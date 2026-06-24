@@ -1,0 +1,412 @@
+"use client"
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState, useRef, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import {
+  CalendarIcon, MapPinIcon, LoaderCircleIcon, ExternalLinkIcon,
+  ChevronRightIcon, TicketIcon, CheckCircleIcon, BanIcon,
+} from "lucide-react"
+import { toast } from "sonner"
+import { useSetRsvp } from "@/hooks/use-evenements"
+import { RsvpBadge } from "@/components/portal/rsvp-badge"
+import { PriceBadge } from "@/components/ui/price-badge"
+import { RichTextView } from "@/components/ui/rich-text-view"
+import { Button } from "@/components/ui/button"
+import { apiErrorMessage } from "@/lib/api-error"
+import { cn } from "@/lib/utils"
+
+type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT"
+
+type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
+
+type Evenement = {
+  id:             string
+  title:          string
+  description:    string | null
+  date:           string
+  endDate:        string | null
+  location:       string | null
+  lat:            number | null
+  lng:            number | null
+  price:          string | null
+  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null }[]
+  rsvpCounts:     RsvpCounts
+}
+
+type ApiResponse = { upcoming: Evenement[]; past: Evenement[]; upcomingHasMore: boolean; pastHasMore: boolean }
+
+const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: string; activeColor: string }[] = [
+  {
+    value:       "CONFIRME",
+    label:       "J'y serai !",
+    dot:         "bg-green-500",
+    color:       "border-border text-muted-foreground hover:border-green-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30",
+    activeColor: "border-green-500 bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400",
+  },
+  {
+    value:       "PROVAVEL",
+    label:       "Si possible",
+    dot:         "bg-yellow-400",
+    color:       "border-border text-muted-foreground hover:border-yellow-400 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/30",
+    activeColor: "border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400",
+  },
+  {
+    value:       "INCERTO",
+    label:       "Peut-être",
+    dot:         "bg-orange-400",
+    color:       "border-border text-muted-foreground hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30",
+    activeColor: "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400",
+  },
+  {
+    value:       "ABSENT",
+    label:       "Je ne viens pas",
+    dot:         "bg-red-500",
+    color:       "border-border text-muted-foreground hover:border-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30",
+    activeColor: "border-red-400 bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+  },
+]
+
+function TicketButton({ evenementId, paid }: { evenementId: string; paid: boolean }) {
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/portal/evenements/${evenementId}/checkout`, { method: "POST" })
+      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
+      return res.json() as Promise<{ url: string }>
+    },
+    onSuccess: ({ url }) => { window.location.href = url },
+    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+  })
+
+  if (paid) {
+    return (
+      <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
+        <CheckCircleIcon className="size-3.5" />
+        Billet acheté
+      </div>
+    )
+  }
+
+  return (
+    <Button
+      size="sm"
+      loading={mutation.isPending}
+      onClick={() => mutation.mutate()}
+      className="w-full"
+    >
+      <TicketIcon className="size-3.5 mr-1.5" />
+      Acheter un billet
+    </Button>
+  )
+}
+
+function RsvpButtons({ evenementId, current }: { evenementId: string; current: RsvpStatus | null }) {
+  const mutation                    = useSetRsvp(evenementId)
+  const [optimistic, setOptimistic] = useState<RsvpStatus | null>(current)
+  const selected = optimistic
+
+  async function handle(rsvp: RsvpStatus) {
+    if (rsvp === selected || mutation.isPending) return
+    setOptimistic(rsvp)
+    try {
+      await mutation.mutateAsync(rsvp)
+      const label = RSVP_OPTIONS.find(o => o.value === rsvp)?.label ?? rsvp
+      toast.success(`Réponse enregistrée : ${label}`)
+    } catch (err) {
+      setOptimistic(current)
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement")
+    }
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-2 pt-1">
+      {RSVP_OPTIONS.map(opt => {
+        const isActive  = selected === opt.value
+        const isLoading = mutation.isPending && optimistic === opt.value
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            disabled={mutation.isPending}
+            onClick={() => handle(opt.value)}
+            className={cn(
+              "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-all",
+              isActive ? opt.activeColor : opt.color,
+              mutation.isPending && !isActive && "opacity-40 cursor-not-allowed",
+            )}
+          >
+            {isLoading
+              ? <LoaderCircleIcon className="size-3 shrink-0 animate-spin" />
+              : <span className={cn("size-2 rounded-full shrink-0", opt.dot)} />
+            }
+            {opt.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function RsvpCounters({ counts }: { counts: RsvpCounts }) {
+  const total = counts.CONFIRME + counts.PROVAVEL + counts.INCERTO + counts.ABSENT
+  if (total === 0) return null
+
+  return (
+    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+      {counts.CONFIRME > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-green-500" />{counts.CONFIRME} confirmé{counts.CONFIRME > 1 ? "s" : ""}</span>}
+      {counts.PROVAVEL > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-yellow-400" />{counts.PROVAVEL} si possible</span>}
+      {counts.INCERTO  > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-orange-400" />{counts.INCERTO} peut-être</span>}
+      {counts.ABSENT   > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-red-500" />{counts.ABSENT} absent{counts.ABSENT > 1 ? "s" : ""}</span>}
+    </div>
+  )
+}
+
+function EventCard({
+  ev,
+  isPast,
+  connectEnabled,
+  optimisticPaidId,
+}: {
+  ev: Evenement
+  isPast?: boolean
+  connectEnabled: boolean
+  optimisticPaidId: string | null
+}) {
+  const participation = ev.participations[0] ?? null
+  const currentRsvp   = participation?.rsvp ?? null
+  const ticketPaid    = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
+  const hasFee        = ev.price != null && Number(ev.price) > 0
+
+  return (
+    <div className={cn(
+      "rounded-2xl border bg-card p-5 space-y-4 transition-all hover:-translate-y-0.5 hover:shadow-md",
+      isPast && "opacity-75 hover:opacity-100",
+    )}>
+      {/* Header */}
+      <div className="space-y-1.5">
+        <div className="flex items-start justify-between gap-2">
+          <p className="font-semibold text-sm leading-snug">{ev.title}</p>
+          {currentRsvp && !hasFee && <RsvpBadge rsvp={currentRsvp} className="shrink-0" />}
+        </div>
+        {ev.description && (
+          <RichTextView content={ev.description} className="text-xs text-muted-foreground line-clamp-3" />
+        )}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-0.5">
+          <span className="flex items-center gap-1">
+            <CalendarIcon className="size-3" />
+            {format(new Date(ev.date), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+          </span>
+          {ev.location && (
+            <span className="flex items-center gap-1">
+              <MapPinIcon className="size-3" />
+              {ev.lat != null && ev.lng != null ? (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${ev.lat},${ev.lng}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline inline-flex items-center gap-0.5"
+                >
+                  {ev.location} <ExternalLinkIcon className="size-2.5" />
+                </a>
+              ) : ev.location}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Tarif + ticket */}
+      {ev.price != null && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            <span className="text-muted-foreground text-xs">Tarif :</span>
+            <PriceBadge price={ev.price} />
+          </div>
+          {!isPast && hasFee && (
+            connectEnabled
+              ? <TicketButton evenementId={ev.id} paid={ticketPaid} />
+              : <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <BanIcon className="size-3.5 shrink-0" />
+                  Paiement en ligne non disponible
+                </p>
+          )}
+          {isPast && ticketPaid && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <CheckCircleIcon className="size-3.5" />
+              Billet acheté
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* RSVP counts — only for free events */}
+      {!hasFee && <RsvpCounters counts={ev.rsvpCounts} />}
+
+      {/* Bottom section */}
+      {isPast ? (
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-muted-foreground">Présence :</span>
+          {participation ? (
+            participation.present
+              ? <span className="font-medium text-green-600 dark:text-green-400">Présent</span>
+              : <span className="font-medium text-muted-foreground">Absent</span>
+          ) : (
+            <span className="text-muted-foreground italic">Non enregistrée</span>
+          )}
+          {currentRsvp && !hasFee && (
+            <>
+              <span className="text-muted-foreground/40">·</span>
+              <span className="text-muted-foreground">
+                RSVP : {RSVP_OPTIONS.find(o => o.value === currentRsvp)?.label}
+              </span>
+            </>
+          )}
+        </div>
+      ) : !hasFee ? (
+        // Free event: show RSVP buttons
+        <div className="space-y-2">
+          <p className={cn(
+            "text-xs font-medium",
+            currentRsvp ? "text-muted-foreground" : "text-foreground",
+          )}>
+            {currentRsvp ? "Votre réponse :" : "Confirmez votre participation :"}
+          </p>
+          <RsvpButtons evenementId={ev.id} current={currentRsvp} />
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl border bg-card p-5 space-y-4 animate-pulse">
+      <div className="space-y-2">
+        <div className="h-4 w-2/3 rounded bg-muted" />
+        <div className="h-3 w-full rounded bg-muted" />
+        <div className="h-3 w-1/3 rounded bg-muted" />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {[0,1,2,3].map(i => <div key={i} className="h-9 rounded-lg bg-muted" />)}
+      </div>
+    </div>
+  )
+}
+
+export default function EvenementsPortalPage() {
+  const searchParams   = useSearchParams()
+  const router         = useRouter()
+  const queryClient    = useQueryClient()
+  const toastShownRef  = useRef(false)
+
+  // optimistic: eventId just paid (before webhook fires)
+  const [optimisticPaidId, setOptimisticPaidId] = useState<string | null>(null)
+
+  const { data, isLoading } = useQuery<ApiResponse>({
+    queryKey: ["portal-evenements"],
+    queryFn:  () => fetch("/api/portal/evenements").then(r => r.json()),
+  })
+
+  const { data: connectData } = useQuery<{ enabled: boolean }>({
+    queryKey: ["portal-connect-status"],
+    queryFn:  () => fetch("/api/portal/connect-status").then(r => r.json()),
+  })
+
+  useEffect(() => {
+    if (toastShownRef.current) return
+    const result = searchParams.get("ticket")
+    if (!result) return
+
+    toastShownRef.current = true
+
+    if (result === "success") {
+      const eid = searchParams.get("eid")
+      if (eid) setOptimisticPaidId(eid)
+      toast.success("Billet acheté avec succès !")
+      queryClient.invalidateQueries({ queryKey: ["portal-evenements"] })
+    } else if (result === "cancelled") {
+      toast.info("Achat annulé.")
+    }
+
+    // Clean URL so refresh/share doesn't re-trigger
+    router.replace(window.location.pathname, { scroll: false })
+  }, [searchParams, router, queryClient])
+
+  const upcoming       = data?.upcoming        ?? []
+  const past           = data?.past            ?? []
+  const upcomingHasMore = data?.upcomingHasMore ?? false
+  const pastHasMore    = data?.pastHasMore     ?? false
+  const connectEnabled = connectData?.enabled  ?? false
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Événements</h1>
+        <p className="text-muted-foreground text-sm mt-1">Vos prochains rendez-vous et votre historique.</p>
+      </div>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">À venir</h2>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[0,1].map(i => <SkeletonCard key={i} />)}
+          </div>
+        ) : upcoming.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center border rounded-xl">
+            Aucun événement à venir.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {upcoming.map(ev => (
+                <EventCard
+                  key={ev.id}
+                  ev={ev}
+                  connectEnabled={connectEnabled}
+                  optimisticPaidId={optimisticPaidId}
+                />
+              ))}
+            </div>
+            {upcomingHasMore && (
+              <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
+                <ChevronRightIcon className="size-3.5" />
+                D'autres événements à venir ne sont pas affichés. Contactez votre association pour plus d'informations.
+              </p>
+            )}
+          </div>
+        )}
+      </section>
+
+      {(isLoading || past.length > 0) && (
+        <section className="space-y-3">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Passés</h2>
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <SkeletonCard />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {past.map(ev => (
+                  <EventCard
+                    key={ev.id}
+                    ev={ev}
+                    isPast
+                    connectEnabled={connectEnabled}
+                    optimisticPaidId={optimisticPaidId}
+                  />
+                ))}
+              </div>
+              {pastHasMore && (
+                <p className="text-xs text-center text-muted-foreground">
+                  Seuls les 10 derniers événements sont affichés.
+                </p>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+    </div>
+  )
+}

@@ -1,0 +1,78 @@
+import { NextResponse } from "next/server"
+import { z } from "zod"
+import { Prisma } from "@prisma/client"
+import { auth } from "@/lib/auth/config"
+import { prisma } from "@/lib/prisma/client"
+import type { SessionUser } from "@/lib/user-context"
+import { computeNextRunAt } from "@/lib/automation"
+
+const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
+
+const schema = z.object({
+  name:          z.string().min(1).max(100).optional(),
+  templateId:    z.string().min(1).optional(),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER"]).optional(),
+  triggerConfig: z.record(z.string(), z.unknown()).optional(),
+  recipients:    z.string().optional(),
+  status:        z.enum(["ACTIVE", "PAUSED", "DONE"]).optional(),
+})
+
+async function resolve(id: string, associationId: string) {
+  return prisma.automationRule.findFirst({ where: { id, associationId } })
+}
+
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  const u = session?.user as SessionUser | undefined
+  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { id } = await params
+  const existing = await resolve(id, u.associationId)
+  if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+
+  const body   = await req.json().catch(() => null)
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+
+  const triggerType   = parsed.data.triggerType   ?? existing.triggerType
+  const triggerConfig = parsed.data.triggerConfig ?? (existing.triggerConfig as Record<string, unknown>)
+
+  const nextRunAt =
+    parsed.data.triggerType || parsed.data.triggerConfig || parsed.data.status === "ACTIVE"
+      ? computeNextRunAt(triggerType, triggerConfig)
+      : undefined
+
+  const data: Prisma.AutomationRuleUncheckedUpdateInput = {}
+  if (parsed.data.name          != null) data.name          = parsed.data.name
+  if (parsed.data.templateId    != null) data.templateId    = parsed.data.templateId
+  if (parsed.data.triggerType   != null) data.triggerType   = parsed.data.triggerType
+  if (parsed.data.triggerConfig != null) data.triggerConfig = parsed.data.triggerConfig as Prisma.InputJsonObject
+  if (parsed.data.recipients    != null) data.recipients    = parsed.data.recipients
+  if (parsed.data.status        != null) data.status        = parsed.data.status
+  if (nextRunAt                 != null) data.nextRunAt     = nextRunAt
+
+  const updated = await prisma.automationRule.update({
+    where: { id },
+    data,
+    include: { template: { select: { name: true } } },
+  })
+
+  return NextResponse.json(updated)
+}
+
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const session = await auth()
+  const u = session?.user as SessionUser | undefined
+  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const { id } = await params
+  const existing = await resolve(id, u.associationId)
+  if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+
+  await prisma.automationRule.delete({ where: { id } })
+  return new NextResponse(null, { status: 204 })
+}

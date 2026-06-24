@@ -1,0 +1,74 @@
+import { NextResponse } from "next/server"
+import bcrypt from "bcryptjs"
+import { prisma } from "@/lib/prisma/client"
+import { portalRegisterSchema } from "@/lib/schemas"
+import { sendEmail } from "@/lib/mail"
+import { portalWelcomeEmail } from "@/lib/email"
+import { APP_URL } from "@/lib/env"
+
+function generatePassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
+  return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+}
+
+export async function POST(req: Request) {
+  const body   = await req.json().catch(() => null)
+  const { slug, ...rest } = body ?? {}
+
+  if (!slug) return NextResponse.json({ error: "Slug manquant" }, { status: 400 })
+
+  const parsed = portalRegisterSchema.safeParse(rest)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 422 })
+  }
+
+  const { firstName, lastName, email, typeId } = parsed.data
+
+  const association = await prisma.association.findUnique({
+    where:  { slug },
+    select: { id: true, name: true },
+  })
+  if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
+  const existing = await prisma.user.findFirst({
+    where: { email: email.toLowerCase(), associationId: association.id },
+  })
+  if (existing) return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 })
+
+  const password     = generatePassword()
+  const passwordHash = await bcrypt.hash(password, 12)
+
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email:         email.toLowerCase(),
+        name:          `${firstName} ${lastName}`,
+        passwordHash,
+        role:          "MEMBRE",
+        associationId: association.id,
+      },
+    })
+    await tx.membre.create({
+      data: {
+        firstName,
+        lastName,
+        email:         email.toLowerCase(),
+        associationId: association.id,
+        userId:        user.id,
+        status:        "ACTIF",
+        typeId:        typeId || null,
+      },
+    })
+  })
+
+  const loginUrl = `${APP_URL}/portal/${slug}/login`
+  sendEmail(portalWelcomeEmail({
+    firstName,
+    email: email.toLowerCase(),
+    password,
+    associationName: association.name,
+    loginUrl,
+  })).catch(() => {})
+
+  return NextResponse.json({ ok: true }, { status: 201 })
+}

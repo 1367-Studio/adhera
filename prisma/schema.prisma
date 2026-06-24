@@ -1,0 +1,376 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  PRESIDENT
+  TRESORIER
+  SECRETAIRE
+  MEMBRE
+}
+
+enum MembreStatus {
+  PENDING
+  ACTIF
+  INACTIF
+  SUSPENDU
+}
+
+enum CotisationStatus {
+  EN_ATTENTE
+  PAYE
+  EXONERE
+}
+
+enum TresorerieType {
+  ENTREE
+  SORTIE
+}
+
+enum RsvpStatus {
+  CONFIRME
+  PROVAVEL
+  INCERTO
+  ABSENT
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+}
+
+enum MaterialStatus {
+  DISPONIBLE
+  EN_USE
+  EN_MAINTENANCE
+  HORS_SERVICE
+  PERDU
+}
+
+enum LoanStatus {
+  DEMANDE
+  CONFIRME
+  REFUSE
+}
+
+enum TriggerType {
+  SCHEDULED_ONCE
+  SCHEDULED_RECURRING
+  EVENT_COTISATION_DUE
+  EVENT_PAYMENT_OVERDUE
+  EVENT_REMINDER
+}
+
+enum RuleStatus {
+  ACTIVE
+  PAUSED
+  DONE
+}
+
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model Association {
+  id                   String             @id @default(cuid())
+  name                 String
+  slug                 String             @unique
+  city                 String?
+  country              String             @default("France")
+  aiApiKey             String?
+  aiModel              String?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripeConnectId      String?
+  subscriptionStatus   SubscriptionStatus @default(TRIAL)
+  trialEndsAt          DateTime?
+  sitePublished        Boolean            @default(false)
+  siteConfig           Json?
+  modules              Json?
+  internalNotes        String?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  deletedAt            DateTime?
+
+  users             User[]
+  membres           Membre[]
+  membreTypes       MembreType[]
+  evenements        Evenement[]
+  cotisations       Cotisation[]
+  tresorerie        TresorerieEntry[]
+  actualites        Actualite[]
+  messageTemplates  MessageTemplate[]
+  automationRules   AutomationRule[]
+  materials         Material[]
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String
+  name          String?
+  passwordHash  String
+  role          UserRole  @default(MEMBRE)
+  active        Boolean   @default(true)
+  associationId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  association   Association?   @relation(fields: [associationId], references: [id])
+  notifications Notification[]
+  membre        Membre?
+
+  @@unique([email, associationId])
+}
+
+model MembreType {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  color         String   @default("gray")
+  associationId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id])
+  membres     Membre[]
+
+  @@unique([name, associationId])
+}
+
+model Membre {
+  id            String       @id @default(cuid())
+  firstName     String
+  lastName      String
+  email         String?
+  phone         String?
+  birthDate     DateTime?
+  address       String?
+  status        MembreStatus @default(ACTIF)
+  typeId        String?
+  associationId String
+  userId        String?      @unique
+  joinedAt      DateTime     @default(now())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+
+  association         Association          @relation(fields: [associationId], references: [id])
+  user                User?                @relation(fields: [userId], references: [id])
+  type                MembreType?          @relation(fields: [typeId], references: [id])
+  cotisations         Cotisation[]
+  participations      Participation[]
+  actualiteRecipients ActualiteRecipient[]
+  materialLoans       MaterialLoan[]
+  automationLogs      AutomationLog[]
+}
+
+model Evenement {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  date          DateTime
+  endDate       DateTime?
+  location      String?
+  lat           Float?
+  lng           Float?
+  price         Decimal?  @db.Decimal(10, 2)
+  capacity      Int?
+  qrToken       String?   @unique
+  qrExpiresAt   DateTime?
+  associationId String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association    Association    @relation(fields: [associationId], references: [id])
+  participations Participation[]
+  actualites     Actualite[]
+}
+
+model Participation {
+  id              String      @id @default(cuid())
+  membreId        String
+  evenementId     String
+  present         Boolean     @default(false)
+  rsvp            RsvpStatus?
+  rsvpAt          DateTime?
+  ticketPaidAt    DateTime?
+  stripeSessionId String?     @unique
+  createdAt       DateTime    @default(now())
+
+  membre    Membre    @relation(fields: [membreId], references: [id])
+  evenement Evenement @relation(fields: [evenementId], references: [id])
+
+  @@unique([membreId, evenementId])
+}
+
+model Cotisation {
+  id            String           @id @default(cuid())
+  membreId      String
+  associationId String
+  amount        Decimal          @db.Decimal(10, 2)
+  year          Int
+  paidAt        DateTime?
+  status        CotisationStatus @default(EN_ATTENTE)
+  note          String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  membre      Membre      @relation(fields: [membreId], references: [id])
+  association Association @relation(fields: [associationId], references: [id])
+
+  @@unique([membreId, year])
+}
+
+model TresorerieEntry {
+  id            String         @id @default(cuid())
+  associationId String
+  type          TresorerieType
+  amount        Decimal        @db.Decimal(10, 2)
+  description   String
+  date          DateTime
+  category      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Actualite {
+  id            String    @id @default(cuid())
+  associationId String
+  title         String
+  content       String
+  imageUrl      String?
+  pinned        Boolean   @default(false)
+  publishedAt   DateTime?
+  evenementId   String?
+  recipientMode String    @default("ALL") // "ALL" | "SELECTED"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association Association          @relation(fields: [associationId], references: [id])
+  evenement   Evenement?           @relation(fields: [evenementId], references: [id])
+  recipients  ActualiteRecipient[]
+}
+
+model ActualiteRecipient {
+  actualiteId String
+  membreId    String
+
+  actualite Actualite @relation(fields: [actualiteId], references: [id], onDelete: Cascade)
+  membre    Membre    @relation(fields: [membreId],    references: [id])
+
+  @@id([actualiteId, membreId])
+}
+
+model Material {
+  id            String         @id @default(cuid())
+  associationId String
+  name          String
+  category      String?
+  description   String?
+  serialNumber  String?
+  quantity      Int            @default(1)
+  status        MaterialStatus @default(DISPONIBLE)
+  location      String?
+  purchaseDate  DateTime?
+  purchasePrice Decimal?       @db.Decimal(10, 2)
+  notes         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  loans       MaterialLoan[]
+}
+
+model MaterialLoan {
+  id               String     @id @default(cuid())
+  materialId       String
+  membreId         String?
+  borrowerName     String?
+  quantity         Int        @default(1)
+  status           LoanStatus @default(CONFIRME)
+  borrowedAt       DateTime   @default(now())
+  expectedReturnAt DateTime?
+  returnedAt       DateTime?
+  notes            String?
+  createdAt        DateTime   @default(now())
+
+  material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
+  membre   Membre?  @relation(fields: [membreId], references: [id])
+}
+
+model MessageTemplate {
+  id            String   @id @default(cuid())
+  associationId String
+  name          String
+  subject       String
+  body          String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  rules       AutomationRule[]
+}
+
+model AutomationRule {
+  id            String      @id @default(cuid())
+  associationId String
+  name          String
+  templateId    String
+  triggerType   TriggerType
+  triggerConfig Json
+  recipients    String      @default("ALL")
+  status        RuleStatus  @default(ACTIVE)
+  lastRunAt     DateTime?
+  nextRunAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  association Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  template    MessageTemplate  @relation(fields: [templateId], references: [id])
+  logs        AutomationLog[]
+}
+
+model AutomationLog {
+  id       String   @id @default(cuid())
+  ruleId   String
+  membreId String?
+  eventId  String?
+  subject  String?
+  sentAt   DateTime @default(now())
+
+  rule   AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  membre Membre?        @relation(fields: [membreId], references: [id], onDelete: SetNull)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
