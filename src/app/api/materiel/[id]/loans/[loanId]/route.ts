@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -20,31 +21,37 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const { id, loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
-    where: { id: loanId, material: { associationId: u.associationId }, materialId: id },
+    where:   { id: loanId, material: { associationId: u.associationId }, materialId: id },
+    include: {
+      material: { select: { name: true } },
+      membre:   { select: { firstName: true, lastName: true } },
+    },
   })
   if (!loan) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => ({}))
   const parsed = patchSchema.safeParse(body)
-
-  // Fix 9: return 400 on malformed body instead of silently defaulting to "return"
   if (!parsed.success) {
     return NextResponse.json({ error: "Action invalide" }, { status: 400 })
   }
 
-  const action = parsed.data.action ?? "return"
+  const action   = parsed.data.action ?? "return"
+  const borrower = loan.membre
+    ? `${loan.membre.firstName} ${loan.membre.lastName}`
+    : (loan.borrowerName ?? "Externe")
+  const label = `${loan.material.name} — ${borrower}`
 
   if (action === "return") {
     if (loan.returnedAt) return NextResponse.json({ error: "Déjà rendu" }, { status: 409 })
-    // Fix 2: cannot return a loan that was never confirmed
     if (loan.status !== "CONFIRME") {
       return NextResponse.json({ error: "Ce prêt n'a pas encore été confirmé" }, { status: 409 })
     }
     const updated = await prisma.materialLoan.update({
-      where: { id: loanId },
-      data:  { returnedAt: new Date() },
+      where:   { id: loanId },
+      data:    { returnedAt: new Date() },
       include: { membre: { select: { firstName: true, lastName: true } } },
     })
+    await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "LOAN_RETURNED", entity: "MaterialLoan", entityId: loanId, label })
     return NextResponse.json(updated)
   }
 
@@ -63,10 +70,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: `Seulement ${available} unité(s) disponible(s)` }, { status: 409 })
     }
     const updated = await prisma.materialLoan.update({
-      where: { id: loanId },
-      data:  { status: "CONFIRME" },
+      where:   { id: loanId },
+      data:    { status: "CONFIRME" },
       include: { membre: { select: { firstName: true, lastName: true } } },
     })
+    await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "LOAN_CONFIRMED", entity: "MaterialLoan", entityId: loanId, label })
     return NextResponse.json(updated)
   }
 
@@ -75,10 +83,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       return NextResponse.json({ error: "Ce prêt n'est pas en attente" }, { status: 409 })
     }
     const updated = await prisma.materialLoan.update({
-      where: { id: loanId },
-      data:  { status: "REFUSE" },
+      where:   { id: loanId },
+      data:    { status: "REFUSE" },
       include: { membre: { select: { firstName: true, lastName: true } } },
     })
+    await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "LOAN_REFUSED", entity: "MaterialLoan", entityId: loanId, label })
     return NextResponse.json(updated)
   }
 
@@ -95,10 +104,20 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const { id, loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
-    where: { id: loanId, material: { associationId: u.associationId }, materialId: id },
+    where:   { id: loanId, material: { associationId: u.associationId }, materialId: id },
+    include: {
+      material: { select: { name: true } },
+      membre:   { select: { firstName: true, lastName: true } },
+    },
   })
   if (!loan) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   await prisma.materialLoan.delete({ where: { id: loanId } })
+
+  const borrower = loan.membre
+    ? `${loan.membre.firstName} ${loan.membre.lastName}`
+    : (loan.borrowerName ?? "Externe")
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "LOAN_DELETED", entity: "MaterialLoan", entityId: loanId, label: `${loan.material.name} — ${borrower}` })
+
   return new NextResponse(null, { status: 204 })
 }

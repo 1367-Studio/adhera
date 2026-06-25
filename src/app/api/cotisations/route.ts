@@ -3,6 +3,7 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { cotisationSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -88,5 +89,6 @@ export async function POST(req: Request) {
     include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } } },
   })
 
+  await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
   return NextResponse.json(cotisation, { status: 201 })
 }

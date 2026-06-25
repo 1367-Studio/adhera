@@ -43,6 +43,13 @@ export function useAutomationRules() {
   })
 }
 
+function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    qc.invalidateQueries({ queryKey: KEY }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+  ])
+}
+
 export function useCreateRule() {
   const qc = useQueryClient()
   return useMutation({
@@ -52,7 +59,7 @@ export function useCreateRule() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -65,7 +72,7 @@ export function useUpdateRule(id: string) {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -74,7 +81,7 @@ export function useDeleteRule() {
   return useMutation({
     mutationFn: (id: string) =>
       fetchJson(`/api/automation-rules/${id}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -87,7 +94,7 @@ export function useToggleRuleStatus() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ status }),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 

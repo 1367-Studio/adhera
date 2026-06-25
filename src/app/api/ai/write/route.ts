@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
+import { parseModules } from "@/lib/modules"
 
 const schema = z.object({
   action:      z.enum(["generate", "improve", "rephrase", "summarize"]),
@@ -41,11 +42,15 @@ export async function POST(req: Request) {
 
   const { action, instruction, currentText } = parsed.data
 
-  // Use association's own key if configured, else platform fallback
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { aiApiKey: true, aiModel: true },
+    select: { aiApiKey: true, aiModel: true, modules: true },
   })
+
+  const modules = parseModules(assoc?.modules)
+  if (!modules.ia) {
+    return NextResponse.json({ error: "Module IA désactivé." }, { status: 403 })
+  }
 
   const client = assoc?.aiApiKey
     ? makeGroqClient(assoc.aiApiKey)

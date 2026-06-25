@@ -13,14 +13,16 @@ import {
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { AiWriter } from "@/components/ai/ai-writer"
+import { useModules } from "@/lib/user-context"
 
 interface MenuBarProps {
   editor:       Editor | null
   aiOpen:       boolean
   onToggleAi:   () => void
+  aiEnabled:    boolean
 }
 
-function MenuBar({ editor, aiOpen, onToggleAi }: MenuBarProps) {
+function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
   if (!editor) return null
 
   const btn = (active: boolean) =>
@@ -61,21 +63,24 @@ function MenuBar({ editor, aiOpen, onToggleAi }: MenuBarProps) {
         <ListOrdered size={14} />
       </button>
 
-      <div className="w-px h-4 bg-border mx-1" />
-
-      <button
-        type="button"
-        onClick={onToggleAi}
-        className={cn(
-          "flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors",
-          aiOpen
-            ? "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
-            : "text-muted-foreground hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30",
-        )}
-      >
-        <SparklesIcon size={13} />
-        IA
-      </button>
+      {aiEnabled && (
+        <>
+          <div className="w-px h-4 bg-border mx-1" />
+          <button
+            type="button"
+            onClick={onToggleAi}
+            className={cn(
+              "flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors",
+              aiOpen
+                ? "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"
+                : "text-muted-foreground hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30",
+            )}
+          >
+            <SparklesIcon size={13} />
+            IA
+          </button>
+        </>
+      )}
     </div>
   )
 }
@@ -99,6 +104,8 @@ export function RichTextEditor({
   minHeight = "180px",
   error,
 }: RichTextEditorProps) {
+  const modules   = useModules()
+  const aiEnabled = modules.ia
   const [aiOpen, setAiOpen] = useState(false)
 
   const editor = useEditor({
@@ -163,8 +170,8 @@ export function RichTextEditor({
           error && "border-destructive focus-within:ring-destructive/30",
         )}
       >
-        <MenuBar editor={editor} aiOpen={aiOpen} onToggleAi={() => setAiOpen(o => !o)} />
-        {aiOpen && (
+        <MenuBar editor={editor} aiOpen={aiOpen} onToggleAi={() => setAiOpen(o => !o)} aiEnabled={aiEnabled} />
+        {aiEnabled && aiOpen && (
           <AiWriter
             currentText={currentText}
             onInsert={handleAiInsert}

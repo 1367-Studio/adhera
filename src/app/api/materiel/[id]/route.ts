@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -89,6 +90,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "MATERIEL_UPDATED", entity: "Material", entityId: id, label: updated.name })
   return NextResponse.json(updated)
 }
 
@@ -104,5 +106,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   await prisma.material.delete({ where: { id } })
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "MATERIEL_DELETED", entity: "Material", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
 }

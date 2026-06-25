@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { actualiteUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
 import { stripHtml } from "@/lib/utils"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -15,7 +16,7 @@ const include = {
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
   if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
@@ -94,13 +95,29 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     )
   }
 
+  const changes: Record<string, { old: string | null; new: string | null }> = {}
+  if (updated.title !== existing.title)
+    changes.title = { old: existing.title, new: updated.title }
+  if (updated.pinned !== existing.pinned)
+    changes.pinned = { old: String(existing.pinned), new: String(updated.pinned) }
+  if ((updated.publishedAt?.toISOString() ?? null) !== (existing.publishedAt?.toISOString() ?? null))
+    changes.publishedAt = { old: existing.publishedAt?.toISOString() ?? null, new: updated.publishedAt?.toISOString() ?? null }
+  if (updated.recipientMode !== existing.recipientMode)
+    changes.recipientMode = { old: existing.recipientMode, new: updated.recipientMode }
+  if (updated.content !== existing.content)
+    changes.content = { old: null, new: null }
+
+  await writeActivityLog({
+    associationId, actorId: userId, action: "ACTUALITE_UPDATED", entity: "Actualite", entityId: id, label: updated.title,
+    metadata: Object.keys(changes).length > 0 ? { changes } : undefined,
+  })
   return NextResponse.json(updated)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
   if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
@@ -108,5 +125,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   await prisma.actualite.delete({ where: { id } })
+  await writeActivityLog({ associationId, actorId: userId, action: "ACTUALITE_DELETED", entity: "Actualite", entityId: id, label: existing.title })
   return NextResponse.json({ ok: true })
 }

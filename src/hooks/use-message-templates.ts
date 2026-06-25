@@ -30,6 +30,13 @@ export function useMessageTemplates() {
   })
 }
 
+function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    qc.invalidateQueries({ queryKey: KEY }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+  ])
+}
+
 export function useCreateTemplate() {
   const qc = useQueryClient()
   return useMutation({
@@ -39,7 +46,7 @@ export function useCreateTemplate() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -52,7 +59,7 @@ export function useUpdateTemplate(id: string) {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -61,6 +68,6 @@ export function useDeleteTemplate() {
   return useMutation({
     mutationFn: (id: string) =>
       fetchJson(`/api/message-templates/${id}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+    onSuccess: () => invalidateAll(qc),
   })
 }

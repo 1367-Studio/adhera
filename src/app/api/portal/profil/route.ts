@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
+import { computeMemberDiff, writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -58,5 +59,22 @@ export async function PATCH(req: Request) {
       ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
     },
   })
+
+  const changes = computeMemberDiff(
+    membre  as unknown as Record<string, unknown>,
+    updated as unknown as Record<string, unknown>,
+  )
+  if (Object.keys(changes).length > 0) {
+    await writeActivityLog({
+      associationId: u.associationId!,
+      actorId:  u.id,
+      action:   "PROFIL_UPDATED",
+      entity:   "Membre",
+      entityId: membre.id,
+      label:    `${membre.firstName} ${membre.lastName}`,
+      metadata: { changes },
+    })
+  }
+
   return NextResponse.json(updated)
 }

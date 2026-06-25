@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/mail"
 import { welcomeEmail } from "@/lib/email"
 import { membreSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -49,7 +50,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -87,6 +88,8 @@ export async function POST(req: Request) {
       portalUrl,
     })).catch(() => {})
   }
+
+  await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id, label: `${membre.firstName} ${membre.lastName}` })
 
   return NextResponse.json(membre, { status: 201 })
 }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -52,7 +53,7 @@ export async function GET() {
 export async function PATCH(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!ADMINS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -77,6 +78,15 @@ export async function PATCH(req: Request) {
   data.siteConfig = { ...existingConfig, ...configFields }
 
   await prisma.association.update({ where: { id: associationId }, data })
+
+  const action = published === true ? "SITE_PUBLISHED" : published === false ? "SITE_UNPUBLISHED" : "SITE_UPDATED"
+  await writeActivityLog({
+    associationId,
+    actorId:  userId,
+    action,
+    entity:   "Association",
+    entityId: associationId,
+  })
 
   return NextResponse.json({ ok: true })
 }

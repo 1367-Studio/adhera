@@ -50,6 +50,7 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
     qc.invalidateQueries({ queryKey: QK }),
     qc.invalidateQueries({ queryKey: ["portal-actualites"] }),
     qc.invalidateQueries({ queryKey: ["portal-actualite"] }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
   ])
 }
 

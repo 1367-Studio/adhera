@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
@@ -27,7 +28,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     membreId:        m.id,
     firstName:       m.firstName,
     lastName:        m.lastName,
-    participationId: m.participations[0]?.id  ?? null,
+    participationId: m.participations[0]?.id    ?? null,
     present:         m.participations[0]?.present ?? false,
     rsvp:            m.participations[0]?.rsvp    ?? null,
   }))
@@ -38,7 +39,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId } = ctx
+  const { associationId, userId } = ctx
 
   const { id: evenementId } = await params
 
@@ -59,11 +60,28 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
   }
 
+  const existingParticipation = await prisma.participation.findUnique({
+    where:  { membreId_evenementId: { membreId, evenementId } },
+    select: { present: true },
+  })
+
   const participation = await prisma.participation.upsert({
     where:  { membreId_evenementId: { membreId, evenementId } },
     create: { membreId, evenementId, present },
     update: { present },
   })
+
+  if (existingParticipation?.present !== present) {
+    await writeActivityLog({
+      associationId,
+      actorId:  userId,
+      action:   "PRESENCE_MARKED",
+      entity:   "Participation",
+      entityId: participation.id,
+      label:    evenement.title,
+      metadata: { present, memberName: `${membre.firstName} ${membre.lastName}` },
+    })
+  }
 
   return NextResponse.json(participation)
 }

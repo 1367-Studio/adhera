@@ -2,13 +2,14 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { tresorerieUpdateSchema } from "@/lib/schemas"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -34,13 +35,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
+  await writeActivityLog({ associationId, actorId: userId, action: "TRESORERIE_UPDATED", entity: "Tresorerie", entityId: id, label: entry.description })
   return NextResponse.json(entry)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -51,5 +53,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Entrée introuvable" }, { status: 404 })
 
   await prisma.tresorerieEntry.delete({ where: { id } })
+  await writeActivityLog({ associationId, actorId: userId, action: "TRESORERIE_DELETED", entity: "Tresorerie", entityId: id, label: existing.description })
   return new NextResponse(null, { status: 204 })
 }

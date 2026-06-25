@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
+import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -61,6 +62,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         portalUrl,
       })).catch(() => {})
     }
+  }
+
+  if (existingParticipation?.rsvp !== parsed.data.rsvp) {
+    await writeActivityLog({
+      associationId: u.associationId!,
+      actorId:  u.id,
+      action:   "RSVP_UPDATED",
+      entity:   "Participation",
+      entityId: participation.id,
+      label:    evenement.title,
+      metadata: { rsvp: parsed.data.rsvp },
+    })
   }
 
   return NextResponse.json(participation)

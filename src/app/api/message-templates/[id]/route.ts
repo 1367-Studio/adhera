@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -32,6 +33,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
   const updated = await prisma.messageTemplate.update({ where: { id }, data: parsed.data })
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_UPDATED", entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
 }
 
@@ -52,5 +54,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   }
 
   await prisma.messageTemplate.delete({ where: { id } })
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_DELETED", entity: "MessageTemplate", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
 }

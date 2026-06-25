@@ -3,6 +3,7 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { tresorerieSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -67,7 +68,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -89,5 +90,6 @@ export async function POST(req: Request) {
     },
   })
 
+  await writeActivityLog({ associationId, actorId: userId, action: "TRESORERIE_CREATED", entity: "Tresorerie", entityId: entry.id, label: entry.description, metadata: { type: entry.type, amount: Number(entry.amount) } })
   return NextResponse.json(entry, { status: 201 })
 }

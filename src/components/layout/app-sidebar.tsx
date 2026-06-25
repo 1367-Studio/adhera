@@ -13,6 +13,7 @@ import {
   MailIcon,
   PackageIcon,
   GlobeIcon,
+  ActivityIcon,
 } from "lucide-react"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -39,6 +40,7 @@ const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 const navigationItems: NavItem[] = [
   { name: "Tableau de bord", href: "/dashboard",             icon: LayoutDashboardIcon, roles: MANAGERS },
   { name: "Membres",         href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
+  { name: "Activité",        href: "/dashboard/activite",    icon: ActivityIcon,         roles: MANAGERS },
   { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
   { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
   { name: "Trésorerie",      href: "/dashboard/tresorerie",  icon: LandmarkIcon,         roles: FINANCE,   moduleKey: "tresorerie"  },

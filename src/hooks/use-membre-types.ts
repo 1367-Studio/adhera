@@ -23,6 +23,14 @@ export function useMembreTypes() {
   return useQuery({ queryKey: QK, queryFn: fetchMembreTypes })
 }
 
+function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    qc.invalidateQueries({ queryKey: QK }),
+    qc.invalidateQueries({ queryKey: QK_MBRS }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+  ])
+}
+
 export function useCreateMembreType() {
   const qc = useQueryClient()
   return useMutation({
@@ -35,10 +43,7 @@ export function useCreateMembreType() {
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
       return res.json()
     },
-    onSuccess: () => Promise.all([
-      qc.invalidateQueries({ queryKey: QK }),
-      qc.invalidateQueries({ queryKey: QK_MBRS }),
-    ]),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -54,10 +59,7 @@ export function useUpdateMembreType(id: string) {
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
       return res.json()
     },
-    onSuccess: () => Promise.all([
-      qc.invalidateQueries({ queryKey: QK }),
-      qc.invalidateQueries({ queryKey: QK_MBRS }),
-    ]),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
@@ -68,9 +70,6 @@ export function useDeleteMembreType() {
       const res = await fetch(`/api/membre-types/${id}`, { method: "DELETE" })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
     },
-    onSuccess: () => Promise.all([
-      qc.invalidateQueries({ queryKey: QK }),
-      qc.invalidateQueries({ queryKey: QK_MBRS }),
-    ]),
+    onSuccess: () => invalidateAll(qc),
   })
 }

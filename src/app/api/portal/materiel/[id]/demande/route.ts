@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -61,6 +62,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       notes:            parsed.data.notes ?? null,
     },
     include: { material: { select: { name: true } } },
+  })
+
+  await writeActivityLog({
+    associationId: u.associationId!,
+    actorId:  u.id,
+    action:   "LOAN_REQUESTED",
+    entity:   "MaterialLoan",
+    entityId: loan.id,
+    label:    loan.material.name,
+    metadata: { quantity: loan.quantity },
   })
 
   return NextResponse.json(loan, { status: 201 })

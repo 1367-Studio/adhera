@@ -5,6 +5,7 @@ import { portalRegisterSchema } from "@/lib/schemas"
 import { sendEmail } from "@/lib/mail"
 import { portalWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
+import { writeActivityLog } from "@/lib/activity-log"
 
 function generatePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
@@ -38,6 +39,8 @@ export async function POST(req: Request) {
   const password     = generatePassword()
   const passwordHash = await bcrypt.hash(password, 12)
 
+  let membreId: string | null = null
+
   await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
@@ -48,7 +51,7 @@ export async function POST(req: Request) {
         associationId: association.id,
       },
     })
-    await tx.membre.create({
+    const membre = await tx.membre.create({
       data: {
         firstName,
         lastName,
@@ -59,7 +62,12 @@ export async function POST(req: Request) {
         typeId:        typeId || null,
       },
     })
+    membreId = membre.id
   })
+
+  if (membreId) {
+    await writeActivityLog({ associationId: association.id, action: "MEMBRE_PORTAL_REGISTERED", entity: "Membre", entityId: membreId, label: `${firstName} ${lastName}` })
+  }
 
   const loginUrl = `${APP_URL}/portal/${slug}/login`
   sendEmail(portalWelcomeEmail({

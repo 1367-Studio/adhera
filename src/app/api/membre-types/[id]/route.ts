@@ -2,13 +2,14 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { membreTypeUpdateSchema } from "@/lib/schemas"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!ADMINS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -25,13 +26,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const type = await prisma.membreType.update({ where: { id }, data: parsed.data })
+  await writeActivityLog({ associationId, actorId: userId, action: "TYPE_UPDATED", entity: "MembreType", entityId: id, label: type.name })
   return NextResponse.json(type)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!ADMINS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -52,5 +54,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   }
 
   await prisma.membreType.delete({ where: { id } })
+  await writeActivityLog({ associationId, actorId: userId, action: "TYPE_DELETED", entity: "MembreType", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
 }

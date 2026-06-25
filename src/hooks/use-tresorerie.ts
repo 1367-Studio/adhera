@@ -51,26 +51,27 @@ export function useTresorerie(page: number, limit = 25, filters: Filters = {}) {
   })
 }
 
+function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
+  return Promise.all([
+    qc.invalidateQueries({ queryKey: QK }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+  ])
+}
+
 export function useCreateEntry() {
   const qc = useQueryClient()
-  return useMutation({
-    mutationFn: createEntry,
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
-  })
+  return useMutation({ mutationFn: createEntry, onSuccess: () => invalidateAll(qc) })
 }
 
 export function useUpdateEntry(id: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (data: TresorerieUpdateInput) => updateEntry(id, data),
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
+    onSuccess: () => invalidateAll(qc),
   })
 }
 
 export function useDeleteEntry() {
   const qc = useQueryClient()
-  return useMutation({
-    mutationFn: deleteEntry,
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
-  })
+  return useMutation({ mutationFn: deleteEntry, onSuccess: () => invalidateAll(qc) })
 }

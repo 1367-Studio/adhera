@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon } from "lucide-react"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon } from "lucide-react"
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput } from "@/lib/schemas"
@@ -12,6 +12,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MembreForm } from "@/components/membres/membre-form"
+import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -80,10 +81,11 @@ export function MembresView() {
   const [search, setSearch]             = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [typeFilter, setTypeFilter]     = useState<string>("")
-  const [createOpen, setCreateOpen]     = useState(false)
-  const [editTarget, setEditTarget]     = useState<Membre | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<Membre | null>(null)
-  const [emailOpen, setEmailOpen]       = useState(false)
+  const [createOpen, setCreateOpen]       = useState(false)
+  const [editTarget, setEditTarget]       = useState<Membre | null>(null)
+  const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
+  const [emailOpen, setEmailOpen]         = useState(false)
+  const [historyTarget, setHistoryTarget] = useState<Membre | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -177,8 +179,9 @@ export function MembresView() {
       className: "w-10",
       cell: (m) => (
         <RowActions actions={[
-          { label: "Modifier",   icon: <PencilIcon className="size-3.5" />,  onClick: () => setEditTarget(m) },
-          { label: "Supprimer",  icon: <Trash2Icon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
+          { label: "Modifier",    icon: <PencilIcon    className="size-3.5" />, onClick: () => setEditTarget(m) },
+          { label: "Historique",  icon: <HistoryIcon   className="size-3.5" />, onClick: () => setHistoryTarget(m) },
+          { label: "Supprimer",   icon: <Trash2Icon    className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
         ]} />
       ),
     },
@@ -324,6 +327,15 @@ export function MembresView() {
         open={emailOpen}
         onOpenChange={setEmailOpen}
       />
+
+      <Modal
+        open={!!historyTarget}
+        onOpenChange={(open) => !open && setHistoryTarget(null)}
+        title={historyTarget ? `Historique — ${historyTarget.firstName} ${historyTarget.lastName}` : "Historique"}
+        size="md"
+      >
+        {historyTarget && <MembreActivityLog membreId={historyTarget.id} />}
+      </Modal>
     </div>
   )
 }

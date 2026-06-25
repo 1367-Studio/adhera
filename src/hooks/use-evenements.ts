@@ -143,6 +143,7 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
     qc.invalidateQueries({ queryKey: ["portal-actualites"] }),
     qc.invalidateQueries({ queryKey: ["portal-actualite"] }),
     qc.invalidateQueries({ queryKey: ["dashboard"] }),
+    qc.invalidateQueries({ queryKey: ["activity-logs"] }),
   ])
 }
 
@@ -179,6 +180,8 @@ export function useSetRsvp(evenementId: string) {
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
       qc.invalidateQueries({ queryKey: ["portal-actualites"] }),
       qc.invalidateQueries({ queryKey: ["portal-actualite"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+      qc.invalidateQueries({ queryKey: ["membre-logs"] }),
     ]),
   })
 }
@@ -192,6 +195,8 @@ export function useTogglePresence(evenementId: string) {
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
       qc.invalidateQueries({ queryKey: ["dashboard"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+      qc.invalidateQueries({ queryKey: ["membre-logs"] }),
     ]),
   })
 }

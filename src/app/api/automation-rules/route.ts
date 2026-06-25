@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
 import { computeNextRunAt } from "@/lib/automation"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -63,5 +64,6 @@ export async function POST(req: Request) {
     include: { template: { select: { name: true } } },
   })
 
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_CREATED", entity: "AutomationRule", entityId: rule.id, label: rule.name })
   return NextResponse.json(rule, { status: 201 })
 }

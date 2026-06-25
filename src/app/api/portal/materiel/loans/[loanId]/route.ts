@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -20,7 +21,7 @@ const patchSchema = z.object({
 async function getMembre(userId: string, associationId: string) {
   return prisma.membre.findFirst({
     where:  { userId, associationId, deletedAt: null },
-    select: { id: true },
+    select: { id: true, firstName: true, lastName: true },
   })
 }
 
@@ -37,7 +38,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ loanId
   const { loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
-    where: { id: loanId, membreId: membre.id },
+    where:   { id: loanId, membreId: membre.id },
+    include: { material: { select: { name: true } } },
   })
   if (!loan) return NextResponse.json({ error: "Demande introuvable" }, { status: 404 })
   if (loan.status !== "DEMANDE") return NextResponse.json({ error: "Seules les demandes en attente peuvent être modifiées" }, { status: 409 })
@@ -51,10 +53,19 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ loanId
   const updated = await prisma.materialLoan.update({
     where: { id: loanId },
     data: {
-      ...(parsed.data.quantity         !== undefined ? { quantity:         parsed.data.quantity }                                                 : {}),
-      ...(parsed.data.expectedReturnAt !== undefined ? { expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null } : {}),
-      ...(parsed.data.notes            !== undefined ? { notes:            parsed.data.notes ?? null }                                            : {}),
+      ...(parsed.data.quantity         !== undefined ? { quantity:         parsed.data.quantity }                                                                : {}),
+      ...(parsed.data.expectedReturnAt !== undefined ? { expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null }        : {}),
+      ...(parsed.data.notes            !== undefined ? { notes:            parsed.data.notes ?? null }                                                           : {}),
     },
+  })
+
+  await writeActivityLog({
+    associationId: u.associationId,
+    actorId:  u.id,
+    action:   "LOAN_UPDATED",
+    entity:   "MaterialLoan",
+    entityId: loanId,
+    label:    `${loan.material.name} — ${membre.firstName} ${membre.lastName}`,
   })
 
   return NextResponse.json(updated)
@@ -73,12 +84,22 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ loan
   const { loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
-    where: { id: loanId, membreId: membre.id },
+    where:   { id: loanId, membreId: membre.id },
+    include: { material: { select: { name: true } } },
   })
   if (!loan) return NextResponse.json({ error: "Demande introuvable" }, { status: 404 })
   if (loan.status !== "DEMANDE") return NextResponse.json({ error: "Seules les demandes en attente peuvent être annulées" }, { status: 409 })
 
   await prisma.materialLoan.delete({ where: { id: loanId } })
+
+  await writeActivityLog({
+    associationId: u.associationId,
+    actorId:  u.id,
+    action:   "LOAN_CANCELLED",
+    entity:   "MaterialLoan",
+    entityId: loanId,
+    label:    `${loan.material.name} — ${membre.firstName} ${membre.lastName}`,
+  })
 
   return NextResponse.json({ ok: true })
 }

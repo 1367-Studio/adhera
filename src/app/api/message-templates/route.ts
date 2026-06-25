@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -43,5 +44,6 @@ export async function POST(req: Request) {
     data: { ...parsed.data, associationId: u.associationId },
   })
 
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_CREATED", entity: "MessageTemplate", entityId: template.id, label: template.name })
   return NextResponse.json(template, { status: 201 })
 }

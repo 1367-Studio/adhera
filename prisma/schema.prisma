@@ -111,6 +111,7 @@ model Association {
   messageTemplates  MessageTemplate[]
   automationRules   AutomationRule[]
   materials         Material[]
+  activityLogs      ActivityLog[]
 }
 
 model User {
@@ -364,6 +365,23 @@ model AutomationLog {
 
   rule   AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
   membre Membre?        @relation(fields: [membreId], references: [id], onDelete: SetNull)
+}
+
+model ActivityLog {
+  id            String   @id @default(cuid())
+  associationId String
+  actorId       String?
+  action        String
+  entity        String
+  entityId      String?
+  label         String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId, createdAt(sort: Desc)])
+  @@index([associationId, entity])
 }
 
 model PasswordResetToken {

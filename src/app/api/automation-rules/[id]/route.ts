@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
 import { computeNextRunAt } from "@/lib/automation"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -59,6 +60,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     include: { template: { select: { name: true } } },
   })
 
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_UPDATED", entity: "AutomationRule", entityId: id, label: updated.name, metadata: parsed.data.status ? { status: parsed.data.status } : undefined })
   return NextResponse.json(updated)
 }
 
@@ -74,5 +76,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   await prisma.automationRule.delete({ where: { id } })
+  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_DELETED", entity: "AutomationRule", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
 }

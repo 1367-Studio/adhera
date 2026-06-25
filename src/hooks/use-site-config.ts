@@ -26,6 +26,9 @@ export function useSaveSiteConfig() {
       if (!res.ok) throw new Error("Erreur lors de la sauvegarde")
       return res.json()
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["site-config"] }),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: ["site-config"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    ]),
   })
 }

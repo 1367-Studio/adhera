@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { evenementUpdateSchema } from "@/lib/schemas"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -29,7 +30,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -61,13 +62,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
+  await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id, label: evenement.title })
   return NextResponse.json(evenement)
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+  const { associationId, role, userId } = ctx
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -78,5 +80,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
   await prisma.evenement.delete({ where: { id } })
+  await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_DELETED", entity: "Evenement", entityId: id, label: existing.title })
   return new NextResponse(null, { status: 204 })
 }

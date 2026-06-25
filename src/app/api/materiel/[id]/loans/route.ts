@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -51,6 +52,19 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       notes:            parsed.data.notes ?? null,
     },
     include: { membre: { select: { firstName: true, lastName: true } } },
+  })
+
+  const borrower = loan.membre
+    ? `${loan.membre.firstName} ${loan.membre.lastName}`
+    : (parsed.data.borrowerName ?? "Externe")
+  await writeActivityLog({
+    associationId: u.associationId,
+    actorId:  u.id,
+    action:   "LOAN_CREATED",
+    entity:   "MaterialLoan",
+    entityId: loan.id,
+    label:    `${material.name} — ${borrower}`,
+    metadata: { quantity: loan.quantity },
   })
 
   return NextResponse.json(loan, { status: 201 })

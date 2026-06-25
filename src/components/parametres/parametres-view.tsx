@@ -61,6 +61,7 @@ export function ParametresView() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["association"] })
+      qc.invalidateQueries({ queryKey: ["activity-logs"] })
       toast.success("Paramètres enregistrés")
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
