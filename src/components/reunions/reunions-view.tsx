@@ -7,6 +7,7 @@ import { fr } from "date-fns/locale"
 import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, ClockIcon, UsersIcon, CalendarIcon, FileTextIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useMeetings, useCreateMeeting, useDeleteMeeting, type Meeting } from "@/hooks/use-meetings"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
@@ -196,6 +197,14 @@ function MeetingCard({
           <Button size="sm" onClick={onJoin} className="flex-1">
             <PlayIcon className="mr-1 h-3 w-3" />
             {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
+          </Button>
+        )}
+        {meeting.status === "ENDED" && (
+          <Button size="sm" variant="outline" className="flex-1" asChild>
+            <Link href={`/dashboard/reunions/${meeting.id}`}>
+              <FileTextIcon className="mr-1 h-3 w-3" />
+              Transcription
+            </Link>
           </Button>
         )}
         <Button size="sm" variant="ghost" onClick={onDelete} className="text-destructive hover:text-destructive">
