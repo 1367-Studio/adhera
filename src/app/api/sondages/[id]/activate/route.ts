@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
@@ -62,6 +63,12 @@ export async function POST(_req: Request, { params }: Params) {
         })),
       skipDuplicates: true,
     })
+
+    await Promise.allSettled(
+      membres
+        .filter(m => m.userId)
+        .map(m => pusherServer.trigger(`user-${m.userId}`, "new-notification", {})),
+    )
   }
 
   await writeActivityLog({

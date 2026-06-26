@@ -20,7 +20,7 @@ export async function GET() {
   const meetings = await prisma.meeting.findMany({
     where: {
       associationId: u.associationId,
-      status: { in: ["SCHEDULED", "LIVE"] },
+      status: { in: ["SCHEDULED", "LIVE", "ENDED"] },
       participants: { some: { membreId: membre.id } },
     },
     orderBy: { createdAt: "desc" },
@@ -31,6 +31,7 @@ export async function GET() {
       status: true,
       scheduledAt: true,
       startedAt: true,
+      endedAt: true,
       roomName: true,
     },
   })

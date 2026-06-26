@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload, RoomServiceClient } from "livekit-server-sdk"
+import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload } from "livekit-server-sdk"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 
@@ -97,25 +97,9 @@ export async function DELETE(
     }
   }
 
-  // Delete the LiveKit room to disconnect all participants immediately
-  try {
-    const roomClient = new RoomServiceClient(
-      process.env.LIVEKIT_URL!,
-      process.env.LIVEKIT_API_KEY!,
-      process.env.LIVEKIT_API_SECRET!,
-    )
-    await roomClient.deleteRoom(meeting.roomName)
-  } catch {
-    // Room may already be empty/deleted
-  }
-
   await prisma.meeting.update({
     where: { id },
-    data:  {
-      egressId: null,
-      status:   "ENDED",
-      endedAt:  new Date(),
-    },
+    data:  { egressId: null },
   })
 
   return NextResponse.json({ recordingKey: meeting.recordingKey })

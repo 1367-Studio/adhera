@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 
@@ -103,6 +104,12 @@ export async function POST(req: Request) {
         })),
       skipDuplicates: true,
     })
+
+    await Promise.allSettled(
+      membres
+        .filter(m => m.userId)
+        .map(m => pusherServer.trigger(`user-${m.userId}`, "new-notification", {})),
+    )
   }
 
   return NextResponse.json(meeting, { status: 201 })

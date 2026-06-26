@@ -13,6 +13,9 @@ export async function POST(req: Request) {
 
   const meeting = await prisma.meeting.findFirst({ where: { id: meetingId, associationId } })
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
+  if (meeting.status === "ENDED" || meeting.status === "CANCELLED") {
+    return NextResponse.json({ error: "Cette réunion est terminée" }, { status: 403 })
+  }
 
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } })
   const identity = userId

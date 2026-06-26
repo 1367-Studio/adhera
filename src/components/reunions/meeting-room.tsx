@@ -10,15 +10,17 @@ import {
   useTracks,
   useRoomContext,
   isTrackReference,
+  useChat,
 } from "@livekit/components-react"
 import { Track } from "livekit-client"
 import {
   Loader2, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon,
-  PhoneOffIcon, CircleIcon,
+  PhoneOffIcon, CircleIcon, SquareIcon, MessageCircleIcon, SendIcon, UsersIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMeetingToken } from "@/hooks/use-meetings"
+import { toast } from "sonner"
 
 type Props = {
   meetingId:      string
@@ -36,6 +38,17 @@ function VideoGrid() {
     [{ source: Track.Source.Camera, withPlaceholder: true }],
     { onlySubscribed: false },
   )
+
+  if (tracks.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+          <UsersIcon className="size-10 opacity-30" />
+          <p className="text-sm">En attente de participants…</p>
+        </div>
+      </div>
+    )
+  }
 
   const count    = tracks.length
   const gridCols =
@@ -80,50 +93,161 @@ function VideoGrid() {
   )
 }
 
+function ChatPanel({ onClose }: { onClose: () => void }) {
+  const { chatMessages, send, isSending } = useChat()
+  const [text, setText] = useState("")
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [chatMessages])
+
+  async function handleSend() {
+    const msg = text.trim()
+    if (!msg) return
+    try {
+      setText("")
+      await send(msg)
+    } catch {
+      setText(msg)
+      toast.error("Impossible d'envoyer le message.")
+    }
+  }
+
+  return (
+    <div className="flex flex-col w-72 border-l bg-card shrink-0">
+      <div className="px-3 py-2 border-b flex items-center justify-between">
+        <span className="text-xs font-medium text-muted-foreground">Chat</span>
+        <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
+      </div>
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
+        {chatMessages.length === 0 && (
+          <p className="text-xs text-muted-foreground text-center pt-4">Aucun message pour le moment.</p>
+        )}
+        {chatMessages.map((msg, i) => (
+          <div key={msg.id ?? i} className="space-y-0.5">
+            <p className="text-[10px] text-muted-foreground font-medium">{msg.from?.name ?? msg.from?.identity}</p>
+            <p className="text-xs bg-muted rounded-lg px-2.5 py-1.5 break-words">{msg.message}</p>
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
+      <div className="p-2 border-t flex gap-1.5">
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+          placeholder="Message…"
+          className="flex-1 text-xs rounded-lg border bg-background px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
+        />
+        <button
+          onClick={handleSend}
+          disabled={isSending || !text.trim()}
+          className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
+        >
+          <SendIcon className="size-3.5" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function Controls({
   meetingId,
   isAdmin,
   onLeave,
   recording,
+  onRecordingChange,
+  chatOpen,
+  onChatToggle,
+  unreadCount,
 }: {
-  meetingId: string
-  isAdmin:   boolean
-  onLeave:   () => void
-  recording: boolean
+  meetingId:         string
+  isAdmin:           boolean
+  onLeave:           () => void
+  recording:         boolean
+  onRecordingChange: (v: boolean) => void
+  chatOpen:          boolean
+  onChatToggle:      () => void
+  unreadCount:       number
 }) {
   const { isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant()
-  const room      = useRoomContext()
-  const [ending, setEnding] = useState(false)
+  const room               = useRoomContext()
+  const [ending,   setEnding]   = useState(false)
+  const [toggling, setToggling] = useState(false)
+
+  async function handleToggleRecording() {
+    setToggling(true)
+    try {
+      if (recording) {
+        await fetch(`/api/meetings/${meetingId}/egress`, { method: "DELETE" })
+        onRecordingChange(false)
+      } else {
+        const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "POST" })
+        if (res.ok) {
+          onRecordingChange(true)
+        } else {
+          toast.error("Impossible de démarrer l'enregistrement.")
+        }
+      }
+    } catch {
+      toast.error("Erreur lors de la gestion de l'enregistrement.")
+    } finally {
+      setToggling(false)
+    }
+  }
 
   async function handleEnd() {
     setEnding(true)
     try {
-      if (isAdmin) {
-        const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "DELETE" })
-        if (!res.ok) {
-          // egress stop failed but we still disconnect
-          console.error("Egress stop failed:", await res.text())
-        }
-      }
+      await fetch(`/api/meetings/${meetingId}/end`, { method: "POST" })
     } finally {
       room.disconnect()
       onLeave()
     }
   }
 
+  async function handleLeave() {
+    room.disconnect()
+    onLeave()
+  }
+
   return (
     <div className="flex items-center justify-center gap-3 px-6 py-4 border-t bg-card shrink-0">
       {isAdmin && (
-        <div className="flex items-center gap-1.5 mr-2 text-xs text-muted-foreground">
-          <CircleIcon
-            className={cn(
-              "size-2 fill-current",
-              recording ? "text-red-500 animate-pulse" : "text-muted-foreground/30",
-            )}
-          />
-          {recording ? "Enregistrement" : "En attente…"}
-        </div>
+        <button
+          onClick={handleToggleRecording}
+          disabled={toggling}
+          className={cn(
+            "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition-colors mr-2",
+            recording
+              ? "border-red-300 text-red-500 bg-red-500/10 hover:bg-red-500/20"
+              : "border-muted text-muted-foreground hover:bg-muted",
+          )}
+        >
+          {recording
+            ? <><CircleIcon className="size-2 fill-current animate-pulse" /> Enregistrement</>
+            : <><SquareIcon className="size-3" /> Enregistrer</>
+          }
+        </button>
       )}
+
+      <div className="relative">
+        <button
+          onClick={onChatToggle}
+          className={cn(
+            "flex size-11 items-center justify-center rounded-full border transition-colors",
+            chatOpen ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted",
+          )}
+        >
+          <MessageCircleIcon className="size-5" />
+        </button>
+        {unreadCount > 0 && !chatOpen && (
+          <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </div>
 
       <TrackToggle
         source={Track.Source.Microphone}
@@ -151,16 +275,27 @@ function Controls({
         {isCameraEnabled ? <VideoIcon className="size-5" /> : <VideoOffIcon className="size-5" />}
       </TrackToggle>
 
-      <Button
-        variant="destructive"
-        className="rounded-full px-5 h-11"
-        onClick={handleEnd}
-        loading={ending}
-        disabled={ending}
-      >
-        <PhoneOffIcon className="size-4 mr-2" />
-        {isAdmin ? "Encerrer" : "Quitter"}
-      </Button>
+      {isAdmin ? (
+        <Button
+          variant="destructive"
+          className="rounded-full px-5 h-11"
+          onClick={handleEnd}
+          loading={ending}
+          disabled={ending}
+        >
+          <PhoneOffIcon className="size-4 mr-2" />
+          Encerrer
+        </Button>
+      ) : (
+        <Button
+          variant="outline"
+          className="rounded-full px-5 h-11"
+          onClick={handleLeave}
+        >
+          <PhoneOffIcon className="size-4 mr-2" />
+          Quitter
+        </Button>
+      )}
     </div>
   )
 }
@@ -174,40 +309,69 @@ function RoomInner({
   isAdmin:   boolean
   onLeave:   () => void
 }) {
-  const [recording, setRecording] = useState(false)
-  const startedRef = useRef(false)
+  const [recording,    setRecording]    = useState(false)
+  const [chatOpen,     setChatOpen]     = useState(false)
+  const [unreadCount,  setUnreadCount]  = useState(0)
+  const { chatMessages } = useChat()
+  const prevCountRef = useRef(0)
 
+  // Sync recording state from DB on mount (handles admin re-joining after mic fix)
   useEffect(() => {
-    if (!isAdmin || startedRef.current) return
-    startedRef.current = true
+    fetch(`/api/meetings/${meetingId}`)
+      .then(r => r.json())
+      .then(m => { if (m.egressId) setRecording(true) })
+      .catch(() => {})
+  }, [meetingId])
 
-    fetch(`/api/meetings/${meetingId}/egress`, { method: "POST" })
-      .then(res => { if (res.ok) setRecording(true) })
-      .catch(() => { /* egress unavailable, meeting still works */ })
-  }, [meetingId, isAdmin])
+  // Badge: count new messages received while chat is closed
+  useEffect(() => {
+    const newCount = chatMessages.length
+    if (!chatOpen && newCount > prevCountRef.current) {
+      setUnreadCount(c => c + (newCount - prevCountRef.current))
+    }
+    prevCountRef.current = newCount
+  }, [chatMessages, chatOpen])
+
+  function handleChatToggle() {
+    setChatOpen(o => !o)
+    setUnreadCount(0)
+  }
 
   return (
-    <div className="flex flex-col rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
-      <div className="flex-1 p-2 min-h-0 overflow-hidden">
-        <VideoGrid />
+    <div className="flex rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
+      <div className="flex flex-col flex-1 min-w-0">
+        <div className="flex-1 p-2 min-h-0 overflow-hidden">
+          <VideoGrid />
+        </div>
+        <RoomAudioRenderer />
+        <Controls
+          meetingId={meetingId}
+          isAdmin={isAdmin}
+          onLeave={onLeave}
+          recording={recording}
+          onRecordingChange={setRecording}
+          chatOpen={chatOpen}
+          onChatToggle={handleChatToggle}
+          unreadCount={unreadCount}
+        />
       </div>
-      <RoomAudioRenderer />
-      <Controls
-        meetingId={meetingId}
-        isAdmin={isAdmin}
-        onLeave={onLeave}
-        recording={recording}
-      />
+      {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
     </div>
   )
 }
 
 export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false }: Props) {
   const { data, isLoading, error } = useMeetingToken(meetingId, tokenEndpoint)
+  const [kickedOut, setKickedOut] = useState(false)
 
   const handleDisconnected = useCallback(() => {
-    onLeave()
-  }, [onLeave])
+    if (isAdmin) {
+      onLeave()
+    } else {
+      setKickedOut(true)
+      setTimeout(onLeave, 3000)
+    }
+  }, [isAdmin, onLeave])
 
   if (isLoading) {
     return (
@@ -221,6 +385,17 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
     return (
       <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
         <p className="text-sm text-destructive">Impossible de rejoindre la réunion.</p>
+      </div>
+    )
+  }
+
+  if (kickedOut) {
+    return (
+      <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
+        <div className="text-center space-y-2">
+          <p className="text-sm font-medium">La réunion a été clôturée par l&apos;administrateur.</p>
+          <p className="text-xs text-muted-foreground">Vous allez être redirigé…</p>
+        </div>
       </div>
     )
   }
