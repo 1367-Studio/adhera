@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     },
   })
 
-  // Send email invites to participants that have a user account
+  // Send email invites and in-app notifications to participants that have a user account
   if ((participantIds ?? []).length > 0) {
     const association = await prisma.association.findUnique({
       where: { id: associationId },
@@ -84,6 +84,25 @@ export async function POST(req: Request) {
         portalUrl:       portalBase,
       }))
     }
+
+    const notifTitle = instant
+      ? `Réunion en cours : ${title}`
+      : `Nouvelle réunion : ${title}`
+    const notifBody = instant
+      ? "Une réunion vient de démarrer. Rejoignez-la maintenant."
+      : "Vous avez été invité à une réunion."
+
+    await prisma.notification.createMany({
+      data: membres
+        .filter(m => m.userId)
+        .map(m => ({
+          userId: m.userId!,
+          title:  notifTitle,
+          body:   notifBody,
+          link:   portalBase,
+        })),
+      skipDuplicates: true,
+    })
   }
 
   return NextResponse.json(meeting, { status: 201 })
