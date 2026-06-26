@@ -44,16 +44,39 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
-  const membre = await prisma.membre.update({
-    where: { id },
-    data: {
-      ...rest,
-      ...(email     !== undefined ? { email:     email     || null }                                      : {}),
-      ...(phone     !== undefined ? { phone:     phone     || null }                                      : {}),
-      ...(address   !== undefined ? { address:   address   || null }                                      : {}),
-      ...(typeId    !== undefined ? { typeId:    typeId    || null }                                      : {}),
-      ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
-    },
+
+  const emailChanged = email !== undefined && email !== existing.email
+
+  if (emailChanged && email && existing.userId) {
+    const conflict = await prisma.user.findFirst({
+      where: { email, associationId, id: { not: existing.userId } },
+    })
+    if (conflict) {
+      return NextResponse.json({ field: "email", error: "Cet email est déjà utilisé." }, { status: 409 })
+    }
+  }
+
+  const membre = await prisma.$transaction(async (tx) => {
+    const updated = await tx.membre.update({
+      where: { id },
+      data: {
+        ...rest,
+        ...(email     !== undefined ? { email:     email     || null }                                      : {}),
+        ...(phone     !== undefined ? { phone:     phone     || null }                                      : {}),
+        ...(address   !== undefined ? { address:   address   || null }                                      : {}),
+        ...(typeId    !== undefined ? { typeId:    typeId    || null }                                      : {}),
+        ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
+      },
+    })
+
+    if (emailChanged && existing.userId) {
+      await tx.user.update({
+        where: { id: existing.userId },
+        data:  { email: email || existing.email! },
+      })
+    }
+
+    return updated
   })
 
   const changes = computeMemberDiff(

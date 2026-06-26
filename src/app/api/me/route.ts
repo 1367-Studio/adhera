@@ -51,9 +51,20 @@ export async function PATCH(req: Request) {
       }
     }
 
-    const user = await prisma.user.update({
-      where: { id: u.id! },
-      data:  { ...(name  ? { name  } : {}), ...(email ? { email } : {}) },
+    const user = await prisma.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id: u.id! },
+        data:  { ...(name ? { name } : {}), ...(email ? { email } : {}) },
+      })
+
+      if (email) {
+        await tx.membre.updateMany({
+          where: { userId: u.id!, deletedAt: null },
+          data:  { email },
+        })
+      }
+
+      return updated
     })
     return NextResponse.json(user)
   }
