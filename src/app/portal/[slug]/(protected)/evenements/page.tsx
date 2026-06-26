@@ -7,7 +7,8 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
   CalendarIcon, MapPinIcon, LoaderCircleIcon, ExternalLinkIcon,
-  ChevronRightIcon, TicketIcon, CheckCircleIcon, BanIcon,
+  ChevronRightIcon, TicketIcon, CheckCircleIcon, BanIcon, BookmarkIcon,
+  MinusIcon, PlusIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 import { useSetRsvp } from "@/hooks/use-evenements"
@@ -32,8 +33,10 @@ type Evenement = {
   lat:            number | null
   lng:            number | null
   price:          string | null
-  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null }[]
+  capacity:       number | null
+  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null; quantity: number }[]
   rsvpCounts:     RsvpCounts
+  confirmedCount: number
 }
 
 type ApiResponse = { upcoming: Evenement[]; past: Evenement[]; upcomingHasMore: boolean; pastHasMore: boolean }
@@ -69,10 +72,14 @@ const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: stri
   },
 ]
 
-function TicketButton({ evenementId, paid }: { evenementId: string; paid: boolean }) {
+function TicketButton({ evenementId, quantity }: { evenementId: string; quantity: number }) {
   const mutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch(`/api/portal/evenements/${evenementId}/checkout`, { method: "POST" })
+      const res = await fetch(`/api/portal/evenements/${evenementId}/checkout`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ quantity }),
+      })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
       return res.json() as Promise<{ url: string }>
     },
@@ -80,25 +87,130 @@ function TicketButton({ evenementId, paid }: { evenementId: string; paid: boolea
     onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
   })
 
-  if (paid) {
+  return (
+    <Button size="sm" loading={mutation.isPending} onClick={() => mutation.mutate()} className="w-full">
+      <TicketIcon className="size-3.5 mr-1.5" />
+      Payer en ligne{quantity > 1 ? ` (×${quantity})` : ""}
+    </Button>
+  )
+}
+
+function QuantityStepper({
+  value,
+  onChange,
+  max,
+}: {
+  value:    number
+  onChange: (v: number) => void
+  max:      number
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-xs text-muted-foreground flex-1">Nombre de places :</span>
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={() => onChange(Math.max(1, value - 1))}
+          disabled={value <= 1}
+          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+        >
+          <MinusIcon className="size-3" />
+        </button>
+        <span className="w-5 text-center text-sm font-medium tabular-nums">{value}</span>
+        <button
+          type="button"
+          onClick={() => onChange(Math.min(max, value + 1))}
+          disabled={value >= max}
+          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+        >
+          <PlusIcon className="size-3" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function PaidEventSection({
+  evenementId,
+  ticketPaid,
+  ticketQuantity,
+  rsvp,
+  connectEnabled,
+  isFull,
+  remainingCapacity,
+}: {
+  evenementId:       string
+  ticketPaid:        boolean
+  ticketQuantity:    number
+  rsvp:              string | null
+  connectEnabled:    boolean
+  isFull:            boolean
+  remainingCapacity: number | null
+}) {
+  const [quantity, setQuantity] = useState(1)
+  const setRsvpMutation = useSetRsvp(evenementId)
+  const maxQty = remainingCapacity != null ? Math.min(10, remainingCapacity) : 10
+
+  if (ticketPaid) {
     return (
       <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
         <CheckCircleIcon className="size-3.5" />
-        Billet acheté
+        {ticketQuantity > 1 ? `${ticketQuantity} billets achetés` : "Billet acheté"}
+      </div>
+    )
+  }
+
+  if (rsvp === "CONFIRME") {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
+          <BookmarkIcon className="size-3.5" />
+          Réservé – paiement sur place
+        </div>
+        {connectEnabled && <TicketButton evenementId={evenementId} quantity={1} />}
+        <Button
+          size="sm"
+          variant="ghost"
+          className="w-full text-muted-foreground text-xs h-8"
+          loading={setRsvpMutation.isPending}
+          onClick={() => setRsvpMutation.mutate("ABSENT", {
+            onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+          })}
+        >
+          Annuler la réservation
+        </Button>
+      </div>
+    )
+  }
+
+  if (isFull) {
+    return (
+      <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
+        <BanIcon className="size-3.5" />
+        Événement complet
       </div>
     )
   }
 
   return (
-    <Button
-      size="sm"
-      loading={mutation.isPending}
-      onClick={() => mutation.mutate()}
-      className="w-full"
-    >
-      <TicketIcon className="size-3.5 mr-1.5" />
-      Acheter un billet
-    </Button>
+    <div className="space-y-2">
+      {maxQty > 1 && (
+        <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
+      )}
+      {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} />}
+      <Button
+        size="sm"
+        variant={connectEnabled ? "outline" : "default"}
+        className="w-full"
+        loading={setRsvpMutation.isPending}
+        onClick={() => setRsvpMutation.mutate("CONFIRME", {
+          onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+        })}
+      >
+        <BookmarkIcon className="size-3.5 mr-1.5" />
+        Réserver – payer sur place
+      </Button>
+    </div>
   )
 }
 
@@ -174,10 +286,13 @@ function EventCard({
   connectEnabled: boolean
   optimisticPaidId: string | null
 }) {
-  const participation = ev.participations[0] ?? null
-  const currentRsvp   = participation?.rsvp ?? null
-  const ticketPaid    = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
-  const hasFee        = ev.price != null && Number(ev.price) > 0
+  const participation    = ev.participations[0] ?? null
+  const currentRsvp      = participation?.rsvp ?? null
+  const ticketPaid       = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
+  const ticketQuantity   = participation?.quantity ?? 1
+  const hasFee           = ev.price != null && Number(ev.price) > 0
+  const remainingCapacity = ev.capacity != null ? Math.max(0, ev.capacity - ev.confirmedCount) : null
+  const isFull           = ev.capacity != null && ev.confirmedCount >= ev.capacity && !ticketPaid && currentRsvp !== "CONFIRME"
 
   return (
     <div className={cn(
@@ -217,19 +332,35 @@ function EventCard({
       </div>
 
       {/* Tarif + ticket */}
-      {ev.price != null && (
+      {ev.price != null && hasFee && (
         <div className="space-y-2">
-          <div className="flex items-center gap-1.5">
-            <span className="text-muted-foreground text-xs">Tarif :</span>
-            <PriceBadge price={ev.price} />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground text-xs">Tarif :</span>
+              <PriceBadge price={ev.price} />
+            </div>
+            {ev.capacity != null && (
+              <span className={cn(
+                "text-xs font-medium tabular-nums",
+                ev.confirmedCount >= ev.capacity
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-muted-foreground",
+              )}>
+                {ev.confirmedCount}/{ev.capacity} réservés
+                {ev.confirmedCount >= ev.capacity && " · Complet"}
+              </span>
+            )}
           </div>
-          {!isPast && hasFee && (
-            connectEnabled
-              ? <TicketButton evenementId={ev.id} paid={ticketPaid} />
-              : <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <BanIcon className="size-3.5 shrink-0" />
-                  Paiement en ligne non disponible
-                </p>
+          {!isPast && (
+            <PaidEventSection
+              evenementId={ev.id}
+              ticketPaid={ticketPaid}
+              ticketQuantity={ticketQuantity}
+              rsvp={participation?.rsvp ?? null}
+              connectEnabled={connectEnabled}
+              isFull={isFull}
+              remainingCapacity={remainingCapacity}
+            />
           )}
           {isPast && ticketPaid && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -340,7 +471,7 @@ export default function EvenementsPortalPage() {
   const connectEnabled = connectData?.enabled  ?? false
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-3xl">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Événements</h1>
         <p className="text-muted-foreground text-sm mt-1">Vos prochains rendez-vous et votre historique.</p>

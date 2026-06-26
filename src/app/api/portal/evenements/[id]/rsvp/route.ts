@@ -42,6 +42,25 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
   const wasAlreadyConfirme = existingParticipation?.rsvp === "CONFIRME"
 
+  if (
+    parsed.data.rsvp === "CONFIRME" &&
+    !wasAlreadyConfirme &&
+    evenement.price != null &&
+    Number(evenement.price) > 0 &&
+    evenement.capacity != null
+  ) {
+    const { _sum } = await prisma.participation.aggregate({
+      where: {
+        evenementId,
+        membreId: { not: membre.id },
+        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
+      },
+      _sum: { quantity: true },
+    })
+    if ((_sum.quantity ?? 0) + 1 > evenement.capacity)
+      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+  }
+
   const participation = await prisma.participation.upsert({
     where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
     create: { membreId: membre.id, evenementId, rsvp: parsed.data.rsvp, rsvpAt: new Date() },

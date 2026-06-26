@@ -9,10 +9,10 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
 import {
-  ArrowLeftIcon, CheckIcon, ChevronDownIcon, DownloadIcon,
+  ArrowLeftIcon, BanknoteIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, DownloadIcon,
   QrCodeIcon, RefreshCwIcon, SearchIcon, UsersIcon, XIcon,
 } from "lucide-react"
-import { useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr } from "@/hooks/use-evenements"
+import { useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid } from "@/hooks/use-evenements"
 import { useCurrentUser } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -21,17 +21,21 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { cn } from "@/lib/utils"
 
 type PresenceRow = {
-  membreId:  string
-  firstName: string
-  lastName:  string
-  present:   boolean
-  rsvp:      string | null
+  membreId:        string
+  firstName:       string
+  lastName:        string
+  participationId: string | null
+  present:         boolean
+  rsvp:            string | null
+  ticketPaidAt:    string | null
+  quantity:        number
 }
 
 type Evenement = {
   id:          string
   title:       string
   date:        string
+  price:       string | null
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
@@ -81,10 +85,15 @@ export default function PresencesPage() {
 
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)
 
-  const typed         = rows as PresenceRow[]
-  const presentsCount = typed.filter(r => r.present).length
+  const typed          = rows as PresenceRow[]
+  const presentsCount  = typed.filter(r => r.present).length
+  const hasFee         = !!ev?.price && Number(ev.price) > 0
+  const reservedCount  = hasFee
+    ? typed.reduce((sum, r) => (r.ticketPaidAt != null || r.rsvp === "CONFIRME") ? sum + (r.quantity ?? 1) : sum, 0)
+    : 0
 
   const toggle     = useTogglePresence(id)
+  const markPaid   = useMarkPaid(id)
   const generateQr = useGenerateQr(id)
   const revokeQr   = useRevokeQr(id)
 
@@ -210,7 +219,7 @@ export default function PresencesPage() {
       {/* Counter */}
       <div className="rounded-xl border bg-card p-4 space-y-2">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <UsersIcon className="size-4 text-muted-foreground" />
             <span className="text-2xl font-bold">{presentsCount}</span>
             {capacity && (
@@ -223,6 +232,16 @@ export default function PresencesPage() {
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
                 Complet
               </span>
+            )}
+            {hasFee && reservedCount > 0 && (
+              <>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <BookmarkIcon className="size-3.5" />
+                  {reservedCount} réservé{reservedCount !== 1 ? "s" : ""}
+                  {capacity && ` / ${capacity}`}
+                </span>
+              </>
             )}
           </div>
           {activeQrValid && (
@@ -341,37 +360,90 @@ export default function PresencesPage() {
           ) : (
             <div className="divide-y max-h-[60vh] overflow-y-auto">
               {filtered.map(row => (
-                <button
+                <div
                   key={row.membreId}
-                  type="button"
-                  onClick={() => handleToggle(row)}
-                  disabled={pendingIds.has(row.membreId)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 px-4 py-3 text-sm transition-colors text-left",
+                    "flex items-center gap-2 px-4 py-3 text-sm transition-colors",
                     row.present
-                      ? "bg-green-50 hover:bg-green-100 dark:bg-green-950/30 dark:hover:bg-green-950/50"
-                      : "bg-background hover:bg-muted/50",
+                      ? "bg-green-50 dark:bg-green-950/30"
+                      : "bg-background",
                   )}
                 >
-                  <span className={cn("font-medium", row.present && "text-green-700 dark:text-green-400")}>
-                    {row.lastName} {row.firstName}
-                  </span>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {row.rsvp && RSVP_LABELS[row.rsvp] && (
-                      <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full hidden sm:inline", RSVP_LABELS[row.rsvp].classes)}>
-                        {RSVP_LABELS[row.rsvp].label}
-                      </span>
-                    )}
-                    <span className={cn(
-                      "flex items-center justify-center size-6 rounded-full transition-colors shrink-0",
-                      row.present
-                        ? "bg-green-500 text-white"
-                        : "border-2 border-muted-foreground/25",
-                    )}>
-                      {row.present && <CheckIcon className="size-3.5" />}
+                  <button
+                    type="button"
+                    onClick={() => handleToggle(row)}
+                    disabled={pendingIds.has(row.membreId)}
+                    className="flex flex-1 items-center justify-between gap-3 text-left min-w-0"
+                  >
+                    <span className={cn("font-medium truncate", row.present && "text-green-700 dark:text-green-400")}>
+                      {row.lastName} {row.firstName}
                     </span>
-                  </div>
-                </button>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {!hasFee && row.rsvp && RSVP_LABELS[row.rsvp] && (
+                        <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full hidden sm:inline", RSVP_LABELS[row.rsvp].classes)}>
+                          {RSVP_LABELS[row.rsvp].label}
+                        </span>
+                      )}
+                      <span className={cn(
+                        "flex items-center justify-center size-6 rounded-full transition-colors shrink-0",
+                        row.present
+                          ? "bg-green-500 text-white"
+                          : "border-2 border-muted-foreground/25",
+                      )}>
+                        {row.present && <CheckIcon className="size-3.5" />}
+                      </span>
+                    </div>
+                  </button>
+
+                  {hasFee && (
+                    row.ticketPaidAt ? (
+                      <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400 shrink-0">
+                        <CheckIcon className="size-3" />
+                        Payé
+                      </span>
+                    ) : row.rsvp === "CONFIRME" ? (
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
+                          <BookmarkIcon className="size-3" />
+                          {row.quantity > 1 ? `Réservé ×${row.quantity}` : "Réservé"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              await markPaid.mutateAsync(row.membreId)
+                              toast.success(`${row.firstName} ${row.lastName} marqué comme payé`)
+                            } catch {
+                              toast.error("Erreur")
+                            }
+                          }}
+                          disabled={markPaid.isPending}
+                          className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                        >
+                          <BanknoteIcon className="size-3" />
+                          Marquer payé
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await markPaid.mutateAsync(row.membreId)
+                            toast.success(`${row.firstName} ${row.lastName} marqué comme payé`)
+                          } catch {
+                            toast.error("Erreur")
+                          }
+                        }}
+                        disabled={markPaid.isPending}
+                        className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                      >
+                        <BanknoteIcon className="size-3" />
+                        Marquer payé
+                      </button>
+                    )
+                  )}
+                </div>
               ))}
             </div>
           )}

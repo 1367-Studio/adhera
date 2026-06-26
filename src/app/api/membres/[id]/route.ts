@@ -17,6 +17,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     include: {
       cotisations:    { orderBy: { year: "desc" } },
       participations: { include: { evenement: true } },
+      user:           { select: { role: true } },
     },
   })
 

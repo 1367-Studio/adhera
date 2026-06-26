@@ -80,3 +80,20 @@ export function useDeleteMembre() {
     onSuccess: () => invalidateAll(qc),
   })
 }
+
+async function changeRole(id: string, role: string) {
+  const res = await fetch(`/api/membres/${id}/role`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ role }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du changement de rôle"))
+}
+
+export function useChangeRole() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, role }: { id: string; role: string }) => changeRole(id, role),
+    onSuccess:  () => invalidateAll(qc),
+  })
+}

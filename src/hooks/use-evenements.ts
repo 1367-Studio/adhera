@@ -71,6 +71,16 @@ async function revokeQr(evenementId: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
 }
 
+async function markPaid(evenementId: string, membreId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ membreId }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
 async function togglePresence(evenementId: string, membreId: string, present: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method: "POST",
@@ -182,6 +192,18 @@ export function useSetRsvp(evenementId: string) {
       qc.invalidateQueries({ queryKey: ["portal-actualite"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
       qc.invalidateQueries({ queryKey: ["membre-logs"] }),
+    ]),
+  })
+}
+
+export function useMarkPaid(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (membreId: string) => markPaid(evenementId, membreId),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+      qc.invalidateQueries({ queryKey: ["tresorerie"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
     ]),
   })
 }

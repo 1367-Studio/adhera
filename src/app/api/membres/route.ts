@@ -32,7 +32,10 @@ export async function GET(req: Request) {
 
   const orderBy = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
 
-  const include = { type: { select: { id: true, name: true, color: true } } }
+  const include = {
+    type: { select: { id: true, name: true, color: true } },
+    user: { select: { role: true } },
+  }
 
   if (!searchParams.has("page")) {
     const data = await prisma.membre.findMany({ where, orderBy, include })

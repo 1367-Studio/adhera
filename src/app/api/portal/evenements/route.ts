@@ -25,6 +25,24 @@ async function getRsvpCounts(evenementIds: string[]): Promise<Record<string, Rsv
   return result
 }
 
+async function getConfirmedCounts(evenementIds: string[]): Promise<Record<string, number>> {
+  if (!evenementIds.length) return {}
+
+  const groups = await prisma.participation.groupBy({
+    by:    ["evenementId"],
+    where: {
+      evenementId: { in: evenementIds },
+      OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
+    },
+    _sum: { quantity: true },
+  })
+
+  const result: Record<string, number> = {}
+  for (const id of evenementIds) result[id] = 0
+  for (const g of groups) result[g.evenementId] = g._sum.quantity ?? 0
+  return result
+}
+
 export async function GET() {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -35,7 +53,7 @@ export async function GET() {
   const now = new Date()
   const participationSelect = {
     where:  { membre: { userId: u.id! } },
-    select: { present: true, rsvp: true, ticketPaidAt: true },
+    select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true },
   }
 
   const LIMIT = 10
@@ -61,10 +79,13 @@ export async function GET() {
   const past            = pastRaw.slice(0, LIMIT)
 
   const allIds = [...upcoming, ...past].map(e => e.id)
-  const rsvpCounts = await getRsvpCounts(allIds)
+  const [rsvpCounts, confirmedCounts] = await Promise.all([
+    getRsvpCounts(allIds),
+    getConfirmedCounts(allIds),
+  ])
 
   const withCounts = (list: typeof upcoming) =>
-    list.map(e => ({ ...e, rsvpCounts: rsvpCounts[e.id] }))
+    list.map(e => ({ ...e, rsvpCounts: rsvpCounts[e.id], confirmedCount: confirmedCounts[e.id] }))
 
   return NextResponse.json({
     upcoming:        withCounts(upcoming),

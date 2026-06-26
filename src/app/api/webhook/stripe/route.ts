@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { paymentConfirmationEmail, donConfirmationEmail } from "@/lib/email"
+import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail } from "@/lib/email"
 import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
+import { pusherServer } from "@/lib/pusher-server"
 import type Stripe from "stripe"
 
 export const dynamic = "force-dynamic"
@@ -37,9 +38,20 @@ export async function POST(req: Request) {
       if (commandeId) {
         const commande = await prisma.boutiqueCommande.findUnique({
           where:   { id: commandeId },
-          select:  { id: true, status: true, totalAmount: true, associationId: true },
+          include: {
+            membre:      { select: { firstName: true, userId: true, user: { select: { email: true } } } },
+            association: { select: { id: true, name: true, slug: true } },
+            items:       {
+              include: {
+                produit:  { select: { name: true } },
+                variante: { select: { label: true } },
+              },
+            },
+          },
         })
         if (commande && commande.status !== "PAID") {
+          const paidAt = new Date()
+
           await prisma.boutiqueCommande.update({
             where: { id: commandeId },
             data:  { status: "PAID" },
@@ -50,10 +62,50 @@ export async function POST(req: Request) {
               type:          "ENTREE",
               amount:        commande.totalAmount / 100,
               description:   "Vente boutique (Stripe)",
-              date:          new Date(),
+              date:          paidAt,
               category:      "Boutique",
             },
           })
+
+          // Email confirmation to member
+          const memberEmail = commande.membre?.user?.email
+          if (memberEmail && commande.membre) {
+            const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${commande.association.slug}/boutique/commandes`
+            sendEmail(boutiqueConfirmationEmail({
+              firstName:       commande.membre.firstName,
+              email:           memberEmail,
+              associationName: commande.association.name,
+              totalAmount:     commande.totalAmount,
+              paidAt,
+              items: commande.items.map(i => ({
+                name:      `${i.produit.name} – ${i.variante.label}`,
+                quantity:  i.quantity,
+                unitPrice: i.unitPrice,
+              })),
+              portalUrl,
+            })).catch(() => {})
+          }
+
+          // Push notification to association admins
+          const admins = await prisma.user.findMany({
+            where:  { associationId: commande.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"] }, active: true },
+            select: { id: true },
+          })
+          if (admins.length) {
+            const memberName = commande.membre?.firstName ?? "Un membre"
+            await prisma.notification.createMany({
+              data: admins.map(a => ({
+                userId: a.id,
+                title:  "Nouvelle commande boutique",
+                body:   `${memberName} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
+                link:   `/dashboard/boutique`,
+              })),
+              skipDuplicates: true,
+            })
+            await Promise.allSettled(
+              admins.map(a => pusherServer.trigger(`user-${a.id}`, "new-notification", {})),
+            )
+          }
         }
       } else if (cotisationId) {
         const cotisation = await prisma.cotisation.findUnique({
@@ -82,10 +134,57 @@ export async function POST(req: Request) {
           })).catch(() => {})
         }
       } else if (participationId) {
-        await prisma.participation.updateMany({
-          where: { id: participationId, ticketPaidAt: null },
-          data:  { ticketPaidAt: new Date(), stripeSessionId: sess.id },
+        const participation = await prisma.participation.findUnique({
+          where:   { id: participationId },
+          include: {
+            evenement: {
+              select: {
+                title:        true,
+                price:        true,
+                date:         true,
+                location:     true,
+                associationId: true,
+                association:  { select: { name: true, slug: true } },
+              },
+            },
+            membre: { select: { firstName: true, email: true } },
+          },
         })
+        if (participation && !participation.ticketPaidAt && participation.evenement) {
+          const paidAt = new Date()
+          await prisma.participation.update({
+            where: { id: participationId },
+            data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id },
+          })
+          const totalAmount = Number(participation.evenement.price!) * (participation.quantity ?? 1)
+          await prisma.tresorerieEntry.create({
+            data: {
+              associationId: participation.evenement.associationId,
+              type:          "ENTREE",
+              amount:        totalAmount,
+              description:   `Billet (Stripe) — ${participation.evenement.title}`,
+              date:          paidAt,
+              category:      "Événement",
+            },
+          })
+          if (participation.membre?.email && participation.evenement.association) {
+            const ev    = participation.evenement
+            const assoc = ev.association!
+            const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${assoc.slug}/evenements`
+            sendEmail(ticketPurchaseEmail({
+              firstName:       participation.membre.firstName,
+              email:           participation.membre.email,
+              associationName: assoc.name,
+              eventTitle:      ev.title,
+              eventDate:       ev.date,
+              eventLocation:   ev.location,
+              amount:          totalAmount,
+              quantity:        participation.quantity ?? 1,
+              paidAt,
+              portalUrl,
+            })).catch(() => {})
+          }
+        }
       } else if (donId) {
         const don = await prisma.don.findUnique({
           where:   { id: donId },
@@ -145,6 +244,46 @@ export async function POST(req: Request) {
           }).catch(() => {})
         }
       }
+      break
+    }
+
+    case "checkout.session.expired": {
+      const sess            = event.data.object as Stripe.Checkout.Session
+      const commandeId      = sess.metadata?.commandeId
+      const participationId = sess.metadata?.participationId
+
+      if (participationId) {
+        // Release the slot held by checkout — only if the member hasn't manually reserved
+        // We reset rsvp+quantity only when there is no prior manual reservation intent.
+        // Since we set rsvp=CONFIRME during checkout, we clear it on expiry so the spot
+        // is freed. Members who had a manual reservation will need to re-reserve.
+        await prisma.participation.updateMany({
+          where: { id: participationId, ticketPaidAt: null },
+          data:  { rsvp: null, quantity: 1 },
+        })
+        break
+      }
+
+      if (!commandeId) break
+
+      const commande = await prisma.boutiqueCommande.findUnique({
+        where:   { id: commandeId },
+        include: { items: { select: { varianteId: true, quantity: true } } },
+      })
+      if (!commande || commande.status !== "PENDING") break
+
+      await prisma.$transaction([
+        prisma.boutiqueCommande.update({
+          where: { id: commandeId },
+          data:  { status: "CANCELLED" },
+        }),
+        ...commande.items.map(item =>
+          prisma.boutiqueVariante.update({
+            where: { id: item.varianteId },
+            data:  { stock: { increment: item.quantity } },
+          })
+        ),
+      ])
       break
     }
 

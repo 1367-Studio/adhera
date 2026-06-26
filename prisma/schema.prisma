@@ -259,6 +259,7 @@ model Participation {
   rsvp            RsvpStatus?
   rsvpAt          DateTime?
   ticketPaidAt    DateTime?
+  quantity        Int         @default(1)
   stripeSessionId String?     @unique
   createdAt       DateTime    @default(now())
 

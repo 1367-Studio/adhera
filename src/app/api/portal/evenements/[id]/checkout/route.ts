@@ -7,8 +7,9 @@ import { APP_URL } from "@/lib/env"
 type SessionUser = { id?: string; associationId?: string | null }
 
 const PLATFORM_FEE = 0.015
+const MAX_QUANTITY  = 10
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -16,6 +17,9 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const { id: evenementId } = await params
+
+  const body     = await req.json().catch(() => ({})) as { quantity?: number }
+  const quantity = Math.max(1, Math.min(MAX_QUANTITY, Number(body?.quantity) || 1))
 
   const evenement = await prisma.evenement.findFirst({
     where:   { id: evenementId, associationId: u.associationId },
@@ -47,22 +51,30 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Billet déjà acheté" }, { status: 422 })
 
   if (evenement.capacity != null) {
-    const paidCount = await prisma.participation.count({
-      where: { evenementId, ticketPaidAt: { not: null } },
+    const { _sum } = await prisma.participation.aggregate({
+      where: {
+        evenementId,
+        membreId: { not: membre.id },
+        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
+      },
+      _sum: { quantity: true },
     })
-    if (paidCount >= evenement.capacity)
+    const usedSlots = _sum.quantity ?? 0
+    if (usedSlots + quantity > evenement.capacity)
       return NextResponse.json({ error: "Événement complet" }, { status: 422 })
   }
 
+  // Hold the slot(s) immediately so simultaneous requests can't oversell
   const participation = await prisma.participation.upsert({
     where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    create: { membreId: membre.id, evenementId },
-    update: {},
+    create: { membreId: membre.id, evenementId, rsvp: "CONFIRME", quantity },
+    update: { rsvp: "CONFIRME", quantity },
     select: { id: true },
   })
 
   const amountCents    = Math.round(Number(evenement.price) * 100)
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const totalCents     = amountCents * quantity
+  const applicationFee = Math.round(totalCents * PLATFORM_FEE)
   const slug           = evenement.association.slug
 
   const checkoutSession = await stripe.checkout.sessions.create({
@@ -74,7 +86,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
           unit_amount:  amountCents,
           product_data: { name: `${evenement.association.name} — ${evenement.title}` },
         },
-        quantity: 1,
+        quantity,
       },
     ],
     payment_intent_data: {

@@ -306,6 +306,58 @@ export function customEmail(p: {
   }
 }
 
+export function ticketPurchaseEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  eventLocation:   string | null
+  amount:          number
+  quantity:        number
+  paidAt:          Date
+  portalUrl:       string
+}) {
+  const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr   = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  const amountStr = Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const qtyLine   = p.quantity > 1 ? `<tr><td style="padding-bottom:10px;">
+    <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Nombre de billets</span>
+    <span style="font-size:14px;font-weight:600;">${p.quantity}</span>
+  </td></tr>` : ""
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Billet confirmé !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre paiement a été accepté. Voici votre confirmation de billet.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Événement</span>
+        <span style="font-size:15px;font-weight:600;">${p.eventTitle}</span>
+      </td></tr>
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date</span>
+        <span style="font-size:14px;">${dateStr} à ${timeStr}</span>
+      </td></tr>
+      ${p.eventLocation ? `<tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Lieu</span>
+        <span style="font-size:14px;">${p.eventLocation}</span>
+      </td></tr>` : ""}
+      ${qtyLine}
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant payé</span>
+        <span style="font-size:16px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>
+    <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
+    ${btn("Voir mes événements", p.portalUrl)}`
+  return {
+    to:      p.email,
+    subject: `Billet confirmé — ${p.eventTitle}`,
+    html:    layout(p.associationName, content),
+  }
+}
+
 export function meetingInviteEmail(p: {
   firstName:       string
   email:           string
@@ -387,6 +439,58 @@ export function donConfirmationEmail(p: {
   return {
     to:      p.email,
     subject: `Confirmation de don — ${p.associationName}`,
+    html:    layout(p.associationName, content),
+  }
+}
+
+export function boutiqueConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  totalAmount:     number
+  paidAt:          Date
+  items:           { name: string; quantity: number; unitPrice: number }[]
+  portalUrl:       string
+}) {
+  const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const dateStr  = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+
+  const rows = p.items.map(i => {
+    const unitStr = (i.unitPrice / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+    return `<tr>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;">${i.name}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:center;">${i.quantity}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:right;">${unitStr}</td>
+    </tr>`
+  }).join("")
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Commande confirmée !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
+      <thead>
+        <tr>
+          <th style="text-align:left;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Article</th>
+          <th style="text-align:center;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Qté</th>
+          <th style="text-align:right;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Prix</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="padding-top:12px;font-size:14px;font-weight:700;">Total</td>
+          <td style="padding-top:12px;font-size:16px;font-weight:700;text-align:right;">${totalStr}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Payé le ${dateStr}. Conservez cet email comme confirmation.</p>
+    ${btn("Voir mes commandes", p.portalUrl)}`
+
+  return {
+    to:      p.email,
+    subject: `Confirmation de commande — ${p.associationName}`,
     html:    layout(p.associationName, content),
   }
 }

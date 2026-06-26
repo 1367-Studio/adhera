@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon } from "lucide-react"
-import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre } from "@/hooks/use-membres"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon } from "lucide-react"
+import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput } from "@/lib/schemas"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
@@ -17,11 +17,14 @@ import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useCurrentUser } from "@/lib/user-context"
 
 type MembreTypeRef = { id: string; name: string; color: string }
+
+type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
 type Membre = {
   id:        string
@@ -35,7 +38,25 @@ type Membre = {
   typeId:    string | null
   type:      MembreTypeRef | null
   joinedAt:  string
+  userId:    string | null
+  user:      { role: UserRole } | null
 }
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  ADMIN:      "Admin",
+  PRESIDENT:  "Président",
+  TRESORIER:  "Trésorier",
+  SECRETAIRE: "Secrétaire",
+  MEMBRE:     "Membre",
+}
+
+const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
+  { value: "MEMBRE",     label: "Membre"     },
+  { value: "SECRETAIRE", label: "Secrétaire" },
+  { value: "TRESORIER",  label: "Trésorier"  },
+  { value: "PRESIDENT",  label: "Président"  },
+  { value: "ADMIN",      label: "Admin"      },
+]
 
 const statusBadge: Record<Membre["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   PENDING:  { label: "En attente", variant: "outline"     },
@@ -73,9 +94,55 @@ function FilterSelect({
   )
 }
 
+function ChangeRoleModal({
+  membre,
+  onClose,
+}: {
+  membre: Membre
+  onClose: () => void
+}) {
+  const [role, setRole] = useState<UserRole>(membre.user?.role ?? "MEMBRE")
+  const mutation        = useChangeRole()
+
+  async function handleSave() {
+    try {
+      await mutation.mutateAsync({ id: membre.id, role })
+      toast.success("Rôle mis à jour")
+      onClose()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  return (
+    <Modal open onOpenChange={open => { if (!open) onClose() }} title="Modifier le rôle">
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Rôle de <strong>{membre.firstName} {membre.lastName}</strong> dans l'association.
+        </p>
+        <Select value={role} onValueChange={v => setRole(v as UserRole)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ROLE_OPTIONS.map(o => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex justify-end gap-2 pt-1">
+          <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>Annuler</Button>
+          <Button onClick={handleSave} loading={mutation.isPending}>Enregistrer</Button>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
 const PAGE_SIZE = 20
 
 export function MembresView() {
+  const currentUser                     = useCurrentUser()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -86,6 +153,7 @@ export function MembresView() {
   const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
   const [emailOpen, setEmailOpen]         = useState(false)
   const [historyTarget, setHistoryTarget] = useState<Membre | null>(null)
+  const [roleTarget, setRoleTarget]       = useState<Membre | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -145,9 +213,15 @@ export function MembresView() {
       header: "Membre",
       cell: (m) => (
         <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <p className="font-medium">{m.lastName} {m.firstName}</p>
             {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
+            {m.user && m.user.role !== "MEMBRE" && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                <ShieldIcon className="size-2.5" />
+                {ROLE_LABELS[m.user.role]}
+              </span>
+            )}
           </div>
           {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
         </div>
@@ -179,9 +253,12 @@ export function MembresView() {
       className: "w-10",
       cell: (m) => (
         <RowActions actions={[
-          { label: "Modifier",    icon: <PencilIcon    className="size-3.5" />, onClick: () => setEditTarget(m) },
-          { label: "Historique",  icon: <HistoryIcon   className="size-3.5" />, onClick: () => setHistoryTarget(m) },
-          { label: "Supprimer",   icon: <Trash2Icon    className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
+          { label: "Modifier",        icon: <PencilIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+          { label: "Historique",      icon: <HistoryIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
+          ...(currentUser.role === "ADMIN" && m.userId ? [
+            { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
+          ] : []),
+          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
         ]} />
       ),
     },
@@ -336,6 +413,13 @@ export function MembresView() {
       >
         {historyTarget && <MembreActivityLog membreId={historyTarget.id} />}
       </Modal>
+
+      {roleTarget && (
+        <ChangeRoleModal
+          membre={roleTarget}
+          onClose={() => setRoleTarget(null)}
+        />
+      )}
     </div>
   )
 }
