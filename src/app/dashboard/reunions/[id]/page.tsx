@@ -173,7 +173,7 @@ export default function ReunionDetailPage() {
   const hasRecording    = !!meeting.recordingKey && meeting.status === "ENDED"
 
   return (
-    <div className="space-y-6 p-6 max-w-3xl">
+    <div className="flex flex-col gap-6 p-6 h-full">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/reunions")}>
@@ -196,149 +196,158 @@ export default function ReunionDetailPage() {
         )}
       </div>
 
-      {/* Meta */}
-      <div className="rounded-xl border bg-card p-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-        {meeting.scheduledAt && (
-          <span className="flex items-center gap-1.5">
-            <CalendarIcon className="size-4" />
-            Planifiée le {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
-          </span>
-        )}
-        {meeting.startedAt && (
-          <span className="flex items-center gap-1.5">
-            <VideoIcon className="size-4" />
-            Démarrée le {format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
-          </span>
-        )}
-        {meeting.endedAt && (
-          <span className="flex items-center gap-1.5">
-            <ClockIcon className="size-4" />
-            Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
-          </span>
-        )}
-        <span className="flex items-center gap-1.5">
-          <UsersIcon className="size-4" />
-          {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""} :&nbsp;
-          {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
-        </span>
-        {meeting.egressId && (
-          <span className="flex items-center gap-1.5 text-red-500">
-            <CircleIcon className="size-2 fill-current animate-pulse" />
-            Enregistrement en cours
-          </span>
-        )}
-        {hasRecording && (
-          <span className="flex items-center gap-1.5 text-green-600">
-            <CircleIcon className="size-2 fill-current" />
-            Enregistrement disponible
-          </span>
-        )}
-      </div>
+      {/* Two-column body */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
 
-      {/* Transcript */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label>Transcription</Label>
-          <div className="flex items-center gap-2">
-            {hasRecording && (
+        {/* Left — Transcript (2/3) */}
+        <div className="lg:col-span-2 space-y-3 flex flex-col">
+          <div className="flex items-center justify-between">
+            <Label>Transcription</Label>
+            <div className="flex items-center gap-2">
+              {hasRecording && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => transcribeRecording.mutate()}
+                  disabled={isTranscribing}
+                >
+                  {transcribeRecording.isPending
+                    ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
+                    : <FileAudioIcon className="size-3.5 mr-1.5" />}
+                  {transcribeRecording.isPending ? "Transcription…" : "Transcrire l'enregistrement"}
+                </Button>
+              )}
+
+              <input
+                ref={fileRef}
+                type="file"
+                accept={AUDIO_ACCEPT}
+                className="hidden"
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  if (file) transcribeUpload.mutate(file)
+                  e.target.value = ""
+                }}
+              />
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => transcribeRecording.mutate()}
+                onClick={() => fileRef.current?.click()}
                 disabled={isTranscribing}
               >
-                {transcribeRecording.isPending
+                {transcribeUpload.isPending
                   ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
                   : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                {transcribeRecording.isPending ? "Transcription…" : "Transcrire l'enregistrement"}
+                {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
               </Button>
+
+              {transcriptDirty && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => saveTranscript.mutate()}
+                  loading={saveTranscript.isPending}
+                >
+                  <SaveIcon className="size-3.5 mr-1.5" />
+                  Sauvegarder
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {isTranscribing && (
+            <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
+              <Loader2Icon className="size-4 animate-spin shrink-0" />
+              Whisper transcrit l'audio… Cela peut prendre quelques instants.
+            </div>
+          )}
+
+          <Textarea
+            value={transcript}
+            onChange={e => setTranscript(e.target.value)}
+            placeholder="La transcription apparaîtra ici après la réunion. Vous pouvez aussi importer un fichier audio ou saisir le texte manuellement."
+            className="font-mono text-xs resize-none flex-1 min-h-[300px]"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Formats acceptés : MP3, M4A, WAV, WebM, OGG, FLAC · Max 25 Mo · Détection automatique de la langue (français, portugais, anglais…)
+          </p>
+        </div>
+
+        {/* Right — Meta + AI Summary (1/3) */}
+        <div className="space-y-4">
+
+          {/* Meta */}
+          <div className="rounded-xl border bg-card p-4 space-y-2 text-sm text-muted-foreground">
+            {meeting.scheduledAt && (
+              <span className="flex items-center gap-1.5">
+                <CalendarIcon className="size-4 shrink-0" />
+                Planifiée le {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+              </span>
             )}
+            {meeting.startedAt && (
+              <span className="flex items-center gap-1.5">
+                <VideoIcon className="size-4 shrink-0" />
+                Démarrée le {format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+              </span>
+            )}
+            {meeting.endedAt && (
+              <span className="flex items-center gap-1.5">
+                <ClockIcon className="size-4 shrink-0" />
+                Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+              </span>
+            )}
+            <span className="flex items-start gap-1.5">
+              <UsersIcon className="size-4 shrink-0 mt-0.5" />
+              <span>
+                {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""} :{" "}
+                {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
+              </span>
+            </span>
+            {meeting.egressId && (
+              <span className="flex items-center gap-1.5 text-red-500">
+                <CircleIcon className="size-2 fill-current animate-pulse" />
+                Enregistrement en cours
+              </span>
+            )}
+            {hasRecording && (
+              <span className="flex items-center gap-1.5 text-green-600">
+                <CircleIcon className="size-2 fill-current" />
+                Enregistrement disponible
+              </span>
+            )}
+          </div>
 
-            <input
-              ref={fileRef}
-              type="file"
-              accept={AUDIO_ACCEPT}
-              className="hidden"
-              onChange={e => {
-                const file = e.target.files?.[0]
-                if (file) transcribeUpload.mutate(file)
-                e.target.value = ""
-              }}
-            />
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => fileRef.current?.click()}
-              disabled={isTranscribing}
-            >
-              {transcribeUpload.isPending
-                ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
-                : <FileAudioIcon className="size-3.5 mr-1.5" />}
-              {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
-            </Button>
-
-            {transcriptDirty && (
+          {/* AI Summary */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Compte-rendu IA</Label>
               <Button
                 size="sm"
-                variant="outline"
-                onClick={() => saveTranscript.mutate()}
-                loading={saveTranscript.isPending}
+                onClick={() => summarize.mutate()}
+                loading={summarize.isPending}
+                disabled={!transcript.trim()}
               >
-                <SaveIcon className="size-3.5 mr-1.5" />
-                Sauvegarder
+                <SparklesIcon className="size-3.5 mr-1.5" />
+                {meeting.summary ? "Regénérer" : "Générer"}
               </Button>
+            </div>
+
+            {meeting.summary ? (
+              <div className="rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
+                {meeting.summary}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed p-6 text-center">
+                <SparklesIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground">
+                  {transcript.trim()
+                    ? "Cliquez sur « Générer » pour créer le compte-rendu."
+                    : "La transcription est nécessaire pour générer le résumé."}
+                </p>
+              </div>
             )}
           </div>
         </div>
-
-        {isTranscribing && (
-          <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
-            <Loader2Icon className="size-4 animate-spin shrink-0" />
-            Whisper transcrit l'audio… Cela peut prendre quelques instants.
-          </div>
-        )}
-
-        <Textarea
-          value={transcript}
-          onChange={e => setTranscript(e.target.value)}
-          placeholder="La transcription apparaîtra ici après la réunion. Vous pouvez aussi importer un fichier audio ou saisir le texte manuellement."
-          rows={10}
-          className="font-mono text-xs resize-y"
-        />
-        <p className="text-[11px] text-muted-foreground">
-          Formats acceptés : MP3, M4A, WAV, WebM, OGG, FLAC · Max 25 Mo · Détection automatique de la langue (français, portugais, anglais…)
-        </p>
-      </div>
-
-      {/* AI Summary */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label>Compte-rendu IA</Label>
-          <Button
-            size="sm"
-            onClick={() => summarize.mutate()}
-            loading={summarize.isPending}
-            disabled={!transcript.trim()}
-          >
-            <SparklesIcon className="size-3.5 mr-1.5" />
-            {meeting.summary ? "Regénérer" : "Générer le résumé"}
-          </Button>
-        </div>
-
-        {meeting.summary ? (
-          <div className="rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
-            {meeting.summary}
-          </div>
-        ) : (
-          <div className="rounded-xl border border-dashed p-8 text-center">
-            <SparklesIcon className="size-8 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm text-muted-foreground">
-              {transcript.trim()
-                ? "Cliquez sur « Générer le résumé » pour créer le compte-rendu automatiquement."
-                : "La transcription est nécessaire pour générer le résumé."}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   )
