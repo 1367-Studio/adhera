@@ -4,7 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, ClockIcon, UsersIcon, CalendarIcon, FileTextIcon } from "lucide-react"
+import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, UsersIcon, CalendarIcon, FileTextIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMeetings, useCreateMeeting, useDeleteMeeting, type Meeting } from "@/hooks/use-meetings"
@@ -185,10 +185,6 @@ function MeetingCard({
         <span className="flex items-center gap-1">
           <UsersIcon className="h-3 w-3" />
           {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""}
-        </span>
-        <span className="flex items-center gap-1">
-          <ClockIcon className="h-3 w-3" />
-          Créée le {format(new Date(meeting.createdAt), "d MMM yyyy", { locale: fr })}
         </span>
       </div>
 
