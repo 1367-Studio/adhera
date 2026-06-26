@@ -7,6 +7,10 @@ export type AssocModules = {
   materiel:    boolean
   site:        boolean
   ia:          boolean
+  dons:        boolean
+  sondages:    boolean
+  boutique:    boolean
+  reunions:    boolean
 }
 
 export const DEFAULT_MODULES: AssocModules = {
@@ -18,6 +22,10 @@ export const DEFAULT_MODULES: AssocModules = {
   materiel:    true,
   site:        true,
   ia:          false,
+  dons:        false,
+  sondages:    true,
+  boutique:    false,
+  reunions:    false,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
@@ -29,6 +37,10 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   materiel:    "Matériel",
   site:        "Site web intégré",
   ia:          "Rédaction assistée par IA",
+  dons:        "Dons en ligne",
+  sondages:    "Sondages",
+  boutique:    "Boutique en ligne",
+  reunions:    "Réunions vidéo",
 }
 
 export function parseModules(raw: unknown): AssocModules {

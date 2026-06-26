@@ -14,6 +14,10 @@ import {
   PackageIcon,
   GlobeIcon,
   ActivityIcon,
+  HeartIcon,
+  ClipboardListIcon,
+  ShoppingBagIcon,
+  VideoIcon,
 } from "lucide-react"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -44,6 +48,10 @@ const navigationItems: NavItem[] = [
   { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
   { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
   { name: "Trésorerie",      href: "/dashboard/tresorerie",  icon: LandmarkIcon,         roles: FINANCE,   moduleKey: "tresorerie"  },
+  { name: "Dons",            href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
+  { name: "Réunions",        href: "/dashboard/reunions",    icon: VideoIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
+  { name: "Sondages",        href: "/dashboard/sondages",    icon: ClipboardListIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
+  { name: "Boutique",        href: "/dashboard/boutique",    icon: ShoppingBagIcon,      roles: MANAGERS,  moduleKey: "boutique"    },
   { name: "Actualités",      href: "/dashboard/actualites",  icon: NewspaperIcon,        roles: MANAGERS,  moduleKey: "actualites"  },
   { name: "Messages",        href: "/dashboard/messages",    icon: MailIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
   { name: "Matériel",        href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },

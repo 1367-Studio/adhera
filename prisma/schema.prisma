@@ -77,6 +77,45 @@ enum RuleStatus {
   DONE
 }
 
+enum SondageStatus {
+  BROUILLON
+  ACTIF
+  FERME
+}
+
+enum BoutiqueProduitStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum BoutiqueCommandeStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum BoutiquePaymentMethod {
+  STRIPE
+  MANUAL
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+  CANCELLED
+}
+
+enum QuestionType {
+  TEXT_SHORT
+  TEXT_LONG
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  RATING
+  YES_NO
+}
+
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -86,6 +125,11 @@ model Association {
   slug                 String             @unique
   city                 String?
   country              String             @default("France")
+  address              String?
+  phone                String?
+  siren                String?
+  rna                  String?
+  canIssueTaxReceipts  Boolean            @default(false)
   aiApiKey             String?
   aiModel              String?
   stripeCustomerId     String?
@@ -112,6 +156,11 @@ model Association {
   automationRules   AutomationRule[]
   materials         Material[]
   activityLogs      ActivityLog[]
+  dons              Don[]
+  sondages          Sondage[]
+  boutiqueProduits  BoutiqueProduit[]
+  boutiqueCommandes BoutiqueCommande[]
+  meetings          Meeting[]
 }
 
 model User {
@@ -173,6 +222,11 @@ model Membre {
   actualiteRecipients ActualiteRecipient[]
   materialLoans       MaterialLoan[]
   automationLogs      AutomationLog[]
+  dons                Don[]
+  sondageRecipients   SondageRecipient[]
+  sondageReponses     SondageReponse[]
+  boutiqueCommandes   BoutiqueCommande[]
+  meetingsAsParticipant MeetingParticipant[]
 }
 
 model Evenement {
@@ -230,6 +284,28 @@ model Cotisation {
   association Association @relation(fields: [associationId], references: [id])
 
   @@unique([membreId, year])
+}
+
+model Don {
+  id              String    @id @default(cuid())
+  associationId   String
+  membreId        String?
+  firstName       String
+  lastName        String
+  email           String
+  address         String?
+  amount          Decimal   @db.Decimal(10, 2)
+  message         String?
+  anonymous       Boolean   @default(false)
+  receiptNumber   String?
+  receiptIssuedAt DateTime?
+  stripeSessionId String?   @unique
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id])
+  membre      Membre?     @relation(fields: [membreId], references: [id])
 }
 
 model TresorerieEntry {
@@ -384,11 +460,173 @@ model ActivityLog {
   @@index([associationId, entity])
 }
 
+model Sondage {
+  id            String        @id @default(cuid())
+  associationId String
+  title         String
+  description   String?
+  status        SondageStatus @default(BROUILLON)
+  recipientMode String        @default("ALL")
+  anonymous     Boolean       @default(false)
+  deadline      DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  questions   SondageQuestion[]
+  recipients  SondageRecipient[]
+  reponses    SondageReponse[]
+}
+
+model SondageQuestion {
+  id        String       @id @default(cuid())
+  sondageId String
+  type      QuestionType
+  label     String
+  required  Boolean      @default(false)
+  order     Int
+  options   Json?
+  condition Json?
+
+  sondage Sondage              @relation(fields: [sondageId], references: [id], onDelete: Cascade)
+  items   SondageReponseItem[]
+}
+
+model SondageRecipient {
+  sondageId String
+  membreId  String
+
+  sondage Sondage @relation(fields: [sondageId], references: [id], onDelete: Cascade)
+  membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
+
+  @@id([sondageId, membreId])
+}
+
+model SondageReponse {
+  id          String   @id @default(cuid())
+  sondageId   String
+  membreId    String?
+  submittedAt DateTime @default(now())
+
+  sondage Sondage              @relation(fields: [sondageId], references: [id], onDelete: Cascade)
+  membre  Membre?              @relation(fields: [membreId],  references: [id], onDelete: SetNull)
+  items   SondageReponseItem[]
+
+  @@unique([sondageId, membreId])
+}
+
+model SondageReponseItem {
+  id         String  @id @default(cuid())
+  reponseId  String
+  questionId String
+  value      String?
+
+  reponse  SondageReponse  @relation(fields: [reponseId],  references: [id], onDelete: Cascade)
+  question SondageQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+// ─── Boutique ─────────────────────────────────────────────────────────────────
+
+model BoutiqueProduit {
+  id            String                @id @default(cuid())
+  associationId String
+  name          String
+  description   String?
+  imageUrl      String?
+  status        BoutiqueProduitStatus @default(DRAFT)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  association Association             @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  variantes   BoutiqueVariante[]
+  commandeItems BoutiqueCommandeItem[]
+}
+
+model BoutiqueVariante {
+  id         String   @id @default(cuid())
+  produitId  String
+  label      String
+  price      Int
+  stock      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  produit       BoutiqueProduit        @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  commandeItems BoutiqueCommandeItem[]
+}
+
+model BoutiqueCommande {
+  id            String                 @id @default(cuid())
+  associationId String
+  membreId      String?
+  guestName     String?
+  guestEmail    String?
+  status        BoutiqueCommandeStatus @default(PENDING)
+  paymentMethod BoutiquePaymentMethod  @default(MANUAL)
+  stripePaymentIntentId String?
+  totalAmount   Int
+  note          String?
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+
+  association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre?                @relation(fields: [membreId],      references: [id], onDelete: SetNull)
+  items       BoutiqueCommandeItem[]
+}
+
+model BoutiqueCommandeItem {
+  id         String @id @default(cuid())
+  commandeId String
+  produitId  String
+  varianteId String
+  quantity   Int
+  unitPrice  Int
+
+  commande  BoutiqueCommande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+  produit   BoutiqueProduit  @relation(fields: [produitId],  references: [id], onDelete: Restrict)
+  variante  BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+}
+
+// ─── Réunions ─────────────────────────────────────────────────────────────────
+
+model Meeting {
+  id            String        @id @default(cuid())
+  associationId String
+  title         String
+  description   String?
+  status        MeetingStatus @default(SCHEDULED)
+  scheduledAt   DateTime?
+  startedAt     DateTime?
+  endedAt       DateTime?
+  roomName      String        @unique
+  createdById   String
+  transcript    String?
+  summary       String?
+  egressId      String?
+  recordingKey  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  participants MeetingParticipant[]
+}
+
+model MeetingParticipant {
+  id        String   @id @default(cuid())
+  meetingId String
+  membreId  String
+  joinedAt  DateTime?
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, membreId])
 }
 

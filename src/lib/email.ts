@@ -305,3 +305,88 @@ export function customEmail(p: {
     html:    layout(p.associationName, p.bodyHtml),
   }
 }
+
+export function meetingInviteEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  meetingTitle:    string
+  scheduledAt:     Date | null
+  instant:         boolean
+  portalUrl:       string
+}) {
+  const whenStr = p.instant
+    ? "maintenant"
+    : p.scheduledAt
+      ? p.scheduledAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) +
+        " à " +
+        p.scheduledAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+      : "prochainement"
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Vous êtes invité(e) à une réunion</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à participer à la réunion suivante.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Réunion</span>
+        <span style="font-size:15px;font-weight:600;">${p.meetingTitle}</span>
+      </td></tr>
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date</span>
+        <span style="font-size:14px;">${whenStr}</span>
+      </td></tr>
+    </table>
+    ${btn("Rejoindre la réunion", p.portalUrl)}`
+  return {
+    to:      p.email,
+    subject: `Invitation — ${p.meetingTitle}`,
+    html:    layout(p.associationName, content),
+  }
+}
+
+export function donConfirmationEmail(p: {
+  firstName:           string
+  email:               string
+  associationName:     string
+  amount:              number
+  paidAt:              Date
+  canIssueTaxReceipts: boolean
+  receiptNumber?:      string
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+
+  const receiptBlock = p.canIssueTaxReceipts
+    ? `<p style="margin:16px 0 0;font-size:13px;color:#3f3f46;">
+        Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `(n° ${p.receiptNumber}) ` : ""}est joint à cet email.
+        Conservez-le pour votre déclaration de revenus — il vous permet de bénéficier d'une réduction d'impôt
+        de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI).
+      </p>`
+    : ""
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre don à <strong>${p.associationName}</strong> a bien été reçu. Merci pour votre générosité !
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date</span>
+        <span style="font-size:14px;">${dateStr}</span>
+      </td></tr>
+    </table>
+    ${receiptBlock}
+    <p style="margin:16px 0 0;font-size:12px;color:#71717a;">Conservez cet email comme confirmation de votre don.</p>`
+
+  return {
+    to:      p.email,
+    subject: `Confirmation de don — ${p.associationName}`,
+    html:    layout(p.associationName, content),
+  }
+}

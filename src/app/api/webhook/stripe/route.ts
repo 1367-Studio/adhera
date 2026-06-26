@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { paymentConfirmationEmail } from "@/lib/email"
+import { paymentConfirmationEmail, donConfirmationEmail } from "@/lib/email"
+import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
 import type Stripe from "stripe"
 
 export const dynamic = "force-dynamic"
@@ -30,8 +31,31 @@ export async function POST(req: Request) {
       const sess            = event.data.object as Stripe.Checkout.Session
       const cotisationId    = sess.metadata?.cotisationId
       const participationId = sess.metadata?.participationId
+      const donId           = sess.metadata?.donId
+      const commandeId      = sess.metadata?.commandeId
 
-      if (cotisationId) {
+      if (commandeId) {
+        const commande = await prisma.boutiqueCommande.findUnique({
+          where:   { id: commandeId },
+          select:  { id: true, status: true, totalAmount: true, associationId: true },
+        })
+        if (commande && commande.status !== "PAID") {
+          await prisma.boutiqueCommande.update({
+            where: { id: commandeId },
+            data:  { status: "PAID" },
+          })
+          await prisma.tresorerieEntry.create({
+            data: {
+              associationId: commande.associationId,
+              type:          "ENTREE",
+              amount:        commande.totalAmount / 100,
+              description:   "Vente boutique (Stripe)",
+              date:          new Date(),
+              category:      "Boutique",
+            },
+          })
+        }
+      } else if (cotisationId) {
         const cotisation = await prisma.cotisation.findUnique({
           where:   { id: cotisationId },
           include: {
@@ -62,6 +86,64 @@ export async function POST(req: Request) {
           where: { id: participationId, ticketPaidAt: null },
           data:  { ticketPaidAt: new Date(), stripeSessionId: sess.id },
         })
+      } else if (donId) {
+        const don = await prisma.don.findUnique({
+          where:   { id: donId },
+          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true } } },
+        })
+        if (!don || don.paidAt) break
+
+        const paidAt = new Date()
+        await prisma.don.update({
+          where: { id: donId },
+          data:  { paidAt, stripeSessionId: sess.id },
+        })
+
+        await prisma.tresorerieEntry.create({
+          data: {
+            associationId: don.associationId,
+            type:          "ENTREE",
+            amount:        don.amount,
+            description:   don.anonymous
+              ? "Don anonyme"
+              : `Don de ${don.firstName} ${don.lastName}`,
+            date:     paidAt,
+            category: "Don",
+          },
+        })
+
+        if (don.email) {
+          const assoc = don.association
+          let pdfAttachment: { filename: string; content: Buffer } | undefined
+
+          if (assoc.canIssueTaxReceipts) {
+            const updatedDon = await prisma.don.findUnique({ where: { id: donId } })
+            if (updatedDon) {
+              const pdf = await generateRecuFiscal(updatedDon, assoc).catch(() => null)
+              if (pdf) {
+                pdfAttachment = {
+                  filename: `recu-fiscal-${updatedDon.receiptNumber ?? donId}.pdf`,
+                  content:  pdf,
+                }
+              }
+            }
+          }
+
+          const refreshed = await prisma.don.findUnique({ where: { id: donId }, select: { receiptNumber: true } })
+
+          sendEmail({
+            ...donConfirmationEmail({
+              firstName:           don.firstName,
+              email:               don.email,
+              associationName:     assoc.name,
+              amount:              Number(don.amount),
+              paidAt,
+              canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+              receiptNumber:       refreshed?.receiptNumber ?? undefined,
+            }),
+            attachments: pdfAttachment ? [pdfAttachment] : undefined,
+          }).catch(() => {})
+        }
       }
       break
     }

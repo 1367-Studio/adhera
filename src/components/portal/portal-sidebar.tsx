@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { UserIcon, CalendarIcon, CoinsIcon, NewspaperIcon, PackageIcon } from "lucide-react"
+import { UserIcon, CalendarIcon, CoinsIcon, NewspaperIcon, PackageIcon, HeartHandshakeIcon, ClipboardListIcon, ShoppingBagIcon, VideoIcon } from "lucide-react"
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -24,8 +24,12 @@ export function PortalSidebar({ slug }: { slug: string }) {
     { href: `/portal/${slug}/actualites`, label: "Actualités",    icon: NewspaperIcon, moduleKey: "actualites"  },
     { href: `/portal/${slug}/evenements`, label: "Événements",    icon: CalendarIcon,  moduleKey: "evenements"  },
     { href: `/portal/${slug}/materiel`,   label: "Matériel",      icon: PackageIcon,   moduleKey: "materiel"    },
-    { href: `/portal/${slug}/cotisation`, label: "Ma cotisation", icon: CoinsIcon,     moduleKey: "cotisations" },
-    { href: `/portal/${slug}/profil`,     label: "Mon profil",    icon: UserIcon },
+    { href: `/portal/${slug}/cotisation`, label: "Ma cotisation", icon: CoinsIcon,          moduleKey: "cotisations" },
+    { href: `/portal/${slug}/dons`,       label: "Mes dons",      icon: HeartHandshakeIcon,  moduleKey: "dons"      },
+    { href: `/portal/${slug}/sondages`,  label: "Sondages",      icon: ClipboardListIcon,   moduleKey: "sondages"  },
+    { href: `/portal/${slug}/boutique`,  label: "Boutique",      icon: ShoppingBagIcon,     moduleKey: "boutique"  },
+    { href: `/portal/${slug}/reunions`,  label: "Réunions",      icon: VideoIcon,           moduleKey: "reunions"  },
+    { href: `/portal/${slug}/profil`,    label: "Mon profil",    icon: UserIcon },
   ]
 
   const navItems = allNavItems.filter(item => !item.moduleKey || modules[item.moduleKey])

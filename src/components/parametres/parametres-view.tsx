@@ -15,6 +15,7 @@ import { MembreTypesManager } from "@/components/parametres/membre-types-manager
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
+import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
 
 type Association = {
   id:      string
@@ -143,6 +144,11 @@ export function ParametresView() {
       {/* Stripe Connect */}
       <div className="rounded-xl border bg-card p-6">
         <StripeConnectSettings canEdit={canEdit} />
+      </div>
+
+      {/* Identité & Dons */}
+      <div className="rounded-xl border bg-card p-6">
+        <IdentityDonsSettings canEdit={canEdit} />
       </div>
 
       {/* IA */}
