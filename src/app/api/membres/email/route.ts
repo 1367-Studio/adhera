@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
-import { sendEmail } from "@/lib/mail"
+import { sendEmailBulk } from "@/lib/mail"
 import { customEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -47,19 +47,16 @@ export async function POST(req: Request) {
     select: { email: true },
   })
 
-  const results = await Promise.allSettled(
-    membres
-      .filter(m => m.email)
-      .map(m => sendEmail(customEmail({
-        associationName: assoc.name,
-        subject,
-        bodyHtml,
-        recipientEmail:  m.email!,
-      })))
-  )
+  const payloads = membres
+    .filter(m => m.email)
+    .map(m => customEmail({
+      associationName: assoc.name,
+      subject,
+      bodyHtml,
+      recipientEmail:  m.email!,
+    }))
 
-  const sent   = results.filter(r => r.status === "fulfilled").length
-  const failed = results.filter(r => r.status === "rejected").length
+  const { sent, failed } = await sendEmailBulk(payloads)
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
   await writeActivityLog({

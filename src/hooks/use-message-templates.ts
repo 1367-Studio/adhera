@@ -23,11 +23,12 @@ async function fetchJson(url: string, init?: RequestInit) {
   return res.status === 204 ? null : res.json()
 }
 
-export function useMessageTemplates() {
+export function useMessageTemplates(options?: { enabled?: boolean }) {
   return useQuery<MessageTemplate[]>({
     queryKey:  KEY,
     queryFn:   () => fetchJson("/api/message-templates"),
     staleTime: 0,
+    enabled:   options?.enabled ?? true,
   })
 }
 

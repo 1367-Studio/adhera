@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { sendEmail } from "@/lib/mail"
+import { sendEmailBatch } from "@/lib/mail"
 import { eventReminderEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt } from "@/lib/automation"
 import type { TriggerType } from "@prisma/client"
+
+const BATCH_SIZE = 100
 
 export async function POST(req: Request) {
   const secret = process.env.CRON_SECRET
@@ -49,15 +51,13 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
   const triggerType = rule.triggerType as TriggerType
   const config = rule.triggerConfig as Record<string, unknown>
 
-  // ── EVENT_REMINDER: send to event participants N days before the event ───────
   if (triggerType === "EVENT_REMINDER") {
     const sent = await processEventReminder(rule, config, now)
     await updateRuleNextRun(rule.id, triggerType, config, now)
     return sent
   }
 
-  // For event-based cotisation rules, check cooldown per member (default 7 days)
-  const cooldownDays = (config.cooldownDays as number | undefined) ?? 7
+  const cooldownDays   = (config.cooldownDays as number | undefined) ?? 7
   const cooldownCutoff = new Date(now.getTime() - cooldownDays * 86_400_000)
 
   let membres = await prisma.membre.findMany({
@@ -70,14 +70,13 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     },
     include: {
       cotisations: {
-        where: { status: "EN_ATTENTE" },
+        where:   { status: "EN_ATTENTE" },
         orderBy: { year: "desc" },
-        take: 1,
+        take:    1,
       },
     },
   })
 
-  // Filter by event condition
   if (triggerType === "EVENT_COTISATION_DUE") {
     const dueDate    = config.dueDate ? new Date(config.dueDate as string) : endOfYear(now)
     const daysBefore = (config.daysBefore as number) ?? 30
@@ -100,57 +99,58 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     membres = membres.filter(m => m.cotisations.some(c => c.year === year))
   }
 
-  // For event rules, filter out members already notified within cooldown
   let targets = membres
   if (triggerType === "EVENT_COTISATION_DUE" || triggerType === "EVENT_PAYMENT_OVERDUE") {
     const recentLogs = await prisma.automationLog.findMany({
-      where: {
-        ruleId:   rule.id,
-        sentAt:   { gte: cooldownCutoff },
-        membreId: { in: membres.map(m => m.id) },
-      },
+      where:  { ruleId: rule.id, sentAt: { gte: cooldownCutoff }, membreId: { in: membres.map(m => m.id) } },
       select: { membreId: true },
     })
     const notifiedIds = new Set(recentLogs.map(l => l.membreId))
     targets = membres.filter(m => !notifiedIds.has(m.id))
   }
 
+  // Build personalized payloads for all targets
+  const jobs = targets
+    .filter(m => m.email)
+    .map(membre => {
+      const cotisation = membre.cotisations[0]
+      const vars       = buildVars({
+        prenom:            membre.firstName,
+        nom:               membre.lastName,
+        email:             membre.email!,
+        association:       rule.association.name,
+        slug:              rule.association.slug,
+        anneeCotisation:   cotisation?.year,
+        montantCotisation: cotisation ? cotisation.amount.toString() : undefined,
+      })
+      return {
+        membreId: membre.id,
+        payload:  {
+          to:      membre.email!,
+          subject: substituteVars(rule.template.subject, vars),
+          html:    substituteVars(rule.template.body, vars),
+        },
+      }
+    })
+
+  // Send in chunks — log only chunks that succeeded
   let sent = 0
-  for (const membre of targets) {
-    if (!membre.email) continue
-
-    const cotisation = membre.cotisations[0]
-    const vars = buildVars({
-      prenom:             membre.firstName,
-      nom:                membre.lastName,
-      email:              membre.email,
-      association:        rule.association.name,
-      slug:               rule.association.slug,
-      anneeCotisation:    cotisation?.year,
-      montantCotisation:  cotisation ? cotisation.amount.toString() : undefined,
-    })
-
-    const subject = substituteVars(rule.template.subject, vars)
-    const html    = substituteVars(rule.template.body,    vars)
-
-    await sendEmail({ to: membre.email, subject, html })
-    await prisma.automationLog.create({
-      data: { ruleId: rule.id, membreId: membre.id, subject },
-    })
-    sent++
+  for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
+    const chunk = jobs.slice(i, i + BATCH_SIZE)
+    const ok    = await sendEmailBatch(chunk.map(j => j.payload))
+    if (ok) {
+      await prisma.automationLog.createMany({
+        data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
+      })
+      sent += chunk.length
+    }
   }
 
-  // Update rule after run
   const isOnce    = triggerType === "SCHEDULED_ONCE"
   const nextRunAt = isOnce ? null : computeNextRunAt(triggerType, config)
-
   await prisma.automationRule.update({
     where: { id: rule.id },
-    data:  {
-      lastRunAt: now,
-      nextRunAt,
-      status:    isOnce ? "DONE" : "ACTIVE",
-    },
+    data:  { lastRunAt: now, nextRunAt, status: isOnce ? "DONE" : "ACTIVE" },
   })
 
   return sent
@@ -164,19 +164,15 @@ async function processEventReminder(
   now: Date,
 ): Promise<number> {
   const daysBefore = (config.daysBefore as number) ?? 1
-
-  const target   = new Date(now.getTime() + daysBefore * 86_400_000)
-  const dayStart = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0)
-  const dayEnd   = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 23, 59, 59)
+  const target     = new Date(now.getTime() + daysBefore * 86_400_000)
+  const dayStart   = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0)
+  const dayEnd     = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 23, 59, 59)
 
   const events = await prisma.evenement.findMany({
-    where: {
-      associationId: rule.associationId,
-      date: { gte: dayStart, lte: dayEnd },
-    },
+    where: { associationId: rule.associationId, date: { gte: dayStart, lte: dayEnd } },
     include: {
       participations: {
-        where: { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
+        where:   { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
         include: { membre: { select: { id: true, firstName: true, email: true } } },
       },
     },
@@ -187,31 +183,36 @@ async function processEventReminder(
 
   for (const event of events) {
     const alreadyNotified = await prisma.automationLog.findMany({
-      where: { ruleId: rule.id, eventId: event.id },
+      where:  { ruleId: rule.id, eventId: event.id },
       select: { membreId: true },
     })
     const notifiedIds = new Set(alreadyNotified.map(l => l.membreId))
 
-    for (const p of event.participations) {
-      if (!p.membre.email) continue
-      if (notifiedIds.has(p.membreId)) continue
-
-      const { subject, html } = eventReminderEmail({
-        firstName:       p.membre.firstName,
-        email:           p.membre.email,
-        associationName: rule.association.name,
-        eventTitle:      event.title,
-        eventDate:       event.date,
-        eventLocation:   event.location,
-        portalUrl,
-        daysBefore,
+    const jobs = event.participations
+      .filter(p => p.membre.email && !notifiedIds.has(p.membreId))
+      .map(p => {
+        const { subject, html } = eventReminderEmail({
+          firstName:       p.membre.firstName,
+          email:           p.membre.email!,
+          associationName: rule.association.name,
+          eventTitle:      event.title,
+          eventDate:       event.date,
+          eventLocation:   event.location,
+          portalUrl,
+          daysBefore,
+        })
+        return { membreId: p.membreId, payload: { to: p.membre.email!, subject, html } }
       })
 
-      await sendEmail({ to: p.membre.email, subject, html })
-      await prisma.automationLog.create({
-        data: { ruleId: rule.id, membreId: p.membreId, eventId: event.id, subject },
-      })
-      sent++
+    for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
+      const chunk = jobs.slice(i, i + BATCH_SIZE)
+      const ok    = await sendEmailBatch(chunk.map(j => j.payload))
+      if (ok) {
+        await prisma.automationLog.createMany({
+          data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id, subject: j.payload.subject })),
+        })
+        sent += chunk.length
+      }
     }
   }
 
