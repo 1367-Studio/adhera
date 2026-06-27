@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -160,8 +160,9 @@ function MeetingCard({
   onJoin: () => void
   onDelete: () => void
 }) {
-  const router  = useRouter()
-  const canJoin = meeting.status === "SCHEDULED" || meeting.status === "LIVE"
+  const router     = useRouter()
+  const [now]      = useState(Date.now)
+  const canJoin    = meeting.status === "SCHEDULED" || meeting.status === "LIVE"
 
   const dateDisplay = (() => {
     if (meeting.startedAt) {
@@ -171,17 +172,17 @@ function MeetingCard({
     return { icon: <CalendarIcon className="h-3 w-3" />, label: format(new Date(anchor), "d MMM yyyy à HH:mm", { locale: fr }) }
   })()
 
-  const durationLabel = (() => {
+  const durationLabel = useMemo(() => {
     if (meeting.startedAt && meeting.endedAt) {
       const mins = Math.round((new Date(meeting.endedAt).getTime() - new Date(meeting.startedAt).getTime()) / 60000)
       return mins < 1 ? "< 1 min" : `${mins} min`
     }
     if (meeting.status === "LIVE" && meeting.startedAt) {
-      const mins = Math.round((Date.now() - new Date(meeting.startedAt).getTime()) / 60000)
+      const mins = Math.round((now - new Date(meeting.startedAt).getTime()) / 60000)
       return `En cours depuis ${mins < 1 ? "< 1" : mins} min`
     }
     return null
-  })()
+  }, [meeting.startedAt, meeting.endedAt, meeting.status, now])
 
   return (
     <div className="rounded-lg border bg-card p-4 flex flex-col gap-3">

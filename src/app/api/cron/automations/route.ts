@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmailBatch } from "@/lib/mail"
 import { eventReminderEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt } from "@/lib/automation"
+import { parseModules } from "@/lib/modules"
 import type { TriggerType } from "@prisma/client"
 
 const BATCH_SIZE = 100
@@ -26,7 +27,7 @@ export async function POST(req: Request) {
     },
     include: {
       template:    true,
-      association: { select: { id: true, name: true, slug: true } },
+      association: { select: { id: true, name: true, slug: true, modules: true } },
     },
   })
 
@@ -43,10 +44,15 @@ export async function POST(req: Request) {
 }
 
 type RuleWithRelations = Awaited<ReturnType<typeof prisma.automationRule.findMany<{
-  include: { template: true; association: { select: { id: true; name: true; slug: true } } }
+  include: { template: true; association: { select: { id: true; name: true; slug: true; modules: true } } }
 }>>>[number]
 
 async function processRule(rule: RuleWithRelations, now: Date): Promise<number> {
+  if (!parseModules(rule.association.modules).messages) {
+    await updateRuleNextRun(rule.id, rule.triggerType as TriggerType, rule.triggerConfig as Record<string, unknown>, now)
+    return 0
+  }
+
   const { mode, typeId } = parseRecipients(rule.recipients)
   const triggerType = rule.triggerType as TriggerType
   const config = rule.triggerConfig as Record<string, unknown>

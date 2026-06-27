@@ -3,7 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { parseModules } from "@/lib/modules"
+import { guardModule } from "@/lib/auth/require-module"
 import { APP_URL } from "@/lib/env"
 
 type SessionUser = { id?: string; associationId?: string | null }
@@ -23,6 +23,9 @@ export async function POST(req: Request) {
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
+  const guard = await guardModule(u.associationId, "dons")
+  if (guard) return guard
+
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success)
@@ -38,12 +41,9 @@ export async function POST(req: Request) {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: u.associationId! },
-    select: { id: true, name: true, slug: true, stripeConnectId: true, modules: true },
+    select: { id: true, name: true, slug: true, stripeConnectId: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
-
-  const modules = parseModules(assoc.modules)
-  if (!modules.dons) return NextResponse.json({ error: "Module dons désactivé" }, { status: 403 })
 
   if (!assoc.stripeConnectId)
     return NextResponse.json({ error: "Paiement en ligne non disponible" }, { status: 400 })

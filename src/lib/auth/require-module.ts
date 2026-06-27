@@ -1,11 +1,12 @@
-import { cache }    from "react"
-import { redirect } from "next/navigation"
-import { auth }     from "@/lib/auth/config"
-import { prisma }   from "@/lib/prisma/client"
+import { cache }        from "react"
+import { redirect }     from "next/navigation"
+import { NextResponse } from "next/server"
+import { auth }         from "@/lib/auth/config"
+import { prisma }       from "@/lib/prisma/client"
 import { parseModules, type AssocModules } from "@/lib/modules"
 import type { SessionUser } from "@/lib/user-context"
 
-const fetchModules = cache(async (associationId: string) => {
+export const fetchModules = cache(async (associationId: string) => {
   const row = await prisma.association.findUnique({
     where:  { id: associationId },
     select: { modules: true },
@@ -13,6 +14,7 @@ const fetchModules = cache(async (associationId: string) => {
   return parseModules(row?.modules)
 })
 
+/** Server Components / layouts: redirects if module is off */
 export async function requireModule(key: keyof AssocModules) {
   const session = await auth()
   const user    = session?.user as SessionUser | undefined
@@ -24,4 +26,16 @@ export async function requireModule(key: keyof AssocModules) {
     }
     redirect("/dashboard")
   }
+}
+
+/** API route handlers: returns 403 NextResponse if module is off, null if ok */
+export async function guardModule(
+  associationId: string,
+  key: keyof AssocModules,
+): Promise<NextResponse | null> {
+  const modules = await fetchModules(associationId)
+  if (!modules[key]) {
+    return NextResponse.json({ error: "Module désactivé" }, { status: 403 })
+  }
+  return null
 }

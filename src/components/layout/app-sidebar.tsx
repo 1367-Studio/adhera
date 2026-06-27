@@ -25,7 +25,7 @@ import {
   SidebarMenuButton, SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
@@ -63,19 +63,16 @@ function isActive(href: string, pathname: string): boolean {
   return pathname === href || pathname.startsWith(href + "/")
 }
 
-interface AppSidebarProps {
-  enabledModules?: AssocModules
-}
-
-export function AppSidebar({ enabledModules }: AppSidebarProps) {
+export function AppSidebar() {
   const { role } = useCurrentUser()
+  const modules   = useModules()
   const pathname  = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
 
   const userRole = role as UserRole
   const visible  = navigationItems.filter(item => {
     if (!item.roles.includes(userRole)) return false
-    if (item.moduleKey && enabledModules && !enabledModules[item.moduleKey]) return false
+    if (item.moduleKey && !modules[item.moduleKey]) return false
     return true
   })
 

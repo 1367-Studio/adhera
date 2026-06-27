@@ -11,6 +11,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { associationId } = ctx
 
   const { id } = await params
+
   const meeting = await prisma.meeting.findFirst({
     where: { id, associationId },
     include: {

@@ -3,7 +3,7 @@ import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
-import { parseModules } from "@/lib/modules"
+import { guardModule } from "@/lib/auth/require-module"
 
 const schema = z.object({
   action:      z.enum(["generate", "improve", "rephrase", "summarize"]),
@@ -36,6 +36,9 @@ export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
 
+  const guard = await guardModule(ctx.associationId, "ia")
+  if (guard) return guard
+
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -44,13 +47,8 @@ export async function POST(req: Request) {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { aiApiKey: true, aiModel: true, modules: true },
+    select: { aiApiKey: true, aiModel: true },
   })
-
-  const modules = parseModules(assoc?.modules)
-  if (!modules.ia) {
-    return NextResponse.json({ error: "Module IA désactivé." }, { status: 403 })
-  }
 
   const client = assoc?.aiApiKey
     ? makeGroqClient(assoc.aiApiKey)

@@ -31,13 +31,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         select: { modules: true },
       })
     : null
-  const enabledModules = parseModules(assocRow?.modules)
 
   return (
-    <UserProvider user={sessionUser} modules={enabledModules}>
+    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)}>
       <TopLoader />
       <SidebarProvider>
-        <AppSidebar enabledModules={enabledModules} />
+        <AppSidebar />
         <SidebarInset>
           <Header user={session.user} showSidebar associationSlug={u.associationSlug ?? undefined} />
           <main className="flex flex-1 flex-col gap-4 p-4 pt-0 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>

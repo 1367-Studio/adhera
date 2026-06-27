@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -16,6 +17,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const guard = await guardModule(u.associationId, "evenements")
+  if (guard) return guard
 
   const { id: evenementId } = await params
 

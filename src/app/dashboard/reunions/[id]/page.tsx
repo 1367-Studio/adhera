@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useModules } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
@@ -52,6 +53,7 @@ export default function ReunionDetailPage() {
   const router  = useRouter()
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
+  const modules = useModules()
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
@@ -168,10 +170,12 @@ export default function ReunionDetailPage() {
     return <div className="p-6 text-sm text-muted-foreground">Réunion introuvable.</div>
   }
 
-  const transcriptDirty = transcript !== (meeting.transcript ?? "")
-  const canJoin         = meeting.status === "SCHEDULED" || meeting.status === "LIVE"
-  const isTranscribing  = transcribeRecording.isPending || transcribeUpload.isPending
-  const hasRecording    = !!meeting.recordingKey && meeting.status === "ENDED"
+  const transcriptDirty  = transcript !== (meeting.transcript ?? "")
+  const canJoin          = (meeting.status === "SCHEDULED" || meeting.status === "LIVE") && modules.reunions
+  const isTranscribing   = transcribeRecording.isPending || transcribeUpload.isPending
+  const hasRecording     = !!meeting.recordingKey && meeting.status === "ENDED"
+  const canTranscribe    = modules.reunions
+  const canSummarize     = modules.reunions
 
   return (
     <div className="flex flex-col gap-6 p-6 h-full">
@@ -205,7 +209,7 @@ export default function ReunionDetailPage() {
           <div className="flex items-center justify-between">
             <Label>Transcription</Label>
             <div className="flex items-center gap-2">
-              {hasRecording && (
+              {canTranscribe && hasRecording && (
                 <Button
                   size="sm"
                   variant="outline"
@@ -219,28 +223,32 @@ export default function ReunionDetailPage() {
                 </Button>
               )}
 
-              <input
-                ref={fileRef}
-                type="file"
-                accept={AUDIO_ACCEPT}
-                className="hidden"
-                onChange={e => {
-                  const file = e.target.files?.[0]
-                  if (file) transcribeUpload.mutate(file)
-                  e.target.value = ""
-                }}
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => fileRef.current?.click()}
-                disabled={isTranscribing}
-              >
-                {transcribeUpload.isPending
-                  ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
-                  : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
-              </Button>
+              {canTranscribe && (
+                <>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept={AUDIO_ACCEPT}
+                    className="hidden"
+                    onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (file) transcribeUpload.mutate(file)
+                      e.target.value = ""
+                    }}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={isTranscribing}
+                  >
+                    {transcribeUpload.isPending
+                      ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
+                      : <FileAudioIcon className="size-3.5 mr-1.5" />}
+                    {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
+                  </Button>
+                </>
+              )}
 
               {transcriptDirty && (
                 <Button
@@ -319,35 +327,37 @@ export default function ReunionDetailPage() {
           </div>
 
           {/* AI Summary */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Compte-rendu IA</Label>
-              <Button
-                size="sm"
-                onClick={() => summarize.mutate()}
-                loading={summarize.isPending}
-                disabled={!transcript.trim()}
-              >
-                <SparklesIcon className="size-3.5 mr-1.5" />
-                {meeting.summary ? "Regénérer" : "Générer"}
-              </Button>
-            </div>
+          {canSummarize && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Compte-rendu IA</Label>
+                <Button
+                  size="sm"
+                  onClick={() => summarize.mutate()}
+                  loading={summarize.isPending}
+                  disabled={!transcript.trim()}
+                >
+                  <SparklesIcon className="size-3.5 mr-1.5" />
+                  {meeting.summary ? "Regénérer" : "Générer"}
+                </Button>
+              </div>
 
-            {meeting.summary ? (
-              <div className="rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
-                {meeting.summary}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed p-6 text-center">
-                <SparklesIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">
-                  {transcript.trim()
-                    ? "Cliquez sur « Générer » pour créer le compte-rendu."
-                    : "La transcription est nécessaire pour générer le résumé."}
-                </p>
-              </div>
-            )}
-          </div>
+              {meeting.summary ? (
+                <div className="rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
+                  {meeting.summary}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed p-6 text-center">
+                  <SparklesIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">
+                    {transcript.trim()
+                      ? "Cliquez sur « Générer » pour créer le compte-rendu."
+                      : "La transcription est nécessaire pour générer le résumé."}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

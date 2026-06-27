@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
+import { guardModule } from "@/lib/auth/require-module"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -13,6 +14,9 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const guard = await guardModule(u.associationId, "messages")
+  if (guard) return guard
 
   const { id } = await params
   const rule = await prisma.automationRule.findFirst({

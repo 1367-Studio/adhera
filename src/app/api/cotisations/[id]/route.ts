@@ -5,6 +5,7 @@ import { cotisationUpdateSchema } from "@/lib/schemas"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -12,6 +13,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
+
+  const guard = await guardModule(associationId, "cotisations")
+  if (guard) return guard
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -76,6 +80,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
+
+  const guard = await guardModule(associationId, "cotisations")
+  if (guard) return guard
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

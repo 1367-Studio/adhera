@@ -3,6 +3,7 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -35,6 +36,9 @@ export async function POST(
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const guard = await guardModule(associationId, "reunions")
+  if (guard) return guard
 
   const { id } = await params
 

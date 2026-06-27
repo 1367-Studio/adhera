@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AssociationNotes } from "@/components/backoffice/association-notes"
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { parseModules }     from "@/lib/modules"
-import { ChevronLeftIcon } from "lucide-react"
+import { ChevronLeftIcon, UsersIcon } from "lucide-react"
+import { buttonVariants } from "@/components/ui/button"
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
@@ -84,10 +85,19 @@ export default async function AssociationDetailPage({ params }: { params: Promis
           <ChevronLeftIcon className="size-3.5" />
           Toutes les associations
         </Link>
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl font-semibold tracking-tight">{assoc.name}</h2>
-          <Badge variant={sub.variant}>{sub.label}</Badge>
-          {assoc.sitePublished && <Badge variant="outline" className="text-green-600 border-green-200">Site publié</Badge>}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-semibold tracking-tight">{assoc.name}</h2>
+            <Badge variant={sub.variant}>{sub.label}</Badge>
+            {assoc.sitePublished && <Badge variant="outline" className="text-green-600 border-green-200">Site publié</Badge>}
+          </div>
+          <Link
+            href={`/backoffice/associations/${assoc.id}/members`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            <UsersIcon className="size-4" />
+            Gérer les membres
+          </Link>
         </div>
         <p className="text-sm text-muted-foreground">/{assoc.slug} · {assoc.city ?? assoc.country}</p>
       </div>

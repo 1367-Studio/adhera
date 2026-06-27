@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
-import { parseModules } from "@/lib/modules"
+import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
@@ -45,13 +45,8 @@ export async function POST(req: Request) {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: ctx.associationId },
-    select: { modules: true },
-  })
-  const modules = parseModules(assoc?.modules)
-  if (!modules.boutique)
-    return NextResponse.json({ error: "Module boutique désactivé" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const body   = await req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)

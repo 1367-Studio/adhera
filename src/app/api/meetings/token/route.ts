@@ -2,11 +2,15 @@ import { NextResponse } from "next/server"
 import { AccessToken } from "livekit-server-sdk"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { guardModule } from "@/lib/auth/require-module"
 
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, userId } = ctx
+
+  const guard = await guardModule(associationId, "reunions")
+  if (guard) return guard
 
   const { meetingId } = await req.json()
   if (!meetingId) return NextResponse.json({ error: "meetingId requis" }, { status: 422 })

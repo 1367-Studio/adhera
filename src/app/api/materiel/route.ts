@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -65,6 +66,9 @@ export async function POST(req: Request) {
   if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const guard = await guardModule(u.associationId, "materiel")
+  if (guard) return guard
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)

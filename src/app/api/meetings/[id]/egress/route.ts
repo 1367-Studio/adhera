@@ -3,6 +3,7 @@ import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload } from "live
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -33,6 +34,9 @@ export async function POST(
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role } = ctx
+
+  const guard = await guardModule(associationId, "reunions")
+  if (guard) return guard
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
@@ -89,6 +93,9 @@ export async function DELETE(
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role } = ctx
+
+  const guard = await guardModule(associationId, "reunions")
+  if (guard) return guard
 
   if (!MANAGERS.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

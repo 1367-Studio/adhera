@@ -5,6 +5,7 @@ import { actualiteUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
 import { stripHtml } from "@/lib/utils"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -17,6 +18,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
+
+  const guard = await guardModule(associationId, "actualites")
+  if (guard) return guard
+
   if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params
@@ -118,6 +123,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
+
+  const guard = await guardModule(associationId, "actualites")
+  if (guard) return guard
+
   if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const { id } = await params

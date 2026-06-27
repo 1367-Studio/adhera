@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmailBulk } from "@/lib/mail"
 import { customEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -18,6 +19,9 @@ const schema = z.object({
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
+
+  const guard = await guardModule(ctx.associationId, "messages")
+  if (guard) return guard
 
   if (!MANAGERS.includes(ctx.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })

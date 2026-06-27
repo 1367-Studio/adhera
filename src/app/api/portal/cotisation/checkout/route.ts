@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
+import { guardModule } from "@/lib/auth/require-module"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -14,6 +15,9 @@ export async function POST(req: Request) {
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const guard = await guardModule(u.associationId, "cotisations")
+  if (guard) return guard
 
   const { cotisationId } = await req.json()
   if (!cotisationId) return NextResponse.json({ error: "cotisationId requis" }, { status: 422 })

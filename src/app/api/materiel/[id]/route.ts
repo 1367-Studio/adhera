@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -57,6 +58,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  const guard = await guardModule(u.associationId, "materiel")
+  if (guard) return guard
+
   const { id } = await params
   const existing = await resolve(id, u.associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
@@ -100,6 +104,9 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
+
+  const guard = await guardModule(u.associationId, "materiel")
+  if (guard) return guard
 
   const { id } = await params
   const existing = await resolve(id, u.associationId)

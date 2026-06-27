@@ -14,6 +14,7 @@ import { SendIcon } from "lucide-react"
 import { useCreateRule, useUpdateRule, useTestSendRule, type AutomationRule, type RuleInput, type TriggerType } from "@/hooks/use-automation-rules"
 import { useMessageTemplates } from "@/hooks/use-message-templates"
 import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useModules } from "@/lib/user-context"
 
 const schema = z.object({
   name:          z.string().min(1, "Requis"),
@@ -75,9 +76,10 @@ interface Props {
 
 export function RuleModal({ open, onOpenChange, rule }: Props) {
   const isEditing = !!rule
-  const createMut = useCreateRule()
-  const updateMut = useUpdateRule(rule?.id ?? "")
-  const testMut   = useTestSendRule()
+  const createMut    = useCreateRule()
+  const updateMut    = useUpdateRule(rule?.id ?? "")
+  const testMut      = useTestSendRule()
+  const { messages } = useModules()
 
   const { data: templates = [] } = useMessageTemplates()
   const { data: membreTypes = [] } = useMembreTypes()
@@ -347,7 +349,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         )}
 
         <div className="flex items-center justify-between pt-1">
-          {isEditing && (
+          {isEditing && messages && (
             <Button
               type="button"
               variant="ghost"

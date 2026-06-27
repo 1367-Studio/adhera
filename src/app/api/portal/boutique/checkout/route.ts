@@ -3,7 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { parseModules } from "@/lib/modules"
+import { guardModule } from "@/lib/auth/require-module"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -36,14 +36,14 @@ export async function POST(req: Request) {
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
+  const guard = await guardModule(u.associationId, "boutique")
+  if (guard) return guard
+
   const assoc = await prisma.association.findUnique({
     where:  { id: u.associationId },
-    select: { id: true, name: true, slug: true, stripeConnectId: true, modules: true },
+    select: { id: true, name: true, slug: true, stripeConnectId: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
-
-  const modules = parseModules(assoc.modules)
-  if (!modules.boutique) return NextResponse.json({ error: "Module boutique désactivé" }, { status: 403 })
 
   if (!assoc.stripeConnectId)
     return NextResponse.json({ error: "Le paiement en ligne n'est pas encore configuré par votre association" }, { status: 400 })

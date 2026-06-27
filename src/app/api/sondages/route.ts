@@ -3,7 +3,7 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
-import { parseModules } from "@/lib/modules"
+import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
@@ -55,13 +55,8 @@ export async function POST(req: Request) {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: ctx.associationId },
-    select: { modules: true },
-  })
-  const modules = parseModules(assoc?.modules)
-  if (!modules.sondages)
-    return NextResponse.json({ error: "Module sondages désactivé" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "sondages")
+  if (guard) return guard
 
   const body   = await req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)

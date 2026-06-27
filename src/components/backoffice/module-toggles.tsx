@@ -5,7 +5,28 @@ import { toast } from "sonner"
 import type { AssocModules } from "@/lib/modules"
 import { MODULE_LABELS } from "@/lib/modules"
 import { Button } from "@/components/ui/button"
-import { AlertTriangleIcon } from "lucide-react"
+import {
+  AlertTriangleIcon, CalendarIcon, CreditCardIcon, LandmarkIcon,
+  NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparklesIcon,
+  HeartIcon, BarChart3Icon, ShoppingBagIcon, VideoIcon,
+} from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const MODULE_META: Record<keyof AssocModules, { icon: LucideIcon; description: string }> = {
+  evenements:  { icon: CalendarIcon,    description: "Agenda, inscriptions et billetterie" },
+  cotisations: { icon: CreditCardIcon,  description: "Suivi des adhésions et paiements" },
+  tresorerie:  { icon: LandmarkIcon,    description: "Entrées, sorties et balance" },
+  actualites:  { icon: NewspaperIcon,   description: "Articles et communications membres" },
+  messages:    { icon: BellIcon,        description: "Emails automatiques et notifications" },
+  materiel:    { icon: PackageIcon,     description: "Inventaire et prêt de matériel" },
+  site:        { icon: GlobeIcon,       description: "Page publique de l'association" },
+  ia:          { icon: SparklesIcon,    description: "Rédaction assistée par IA" },
+  dons:        { icon: HeartIcon,       description: "Collecte de dons en ligne" },
+  sondages:    { icon: BarChart3Icon,   description: "Création et diffusion de sondages" },
+  boutique:    { icon: ShoppingBagIcon, description: "Vente de produits aux membres" },
+  reunions:    { icon: VideoIcon,       description: "Réunions et assemblées générales" },
+}
 
 interface Props {
   associationId:  string
@@ -34,38 +55,73 @@ export function ModuleToggles({ associationId, initialModules }: Props) {
         setSaved(snapshot)
         toast.success("Modules mis à jour")
       } else {
-        setModules(saved) // rollback to last saved state
+        setModules(saved)
         toast.error("Erreur lors de la sauvegarde")
       }
     })
   }
 
   return (
-    <div className="space-y-3">
-      {(Object.keys(MODULE_LABELS) as (keyof AssocModules)[]).map(key => (
-        <div key={key} className="space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-sm">{MODULE_LABELS[key]}</span>
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {(Object.keys(MODULE_META) as (keyof AssocModules)[]).map(key => {
+          const { icon: Icon, description } = MODULE_META[key]
+          const enabled = modules[key]
+          return (
             <button
+              key={key}
               type="button"
               onClick={() => !pending && toggle(key)}
-              aria-checked={modules[key]}
-              role="switch"
-              className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors ${
-                modules[key] ? "bg-foreground" : "bg-muted"
-              } ${pending ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+              disabled={pending}
+              className={cn(
+                "group relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-all",
+                enabled
+                  ? "border-foreground/20 bg-foreground/[0.04]"
+                  : "border-border bg-background hover:bg-muted/40",
+                pending && "cursor-not-allowed opacity-60",
+              )}
             >
-              <span className={`pointer-events-none inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${modules[key] ? "translate-x-4" : "translate-x-0"}`} />
+              <div className="flex items-start justify-between gap-2">
+                <div className={cn(
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                  enabled ? "bg-foreground text-background" : "bg-muted text-muted-foreground",
+                )}>
+                  <Icon className="size-4" />
+                </div>
+                <div className={cn(
+                  "relative mt-0.5 inline-flex h-4 w-7 shrink-0 rounded-full border-2 border-transparent transition-colors",
+                  enabled ? "bg-foreground" : "bg-input",
+                )}>
+                  <span className={cn(
+                    "pointer-events-none inline-block size-3 rounded-full bg-white shadow-sm transition-transform",
+                    enabled ? "translate-x-3" : "translate-x-0",
+                  )} />
+                </div>
+              </div>
+
+              <div>
+                <p className={cn(
+                  "text-xs font-semibold leading-tight",
+                  enabled ? "text-foreground" : "text-muted-foreground",
+                )}>
+                  {MODULE_LABELS[key]}
+                </p>
+                <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                  {description}
+                </p>
+              </div>
+
+              {key === "site" && !enabled && saved[key] && (
+                <p className="flex items-center gap-1 text-[11px] text-amber-600">
+                  <AlertTriangleIcon className="size-3 shrink-0" />
+                  Retirera le site public immédiatement.
+                </p>
+              )}
             </button>
-          </div>
-          {key === "site" && !modules[key] && saved[key] && (
-            <p className="flex items-center gap-1 text-xs text-amber-600">
-              <AlertTriangleIcon className="size-3 shrink-0" />
-              Désactiver retirera le site public immédiatement.
-            </p>
-          )}
-        </div>
-      ))}
+          )
+        })}
+      </div>
+
       {isDirty && (
         <Button size="sm" onClick={save} loading={pending} disabled={pending}>
           Sauvegarder
