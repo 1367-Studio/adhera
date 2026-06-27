@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import {
   SendIcon, AlertTriangleIcon, UsersIcon, TagIcon, UserCheckIcon,
   SearchIcon, CheckIcon, PencilIcon, ChevronRightIcon, LoaderCircleIcon,
-  FileTextIcon,
+  FileTextIcon, BookmarkPlusIcon,
 } from "lucide-react"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import { FormField } from "@/components/ui/form-field"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
-import { useMessageTemplates, type MessageTemplate } from "@/hooks/use-message-templates"
+import { useMessageTemplates, useCreateTemplate, type MessageTemplate } from "@/hooks/use-message-templates"
 import { cn } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -178,9 +178,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const [recipientMode,     setRecipientMode]     = useState<RecipientMode>("all")
   const [selectedTypeId,    setSelectedTypeId]    = useState<string>("")
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
-  const [selectedTemplate,  setSelectedTemplate]  = useState<MessageTemplate | null>(null)
-  const [pendingTemplate,   setPendingTemplate]   = useState<MessageTemplate | null>(null)
-  const [closeWarningOpen,  setCloseWarningOpen]  = useState(false)
+  const [selectedTemplate,    setSelectedTemplate]    = useState<MessageTemplate | null>(null)
+  const [pendingTemplate,     setPendingTemplate]     = useState<MessageTemplate | null>(null)
+  const [appliedBodyBaseline, setAppliedBodyBaseline] = useState<string>("")
+  const captureNextBody = useRef(false)
+  const [closeWarningOpen,    setCloseWarningOpen]    = useState(false)
+  const [saveTemplateOpen,    setSaveTemplateOpen]    = useState(false)
+  const [saveTemplateName,    setSaveTemplateName]    = useState("")
   const [subject,           setSubject]           = useState("")
   const [bodyHtml,          setBodyHtml]          = useState("")
   const [sending,           setSending]           = useState(false)
@@ -196,7 +200,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       setSelectedMemberIds([])
       setSelectedTemplate(null)
       setPendingTemplate(null)
+      setAppliedBodyBaseline("")
+      captureNextBody.current = false
       setCloseWarningOpen(false)
+      setSaveTemplateOpen(false)
+      setSaveTemplateName("")
       setSubject("")
       setBodyHtml("")
       setRecipientCount(null)
@@ -214,6 +222,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   })
 
   const { data: templates = [], isLoading: loadingTemplates } = useMessageTemplates({ enabled: open })
+  const createTemplate = useCreateTemplate()
 
   const { data: allMembres = [], isLoading: loadingMembres } = useQuery<MembrePick[]>({
     queryKey:  ["membres-email-pick"],
@@ -226,11 +235,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   // Computed — no need for state + effect
   const selectedTypeName = types.find(t => t.id === selectedTypeId)?.name ?? ""
 
-  // Content matches the applied template exactly (user hasn't edited anything)
+  // Uses the TipTap-normalized baseline captured on apply, not the raw DB string
   const contentMatchesTemplate =
     !!selectedTemplate &&
     subject === selectedTemplate.subject &&
-    bodyHtml === selectedTemplate.body
+    bodyHtml === appliedBodyBaseline
 
   function applyTemplate(tpl: MessageTemplate) {
     // Warn whenever there's content that differs from what this template would set
@@ -244,13 +253,36 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   function doApplyTemplate(tpl: MessageTemplate) {
     setSelectedTemplate(tpl)
     setSubject(tpl.subject)
+    captureNextBody.current = true
     setBodyHtml(tpl.body)
     setPendingTemplate(null)
   }
 
+  function handleBodyChange(html: string) {
+    setBodyHtml(html)
+    if (captureNextBody.current) {
+      setAppliedBodyBaseline(html)
+      captureNextBody.current = false
+    }
+  }
+
   function clearTemplate() {
-    // Only deselect the card — keep what the user wrote
     setSelectedTemplate(null)
+  }
+
+  async function handleSaveAsTemplate() {
+    const name = saveTemplateName.trim()
+    if (!name) return
+    try {
+      const saved = await createTemplate.mutateAsync({ name, subject, body: bodyHtml })
+      setSelectedTemplate(saved)
+      setAppliedBodyBaseline(bodyHtml)
+      toast.success(`Modèle « ${name} » enregistré`)
+      setSaveTemplateOpen(false)
+      setSaveTemplateName("")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
   }
 
   function toggleMember(id: string) {
@@ -318,8 +350,12 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? "Erreur"); return }
-      toast.success(`Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
-      if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
+      if (data.sent === 0) {
+        toast.error(`Aucun email envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
+      } else {
+        toast.success(`Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
+        if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
+      }
       onOpenChange(false)
     } catch {
       toast.error("Erreur réseau")
@@ -484,7 +520,19 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
             {/* ── Message ── */}
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</p>
+                {subject.trim().length > 0 && hasHtmlContent(bodyHtml) && !contentMatchesTemplate && (
+                  <button
+                    type="button"
+                    onClick={() => { setSaveTemplateName(subject.trim()); setSaveTemplateOpen(true) }}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <BookmarkPlusIcon className="size-3.5" />
+                    Enregistrer comme modèle
+                  </button>
+                )}
+              </div>
               <FormField
                 label="Objet"
                 required
@@ -496,7 +544,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 label="Corps du message"
                 required
                 value={bodyHtml}
-                onChange={setBodyHtml}
+                onChange={handleBodyChange}
                 placeholder="Rédigez votre message…"
                 minHeight="180px"
               />
@@ -567,6 +615,37 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         confirmLabel="Abandonner"
         onConfirm={() => { setCloseWarningOpen(false); onOpenChange(false) }}
       />
+
+      <Modal
+        open={saveTemplateOpen}
+        onOpenChange={open => { if (!open) setSaveTemplateOpen(false) }}
+        title="Enregistrer comme modèle"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <FormField
+            label="Nom du modèle"
+            required
+            placeholder="ex. Rappel cotisation annuel…"
+            value={saveTemplateName}
+            onChange={e => setSaveTemplateName(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") handleSaveAsTemplate() }}
+            autoFocus
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setSaveTemplateOpen(false)} disabled={createTemplate.isPending}>
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSaveAsTemplate}
+              loading={createTemplate.isPending}
+              disabled={!saveTemplateName.trim()}
+            >
+              Enregistrer
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   )
 }
