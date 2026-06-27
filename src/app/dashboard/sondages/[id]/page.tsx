@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ArrowLeftIcon, CheckCircleIcon, LockIcon, BarChart2Icon, PencilIcon, RefreshCwIcon, ClipboardListIcon, SearchIcon, UsersIcon, CheckIcon } from "lucide-react"
+import { ArrowLeftIcon, CheckCircleIcon, LockIcon, BarChart2Icon, PencilIcon, RefreshCwIcon, ClipboardListIcon, SearchIcon, UsersIcon, CheckIcon, ListIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { SondageFormBuilder } from "@/components/sondages/sondage-form-builder"
 import { SondageResultats } from "@/components/sondages/sondage-resultats"
+import { SondageRepondesIndividuelles } from "@/components/sondages/sondage-reponses-individuelles"
 import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
@@ -73,6 +74,13 @@ export default function SondageDetailPage() {
     queryKey:  ["sondage-resultats", id],
     queryFn:   () => fetch(`/api/sondages/${id}/resultats`).then(r => r.json()),
     enabled:   activeTab === "resultats",
+    staleTime: 0,
+  })
+
+  const { data: reponses, isLoading: reponsesLoading, refetch: refetchReponses } = useQuery({
+    queryKey:  ["sondage-reponses", id],
+    queryFn:   () => fetch(`/api/sondages/${id}/reponses`).then(r => r.json()),
+    enabled:   activeTab === "reponses",
     staleTime: 0,
   })
 
@@ -265,6 +273,10 @@ export default function SondageDetailPage() {
           <TabsTrigger value="resultats">
             <BarChart2Icon className="size-3.5" />
             Résultats
+          </TabsTrigger>
+          <TabsTrigger value="reponses">
+            <ListIcon className="size-3.5" />
+            Réponses
           </TabsTrigger>
         </TabsList>
 
@@ -469,6 +481,33 @@ export default function SondageDetailPage() {
               </div>
             ) : resultats ? (
               <SondageResultats data={resultats} />
+            ) : null}
+          </div>
+        </TabsContent>
+
+        {/* Réponses individuelles tab */}
+        <TabsContent value="reponses">
+          <div className="pt-4 space-y-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => refetchReponses()} disabled={reponsesLoading}>
+                <RefreshCwIcon className={`mr-1.5 size-3.5 ${reponsesLoading ? "animate-spin" : ""}`} />
+                Actualiser
+              </Button>
+            </div>
+            {reponsesLoading ? (
+              <div className="space-y-2">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="rounded-xl border p-4 animate-pulse flex items-center gap-3">
+                    <div className="size-8 rounded-full bg-muted shrink-0" />
+                    <div className="space-y-1.5 flex-1">
+                      <div className="h-3.5 w-32 bg-muted rounded" />
+                      <div className="h-3 w-48 bg-muted rounded" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : reponses ? (
+              <SondageRepondesIndividuelles data={reponses} />
             ) : null}
           </div>
         </TabsContent>

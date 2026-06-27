@@ -83,8 +83,8 @@ function RatingInput({
         >
           <StarIcon
             className="size-8 transition-colors"
-            fill={star <= rating ? "hsl(var(--primary))" : "transparent"}
-            stroke={star <= rating ? "hsl(var(--primary))" : "currentColor"}
+            fill={star <= rating ? "#f59e0b" : "transparent"}
+            stroke={star <= rating ? "#f59e0b" : "currentColor"}
           />
         </button>
       ))}
