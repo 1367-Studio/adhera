@@ -4,7 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, UsersIcon, CalendarIcon, FileTextIcon } from "lucide-react"
+import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, UsersIcon, CalendarIcon, FileTextIcon, ClockIcon } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMeetings, useCreateMeeting, useDeleteMeeting, type Meeting } from "@/hooks/use-meetings"
@@ -163,6 +163,26 @@ function MeetingCard({
   const router  = useRouter()
   const canJoin = meeting.status === "SCHEDULED" || meeting.status === "LIVE"
 
+  const dateDisplay = (() => {
+    if (meeting.startedAt) {
+      return { icon: <PlayIcon className="h-3 w-3" />, label: format(new Date(meeting.startedAt), "d MMM yyyy à HH:mm", { locale: fr }) }
+    }
+    const anchor = meeting.scheduledAt ?? meeting.createdAt
+    return { icon: <CalendarIcon className="h-3 w-3" />, label: format(new Date(anchor), "d MMM yyyy à HH:mm", { locale: fr }) }
+  })()
+
+  const durationLabel = (() => {
+    if (meeting.startedAt && meeting.endedAt) {
+      const mins = Math.round((new Date(meeting.endedAt).getTime() - new Date(meeting.startedAt).getTime()) / 60000)
+      return mins < 1 ? "< 1 min" : `${mins} min`
+    }
+    if (meeting.status === "LIVE" && meeting.startedAt) {
+      const mins = Math.round((Date.now() - new Date(meeting.startedAt).getTime()) / 60000)
+      return `En cours depuis ${mins < 1 ? "< 1" : mins} min`
+    }
+    return null
+  })()
+
   return (
     <div className="rounded-lg border bg-card p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
@@ -176,10 +196,14 @@ function MeetingCard({
       </div>
 
       <div className="flex flex-col gap-1 text-xs text-muted-foreground">
-        {meeting.scheduledAt && (
+        <span className="flex items-center gap-1">
+          {dateDisplay.icon}
+          {dateDisplay.label}
+        </span>
+        {durationLabel && (
           <span className="flex items-center gap-1">
-            <CalendarIcon className="h-3 w-3" />
-            {format(new Date(meeting.scheduledAt), "d MMM yyyy à HH:mm", { locale: fr })}
+            <ClockIcon className="h-3 w-3" />
+            {durationLabel}
           </span>
         )}
         <span className="flex items-center gap-1">

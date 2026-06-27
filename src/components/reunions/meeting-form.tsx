@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { FormField } from "@/components/ui/form-field"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckboxField } from "@/components/ui/checkbox-field"
@@ -48,16 +48,14 @@ export function MeetingForm({ membres, loading, onSubmit, onCancel }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="title">Titre *</Label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Ex: Réunion du bureau"
-          required
-        />
-      </div>
+      <FormField
+        label="Titre"
+        required
+        id="title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Ex: Réunion du bureau"
+      />
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="description">Description</Label>
@@ -77,15 +75,13 @@ export function MeetingForm({ membres, loading, onSubmit, onCancel }: Props) {
       />
 
       {!instant && (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="scheduledAt">Date et heure planifiée</Label>
-          <Input
-            id="scheduledAt"
-            type="datetime-local"
-            value={scheduledAt}
-            onChange={(e) => setScheduledAt(e.target.value)}
-          />
-        </div>
+        <FormField
+          label="Date et heure planifiée"
+          id="scheduledAt"
+          type="datetime-local"
+          value={scheduledAt}
+          onChange={(e) => setScheduledAt(e.target.value)}
+        />
       )}
 
       {membres.length > 0 && (
