@@ -21,7 +21,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     include: {
       participations: {
         where:  { evenementId },
-        select: { id: true, present: true, rsvp: true, ticketPaidAt: true, quantity: true },
+        select: { id: true, present: true, rsvp: true, ticketPaidAt: true, quantity: true, paidQuantity: true },
       },
     },
   })
@@ -30,11 +30,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     membreId:        m.id,
     firstName:       m.firstName,
     lastName:        m.lastName,
-    participationId: m.participations[0]?.id           ?? null,
-    present:         m.participations[0]?.present       ?? false,
-    rsvp:            m.participations[0]?.rsvp          ?? null,
-    ticketPaidAt:    m.participations[0]?.ticketPaidAt  ?? null,
-    quantity:        m.participations[0]?.quantity      ?? 1,
+    participationId: m.participations[0]?.id            ?? null,
+    present:         m.participations[0]?.present        ?? false,
+    rsvp:            m.participations[0]?.rsvp           ?? null,
+    ticketPaidAt:    m.participations[0]?.ticketPaidAt   ?? null,
+    quantity:        m.participations[0]?.quantity       ?? 1,
+    paidQuantity:    m.participations[0]?.paidQuantity   ?? null,
   }))
 
   return NextResponse.json(data)
@@ -49,7 +50,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const { id: evenementId } = await params
-  const { membreId } = await req.json() as { membreId: string }
+  const { membreId, paidQuantity: rawPaid } = await req.json() as { membreId: string; paidQuantity?: number }
 
   const evenement = await prisma.evenement.findFirst({
     where: { id: evenementId, associationId },
@@ -64,25 +65,34 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const existing = await prisma.participation.findUnique({
     where:  { membreId_evenementId: { membreId, evenementId } },
-    select: { id: true, ticketPaidAt: true },
+    select: { id: true, ticketPaidAt: true, quantity: true },
   })
   if (existing?.ticketPaidAt)
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
-  const paidAt = new Date()
+  const paidAt      = new Date()
+  const reservedQty = existing?.quantity ?? null
+  const paidQty     = rawPaid != null
+    ? reservedQty != null
+      ? Math.min(Math.max(1, Math.round(rawPaid)), reservedQty)
+      : Math.max(1, Math.round(rawPaid))
+    : (reservedQty ?? 1)
+  const total       = Number(evenement.price) * paidQty
 
   const participation = await prisma.participation.upsert({
     where:  { membreId_evenementId: { membreId, evenementId } },
-    create: { membreId, evenementId, ticketPaidAt: paidAt },
-    update: { ticketPaidAt: paidAt },
+    create: { membreId, evenementId, ticketPaidAt: paidAt, paidQuantity: paidQty, quantity: paidQty },
+    update: { ticketPaidAt: paidAt, paidQuantity: paidQty },
   })
 
   await prisma.tresorerieEntry.create({
     data: {
       associationId,
       type:        "ENTREE",
-      amount:      evenement.price,
-      description: `Billet (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`,
+      amount:      total,
+      description: paidQty > 1
+        ? `${paidQty} billets (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`
+        : `Billet (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`,
       date:        paidAt,
       category:    "Événement",
     },
@@ -95,7 +105,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     entity:   "Participation",
     entityId: participation.id,
     label:    evenement.title,
-    metadata: { memberName: `${membre.firstName} ${membre.lastName}` },
+    metadata: { memberName: `${membre.firstName} ${membre.lastName}`, quantity: paidQty },
   })
 
   return NextResponse.json(participation)
@@ -117,10 +127,20 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
   if (present && evenement.capacity != null) {
-    const presentCount = await prisma.participation.count({
-      where: { evenementId, present: true, membreId: { not: membreId } },
-    })
-    if (presentCount >= evenement.capacity) {
+    const [presentParticipations, memberParticipation] = await Promise.all([
+      prisma.participation.findMany({
+        where:  { evenementId, present: true, membreId: { not: membreId } },
+        select: { quantity: true, paidQuantity: true },
+      }),
+      prisma.participation.findUnique({
+        where:  { membreId_evenementId: { membreId, evenementId } },
+        select: { quantity: true, paidQuantity: true },
+      }),
+    ])
+    const occupiedSlots =
+      presentParticipations.reduce((sum, p) => sum + (p.paidQuantity ?? p.quantity), 0) +
+      (memberParticipation?.paidQuantity ?? memberParticipation?.quantity ?? 1)
+    if (occupiedSlots > evenement.capacity) {
       return NextResponse.json({ error: "Capacité maximale atteinte" }, { status: 422 })
     }
   }

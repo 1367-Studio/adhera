@@ -37,32 +37,42 @@ export async function GET(req: Request) {
 
   const orderBy = { date: "desc" as const }
 
-  if (!searchParams.has("page")) {
-    const data = await prisma.tresorerieEntry.findMany({ where, orderBy })
+  // Year-scoped date filter (without type/search, for accurate yearly totals)
+  const yearDateFilter = year && !Number.isNaN(parseInt(year)) ? {
+    gte: new Date(`${parseInt(year)}-01-01`),
+    lt:  new Date(`${parseInt(year) + 1}-01-01`),
+  } : undefined
 
-    // Compute balance
-    const [entrees, sorties] = await Promise.all([
+  async function computeStats() {
+    const [entrees, sorties, entreesAnnee, sortiesAnnee] = await Promise.all([
       prisma.tresorerieEntry.aggregate({ where: { associationId, type: "ENTREE" }, _sum: { amount: true } }),
       prisma.tresorerieEntry.aggregate({ where: { associationId, type: "SORTIE" }, _sum: { amount: true } }),
+      prisma.tresorerieEntry.aggregate({ where: { associationId, type: "ENTREE", ...(yearDateFilter ? { date: yearDateFilter } : {}) }, _sum: { amount: true } }),
+      prisma.tresorerieEntry.aggregate({ where: { associationId, type: "SORTIE", ...(yearDateFilter ? { date: yearDateFilter } : {}) }, _sum: { amount: true } }),
     ])
-    const solde = (Number(entrees._sum.amount ?? 0)) - (Number(sorties._sum.amount ?? 0))
+    return {
+      solde:     Number(entrees._sum.amount ?? 0) - Number(sorties._sum.amount ?? 0),
+      recettes:  Number(entreesAnnee._sum.amount ?? 0),
+      depenses:  Number(sortiesAnnee._sum.amount ?? 0),
+    }
+  }
 
-    return NextResponse.json({ data, solde })
+  if (!searchParams.has("page")) {
+    const [data, stats] = await Promise.all([
+      prisma.tresorerieEntry.findMany({ where, orderBy }),
+      computeStats(),
+    ])
+    return NextResponse.json({ data, ...stats })
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
-  const [data, total] = await Promise.all([
+  const [data, total, stats] = await Promise.all([
     prisma.tresorerieEntry.findMany({ where, orderBy, skip, take: limit }),
     prisma.tresorerieEntry.count({ where }),
+    computeStats(),
   ])
 
-  const [entrees, sorties] = await Promise.all([
-    prisma.tresorerieEntry.aggregate({ where: { associationId, type: "ENTREE" }, _sum: { amount: true } }),
-    prisma.tresorerieEntry.aggregate({ where: { associationId, type: "SORTIE" }, _sum: { amount: true } }),
-  ])
-  const solde = (Number(entrees._sum.amount ?? 0)) - (Number(sorties._sum.amount ?? 0))
-
-  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), solde })
+  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), ...stats })
 }
 
 export async function POST(req: Request) {

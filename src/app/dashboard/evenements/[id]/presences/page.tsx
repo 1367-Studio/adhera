@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { Modal } from "@/components/ui/modal"
 import { cn } from "@/lib/utils"
 
 type PresenceRow = {
@@ -29,12 +30,14 @@ type PresenceRow = {
   rsvp:            string | null
   ticketPaidAt:    string | null
   quantity:        number
+  paidQuantity:    number | null
 }
 
 type Evenement = {
   id:          string
   title:       string
   date:        string
+  location:    string | null
   price:       string | null
   capacity:    number | null
   qrToken:     string | null
@@ -58,9 +61,12 @@ export default function PresencesPage() {
   const [qrToken, setQrToken]           = useState<string | null>(null)
   const [qrExpiresAt, setQrExpiresAt]   = useState<string | null>(null)
   const [pendingIds, setPendingIds]      = useState<Set<string>>(new Set())
+  const [payingIds, setPayingIds]        = useState<Set<string>>(new Set())
   const [search, setSearch]             = useState("")
   const [revokeConfirmOpen,     setRevokeConfirmOpen]     = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
+  const [payTarget, setPayTarget]        = useState<PresenceRow | null>(null)
+  const [payQuantity, setPayQuantity]    = useState(1)
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -86,10 +92,16 @@ export default function PresencesPage() {
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)
 
   const typed          = rows as PresenceRow[]
-  const presentsCount  = typed.filter(r => r.present).length
   const hasFee         = !!ev?.price && Number(ev.price) > 0
+  const presentsCount  = hasFee
+    ? typed.reduce((sum, r) => r.present ? sum + (r.paidQuantity ?? r.quantity ?? 1) : sum, 0)
+    : typed.filter(r => r.present).length
   const reservedCount  = hasFee
-    ? typed.reduce((sum, r) => (r.ticketPaidAt != null || r.rsvp === "CONFIRME") ? sum + (r.quantity ?? 1) : sum, 0)
+    ? typed.reduce((sum, r) => {
+        if (r.ticketPaidAt != null) return sum + (r.paidQuantity ?? r.quantity ?? 1)
+        if (r.rsvp === "CONFIRME")  return sum + (r.quantity ?? 1)
+        return sum
+      }, 0)
     : 0
 
   const toggle     = useTogglePresence(id)
@@ -100,6 +112,23 @@ export default function PresencesPage() {
   const filtered = search.trim()
     ? typed.filter(r => `${r.lastName} ${r.firstName}`.toLowerCase().includes(search.toLowerCase()))
     : typed
+
+  function openPayDialog(row: PresenceRow) {
+    if (row.rsvp !== null && row.quantity <= 1) {
+      setPayingIds(prev => new Set(prev).add(row.membreId))
+      markPaid.mutate(
+        { membreId: row.membreId },
+        {
+          onSuccess: () => toast.success(`${row.firstName} ${row.lastName} marqué comme payé`),
+          onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+          onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(row.membreId); return s }),
+        },
+      )
+    } else {
+      setPayQuantity(row.rsvp ? row.quantity : 1)
+      setPayTarget(row)
+    }
+  }
 
   async function handleToggle(row: PresenceRow) {
     if (pendingIds.has(row.membreId)) return
@@ -142,22 +171,158 @@ export default function PresencesPage() {
     }
     const { default: jsPDF }     = await import("jspdf")
     const { default: autoTable } = await import("jspdf-autotable")
-    const doc = new jsPDF()
-    doc.setFontSize(14)
-    doc.text(`Présences — ${ev?.title ?? ""}`, 14, 18)
+
+    const doc   = new jsPDF({ unit: "mm", format: "a4" })
+    const W     = 210
+    const M     = 14
+    const ZINC  = [113, 113, 122] as [number, number, number]
+    const BLACK = [24,  24,  27 ] as [number, number, number]
+    const title = ev?.title ?? ""
+    const today = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+
+    // ── Header bar ─────────────────────────────────────────────────────────
+    doc.setFillColor(0, 0, 0)
+    doc.rect(0, 0, W, 20, "F")
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "bold")
+    doc.text("ADHÉRA", M, 13)
+    doc.setFont("helvetica", "normal")
     doc.setFontSize(9)
-    doc.setTextColor(120)
-    doc.text(new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" }), 14, 25)
-    doc.setTextColor(0)
-    autoTable(doc, {
-      startY:       30,
-      head:         [["#", "Membre", "Présent", "RSVP"]],
-      body:         typed.map((r, i) => [i + 1, `${r.lastName} ${r.firstName}`, r.present ? "✓" : "", r.rsvp ? (RSVP_LABELS[r.rsvp]?.label ?? "") : ""]),
-      headStyles:   { fillColor: [30, 30, 30] },
-      columnStyles: { 0: { cellWidth: 12 }, 2: { cellWidth: 22, halign: "center" } },
-      styles:       { fontSize: 9 },
+    doc.text("Liste de présences", W - M, 13, { align: "right" })
+
+    // ── Event title + meta ──────────────────────────────────────────────────
+    let y = 32
+    doc.setTextColor(...BLACK)
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "bold")
+    doc.text(title, M, y)
+    y += 7
+
+    doc.setFontSize(8.5)
+    doc.setFont("helvetica", "normal")
+    doc.setTextColor(...ZINC)
+    const dateStr = format(new Date(ev!.date), "EEEE dd MMMM yyyy · HH'h'mm", { locale: fr })
+    doc.text(dateStr, M, y)
+    if (ev?.location) {
+      doc.text(`· ${ev.location}`, M + doc.getTextWidth(dateStr) + 2, y)
+    }
+    doc.text(`Généré le ${today}`, W - M, y, { align: "right" })
+    y += 10
+
+    // ── Stats chips ─────────────────────────────────────────────────────────
+    const paidCount = hasFee ? typed.filter(r => r.ticketPaidAt != null).length : 0
+    const stats: { value: string; label: string }[] = [
+      { value: String(presentsCount), label: presentsCount !== 1 ? "présents" : "présent" },
+      ...(capacity ? [{ value: String(capacity), label: "capacité" }] : []),
+      ...(hasFee    ? [{ value: String(paidCount),    label: paidCount    !== 1 ? "payés"    : "payé"    }] : []),
+      ...(hasFee    ? [{ value: String(reservedCount), label: reservedCount !== 1 ? "réservés" : "réservé" }] : []),
+    ]
+
+    const chipW = 36
+    const chipH = 16
+    stats.forEach((s, i) => {
+      const x = M + i * (chipW + 3)
+      doc.setFillColor(244, 244, 245)
+      doc.roundedRect(x, y, chipW, chipH, 2, 2, "F")
+      doc.setTextColor(...BLACK)
+      doc.setFontSize(12)
+      doc.setFont("helvetica", "bold")
+      doc.text(s.value, x + chipW / 2, y + 7, { align: "center" })
+      doc.setFontSize(7)
+      doc.setFont("helvetica", "normal")
+      doc.setTextColor(...ZINC)
+      doc.text(s.label, x + chipW / 2, y + 13, { align: "center" })
     })
-    doc.save(`presences_${(ev?.title ?? "export").replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`)
+    y += chipH + 6
+
+    // ── Separator ───────────────────────────────────────────────────────────
+    doc.setDrawColor(228, 228, 231)
+    doc.line(M, y, W - M, y)
+    y += 5
+
+    // ── Table ───────────────────────────────────────────────────────────────
+    const commonTableOpts = {
+      margin:             { left: M, right: M },
+      headStyles:         { fillColor: BLACK, textColor: [255, 255, 255] as [number, number, number], fontStyle: "bold" as const, fontSize: 8 },
+      bodyStyles:         { fontSize: 8.5, textColor: BLACK },
+      alternateRowStyles: { fillColor: [250, 250, 250] as [number, number, number] },
+      styles:             { cellPadding: 3, lineColor: [228, 228, 231] as [number, number, number], lineWidth: 0.1 },
+    }
+
+    if (hasFee) {
+      autoTable(doc, {
+        ...commonTableOpts,
+        startY:       y,
+        head:         [["#", "Membre", "Présent", "Paiement", "Places"]],
+        body:         typed.map((r, i) => [
+          i + 1,
+          `${r.lastName} ${r.firstName}`,
+          r.present ? "Oui" : "",
+          r.ticketPaidAt ? "Payé" : r.rsvp === "CONFIRME" ? "Réservé" : "—",
+          r.ticketPaidAt ? String(r.paidQuantity ?? r.quantity) : String(r.quantity),
+        ]),
+        columnStyles: {
+          0: { cellWidth: 10, halign: "center" },
+          2: { cellWidth: 20, halign: "center" },
+          3: { cellWidth: 26 },
+          4: { cellWidth: 16, halign: "center" },
+        },
+        didParseCell: (data) => {
+          if (data.section !== "body") return
+          if (data.column.index === 2 && data.cell.raw === "Oui") {
+            data.cell.styles.textColor = [22, 163, 74]
+            data.cell.styles.fontStyle = "bold"
+          }
+          if (data.column.index === 3) {
+            if (data.cell.raw === "Payé")    data.cell.styles.textColor = [22, 163, 74]
+            if (data.cell.raw === "Réservé") data.cell.styles.textColor = [37, 99, 235]
+            if (data.cell.raw === "—")       data.cell.styles.textColor = ZINC
+          }
+        },
+      })
+    } else {
+      autoTable(doc, {
+        ...commonTableOpts,
+        startY:       y,
+        head:         [["#", "Membre", "Présent", "RSVP"]],
+        body:         typed.map((r, i) => [
+          i + 1,
+          `${r.lastName} ${r.firstName}`,
+          r.present ? "Oui" : "",
+          r.rsvp ? (RSVP_LABELS[r.rsvp]?.label ?? "—") : "—",
+        ]),
+        columnStyles: {
+          0: { cellWidth: 10, halign: "center" },
+          2: { cellWidth: 22, halign: "center" },
+        },
+        didParseCell: (data) => {
+          if (data.section !== "body") return
+          if (data.column.index === 2 && data.cell.raw === "Oui") {
+            data.cell.styles.textColor = [22, 163, 74]
+            data.cell.styles.fontStyle = "bold"
+          }
+          if (data.column.index === 3 && data.cell.raw === "—") {
+            data.cell.styles.textColor = ZINC
+          }
+        },
+      })
+    }
+
+    // ── Per-page footer ─────────────────────────────────────────────────────
+    const pageCount = doc.getNumberOfPages()
+    for (let p = 1; p <= pageCount; p++) {
+      doc.setPage(p)
+      doc.setDrawColor(228, 228, 231)
+      doc.line(M, 287, W - M, 287)
+      doc.setFontSize(7.5)
+      doc.setFont("helvetica", "normal")
+      doc.setTextColor(...ZINC)
+      doc.text(`Page ${p} / ${pageCount}`, M, 292)
+      doc.text("Généré par Adhéra", W - M, 292, { align: "right" })
+    }
+
+    doc.save(`presences_${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`)
   }
 
   if (loadingEvent) {
@@ -399,7 +564,9 @@ export default function PresencesPage() {
                     row.ticketPaidAt ? (
                       <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400 shrink-0">
                         <CheckIcon className="size-3" />
-                        Payé
+                        {row.paidQuantity && row.paidQuantity < row.quantity
+                          ? `Payé ×${row.paidQuantity}/${row.quantity}`
+                          : "Payé"}
                       </span>
                     ) : row.rsvp === "CONFIRME" ? (
                       <div className="flex items-center gap-1.5 shrink-0">
@@ -409,15 +576,8 @@ export default function PresencesPage() {
                         </span>
                         <button
                           type="button"
-                          onClick={async () => {
-                            try {
-                              await markPaid.mutateAsync(row.membreId)
-                              toast.success(`${row.firstName} ${row.lastName} marqué comme payé`)
-                            } catch {
-                              toast.error("Erreur")
-                            }
-                          }}
-                          disabled={markPaid.isPending}
+                          onClick={() => openPayDialog(row)}
+                          disabled={payingIds.has(row.membreId)}
                           className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                         >
                           <BanknoteIcon className="size-3" />
@@ -427,15 +587,8 @@ export default function PresencesPage() {
                     ) : (
                       <button
                         type="button"
-                        onClick={async () => {
-                          try {
-                            await markPaid.mutateAsync(row.membreId)
-                            toast.success(`${row.firstName} ${row.lastName} marqué comme payé`)
-                          } catch {
-                            toast.error("Erreur")
-                          }
-                        }}
-                        disabled={markPaid.isPending}
+                        onClick={() => openPayDialog(row)}
+                        disabled={payingIds.has(row.membreId)}
                         className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                       >
                         <BanknoteIcon className="size-3" />
@@ -449,6 +602,87 @@ export default function PresencesPage() {
           )}
         </div>
       </div>
+
+      {/* Payment quantity dialog */}
+      <Modal
+        open={!!payTarget}
+        onOpenChange={o => { if (!o) setPayTarget(null) }}
+        title="Encaisser le paiement"
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
+            <Button
+              loading={markPaid.isPending}
+              onClick={async () => {
+                if (!payTarget) return
+                try {
+                  await markPaid.mutateAsync({ membreId: payTarget.membreId, paidQuantity: payQuantity })
+                  toast.success(`${payTarget.firstName} ${payTarget.lastName} — ${payQuantity} billet${payQuantity > 1 ? "s" : ""} encaissé${payQuantity > 1 ? "s" : ""}`)
+                  setPayTarget(null)
+                } catch {
+                  toast.error("Erreur")
+                }
+              }}
+            >
+              <BanknoteIcon className="mr-1.5 size-4" />
+              Encaisser
+            </Button>
+          </>
+        }
+      >
+        {payTarget && (() => {
+          const maxQty = payTarget.rsvp
+            ? payTarget.quantity
+            : (capacity != null ? Math.max(1, capacity - presentsCount) : 20)
+          return (
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              {payTarget.rsvp ? (
+                <>
+                  <span className="font-medium text-foreground">{payTarget.firstName} {payTarget.lastName}</span> a réservé{" "}
+                  <span className="font-medium text-foreground">{payTarget.quantity} billet{payTarget.quantity > 1 ? "s" : ""}</span>.{" "}
+                  Combien sont encaissés maintenant ?
+                </>
+              ) : (
+                <>
+                  Combien de billets pour{" "}
+                  <span className="font-medium text-foreground">{payTarget.firstName} {payTarget.lastName}</span> ?
+                </>
+              )}
+            </p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setPayQuantity(q => Math.max(1, q - 1))}
+                className="size-8 rounded-full border flex items-center justify-center text-lg font-medium hover:bg-muted transition-colors disabled:opacity-40"
+                disabled={payQuantity <= 1}
+              >
+                −
+              </button>
+              <span className="text-2xl font-bold w-12 text-center tabular-nums">{payQuantity}</span>
+              <button
+                type="button"
+                onClick={() => setPayQuantity(q => Math.min(maxQty, q + 1))}
+                className="size-8 rounded-full border flex items-center justify-center text-lg font-medium hover:bg-muted transition-colors disabled:opacity-40"
+                disabled={payQuantity >= maxQty}
+              >
+                +
+              </button>
+              {payTarget.rsvp && <span className="text-sm text-muted-foreground">/ {payTarget.quantity}</span>}
+            </div>
+            {ev?.price && (
+              <p className="text-sm font-medium">
+                Total :{" "}
+                <span className="text-foreground">
+                  {(Number(ev.price) * payQuantity).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+                </span>
+              </p>
+            )}
+          </div>
+          )
+        })()}
+      </Modal>
 
       {/* Revoke confirmation */}
       <ConfirmDialog

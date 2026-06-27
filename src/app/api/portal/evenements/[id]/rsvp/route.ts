@@ -9,7 +9,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 type SessionUser = { id?: string; associationId?: string | null }
 
 const bodySchema = z.object({
-  rsvp: z.enum(["CONFIRME", "PROVAVEL", "INCERTO", "ABSENT"]),
+  rsvp:     z.enum(["CONFIRME", "PROVAVEL", "INCERTO", "ABSENT"]),
+  quantity: z.number().int().min(1).optional().default(1),
 })
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -42,13 +43,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
   const wasAlreadyConfirme = existingParticipation?.rsvp === "CONFIRME"
 
-  if (
-    parsed.data.rsvp === "CONFIRME" &&
-    !wasAlreadyConfirme &&
-    evenement.price != null &&
-    Number(evenement.price) > 0 &&
-    evenement.capacity != null
-  ) {
+  if (parsed.data.rsvp === "CONFIRME" && evenement.capacity != null) {
     const { _sum } = await prisma.participation.aggregate({
       where: {
         evenementId,
@@ -57,14 +52,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       },
       _sum: { quantity: true },
     })
-    if ((_sum.quantity ?? 0) + 1 > evenement.capacity)
+    if ((_sum.quantity ?? 0) + parsed.data.quantity > evenement.capacity)
       return NextResponse.json({ error: "Événement complet" }, { status: 422 })
   }
 
   const participation = await prisma.participation.upsert({
     where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    create: { membreId: membre.id, evenementId, rsvp: parsed.data.rsvp, rsvpAt: new Date() },
-    update: { rsvp: parsed.data.rsvp, rsvpAt: new Date() },
+    create: { membreId: membre.id, evenementId, rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
+    update: { rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
   })
 
   if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme && membre.email) {

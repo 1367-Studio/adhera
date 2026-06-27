@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
+import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -72,6 +73,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     select: { id: true },
   })
 
+  // Re-verify capacity after upsert to handle race conditions
+  if (evenement.capacity != null) {
+    const { _sum: postCheck } = await prisma.participation.aggregate({
+      where: {
+        evenementId,
+        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
+      },
+      _sum: { quantity: true },
+    })
+    if ((postCheck.quantity ?? 0) > evenement.capacity) {
+      await prisma.participation.update({
+        where: { id: participation.id },
+        data:  { rsvp: null, quantity: 1 },
+      })
+      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    }
+  }
+
   const amountCents    = Math.round(Number(evenement.price) * 100)
   const totalCents     = amountCents * quantity
   const applicationFee = Math.round(totalCents * PLATFORM_FEE)
@@ -96,11 +115,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     },
     metadata:    { participationId: participation.id },
     success_url: `${APP_URL}/portal/${slug}/evenements?ticket=success&eid=${evenementId}`,
-    cancel_url:  `${APP_URL}/portal/${slug}/evenements?ticket=cancelled`,
+    cancel_url:  `${APP_URL}/portal/${slug}/evenements?ticket=cancelled&eid=${evenementId}`,
   })
 
   if (!checkoutSession.url)
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
+
+  await writeActivityLog({
+    associationId: u.associationId!,
+    actorId:       u.id,
+    action:        "TICKET_CHECKOUT_STARTED",
+    entity:        "Participation",
+    entityId:      participation.id,
+    label:         evenement.title,
+    metadata:      { quantity, amount: Number(evenement.price) * quantity },
+  })
 
   return NextResponse.json({ url: checkoutSession.url })
 }

@@ -76,7 +76,7 @@ async function fetchToken(meetingId: string, endpoint: string) {
 const QK = ["meetings"]
 
 export function useMeetings() {
-  return useQuery({ queryKey: QK, queryFn: fetchMeetings })
+  return useQuery({ queryKey: QK, queryFn: fetchMeetings, staleTime: 0 })
 }
 
 export function useCreateMeeting() {

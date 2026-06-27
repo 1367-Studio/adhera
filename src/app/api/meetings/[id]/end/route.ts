@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { EgressClient, RoomServiceClient } from "livekit-server-sdk"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -48,6 +49,15 @@ export async function POST(
   await prisma.meeting.update({
     where: { id },
     data:  { egressId: null, status: "ENDED", endedAt: new Date() },
+  })
+
+  await writeActivityLog({
+    associationId,
+    actorId: ctx.userId,
+    action:  "MEETING_ENDED",
+    entity:  "Meeting",
+    entityId: id,
+    label:   meeting.title,
   })
 
   return NextResponse.json({ ok: true })

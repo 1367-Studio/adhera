@@ -29,6 +29,7 @@ export default function ReunionsPortalPage() {
   const { data: meetings = [], isLoading } = useQuery<Meeting[]>({
     queryKey: ["portal-meetings"],
     queryFn:  () => fetch("/api/portal/meetings").then(r => r.json()),
+    staleTime: 0,
   })
 
   if (activeMeetingId) {

@@ -40,8 +40,9 @@ async function deleteActualite(id: string) {
 
 export function useActualitesPaginated(page: number, limit = 20, search?: string) {
   return useQuery({
-    queryKey: [...QK, "paginated", page, limit, search],
-    queryFn:  () => fetchActualitesPaginated(page, limit, search),
+    queryKey:  [...QK, "paginated", page, limit, search],
+    queryFn:   () => fetchActualitesPaginated(page, limit, search),
+    staleTime: 0,
   })
 }
 

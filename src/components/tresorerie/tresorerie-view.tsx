@@ -57,8 +57,10 @@ export function TresorerieView() {
   }
 
   const { data: result, isLoading } = useTresorerie(page, PAGE_SIZE, filters)
-  const entries = (result?.data ?? []) as Entry[]
-  const solde   = result?.solde ?? 0
+  const entries  = (result?.data ?? []) as Entry[]
+  const solde    = result?.solde    ?? 0
+  const recettes = result?.recettes ?? 0
+  const depenses = result?.depenses ?? 0
 
   useEffect(() => {
     if (result && result.totalPages > 0 && page > result.totalPages) setPage(result.totalPages)
@@ -151,19 +153,34 @@ export function TresorerieView() {
     },
   ]
 
-  const soldeLabel = solde.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const bilanAnnee = recettes - depenses
 
   return (
     <div className="space-y-4">
       <PageHeader
         title="Trésorerie"
         description={
-          <span className={cn(
-            "font-semibold",
-            solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
-          )}>
-            Solde global : {soldeLabel}
-          </span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className={cn(
+              "font-semibold",
+              solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
+            )}>
+              Solde global : {fmt(solde)}
+            </span>
+            {yearFilter > 0 && (
+              <span className="text-sm text-muted-foreground">
+                {yearFilter} · Recettes&nbsp;
+                <span className="text-green-600 dark:text-green-400 font-medium">+{fmt(recettes)}</span>
+                &nbsp;· Dépenses&nbsp;
+                <span className="text-destructive font-medium">−{fmt(depenses)}</span>
+                &nbsp;· Bilan&nbsp;
+                <span className={cn("font-semibold", bilanAnnee >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")}>
+                  {bilanAnnee >= 0 ? "+" : ""}{fmt(bilanAnnee)}
+                </span>
+              </span>
+            )}
+          </div>
         }
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>

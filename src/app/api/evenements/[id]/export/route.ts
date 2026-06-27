@@ -28,31 +28,43 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     include: {
       participations: {
         where:  { evenementId: id },
-        select: { present: true, rsvp: true },
+        select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true },
       },
     },
   })
 
-  const slug = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
-  const date = format(evenement.date, "yyyy-MM-dd")
+  const slug    = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
+  const date    = format(evenement.date, "yyyy-MM-dd")
+  const hasFee  = evenement.price != null && Number(evenement.price) > 0
 
-  const rows = membres.map((m, i) => ({
-    "#":       i + 1,
-    Nom:       m.lastName,
-    Prénom:    m.firstName,
-    Email:     m.email ?? "",
-    Présent:   m.participations[0]?.present ? "Oui" : "Non",
-    RSVP:      m.participations[0]?.rsvp ? (RSVP_LABELS[m.participations[0].rsvp] ?? "") : "",
-  }))
+  const rows = membres.map((m, i) => {
+    const p = m.participations[0]
+    const base = {
+      "#":     i + 1,
+      Nom:     m.lastName,
+      Prénom:  m.firstName,
+      Email:   m.email ?? "",
+      Présent: p?.present ? "Oui" : "Non",
+    }
+    if (hasFee) {
+      return {
+        ...base,
+        Paiement: p?.ticketPaidAt ? "Payé" : p?.rsvp === "CONFIRME" ? "Réservé" : "",
+        Places:   p?.quantity ?? "",
+        RSVP:     "",
+      }
+    }
+    return { ...base, RSVP: p?.rsvp ? (RSVP_LABELS[p.rsvp] ?? "") : "" }
+  })
 
   if (fmt === "xlsx") {
     const ws = utils.json_to_sheet(rows)
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, "Présences")
 
-    ws["!cols"] = [
-      { wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 },
-    ]
+    ws["!cols"] = hasFee
+      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 14 }]
+      : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
 
     const buf = write(wb, { type: "buffer", bookType: "xlsx" })
     return new NextResponse(buf, {

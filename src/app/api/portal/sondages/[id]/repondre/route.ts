@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 type Params = { params: Promise<{ id: string }> }
@@ -75,6 +76,15 @@ export async function POST(req: Request, { params }: Params) {
           })),
       },
     },
+  })
+
+  await writeActivityLog({
+    associationId: u.associationId,
+    actorId:       u.id!,
+    action:        "SONDAGE_REPONSE_SUBMITTED",
+    entity:        "SondageReponse",
+    entityId:      reponse.id,
+    label:         sondage.title,
   })
 
   return NextResponse.json({ ok: true, reponseId: reponse.id }, { status: 201 })

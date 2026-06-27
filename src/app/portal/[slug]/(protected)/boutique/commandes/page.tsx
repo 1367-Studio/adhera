@@ -49,6 +49,7 @@ export default function MesCommandesPage() {
   const { data: commandes = [], isLoading } = useQuery<Commande[]>({
     queryKey: ["portal-boutique-commandes", slug],
     queryFn:  () => fetch("/api/portal/boutique/commandes").then(r => r.json()),
+    staleTime: 0,
   })
 
   return (

@@ -38,8 +38,9 @@ async function fetchJson(url: string, init?: RequestInit) {
 
 export function useAutomationRules() {
   return useQuery<AutomationRule[]>({
-    queryKey: KEY,
-    queryFn:  () => fetchJson("/api/automation-rules"),
+    queryKey:  KEY,
+    queryFn:   () => fetchJson("/api/automation-rules"),
+    staleTime: 0,
   })
 }
 

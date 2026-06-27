@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -111,6 +112,15 @@ export async function POST(req: Request) {
         .map(m => pusherServer.trigger(`user-${m.userId}`, "new-notification", {})),
     )
   }
+
+  await writeActivityLog({
+    associationId,
+    actorId: userId,
+    action:  "MEETING_CREATED",
+    entity:  "Meeting",
+    entityId: meeting.id,
+    label:   meeting.title,
+  })
 
   return NextResponse.json(meeting, { status: 201 })
 }

@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail } from "@/lib/email"
 import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
 import { pusherServer } from "@/lib/pusher-server"
+import { writeActivityLog } from "@/lib/activity-log"
 import type Stripe from "stripe"
 
 export const dynamic = "force-dynamic"
@@ -123,6 +124,19 @@ export async function POST(req: Request) {
           data:  { status: "PAYE", paidAt },
         })
 
+        if (cotisation.amount != null) {
+          await prisma.tresorerieEntry.create({
+            data: {
+              associationId: cotisation.associationId,
+              type:        "ENTREE",
+              amount:      cotisation.amount,
+              description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+              category:    "Cotisation",
+              date:        paidAt,
+            },
+          })
+        }
+
         if (cotisation.membre.email) {
           sendEmail(paymentConfirmationEmail({
             firstName:       cotisation.membre.firstName,
@@ -154,7 +168,7 @@ export async function POST(req: Request) {
           const paidAt = new Date()
           await prisma.participation.update({
             where: { id: participationId },
-            data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id },
+            data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id, paidQuantity: participation.quantity ?? 1 },
           })
           const totalAmount = Number(participation.evenement.price!) * (participation.quantity ?? 1)
           await prisma.tresorerieEntry.create({
@@ -166,6 +180,14 @@ export async function POST(req: Request) {
               date:          paidAt,
               category:      "Événement",
             },
+          })
+          await writeActivityLog({
+            associationId: participation.evenement.associationId,
+            action:        "TICKET_PAID_STRIPE",
+            entity:        "Participation",
+            entityId:      participationId,
+            label:         participation.evenement.title,
+            metadata:      { quantity: participation.quantity ?? 1, amount: totalAmount, stripeSessionId: sess.id },
           })
           if (participation.membre?.email && participation.evenement.association) {
             const ev    = participation.evenement
@@ -253,14 +275,24 @@ export async function POST(req: Request) {
       const participationId = sess.metadata?.participationId
 
       if (participationId) {
-        // Release the slot held by checkout — only if the member hasn't manually reserved
-        // We reset rsvp+quantity only when there is no prior manual reservation intent.
-        // Since we set rsvp=CONFIRME during checkout, we clear it on expiry so the spot
-        // is freed. Members who had a manual reservation will need to re-reserve.
+        const expiredParticipation = await prisma.participation.findUnique({
+          where:  { id: participationId },
+          select: { evenement: { select: { title: true, associationId: true } } },
+        })
         await prisma.participation.updateMany({
           where: { id: participationId, ticketPaidAt: null },
           data:  { rsvp: null, quantity: 1 },
         })
+        if (expiredParticipation?.evenement) {
+          await writeActivityLog({
+            associationId: expiredParticipation.evenement.associationId,
+            action:        "TICKET_CHECKOUT_EXPIRED",
+            entity:        "Participation",
+            entityId:      participationId,
+            label:         expiredParticipation.evenement.title,
+            metadata:      { stripeSessionId: sess.id },
+          })
+        }
         break
       }
 

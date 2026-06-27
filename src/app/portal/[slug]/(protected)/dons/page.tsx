@@ -30,6 +30,7 @@ export default function DonsPortalPage() {
   const { data: dons = [], isLoading, refetch } = useQuery<Don[]>({
     queryKey: ["portal-dons"],
     queryFn:  () => fetch("/api/portal/dons").then(r => r.json()),
+    staleTime: 0,
   })
 
   useEffect(() => {

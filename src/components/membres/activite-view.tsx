@@ -105,6 +105,11 @@ const SLA  = "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
 const SLA_L = "bg-slate-50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400"
 const ROSE = "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
 const SKY  = "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300"
+const SKY_L = "bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400"
+const PINK = "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300"
+const PINK_L = "bg-pink-50 text-pink-600 dark:bg-pink-900/20 dark:text-pink-400"
+const LIME = "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300"
+const LIME_L = "bg-lime-50 text-lime-600 dark:bg-lime-900/20 dark:text-lime-400"
 const CYA  = "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300"
 const CYA_L = "bg-cyan-50 text-cyan-600 dark:bg-cyan-900/20 dark:text-cyan-400"
 const YEL  = "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300"
@@ -115,7 +120,9 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   MEMBRE_UPDATED:           { label: "Membre modifié",      color: BLUE_L },
   MEMBRE_DELETED:           { label: "Membre archivé",      color: DEL    },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscrit (portail)",   color: SKY    },
+  MEMBRE_ROLE_CHANGED:      { label: "Rôle modifié",        color: BLUE   },
   PROFIL_UPDATED:           { label: "Profil modifié",      color: BLUE_L },
+  EMAIL_SENT_BULK:          { label: "E-mail envoyé",       color: AMB_L  },
   // Actualités (amber)
   ACTUALITE_CREATED:        { label: "Actualité créée",     color: AMB    },
   ACTUALITE_UPDATED:        { label: "Actualité modifiée",  color: AMB_L  },
@@ -126,6 +133,8 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   EVENEMENT_DELETED:        { label: "Événement supprimé",  color: DEL    },
   PRESENCE_MARKED:          { label: "Présence marquée",    color: TEAL   },
   RSVP_UPDATED:             { label: "RSVP mis à jour",     color: VIO    },
+  TICKET_CHECKOUT_STARTED:  { label: "Paiement initié",     color: VIO_L  },
+  TICKET_PAID:              { label: "Ticket payé",         color: EME    },
   // Cotisations (emerald)
   COTISATION_CREATED:       { label: "Cotisation créée",    color: EME    },
   COTISATION_UPDATED:       { label: "Cotisation modifiée", color: EME_L  },
@@ -159,6 +168,28 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   TYPE_CREATED:             { label: "Type créé",           color: SLA    },
   TYPE_UPDATED:             { label: "Type modifié",        color: SLA_L  },
   TYPE_DELETED:             { label: "Type supprimé",       color: DEL    },
+  // Réunions (sky)
+  MEETING_CREATED:           { label: "Réunion créée",              color: SKY   },
+  MEETING_UPDATED:           { label: "Réunion modifiée",           color: SKY_L },
+  MEETING_DELETED:           { label: "Réunion supprimée",          color: DEL   },
+  MEETING_ENDED:             { label: "Réunion terminée",           color: SLA   },
+  MEETING_RECORDING_STARTED: { label: "Enregistrement démarré",     color: SKY_L },
+  MEETING_RECORDING_STOPPED: { label: "Enregistrement arrêté",      color: SLA   },
+  MEETING_TRANSCRIBED:       { label: "Transcription générée",      color: SKY_L },
+  MEETING_SUMMARIZED:        { label: "Compte-rendu généré",        color: SKY   },
+  // Sondages (lime)
+  SONDAGE_CREATED:           { label: "Sondage créé",       color: LIME   },
+  SONDAGE_UPDATED:           { label: "Sondage modifié",    color: LIME_L },
+  SONDAGE_DELETED:           { label: "Sondage supprimé",   color: DEL    },
+  SONDAGE_ACTIVATED:         { label: "Sondage activé",     color: LIME   },
+  SONDAGE_CLOSED:            { label: "Sondage fermé",      color: SLA    },
+  SONDAGE_REPONSE_SUBMITTED: { label: "Réponse soumise",    color: LIME_L },
+  // Boutique (pink)
+  BOUTIQUE_PRODUIT_CREATED:  { label: "Produit créé",          color: PINK   },
+  BOUTIQUE_PRODUIT_UPDATED:  { label: "Produit modifié",        color: PINK_L },
+  BOUTIQUE_PRODUIT_DELETED:  { label: "Produit supprimé",       color: DEL    },
+  BOUTIQUE_COMMANDE_CREATED: { label: "Commande créée",         color: PINK   },
+  BOUTIQUE_COMMANDE_UPDATED: { label: "Commande mise à jour",   color: PINK_L },
   // Association / Site (rose)
   ASSOCIATION_UPDATED:      { label: "Paramètres modifiés",  color: ROSE   },
   SITE_UPDATED:             { label: "Site web modifié",     color: ROSE   },
@@ -178,7 +209,12 @@ const ENTITY_LABELS: Record<string, string> = {
   MessageTemplate: "Modèles",
   AutomationRule:  "Automatisations",
   MembreType:      "Types membres",
-  Association:     "Paramètres",
+  Association:      "Paramètres",
+  BoutiqueProduit:  "Boutique – Produits",
+  BoutiqueCommande: "Boutique – Commandes",
+  Sondage:          "Sondages",
+  SondageReponse:   "Sondages – Réponses",
+  Meeting:          "Réunions",
 }
 
 const ENTITY_OPTIONS = [
@@ -194,6 +230,11 @@ const ENTITY_OPTIONS = [
   { value: "AutomationRule",  label: "Automatisations"  },
   { value: "MembreType",      label: "Types membres"    },
   { value: "Association",     label: "Paramètres"       },
+  { value: "BoutiqueProduit",  label: "Boutique – Produits"   },
+  { value: "BoutiqueCommande", label: "Boutique – Commandes"  },
+  { value: "Sondage",          label: "Sondages"              },
+  { value: "SondageReponse",   label: "Sondages – Réponses"   },
+  { value: "Meeting",          label: "Réunions"              },
 ]
 
 // ─── Sub-components ──────────────────────────────────────────────────────────

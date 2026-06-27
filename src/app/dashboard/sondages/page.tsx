@@ -44,8 +44,9 @@ export default function SondagesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Sondage | null>(null)
 
   const { data: sondages = [], isLoading } = useQuery<Sondage[]>({
-    queryKey: ["sondages"],
-    queryFn:  () => fetch("/api/sondages").then(r => r.json()),
+    queryKey:  ["sondages"],
+    queryFn:   () => fetch("/api/sondages").then(r => r.json()),
+    staleTime: 0,
   })
 
   const activateMutation = useMutation({

@@ -42,8 +42,9 @@ async function deleteMembre(id: string) {
 
 export function useMembresPaginated(page: number, limit = 20, search?: string, status?: string, typeId?: string) {
   return useQuery({
-    queryKey: [...QK, "paginated", page, limit, search, status, typeId],
-    queryFn:  () => fetchMembresPaginated(page, limit, search, status, typeId),
+    queryKey:  [...QK, "paginated", page, limit, search, status, typeId],
+    queryFn:   () => fetchMembresPaginated(page, limit, search, status, typeId),
+    staleTime: 0,
   })
 }
 

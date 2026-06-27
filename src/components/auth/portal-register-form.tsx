@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { portalRegisterSchema, type PortalRegisterInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -43,6 +44,7 @@ export function PortalRegisterForm({ slug }: { slug: string }) {
     }
 
     toast.success("Compte créé ! Vérifiez votre email pour recevoir vos identifiants.")
+    await signOut({ redirect: false })
     router.push(`/portal/${slug}/login`)
   }
 

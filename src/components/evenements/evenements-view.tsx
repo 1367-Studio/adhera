@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, UsersIcon, ListIcon, CalendarDaysIcon, MapPinIcon } from "lucide-react"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, UsersIcon, BookmarkIcon, ListIcon, CalendarDaysIcon, MapPinIcon } from "lucide-react"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -33,7 +33,8 @@ type Evenement = {
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
-  _count:      { participations: number }
+  _count:         { participations: number }
+  confirmedCount: number
 }
 
 function toDatetimeLocal(iso: string) {
@@ -67,7 +68,7 @@ export function EvenementsView() {
   }
 
   function calendarEventToEvenement(ev: CalendarEvenement): Evenement {
-    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, _count: ev._count }
+    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, _count: ev._count, confirmedCount: 0 }
   }
 
   function handleCalendarEditClick(ev: CalendarEvenement)      { setEditTarget(calendarEventToEvenement(ev)) }
@@ -165,16 +166,28 @@ export function EvenementsView() {
     {
       key: "presences",
       header: "Présences",
-      cell: (e) => (
-        <button
-          type="button"
-          onClick={(ev) => { ev.stopPropagation(); router.push(`/dashboard/evenements/${e.id}/presences`) }}
-          className="flex items-center gap-1.5 text-sm text-primary hover:underline"
-        >
-          <UsersIcon className="size-3.5" />
-          {e._count.participations}
-        </button>
-      ),
+      cell: (e) => {
+        const hasFee = e.price != null && Number(e.price) > 0
+        return (
+          <button
+            type="button"
+            onClick={(ev) => { ev.stopPropagation(); router.push(`/dashboard/evenements/${e.id}/presences`) }}
+            className="flex flex-col gap-0.5 text-left hover:opacity-75 transition-opacity"
+          >
+            <span className="flex items-center gap-1.5 text-sm text-primary">
+              <UsersIcon className="size-3.5" />
+              {e._count.participations} présent{e._count.participations !== 1 ? "s" : ""}
+            </span>
+            {hasFee && e.confirmedCount > 0 && (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <BookmarkIcon className="size-3.5" />
+                {e.confirmedCount} réservé{e.confirmedCount !== 1 ? "s" : ""}
+                {e.capacity != null && ` / ${e.capacity}`}
+              </span>
+            )}
+          </button>
+        )
+      },
       hideInCard: true,
     },
     {

@@ -97,14 +97,15 @@ async function fetchJson(url: string, init?: RequestInit) {
 }
 
 export function useMateriel() {
-  return useQuery<Material[]>({ queryKey: KEY, queryFn: () => fetchJson("/api/materiel") })
+  return useQuery<Material[]>({ queryKey: KEY, queryFn: () => fetchJson("/api/materiel"), staleTime: 0 })
 }
 
 export function useMaterialDetail(id: string | null) {
   return useQuery<MaterialDetail>({
-    queryKey: detailKey(id ?? ""),
-    queryFn:  () => fetchJson(`/api/materiel/${id}`),
-    enabled:  !!id,
+    queryKey:  detailKey(id ?? ""),
+    queryFn:   () => fetchJson(`/api/materiel/${id}`),
+    enabled:   !!id,
+    staleTime: 0,
   })
 }
 

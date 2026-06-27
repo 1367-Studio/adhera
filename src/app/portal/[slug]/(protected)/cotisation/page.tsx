@@ -48,6 +48,7 @@ export default function CotisationPortalPage() {
   const { data: cotisations, isLoading, refetch } = useQuery<Cotisation[]>({
     queryKey: ["portal-cotisation"],
     queryFn:  () => fetch("/api/portal/cotisation").then(r => r.json()),
+    staleTime: 0,
   })
 
   useEffect(() => {

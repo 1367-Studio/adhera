@@ -199,6 +199,7 @@ export default function SondageFormPage() {
       if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
       return r.json()
     }),
+    staleTime: 0,
   })
 
   const visibleQuestions = useMemo(

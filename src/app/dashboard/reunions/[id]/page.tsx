@@ -57,8 +57,9 @@ export default function ReunionDetailPage() {
   const [inRoom,     setInRoom]     = useState(false)
 
   const { data: meeting, isLoading } = useQuery<Meeting>({
-    queryKey: ["meeting", id],
-    queryFn:  () => fetch(`/api/meetings/${id}`).then(r => r.json()),
+    queryKey:  ["meeting", id],
+    queryFn:   () => fetch(`/api/meetings/${id}`).then(r => r.json()),
+    staleTime: 0,
   })
 
   useEffect(() => {

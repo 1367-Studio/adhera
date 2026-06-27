@@ -25,8 +25,9 @@ async function fetchJson(url: string, init?: RequestInit) {
 
 export function useMessageTemplates() {
   return useQuery<MessageTemplate[]>({
-    queryKey: KEY,
-    queryFn:  () => fetchJson("/api/message-templates"),
+    queryKey:  KEY,
+    queryFn:   () => fetchJson("/api/message-templates"),
+    staleTime: 0,
   })
 }
 

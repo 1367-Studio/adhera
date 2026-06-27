@@ -177,6 +177,7 @@ export default function ActualitesPortalPage() {
     queryKey: ["portal-actualites", page],
     queryFn:  () => fetch(`/api/portal/actualites?page=${page}&limit=20`).then(r => r.json()),
     placeholderData: (prev) => prev,
+    staleTime: 0,
   })
 
   const hasMore = data?.hasMore ?? false

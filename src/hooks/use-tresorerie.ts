@@ -5,7 +5,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 
 const QK = ["tresorerie"]
 
-type TresorerieResult = PaginatedResult<unknown> & { solde: number }
+type TresorerieResult = PaginatedResult<unknown> & { solde: number; recettes: number; depenses: number }
 
 type Filters = { type?: string; year?: number; search?: string }
 
@@ -46,8 +46,9 @@ async function deleteEntry(id: string) {
 
 export function useTresorerie(page: number, limit = 25, filters: Filters = {}) {
   return useQuery({
-    queryKey: [...QK, page, limit, filters],
-    queryFn:  () => fetchTresorerie(page, limit, filters),
+    queryKey:  [...QK, page, limit, filters],
+    queryFn:   () => fetchTresorerie(page, limit, filters),
+    staleTime: 0,
   })
 }
 

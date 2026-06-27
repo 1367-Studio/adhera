@@ -61,8 +61,9 @@ export default function DonsPage() {
   })
 
   const { data: result, isLoading } = useQuery<DonsResult>({
-    queryKey: ["dashboard-dons", page, yearFilter, search],
-    queryFn:  () => fetch(`/api/dons?${params}`).then(r => r.json()),
+    queryKey:  ["dashboard-dons", page, yearFilter, search],
+    queryFn:   () => fetch(`/api/dons?${params}`).then(r => r.json()),
+    staleTime: 0,
   })
 
   const dons = result?.data ?? []

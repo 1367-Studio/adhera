@@ -59,6 +59,7 @@ export default function ActualiteDetailPage() {
       if (!r.ok) throw new Error("Introuvable")
       return r.json()
     }),
+    staleTime: 0,
   })
 
   if (isLoading) return <div className="space-y-6"><SkeletonDetail /></div>

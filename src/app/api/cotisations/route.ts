@@ -89,6 +89,19 @@ export async function POST(req: Request) {
     include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } } },
   })
 
+  if (cotisation.status === "PAYE" && cotisation.amount != null) {
+    await prisma.tresorerieEntry.create({
+      data: {
+        associationId,
+        type:        "ENTREE",
+        amount:      cotisation.amount,
+        description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+        category:    "Cotisation",
+        date:        cotisation.paidAt ?? new Date(),
+      },
+    })
+  }
+
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
   return NextResponse.json(cotisation, { status: 201 })
 }

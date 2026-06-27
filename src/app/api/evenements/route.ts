@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
+import { pusherServer } from "@/lib/pusher-server"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -55,7 +56,19 @@ export async function GET(req: Request) {
     }),
     prisma.evenement.count({ where }),
   ])
-  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
+
+  const ids = data.map(e => e.id)
+  const confirmedGroups = ids.length > 0
+    ? await prisma.participation.groupBy({
+        by:    ["evenementId"],
+        where: { evenementId: { in: ids }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        _sum:  { quantity: true },
+      })
+    : []
+  const confirmedMap = Object.fromEntries(confirmedGroups.map(g => [g.evenementId, g._sum.quantity ?? 0]))
+  const enriched = data.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
+
+  return NextResponse.json({ data: enriched, total, page, limit, totalPages: Math.ceil(total / limit) })
 }
 
 export async function POST(req: Request) {
@@ -90,5 +103,25 @@ export async function POST(req: Request) {
   })
 
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_CREATED", entity: "Evenement", entityId: evenement.id, label: evenement.title })
+
+  // Notify all active members with portal access
+  const pusherReady = !!(process.env.PUSHER_APP_ID && process.env.PUSHER_KEY && process.env.PUSHER_SECRET)
+  const members = await prisma.membre.findMany({
+    where:  { associationId, deletedAt: null, status: "ACTIF", userId: { not: null } },
+    select: { userId: true },
+  })
+  const notifDateStr = evenement.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+  const notifBody    = [notifDateStr, evenement.location].filter(Boolean).join(" · ")
+  void Promise.all(
+    members.map(async m => {
+      const notif = await prisma.notification.create({
+        data: { userId: m.userId!, title: evenement.title, body: notifBody || null, link: "/portal/evenements" },
+      })
+      if (pusherReady) {
+        await pusherServer.trigger(`user-${m.userId}`, "new-notification", { id: notif.id })
+      }
+    }),
+  )
+
   return NextResponse.json(evenement, { status: 201 })
 }

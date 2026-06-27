@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -76,6 +77,15 @@ export async function POST(
     const updated = await prisma.meeting.update({
       where: { id },
       data:  { summary },
+    })
+
+    await writeActivityLog({
+      associationId,
+      actorId: ctx.userId,
+      action:  "MEETING_SUMMARIZED",
+      entity:  "Meeting",
+      entityId: id,
+      label:   meeting.title,
     })
 
     return NextResponse.json({ summary: updated.summary })

@@ -50,11 +50,11 @@ async function deleteEvenement(id: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression"))
 }
 
-async function setRsvp(evenementId: string, rsvp: string) {
+async function setRsvp(evenementId: string, rsvp: string, quantity?: number) {
   const res = await fetch(`/api/portal/evenements/${evenementId}/rsvp`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ rsvp }),
+    body:    JSON.stringify({ rsvp, ...(quantity != null && { quantity }) }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -71,11 +71,11 @@ async function revokeQr(evenementId: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
 }
 
-async function markPaid(evenementId: string, membreId: string) {
+async function markPaid(evenementId: string, membreId: string, paidQuantity?: number) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ membreId }),
+    body:    JSON.stringify({ membreId, ...(paidQuantity != null && { paidQuantity }) }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -117,32 +117,36 @@ export type CalendarEvenement = {
 
 export function useEvenement(id: string) {
   return useQuery({
-    queryKey: [...QK, id],
-    queryFn:  () => fetchEvenement(id),
-    enabled:  !!id,
+    queryKey:  [...QK, id],
+    queryFn:   () => fetchEvenement(id),
+    enabled:   !!id,
+    staleTime: 0,
   })
 }
 
 export function useEvenementsByMonth(year: number, month: number) {
   return useQuery({
-    queryKey: [...QK, "calendar", year, month],
-    queryFn:  () => fetchEvenementsByMonth(year, month),
+    queryKey:  [...QK, "calendar", year, month],
+    queryFn:   () => fetchEvenementsByMonth(year, month),
+    staleTime: 0,
   })
 }
 
 export function useEvenementsPaginated(page: number, limit = 20, search?: string) {
   return useQuery({
-    queryKey: [...QK, "paginated", page, limit, search],
-    queryFn:  () => fetchEvenementsPaginated(page, limit, search),
+    queryKey:  [...QK, "paginated", page, limit, search],
+    queryFn:   () => fetchEvenementsPaginated(page, limit, search),
+    staleTime: 0,
   })
 }
 
 export function useParticipations(evenementId: string, options?: { refetchInterval?: number }) {
   return useQuery({
-    queryKey:       [...QK, evenementId, "participations"],
-    queryFn:        () => fetchParticipations(evenementId),
-    enabled:        !!evenementId,
+    queryKey:        [...QK, evenementId, "participations"],
+    queryFn:         () => fetchParticipations(evenementId),
+    enabled:         !!evenementId,
     refetchInterval: options?.refetchInterval,
+    staleTime:       0,
   })
 }
 
@@ -184,7 +188,7 @@ export function useDeleteEvenement() {
 export function useSetRsvp(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (rsvp: string) => setRsvp(evenementId, rsvp),
+    mutationFn: ({ rsvp, quantity }: { rsvp: string; quantity?: number }) => setRsvp(evenementId, rsvp, quantity),
     onSuccess:  () => Promise.all([
       qc.invalidateQueries({ queryKey: QK }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
@@ -199,7 +203,8 @@ export function useSetRsvp(evenementId: string) {
 export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (membreId: string) => markPaid(evenementId, membreId),
+    mutationFn: ({ membreId, paidQuantity }: { membreId: string; paidQuantity?: number }) =>
+      markPaid(evenementId, membreId, paidQuantity),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["tresorerie"] }),

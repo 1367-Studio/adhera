@@ -4,6 +4,7 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { customEmail } from "@/lib/email"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -11,6 +12,7 @@ const schema = z.object({
   subject:      z.string().min(1).max(200),
   bodyHtml:     z.string().min(1),
   recipientIds: z.array(z.string()).optional(),
+  typeId:       z.string().optional(),
 })
 
 export async function POST(req: Request) {
@@ -25,7 +27,7 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
 
-  const { subject, bodyHtml, recipientIds } = parsed.data
+  const { subject, bodyHtml, recipientIds, typeId } = parsed.data
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -40,6 +42,7 @@ export async function POST(req: Request) {
       status:        "ACTIF",
       email:         { not: null },
       ...(recipientIds?.length ? { id: { in: recipientIds } } : {}),
+      ...(typeId ? { typeId } : {}),
     },
     select: { email: true },
   })
@@ -57,6 +60,22 @@ export async function POST(req: Request) {
 
   const sent   = results.filter(r => r.status === "fulfilled").length
   const failed = results.filter(r => r.status === "rejected").length
+
+  const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
+  await writeActivityLog({
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
+    action:        "EMAIL_SENT_BULK",
+    entity:        "Membre",
+    label:         subject,
+    metadata:      {
+      sent,
+      failed,
+      recipientMode,
+      ...(typeId           ? { typeId }                              : {}),
+      ...(recipientIds?.length ? { recipientCount: recipientIds.length } : {}),
+    },
+  })
 
   return NextResponse.json({ sent, failed })
 }

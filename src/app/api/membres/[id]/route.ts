@@ -70,11 +70,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       },
     })
 
-    if (emailChanged && existing.userId) {
-      await tx.user.update({
-        where: { id: existing.userId },
-        data:  { email: email || existing.email! },
-      })
+    if (existing.userId) {
+      const userUpdate: { email?: string; active?: boolean } = {}
+      if (emailChanged)            userUpdate.email  = email || existing.email!
+      if (rest.status !== undefined) userUpdate.active = rest.status === "ACTIF"
+      if (Object.keys(userUpdate).length > 0) {
+        await tx.user.update({ where: { id: existing.userId }, data: userUpdate })
+      }
     }
 
     return updated

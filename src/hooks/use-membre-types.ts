@@ -20,7 +20,7 @@ async function fetchMembreTypes(): Promise<MembreType[]> {
 }
 
 export function useMembreTypes() {
-  return useQuery({ queryKey: QK, queryFn: fetchMembreTypes })
+  return useQuery({ queryKey: QK, queryFn: fetchMembreTypes, staleTime: 0 })
 }
 
 function invalidateAll(qc: ReturnType<typeof useQueryClient>) {

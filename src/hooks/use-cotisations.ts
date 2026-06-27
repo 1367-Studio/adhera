@@ -44,8 +44,9 @@ async function deleteCotisation(id: string) {
 
 export function useCotisationsPaginated(page: number, limit = 20, filters: Filters = {}) {
   return useQuery({
-    queryKey: [...QK, "paginated", page, limit, filters],
-    queryFn:  () => fetchCotisationsPaginated(page, limit, filters),
+    queryKey:  [...QK, "paginated", page, limit, filters],
+    queryFn:   () => fetchCotisationsPaginated(page, limit, filters),
+    staleTime: 0,
   })
 }
 

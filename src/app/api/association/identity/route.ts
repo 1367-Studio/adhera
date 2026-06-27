@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -71,6 +72,14 @@ export async function PATCH(req: Request) {
       ...(rna                !== undefined ? { rna:                rna || null }                : {}),
       ...(canIssueTaxReceipts !== undefined ? { canIssueTaxReceipts }                           : {}),
     },
+  })
+
+  await writeActivityLog({
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
+    action:        "ASSOCIATION_UPDATED",
+    entity:        "Association",
+    label:         "Identité juridique",
   })
 
   return NextResponse.json({ ok: true })

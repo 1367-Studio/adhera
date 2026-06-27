@@ -4,6 +4,7 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { r2 } from "@/lib/r2"
 import { makeGroqClient, platformClient } from "@/lib/ai/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const MAX_BYTES = 25 * 1024 * 1024
@@ -87,6 +88,15 @@ export async function POST(
     await prisma.meeting.update({
       where: { id },
       data:  { transcript },
+    })
+
+    await writeActivityLog({
+      associationId,
+      actorId: ctx.userId,
+      action:  "MEETING_TRANSCRIBED",
+      entity:  "Meeting",
+      entityId: id,
+      label:   meeting.title,
     })
 
     return NextResponse.json({ transcript })

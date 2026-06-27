@@ -68,17 +68,19 @@ export default function EditProduitPage() {
   const [variantes, setVariantes]   = useState<VarianteRow[]>([])
 
   const { data: produit, isLoading } = useQuery<Produit>({
-    queryKey: ["boutique-produit", id],
-    queryFn:  () => fetch(`/api/boutique/produits/${id}`).then(async r => {
+    queryKey:  ["boutique-produit", id],
+    queryFn:   () => fetch(`/api/boutique/produits/${id}`).then(async r => {
       if (!r.ok) throw new Error("Introuvable")
       return r.json()
     }),
+    staleTime: 0,
   })
 
   const { data: commandeResult } = useQuery<{ data: Commande[] }>({
-    queryKey: ["boutique-commandes-produit", id],
-    queryFn:  () => fetch("/api/boutique/commandes").then(r => r.json()),
-    enabled:  activeTab === "commandes",
+    queryKey:  ["boutique-commandes-produit", id],
+    queryFn:   () => fetch("/api/boutique/commandes").then(r => r.json()),
+    enabled:   activeTab === "commandes",
+    staleTime: 0,
     select:   (res) => ({
       data: res.data.filter((c: Commande) =>
         c.items.some((item: CommandeItem) => item.produit.id === id)

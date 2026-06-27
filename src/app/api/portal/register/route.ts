@@ -51,18 +51,38 @@ export async function POST(req: Request) {
         associationId: association.id,
       },
     })
-    const membre = await tx.membre.create({
-      data: {
-        firstName,
-        lastName,
+
+    // Link to existing unlinked Membre by email if available, to avoid duplicates
+    const existingMembre = await tx.membre.findFirst({
+      where: {
         email:         email.toLowerCase(),
         associationId: association.id,
-        userId:        user.id,
-        status:        "ACTIF",
-        typeId:        typeId || null,
+        userId:        null,
+        deletedAt:     null,
       },
+      select: { id: true },
     })
-    membreId = membre.id
+
+    if (existingMembre) {
+      await tx.membre.update({
+        where: { id: existingMembre.id },
+        data:  { userId: user.id, firstName, lastName, status: "ACTIF" },
+      })
+      membreId = existingMembre.id
+    } else {
+      const membre = await tx.membre.create({
+        data: {
+          firstName,
+          lastName,
+          email:         email.toLowerCase(),
+          associationId: association.id,
+          userId:        user.id,
+          status:        "ACTIF",
+          typeId:        typeId || null,
+        },
+      })
+      membreId = membre.id
+    }
   })
 
   if (membreId) {

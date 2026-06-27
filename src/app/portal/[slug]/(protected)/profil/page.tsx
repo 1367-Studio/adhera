@@ -57,6 +57,7 @@ export default function ProfilPage() {
   const { data: membre, isLoading } = useQuery<Membre>({
     queryKey: ["portal-profil"],
     queryFn:  () => fetch("/api/portal/profil").then(r => r.json()),
+    staleTime: 0,
   })
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm<FormValues>({

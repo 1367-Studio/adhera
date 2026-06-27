@@ -180,6 +180,7 @@ export default function MaterielPage() {
   const { data, isLoading } = useQuery<PortalMaterielData>({
     queryKey: ["portal-materiel"],
     queryFn:  () => fetch("/api/portal/materiel").then(r => r.json()),
+    staleTime: 0,
   })
 
   const requestMutation = useMutation({
@@ -452,6 +453,7 @@ export default function MaterielPage() {
       {editingLoan && (
         <Portal>
         <RequestModal
+          key={editingLoan.id}
           item={{
             id:           editingLoan.materialId,
             name:         editingLoan.material.name,

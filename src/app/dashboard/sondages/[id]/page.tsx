@@ -64,14 +64,16 @@ export default function SondageDetailPage() {
   const [activeTab, setActiveTab] = useState("edit")
 
   const { data: sondage, isLoading } = useQuery<Sondage>({
-    queryKey: ["sondage", id],
-    queryFn:  () => fetch(`/api/sondages/${id}`).then(r => r.json()),
+    queryKey:  ["sondage", id],
+    queryFn:   () => fetch(`/api/sondages/${id}`).then(r => r.json()),
+    staleTime: 0,
   })
 
   const { data: resultats, isLoading: resultatsLoading, refetch: refetchResultats } = useQuery({
-    queryKey: ["sondage-resultats", id],
-    queryFn:  () => fetch(`/api/sondages/${id}/resultats`).then(r => r.json()),
-    enabled:  activeTab === "resultats",
+    queryKey:  ["sondage-resultats", id],
+    queryFn:   () => fetch(`/api/sondages/${id}/resultats`).then(r => r.json()),
+    enabled:   activeTab === "resultats",
+    staleTime: 0,
   })
 
   const [title, setTitle]               = useState("")

@@ -26,6 +26,7 @@ export default function SondagesPortalPage() {
   const { data: sondages = [], isLoading } = useQuery<SondageItem[]>({
     queryKey: ["portal-sondages"],
     queryFn:  () => fetch("/api/portal/sondages").then(r => r.json()),
+    staleTime: 0,
   })
 
   return (

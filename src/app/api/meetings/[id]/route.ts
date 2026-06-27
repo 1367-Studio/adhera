@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -49,6 +50,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
+  await writeActivityLog({
+    associationId,
+    actorId: ctx.userId,
+    action:  "MEETING_UPDATED",
+    entity:  "Meeting",
+    entityId: id,
+    label:   existing.title,
+  })
+
   return NextResponse.json(meeting)
 }
 
@@ -66,5 +76,15 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
   await prisma.meeting.delete({ where: { id } })
+
+  await writeActivityLog({
+    associationId,
+    actorId: ctx.userId,
+    action:  "MEETING_DELETED",
+    entity:  "Meeting",
+    entityId: id,
+    label:   existing.title,
+  })
+
   return new NextResponse(null, { status: 204 })
 }
