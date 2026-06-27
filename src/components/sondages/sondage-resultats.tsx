@@ -40,17 +40,25 @@ type ResultatsData = {
 
 const COLORS = ["#6366f1", "#8b5cf6", "#a78bfa", "#c4b5fd", "#ddd6fe", "#ede9fe"]
 
-const TOOLTIP_STYLE = {
-  contentStyle: {
-    background:   "hsl(var(--card))",
-    border:       "1px solid hsl(var(--border))",
-    borderRadius: "8px",
-    color:        "hsl(var(--card-foreground))",
-    fontSize:     "12px",
-    boxShadow:    "0 4px 12px rgba(0,0,0,0.08)",
-  },
-  labelStyle: { fontWeight: 600, color: "hsl(var(--card-foreground))" },
-  itemStyle:  { color: "hsl(var(--card-foreground))" },
+function ChartTooltip({ active, payload, label, formatter }: {
+  active?:    boolean
+  payload?:   { name: string; value: number }[]
+  label?:     string
+  formatter?: (v: number) => string
+}) {
+  if (!active || !payload?.length) return null
+  const p = payload[0]
+  const header   = label ?? p.name
+  const valueStr = formatter ? formatter(p.value) : String(p.value)
+  return (
+    <div className="rounded-lg border bg-card text-card-foreground px-3 py-2 shadow-md text-xs space-y-0.5">
+      <p className="font-semibold">{header}</p>
+      <p className="text-muted-foreground">
+        {label ? `${p.name}: ` : ""}
+        <span className="font-medium text-card-foreground">{valueStr}</span>
+      </p>
+    </div>
+  )
 }
 
 function ChoiceChart({ result }: { result: ChoiceResult }) {
@@ -68,10 +76,7 @@ function ChoiceChart({ result }: { result: ChoiceResult }) {
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={v => `${v} (${total ? Math.round((v as number) / total * 100) : 0}%)`}
-                {...TOOLTIP_STYLE}
-              />
+              <Tooltip content={<ChartTooltip formatter={v => `${v} (${total ? Math.round(v / total * 100) : 0}%)`} />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -105,7 +110,7 @@ function ChoiceChart({ result }: { result: ChoiceResult }) {
           <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
           <XAxis type="number" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
           <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
-          <Tooltip cursor={{ fill: "hsl(var(--muted))" }} {...TOOLTIP_STYLE} />
+          <Tooltip cursor={{ fill: "currentColor", fillOpacity: 0.06 }} content={<ChartTooltip />} />
           <Bar dataKey="value" fill={COLORS[0]} radius={[0, 4, 4, 0]} name="Réponses" />
         </BarChart>
       </ResponsiveContainer>
@@ -137,7 +142,7 @@ function RatingChart({ result }: { result: RatingResult }) {
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fontSize: 11 }} tickLine={false} axisLine={false} allowDecimals={false} />
-            <Tooltip cursor={{ fill: "hsl(var(--muted))" }} {...TOOLTIP_STYLE} />
+            <Tooltip cursor={{ fill: "currentColor", fillOpacity: 0.06 }} content={<ChartTooltip />} />
             <Bar dataKey="value" fill={COLORS[0]} radius={[4, 4, 0, 0]} name="Réponses" />
           </BarChart>
         </ResponsiveContainer>
