@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Breadcrumb,
@@ -14,6 +15,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { UserMenu } from "@/components/layout/user-menu"
 import { NotificationBell } from "@/components/layout/notification-bell"
+import { isManager } from "@/lib/user-context"
+import { cn } from "@/lib/utils"
 
 const routeLabels: Record<string, string> = {
   dashboard:    "Dashboard",
@@ -38,11 +41,38 @@ interface HeaderProps {
     email?: string | null
     role?:  string
   }
-  showSidebar?:    boolean
-  logoutRedirect?: string
+  showSidebar?:     boolean
+  logoutRedirect?:  string
+  associationSlug?: string
 }
 
-export function Header({ user, showSidebar = false, logoutRedirect }: HeaderProps) {
+function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
+  const inPortal = pathname.includes("/portal/")
+  return (
+    <div className="flex items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
+      <Link
+        href={`/portal/${slug}/actualites`}
+        className={cn(
+          "rounded-full px-3 py-1 transition-colors",
+          inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+        )}
+      >
+        Mon espace
+      </Link>
+      <Link
+        href="/dashboard"
+        className={cn(
+          "rounded-full px-3 py-1 transition-colors",
+          !inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+        )}
+      >
+        Gestion
+      </Link>
+    </div>
+  )
+}
+
+export function Header({ user, showSidebar = false, logoutRedirect, associationSlug }: HeaderProps) {
   const pathname = usePathname()
   const looksLikeId = (s: string) => /^[a-z0-9]{20,}$/i.test(s) || /^[0-9a-f-]{36}$/i.test(s)
   const segments = pathname.split("/").filter(Boolean)
@@ -84,7 +114,10 @@ export function Header({ user, showSidebar = false, logoutRedirect }: HeaderProp
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-2">
+        {associationSlug && isManager(user.role ?? "") && (
+          <ViewSwitcher slug={associationSlug} pathname={pathname} />
+        )}
         <NotificationBell />
         <ThemeToggle />
         <UserMenu user={user} logoutRedirect={logoutRedirect} />

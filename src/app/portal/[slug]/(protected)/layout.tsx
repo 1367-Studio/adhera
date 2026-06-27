@@ -24,7 +24,6 @@ export default async function PortalLayout({
 
   // Enforce the user belongs to this association
   if (u.associationSlug !== slug) redirect(`/portal/${slug}/login`)
-  if (u.role !== "MEMBRE") redirect("/dashboard")
 
   const sessionUser: SessionUser = {
     id:              u.id,
@@ -49,7 +48,7 @@ export default async function PortalLayout({
       <SidebarProvider>
         <PortalSidebar slug={slug} />
         <SidebarInset>
-          <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} />
+          <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} associationSlug={slug} />
           <main className="flex flex-1 flex-col gap-4 p-4 pb-6 md:p-6 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>

@@ -46,6 +46,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
 
+  if (existing.userId === userId && rest.status === "INACTIF") {
+    return NextResponse.json({ error: "Vous ne pouvez pas désactiver votre propre compte" }, { status: 403 })
+  }
+
   const emailChanged = email !== undefined && email !== existing.email
 
   if (emailChanged && email && existing.userId) {
@@ -105,6 +109,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const { id } = await params
   const existing = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
+
+  if (existing.userId === userId) {
+    return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 403 })
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.membre.update({ where: { id }, data: { deletedAt: new Date() } })

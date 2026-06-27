@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon } from "lucide-react"
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import type { MembreInput } from "@/lib/schemas"
+import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -103,6 +103,11 @@ function ChangeRoleModal({
 }) {
   const [role, setRole] = useState<UserRole>(membre.user?.role ?? "MEMBRE")
   const mutation        = useChangeRole()
+  const currentUser     = useCurrentUser()
+
+  const roleOptions = currentUser.role === "ADMIN"
+    ? ROLE_OPTIONS
+    : ROLE_OPTIONS.filter(o => o.value !== "ADMIN")
 
   async function handleSave() {
     try {
@@ -125,7 +130,7 @@ function ChangeRoleModal({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {ROLE_OPTIONS.map(o => (
+            {roleOptions.map(o => (
               <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
             ))}
           </SelectContent>
@@ -176,7 +181,7 @@ export function MembresView() {
   const updateMutation = useUpdateMembre(editTarget?.id ?? "")
   const deleteMutation = useDeleteMembre()
 
-  async function handleCreate(data: MembreInput) {
+  async function handleCreate(data: MembreCreateInput) {
     try {
       await createMutation.mutateAsync(data)
       toast.success("Membre ajouté avec succès")
@@ -251,16 +256,21 @@ export function MembresView() {
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (m) => (
-        <RowActions actions={[
-          { label: "Modifier",        icon: <PencilIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
-          { label: "Historique",      icon: <HistoryIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
-          ...(currentUser.role === "ADMIN" && m.userId ? [
-            { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
-          ] : []),
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
-        ]} />
-      ),
+      cell: (m) => {
+        const isSelf = m.userId === currentUser.id
+        return (
+          <RowActions actions={[
+            { label: "Modifier",   icon: <PencilIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+            { label: "Historique", icon: <HistoryIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
+            ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
+              { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
+            ] : []),
+            ...(!isSelf ? [
+              { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
+            ] : []),
+          ]} />
+        )
+      },
     },
   ]
 
@@ -364,6 +374,8 @@ export function MembresView() {
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
           loading={createMutation.isPending}
+          isCreate
+          actorRole={currentUser.role}
         />
       </Modal>
 
@@ -387,6 +399,7 @@ export function MembresView() {
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          isSelf={editTarget?.userId === currentUser.id}
         />
       </Modal>
 

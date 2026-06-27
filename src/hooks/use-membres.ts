@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { MembreInput, MembreUpdateInput } from "@/lib/schemas"
+import type { MembreCreateInput, MembreUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage } from "@/lib/api-error"
 
@@ -15,7 +15,7 @@ async function fetchMembresPaginated(page: number, limit: number, search?: strin
   return res.json() as Promise<PaginatedResult<unknown>>
 }
 
-async function createMembre(data: MembreInput) {
+async function createMembre(data: MembreCreateInput) {
   const res = await fetch("/api/membres", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

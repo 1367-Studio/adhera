@@ -7,6 +7,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
 import { HeartHandshakeIcon, DownloadIcon, CheckCircleIcon, ClockIcon } from "lucide-react"
+import { portalFetch } from "@/lib/portal-fetch"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,7 +30,7 @@ export default function DonsPortalPage() {
 
   const { data: dons = [], isLoading, refetch } = useQuery<Don[]>({
     queryKey: ["portal-dons"],
-    queryFn:  () => fetch("/api/portal/dons").then(r => r.json()),
+    queryFn:  () => portalFetch("/api/portal/dons") as Promise<Don[]>,
     staleTime: 0,
   })
 

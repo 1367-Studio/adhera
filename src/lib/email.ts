@@ -72,6 +72,51 @@ export function welcomeEmail(p: {
   }
 }
 
+export function invitationEmail(p: {
+  firstName:       string
+  email:           string
+  password:        string
+  associationName: string
+  role:            string
+  loginUrl:        string
+}) {
+  const isStaff   = p.role !== "MEMBRE"
+  const roleLabel: Record<string, string> = {
+    MEMBRE:     "membre",
+    SECRETAIRE: "secrétaire",
+    TRESORIER:  "trésorier",
+    PRESIDENT:  "président",
+    ADMIN:      "administrateur",
+  }
+  const label   = roleLabel[p.role] ?? p.role.toLowerCase()
+  const context = isStaff
+    ? `Vous avez été invité(e) en tant que <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à l'espace de gestion de l'association.`
+    : `Vous avez été invité(e) comme <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à votre espace membre pour consulter les événements, actualités et gérer votre adhésion.`
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
+    ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl)}
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f4f4f5;border-radius:8px;padding:16px 20px;width:100%;">
+      <tr>
+        <td style="font-size:13px;color:#71717a;padding-bottom:6px;">Vos identifiants de connexion</td>
+      </tr>
+      <tr>
+        <td style="font-size:14px;"><strong>Email :</strong> ${p.email}</td>
+      </tr>
+      <tr>
+        <td style="font-size:14px;padding-top:4px;"><strong>Mot de passe :</strong> ${p.password}</td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:13px;color:#71717a;">Nous vous recommandons de changer votre mot de passe après votre première connexion. Vous pouvez également utiliser <a href="${p.loginUrl.replace(/\/login.*/, "/forgot-password")}" style="color:#18181b;">mot de passe oublié</a> à tout moment.</p>`
+
+  return {
+    to:      p.email,
+    subject: `Invitation — ${p.associationName}`,
+    html:    layout(p.associationName, content),
+  }
+}
+
 export function rsvpConfirmationEmail(p: {
   firstName:       string
   email:           string

@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { membreSchema, type MembreInput } from "@/lib/schemas"
+import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -17,23 +17,38 @@ const statusOptions = [
   { value: "SUSPENDU", label: "Suspendu"   },
 ]
 
+const selfStatusOptions = statusOptions.filter(o => o.value !== "INACTIF" && o.value !== "SUSPENDU")
+
+const allRoleOptions = [
+  { value: "MEMBRE",     label: "Membre"     },
+  { value: "SECRETAIRE", label: "Secrétaire" },
+  { value: "TRESORIER",  label: "Trésorier"  },
+  { value: "PRESIDENT",  label: "Président"  },
+  { value: "ADMIN",      label: "Admin"      },
+]
+
 interface MembreFormProps {
   defaultValues?: Partial<MembreInput>
-  onSubmit: (data: MembreInput) => Promise<void>
+  onSubmit: (data: MembreCreateInput) => Promise<void>
   onCancel: () => void
   loading?: boolean
+  isCreate?: boolean
+  actorRole?: string
+  isSelf?: boolean
 }
 
-export function MembreForm({ defaultValues, onSubmit, onCancel, loading }: MembreFormProps) {
+export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf }: MembreFormProps) {
   const { data: types = [] } = useMembreTypes()
 
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<MembreInput>({
-    resolver: zodResolver(membreSchema),
-    defaultValues: { status: "ACTIF", ...defaultValues },
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<MembreCreateInput>({
+    resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
+    defaultValues: { status: "ACTIF", role: "MEMBRE", ...defaultValues },
     mode: "onSubmit",
   })
 
-  useEffect(() => { reset({ status: "ACTIF", ...defaultValues }) }, [defaultValues, reset])
+  useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues }) }, [defaultValues, reset])
+
+  const roleOptions = actorRole === "ADMIN" ? allRoleOptions : allRoleOptions.filter(o => o.value !== "ADMIN")
 
   const typeOptions = [
     { value: "", label: "Aucun type" },
@@ -62,6 +77,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading }: Membr
           label="Email"
           type="email"
           placeholder="contact@example.com"
+          required={isCreate}
           error={errors.email?.message}
           {...register("email")}
         />
@@ -73,6 +89,27 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading }: Membr
           {...register("phone")}
         />
       </div>
+
+      {isCreate && (
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <div className="space-y-1.5">
+              <SelectField
+                label="Rôle"
+                options={roleOptions}
+                value={field.value ?? "MEMBRE"}
+                onValueChange={field.onChange}
+                error={errors.role?.message}
+              />
+              <p className="text-xs text-muted-foreground">
+                Un email d&apos;invitation avec les identifiants sera envoyé à cette adresse.
+              </p>
+            </div>
+          )}
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
@@ -89,7 +126,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading }: Membr
             <SelectField
               label="Statut"
               required
-              options={statusOptions}
+              options={isSelf ? selfStatusOptions : statusOptions}
               value={field.value}
               onValueChange={field.onChange}
               error={errors.status?.message}

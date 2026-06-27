@@ -39,7 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <SidebarProvider>
         <AppSidebar enabledModules={enabledModules} />
         <SidebarInset>
-          <Header user={session.user} showSidebar />
+          <Header user={session.user} showSidebar associationSlug={u.associationSlug ?? undefined} />
           <main className="flex flex-1 flex-col gap-4 p-4 pt-0 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>

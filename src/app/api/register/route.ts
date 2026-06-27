@@ -65,13 +65,23 @@ export async function POST(req: Request) {
           trialEndsAt,
         },
       })
-      await tx.user.create({
+      const user = await tx.user.create({
         data: {
           email:         email.toLowerCase(),
           name:          `${firstName} ${lastName}`,
           passwordHash,
           role:          "ADMIN",
           associationId: association.id,
+        },
+      })
+      await tx.membre.create({
+        data: {
+          firstName,
+          lastName,
+          email:         email.toLowerCase(),
+          status:        "ACTIF",
+          associationId: association.id,
+          userId:        user.id,
         },
       })
     })

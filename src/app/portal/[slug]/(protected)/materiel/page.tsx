@@ -12,6 +12,7 @@ import { fr } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import { Portal } from "@/components/ui/portal"
 import { cn } from "@/lib/utils"
+import { portalFetch } from "@/lib/portal-fetch"
 
 type CatalogItem = {
   id:           string
@@ -179,7 +180,7 @@ export default function MaterielPage() {
 
   const { data, isLoading } = useQuery<PortalMaterielData>({
     queryKey: ["portal-materiel"],
-    queryFn:  () => fetch("/api/portal/materiel").then(r => r.json()),
+    queryFn:  () => portalFetch("/api/portal/materiel") as Promise<PortalMaterielData>,
     staleTime: 0,
   })
 

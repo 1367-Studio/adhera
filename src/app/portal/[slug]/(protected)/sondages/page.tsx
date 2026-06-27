@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { ClipboardListIcon, CheckCircleIcon, ClockIcon, ChevronRightIcon } from "lucide-react"
+import { portalFetch } from "@/lib/portal-fetch"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
@@ -25,7 +26,7 @@ export default function SondagesPortalPage() {
 
   const { data: sondages = [], isLoading } = useQuery<SondageItem[]>({
     queryKey: ["portal-sondages"],
-    queryFn:  () => fetch("/api/portal/sondages").then(r => r.json()),
+    queryFn:  () => portalFetch("/api/portal/sondages") as Promise<SondageItem[]>,
     staleTime: 0,
   })
 

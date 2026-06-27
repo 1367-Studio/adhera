@@ -19,7 +19,13 @@ export const membreSchema = z.object({
   typeId:    z.string().optional().or(z.literal("")),
 })
 
+export const membreCreateSchema = membreSchema.extend({
+  email: z.string().trim().email("Email invalide").min(1, "Email requis"),
+  role:  z.enum(["MEMBRE", "SECRETAIRE", "TRESORIER", "PRESIDENT", "ADMIN"]).optional(),
+})
+
 export const membreUpdateSchema = membreSchema.partial()
 
 export type MembreInput       = z.infer<typeof membreSchema>
+export type MembreCreateInput = z.infer<typeof membreCreateSchema>
 export type MembreUpdateInput = z.infer<typeof membreUpdateSchema>

@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server"
+import { randomBytes } from "crypto"
+import bcrypt from "bcryptjs"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { welcomeEmail } from "@/lib/email"
-import { membreSchema } from "@/lib/schemas"
+import { invitationEmail } from "@/lib/email"
+import { membreCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
+import { APP_URL } from "@/lib/env"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -53,42 +56,73 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+  const { associationId, role: actorRole, userId } = ctx
 
-  if (!MANAGERS.includes(role)) {
+  if (!MANAGERS.includes(actorRole)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const body = await req.json()
-  const parsed = membreSchema.safeParse(body)
+  const parsed = membreCreateSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
-  const [membre, assoc] = await Promise.all([
-    prisma.membre.create({
-      data: {
-        ...rest,
-        associationId,
-        email:     email     || null,
-        phone:     phone     || null,
-        address:   address   || null,
-        typeId:    typeId    || null,
-        birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null,
-      },
-    }),
-    prisma.association.findUnique({ where: { id: associationId }, select: { name: true } }),
-  ])
+  const { birthDate, email, phone, address, typeId, role = "MEMBRE", ...rest } = parsed.data
 
-  if (membre.email && assoc) {
-    const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
-    sendEmail(welcomeEmail({
+  if (role === "ADMIN" && actorRole !== "ADMIN") {
+    return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
+  }
+
+  const assoc = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: { name: true, slug: true },
+  })
+
+  const membreData = {
+    ...rest,
+    associationId,
+    email:     email     || null,
+    phone:     phone     || null,
+    address:   address   || null,
+    typeId:    typeId    || null,
+    birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null,
+  }
+
+  const existing = await prisma.user.findFirst({ where: { email: email.toLowerCase(), associationId } })
+  if (existing) {
+    return NextResponse.json({ error: "Un compte existe déjà avec cet email dans cette association" }, { status: 409 })
+  }
+
+  const plainPassword = randomBytes(6).toString("hex")
+  const passwordHash  = await bcrypt.hash(plainPassword, 12)
+
+  const membre = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email:         email.toLowerCase(),
+        name:          `${rest.firstName} ${rest.lastName}`,
+        passwordHash,
+        role:          role as "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE",
+        associationId,
+      },
+    })
+    return tx.membre.create({ data: { ...membreData, userId: user.id } })
+  })
+
+  if (assoc) {
+    const isStaff  = role !== "MEMBRE"
+    const loginUrl = isStaff
+      ? `${APP_URL}/login`
+      : `${APP_URL}/portal/${assoc.slug}/login`
+
+    sendEmail(invitationEmail({
       firstName:       membre.firstName,
-      email:           membre.email,
+      email:           email.toLowerCase(),
+      password:        plainPassword,
       associationName: assoc.name,
-      hasPortalAccess: !!membre.userId,
-      portalUrl,
+      role,
+      loginUrl,
     })).catch(() => {})
   }
 

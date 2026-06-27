@@ -93,12 +93,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (pathname.startsWith("/dashboard") || pathname.startsWith("/backoffice")) return isLoggedIn
       return true
     },
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id              = user.id
         token.role            = (user as { role?: string }).role
         token.associationId   = (user as { associationId?:   string | null }).associationId
         token.associationSlug = (user as { associationSlug?: string | null }).associationSlug
+      } else if (token.id) {
+        const fresh = await prisma.user.findUnique({
+          where:  { id: token.id as string },
+          select: { role: true, associationId: true, active: true },
+        })
+        if (!fresh || !fresh.active) {
+          return null
+        }
+        token.role          = fresh.role
+        token.associationId = fresh.associationId
       }
       return token
     },

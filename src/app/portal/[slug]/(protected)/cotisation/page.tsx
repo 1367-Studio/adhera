@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
+import { portalFetch } from "@/lib/portal-fetch"
 
 type Cotisation = {
   id:      string
@@ -45,9 +46,9 @@ export default function CotisationPortalPage() {
   const searchParams = useSearchParams()
   const [paymentEnabled, setPaymentEnabled] = useState(false)
 
-  const { data: cotisations, isLoading, refetch } = useQuery<Cotisation[]>({
+  const { data: cotisations, isLoading, isError, refetch } = useQuery<Cotisation[]>({
     queryKey: ["portal-cotisation"],
-    queryFn:  () => fetch("/api/portal/cotisation").then(r => r.json()),
+    queryFn:  () => portalFetch("/api/portal/cotisation") as Promise<Cotisation[]>,
     staleTime: 0,
   })
 
@@ -114,6 +115,8 @@ export default function CotisationPortalPage() {
       </div>
     )
   }
+
+  if (isError) return <p className="text-sm text-muted-foreground py-8 text-center">Aucun profil membre associé à ce compte.</p>
 
   const list     = cotisations ?? []
   const thisYear = list.find(c => c.year === currentYear())
