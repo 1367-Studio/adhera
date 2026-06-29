@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { parseSmsSettings } from "@/lib/sms-settings"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -40,6 +41,14 @@ export async function PATCH(req: Request) {
   await prisma.association.update({
     where: { id: ctx.associationId },
     data:  { smsSettings: parsed.data },
+  })
+
+  await writeActivityLog({
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
+    action:        "SMS_SETTINGS_UPDATED",
+    entity:        "Association",
+    metadata:      parsed.data,
   })
 
   return NextResponse.json({ ok: true })

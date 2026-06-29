@@ -31,24 +31,34 @@ export async function writeActivityLog(opts: WriteActivityLogOptions): Promise<v
 
 type FieldDiff = { old: string | null; new: string | null }
 
+function normalizeForDiff(v: unknown): string | null {
+  if (v === null || v === undefined || v === "") return null
+  if (v instanceof Date) return v.toISOString().split("T")[0]
+  if (typeof v === "object" && typeof (v as { toNumber?: unknown }).toNumber === "function") {
+    return String((v as { toNumber(): number }).toNumber())
+  }
+  return String(v)
+}
+
+export function computeDiff(
+  before: Record<string, unknown>,
+  after:  Record<string, unknown>,
+  fields: readonly string[],
+): Record<string, FieldDiff> {
+  const changes: Record<string, FieldDiff> = {}
+  for (const field of fields) {
+    const oldStr = normalizeForDiff(before[field])
+    const newStr = normalizeForDiff(after[field])
+    if (oldStr !== newStr) changes[field] = { old: oldStr, new: newStr }
+  }
+  return changes
+}
+
 const MEMBRE_FIELDS = ["firstName", "lastName", "email", "phone", "address", "birthDate", "status", "typeId"] as const
 
 export function computeMemberDiff(
   before: Record<string, unknown>,
   after:  Record<string, unknown>,
 ): Record<string, FieldDiff> {
-  const changes: Record<string, FieldDiff> = {}
-  for (const field of MEMBRE_FIELDS) {
-    const oldVal = before[field] ?? null
-    const newVal = after[field]  ?? null
-    const oldStr = oldVal instanceof Date ? oldVal.toISOString().split("T")[0] : String(oldVal ?? "")
-    const newStr = newVal instanceof Date ? newVal.toISOString().split("T")[0] : String(newVal ?? "")
-    if (oldStr !== newStr) {
-      changes[field] = {
-        old: oldVal !== null ? oldStr : null,
-        new: newVal !== null ? newStr : null,
-      }
-    }
-  }
-  return changes
+  return computeDiff(before, after, MEMBRE_FIELDS)
 }

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { cotisationUpdateSchema } from "@/lib/schemas"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
-import { writeActivityLog } from "@/lib/activity-log"
+import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -72,7 +72,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
   }
 
-  await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_UPDATED", entity: "Cotisation", entityId: id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`, metadata: parsed.data.status ? { status: parsed.data.status, oldStatus: existing.status } : undefined })
+  const changes = computeDiff(
+    existing   as Record<string, unknown>,
+    cotisation as Record<string, unknown>,
+    ["status", "amount", "paidAt", "note"],
+  )
+  await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_UPDATED", entity: "Cotisation", entityId: id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(cotisation)
 }
 

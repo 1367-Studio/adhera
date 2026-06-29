@@ -190,11 +190,18 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   BOUTIQUE_PRODUIT_DELETED:  { label: "Produit supprimé",       color: DEL    },
   BOUTIQUE_COMMANDE_CREATED: { label: "Commande créée",         color: PINK   },
   BOUTIQUE_COMMANDE_UPDATED: { label: "Commande mise à jour",   color: PINK_L },
+  // Dons (teal)
+  DON_PAID:                 { label: "Don reçu",             color: TEAL   },
+  // Cotisation Stripe
+  COTISATION_PAID:          { label: "Cotisation payée (Stripe)", color: EME },
   // Association / Site (rose)
   ASSOCIATION_UPDATED:      { label: "Paramètres modifiés",  color: ROSE   },
   SITE_UPDATED:             { label: "Site web modifié",     color: ROSE   },
   SITE_PUBLISHED:           { label: "Site web publié",      color: EME    },
   SITE_UNPUBLISHED:         { label: "Site web dépublié",    color: SLA    },
+  SMS_SETTINGS_UPDATED:     { label: "SMS — paramètres",     color: ROSE   },
+  // Tickets expirés
+  TICKET_CHECKOUT_EXPIRED:  { label: "Paiement expiré",      color: DEL    },
 }
 
 const ENTITY_LABELS: Record<string, string> = {
@@ -209,12 +216,25 @@ const ENTITY_LABELS: Record<string, string> = {
   MessageTemplate: "Modèles",
   AutomationRule:  "Automatisations",
   MembreType:      "Types membres",
-  Association:      "Paramètres",
+  Association:     "Paramètres",
   BoutiqueProduit:  "Boutique – Produits",
   BoutiqueCommande: "Boutique – Commandes",
   Sondage:          "Sondages",
   SondageReponse:   "Sondages – Réponses",
   Meeting:          "Réunions",
+  Don:              "Dons",
+}
+
+const GENERIC_FIELD_LABELS: Record<string, Record<string, string>> = {
+  TRESORERIE_UPDATED: {
+    description: "Description", amount: "Montant", type: "Type", date: "Date", category: "Catégorie",
+  },
+  EVENEMENT_UPDATED: {
+    title: "Titre", date: "Date", location: "Lieu", price: "Prix", capacity: "Capacité",
+  },
+  COTISATION_UPDATED: {
+    status: "Statut", amount: "Montant", paidAt: "Date paiement", note: "Note",
+  },
 }
 
 const ENTITY_OPTIONS = [
@@ -235,6 +255,7 @@ const ENTITY_OPTIONS = [
   { value: "Sondage",          label: "Sondages"              },
   { value: "SondageReponse",   label: "Sondages – Réponses"   },
   { value: "Meeting",          label: "Réunions"              },
+  { value: "Don",              label: "Dons"                  },
 ]
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -245,6 +266,34 @@ function ActionBadge({ action }: { action: string }) {
     <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap", cfg.color)}>
       {cfg.label}
     </span>
+  )
+}
+
+function formatDiffValue(field: string, value: string | null): string {
+  if (value === null) return "—"
+  if (field === "status") return STATUS_LABELS[value] ?? value
+  if (field === "type")   return value === "ENTREE" ? "Entrée" : "Sortie"
+  return value
+}
+
+function GenericDiff({ changes, fieldLabels }: {
+  changes: Record<string, { old: string | null; new: string | null }>
+  fieldLabels: Record<string, string>
+}) {
+  const entries = Object.entries(changes)
+  if (entries.length === 0) return <span className="text-muted-foreground text-xs">—</span>
+  return (
+    <div className="space-y-0.5">
+      {entries.map(([field, diff]) => (
+        <p key={field} className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">{fieldLabels[field] ?? field}</span>
+          {" "}
+          <span className="line-through opacity-50">{formatDiffValue(field, diff.old)}</span>
+          {" → "}
+          <span>{formatDiffValue(field, diff.new)}</span>
+        </p>
+      ))}
+    </div>
   )
 }
 
@@ -277,21 +326,12 @@ function Details({ log }: { log: LogEntry }) {
   }
 
   if ((log.action === "MEMBRE_UPDATED" || log.action === "PROFIL_UPDATED") && m.changes) {
-    const entries = Object.entries(m.changes)
-    if (entries.length === 0) return <span className="text-muted-foreground text-xs">—</span>
-    return (
-      <div className="space-y-0.5">
-        {entries.map(([field, diff]) => (
-          <p key={field} className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground/80">{FIELD_LABELS[field] ?? field}</span>
-            {" "}
-            <span className="line-through opacity-50">{diff.old ? (field === "status" ? STATUS_LABELS[diff.old] ?? diff.old : diff.old) : "—"}</span>
-            {" → "}
-            <span>{diff.new ? (field === "status" ? STATUS_LABELS[diff.new] ?? diff.new : diff.new) : "—"}</span>
-          </p>
-        ))}
-      </div>
-    )
+    return <GenericDiff changes={m.changes} fieldLabels={FIELD_LABELS} />
+  }
+
+  const genericLabels = GENERIC_FIELD_LABELS[log.action]
+  if (genericLabels && m.changes) {
+    return <GenericDiff changes={m.changes} fieldLabels={genericLabels} />
   }
 
   if (m.status) {
@@ -303,8 +343,8 @@ function Details({ log }: { log: LogEntry }) {
     )
   }
 
-  if (m.type && m.amount != null) {
-    return <p className="text-xs text-muted-foreground">{m.type === "ENTREE" ? "+" : "-"}{m.amount.toFixed(2)} €</p>
+  if (m.amount != null && !m.changes) {
+    return <p className="text-xs text-muted-foreground">{Number(m.amount).toFixed(2)} €</p>
   }
 
   if (m.rsvp) {

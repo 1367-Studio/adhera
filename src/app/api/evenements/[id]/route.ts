@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { evenementUpdateSchema } from "@/lib/schemas"
-import { writeActivityLog } from "@/lib/activity-log"
+import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -66,7 +66,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
-  await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id, label: evenement.title })
+  const changes = computeDiff(
+    existing  as Record<string, unknown>,
+    evenement as Record<string, unknown>,
+    ["title", "date", "location", "price", "capacity"],
+  )
+  await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id, label: evenement.title, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(evenement)
 }
 

@@ -145,6 +145,15 @@ export async function POST(req: Request) {
             paidAt,
           })).catch(() => {})
         }
+
+        await writeActivityLog({
+          associationId: cotisation.associationId,
+          action:        "COTISATION_PAID",
+          entity:        "Cotisation",
+          entityId:      cotisationId,
+          label:         `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`,
+          metadata:      { amount: Number(cotisation.amount) },
+        })
       } else if (participationId) {
         const participation = await prisma.participation.findUnique({
           where:   { id: participationId },
@@ -181,7 +190,7 @@ export async function POST(req: Request) {
           })
           await writeActivityLog({
             associationId: participation.evenement.associationId,
-            action:        "TICKET_PAID_STRIPE",
+            action:        "TICKET_PAID",
             entity:        "Participation",
             entityId:      participationId,
             label:         participation.evenement.title,
@@ -263,6 +272,15 @@ export async function POST(req: Request) {
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
           }).catch(() => {})
         }
+
+        await writeActivityLog({
+          associationId: don.associationId,
+          action:        "DON_PAID",
+          entity:        "Don",
+          entityId:      donId,
+          label:         don.anonymous ? "Don anonyme" : `${don.firstName} ${don.lastName}`,
+          metadata:      { amount: Number(don.amount) },
+        })
       }
       break
     }
