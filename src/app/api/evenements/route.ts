@@ -44,6 +44,7 @@ export async function GET(req: Request) {
     const data = await prisma.evenement.findMany({
       where,
       orderBy,
+      take: 500,
       include: { _count: { select: { participations: { where: { present: true } } } } },
     })
     return NextResponse.json(data)

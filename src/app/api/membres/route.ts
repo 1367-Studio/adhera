@@ -41,7 +41,7 @@ export async function GET(req: Request) {
   }
 
   if (!searchParams.has("page")) {
-    const data = await prisma.membre.findMany({ where, orderBy, include })
+    const data = await prisma.membre.findMany({ where, orderBy, include, take: 500 })
     return NextResponse.json(data)
   }
 

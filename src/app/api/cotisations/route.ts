@@ -39,7 +39,7 @@ export async function GET(req: Request) {
   ]
 
   if (!searchParams.has("page")) {
-    const data = await prisma.cotisation.findMany({ where, include, orderBy })
+    const data = await prisma.cotisation.findMany({ where, include, orderBy, take: 500 })
     return NextResponse.json(data)
   }
 
