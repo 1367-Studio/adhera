@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, TrendingUpIcon, TrendingDownIcon } from "lucide-react"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, TrendingUpIcon, TrendingDownIcon, LandmarkIcon, ScaleIcon } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useTresorerie, useCreateEntry, useUpdateEntry, useDeleteEntry } from "@/hooks/use-tresorerie"
@@ -160,28 +160,7 @@ export function TresorerieView() {
     <div className="space-y-4">
       <PageHeader
         title="Trésorerie"
-        description={
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span className={cn(
-              "font-semibold",
-              solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
-            )}>
-              Solde global : {fmt(solde)}
-            </span>
-            {yearFilter > 0 && (
-              <span className="text-sm text-muted-foreground">
-                {yearFilter} · Recettes&nbsp;
-                <span className="text-green-600 dark:text-green-400 font-medium">+{fmt(recettes)}</span>
-                &nbsp;· Dépenses&nbsp;
-                <span className="text-destructive font-medium">−{fmt(depenses)}</span>
-                &nbsp;· Bilan&nbsp;
-                <span className={cn("font-semibold", bilanAnnee >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")}>
-                  {bilanAnnee >= 0 ? "+" : ""}{fmt(bilanAnnee)}
-                </span>
-              </span>
-            )}
-          </div>
-        }
+        description="Suivi des entrées et sorties financières de l'association."
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
@@ -189,6 +168,57 @@ export function TresorerieView() {
           </Button>
         }
       />
+
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Solde global</span>
+            <div className={cn("flex size-7 items-center justify-center rounded-lg", solde >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30")}>
+              <LandmarkIcon className={cn("size-3.5", solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")} />
+            </div>
+          </div>
+          <span className={cn("text-xl font-bold tabular-nums", solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")}>
+            {fmt(solde)}
+          </span>
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Recettes {yearFilter || ""}</span>
+            <div className="flex size-7 items-center justify-center rounded-lg bg-green-50 dark:bg-green-950/30">
+              <TrendingUpIcon className="size-3.5 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+          <span className="text-xl font-bold tabular-nums text-green-600 dark:text-green-400">
+            +{fmt(recettes)}
+          </span>
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Dépenses {yearFilter || ""}</span>
+            <div className={cn("flex size-7 items-center justify-center rounded-lg", depenses > 0 ? "bg-red-50 dark:bg-red-950/30" : "bg-muted/40")}>
+              <TrendingDownIcon className={cn("size-3.5", depenses > 0 ? "text-destructive" : "text-muted-foreground")} />
+            </div>
+          </div>
+          <span className={cn("text-xl font-bold tabular-nums", depenses > 0 ? "text-destructive" : "text-muted-foreground")}>
+            {depenses > 0 ? `−${fmt(depenses)}` : fmt(depenses)}
+          </span>
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Bilan {yearFilter || ""}</span>
+            <div className={cn("flex size-7 items-center justify-center rounded-lg", bilanAnnee >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30")}>
+              <ScaleIcon className={cn("size-3.5", bilanAnnee >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")} />
+            </div>
+          </div>
+          <span className={cn("text-xl font-bold tabular-nums", bilanAnnee >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive")}>
+            {bilanAnnee >= 0 ? "+" : ""}{fmt(bilanAnnee)}
+          </span>
+        </div>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         {/* Search */}

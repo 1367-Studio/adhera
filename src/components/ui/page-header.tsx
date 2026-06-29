@@ -10,7 +10,7 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
       <div className="space-y-1">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
         {description && (
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <div className="text-sm text-muted-foreground">{description}</div>
         )}
       </div>
       {action && <div className="shrink-0">{action}</div>}
