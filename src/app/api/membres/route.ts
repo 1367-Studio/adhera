@@ -5,6 +5,8 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
+import { sendSms, welcomeSms } from "@/lib/sms"
+import { parseSmsSettings } from "@/lib/sms-settings"
 import { membreCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -76,7 +78,7 @@ export async function POST(req: Request) {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, slug: true },
+    select: { name: true, slug: true, smsSettings: true },
   })
 
   const membreData = {
@@ -124,6 +126,14 @@ export async function POST(req: Request) {
       role,
       loginUrl,
     })).catch(() => {})
+
+    const smsConfig = parseSmsSettings(assoc.smsSettings)
+    if (smsConfig.memberWelcome && role === "MEMBRE" && membre.phone) {
+      sendSms(membre.phone, welcomeSms({
+        firstName:       membre.firstName,
+        associationName: assoc.name,
+      })).catch(() => {})
+    }
   }
 
   await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id, label: `${membre.firstName} ${membre.lastName}` })

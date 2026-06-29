@@ -1,21 +1,24 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { BuildingIcon, CreditCardIcon, BellIcon, ZapIcon } from "lucide-react"
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
+import { ViewToggle } from "@/components/ui/view-toggle"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
 import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
+import { SmsSettings } from "@/components/parametres/sms-settings"
 
 type Association = {
   id:      string
@@ -25,12 +28,29 @@ type Association = {
   country: string
 }
 
+type Tab = "general" | "paiements" | "notifications" | "integrations"
+
+const ALL_TABS = [
+  { value: "general"       as Tab, label: "Général",       icon: <BuildingIcon   className="size-3.5" />, module: null    },
+  { value: "paiements"     as Tab, label: "Paiements",     icon: <CreditCardIcon className="size-3.5" />, module: "dons"  },
+  { value: "notifications" as Tab, label: "Notifications", icon: <BellIcon       className="size-3.5" />, module: "sms"   },
+  { value: "integrations"  as Tab, label: "Intégrations",  icon: <ZapIcon        className="size-3.5" />, module: "ia"   },
+] as const
+
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 export function ParametresView() {
   const { role } = useCurrentUser()
-  const canEdit   = ADMINS.includes(role)
-  const qc        = useQueryClient()
+  const modules  = useModules()
+  const canEdit  = ADMINS.includes(role)
+  const qc       = useQueryClient()
+  const [tab, setTab] = useState<Tab>("general")
+
+  const tabs = ALL_TABS.filter(t => !t.module || modules[t.module])
+
+  useEffect(() => {
+    if (!tabs.some(t => t.value === tab)) setTab("general")
+  }, [tabs, tab])
 
   const { data: assoc, isLoading } = useQuery<Association>({
     queryKey: ["association"],
@@ -42,7 +62,7 @@ export function ParametresView() {
   })
 
   const { register, handleSubmit, reset, formState: { errors, isDirty, isSubmitting } } = useForm<AssociationInput>({
-    resolver: zodResolver(associationSchema),
+    resolver:      zodResolver(associationSchema),
     defaultValues: { name: "", city: "", country: "France" },
   })
 
@@ -68,93 +88,92 @@ export function ParametresView() {
     onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
   })
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4 py-4">
-        <div className="h-8 w-48 rounded-lg bg-muted animate-pulse" />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <div className="rounded-xl border bg-card p-6 space-y-3">
-            {[1,2,3].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
-          </div>
-          <div className="rounded-xl border bg-card p-6 space-y-3">
-            {[1,2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6 py-4">
       <PageHeader
         title="Paramètres"
         description="Configuration de votre association"
+        action={<ViewToggle options={tabs} value={tab} onChange={setTab} />}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Association */}
-        <div className="rounded-xl border bg-card p-6">
-          <h3 className="text-sm font-semibold mb-4">Informations de l'association</h3>
-
-          <form onSubmit={handleSubmit(d => updateMutation.mutate(d))} className="space-y-4" noValidate>
-            <FormField
-              label="Nom de l'association"
-              required
-              disabled={!canEdit}
-              error={errors.name?.message}
-              {...register("name")}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                label="Ville"
-                disabled={!canEdit}
-                placeholder="Paris"
-                error={errors.city?.message}
-                {...register("city")}
-              />
-              <FormField
-                label="Pays"
-                required
-                disabled={!canEdit}
-                error={errors.country?.message}
-                {...register("country")}
-              />
-            </div>
-
-            {canEdit && (
-              <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
-                Enregistrer
-              </Button>
+      {/* ── Général ───────────────────────────────────────────────────── */}
+      {tab === "general" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-card p-6">
+            <h3 className="text-sm font-semibold mb-4">Informations de l'association</h3>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit(d => updateMutation.mutate(d))} className="space-y-4" noValidate>
+                <FormField
+                  label="Nom de l'association"
+                  required
+                  disabled={!canEdit}
+                  error={errors.name?.message}
+                  {...register("name")}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    label="Ville"
+                    disabled={!canEdit}
+                    placeholder="Paris"
+                    error={errors.city?.message}
+                    {...register("city")}
+                  />
+                  <FormField
+                    label="Pays"
+                    required
+                    disabled={!canEdit}
+                    error={errors.country?.message}
+                    {...register("country")}
+                  />
+                </div>
+                {canEdit && (
+                  <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
+                    Enregistrer
+                  </Button>
+                )}
+              </form>
             )}
-          </form>
-        </div>
+          </div>
 
-        {/* Types de membres */}
-        <MembreTypesManager canEdit={canEdit} />
-      </div>
+          <MembreTypesManager canEdit={canEdit} />
 
-      {/* Portail */}
-      {assoc?.slug && (
-        <div className="rounded-xl border bg-card p-6">
-          <PortalLinkSettings slug={assoc.slug} />
+          {assoc?.slug && (
+            <div className="rounded-xl border bg-card p-6">
+              <PortalLinkSettings slug={assoc.slug} />
+            </div>
+          )}
         </div>
       )}
 
-      {/* Stripe Connect */}
-      <div className="rounded-xl border bg-card p-6">
-        <StripeConnectSettings canEdit={canEdit} />
-      </div>
+      {/* ── Paiements ─────────────────────────────────────────────────── */}
+      {tab === "paiements" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-card p-6">
+            <StripeConnectSettings canEdit={canEdit} />
+          </div>
+          <div className="rounded-xl border bg-card p-6">
+            <IdentityDonsSettings canEdit={canEdit} />
+          </div>
+        </div>
+      )}
 
-      {/* Identité & Dons */}
-      <div className="rounded-xl border bg-card p-6">
-        <IdentityDonsSettings canEdit={canEdit} />
-      </div>
+      {/* ── Notifications ─────────────────────────────────────────────── */}
+      {tab === "notifications" && (
+        <div className="rounded-xl border bg-card p-6">
+          <SmsSettings canEdit={canEdit} />
+        </div>
+      )}
 
-      {/* IA */}
-      <div className="rounded-xl border bg-card p-6">
-        <AiSettings canEdit={canEdit} />
-      </div>
+      {/* ── Intégrations ──────────────────────────────────────────────── */}
+      {tab === "integrations" && (
+        <div className="rounded-xl border bg-card p-6">
+          <AiSettings canEdit={canEdit} />
+        </div>
+      )}
     </div>
   )
 }

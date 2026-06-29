@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import {
   AlertTriangleIcon, CalendarIcon, CreditCardIcon, LandmarkIcon,
   NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparklesIcon,
-  HeartIcon, BarChart3Icon, ShoppingBagIcon, VideoIcon,
+  HeartIcon, BarChart3Icon, ShoppingBagIcon, VideoIcon, MessageSquareTextIcon,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -25,7 +25,8 @@ const MODULE_META: Record<keyof AssocModules, { icon: LucideIcon; description: s
   dons:        { icon: HeartIcon,       description: "Collecte de dons en ligne" },
   sondages:    { icon: BarChart3Icon,   description: "Création et diffusion de sondages" },
   boutique:    { icon: ShoppingBagIcon, description: "Vente de produits aux membres" },
-  reunions:    { icon: VideoIcon,       description: "Réunions et assemblées générales" },
+  reunions:    { icon: VideoIcon,             description: "Réunions et assemblées générales" },
+  sms:         { icon: MessageSquareTextIcon, description: "Notifications SMS via Twilio" },
 }
 
 interface Props {

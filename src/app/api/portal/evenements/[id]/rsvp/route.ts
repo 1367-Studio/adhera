@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
+import { sendSms, rsvpConfirmationSms } from "@/lib/sms"
+import { parseSmsSettings } from "@/lib/sms-settings"
 import { writeActivityLog } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
@@ -62,19 +64,35 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     update: { rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
   })
 
-  if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme && membre.email) {
-    const assoc = await prisma.association.findUnique({ where: { id: u.associationId! }, select: { name: true } })
+  if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme) {
+    const assoc = await prisma.association.findUnique({
+      where:  { id: u.associationId! },
+      select: { name: true, smsSettings: true },
+    })
     if (assoc) {
-      const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
-      sendEmail(rsvpConfirmationEmail({
-        firstName:       membre.firstName,
-        email:           membre.email,
-        associationName: assoc.name,
-        eventTitle:      evenement.title,
-        eventDate:       evenement.date,
-        eventLocation:   evenement.location,
-        portalUrl,
-      })).catch(() => {})
+      const portalUrl  = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
+      const smsConfig  = parseSmsSettings(assoc.smsSettings)
+
+      if (membre.email) {
+        sendEmail(rsvpConfirmationEmail({
+          firstName:       membre.firstName,
+          email:           membre.email,
+          associationName: assoc.name,
+          eventTitle:      evenement.title,
+          eventDate:       evenement.date,
+          eventLocation:   evenement.location,
+          portalUrl,
+        })).catch(() => {})
+      }
+
+      if (smsConfig.rsvpConfirmation && membre.phone) {
+        sendSms(membre.phone, rsvpConfirmationSms({
+          firstName:       membre.firstName,
+          associationName: assoc.name,
+          eventTitle:      evenement.title,
+          eventDate:       evenement.date,
+        })).catch(() => {})
+      }
     }
   }
 

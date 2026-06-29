@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmailBulk } from "@/lib/mail"
 import { eventReminderEmail } from "@/lib/email"
+import { sendSms, eventReminderSms } from "@/lib/sms"
+import { parseSmsSettings } from "@/lib/sms-settings"
 
 export async function GET(req: Request) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "")
@@ -18,10 +20,10 @@ export async function GET(req: Request) {
   const evenements = await prisma.evenement.findMany({
     where: { date: { gte: dayStart, lte: dayEnd } },
     include: {
-      association:    { select: { name: true, slug: true } },
+      association:    { select: { name: true, slug: true, smsSettings: true } },
       participations: {
         where:   { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
-        include: { membre: { select: { firstName: true, email: true } } },
+        include: { membre: { select: { firstName: true, email: true, phone: true } } },
       },
     },
   })
@@ -44,5 +46,21 @@ export async function GET(req: Request) {
 
   const { sent, failed } = await sendEmailBulk(payloads)
 
-  return NextResponse.json({ ok: true, sent, failed })
+  const smsJobs = evenements.flatMap(ev => {
+    const smsConfig = parseSmsSettings(ev.association.smsSettings)
+    if (!smsConfig.eventReminder) return []
+    return ev.participations
+      .filter(p => p.membre.phone)
+      .map(p => sendSms(p.membre.phone!, eventReminderSms({
+        firstName:       p.membre.firstName,
+        associationName: ev.association.name,
+        eventTitle:      ev.title,
+        eventDate:       ev.date,
+      })))
+  })
+  const smsResults  = await Promise.allSettled(smsJobs)
+  const smsSent     = smsResults.filter(r => r.status === "fulfilled").length
+  const smsFailed   = smsResults.filter(r => r.status === "rejected").length
+
+  return NextResponse.json({ ok: true, sent, failed, smsSent, smsFailed })
 }

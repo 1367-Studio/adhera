@@ -140,6 +140,7 @@ model Association {
   sitePublished        Boolean            @default(false)
   siteConfig           Json?
   modules              Json?
+  smsSettings          Json?
   internalNotes        String?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
