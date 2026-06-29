@@ -64,11 +64,7 @@ export async function POST(_req: Request, { params }: Params) {
       skipDuplicates: true,
     })
 
-    await Promise.allSettled(
-      membres
-        .filter(m => m.userId)
-        .map(m => pusherServer.trigger(`user-${m.userId}`, "new-notification", {})),
-    )
+    await pusherServer.trigger(`private-association-${ctx.associationId}`, "new-notification", {}).catch(() => {})
   }
 
   await writeActivityLog({

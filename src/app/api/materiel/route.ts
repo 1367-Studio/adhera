@@ -21,16 +21,30 @@ const schema = z.object({
   notes:         z.string().max(1000).optional().nullable(),
 })
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth()
   const u = session?.user as SessionUser | undefined
   if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
+  const { searchParams } = new URL(req.url)
+  const search = searchParams.get("search")?.trim()
+
+  const where: Record<string, unknown> = { associationId: u.associationId }
+  if (search) {
+    where.OR = [
+      { name:         { contains: search, mode: "insensitive" } },
+      { category:     { contains: search, mode: "insensitive" } },
+      { location:     { contains: search, mode: "insensitive" } },
+      { serialNumber: { contains: search, mode: "insensitive" } },
+    ]
+  }
+
   const materials = await prisma.material.findMany({
-    where:   { associationId: u.associationId },
+    where,
     orderBy: { createdAt: "desc" },
+    take:    500,
     include: {
       _count: { select: { loans: { where: { returnedAt: null } } } },
       loans: {

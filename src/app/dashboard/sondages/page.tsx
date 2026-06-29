@@ -5,14 +5,16 @@ import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { PlusIcon, ClipboardListIcon, UsersIcon, CheckCircleIcon, LockIcon, FileEditIcon } from "lucide-react"
+import { PlusIcon, ClipboardListIcon, UsersIcon, CheckCircleIcon, LockIcon, FileEditIcon, SearchIcon } from "lucide-react"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { useState } from "react"
+import { Pagination } from "@/components/ui/pagination"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import type { PaginatedResult } from "@/lib/pagination"
 
 type Sondage = {
   id:           string
@@ -38,23 +40,43 @@ const STATUS_ICON = {
   FERME:     <LockIcon className="size-3" />,
 }
 
+const PAGE_SIZE = 20
+
 export default function SondagesPage() {
   const router = useRouter()
   const qc     = useQueryClient()
-  const [deleteTarget, setDeleteTarget] = useState<Sondage | null>(null)
+  const [deleteTarget,  setDeleteTarget]  = useState<Sondage | null>(null)
+  const [page,          setPage]          = useState(1)
+  const [searchInput,   setSearchInput]   = useState("")
+  const [search,        setSearch]        = useState("")
 
-  const { data: sondages = [], isLoading } = useQuery<Sondage[]>({
-    queryKey:  ["sondages"],
-    queryFn:   () => fetch("/api/sondages").then(r => r.json()),
+  useEffect(() => {
+    const t = setTimeout(() => { setSearch(searchInput); setPage(1) }, 300)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
+  const { data: result, isLoading } = useQuery<PaginatedResult<Sondage>>({
+    queryKey:  ["sondages", page, search],
+    queryFn:   () => {
+      const p = new URLSearchParams({ page: String(page), limit: String(PAGE_SIZE) })
+      if (search) p.set("search", search)
+      return fetch(`/api/sondages?${p}`).then(r => r.json())
+    },
     staleTime: 0,
   })
+
+  useEffect(() => {
+    if (result && result.totalPages > 0 && page > result.totalPages) setPage(result.totalPages)
+  }, [result, page])
+
+  const sondages = result?.data ?? []
 
   const activateMutation = useMutation({
     mutationFn: (id: string) => fetch(`/api/sondages/${id}/activate`, { method: "POST" }).then(r => {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); toast.success("Sondage activé") },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage activé") },
     onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
 
@@ -63,7 +85,7 @@ export default function SondagesPage() {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); toast.success("Sondage fermé") },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage fermé") },
     onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
 
@@ -72,7 +94,7 @@ export default function SondagesPage() {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); toast.success("Sondage supprimé"); setDeleteTarget(null) },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage supprimé"); setDeleteTarget(null) },
     onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
 
@@ -88,6 +110,16 @@ export default function SondagesPage() {
           </Button>
         }
       />
+
+      <div className="relative max-w-sm">
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+        <input
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+          placeholder="Rechercher…"
+          className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        />
+      </div>
 
       {isLoading ? (
         <div className="space-y-3">
@@ -180,6 +212,16 @@ export default function SondagesPage() {
             </div>
           ))}
         </div>
+      )}
+
+      {result && result.totalPages > 1 && (
+        <Pagination
+          page={result.page}
+          totalPages={result.totalPages}
+          total={result.total}
+          limit={result.limit}
+          onPageChange={setPage}
+        />
       )}
 
       <ConfirmDialog

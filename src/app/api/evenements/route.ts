@@ -116,16 +116,15 @@ export async function POST(req: Request) {
   })
   const notifDateStr = evenement.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
   const notifBody    = [notifDateStr, evenement.location].filter(Boolean).join(" · ")
-  void Promise.all(
-    members.map(async m => {
-      const notif = await prisma.notification.create({
-        data: { userId: m.userId!, title: evenement.title, body: notifBody || null, link: "/portal/evenements" },
-      })
-      if (pusherReady) {
-        await pusherServer.trigger(`user-${m.userId}`, "new-notification", { id: notif.id })
-      }
-    }),
-  )
+  void (async () => {
+    await prisma.notification.createMany({
+      data: members.map(m => ({ userId: m.userId!, title: evenement.title, body: notifBody || null, link: "/portal/evenements" })),
+      skipDuplicates: true,
+    })
+    if (pusherReady) {
+      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {})
+    }
+  })()
 
   return NextResponse.json(evenement, { status: 201 })
 }

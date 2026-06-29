@@ -96,8 +96,17 @@ async function fetchJson(url: string, init?: RequestInit) {
   return res.status === 204 ? null : res.json()
 }
 
-export function useMateriel() {
-  return useQuery<Material[]>({ queryKey: KEY, queryFn: () => fetchJson("/api/materiel"), staleTime: 0 })
+export function useMateriel(search?: string) {
+  return useQuery<Material[]>({
+    queryKey:  [...KEY, search],
+    queryFn:   () => {
+      const p = new URLSearchParams()
+      if (search) p.set("search", search)
+      const qs = p.toString()
+      return fetchJson(qs ? `/api/materiel?${qs}` : "/api/materiel")
+    },
+    staleTime: 0,
+  })
 }
 
 export function useMaterialDetail(id: string | null) {

@@ -88,16 +88,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       userIds = recipients.map(r => r.membre.userId).filter((uid): uid is string => !!uid)
     }
 
-    await Promise.all(
-      userIds.map(async (userId) => {
-        const notif = await prisma.notification.create({
-          data: { userId, title: updated.title, body: notifBody, link: "/portal/actualites" },
-        })
-        if (pusherReady) {
-          await pusherServer.trigger(`user-${userId}`, "new-notification", { id: notif.id })
-        }
-      }),
-    )
+    await prisma.notification.createMany({
+      data: userIds.map(uid => ({ userId: uid, title: updated.title, body: notifBody, link: "/portal/actualites" })),
+      skipDuplicates: true,
+    })
+    if (pusherReady) {
+      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {})
+    }
   }
 
   const changes: Record<string, { old: string | null; new: string | null }> = {}

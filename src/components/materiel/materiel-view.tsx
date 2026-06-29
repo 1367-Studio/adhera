@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import {
   PlusIcon, SearchIcon, PackageIcon,
   MapPinIcon, ClockIcon, CheckIcon, XIcon,
@@ -131,34 +131,28 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
 }
 
 export function MaterielView() {
-  const { data: materials = [], isLoading } = useMateriel()
+  const [searchInput,  setSearchInput]  = useState("")
   const [search,       setSearch]       = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("ALL")
   const [createOpen,   setCreateOpen]   = useState(false)
   const [selected,     setSelected]     = useState<Material | null>(null)
   const [sheetOpen,    setSheetOpen]    = useState(false)
 
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(searchInput), 300)
+    return () => clearTimeout(t)
+  }, [searchInput])
+
+  const { data: materials = [], isLoading } = useMateriel(search || undefined)
+
   const filtered = useMemo(() => {
     return materials.filter(m => {
-      let matchStatus: boolean
-      if (statusFilter === "ALL") {
-        matchStatus = true
-      } else if (statusFilter === "EN_USE") {
-        matchStatus = m.status === "EN_USE" || m.loanedQty > 0
-      } else if (statusFilter === "DISPONIBLE") {
-        matchStatus = m.status === "DISPONIBLE" && m.availableQty > 0
-      } else {
-        matchStatus = m.status === statusFilter
-      }
-      const q = search.toLowerCase()
-      const matchSearch = !q
-        || m.name.toLowerCase().includes(q)
-        || m.category?.toLowerCase().includes(q)
-        || m.location?.toLowerCase().includes(q)
-        || m.serialNumber?.toLowerCase().includes(q)
-      return matchStatus && matchSearch
+      if (statusFilter === "ALL")         return true
+      if (statusFilter === "EN_USE")      return m.status === "EN_USE" || m.loanedQty > 0
+      if (statusFilter === "DISPONIBLE")  return m.status === "DISPONIBLE" && m.availableQty > 0
+      return m.status === statusFilter
     })
-  }, [materials, search, statusFilter])
+  }, [materials, statusFilter])
 
   const stats = useMemo(() => ({
     total:       materials.length,
@@ -231,8 +225,8 @@ export function MaterielView() {
         <div className="relative flex-1 max-w-sm">
           <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
           <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
             placeholder="Rechercher…"
             className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />

@@ -184,15 +184,25 @@ async function processEventReminder(
     },
   })
 
+  if (events.length === 0) return 0
+
   const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal/${rule.association.slug}/evenements`
   let sent = 0
 
+  const eventIds = events.map(e => e.id)
+  const allLogs  = await prisma.automationLog.findMany({
+    where:  { ruleId: rule.id, eventId: { in: eventIds } },
+    select: { membreId: true, eventId: true },
+  })
+  const notifiedByEvent = new Map<string, Set<string>>()
+  for (const log of allLogs) {
+    if (!log.eventId || !log.membreId) continue
+    if (!notifiedByEvent.has(log.eventId)) notifiedByEvent.set(log.eventId, new Set())
+    notifiedByEvent.get(log.eventId)!.add(log.membreId)
+  }
+
   for (const event of events) {
-    const alreadyNotified = await prisma.automationLog.findMany({
-      where:  { ruleId: rule.id, eventId: event.id },
-      select: { membreId: true },
-    })
-    const notifiedIds = new Set(alreadyNotified.map(l => l.membreId))
+    const notifiedIds = notifiedByEvent.get(event.id) ?? new Set<string>()
 
     const jobs = event.participations
       .filter(p => p.membre.email && !notifiedIds.has(p.membreId))

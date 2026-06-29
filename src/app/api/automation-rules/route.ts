@@ -3,6 +3,7 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { parsePagination } from "@/lib/pagination"
 import type { SessionUser } from "@/lib/user-context"
 import { computeNextRunAt } from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -17,20 +18,28 @@ const schema = z.object({
   recipients:    z.string().default("ALL"),
 })
 
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth()
   const u = session?.user as SessionUser | undefined
   if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  const rules = await prisma.automationRule.findMany({
-    where:   { associationId: u.associationId },
-    orderBy: { createdAt: "desc" },
-    include: { template: { select: { name: true } } },
-  })
+  const { searchParams } = new URL(req.url)
+  const where   = { associationId: u.associationId }
+  const orderBy = { createdAt: "desc" as const }
+  const include = { template: { select: { name: true } } }
 
-  return NextResponse.json(rules)
+  if (!searchParams.has("page")) {
+    return NextResponse.json(await prisma.automationRule.findMany({ where, orderBy, include }))
+  }
+
+  const { page, limit, skip } = parsePagination(searchParams)
+  const [data, total] = await Promise.all([
+    prisma.automationRule.findMany({ where, orderBy, skip, take: limit, include }),
+    prisma.automationRule.count({ where }),
+  ])
+  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
 }
 
 export async function POST(req: Request) {

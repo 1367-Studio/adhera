@@ -3,6 +3,7 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { parsePagination } from "@/lib/pagination"
 import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -32,20 +33,32 @@ const createSchema = z.object({
   recipientIds:  z.array(z.string()).optional(),
 })
 
-export async function GET() {
+export async function GET(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
 
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const sondages = await prisma.sondage.findMany({
-    where:   { associationId: ctx.associationId },
-    orderBy: { createdAt: "desc" },
-    include: { _count: { select: { reponses: true, questions: true } } },
-  })
+  const { searchParams } = new URL(req.url)
+  const search = searchParams.get("search")?.trim()
 
-  return NextResponse.json(sondages)
+  const where: Prisma.SondageWhereInput = { associationId: ctx.associationId }
+  if (search) where.title = { contains: search, mode: "insensitive" }
+
+  const orderBy = { createdAt: "desc" as const }
+  const include = { _count: { select: { reponses: true, questions: true } } }
+
+  if (!searchParams.has("page")) {
+    return NextResponse.json(await prisma.sondage.findMany({ where, orderBy, include }))
+  }
+
+  const { page, limit, skip } = parsePagination(searchParams)
+  const [data, total] = await Promise.all([
+    prisma.sondage.findMany({ where, orderBy, skip, take: limit, include }),
+    prisma.sondage.count({ where }),
+  ])
+  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
 }
 
 export async function POST(req: Request) {

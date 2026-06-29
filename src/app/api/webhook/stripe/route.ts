@@ -103,9 +103,7 @@ export async function POST(req: Request) {
               })),
               skipDuplicates: true,
             })
-            await Promise.allSettled(
-              admins.map(a => pusherServer.trigger(`user-${a.id}`, "new-notification", {})),
-            )
+            await pusherServer.trigger(`private-association-${commande.associationId}`, "new-notification", {}).catch(() => {})
           }
         }
       } else if (cotisationId) {

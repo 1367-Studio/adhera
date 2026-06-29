@@ -180,6 +180,7 @@ model User {
   membre        Membre?
 
   @@unique([email, associationId])
+  @@index([associationId, role])
 }
 
 model MembreType {
@@ -227,6 +228,9 @@ model Membre {
   sondageReponses     SondageReponse[]
   boutiqueCommandes   BoutiqueCommande[]
   meetingsAsParticipant MeetingParticipant[]
+
+  @@index([associationId, deletedAt])
+  @@index([associationId, status])
 }
 
 model Evenement {
@@ -249,6 +253,8 @@ model Evenement {
   association    Association    @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
+
+  @@index([associationId, date])
 }
 
 model Participation {
@@ -268,6 +274,7 @@ model Participation {
   evenement Evenement @relation(fields: [evenementId], references: [id])
 
   @@unique([membreId, evenementId])
+  @@index([evenementId])
 }
 
 model Cotisation {
@@ -286,6 +293,7 @@ model Cotisation {
   association Association @relation(fields: [associationId], references: [id])
 
   @@unique([membreId, year])
+  @@index([associationId, status])
 }
 
 model Don {
@@ -308,6 +316,8 @@ model Don {
 
   association Association @relation(fields: [associationId], references: [id])
   membre      Membre?     @relation(fields: [membreId], references: [id])
+
+  @@index([associationId, paidAt])
 }
 
 model TresorerieEntry {
@@ -322,6 +332,9 @@ model TresorerieEntry {
   updatedAt     DateTime       @updatedAt
 
   association Association @relation(fields: [associationId], references: [id])
+
+  @@index([associationId, date])
+  @@index([associationId, type])
 }
 
 model Notification {
@@ -334,6 +347,8 @@ model Notification {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, read])
 }
 
 model Actualite {
@@ -352,6 +367,8 @@ model Actualite {
   association Association          @relation(fields: [associationId], references: [id])
   evenement   Evenement?           @relation(fields: [evenementId], references: [id])
   recipients  ActualiteRecipient[]
+
+  @@index([associationId, publishedAt])
 }
 
 model ActualiteRecipient {
@@ -382,6 +399,8 @@ model Material {
 
   association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
   loans       MaterialLoan[]
+
+  @@index([associationId, status])
 }
 
 model MaterialLoan {
@@ -399,6 +418,8 @@ model MaterialLoan {
 
   material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
   membre   Membre?  @relation(fields: [membreId], references: [id])
+
+  @@index([materialId, returnedAt])
 }
 
 model MessageTemplate {
@@ -431,6 +452,9 @@ model AutomationRule {
   association Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
   template    MessageTemplate  @relation(fields: [templateId], references: [id])
   logs        AutomationLog[]
+
+  @@index([associationId, status])
+  @@index([status, nextRunAt])
 }
 
 model AutomationLog {
@@ -443,6 +467,9 @@ model AutomationLog {
 
   rule   AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
   membre Membre?        @relation(fields: [membreId], references: [id], onDelete: SetNull)
+
+  @@index([ruleId, sentAt])
+  @@index([ruleId, eventId])
 }
 
 model ActivityLog {
@@ -478,6 +505,8 @@ model Sondage {
   questions   SondageQuestion[]
   recipients  SondageRecipient[]
   reponses    SondageReponse[]
+
+  @@index([associationId, status])
 }
 
 model SondageQuestion {
@@ -581,6 +610,8 @@ model BoutiqueCommande {
   association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre?                @relation(fields: [membreId],      references: [id], onDelete: SetNull)
   items       BoutiqueCommandeItem[]
+
+  @@index([associationId, status])
 }
 
 model BoutiqueCommandeItem {
@@ -618,6 +649,8 @@ model Meeting {
 
   association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   participants MeetingParticipant[]
+
+  @@index([associationId])
 }
 
 model MeetingParticipant {
