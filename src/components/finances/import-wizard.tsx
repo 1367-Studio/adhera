@@ -201,6 +201,9 @@ export function ImportWizard() {
     ...columns.map(c => ({ value: c, label: c })),
   ]
 
+  const typedAccounts = accounts as { id: string; accountName: string; bankName: string }[]
+  const selectedAccount = typedAccounts.find(a => a.id === mapping.bankAccountId)
+
   const credits = parsedRows.filter(r => r.type === "CREDIT").length
   const debits  = parsedRows.filter(r => r.type === "DEBIT").length
 
@@ -267,9 +270,13 @@ export function ImportWizard() {
                 <div>
                   <label className="text-sm font-medium">Compte bancaire *</label>
                   <Select value={mapping.bankAccountId} onValueChange={v => setMapping(m => ({ ...m, bankAccountId: v ?? "" }))}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner un compte" /></SelectTrigger>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Sélectionner un compte">
+                        {selectedAccount ? `${selectedAccount.accountName} — ${selectedAccount.bankName}` : undefined}
+                      </SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
-                      {(accounts as { id: string; accountName: string; bankName: string }[]).map(a => (
+                      {typedAccounts.map(a => (
                         <SelectItem key={a.id} value={a.id}>{a.accountName} — {a.bankName}</SelectItem>
                       ))}
                     </SelectContent>
@@ -295,9 +302,13 @@ export function ImportWizard() {
                 <div>
                   <label className="text-sm font-medium">Format des montants *</label>
                   <Select value={mapping.valueMode} onValueChange={v => setMapping(m => ({ ...m, valueMode: v as "single" | "split" }))}>
-                    <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue>
+                        {mapping.valueMode === "split" ? "Deux colonnes (Débit / Crédit)" : "Colonne unique (±montant)"}
+                      </SelectValue>
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="single">Colonne única (positif = crédit, négatif = débit)</SelectItem>
+                      <SelectItem value="single">Colonne unique (positif = crédit, négatif = débit)</SelectItem>
                       <SelectItem value="split">Deux colonnes séparées (Débit / Crédit)</SelectItem>
                     </SelectContent>
                   </Select>
