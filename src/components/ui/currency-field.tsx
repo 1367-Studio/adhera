@@ -40,7 +40,11 @@ export function CurrencyInput({ value, onChange, className }: CurrencyInputProps
     onChange(next / 100)
   }
 
-  function handleFocus() { savedRef.current = cents; touchedRef.current = false; emit(0) }
+  function handleFocus() {
+    savedRef.current   = cents
+    touchedRef.current = false
+    setCents(0) // visual only — no onChange, no internal.current
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.metaKey || e.ctrlKey) return
@@ -56,7 +60,7 @@ export function CurrencyInput({ value, onChange, className }: CurrencyInputProps
   }
 
   function handleBlur() {
-    if (!touchedRef.current) emit(savedRef.current)
+    if (!touchedRef.current) setCents(savedRef.current) // visual restore, no onChange
   }
 
   return (
@@ -107,9 +111,9 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
   }
 
   function handleFocus() {
-    savedRef.current  = cents
+    savedRef.current   = cents
     touchedRef.current = false
-    emit(0)
+    setCents(0) // visual only — no onChange, no internal.current
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -134,8 +138,7 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
   }
 
   function handleBlur() {
-    // If user focused but didn't type anything, restore the original value
-    if (!touchedRef.current) emit(savedRef.current)
+    if (!touchedRef.current) setCents(savedRef.current) // visual restore, no onChange
     onBlur?.()
   }
 
