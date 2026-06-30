@@ -210,7 +210,6 @@ const ENTITY_LABELS: Record<string, string> = {
   Evenement:       "Événements",
   Participation:   "Présences / RSVP",
   Cotisation:      "Cotisations",
-  Tresorerie:      "Trésorerie",
   Material:        "Matériel",
   MaterialLoan:    "Prêts",
   MessageTemplate: "Modèles",
@@ -226,9 +225,6 @@ const ENTITY_LABELS: Record<string, string> = {
 }
 
 const GENERIC_FIELD_LABELS: Record<string, Record<string, string>> = {
-  TRESORERIE_UPDATED: {
-    description: "Description", amount: "Montant", type: "Type", date: "Date", category: "Catégorie",
-  },
   EVENEMENT_UPDATED: {
     title: "Titre", date: "Date", location: "Lieu", price: "Prix", capacity: "Capacité",
   },
@@ -243,7 +239,6 @@ const ENTITY_OPTIONS = [
   { value: "Evenement",       label: "Événements"       },
   { value: "Participation",   label: "Présences / RSVP" },
   { value: "Cotisation",      label: "Cotisations"      },
-  { value: "Tresorerie",      label: "Trésorerie"       },
   { value: "Material",        label: "Matériel"         },
   { value: "MaterialLoan",    label: "Prêts"            },
   { value: "MessageTemplate", label: "Modèles msg"      },

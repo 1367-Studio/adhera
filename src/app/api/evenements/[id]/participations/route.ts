@@ -85,16 +85,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     update: { ticketPaidAt: paidAt, paidQuantity: paidQty },
   })
 
-  await prisma.tresorerieEntry.create({
+  await prisma.income.create({
     data: {
       associationId,
-      type:        "ENTREE",
+      memberId:    membreId,
       amount:      total,
       description: paidQty > 1
         ? `${paidQty} billets (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`
         : `Billet (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`,
+      source:      "MANUAL",
+      status:      "PAID",
       date:        paidAt,
-      category:    "Événement",
     },
   })
 

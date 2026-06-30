@@ -57,14 +57,14 @@ export async function POST(req: Request) {
             where: { id: commandeId },
             data:  { status: "PAID" },
           })
-          await prisma.tresorerieEntry.create({
+          await prisma.income.create({
             data: {
               associationId: commande.associationId,
-              type:          "ENTREE",
               amount:        commande.totalAmount / 100,
               description:   "Vente boutique (Stripe)",
+              source:        "STRIPE",
+              status:        "PAID",
               date:          paidAt,
-              category:      "Boutique",
             },
           })
 
@@ -123,14 +123,15 @@ export async function POST(req: Request) {
         })
 
         if (cotisation.amount != null) {
-          await prisma.tresorerieEntry.create({
+          await prisma.income.create({
             data: {
               associationId: cotisation.associationId,
-              type:        "ENTREE",
-              amount:      cotisation.amount,
-              description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-              category:    "Cotisation",
-              date:        paidAt,
+              memberId:      cotisation.membreId,
+              amount:        cotisation.amount,
+              description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+              source:        "STRIPE",
+              status:        "PAID",
+              date:          paidAt,
             },
           })
         }
@@ -178,14 +179,15 @@ export async function POST(req: Request) {
             data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id, paidQuantity: participation.quantity ?? 1 },
           })
           const totalAmount = Number(participation.evenement.price!) * (participation.quantity ?? 1)
-          await prisma.tresorerieEntry.create({
+          await prisma.income.create({
             data: {
               associationId: participation.evenement.associationId,
-              type:          "ENTREE",
+              memberId:      participation.membreId,
               amount:        totalAmount,
               description:   `Billet (Stripe) — ${participation.evenement.title}`,
+              source:        "STRIPE",
+              status:        "PAID",
               date:          paidAt,
-              category:      "Événement",
             },
           })
           await writeActivityLog({
@@ -227,16 +229,16 @@ export async function POST(req: Request) {
           data:  { paidAt, stripeSessionId: sess.id },
         })
 
-        await prisma.tresorerieEntry.create({
+        await prisma.income.create({
           data: {
             associationId: don.associationId,
-            type:          "ENTREE",
             amount:        don.amount,
             description:   don.anonymous
               ? "Don anonyme"
               : `Don de ${don.firstName} ${don.lastName}`,
-            date:     paidAt,
-            category: "Don",
+            source:        "STRIPE",
+            status:        "PAID",
+            date:          paidAt,
           },
         })
 

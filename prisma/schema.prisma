@@ -30,11 +30,6 @@ enum CotisationStatus {
   EXONERE
 }
 
-enum TresorerieType {
-  ENTREE
-  SORTIE
-}
-
 enum RsvpStatus {
   CONFIRME
   PROVAVEL
@@ -199,7 +194,6 @@ model Association {
   membreTypes       MembreType[]
   evenements        Evenement[]
   cotisations       Cotisation[]
-  tresorerie        TresorerieEntry[]
   actualites        Actualite[]
   messageTemplates  MessageTemplate[]
   automationRules   AutomationRule[]
@@ -374,23 +368,6 @@ model Don {
   membre      Membre?     @relation(fields: [membreId], references: [id])
 
   @@index([associationId, paidAt])
-}
-
-model TresorerieEntry {
-  id            String         @id @default(cuid())
-  associationId String
-  type          TresorerieType
-  amount        Decimal        @db.Decimal(10, 2)
-  description   String
-  date          DateTime
-  category      String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  association Association @relation(fields: [associationId], references: [id])
-
-  @@index([associationId, date])
-  @@index([associationId, type])
 }
 
 model Notification {

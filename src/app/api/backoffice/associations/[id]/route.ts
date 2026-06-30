@@ -9,7 +9,6 @@ const patchSchema = z.object({
   modules: z.object({
     evenements:  z.boolean(),
     cotisations: z.boolean(),
-    tresorerie:  z.boolean(),
     actualites:  z.boolean(),
     messages:    z.boolean(),
     materiel:    z.boolean(),
@@ -20,6 +19,7 @@ const patchSchema = z.object({
     boutique:    z.boolean(),
     reunions:    z.boolean(),
     sms:         z.boolean(),
+    finances:    z.boolean(),
   }).optional(),
 })
 

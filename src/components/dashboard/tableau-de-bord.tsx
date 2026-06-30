@@ -65,13 +65,13 @@ export function TableauDeBord() {
       moduleKey: "cotisations" as const,
     },
     {
-      label:     "Solde trésorerie",
+      label:     "Solde financier",
       value:     data ? fmt(data.solde) : "—",
       icon:      LandmarkIcon,
-      href:      "/dashboard/tresorerie",
+      href:      "/dashboard/finances",
       color:     data && data.solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
       bg:        data && data.solde >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30",
-      moduleKey: "tresorerie" as const,
+      moduleKey: "finances" as const,
     },
   ]
 

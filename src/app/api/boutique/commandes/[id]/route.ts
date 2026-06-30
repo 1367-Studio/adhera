@@ -119,16 +119,15 @@ export async function PATCH(req: Request, { params }: Params) {
         }
       }
 
-      // On PAID: create tresorerie entry
       if (status === "PAID") {
-        await tx.tresorerieEntry.create({
+        await tx.income.create({
           data: {
             associationId: ctx.associationId,
-            type:          "ENTREE",
             amount:        paidAmount / 100,
             description:   "Vente boutique",
+            source:        "MANUAL",
+            status:        "PAID",
             date:          new Date(),
-            category:      "Boutique",
           },
         })
       }

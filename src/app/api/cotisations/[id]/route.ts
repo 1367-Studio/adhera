@@ -46,13 +46,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const becomingPaid = parsed.data.status === "PAYE" && existing.status !== "PAYE"
 
   if (becomingPaid && cotisation.amount != null) {
-    await prisma.tresorerieEntry.create({
+    await prisma.income.create({
       data: {
         associationId,
-        type:        "ENTREE",
+        memberId:    existing.membreId,
         amount:      cotisation.amount,
         description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-        category:    "Cotisation",
+        source:      "MANUAL",
+        status:      "PAID",
         date:        cotisation.paidAt ?? new Date(),
       },
     })

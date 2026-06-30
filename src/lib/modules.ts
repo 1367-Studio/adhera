@@ -1,7 +1,6 @@
 export type AssocModules = {
   evenements:  boolean
   cotisations: boolean
-  tresorerie:  boolean
   actualites:  boolean
   messages:    boolean
   materiel:    boolean
@@ -18,7 +17,6 @@ export type AssocModules = {
 export const DEFAULT_MODULES: AssocModules = {
   evenements:  true,
   cotisations: true,
-  tresorerie:  true,
   actualites:  true,
   messages:    true,
   materiel:    true,
@@ -35,7 +33,6 @@ export const DEFAULT_MODULES: AssocModules = {
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   evenements:  "Événements",
   cotisations: "Cotisations",
-  tresorerie:  "Trésorerie",
   actualites:  "Actualités",
   messages:    "Messages automatiques",
   materiel:    "Matériel",

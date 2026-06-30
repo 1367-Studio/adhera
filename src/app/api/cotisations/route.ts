@@ -94,13 +94,14 @@ export async function POST(req: Request) {
   })
 
   if (cotisation.status === "PAYE" && cotisation.amount != null) {
-    await prisma.tresorerieEntry.create({
+    await prisma.income.create({
       data: {
         associationId,
-        type:        "ENTREE",
+        memberId:    cotisation.membreId,
         amount:      cotisation.amount,
         description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-        category:    "Cotisation",
+        source:      "MANUAL",
+        status:      "PAID",
         date:        cotisation.paidAt ?? new Date(),
       },
     })
