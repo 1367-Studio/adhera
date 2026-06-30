@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import {
   SendIcon, AlertTriangleIcon, UsersIcon, TagIcon, UserCheckIcon,
   SearchIcon, CheckIcon, PencilIcon, ChevronRightIcon, LoaderCircleIcon,
-  SmartphoneIcon,
+  SmartphoneIcon, InfoIcon,
 } from "lucide-react"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
@@ -31,10 +31,10 @@ type RecipientMode = "all" | "type" | "manual"
 // ── SMS char counter ───────────────────────────────────────────────────────────
 
 function SmsCounter({ text }: { text: string }) {
-  const len      = text.length
-  const segments = len === 0 ? 1 : Math.ceil(len / 160)
-  const used     = len % 160 === 0 && len > 0 ? 160 : len % 160
-  const remaining = 160 - used
+  const len = text.length
+  // Multi-segment SMS uses 153 chars/segment (7 bytes reserved for UDH concat header)
+  const segments  = len === 0 ? 1 : len <= 160 ? 1 : Math.ceil(len / 153)
+  const remaining = len <= 160 ? 160 - len : 153 - (len % 153 || 153)
 
   return (
     <p className={cn(
@@ -53,10 +53,12 @@ function MemberPickList({
   membres,
   selectedIds,
   onToggle,
+  truncated,
 }: {
   membres:     MembrePick[]
   selectedIds: string[]
   onToggle:    (id: string) => void
+  truncated:   boolean
 }) {
   const [search, setSearch] = useState("")
 
@@ -78,65 +80,73 @@ function MemberPickList({
   }
 
   return (
-    <div className="rounded-lg border overflow-hidden">
-      <div className="p-2 border-b bg-muted/30 space-y-2">
-        <div className="relative">
-          <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Rechercher…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
+    <div className="space-y-2">
+      {truncated && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+          <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
+          <span>Seuls les 500 premiers membres sont affichés. Pour cibler plus de membres, utilisez le mode « Tous les membres » ou « Par type ».</span>
         </div>
-        <div className="flex items-center justify-between px-0.5">
-          <span className="text-xs text-muted-foreground">{filtered.length} membre{filtered.length > 1 ? "s" : ""}</span>
-          <button type="button" onClick={toggleFiltered} className="text-xs text-primary hover:underline">
-            {allFilteredSelected ? "Désélectionner tout" : "Sélectionner tout"}
-          </button>
+      )}
+      <div className="rounded-lg border overflow-hidden">
+        <div className="p-2 border-b bg-muted/30 space-y-2">
+          <div className="relative">
+            <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Rechercher…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full rounded-md border border-input bg-background pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+          <div className="flex items-center justify-between px-0.5">
+            <span className="text-xs text-muted-foreground">{filtered.length} membre{filtered.length > 1 ? "s" : ""}</span>
+            <button type="button" onClick={toggleFiltered} className="text-xs text-primary hover:underline">
+              {allFilteredSelected ? "Désélectionner tout" : "Sélectionner tout"}
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="max-h-48 overflow-y-auto divide-y">
-        {filtered.length === 0 ? (
-          <p className="text-center text-xs text-muted-foreground py-6">Aucun membre trouvé</p>
-        ) : (
-          filtered.map(m => {
-            const isSelected = selectedIds.includes(m.id)
-            return (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => onToggle(m.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-3 py-2.5 text-sm text-left transition-colors",
-                  isSelected ? "bg-primary/5" : "hover:bg-muted/40",
-                )}
-              >
-                <span className={cn(
-                  "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
-                  isSelected ? "bg-primary border-primary text-primary-foreground" : "border-input",
-                )}>
-                  {isSelected && <CheckIcon className="size-2.5" />}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="font-medium truncate block">{m.lastName} {m.firstName}</span>
-                  {m.phone && <span className="text-xs text-muted-foreground truncate block">{m.phone}</span>}
-                </span>
-                {m.type && (
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ background: `${m.type.color}20`, color: m.type.color }}>
-                    {m.type.name}
+        <div className="max-h-48 overflow-y-auto divide-y">
+          {filtered.length === 0 ? (
+            <p className="text-center text-xs text-muted-foreground py-6">Aucun membre trouvé</p>
+          ) : (
+            filtered.map(m => {
+              const isSelected = selectedIds.includes(m.id)
+              return (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => onToggle(m.id)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 text-sm text-left transition-colors",
+                    isSelected ? "bg-primary/5" : "hover:bg-muted/40",
+                  )}
+                >
+                  <span className={cn(
+                    "flex size-4 shrink-0 items-center justify-center rounded border transition-colors",
+                    isSelected ? "bg-primary border-primary text-primary-foreground" : "border-input",
+                  )}>
+                    {isSelected && <CheckIcon className="size-2.5" />}
                   </span>
-                )}
-              </button>
-            )
-          })
-        )}
-      </div>
-      <div className="px-3 py-2 border-t bg-muted/30 text-xs text-muted-foreground">
-        {selectedIds.length > 0
-          ? `${selectedIds.length} membre${selectedIds.length > 1 ? "s" : ""} sélectionné${selectedIds.length > 1 ? "s" : ""}`
-          : "Aucun membre sélectionné"}
+                  <span className="flex-1 min-w-0">
+                    <span className="font-medium truncate block">{m.lastName} {m.firstName}</span>
+                    {m.phone && <span className="text-xs text-muted-foreground truncate block">{m.phone}</span>}
+                  </span>
+                  {m.type && (
+                    <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full shrink-0" style={{ background: `${m.type.color}20`, color: m.type.color }}>
+                      {m.type.name}
+                    </span>
+                  )}
+                </button>
+              )
+            })
+          )}
+        </div>
+        <div className="px-3 py-2 border-t bg-muted/30 text-xs text-muted-foreground">
+          {selectedIds.length > 0
+            ? `${selectedIds.length} membre${selectedIds.length > 1 ? "s" : ""} sélectionné${selectedIds.length > 1 ? "s" : ""}`
+            : "Aucun membre sélectionné"}
+        </div>
       </div>
     </div>
   )
@@ -189,8 +199,10 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
     staleTime: 30_000,
   })
   const membresWithPhone = allMembres.filter(m => m.phone)
+  const listTruncated    = allMembres.length >= 500
 
-  const selectedTypeName = types.find(t => t.id === selectedTypeId)?.name ?? ""
+  const selectedType     = types.find(t => t.id === selectedTypeId)
+  const selectedTypeName = selectedType?.name ?? ""
 
   async function handleContinue() {
     if (recipientMode === "type" && !selectedTypeId) {
@@ -250,10 +262,11 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
 
       if (data.sent === 0) {
         toast.error(`Aucun SMS envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
-      } else {
-        toast.success(`SMS envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
-        if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
+        return
       }
+
+      toast.success(`SMS envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
+      if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
       onOpenChange(false)
     } catch {
       toast.error("Erreur réseau")
@@ -271,8 +284,10 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
   const recipientSummary =
     recipientMode === "manual"
       ? `${selectedMemberIds.length} membre${selectedMemberIds.length > 1 ? "s" : ""} sélectionné${selectedMemberIds.length > 1 ? "s" : ""}`
-      : recipientMode === "type" && selectedTypeName
-        ? `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} de type « ${selectedTypeName} »`
+      : recipientMode === "type" && selectedTypeId
+        ? selectedTypeName
+          ? `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} de type « ${selectedTypeName} »`
+          : `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} (type sélectionné)`
         : `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} actif${(recipientCount ?? 0) > 1 ? "s" : ""}`
 
   return (
@@ -359,6 +374,7 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
                   <MemberPickList
                     membres={membresWithPhone}
                     selectedIds={selectedMemberIds}
+                    truncated={listTruncated}
                     onToggle={id => setSelectedMemberIds(prev =>
                       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
                     )}
@@ -418,6 +434,9 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
               <div className="space-y-0.5">
                 <p className="text-xs text-muted-foreground">Destinataires</p>
                 <p className="text-sm font-medium">{recipientSummary}</p>
+                {recipientMode === "manual" && (
+                  <p className="text-xs text-muted-foreground">Seuls les membres avec un numéro de téléphone valide recevront le SMS.</p>
+                )}
               </div>
             </div>
 
