@@ -46,16 +46,25 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const becomingPaid = parsed.data.status === "PAYE" && existing.status !== "PAYE"
 
   if (becomingPaid && cotisation.amount != null) {
+    const incomeDesc = `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`
+    await prisma.income.deleteMany({ where: { associationId, memberId: existing.membreId, description: incomeDesc } })
     await prisma.income.create({
       data: {
         associationId,
         memberId:    existing.membreId,
         amount:      cotisation.amount,
-        description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+        description: incomeDesc,
         source:      "MANUAL",
         status:      "PAID",
         date:        cotisation.paidAt ?? new Date(),
       },
+    })
+  }
+
+  const unbecomingPaid = existing.status === "PAYE" && parsed.data.status !== "PAYE"
+  if (unbecomingPaid) {
+    await prisma.income.deleteMany({
+      where: { associationId, memberId: existing.membreId, description: `Cotisation ${existing.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}` },
     })
   }
 
@@ -101,7 +110,12 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
 
-  await prisma.cotisation.delete({ where: { id } })
+  await prisma.$transaction([
+    prisma.income.deleteMany({
+      where: { associationId, memberId: existing.membreId, description: `Cotisation ${existing.year} — ${existing.membre.firstName} ${existing.membre.lastName}` },
+    }),
+    prisma.cotisation.delete({ where: { id } }),
+  ])
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
   return new NextResponse(null, { status: 204 })
 }

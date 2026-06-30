@@ -60,8 +60,9 @@ export async function POST(req: Request) {
           await prisma.income.create({
             data: {
               associationId: commande.associationId,
+              memberId:      commande.membreId ?? undefined,
               amount:        commande.totalAmount / 100,
-              description:   "Vente boutique (Stripe)",
+              description:   `Vente boutique #${commandeId} (Stripe)`,
               source:        "STRIPE",
               status:        "PAID",
               date:          paidAt,

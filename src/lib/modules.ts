@@ -27,7 +27,7 @@ export const DEFAULT_MODULES: AssocModules = {
   boutique:    false,
   reunions:    false,
   sms:         false,
-  finances:    false,
+  finances:    true,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {

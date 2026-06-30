@@ -7,7 +7,6 @@ import {
   UsersIcon,
   CalendarIcon,
   CoinsIcon,
-  LandmarkIcon,
   SettingsIcon,
   NewspaperIcon,
   MailIcon,

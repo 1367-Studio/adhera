@@ -47,7 +47,7 @@ export async function PATCH(req: Request, { params }: Params) {
 
   const commande = await prisma.boutiqueCommande.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, status: true, totalAmount: true, paymentMethod: true },
+    select: { id: true, status: true, totalAmount: true, paymentMethod: true, membreId: true },
   })
   if (!commande) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -123,8 +123,9 @@ export async function PATCH(req: Request, { params }: Params) {
         await tx.income.create({
           data: {
             associationId: ctx.associationId,
+            memberId:      commande.membreId ?? undefined,
             amount:        paidAmount / 100,
-            description:   "Vente boutique",
+            description:   `Vente boutique #${id}`,
             source:        "MANUAL",
             status:        "PAID",
             date:          new Date(),
