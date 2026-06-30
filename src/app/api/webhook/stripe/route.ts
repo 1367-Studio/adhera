@@ -63,6 +63,7 @@ export async function POST(req: Request) {
               memberId:      commande.membreId ?? undefined,
               amount:        commande.totalAmount / 100,
               description:   commande.membre ? `Vente boutique — ${commande.membre.firstName} ${commande.membre.lastName}` : "Vente boutique",
+              paymentMethod: "STRIPE",
               source:        "STRIPE",
               status:        "PAID",
               date:          paidAt,
@@ -130,6 +131,7 @@ export async function POST(req: Request) {
               memberId:      cotisation.membreId,
               amount:        cotisation.amount,
               description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+              paymentMethod: "STRIPE",
               source:        "STRIPE",
               status:        "PAID",
               date:          paidAt,
@@ -186,6 +188,7 @@ export async function POST(req: Request) {
               memberId:      participation.membreId,
               amount:        totalAmount,
               description:   `Billet (Stripe) — ${participation.evenement.title}`,
+              paymentMethod: "STRIPE",
               source:        "STRIPE",
               status:        "PAID",
               date:          paidAt,
@@ -237,6 +240,7 @@ export async function POST(req: Request) {
             description:   don.anonymous
               ? "Don anonyme"
               : `Don de ${don.firstName} ${don.lastName}`,
+            paymentMethod: "STRIPE",
             source:        "STRIPE",
             status:        "PAID",
             date:          paidAt,
