@@ -15,7 +15,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { IncomeForm } from "@/components/finances/income-form"
 import { cn } from "@/lib/utils"
 
@@ -189,23 +189,24 @@ export function IncomesView() {
           )}
         </div>
 
-        <Select value={yearFilter || "all"} onValueChange={v => { setYearFilter(v === "all" ? "" : (v ?? "")); setPage(1) }}>
-          <SelectTrigger className="w-28"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes années</SelectItem>
-            {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          value={yearFilter}
+          onValueChange={v => { setYearFilter(v); setPage(1) }}
+          options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
+          placeholder="Toutes années"
+          width="w-32"
+        />
 
-        <Select value={statusFilter || "all"} onValueChange={v => { setStatusFilter(v === "all" ? "" : (v ?? "")); setPage(1) }}>
-          <SelectTrigger className="w-36"><SelectValue placeholder="Tous statuts" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Tous statuts</SelectItem>
-            <SelectItem value="PENDING">En attente</SelectItem>
-            <SelectItem value="PAID">Payé</SelectItem>
-            <SelectItem value="CANCELLED">Annulé</SelectItem>
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          value={statusFilter}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
+          options={[
+            { value: "PENDING",   label: "En attente" },
+            { value: "PAID",      label: "Payé" },
+            { value: "CANCELLED", label: "Annulé" },
+          ]}
+          placeholder="Tous statuts"
+        />
       </div>
 
       <DataTable

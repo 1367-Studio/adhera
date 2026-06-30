@@ -12,7 +12,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { IncomeForm } from "@/components/finances/income-form"
 import { ExpenseForm } from "@/components/finances/expense-form"
 import { ReconciliationMatchModal } from "@/components/finances/reconciliation-match-modal"
@@ -237,15 +237,13 @@ export function ReconciliationView() {
         </div>
 
         {(accounts as { id: string; accountName: string }[]).length > 1 && (
-          <Select value={accountFilter || "all"} onValueChange={v => { setAccountFilter(v === "all" ? "" : (v ?? "")); setPage(1) }}>
-            <SelectTrigger className="w-48"><SelectValue placeholder="Tous les comptes" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tous les comptes</SelectItem>
-              {(accounts as { id: string; accountName: string }[]).map(a => (
-                <SelectItem key={a.id} value={a.id}>{a.accountName}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <FilterSelect
+            value={accountFilter}
+            onValueChange={v => { setAccountFilter(v); setPage(1) }}
+            options={(accounts as { id: string; accountName: string }[]).map(a => ({ value: a.id, label: a.accountName }))}
+            placeholder="Tous les comptes"
+            width="w-48"
+          />
         )}
       </div>
 
