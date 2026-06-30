@@ -20,6 +20,8 @@ const TRIGGER_LABELS: Record<string, string> = {
   EVENT_COTISATION_DUE:  "Cotisation à venir",
   EVENT_PAYMENT_OVERDUE: "Paiement en retard",
   EVENT_REMINDER:        "Rappel d'événement",
+  RSVP_CONFIRMED:        "RSVP confirmé",
+  MEMBER_CREATED:        "Nouveau membre",
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -63,6 +65,8 @@ function triggerSummary(rule: AutomationRule): string {
     const d = c.daysBefore ?? 1
     return d === 1 ? "La veille de chaque événement" : `${d}j avant chaque événement`
   }
+  if (rule.triggerType === "RSVP_CONFIRMED") return "Déclenché à la confirmation RSVP"
+  if (rule.triggerType === "MEMBER_CREATED")  return "Déclenché à la création du membre"
   return ""
 }
 

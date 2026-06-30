@@ -15,14 +15,18 @@ interface FireParams {
   evenement?:    { id: string; title: string; date: Date; location: string | null }
 }
 
-export async function fireEventRule(params: FireParams): Promise<void> {
+export async function fireEventRule(params: FireParams): Promise<boolean> {
   const { triggerType, associationId, association, membre, evenement } = params
+
+  const mods = parseModules(association.modules)
+  if (!mods.messages) return false
 
   const rule = await prisma.automationRule.findFirst({
     where:   { associationId, triggerType, status: "ACTIVE" },
+    orderBy: { createdAt: "asc" },
     include: { template: true },
   })
-  if (!rule) return
+  if (!rule) return false
 
   const vars = buildVars({
     prenom:      membre.firstName,
@@ -38,6 +42,7 @@ export async function fireEventRule(params: FireParams): Promise<void> {
   })
 
   const channel = rule.channel as MessageChannel
+  let dispatched = false
 
   if ((channel === "EMAIL" || channel === "BOTH") && membre.email) {
     sendEmail({
@@ -45,18 +50,24 @@ export async function fireEventRule(params: FireParams): Promise<void> {
       subject: substituteVars(rule.template.subject, vars),
       html:    substituteVars(rule.template.body, vars),
     }).catch(() => {})
+    dispatched = true
   }
 
-  if ((channel === "SMS" || channel === "BOTH") && parseModules(association.modules).sms && rule.template.smsBody && membre.phone) {
+  if ((channel === "SMS" || channel === "BOTH") && mods.sms && rule.template.smsBody && membre.phone) {
     sendSms(membre.phone, substituteVars(rule.template.smsBody, vars)).catch(() => {})
+    dispatched = true
   }
 
-  await prisma.automationLog.create({
-    data: {
-      ruleId:   rule.id,
-      membreId: membre.id,
-      eventId:  evenement?.id,
-      subject:  substituteVars(rule.template.subject, vars),
-    },
-  })
+  if (dispatched) {
+    await prisma.automationLog.create({
+      data: {
+        ruleId:   rule.id,
+        membreId: membre.id,
+        eventId:  evenement?.id,
+        subject:  substituteVars(rule.template.subject, vars),
+      },
+    })
+  }
+
+  return dispatched
 }

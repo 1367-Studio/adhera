@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
+import { sendEmail } from "@/lib/mail"
+import { rsvpConfirmationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -67,13 +69,38 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       select: { name: true, slug: true, modules: true },
     })
     if (assoc) {
-      fireEventRule({
+      const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
+      void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",
         associationId: u.associationId!,
         association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
         evenement:     { id: evenementId, title: evenement.title, date: evenement.date, location: evenement.location },
-      }).catch(() => {})
+      }).then(dispatched => {
+        if (!dispatched && membre.email) {
+          sendEmail(rsvpConfirmationEmail({
+            firstName:       membre.firstName,
+            email:           membre.email,
+            associationName: assoc.name,
+            eventTitle:      evenement.title,
+            eventDate:       evenement.date,
+            eventLocation:   evenement.location,
+            portalUrl,
+          })).catch(() => {})
+        }
+      }).catch(() => {
+        if (membre.email) {
+          sendEmail(rsvpConfirmationEmail({
+            firstName:       membre.firstName,
+            email:           membre.email,
+            associationName: assoc.name,
+            eventTitle:      evenement.title,
+            eventDate:       evenement.date,
+            eventLocation:   evenement.location,
+            portalUrl,
+          })).catch(() => {})
+        }
+      })
     }
   }
 
