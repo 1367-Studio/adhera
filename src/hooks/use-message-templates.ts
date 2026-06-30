@@ -5,12 +5,13 @@ export type MessageTemplate = {
   name:      string
   subject:   string
   body:      string
+  smsBody:   string | null
   createdAt: string
   updatedAt: string
   _count:    { rules: number }
 }
 
-export type TemplateInput = { name: string; subject: string; body: string }
+export type TemplateInput = { name: string; subject: string; body: string; smsBody?: string }
 
 const KEY = ["message-templates"]
 

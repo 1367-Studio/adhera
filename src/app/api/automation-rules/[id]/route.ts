@@ -12,9 +12,10 @@ const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const schema = z.object({
   name:          z.string().min(1).max(100).optional(),
   templateId:    z.string().min(1).optional(),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER"]).optional(),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED"]).optional(),
   triggerConfig: z.record(z.string(), z.unknown()).optional(),
   recipients:    z.string().optional(),
+  channel:       z.enum(["EMAIL", "SMS", "BOTH"]).optional(),
   status:        z.enum(["ACTIVE", "PAUSED", "DONE"]).optional(),
 })
 
@@ -51,6 +52,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if (parsed.data.triggerType   != null) data.triggerType   = parsed.data.triggerType
   if (parsed.data.triggerConfig != null) data.triggerConfig = parsed.data.triggerConfig as Prisma.InputJsonObject
   if (parsed.data.recipients    != null) data.recipients    = parsed.data.recipients
+  if (parsed.data.channel       != null) data.channel       = parsed.data.channel
   if (parsed.data.status        != null) data.status        = parsed.data.status
   if (nextRunAt                 != null) data.nextRunAt     = nextRunAt
 

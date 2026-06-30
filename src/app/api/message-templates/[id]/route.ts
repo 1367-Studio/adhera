@@ -11,6 +11,7 @@ const schema = z.object({
   name:    z.string().min(1).max(100).optional(),
   subject: z.string().min(1).max(200).optional(),
   body:    z.string().min(1).optional(),
+  smsBody: z.string().optional(),
 })
 
 async function resolve(id: string, associationId: string) {
@@ -32,7 +33,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const updated = await prisma.messageTemplate.update({ where: { id }, data: parsed.data })
+  const updateData: Record<string, unknown> = {}
+  if (parsed.data.name    != null) updateData.name    = parsed.data.name
+  if (parsed.data.subject != null) updateData.subject = parsed.data.subject
+  if (parsed.data.body    != null) updateData.body    = parsed.data.body
+  if ("smsBody" in parsed.data)    updateData.smsBody = parsed.data.smsBody || null
+
+  const updated = await prisma.messageTemplate.update({ where: { id }, data: updateData })
   await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_UPDATED", entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
 }

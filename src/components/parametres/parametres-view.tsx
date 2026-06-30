@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { BuildingIcon, CreditCardIcon, BellIcon, ZapIcon } from "lucide-react"
+import { BuildingIcon, CreditCardIcon, ZapIcon } from "lucide-react"
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -18,8 +18,6 @@ import { PortalLinkSettings } from "@/components/parametres/portal-link-settings
 import { AiSettings } from "@/components/ai/ai-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
-import { SmsSettings } from "@/components/parametres/sms-settings"
-
 type Association = {
   id:      string
   name:    string
@@ -28,13 +26,12 @@ type Association = {
   country: string
 }
 
-type Tab = "general" | "paiements" | "notifications" | "integrations"
+type Tab = "general" | "paiements" | "integrations"
 
 const ALL_TABS = [
-  { value: "general"       as Tab, label: "Général",       icon: <BuildingIcon   className="size-3.5" />, module: null    },
-  { value: "paiements"     as Tab, label: "Paiements",     icon: <CreditCardIcon className="size-3.5" />, module: "dons"  },
-  { value: "notifications" as Tab, label: "Notifications", icon: <BellIcon       className="size-3.5" />, module: "sms"   },
-  { value: "integrations"  as Tab, label: "Intégrations",  icon: <ZapIcon        className="size-3.5" />, module: "ia"   },
+  { value: "general"      as Tab, label: "Général",      icon: <BuildingIcon   className="size-3.5" />, module: null   },
+  { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, module: "dons" },
+  { value: "integrations" as Tab, label: "Intégrations", icon: <ZapIcon        className="size-3.5" />, module: "ia"  },
 ] as const
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
@@ -158,13 +155,6 @@ export function ParametresView() {
           <div className="rounded-xl border bg-card p-6">
             <IdentityDonsSettings canEdit={canEdit} />
           </div>
-        </div>
-      )}
-
-      {/* ── Notifications ─────────────────────────────────────────────── */}
-      {tab === "notifications" && (
-        <div className="rounded-xl border bg-card p-6">
-          <SmsSettings canEdit={canEdit} />
         </div>
       )}
 

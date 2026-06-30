@@ -5,11 +5,12 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { GripHorizontalIcon } from "lucide-react"
+import { GripHorizontalIcon, MessageSquareTextIcon } from "lucide-react"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { useModules } from "@/lib/user-context"
 import {
   useCreateTemplate, useUpdateTemplate,
   type MessageTemplate, type TemplateInput,
@@ -23,7 +24,10 @@ const schema = z.object({
   name:    z.string().min(1, "Requis"),
   subject: z.string().min(1, "Requis"),
   body:    z.string().refine(hasText, "Requis"),
+  smsBody: z.string().optional(),
 })
+
+type FormValues = z.infer<typeof schema>
 
 const VARIABLES = [
   { token: "{{prenom}}",             label: "Prénom" },
@@ -33,6 +37,9 @@ const VARIABLES = [
   { token: "{{lien_portal}}",        label: "Lien portail" },
   { token: "{{annee_cotisation}}",   label: "Année cotis." },
   { token: "{{montant_cotisation}}", label: "Montant cotis." },
+  { token: "{{titre_evenement}}",    label: "Titre événement" },
+  { token: "{{date_evenement}}",     label: "Date événement" },
+  { token: "{{lieu_evenement}}",     label: "Lieu événement" },
 ]
 
 interface Props {
@@ -42,28 +49,38 @@ interface Props {
 }
 
 export function TemplateModal({ open, onOpenChange, template }: Props) {
-  const isEditing    = !!template
-  const createMut    = useCreateTemplate()
-  const updateMut    = useUpdateTemplate(template?.id ?? "")
+  const isEditing = !!template
+  const { sms }   = useModules()
+  const createMut = useCreateTemplate()
+  const updateMut = useUpdateTemplate(template?.id ?? "")
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<TemplateInput>({
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver:      zodResolver(schema),
-    defaultValues: { name: "", subject: "", body: "" },
+    defaultValues: { name: "", subject: "", body: "", smsBody: "" },
   })
 
   useEffect(() => {
     if (open) {
-      reset(template ? { name: template.name, subject: template.subject, body: template.body } : { name: "", subject: "", body: "" })
+      reset(template
+        ? { name: template.name, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "" }
+        : { name: "", subject: "", body: "", smsBody: "" }
+      )
     }
   }, [open, template, reset])
 
-  async function onSubmit(data: TemplateInput) {
+  async function onSubmit(data: FormValues) {
+    const payload: TemplateInput = {
+      name:    data.name,
+      subject: data.subject,
+      body:    data.body,
+      smsBody: data.smsBody?.trim() || undefined,
+    }
     try {
       if (isEditing) {
-        await updateMut.mutateAsync(data)
+        await updateMut.mutateAsync(payload)
         toast.success("Modèle mis à jour")
       } else {
-        await createMut.mutateAsync(data)
+        await createMut.mutateAsync(payload)
         toast.success("Modèle créé")
       }
       onOpenChange(false)
@@ -72,7 +89,8 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
     }
   }
 
-  const isPending = isSubmitting || createMut.isPending || updateMut.isPending
+  const smsBody    = watch("smsBody") ?? ""
+  const isPending  = isSubmitting || createMut.isPending || updateMut.isPending
 
   return (
     <Modal
@@ -97,9 +115,8 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
           {...register("subject")}
         />
 
-        {/* Variables reference */}
         <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground">Variables — glissez dans l'objet ou le corps</p>
+          <p className="text-xs font-medium text-muted-foreground">Variables — glissez dans l'objet, le corps ou le SMS</p>
           <div className="flex flex-wrap gap-1.5">
             {VARIABLES.map(v => (
               <button
@@ -121,7 +138,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         </div>
 
         <RichTextEditor
-          label="Corps du message"
+          label="Corps du message (email)"
           required
           value={watch("body")}
           onChange={v => setValue("body", v, { shouldValidate: true })}
@@ -129,6 +146,25 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
           minHeight="200px"
           error={errors.body?.message}
         />
+
+        {sms && (
+          <div className="space-y-2 rounded-xl border bg-muted/20 p-4">
+            <div className="flex items-center gap-2">
+              <MessageSquareTextIcon className="size-4 text-muted-foreground" />
+              <p className="text-sm font-medium">Corps du SMS</p>
+            </div>
+            <p className="text-xs text-muted-foreground">Texte court envoyé par SMS. Laissez vide si ce modèle n'est pas utilisé avec un canal SMS.</p>
+            <textarea
+              {...register("smsBody")}
+              rows={3}
+              placeholder="{{association}} — Bonjour {{prenom}}, …"
+              className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <p className={`text-xs text-right ${smsBody.length > 160 ? "text-amber-600" : "text-muted-foreground"}`}>
+              {smsBody.length} / 160 caractères{smsBody.length > 160 ? " — sera divisé en plusieurs SMS" : ""}
+            </p>
+          </div>
+        )}
 
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>

@@ -69,6 +69,14 @@ enum TriggerType {
   EVENT_COTISATION_DUE
   EVENT_PAYMENT_OVERDUE
   EVENT_REMINDER
+  RSVP_CONFIRMED
+  MEMBER_CREATED
+}
+
+enum MessageChannel {
+  EMAIL
+  SMS
+  BOTH
 }
 
 enum RuleStatus {
@@ -140,7 +148,6 @@ model Association {
   sitePublished        Boolean            @default(false)
   siteConfig           Json?
   modules              Json?
-  smsSettings          Json?
   internalNotes        String?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
@@ -429,6 +436,7 @@ model MessageTemplate {
   name          String
   subject       String
   body          String   @db.Text
+  smsBody       String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -443,8 +451,9 @@ model AutomationRule {
   templateId    String
   triggerType   TriggerType
   triggerConfig Json
-  recipients    String      @default("ALL")
-  status        RuleStatus  @default(ACTIVE)
+  channel       MessageChannel @default(EMAIL)
+  recipients    String         @default("ALL")
+  status        RuleStatus     @default(ACTIVE)
   lastRunAt     DateTime?
   nextRunAt     DateTime?
   createdAt     DateTime    @default(now())

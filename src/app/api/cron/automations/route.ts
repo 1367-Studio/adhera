@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmailBatch } from "@/lib/mail"
+import { sendSmsBatch } from "@/lib/sms"
 import { eventReminderEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt } from "@/lib/automation"
 import { parseModules } from "@/lib/modules"
-import type { TriggerType } from "@prisma/client"
+import type { TriggerType, MessageChannel } from "@prisma/client"
 
 const BATCH_SIZE = 100
 
@@ -22,8 +23,9 @@ export async function POST(req: Request) {
 
   const rules = await prisma.automationRule.findMany({
     where: {
-      status:    "ACTIVE",
-      nextRunAt: { lte: now },
+      status:      "ACTIVE",
+      nextRunAt:   { lte: now },
+      triggerType: { notIn: ["RSVP_CONFIRMED", "MEMBER_CREATED"] },
     },
     include: {
       template:    true,
@@ -48,17 +50,22 @@ type RuleWithRelations = Awaited<ReturnType<typeof prisma.automationRule.findMan
 }>>>[number]
 
 async function processRule(rule: RuleWithRelations, now: Date): Promise<number> {
-  if (!parseModules(rule.association.modules).messages) {
+  const mods = parseModules(rule.association.modules)
+  if (!mods.messages) {
     await updateRuleNextRun(rule.id, rule.triggerType as TriggerType, rule.triggerConfig as Record<string, unknown>, now)
     return 0
   }
+
+  const channel     = rule.channel as MessageChannel
+  const smsEnabled  = mods.sms && (channel === "SMS" || channel === "BOTH")
+  const emailEnabled = channel === "EMAIL" || channel === "BOTH"
 
   const { mode, typeId } = parseRecipients(rule.recipients)
   const triggerType = rule.triggerType as TriggerType
   const config = rule.triggerConfig as Record<string, unknown>
 
   if (triggerType === "EVENT_REMINDER") {
-    const sent = await processEventReminder(rule, config, now)
+    const sent = await processEventReminder(rule, config, now, { emailEnabled, smsEnabled })
     await updateRuleNextRun(rule.id, triggerType, config, now)
     return sent
   }
@@ -71,7 +78,6 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
       associationId: rule.associationId,
       status:        "ACTIF",
       deletedAt:     null,
-      email:         { not: null },
       ...(mode === "TYPE" && typeId ? { typeId } : {}),
     },
     include: {
@@ -115,40 +121,66 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     targets = membres.filter(m => !notifiedIds.has(m.id))
   }
 
-  // Build personalized payloads for all targets
-  const jobs = targets
-    .filter(m => m.email)
-    .map(membre => {
-      const cotisation = membre.cotisations[0]
-      const vars       = buildVars({
-        prenom:            membre.firstName,
-        nom:               membre.lastName,
-        email:             membre.email!,
-        association:       rule.association.name,
-        slug:              rule.association.slug,
-        anneeCotisation:   cotisation?.year,
-        montantCotisation: cotisation ? cotisation.amount.toString() : undefined,
-      })
-      return {
-        membreId: membre.id,
-        payload:  {
-          to:      membre.email!,
-          subject: substituteVars(rule.template.subject, vars),
-          html:    substituteVars(rule.template.body, vars),
-        },
-      }
+  const jobs = targets.map(membre => {
+    const cotisation = membre.cotisations[0]
+    const vars = buildVars({
+      prenom:            membre.firstName,
+      nom:               membre.lastName,
+      email:             membre.email ?? "",
+      association:       rule.association.name,
+      slug:              rule.association.slug,
+      anneeCotisation:   cotisation?.year,
+      montantCotisation: cotisation ? cotisation.amount.toString() : undefined,
     })
+    return { membreId: membre.id, membre, vars }
+  })
 
-  // Send in chunks — log only chunks that succeeded
   let sent = 0
-  for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
-    const chunk = jobs.slice(i, i + BATCH_SIZE)
-    const ok    = await sendEmailBatch(chunk.map(j => j.payload))
-    if (ok) {
-      await prisma.automationLog.createMany({
-        data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
-      })
-      sent += chunk.length
+
+  // Email dispatch
+  if (emailEnabled) {
+    const emailJobs = jobs
+      .filter(j => j.membre.email)
+      .map(j => ({
+        membreId: j.membreId,
+        payload: {
+          to:      j.membre.email!,
+          subject: substituteVars(rule.template.subject, j.vars),
+          html:    substituteVars(rule.template.body, j.vars),
+        },
+      }))
+
+    for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
+      const chunk = emailJobs.slice(i, i + BATCH_SIZE)
+      const ok    = await sendEmailBatch(chunk.map(j => j.payload))
+      if (ok) {
+        await prisma.automationLog.createMany({
+          data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
+        })
+        sent += chunk.length
+      }
+    }
+  }
+
+  // SMS dispatch
+  if (smsEnabled && rule.template.smsBody) {
+    const smsJobs = jobs
+      .filter(j => j.membre.phone)
+      .map(j => ({
+        membreId: j.membreId,
+        to:       j.membre.phone!,
+        body:     substituteVars(rule.template.smsBody!, j.vars),
+      }))
+
+    for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
+      const chunk  = smsJobs.slice(i, i + BATCH_SIZE)
+      const result = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })))
+      if (result.sent > 0) {
+        await prisma.automationLog.createMany({
+          data: chunk.slice(0, result.sent).map(j => ({ ruleId: rule.id, membreId: j.membreId })),
+        })
+        sent += result.sent
+      }
     }
   }
 
@@ -162,12 +194,13 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
   return sent
 }
 
-// ── EVENT_REMINDER processor ────────────────────────────────────────────────────
+// ── EVENT_REMINDER processor ─────────────────────────────────────────────────
 
 async function processEventReminder(
   rule: RuleWithRelations,
   config: Record<string, unknown>,
   now: Date,
+  opts: { emailEnabled: boolean; smsEnabled: boolean },
 ): Promise<number> {
   const daysBefore = (config.daysBefore as number) ?? 1
   const target     = new Date(now.getTime() + daysBefore * 86_400_000)
@@ -179,7 +212,7 @@ async function processEventReminder(
     include: {
       participations: {
         where:   { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
-        include: { membre: { select: { id: true, firstName: true, email: true } } },
+        include: { membre: { select: { id: true, firstName: true, email: true, phone: true } } },
       },
     },
   })
@@ -203,31 +236,66 @@ async function processEventReminder(
 
   for (const event of events) {
     const notifiedIds = notifiedByEvent.get(event.id) ?? new Set<string>()
+    const targets = event.participations.filter(p => !notifiedIds.has(p.membreId))
 
-    const jobs = event.participations
-      .filter(p => p.membre.email && !notifiedIds.has(p.membreId))
-      .map(p => {
-        const { subject, html } = eventReminderEmail({
-          firstName:       p.membre.firstName,
-          email:           p.membre.email!,
-          associationName: rule.association.name,
-          eventTitle:      event.title,
-          eventDate:       event.date,
-          eventLocation:   event.location,
-          portalUrl,
-          daysBefore,
+    // Email
+    if (opts.emailEnabled) {
+      const emailJobs = targets
+        .filter(p => p.membre.email)
+        .map(p => {
+          const { subject, html } = eventReminderEmail({
+            firstName:       p.membre.firstName,
+            email:           p.membre.email!,
+            associationName: rule.association.name,
+            eventTitle:      event.title,
+            eventDate:       event.date,
+            eventLocation:   event.location,
+            portalUrl,
+            daysBefore,
+          })
+          return { membreId: p.membreId, payload: { to: p.membre.email!, subject, html } }
         })
-        return { membreId: p.membreId, payload: { to: p.membre.email!, subject, html } }
-      })
 
-    for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
-      const chunk = jobs.slice(i, i + BATCH_SIZE)
-      const ok    = await sendEmailBatch(chunk.map(j => j.payload))
-      if (ok) {
-        await prisma.automationLog.createMany({
-          data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id, subject: j.payload.subject })),
+      for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
+        const chunk = emailJobs.slice(i, i + BATCH_SIZE)
+        const ok    = await sendEmailBatch(chunk.map(j => j.payload))
+        if (ok) {
+          await prisma.automationLog.createMany({
+            data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id, subject: j.payload.subject })),
+          })
+          sent += chunk.length
+        }
+      }
+    }
+
+    // SMS
+    if (opts.smsEnabled && rule.template.smsBody) {
+      const smsBody = rule.template.smsBody
+      const smsJobs = targets
+        .filter(p => p.membre.phone)
+        .map(p => {
+          const vars = buildVars({
+            prenom:         p.membre.firstName,
+            nom:            "",
+            email:          p.membre.email ?? "",
+            association:    rule.association.name,
+            slug:           rule.association.slug,
+            titreEvenement: event.title,
+            dateEvenement:  event.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" }),
+            lieuEvenement:  event.location ?? undefined,
+          })
+          return { membreId: p.membreId, to: p.membre.phone!, body: substituteVars(smsBody, vars) }
         })
-        sent += chunk.length
+
+      for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
+        const chunk  = smsJobs.slice(i, i + BATCH_SIZE)
+        const result = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })))
+        if (result.sent > 0) {
+          await prisma.automationLog.createMany({
+            data: chunk.slice(0, result.sent).map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id })),
+          })
+          sent += result.sent
+        }
       }
     }
   }

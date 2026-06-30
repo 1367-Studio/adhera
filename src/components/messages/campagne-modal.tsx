@@ -109,6 +109,7 @@ export function CampagneModal({ open, onOpenChange }: Props) {
           name:          `${name} — ${label}`,
           templateId,
           triggerType:   step.type === "before" ? "EVENT_COTISATION_DUE" : "EVENT_PAYMENT_OVERDUE",
+          channel:       "EMAIL",
           recipients,
           triggerConfig: step.type === "before"
             ? { daysBefore: step.days, dueDate: dueDate || undefined, year: Number(year), cooldownDays: Number(cooldown) }
