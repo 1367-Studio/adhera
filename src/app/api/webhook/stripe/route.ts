@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         const commande = await prisma.boutiqueCommande.findUnique({
           where:   { id: commandeId },
           include: {
-            membre:      { select: { firstName: true, userId: true, user: { select: { email: true } } } },
+            membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
             association: { select: { id: true, name: true, slug: true } },
             items:       {
               include: {
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
               associationId: commande.associationId,
               memberId:      commande.membreId ?? undefined,
               amount:        commande.totalAmount / 100,
-              description:   `Vente boutique #${commandeId} (Stripe)`,
+              description:   commande.membre ? `Vente boutique — ${commande.membre.firstName} ${commande.membre.lastName}` : "Vente boutique",
               source:        "STRIPE",
               status:        "PAID",
               date:          paidAt,
