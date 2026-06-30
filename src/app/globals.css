@@ -196,6 +196,10 @@ header.sticky {
   color: #f8fafc !important;
 }
 
+[data-sidebar="footer"] {
+  border-top: 1px solid var(--sidebar-border) !important;
+}
+
 /* ── Tables ───────────────────────────────────────────────────────────────── */
 
 [data-slot="table-wrapper"] {
@@ -295,14 +299,9 @@ header.sticky {
 }
 [data-sidebar="footer"] { animation-delay: 60ms; }
 
-[data-sidebar="menu-button"] {
+/* [data-sidebar="menu-button"] {
   transition: background-color 150ms ease, color 150ms ease, box-shadow 150ms ease !important;
-}
-
-[data-sidebar="menu-button"][data-active="true"],
-[data-sidebar="menu-button"][data-active] {
-  box-shadow: inset 3px 0 0 var(--primary) !important;
-}
+} */
 
 @media (prefers-reduced-motion: reduce) {
   [data-sidebar="menu-item"],

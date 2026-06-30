@@ -44,7 +44,6 @@ const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 const navigationItems: NavItem[] = [
   { name: "Tableau de bord", href: "/dashboard",             icon: LayoutDashboardIcon, roles: MANAGERS },
   { name: "Membres",         href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
-  { name: "Activité",        href: "/dashboard/activite",    icon: ActivityIcon,         roles: MANAGERS },
   { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
   { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
   { name: "Trésorerie",      href: "/dashboard/tresorerie",  icon: LandmarkIcon,         roles: FINANCE,   moduleKey: "tresorerie"  },
@@ -56,6 +55,8 @@ const navigationItems: NavItem[] = [
   { name: "Messages",        href: "/dashboard/messages",    icon: MailIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
   { name: "Matériel",        href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },
   { name: "Site web",        href: "/dashboard/site",        icon: GlobeIcon,            roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site" },
+  { name: "Historique",      href: "/dashboard/activite",    icon: ActivityIcon,         roles: MANAGERS },
+
 ]
 
 function isActive(href: string, pathname: string): boolean {
