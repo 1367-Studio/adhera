@@ -9,6 +9,7 @@ import {
   AlertTriangleIcon, CalendarIcon, CreditCardIcon, LandmarkIcon,
   NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparklesIcon,
   HeartIcon, BarChart3Icon, ShoppingBagIcon, VideoIcon, MessageSquareTextIcon,
+  BanknoteIcon,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -27,6 +28,7 @@ const MODULE_META: Record<keyof AssocModules, { icon: LucideIcon; description: s
   boutique:    { icon: ShoppingBagIcon, description: "Vente de produits aux membres" },
   reunions:    { icon: VideoIcon,             description: "Réunions et assemblées générales" },
   sms:         { icon: MessageSquareTextIcon, description: "Notifications SMS via Twilio" },
+  finances:    { icon: BanknoteIcon,          description: "Conciliation bancaire et comptabilité" },
 }
 
 interface Props {

@@ -124,6 +124,47 @@ enum QuestionType {
   YES_NO
 }
 
+enum BankTransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum BankTransactionStatus {
+  UNMATCHED
+  MATCHED
+  PENDING
+  IGNORED
+  DUPLICATE
+}
+
+enum FinanceCategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum IncomeSource {
+  MANUAL
+  STRIPE
+  BANK_IMPORT
+}
+
+enum IncomeStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum ExpenseStatus {
+  DRAFT
+  VALIDATED
+  CANCELLED
+}
+
+enum MatchedBy {
+  AUTO
+  USER
+}
+
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -169,6 +210,12 @@ model Association {
   boutiqueProduits  BoutiqueProduit[]
   boutiqueCommandes BoutiqueCommande[]
   meetings          Meeting[]
+  bankAccounts      BankAccount[]
+  bankTransactions  BankTransaction[]
+  financeCategories FinanceCategory[]
+  incomes           Income[]
+  expenses          Expense[]
+  bankReconciliations BankReconciliation[]
 }
 
 model User {
@@ -236,6 +283,7 @@ model Membre {
   sondageReponses     SondageReponse[]
   boutiqueCommandes   BoutiqueCommande[]
   meetingsAsParticipant MeetingParticipant[]
+  incomes             Income[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -673,5 +721,135 @@ model MeetingParticipant {
   membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
 
   @@unique([meetingId, membreId])
+}
+
+// ─── Finances & Conciliation bancaire ────────────────────────────────────────
+
+model BankAccount {
+  id             String   @id @default(cuid())
+  associationId  String
+  bankName       String
+  accountName    String
+  ibanLast4      String?
+  currency       String   @default("EUR")
+  openingBalance Decimal  @default(0) @db.Decimal(10, 2)
+  currentBalance Decimal  @default(0) @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  association  Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  transactions BankTransaction[]
+
+  @@index([associationId])
+}
+
+model BankTransaction {
+  id              String                @id @default(cuid())
+  associationId   String
+  bankAccountId   String
+  transactionDate DateTime
+  label           String
+  amount          Decimal               @db.Decimal(10, 2)
+  type            BankTransactionType
+  balanceAfter    Decimal?              @db.Decimal(10, 2)
+  externalId      String?
+  status          BankTransactionStatus @default(UNMATCHED)
+  rawData         Json?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankAccount     BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  reconciliations BankReconciliation[]
+
+  @@unique([bankAccountId, externalId])
+  @@index([associationId, status])
+  @@index([associationId, transactionDate])
+}
+
+model FinanceCategory {
+  id             String              @id @default(cuid())
+  associationId  String
+  name           String
+  type           FinanceCategoryType
+  accountingCode String?
+  isDefault      Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes     Income[]
+  expenses    Expense[]
+
+  @@index([associationId, type])
+}
+
+model Income {
+  id            String       @id @default(cuid())
+  associationId String
+  memberId      String?
+  amount        Decimal      @db.Decimal(10, 2)
+  categoryId    String?
+  paymentMethod String?
+  date          DateTime
+  description   String?
+  source        IncomeSource @default(MANUAL)
+  status        IncomeStatus @default(PENDING)
+  reference     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre          Membre?            @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId, status])
+  @@index([associationId, date])
+}
+
+model Expense {
+  id            String        @id @default(cuid())
+  associationId String
+  amount        Decimal       @db.Decimal(10, 2)
+  categoryId    String?
+  date          DateTime
+  vendor        String?
+  description   String?
+  receiptUrl    String?
+  internalNote  String?
+  status        ExpenseStatus @default(DRAFT)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId, status])
+  @@index([associationId, date])
+}
+
+model BankReconciliation {
+  id                String    @id @default(cuid())
+  associationId     String
+  bankTransactionId String
+  incomeId          String?
+  expenseId         String?
+  matchScore        Int       @default(0)
+  matchedBy         MatchedBy @default(AUTO)
+  matchedAt         DateTime  @default(now())
+  matchedByUserId   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  association     Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  income          Income?         @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense         Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+
+  @@index([bankTransactionId])
+  @@index([associationId])
 }
 

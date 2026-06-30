@@ -12,6 +12,7 @@ export type AssocModules = {
   boutique:    boolean
   reunions:    boolean
   sms:         boolean
+  finances:    boolean
 }
 
 export const DEFAULT_MODULES: AssocModules = {
@@ -28,6 +29,7 @@ export const DEFAULT_MODULES: AssocModules = {
   boutique:    false,
   reunions:    false,
   sms:         false,
+  finances:    false,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
@@ -44,6 +46,7 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   boutique:    "Boutique en ligne",
   reunions:    "Réunions vidéo",
   sms:         "Notifications SMS",
+  finances:    "Finances & Conciliation bancaire",
 }
 
 export function parseModules(raw: unknown): AssocModules {
