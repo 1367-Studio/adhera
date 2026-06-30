@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon } from "lucide-react"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon, SmartphoneIcon } from "lucide-react"
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -14,13 +14,14 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MembreForm } from "@/components/membres/membre-form"
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
+import { SendSmsModal } from "@/components/membres/send-sms-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
 
 type MembreTypeRef = { id: string; name: string; color: string }
 
@@ -148,6 +149,7 @@ const PAGE_SIZE = 20
 
 export function MembresView() {
   const currentUser                     = useCurrentUser()
+  const modules                         = useModules()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -157,6 +159,7 @@ export function MembresView() {
   const [editTarget, setEditTarget]       = useState<Membre | null>(null)
   const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
   const [emailOpen, setEmailOpen]         = useState(false)
+  const [smsOpen,   setSmsOpen]           = useState(false)
   const [historyTarget, setHistoryTarget] = useState<Membre | null>(null)
   const [roleTarget, setRoleTarget]       = useState<Membre | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -289,6 +292,12 @@ export function MembresView() {
               <MailIcon className="mr-1.5 size-4" />
               Envoyer un email
             </Button>
+            {modules.sms && (
+              <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
+                <SmartphoneIcon className="mr-1.5 size-4" />
+                Envoyer un SMS
+              </Button>
+            )}
             <Button size="sm" onClick={() => setCreateOpen(true)}>
               <PlusIcon className="mr-1.5 size-4" />
               Ajouter
@@ -416,6 +425,11 @@ export function MembresView() {
       <SendEmailModal
         open={emailOpen}
         onOpenChange={setEmailOpen}
+      />
+
+      <SendSmsModal
+        open={smsOpen}
+        onOpenChange={setSmsOpen}
       />
 
       <Modal
