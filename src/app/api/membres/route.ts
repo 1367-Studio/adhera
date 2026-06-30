@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
 import { sendSms, welcomeSms } from "@/lib/sms"
 import { parseSmsSettings } from "@/lib/sms-settings"
+import { parseModules } from "@/lib/modules"
 import { membreCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, slug: true, smsSettings: true },
+    select: { name: true, slug: true, modules: true, smsSettings: true },
   })
 
   const membreData = {
@@ -128,7 +129,7 @@ export async function POST(req: Request) {
     })).catch(() => {})
 
     const smsConfig = parseSmsSettings(assoc.smsSettings)
-    if (smsConfig.memberWelcome && role === "MEMBRE" && membre.phone) {
+    if (parseModules(assoc.modules).sms && smsConfig.memberWelcome && role === "MEMBRE" && membre.phone) {
       sendSms(membre.phone, welcomeSms({
         firstName:       membre.firstName,
         associationName: assoc.name,

@@ -4,6 +4,7 @@ import { sendEmailBulk } from "@/lib/mail"
 import { eventReminderEmail } from "@/lib/email"
 import { sendSms, eventReminderSms } from "@/lib/sms"
 import { parseSmsSettings } from "@/lib/sms-settings"
+import { parseModules } from "@/lib/modules"
 
 export async function GET(req: Request) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "")
@@ -20,7 +21,7 @@ export async function GET(req: Request) {
   const evenements = await prisma.evenement.findMany({
     where: { date: { gte: dayStart, lte: dayEnd } },
     include: {
-      association:    { select: { name: true, slug: true, smsSettings: true } },
+      association:    { select: { name: true, slug: true, modules: true, smsSettings: true } },
       participations: {
         where:   { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
         include: { membre: { select: { firstName: true, email: true, phone: true } } },
@@ -47,6 +48,7 @@ export async function GET(req: Request) {
   const { sent, failed } = await sendEmailBulk(payloads)
 
   const smsJobs = evenements.flatMap(ev => {
+    if (!parseModules(ev.association.modules).sms) return []
     const smsConfig = parseSmsSettings(ev.association.smsSettings)
     if (!smsConfig.eventReminder) return []
     return ev.participations
