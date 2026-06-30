@@ -23,6 +23,11 @@ export function computeNextRunAt(
     return nextRecurring(config, now)
   }
 
+  // Event-driven inline rules: never scheduled by cron
+  if (triggerType === "RSVP_CONFIRMED" || triggerType === "MEMBER_CREATED") {
+    return null
+  }
+
   // Event-based rules (cotisation / payment / reminder): run daily, starting now
   return new Date(now.getTime())
 }

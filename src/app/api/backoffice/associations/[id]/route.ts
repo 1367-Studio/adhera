@@ -19,6 +19,7 @@ const patchSchema = z.object({
     sondages:    z.boolean(),
     boutique:    z.boolean(),
     reunions:    z.boolean(),
+    sms:         z.boolean(),
   }).optional(),
 })
 

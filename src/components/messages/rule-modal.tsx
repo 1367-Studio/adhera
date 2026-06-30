@@ -5,21 +5,24 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { AlertCircleIcon, AlertTriangleIcon, SendIcon } from "lucide-react"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { Button } from "@/components/ui/button"
-import { AlertCircleIcon } from "lucide-react"
-import { SendIcon } from "lucide-react"
-import { useCreateRule, useUpdateRule, useTestSendRule, type AutomationRule, type RuleInput, type TriggerType } from "@/hooks/use-automation-rules"
+import { useCreateRule, useUpdateRule, useTestSendRule, type AutomationRule, type RuleInput, type TriggerType, type MessageChannel } from "@/hooks/use-automation-rules"
+import type { Resolver, SubmitHandler } from "react-hook-form"
 import { useMessageTemplates } from "@/hooks/use-message-templates"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useModules } from "@/lib/user-context"
 
+const EVENT_TRIGGERS: TriggerType[] = ["RSVP_CONFIRMED", "MEMBER_CREATED"]
+
 const schema = z.object({
   name:          z.string().min(1, "Requis"),
   templateId:    z.string().min(1, "Requis"),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER"]),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED"]),
+  channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
   recipients:    z.string(),
   // SCHEDULED_ONCE
   date:          z.string().optional(),
@@ -50,6 +53,14 @@ const TRIGGER_OPTIONS = [
   { value: "EVENT_COTISATION_DUE",  label: "Cotisation à venir" },
   { value: "EVENT_PAYMENT_OVERDUE", label: "Paiement en retard" },
   { value: "EVENT_REMINDER",        label: "Rappel d'événement" },
+  { value: "RSVP_CONFIRMED",        label: "Confirmation de participation (RSVP)" },
+  { value: "MEMBER_CREATED",        label: "Nouveau membre inscrit" },
+]
+
+const CHANNEL_OPTIONS = [
+  { value: "EMAIL", label: "Email uniquement" },
+  { value: "SMS",   label: "SMS uniquement" },
+  { value: "BOTH",  label: "Email + SMS" },
 ]
 
 const FREQUENCY_OPTIONS = [
@@ -79,25 +90,33 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
   const createMut    = useCreateRule()
   const updateMut    = useUpdateRule(rule?.id ?? "")
   const testMut      = useTestSendRule()
-  const { messages } = useModules()
+  const { messages, sms } = useModules()
 
   const { data: templates = [] } = useMessageTemplates()
   const { data: membreTypes = [] } = useMembreTypes()
 
+  const defaultValues: FormValues = {
+    name: "", templateId: "", triggerType: "SCHEDULED_ONCE", channel: "EMAIL",
+    recipients: "ALL", time: "09:00", frequency: "monthly",
+    dayOfMonth: "1", dayOfWeek: "1",
+    daysBefore: "30", daysAfter: "30",
+    year: new Date().getFullYear().toString(),
+    cooldownDays: "7",
+  }
+
   const { register, handleSubmit, reset, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
-    resolver:      zodResolver(schema),
-    defaultValues: {
-      name: "", templateId: "", triggerType: "SCHEDULED_ONCE",
-      recipients: "ALL", time: "09:00", frequency: "monthly",
-      dayOfMonth: "1", dayOfWeek: "1",
-      daysBefore: "30", daysAfter: "30",
-      year: new Date().getFullYear().toString(),
-      cooldownDays: "7",
-    },
+    resolver:      zodResolver(schema) as Resolver<FormValues>,
+    defaultValues,
   })
 
   const triggerType = watch("triggerType") as TriggerType
+  const channel     = watch("channel") as MessageChannel
   const frequency   = watch("frequency")
+  const templateId  = watch("templateId")
+
+  const isEventTrigger       = EVENT_TRIGGERS.includes(triggerType)
+  const selectedTemplate     = templates.find(t => t.id === templateId)
+  const warnMissingSmsBody   = sms && channel !== "EMAIL" && !!templateId && !selectedTemplate?.smsBody
 
   useEffect(() => {
     if (!open) return
@@ -107,6 +126,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         name:         rule.name,
         templateId:   rule.templateId,
         triggerType:  rule.triggerType,
+        channel:      rule.channel ?? "EMAIL",
         recipients:   rule.recipients,
         date:         (c.date as string) ?? "",
         time:         (c.time as string) ?? "09:00",
@@ -120,21 +140,12 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         cooldownDays: c.cooldownDays?.toString() ?? "7",
       })
     } else {
-      reset({
-        name: "", templateId: "", triggerType: "SCHEDULED_ONCE",
-        recipients: "ALL", time: "09:00", frequency: "monthly",
-        dayOfMonth: "1", dayOfWeek: "1",
-        daysBefore: "30", daysAfter: "30",
-        year: new Date().getFullYear().toString(),
-        cooldownDays: "7",
-      })
+      reset(defaultValues)
     }
   }, [open, rule, reset])
 
   function buildTriggerConfig(values: FormValues): Record<string, unknown> {
-    if (values.triggerType === "SCHEDULED_ONCE") {
-      return { date: values.date, time: values.time }
-    }
+    if (values.triggerType === "SCHEDULED_ONCE")      return { date: values.date, time: values.time }
     if (values.triggerType === "SCHEDULED_RECURRING") {
       const base: Record<string, unknown> = { frequency: values.frequency, time: values.time }
       if (values.frequency === "weekly")  base.dayOfWeek  = Number(values.dayOfWeek)
@@ -142,19 +153,10 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
       return base
     }
     if (values.triggerType === "EVENT_COTISATION_DUE") {
-      return {
-        daysBefore:  Number(values.daysBefore),
-        dueDate:     values.dueDate,
-        year:        Number(values.year),
-        cooldownDays: Number(values.cooldownDays),
-      }
+      return { daysBefore: Number(values.daysBefore), dueDate: values.dueDate, year: Number(values.year), cooldownDays: Number(values.cooldownDays) }
     }
     if (values.triggerType === "EVENT_PAYMENT_OVERDUE") {
-      return {
-        daysAfter:   Number(values.daysAfter),
-        year:        Number(values.year),
-        cooldownDays: Number(values.cooldownDays),
-      }
+      return { daysAfter: Number(values.daysAfter), year: Number(values.year), cooldownDays: Number(values.cooldownDays) }
     }
     if (values.triggerType === "EVENT_REMINDER") {
       return { daysBefore: Number(values.daysBefore) }
@@ -168,7 +170,8 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
       templateId:    values.templateId,
       triggerType:   values.triggerType as TriggerType,
       triggerConfig: buildTriggerConfig(values),
-      recipients:    values.recipients,
+      channel:       values.channel as MessageChannel,
+      recipients:    isEventTrigger ? "ALL" : values.recipients,
     }
     try {
       if (isEditing) {
@@ -184,7 +187,10 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     }
   }
 
-  const templateOptions = templates.map(t => ({ value: t.id, label: t.name }))
+  const templateOptions = templates.map(t => ({
+    value: t.id,
+    label: t.name + (sms && t.smsBody ? " ✦" : ""),
+  }))
   const recipientOptions = [
     { value: "ALL", label: "Tous les membres actifs" },
     ...membreTypes.map(t => ({ value: `TYPE:${t.id}`, label: `Type : ${t.name}` })),
@@ -199,7 +205,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
       title={isEditing ? "Modifier la règle" : "Nouvelle règle"}
       size="lg"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FormValues>)} className="space-y-4">
         <FormField label="Nom de la règle" required placeholder="Rappel cotisation" error={errors.name?.message} {...register("name")} />
 
         <Controller
@@ -231,12 +237,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               name="frequency"
               control={control}
               render={({ field }) => (
-                <SelectField
-                  label="Fréquence"
-                  options={FREQUENCY_OPTIONS}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                />
+                <SelectField label="Fréquence" options={FREQUENCY_OPTIONS} value={field.value} onValueChange={field.onChange} />
               )}
             />
             {frequency === "weekly" && (
@@ -244,24 +245,12 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
                 name="dayOfWeek"
                 control={control}
                 render={({ field }) => (
-                  <SelectField
-                    label="Jour de la semaine"
-                    options={DAY_OF_WEEK_OPTIONS}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  />
+                  <SelectField label="Jour de la semaine" options={DAY_OF_WEEK_OPTIONS} value={field.value} onValueChange={field.onChange} />
                 )}
               />
             )}
             {frequency === "monthly" && (
-              <FormField
-                label="Jour du mois"
-                type="number"
-                min={1}
-                max={28}
-                placeholder="1"
-                {...register("dayOfMonth")}
-              />
+              <FormField label="Jour du mois" type="number" min={1} max={28} placeholder="1" {...register("dayOfMonth")} />
             )}
             <FormField label="Heure d'envoi" type="time" {...register("time")} />
           </div>
@@ -270,7 +259,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* EVENT_COTISATION_DUE */}
         {triggerType === "EVENT_COTISATION_DUE" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un email aux membres avec une cotisation impayée, N jours avant la date d'échéance.</p>
+            <p className="text-xs text-muted-foreground">Envoie un message aux membres avec une cotisation impayée, N jours avant la date d'échéance.</p>
             <div className="grid grid-cols-2 gap-3">
               <FormField label="Jours avant l'échéance" type="number" min={1} placeholder="30" {...register("daysBefore")} />
               <FormField label="Date d'échéance" type="date" {...register("dueDate")} />
@@ -285,7 +274,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* EVENT_PAYMENT_OVERDUE */}
         {triggerType === "EVENT_PAYMENT_OVERDUE" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un email aux membres dont la cotisation est impayée depuis N jours après le 1er janvier de l'année.</p>
+            <p className="text-xs text-muted-foreground">Envoie un message aux membres dont la cotisation est impayée depuis N jours après le 1er janvier.</p>
             <div className="grid grid-cols-2 gap-3">
               <FormField label="Jours de retard" type="number" min={1} placeholder="30" {...register("daysAfter")} />
               <FormField label="Année de cotisation" type="number" placeholder="2026" {...register("year")} />
@@ -297,7 +286,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* EVENT_REMINDER */}
         {triggerType === "EVENT_REMINDER" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un rappel automatique aux participants confirmés ou probables, N jours avant chaque événement. Les destinataires sont les participants inscrits — le filtre par type de membre ne s'applique pas ici.</p>
+            <p className="text-xs text-muted-foreground">Envoie un rappel automatique aux participants confirmés ou probables, N jours avant chaque événement.</p>
             <FormField
               label="Jours avant l'événement"
               type="number"
@@ -307,6 +296,14 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               hint="Ex: 1 = la veille, 3 = 3 jours avant"
               {...register("daysBefore")}
             />
+          </div>
+        )}
+
+        {/* RSVP_CONFIRMED / MEMBER_CREATED */}
+        {isEventTrigger && (
+          <div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
+            {triggerType === "RSVP_CONFIRMED" && "Déclenché automatiquement lorsqu'un membre confirme sa participation à un événement."}
+            {triggerType === "MEMBER_CREATED"  && "Déclenché automatiquement lors de l'ajout d'un nouveau membre (rôle Membre uniquement)."}
           </div>
         )}
 
@@ -333,7 +330,31 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
           />
         )}
 
-        {triggerType !== "EVENT_REMINDER" && (
+        {/* Channel selector — visible only when modules.sms is active */}
+        {sms && (
+          <Controller
+            name="channel"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label="Canal d'envoi"
+                options={CHANNEL_OPTIONS}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+        )}
+
+        {/* Warning: SMS channel selected but template has no smsBody */}
+        {warnMissingSmsBody && (
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+            <AlertTriangleIcon className="size-4 shrink-0 mt-0.5" />
+            <span>Le modèle sélectionné n'a pas de corps SMS. Modifiez le modèle pour activer l'envoi SMS.</span>
+          </div>
+        )}
+
+        {!isEventTrigger && triggerType !== "EVENT_REMINDER" && (
           <Controller
             name="recipients"
             control={control}

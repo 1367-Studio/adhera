@@ -11,6 +11,7 @@ const schema = z.object({
   name:    z.string().min(1).max(100),
   subject: z.string().min(1).max(200),
   body:    z.string().min(1),
+  smsBody: z.string().optional(),
 })
 
 export async function GET() {
@@ -23,7 +24,7 @@ export async function GET() {
   const templates = await prisma.messageTemplate.findMany({
     where:   { associationId: u.associationId },
     orderBy: { createdAt: "desc" },
-    select:  { id: true, name: true, subject: true, body: true, createdAt: true, updatedAt: true, _count: { select: { rules: true } } },
+    select:  { id: true, name: true, subject: true, body: true, smsBody: true, createdAt: true, updatedAt: true, _count: { select: { rules: true } } },
   })
 
   return NextResponse.json(templates)
@@ -41,7 +42,13 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
   const template = await prisma.messageTemplate.create({
-    data: { ...parsed.data, associationId: u.associationId },
+    data: {
+      name:          parsed.data.name,
+      subject:       parsed.data.subject,
+      body:          parsed.data.body,
+      smsBody:       parsed.data.smsBody || null,
+      associationId: u.associationId,
+    },
   })
 
   await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_CREATED", entity: "MessageTemplate", entityId: template.id, label: template.name })
