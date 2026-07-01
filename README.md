@@ -8,7 +8,13 @@ SaaS platform for managing French associations (loi 1901). Built for presidents,
 - **Events** — calendar, RSVP, attendance, location (OSM + Google Maps), paid tickets via Stripe Connect
 - **Actualités** — rich text posts, image upload, recipient targeting, real-time push notifications
 - **Cotisations** — annual dues tracking per member, payment status, export
-- **Trésorerie** — income/expense tracking, categories, balance
+- **Finances** — bank accounts, statement import (CSV/Excel) with auto column mapping, bank reconciliation with match-score engine, income/expense tracking, categories, reports & exports
+- **Matériel** — equipment inventory and loan tracking
+- **Dons** — online donation collection
+- **Sondages** — polls/surveys creation and distribution
+- **Boutique** — online store for member purchases
+- **Réunions** — video meetings and general assemblies (LiveKit, with recording)
+- **SMS notifications** — via Twilio
 - **Portal** — member self-service area: news feed, events with RSVP, ticket purchase, cotisation status, profile
 - **Public site** — customizable association page with sections (hero, events, news, membership form, contact)
 - **Notifications** — real-time push via Pusher
@@ -24,6 +30,9 @@ SaaS platform for managing French associations (loi 1901). Built for presidents,
 - **Storage:** Cloudflare R2
 - **Real-time:** Pusher
 - **Email:** Resend
+- **SMS:** Twilio
+- **Video meetings:** LiveKit
+- **AI:** Groq
 
 ## Getting Started
 
