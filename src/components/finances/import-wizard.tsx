@@ -68,12 +68,76 @@ function parseAmount(val: unknown): number {
   return parseFloat(String(val).replace(/\s/g, "").replace(",", ".")) || 0
 }
 
+function normalizeHeader(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[àáâãäå]/g, "a")
+    .replace(/[éèêë]/g, "e")
+    .replace(/[ìíîï]/g, "i")
+    .replace(/[òóôõö]/g, "o")
+    .replace(/[ùúûü]/g, "u")
+    .replace(/ç/g, "c")
+}
+
+const COLUMN_ALIASES: Record<"date" | "label" | "amount" | "debit" | "credit" | "balance", string[]> = {
+  date:    ["date", "date operation", "date de l operation", "date valeur", "transaction date", "operation date"],
+  label:   ["libelle", "description", "label", "intitule", "detail", "communication", "nature de l operation"],
+  amount:  ["montant", "amount", "valeur"],
+  debit:   ["debit", "sortie", "retrait"],
+  credit:  ["credit", "entree", "depot"],
+  balance: ["solde", "balance", "nouveau solde", "solde apres operation"],
+}
+
+function guessColumn(columns: string[], aliases: string[]): string {
+  const normalized = columns.map(c => ({ original: c, normalized: normalizeHeader(c) }))
+  const exact = normalized.find(c => aliases.includes(c.normalized))
+  if (exact) return exact.original
+  const partial = normalized.find(c => aliases.some(a => new RegExp(`\\b${a}\\b`).test(c.normalized)))
+  return partial?.original ?? ""
+}
+
+function guessMapping(columns: string[]): Partial<ColumnMapping> {
+  // Each column can only be claimed by one role — prevents e.g. a single
+  // "Débit/Crédit" column from matching both aliases and forcing split mode.
+  const available = [...columns]
+  const claim = (aliases: string[]) => {
+    const col = guessColumn(available, aliases)
+    if (col) available.splice(available.indexOf(col), 1)
+    return col
+  }
+
+  const dateColumn    = claim(COLUMN_ALIASES.date)
+  const labelColumn   = claim(COLUMN_ALIASES.label)
+  const debitColumn   = claim(COLUMN_ALIASES.debit)
+  const creditColumn  = claim(COLUMN_ALIASES.credit)
+  const amountColumn  = claim(COLUMN_ALIASES.amount)
+  const balanceColumn = claim(COLUMN_ALIASES.balance)
+
+  const valueMode: "single" | "split" = debitColumn && creditColumn ? "split" : "single"
+
+  return {
+    dateColumn,
+    labelColumn,
+    valueMode,
+    amountColumn: valueMode === "single" ? amountColumn : "",
+    debitColumn:  valueMode === "split" ? debitColumn  : "",
+    creditColumn: valueMode === "split" ? creditColumn : "",
+    balanceColumn,
+  }
+}
+
+function AutoBadge() {
+  return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">Détecté</span>
+}
+
 export function ImportWizard() {
   const [step, setStep]           = useState<Step>(1)
   const [file, setFile]           = useState<File | null>(null)
   const [rawRows, setRawRows]     = useState<Record<string, unknown>[]>([])
   const [columns, setColumns]     = useState<string[]>([])
   const [mapping, setMapping]     = useState<ColumnMapping>({ bankAccountId: "", dateColumn: "", labelColumn: "", valueMode: "single", amountColumn: "", debitColumn: "", creditColumn: "", balanceColumn: "" })
+  const [autoDetected, setAutoDetected] = useState<Set<keyof ColumnMapping>>(new Set())
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([])
   const [importing, setImporting] = useState(false)
   const [result, setResult]       = useState<ImportResult | null>(null)
@@ -89,8 +153,18 @@ export function ImportWizard() {
         const workbook = XLSX.read(buffer, { type: "array", cellDates: false })
         const sheet    = workbook.Sheets[workbook.SheetNames[0]]
         const rows     = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
+        const headers = rows.length > 0 ? Object.keys(rows[0]) : []
+        const guessed = guessMapping(headers)
+        const detected = new Set<keyof ColumnMapping>()
+        if (guessed.dateColumn)    detected.add("dateColumn")
+        if (guessed.labelColumn)   detected.add("labelColumn")
+        if (guessed.balanceColumn) detected.add("balanceColumn")
+        if (guessed.amountColumn)                      { detected.add("amountColumn"); detected.add("valueMode") }
+        if (guessed.debitColumn && guessed.creditColumn) { detected.add("debitColumn"); detected.add("creditColumn"); detected.add("valueMode") }
         setRawRows(rows)
-        setColumns(rows.length > 0 ? Object.keys(rows[0]) : [])
+        setColumns(headers)
+        setMapping(m => ({ ...m, ...guessed }))
+        setAutoDetected(detected)
         setStep(2)
       } catch {
         toast.error("Impossible de lire le fichier")
@@ -194,6 +268,17 @@ export function ImportWizard() {
   function reset() {
     setStep(1); setFile(null); setRawRows([]); setColumns([]); setParsedRows([]); setResult(null)
     setMapping({ bankAccountId: "", dateColumn: "", labelColumn: "", valueMode: "single", amountColumn: "", debitColumn: "", creditColumn: "", balanceColumn: "" })
+    setAutoDetected(new Set())
+  }
+
+  function updateMapping<K extends keyof ColumnMapping>(key: K, value: ColumnMapping[K]) {
+    setMapping(m => ({ ...m, [key]: value }))
+    setAutoDetected(prev => {
+      if (!prev.has(key)) return prev
+      const next = new Set(prev)
+      next.delete(key)
+      return next
+    })
   }
 
   const colOptions = [
@@ -284,24 +369,24 @@ export function ImportWizard() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Colonne de date *</label>
-                  <Select value={mapping.dateColumn} onValueChange={v => setMapping(m => ({ ...m, dateColumn: v ?? "" }))}>
+                  <label className="text-sm font-medium">Colonne de date *{autoDetected.has("dateColumn") && <AutoBadge />}</label>
+                  <Select value={mapping.dateColumn} onValueChange={v => updateMapping("dateColumn", v ?? "")}>
                     <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                     <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Colonne de libellé *</label>
-                  <Select value={mapping.labelColumn} onValueChange={v => setMapping(m => ({ ...m, labelColumn: v ?? "" }))}>
+                  <label className="text-sm font-medium">Colonne de libellé *{autoDetected.has("labelColumn") && <AutoBadge />}</label>
+                  <Select value={mapping.labelColumn} onValueChange={v => updateMapping("labelColumn", v ?? "")}>
                     <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                     <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium">Format des montants *</label>
-                  <Select value={mapping.valueMode} onValueChange={v => setMapping(m => ({ ...m, valueMode: v as "single" | "split" }))}>
+                  <label className="text-sm font-medium">Format des montants *{autoDetected.has("valueMode") && <AutoBadge />}</label>
+                  <Select value={mapping.valueMode} onValueChange={v => updateMapping("valueMode", v as "single" | "split")}>
                     <SelectTrigger className="mt-1">
                       <SelectValue>
                         {mapping.valueMode === "split" ? "Deux colonnes (Débit / Crédit)" : "Colonne unique (±montant)"}
@@ -316,8 +401,8 @@ export function ImportWizard() {
 
                 {mapping.valueMode === "single" && (
                   <div>
-                    <label className="text-sm font-medium">Colonne montant *</label>
-                    <Select value={mapping.amountColumn} onValueChange={v => setMapping(m => ({ ...m, amountColumn: v ?? "" }))}>
+                    <label className="text-sm font-medium">Colonne montant *{autoDetected.has("amountColumn") && <AutoBadge />}</label>
+                    <Select value={mapping.amountColumn} onValueChange={v => updateMapping("amountColumn", v ?? "")}>
                       <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                       <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                     </Select>
@@ -327,15 +412,15 @@ export function ImportWizard() {
                 {mapping.valueMode === "split" && (
                   <>
                     <div>
-                      <label className="text-sm font-medium">Colonne débit *</label>
-                      <Select value={mapping.debitColumn} onValueChange={v => setMapping(m => ({ ...m, debitColumn: v ?? "" }))}>
+                      <label className="text-sm font-medium">Colonne débit *{autoDetected.has("debitColumn") && <AutoBadge />}</label>
+                      <Select value={mapping.debitColumn} onValueChange={v => updateMapping("debitColumn", v ?? "")}>
                         <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                         <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div>
-                      <label className="text-sm font-medium">Colonne crédit *</label>
-                      <Select value={mapping.creditColumn} onValueChange={v => setMapping(m => ({ ...m, creditColumn: v ?? "" }))}>
+                      <label className="text-sm font-medium">Colonne crédit *{autoDetected.has("creditColumn") && <AutoBadge />}</label>
+                      <Select value={mapping.creditColumn} onValueChange={v => updateMapping("creditColumn", v ?? "")}>
                         <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
                         <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                       </Select>
@@ -344,8 +429,8 @@ export function ImportWizard() {
                 )}
 
                 <div>
-                  <label className="text-sm font-medium">Colonne solde (optionnel)</label>
-                  <Select value={mapping.balanceColumn} onValueChange={v => setMapping(m => ({ ...m, balanceColumn: v ?? "" }))}>
+                  <label className="text-sm font-medium">Colonne solde (optionnel){autoDetected.has("balanceColumn") && <AutoBadge />}</label>
+                  <Select value={mapping.balanceColumn} onValueChange={v => updateMapping("balanceColumn", v ?? "")}>
                     <SelectTrigger className="mt-1"><SelectValue placeholder="—" /></SelectTrigger>
                     <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
                   </Select>

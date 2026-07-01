@@ -75,6 +75,26 @@ export async function POST(req: Request) {
     }
   }
 
+  if (imported > 0) {
+    const latestWithBalance = await prisma.bankTransaction.findFirst({
+      where:   { bankAccountId: mapping.bankAccountId, balanceAfter: { not: null } },
+      orderBy: [{ transactionDate: "desc" }, { createdAt: "desc" }],
+    })
+
+    let currentBalance: Prisma.Decimal | number
+    if (latestWithBalance?.balanceAfter != null) {
+      currentBalance = latestWithBalance.balanceAfter
+    } else {
+      const [credit, debit] = await Promise.all([
+        prisma.bankTransaction.aggregate({ where: { bankAccountId: mapping.bankAccountId, type: "CREDIT", status: { not: "DUPLICATE" } }, _sum: { amount: true } }),
+        prisma.bankTransaction.aggregate({ where: { bankAccountId: mapping.bankAccountId, type: "DEBIT",  status: { not: "DUPLICATE" } }, _sum: { amount: true } }),
+      ])
+      currentBalance = Number(account.openingBalance) + Number(credit._sum.amount ?? 0) - Number(debit._sum.amount ?? 0)
+    }
+
+    await prisma.bankAccount.update({ where: { id: mapping.bankAccountId }, data: { currentBalance } })
+  }
+
   await writeActivityLog({
     associationId,
     actorId: userId,
