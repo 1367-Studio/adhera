@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -21,9 +21,7 @@ const createSchema = z.object({
   variantes:   z.array(varianteSchema).min(1).max(20),
 })
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
@@ -39,11 +37,9 @@ export async function GET() {
   })
 
   return NextResponse.json(produits)
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const POST = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -79,4 +75,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json(produit, { status: 201 })
-}
+})

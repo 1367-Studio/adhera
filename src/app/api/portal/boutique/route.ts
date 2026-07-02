@@ -1,22 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
+export const GET = withPortalAuth(async (_req, ctx) => {
   const produits = await prisma.boutiqueProduit.findMany({
-    where:   { associationId: u.associationId, status: "ACTIVE" },
+    where:   { associationId: ctx.associationId, status: "ACTIVE" },
     orderBy: { createdAt: "desc" },
     include: {
       variantes: {
@@ -27,4 +15,4 @@ export async function GET() {
   })
 
   return NextResponse.json(produits)
-}
+}, { module: "boutique", requireMembre: false })

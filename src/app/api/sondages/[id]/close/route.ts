@@ -1,17 +1,11 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function POST(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -35,4 +29,4 @@ export async function POST(_req: Request, { params }: Params) {
   })
 
   return NextResponse.json({ ok: true })
-}
+})

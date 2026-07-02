@@ -4,23 +4,15 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  const guard = await guardModule(u.associationId, "messages")
-  if (guard) return guard
-
-  const { id } = await params
   const rule = await prisma.automationRule.findFirst({
-    where:   { id, associationId: u.associationId },
+    where:   { id, associationId },
     include: {
       template:    true,
       association: { select: { name: true, slug: true } },
@@ -28,12 +20,15 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   })
   if (!rule) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
-  const adminEmail = u.email
+  const session = await auth()
+  const u = session?.user as SessionUser | undefined
+
+  const adminEmail = u?.email
   if (!adminEmail) return NextResponse.json({ error: "Email admin introuvable" }, { status: 400 })
 
   const vars = buildVars({
-    prenom:             u.name?.split(" ")[0] ?? "Prénom",
-    nom:                u.name?.split(" ").slice(1).join(" ") ?? "Nom",
+    prenom:             u?.name?.split(" ")[0] ?? "Prénom",
+    nom:                u?.name?.split(" ").slice(1).join(" ") ?? "Nom",
     email:              adminEmail,
     association:        rule.association.name,
     slug:               rule.association.slug,
@@ -50,4 +45,4 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   await sendEmail({ to: adminEmail, subject, html })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
-}
+}, { roles: ALLOWED_ROLES, module: "messages" })

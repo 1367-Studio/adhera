@@ -1,30 +1,22 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
+type Params = { id: string }
 
 const bodySchema = z.object({
   rsvp:     z.enum(["CONFIRME", "PROVAVEL", "INCERTO", "ABSENT"]),
   quantity: z.number().int().min(1).optional().default(1),
 })
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const { id: evenementId } = await params
-
+export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }) => {
   const evenement = await prisma.evenement.findFirst({
-    where: { id: evenementId, associationId: u.associationId },
+    where: { id: evenementId, associationId: ctx.associationId },
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
   if (evenement.date < new Date()) return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
@@ -33,8 +25,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId, deletedAt: null },
+  const membre = await prisma.membre.findUnique({
+    where: { id: ctx.membreId! },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
@@ -86,14 +78,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme) {
     const assoc = await prisma.association.findUnique({
-      where:  { id: u.associationId! },
+      where:  { id: ctx.associationId },
       select: { name: true, slug: true, modules: true },
     })
     if (assoc) {
       const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
       void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",
-        associationId: u.associationId!,
+        associationId: ctx.associationId,
         association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
         evenement:     { id: evenementId, title: evenement.title, date: evenement.date, location: evenement.location },
@@ -127,8 +119,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   if (existingParticipation?.rsvp !== parsed.data.rsvp) {
     await writeActivityLog({
-      associationId: u.associationId!,
-      actorId:  u.id,
+      associationId: ctx.associationId,
+      actorId:  ctx.userId,
       action:   "RSVP_UPDATED",
       entity:   "Participation",
       entityId: participation.id,
@@ -138,4 +130,4 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   return NextResponse.json(participation)
-}
+}, { module: "evenements" })

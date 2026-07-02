@@ -1,39 +1,21 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-type Params = { params: Promise<{ id: string }> }
+type Params = { id: string }
 
 const schema = z.object({
   answers: z.record(z.string(), z.union([z.string(), z.array(z.string()), z.null()])),
 })
 
-export async function POST(req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "sondages")
-  if (guard) return guard
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId!, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
   const now = new Date()
   const sondage = await prisma.sondage.findFirst({
     where: {
       id,
-      associationId: u.associationId!,
+      associationId: ctx.associationId,
       status:        "ACTIF",
       OR: [{ deadline: null }, { deadline: { gte: now } }],
     },
@@ -43,7 +25,7 @@ export async function POST(req: Request, { params }: Params) {
 
   // Prevent double submission — always check by real membreId, even for anonymous sondages
   const existing = await prisma.sondageReponse.findFirst({
-    where: { sondageId: id, membreId: membre.id },
+    where: { sondageId: id, membreId: ctx.membreId! },
     select: { id: true },
   })
   if (existing) return NextResponse.json({ error: "Vous avez déjà répondu à ce sondage" }, { status: 409 })
@@ -70,7 +52,7 @@ export async function POST(req: Request, { params }: Params) {
   const reponse = await prisma.sondageReponse.create({
     data: {
       sondageId: id,
-      membreId:  membre.id,  // always stored for dedup; anonymity is enforced at result display level
+      membreId:  ctx.membreId!,  // always stored for dedup; anonymity is enforced at result display level
       items: {
         create: Object.entries(answers)
           .filter(([, v]) => v !== null && v !== undefined && v !== "")
@@ -83,8 +65,8 @@ export async function POST(req: Request, { params }: Params) {
   })
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:       u.id!,
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
     action:        "SONDAGE_REPONSE_SUBMITTED",
     entity:        "SondageReponse",
     entityId:      reponse.id,
@@ -92,4 +74,4 @@ export async function POST(req: Request, { params }: Params) {
   })
 
   return NextResponse.json({ ok: true, reponseId: reponse.id }, { status: 201 })
-}
+}, { module: "sondages" })

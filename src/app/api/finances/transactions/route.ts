@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const guard = await guardModule(ctx.associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -53,4 +45,4 @@ export async function GET(req: Request) {
   ])
 
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+}, { roles: FINANCE, module: "finances" })

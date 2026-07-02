@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { associationId?: string | null }
-
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ enabled: false })
-
+export const GET = withPortalAuth(async (_req, ctx) => {
   const assoc = await prisma.association.findUnique({
-    where:  { id: u.associationId },
+    where:  { id: ctx.associationId },
     select: { stripeConnectId: true },
   })
   if (!assoc?.stripeConnectId) return NextResponse.json({ enabled: false })
@@ -21,4 +13,4 @@ export async function GET() {
   const account = await stripe.accounts.retrieve(assoc.stripeConnectId)
 
   return NextResponse.json({ enabled: account.charges_enabled === true })
-}
+}, { requireMembre: false })

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
 
@@ -10,10 +10,7 @@ const schema = z.object({
   aiModel:  z.string().max(128).nullable().optional(),
 })
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
     select: { aiApiKey: true, aiModel: true },
@@ -24,12 +21,9 @@ export async function GET() {
     aiApiKeyConfigured: !!assoc?.aiApiKey,
     usingPlatformKey:   !assoc?.aiApiKey && !!process.env.GROQ_API_KEY,
   })
-}
+})
 
-export async function PATCH(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
@@ -49,4 +43,4 @@ export async function PATCH(req: Request) {
   })
 
   return NextResponse.json({ ok: true })
-}
+})

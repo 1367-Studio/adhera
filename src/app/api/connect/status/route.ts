@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const assoc = await prisma.association.findUnique({
@@ -32,4 +30,4 @@ export async function GET() {
     payoutsEnabled:   account.payouts_enabled,
     requirements:     account.requirements?.currently_due ?? [],
   })
-}
+})

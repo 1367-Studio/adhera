@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Prisma } from "@prisma/client"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
-import type { SessionUser } from "@/lib/user-context"
 import { computeNextRunAt } from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -19,15 +18,11 @@ const schema = z.object({
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
 })
 
-export async function GET(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
-  const where   = { associationId: u.associationId }
+  const where   = { associationId }
   const orderBy = { createdAt: "desc" as const }
   const include = { template: { select: { name: true } } }
 
@@ -41,21 +36,17 @@ export async function GET(req: Request) {
     prisma.automationRule.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+}, { roles: ALLOWED_ROLES })
 
-export async function POST(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
   const template = await prisma.messageTemplate.findFirst({
-    where: { id: parsed.data.templateId, associationId: u.associationId },
+    where: { id: parsed.data.templateId, associationId },
   })
   if (!template) return NextResponse.json({ error: "Modèle introuvable" }, { status: 404 })
 
@@ -69,12 +60,12 @@ export async function POST(req: Request) {
       triggerConfig: parsed.data.triggerConfig as Prisma.InputJsonObject,
       recipients:    parsed.data.recipients,
       channel:       parsed.data.channel,
-      associationId: u.associationId,
+      associationId,
       nextRunAt,
     },
     include: { template: { select: { name: true } } },
   })
 
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_CREATED", entity: "AutomationRule", entityId: rule.id, label: rule.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "RULE_CREATED", entity: "AutomationRule", entityId: rule.id, label: rule.name })
   return NextResponse.json(rule, { status: 201 })
-}
+}, { roles: ALLOWED_ROLES })

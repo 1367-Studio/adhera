@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string }
+export const GET = withAdminAuth(async (_req, ctx) => {
+  const { userId } = ctx
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
   const notifications = await prisma.notification.findMany({
-    where:   { userId: u.id! },
+    where:   { userId },
     orderBy: { createdAt: "desc" },
     take:    50,
   })
   return NextResponse.json(notifications)
-}
+})

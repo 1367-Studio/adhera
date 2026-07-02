@@ -1,27 +1,16 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { cotisationUpdateSchema } from "@/lib/schemas"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "cotisations")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.cotisation.findFirst({ where: { id, associationId, membre: { deletedAt: null } } })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
 
@@ -89,21 +78,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   )
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_UPDATED", entity: "Cotisation", entityId: id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(cotisation)
-}
+}, { roles: MANAGERS, module: "cotisations" })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "cotisations")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.cotisation.findFirst({
     where:   { id, associationId, membre: { deletedAt: null } },
     include: { membre: { select: { firstName: true, lastName: true } } },
@@ -118,4 +97,4 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   ])
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: MANAGERS, module: "cotisations" })

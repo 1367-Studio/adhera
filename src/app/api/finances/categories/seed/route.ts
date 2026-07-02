@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -30,16 +29,8 @@ const DEFAULT_EXPENSE_CATEGORIES = [
   "Autres dépenses",
 ]
 
-export async function POST() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
-
-  const guard = await guardModule(associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const existing = await prisma.financeCategory.findMany({
     where:  { associationId },
@@ -59,4 +50,4 @@ export async function POST() {
   }
 
   return NextResponse.json({ created: toCreate.length, skipped: existing.length })
-}
+}, { roles: FINANCE, module: "finances" })

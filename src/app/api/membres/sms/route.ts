@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { sendSmsBatch } from "@/lib/sms"
-import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
@@ -14,13 +13,7 @@ const schema = z.object({
   typeId:       z.string().optional(),
 })
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
-  const guard = await guardModule(ctx.associationId, "sms")
-  if (guard) return guard
-
+export const POST = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
@@ -74,4 +67,4 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({ sent, failed, failedMembers })
-}
+}, { module: "sms" })

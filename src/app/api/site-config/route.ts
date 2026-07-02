@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -32,9 +32,7 @@ const schema = z.object({
   sections:           z.array(sectionSchema).optional(),
 })
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const assoc = await prisma.association.findUnique({
@@ -48,16 +46,10 @@ export async function GET() {
     slug:      assoc.slug,
     config:    assoc.siteConfig ?? null,
   })
-}
+})
 
-export async function PATCH(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  if (!ADMINS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const PATCH = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json()
   const parsed = schema.safeParse(body)
@@ -89,4 +81,4 @@ export async function PATCH(req: Request) {
   })
 
   return NextResponse.json({ ok: true })
-}
+}, { roles: ADMINS })

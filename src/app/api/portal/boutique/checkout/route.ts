@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 const PLATFORM_FEE = 0.015
-
-type SessionUser = { id?: string; associationId?: string | null }
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -22,34 +19,15 @@ const schema = z.object({
   note:  z.string().trim().max(500).optional().nullable(),
 })
 
-async function getMembre(userId: string, associationId: string) {
-  return prisma.membre.findFirst({
-    where:  { userId, associationId, deletedAt: null },
-    select: { id: true },
-  })
-}
-
-export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
+export const POST = withPortalAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
-    where:  { id: u.associationId },
+    where:  { id: ctx.associationId },
     select: { id: true, name: true, slug: true, stripeConnectId: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   if (!assoc.stripeConnectId)
     return NextResponse.json({ error: "Le paiement en ligne n'est pas encore configuré par votre association" }, { status: 400 })
-
-  const membre = await getMembre(u.id!, u.associationId)
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
@@ -70,7 +48,7 @@ export async function POST(req: Request) {
         include: { produit: { select: { associationId: true, status: true } } },
       })
 
-      if (!variante || variante.produit.associationId !== u.associationId)
+      if (!variante || variante.produit.associationId !== ctx.associationId)
         throw new Error("Variante introuvable")
       if (variante.produit.status !== "ACTIVE")
         throw new Error("Produit non disponible")
@@ -88,8 +66,8 @@ export async function POST(req: Request) {
 
     return tx.boutiqueCommande.create({
       data: {
-        associationId: u.associationId!,
-        membreId:      membre.id,
+        associationId: ctx.associationId,
+        membreId:      ctx.membreId!,
         status:        "PENDING",
         paymentMethod: "STRIPE",
         totalAmount,
@@ -151,8 +129,8 @@ export async function POST(req: Request) {
   })
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:       u.id!,
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
     action:        "BOUTIQUE_COMMANDE_CREATED",
     entity:        "BoutiqueCommande",
     entityId:      commande.id,
@@ -160,4 +138,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json({ url: checkoutSession.url })
-}
+}, { module: "boutique" })

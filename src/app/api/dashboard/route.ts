@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const now        = new Date()
@@ -54,4 +52,4 @@ export async function GET() {
     solde,
     prochainEvenement,
   })
-}
+})

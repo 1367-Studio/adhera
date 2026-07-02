@@ -1,35 +1,21 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-type Params = { params: Promise<{ id: string }> }
+type Params = { id: string }
 
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId!, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const now = new Date()
   const sondage = await prisma.sondage.findFirst({
     where: {
       id,
-      associationId: u.associationId!,
+      associationId: ctx.associationId,
       status:        "ACTIF",
       OR: [{ deadline: null }, { deadline: { gte: now } }],
     },
     include: {
       questions: { orderBy: { order: "asc" } },
-      reponses:  { where: { membreId: membre.id }, select: { id: true } },
+      reponses:  { where: { membreId: ctx.membreId! }, select: { id: true } },
     },
   })
 
@@ -38,7 +24,7 @@ export async function GET(_req: Request, { params }: Params) {
   // Check membership in recipients for SELECTED mode
   if (sondage.recipientMode === "SELECTED") {
     const recipient = await prisma.sondageRecipient.findUnique({
-      where: { sondageId_membreId: { sondageId: id, membreId: membre.id } },
+      where: { sondageId_membreId: { sondageId: id, membreId: ctx.membreId! } },
     })
     if (!recipient) return NextResponse.json({ error: "Non autorisé" }, { status: 403 })
   }
@@ -52,4 +38,4 @@ export async function GET(_req: Request, { params }: Params) {
     questions:   sondage.questions,
     repondu:     sondage.reponses.length > 0,
   })
-}
+})

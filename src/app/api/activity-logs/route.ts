@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
 const PAGE_SIZE = 50
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -66,4 +64,4 @@ export async function GET(req: Request) {
     totalPages: Math.ceil(total / PAGE_SIZE),
     pageSize:   PAGE_SIZE,
   })
-}
+})

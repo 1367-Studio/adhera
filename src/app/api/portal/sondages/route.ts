@@ -1,40 +1,26 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId!, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth(async (_req, ctx) => {
   const now = new Date()
 
   // Active sondages for this association that this member is a recipient of
   const sondages = await prisma.sondage.findMany({
     where: {
-      associationId: u.associationId!,
+      associationId: ctx.associationId,
       status:        "ACTIF",
       AND: [
         { OR: [{ deadline: null }, { deadline: { gte: now } }] },
         { OR: [
           { recipientMode: "ALL" },
-          { recipientMode: "SELECTED", recipients: { some: { membreId: membre.id } } },
+          { recipientMode: "SELECTED", recipients: { some: { membreId: ctx.membreId! } } },
         ]},
       ],
     },
     include: {
       _count:    { select: { questions: true } },
-      reponses:  { where: { membreId: membre.id }, select: { id: true, submittedAt: true } },
+      reponses:  { where: { membreId: ctx.membreId! }, select: { id: true, submittedAt: true } },
     },
     orderBy: { createdAt: "desc" },
   })
@@ -51,4 +37,4 @@ export async function GET() {
       submittedAt: s.reponses[0]?.submittedAt ?? null,
     })),
   )
-}
+})

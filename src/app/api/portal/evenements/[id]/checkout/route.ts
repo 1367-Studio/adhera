@@ -1,33 +1,21 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
-
-type SessionUser = { id?: string; associationId?: string | null }
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 const PLATFORM_FEE = 0.015
 const MAX_QUANTITY  = 10
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+type Params = { id: string }
 
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "evenements")
-  if (guard) return guard
-
-  const { id: evenementId } = await params
-
+export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId }) => {
   const body     = await req.json().catch(() => ({})) as { quantity?: number }
   const quantity = Math.max(1, Math.min(MAX_QUANTITY, Number(body?.quantity) || 1))
 
   const evenement = await prisma.evenement.findFirst({
-    where:   { id: evenementId, associationId: u.associationId },
+    where:   { id: evenementId, associationId: ctx.associationId },
     include: { association: { select: { stripeConnectId: true, name: true, slug: true } } },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -42,14 +30,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!connectAccount.charges_enabled)
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId!, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
   const existing = await prisma.participation.findUnique({
-    where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
+    where:  { membreId_evenementId: { membreId: ctx.membreId!, evenementId } },
     select: { ticketPaidAt: true },
   })
   if (existing?.ticketPaidAt)
@@ -59,7 +41,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { _sum } = await prisma.participation.aggregate({
       where: {
         evenementId,
-        membreId: { not: membre.id },
+        membreId: { not: ctx.membreId! },
         OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
       },
       _sum: { quantity: true },
@@ -71,8 +53,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   // Hold the slot(s) immediately so simultaneous requests can't oversell
   const participation = await prisma.participation.upsert({
-    where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    create: { membreId: membre.id, evenementId, rsvp: "CONFIRME", quantity },
+    where:  { membreId_evenementId: { membreId: ctx.membreId!, evenementId } },
+    create: { membreId: ctx.membreId!, evenementId, rsvp: "CONFIRME", quantity },
     update: { rsvp: "CONFIRME", quantity },
     select: { id: true },
   })
@@ -115,7 +97,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: evenement.association.stripeConnectId },
-      metadata:               { participationId: participation.id, associationId: u.associationId },
+      metadata:               { participationId: participation.id, associationId: ctx.associationId },
     },
     metadata:    { participationId: participation.id },
     success_url: `${APP_URL}/portal/${slug}/evenements?ticket=success&eid=${evenementId}`,
@@ -126,8 +108,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
 
   await writeActivityLog({
-    associationId: u.associationId!,
-    actorId:       u.id,
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
     action:        "TICKET_CHECKOUT_STARTED",
     entity:        "Participation",
     entityId:      participation.id,
@@ -136,4 +118,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   return NextResponse.json({ url: checkoutSession.url })
-}
+}, { module: "evenements" })

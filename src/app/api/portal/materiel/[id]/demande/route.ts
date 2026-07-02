@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
+type Params = { id: string }
 
 // Fix 4: validate expectedReturnAt is a valid date string (not NaN) and not in the past
 const schema = z.object({
@@ -19,23 +19,9 @@ const schema = z.object({
   notes: z.string().max(500).trim().optional().nullable(),
 })
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
-  const { id } = await params
-
+export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
   const material = await prisma.material.findFirst({
-    where: { id, associationId: u.associationId },
+    where: { id, associationId: ctx.associationId },
   })
   if (!material) return NextResponse.json({ error: "Article introuvable" }, { status: 404 })
 
@@ -46,7 +32,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   const existing = await prisma.materialLoan.findFirst({
-    where: { materialId: id, membreId: membre.id, returnedAt: null, status: { in: ["DEMANDE", "CONFIRME"] } },
+    where: { materialId: id, membreId: ctx.membreId!, returnedAt: null, status: { in: ["DEMANDE", "CONFIRME"] } },
   })
   if (existing) {
     return NextResponse.json({ error: "Vous avez déjà une demande en cours pour cet article" }, { status: 409 })
@@ -55,7 +41,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const loan = await prisma.materialLoan.create({
     data: {
       materialId:       id,
-      membreId:         membre.id,
+      membreId:         ctx.membreId!,
       quantity:         parsed.data.quantity,
       status:           "DEMANDE",
       expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
@@ -65,8 +51,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   await writeActivityLog({
-    associationId: u.associationId!,
-    actorId:  u.id,
+    associationId: ctx.associationId,
+    actorId:  ctx.userId,
     action:   "LOAN_REQUESTED",
     entity:   "MaterialLoan",
     entityId: loan.id,
@@ -75,4 +61,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   return NextResponse.json(loan, { status: 201 })
-}
+}, { module: "materiel" })

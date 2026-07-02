@@ -1,18 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
-
-type SessionUser = { id?: string; associationId?: string | null }
-
-async function getMembre(userId: string, associationId: string) {
-  return prisma.membre.findFirst({
-    where:  { userId, associationId, deletedAt: null },
-    select: { id: true },
-  })
-}
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -26,21 +16,9 @@ const checkoutSchema = z.object({
   note:          z.string().trim().max(500).optional().nullable(),
 })
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
-  const membre = await getMembre(u.id!, u.associationId)
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth(async (_req, ctx) => {
   const commandes = await prisma.boutiqueCommande.findMany({
-    where:   { associationId: u.associationId, membreId: membre.id },
+    where:   { associationId: ctx.associationId, membreId: ctx.membreId! },
     orderBy: { createdAt: "desc" },
     include: {
       items: {
@@ -53,21 +31,9 @@ export async function GET() {
   })
 
   return NextResponse.json(commandes)
-}
+}, { module: "boutique" })
 
-export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
-  const membre = await getMembre(u.id!, u.associationId)
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const POST = withPortalAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
   const parsed = checkoutSchema.safeParse(body)
   if (!parsed.success)
@@ -85,7 +51,7 @@ export async function POST(req: Request) {
         include: { produit: { select: { associationId: true, status: true } } },
       })
 
-      if (!variante || variante.produit.associationId !== u.associationId)
+      if (!variante || variante.produit.associationId !== ctx.associationId)
         throw new Error(`Variante introuvable: ${item.varianteId}`)
       if (variante.produit.status !== "ACTIVE")
         throw new Error(`Produit non disponible`)
@@ -108,8 +74,8 @@ export async function POST(req: Request) {
 
     return tx.boutiqueCommande.create({
       data: {
-        associationId: u.associationId!,
-        membreId:      membre.id,
+        associationId: ctx.associationId,
+        membreId:      ctx.membreId!,
         status:        "PENDING",
         paymentMethod,
         totalAmount,
@@ -128,8 +94,8 @@ export async function POST(req: Request) {
   }, { isolationLevel: "Serializable" })
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:       u.id!,
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
     action:        "BOUTIQUE_COMMANDE_CREATED",
     entity:        "BoutiqueCommande",
     entityId:      commande.id,
@@ -137,4 +103,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json(commande, { status: 201 })
-}
+}, { module: "boutique" })

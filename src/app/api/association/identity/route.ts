@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -14,10 +14,7 @@ const schema = z.object({
   canIssueTaxReceipts: z.boolean().optional(),
 })
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
     select: {
@@ -31,15 +28,9 @@ export async function GET() {
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   return NextResponse.json(assoc)
-}
+})
 
-export async function PATCH(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
-  if (!ADMINS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
+export const PATCH = withAdminAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success)
@@ -83,4 +74,4 @@ export async function PATCH(req: Request) {
   })
 
   return NextResponse.json({ ok: true })
-}
+}, { roles: ADMINS })

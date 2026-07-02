@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const schema = z.object({
   action:      z.enum(["generate", "improve", "rephrase", "summarize"]),
@@ -32,13 +31,7 @@ function buildUserPrompt(action: string, instruction?: string, currentText?: str
   }
 }
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
-  const guard = await guardModule(ctx.associationId, "ia")
-  if (guard) return guard
-
+export const POST = withAdminAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -80,4 +73,4 @@ export async function POST(req: Request) {
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-}
+}, { module: "ia" })

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -13,12 +13,7 @@ const updateSchema = z.object({
   items:  z.array(z.object({ id: z.string(), quantity: z.number().int().min(0) })).optional(),
 })
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
@@ -39,12 +34,9 @@ export async function GET(_req: Request, { params }: Params) {
   if (!commande) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(commande)
-}
+})
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
@@ -164,4 +156,4 @@ export async function PATCH(req: Request, { params }: Params) {
     },
   })
   return NextResponse.json(updated)
-}
+})

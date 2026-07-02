@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -17,18 +15,10 @@ const schema = z.object({
   notes:            z.string().max(500).optional().nullable(),
 }).refine(d => d.membreId || d.borrowerName, { message: "Emprunteur requis" })
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(u.associationId, "materiel")
-  if (guard) return guard
-
-  const { id } = await params
-  const material = await prisma.material.findFirst({ where: { id, associationId: u.associationId } })
+  const material = await prisma.material.findFirst({ where: { id, associationId } })
   if (!material) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
@@ -69,8 +59,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     ? `${loan.membre.firstName} ${loan.membre.lastName}`
     : (parsed.data.borrowerName ?? "Externe")
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:  u.id,
+    associationId,
+    actorId:  userId,
     action:   "LOAN_CREATED",
     entity:   "MaterialLoan",
     entityId: loan.id,
@@ -79,4 +69,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   return NextResponse.json(loan, { status: 201 })
-}
+}, { roles: ALLOWED, module: "materiel" })

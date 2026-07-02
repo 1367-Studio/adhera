@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -21,17 +19,13 @@ const schema = z.object({
   notes:         z.string().max(1000).optional().nullable(),
 })
 
-export async function GET(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
   const search = searchParams.get("search")?.trim()
 
-  const where: Record<string, unknown> = { associationId: u.associationId }
+  const where: Record<string, unknown> = { associationId }
   if (search) {
     where.OR = [
       { name:         { contains: search, mode: "insensitive" } },
@@ -72,17 +66,10 @@ export async function GET(req: Request) {
   })
 
   return NextResponse.json(result)
-}
+}, { roles: ALLOWED })
 
-export async function POST(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const guard = await guardModule(u.associationId, "materiel")
-  if (guard) return guard
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
@@ -92,12 +79,12 @@ export async function POST(req: Request) {
   const material = await prisma.material.create({
     data: {
       ...rest,
-      associationId: u.associationId,
+      associationId,
       purchaseDate:  purchaseDate ? new Date(purchaseDate) : null,
       purchasePrice: purchasePrice ?? null,
     },
   })
 
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "MATERIEL_CREATED", entity: "Material", entityId: material.id, label: material.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_CREATED", entity: "Material", entityId: material.id, label: material.name })
   return NextResponse.json(material, { status: 201 })
-}
+}, { roles: ALLOWED, module: "materiel" })

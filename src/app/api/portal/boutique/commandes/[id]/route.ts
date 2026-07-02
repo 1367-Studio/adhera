@@ -1,37 +1,19 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-type Params = { params: Promise<{ id: string }> }
+type Params = { id: string }
 
 const updateSchema = z.object({
   status: z.literal("CANCELLED").optional(),
   items:  z.array(z.object({ id: z.string(), quantity: z.number().int().min(0) })).optional(),
 })
 
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const commande = await prisma.boutiqueCommande.findFirst({
-    where:   { id, associationId: u.associationId, membreId: membre.id },
+    where:   { id, associationId: ctx.associationId, membreId: ctx.membreId! },
     include: {
       items: {
         include: {
@@ -44,27 +26,11 @@ export async function GET(_req: Request, { params }: Params) {
   if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 })
 
   return NextResponse.json(commande)
-}
+}, { module: "boutique" })
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "boutique")
-  if (guard) return guard
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const PATCH = withPortalAuth<Params>(async (req, ctx, { id }) => {
   const commande = await prisma.boutiqueCommande.findFirst({
-    where:  { id, associationId: u.associationId, membreId: membre.id },
+    where:  { id, associationId: ctx.associationId, membreId: ctx.membreId! },
     select: { id: true, status: true, paymentMethod: true },
   })
   if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 })
@@ -134,8 +100,8 @@ export async function PATCH(req: Request, { params }: Params) {
   }
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:       u.id!,
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
     action:        status === "CANCELLED" ? "BOUTIQUE_COMMANDE_CANCELLED" : "BOUTIQUE_COMMANDE_UPDATED",
     entity:        "BoutiqueCommande",
     entityId:      id,
@@ -154,4 +120,4 @@ export async function PATCH(req: Request, { params }: Params) {
     },
   })
   return NextResponse.json(updated)
-}
+}, { module: "boutique" })

@@ -1,21 +1,12 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { computeMatchScore } from "@/lib/finance/match-score"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
-
-  const guard = await guardModule(associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
   const bankTransactionId = searchParams.get("bankTransactionId")
@@ -83,4 +74,4 @@ export async function GET(req: Request) {
     .slice(0, 5)
 
   return NextResponse.json({ transaction: tx, suggestions })
-}
+}, { roles: FINANCE, module: "finances" })

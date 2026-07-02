@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -14,28 +13,20 @@ const schema = z.object({
   smsBody: z.string().optional(),
 })
 
-export async function GET() {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const templates = await prisma.messageTemplate.findMany({
-    where:   { associationId: u.associationId },
+    where:   { associationId },
     orderBy: { createdAt: "desc" },
     select:  { id: true, name: true, subject: true, body: true, smsBody: true, createdAt: true, updatedAt: true, _count: { select: { rules: true } } },
   })
 
   return NextResponse.json(templates)
-}
+}, { roles: ALLOWED_ROLES })
 
-export async function POST(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
@@ -47,10 +38,10 @@ export async function POST(req: Request) {
       subject:       parsed.data.subject,
       body:          parsed.data.body,
       smsBody:       parsed.data.smsBody || null,
-      associationId: u.associationId,
+      associationId,
     },
   })
 
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_CREATED", entity: "MessageTemplate", entityId: template.id, label: template.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_CREATED", entity: "MessageTemplate", entityId: template.id, label: template.name })
   return NextResponse.json(template, { status: 201 })
-}
+}, { roles: ALLOWED_ROLES })

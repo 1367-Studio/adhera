@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Prisma } from "@prisma/client"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { guardModule } from "@/lib/auth/require-module"
@@ -33,10 +33,7 @@ const createSchema = z.object({
   recipientIds:  z.array(z.string()).optional(),
 })
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -59,12 +56,9 @@ export async function GET(req: Request) {
     prisma.sondage.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const POST = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -138,4 +132,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json(sondage, { status: 201 })
-}
+})
