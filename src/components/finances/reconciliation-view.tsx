@@ -103,6 +103,15 @@ export function ReconciliationView() {
     }
   }
 
+  async function handleUnmatch(tx: BankTx) {
+    try {
+      await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "UNMATCH" })
+      toast.success("Conciliation annulée")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
   async function handleCreateIncome(data: IncomeInput, tx: BankTx) {
     try {
       const income = await createIncomeMutation.mutateAsync(data)
@@ -175,7 +184,18 @@ export function ReconciliationView() {
       className: "w-52",
       hideInCard: true,
       cell: (tx) => {
-        if (tx.status === "MATCHED") return null
+        if (tx.status === "MATCHED") {
+          return (
+            <Button
+              size="sm" variant="ghost"
+              className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
+              onClick={() => handleUnmatch(tx)}
+              title="Annuler la conciliation"
+            >
+              <RotateCcwIcon className="size-3 mr-1" />Déconcilier
+            </Button>
+          )
+        }
         if (tx.status === "IGNORED" || tx.status === "DUPLICATE") {
           return (
             <Button

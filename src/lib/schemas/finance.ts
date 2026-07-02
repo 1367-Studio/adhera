@@ -90,7 +90,7 @@ export type ImportRow = z.infer<typeof importRowSchema>
 
 export const reconcileActionSchema = z.object({
   bankTransactionId: z.string().min(1),
-  action:            z.enum(["MATCH", "IGNORE", "DUPLICATE"]),
+  action:            z.enum(["MATCH", "IGNORE", "DUPLICATE", "UNMATCH"]),
   incomeId:          z.string().optional(),
   expenseId:         z.string().optional(),
 })

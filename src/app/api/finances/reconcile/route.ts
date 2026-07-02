@@ -97,5 +97,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ status: "MATCHED" })
   }
 
+  if (action === "UNMATCH") {
+    if (tx.status !== "MATCHED") {
+      return NextResponse.json({ error: "Transaction non conciliée" }, { status: 409 })
+    }
+
+    const reconciliation = await prisma.bankReconciliation.findFirst({
+      where: { bankTransactionId, associationId },
+    })
+
+    await prisma.$transaction([
+      ...(reconciliation ? [prisma.bankReconciliation.delete({ where: { id: reconciliation.id } })] : []),
+      prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "UNMATCHED" } }),
+      ...(reconciliation?.incomeId
+        ? [prisma.income.updateMany({ where: { id: reconciliation.incomeId, status: "PAID" }, data: { status: "PENDING" } })]
+        : []),
+      ...(reconciliation?.expenseId
+        ? [prisma.expense.updateMany({ where: { id: reconciliation.expenseId, status: "VALIDATED" }, data: { status: "DRAFT" } })]
+        : []),
+    ])
+
+    await writeActivityLog({ associationId, actorId: userId, action: "TX_UNMATCHED", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label })
+    return NextResponse.json({ status: "UNMATCHED" })
+  }
+
   return NextResponse.json({ error: "Action invalide" }, { status: 422 })
 }

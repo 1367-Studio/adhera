@@ -41,7 +41,7 @@ async function fetchSuggestions(bankTransactionId: string) {
   return res.json()
 }
 
-async function reconcile(data: { bankTransactionId: string; action: "MATCH" | "IGNORE" | "DUPLICATE"; incomeId?: string; expenseId?: string }) {
+async function reconcile(data: { bankTransactionId: string; action: "MATCH" | "IGNORE" | "DUPLICATE" | "UNMATCH"; incomeId?: string; expenseId?: string }) {
   const res = await fetch("/api/finances/reconcile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
