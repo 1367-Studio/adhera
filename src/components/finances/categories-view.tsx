@@ -18,6 +18,7 @@ type Category = {
   type:          "INCOME" | "EXPENSE"
   accountingCode: string | null
   isDefault:     boolean
+  _count?:       { incomes: number; expenses: number }
 }
 
 function CategoryList({ categories, loading, onEdit, onDelete }: {
@@ -166,7 +167,12 @@ export function CategoriesView() {
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
         title="Supprimer cette catégorie ?"
-        description={deleteTarget?.name ?? ""}
+        description={(() => {
+          const uses = (deleteTarget?._count?.incomes ?? 0) + (deleteTarget?._count?.expenses ?? 0)
+          return uses > 0
+            ? `« ${deleteTarget?.name} » est utilisée par ${uses} recette${uses > 1 ? "s" : ""}/dépense${uses > 1 ? "s" : ""}. Ces entrées passeront en « Non catégorisé ».`
+            : deleteTarget?.name ?? ""
+        })()}
         confirmLabel="Supprimer"
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}

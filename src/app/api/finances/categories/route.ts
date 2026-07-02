@@ -23,6 +23,7 @@ export async function GET(req: Request) {
   const categories = await prisma.financeCategory.findMany({
     where:   { associationId, ...(type ? { type: type as "INCOME" | "EXPENSE" } : {}) },
     orderBy: [{ type: "asc" }, { name: "asc" }],
+    include: { _count: { select: { incomes: true, expenses: true } } },
   })
   return NextResponse.json(categories)
 }

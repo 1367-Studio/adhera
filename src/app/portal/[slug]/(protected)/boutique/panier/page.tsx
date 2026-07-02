@@ -160,11 +160,15 @@ export default function PanierPage() {
                   <button
                     type="button"
                     onClick={() => updateQuantity(item.varianteId, item.quantity + 1)}
-                    className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors"
+                    disabled={item.quantity >= item.stock}
+                    className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors disabled:opacity-30 disabled:pointer-events-none"
                   >
                     <PlusIcon className="size-3" />
                   </button>
                 </div>
+                {item.quantity >= item.stock && (
+                  <p className="text-[10px] text-muted-foreground">Stock max atteint</p>
+                )}
               </div>
             </div>
           ))}

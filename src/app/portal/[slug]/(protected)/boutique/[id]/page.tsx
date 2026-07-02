@@ -79,6 +79,7 @@ export default function ProduitDetailPage() {
       varianteLabel: selectedVariante.label,
       price:         selectedVariante.price,
       imageUrl:      produit.imageUrl,
+      stock:         selectedVariante.stock,
     }, quantity)
     toast.success("Ajouté au panier")
   }
