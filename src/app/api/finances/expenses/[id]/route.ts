@@ -29,18 +29,33 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const { date, categoryId, vendor, description, receiptUrl, internalNote, ...rest } = parsed.data
-  const expense = await prisma.expense.update({
-    where: { id },
-    data:  {
-      ...rest,
-      ...(date         ? { date: new Date(date) } : {}),
-      ...(categoryId   !== undefined ? { categoryId:   categoryId   || null } : {}),
-      ...(vendor       !== undefined ? { vendor:       vendor       || null } : {}),
-      ...(description  !== undefined ? { description:  description  || null } : {}),
-      ...(receiptUrl   !== undefined ? { receiptUrl:   receiptUrl   || null } : {}),
-      ...(internalNote !== undefined ? { internalNote: internalNote || null } : {}),
-    },
-  })
+
+  // If status moves away from VALIDATED, any bank reconciliation for this expense is no
+  // longer valid — unlink it and reset the transaction, mirroring what DELETE already does.
+  const leavesValidated = rest.status !== undefined && rest.status !== "VALIDATED" && existing.status === "VALIDATED"
+  const reconciliations = leavesValidated
+    ? await prisma.bankReconciliation.findMany({ where: { expenseId: id }, select: { bankTransactionId: true } })
+    : []
+  const txIds = reconciliations.map(r => r.bankTransactionId)
+
+  const [expense] = await prisma.$transaction([
+    prisma.expense.update({
+      where: { id },
+      data:  {
+        ...rest,
+        ...(date         ? { date: new Date(date) } : {}),
+        ...(categoryId   !== undefined ? { categoryId:   categoryId   || null } : {}),
+        ...(vendor       !== undefined ? { vendor:       vendor       || null } : {}),
+        ...(description  !== undefined ? { description:  description  || null } : {}),
+        ...(receiptUrl   !== undefined ? { receiptUrl:   receiptUrl   || null } : {}),
+        ...(internalNote !== undefined ? { internalNote: internalNote || null } : {}),
+      },
+    }),
+    ...(leavesValidated ? [prisma.bankReconciliation.deleteMany({ where: { expenseId: id } })] : []),
+    ...(txIds.length > 0
+      ? [prisma.bankTransaction.updateMany({ where: { id: { in: txIds } }, data: { status: "UNMATCHED" as const } })]
+      : []),
+  ])
 
   await writeActivityLog({ associationId, actorId: userId, action: "EXPENSE_UPDATED", entity: "Expense", entityId: id })
   return NextResponse.json(expense)

@@ -33,7 +33,7 @@ export async function GET() {
       _sum: { amount: true },
     }),
     prisma.expense.aggregate({
-      where: { associationId, status: { not: "CANCELLED" } },
+      where: { associationId, status: "VALIDATED" },
       _sum: { amount: true },
     }),
     prisma.evenement.findFirst({

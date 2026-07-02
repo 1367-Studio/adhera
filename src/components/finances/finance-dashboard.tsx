@@ -8,39 +8,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils"
 
 type Stats = {
-  totalIncomes:    number
-  totalExpenses:   number
-  result:          number
-  unmatched:       number
-  pendingReceipts: number
+  totalIncomes:     number
+  totalExpenses:    number
+  result:           number
+  cumulativeResult: number
+  unmatched:        number
+  pendingReceipts:  number
 }
 
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
+function sumAmount(data: unknown): number {
+  const rows = (data as { data?: unknown[] })?.data ?? (Array.isArray(data) ? data : [])
+  return (rows as { amount: string | number }[]).reduce((s, r) => s + Number(r.amount), 0)
+}
+
 async function fetchStats(year: number): Promise<Stats> {
   const dateFrom = `${year}-01-01`
   const dateTo   = `${year}-12-31`
-  const incParams = new URLSearchParams({ dateFrom, dateTo })
-  const [incRes, expRes, txRes, expPendRes] = await Promise.all([
+  const incParams = new URLSearchParams({ dateFrom, dateTo, status: "PAID" })
+  const expParams = new URLSearchParams({ dateFrom, dateTo, status: "VALIDATED" })
+  const [incRes, expRes, txRes, expPendRes, incAllRes, expAllRes] = await Promise.all([
     fetch(`/api/finances/incomes?${incParams}`),
-    fetch(`/api/finances/expenses?${incParams}`),
+    fetch(`/api/finances/expenses?${expParams}`),
     fetch("/api/finances/transactions?status=UNMATCHED&limit=1"),
     fetch("/api/finances/expenses?status=DRAFT&limit=1"),
+    fetch("/api/finances/incomes?status=PAID"),
+    fetch("/api/finances/expenses?status=VALIDATED"),
   ])
-  const [incData, expData, txData, pendData] = await Promise.all([
-    incRes.json(), expRes.json(), txRes.json(), expPendRes.json(),
+  const [incData, expData, txData, pendData, incAllData, expAllData] = await Promise.all([
+    incRes.json(), expRes.json(), txRes.json(), expPendRes.json(), incAllRes.json(), expAllRes.json(),
   ])
 
-  const totalIncomes  = (incData.data ?? incData ?? []).reduce((s: number, i: { amount: string | number }) => s + Number(i.amount), 0)
-  const totalExpenses = (expData.data ?? expData ?? []).reduce((s: number, e: { amount: string | number }) => s + Number(e.amount), 0)
+  const totalIncomes  = sumAmount(incData)
+  const totalExpenses = sumAmount(expData)
 
   return {
     totalIncomes,
     totalExpenses,
-    result:          totalIncomes - totalExpenses,
-    unmatched:       txData.total   ?? 0,
-    pendingReceipts: pendData.total ?? 0,
+    result:           totalIncomes - totalExpenses,
+    cumulativeResult: sumAmount(incAllData) - sumAmount(expAllData),
+    unmatched:        txData.total   ?? 0,
+    pendingReceipts:  pendData.total ?? 0,
   }
 }
 
@@ -99,7 +109,7 @@ export function FinanceDashboard() {
     staleTime: 0,
   })
 
-  const s = stats ?? { totalIncomes: 0, totalExpenses: 0, result: 0, unmatched: 0, pendingReceipts: 0 }
+  const s = stats ?? { totalIncomes: 0, totalExpenses: 0, result: 0, cumulativeResult: 0, unmatched: 0, pendingReceipts: 0 }
 
   return (
     <div className="space-y-4">
@@ -135,10 +145,10 @@ export function FinanceDashboard() {
           />
           <StatCard
             title={`Résultat cumulé`}
-            value={s.result}
+            value={s.cumulativeResult}
             icon={LandmarkIcon}
             colorClass="bg-blue-50 dark:bg-blue-950/30"
-            prefix={s.result >= 0 ? "+" : ""}
+            prefix={s.cumulativeResult >= 0 ? "+" : ""}
           />
           <CountCard title="Transactions non conciliées" value={s.unmatched}       icon={AlertCircleIcon} colorClass="bg-orange-50 dark:bg-orange-950/30" label="à traiter" />
           <CountCard title="Justificatifs en attente"    value={s.pendingReceipts} icon={ReceiptIcon}     colorClass="bg-yellow-50 dark:bg-yellow-950/30" label="dépenses brouillon" />

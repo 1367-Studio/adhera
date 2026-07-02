@@ -58,8 +58,14 @@ export function ReportsView() {
 
   const loading = loadingI || loadingE
 
-  const totalIncomes  = incomes.reduce((s, i) => s + Number(i.amount), 0)
-  const totalExpenses = expenses.reduce((s, e) => s + Number(e.amount), 0)
+  // Only PAID income / VALIDATED expense rows represent money that actually moved —
+  // PENDING, DRAFT, and CANCELLED rows are shown in the raw export (with their status
+  // labeled) but must not count toward totals or category breakdowns.
+  const paidIncomes      = incomes.filter(i => i.status === "PAID")
+  const validatedExpenses = expenses.filter(e => e.status === "VALIDATED")
+
+  const totalIncomes  = paidIncomes.reduce((s, i) => s + Number(i.amount), 0)
+  const totalExpenses = validatedExpenses.reduce((s, e) => s + Number(e.amount), 0)
 
   function groupByCategory(rows: Row[]): Record<string, number> {
     return rows.reduce((acc, row) => {
@@ -69,8 +75,8 @@ export function ReportsView() {
     }, {} as Record<string, number>)
   }
 
-  const incomeByCategory  = groupByCategory(incomes)
-  const expenseByCategory = groupByCategory(expenses)
+  const incomeByCategory  = groupByCategory(paidIncomes)
+  const expenseByCategory = groupByCategory(validatedExpenses)
 
   const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 

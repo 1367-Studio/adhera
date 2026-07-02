@@ -91,6 +91,14 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const existing = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
+  const participationCount = await prisma.participation.count({ where: { evenementId: id } })
+  if (participationCount > 0) {
+    return NextResponse.json(
+      { error: `Impossible de supprimer : ${participationCount} membre(s) ont une réponse ou un billet pour cet événement.` },
+      { status: 409 },
+    )
+  }
+
   await prisma.evenement.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_DELETED", entity: "Evenement", entityId: id, label: existing.title })
   return new NextResponse(null, { status: 204 })
