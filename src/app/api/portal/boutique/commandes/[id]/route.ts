@@ -3,6 +3,7 @@ import { z } from "zod"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 type SessionUser = { id?: string; associationId?: string | null }
 type Params = { params: Promise<{ id: string }> }
@@ -19,6 +20,9 @@ export async function GET(_req: Request, { params }: Params) {
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const guard = await guardModule(u.associationId, "boutique")
+  if (guard) return guard
 
   const membre = await prisma.membre.findFirst({
     where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
@@ -49,6 +53,9 @@ export async function PATCH(req: Request, { params }: Params) {
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const guard = await guardModule(u.associationId, "boutique")
+  if (guard) return guard
 
   const membre = await prisma.membre.findFirst({
     where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },

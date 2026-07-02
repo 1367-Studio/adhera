@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -29,6 +30,8 @@ export async function GET(_req: Request, { params }: Params) {
   if (!isCtx(ctx)) return ctx
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:   { id, associationId: ctx.associationId },
@@ -48,6 +51,8 @@ export async function PATCH(req: Request, { params }: Params) {
   if (!isCtx(ctx)) return ctx
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:  { id, associationId: ctx.associationId },
@@ -122,6 +127,8 @@ export async function DELETE(_req: Request, { params }: Params) {
   if (!isCtx(ctx)) return ctx
   if (!["ADMIN", "PRESIDENT"].includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:  { id, associationId: ctx.associationId },

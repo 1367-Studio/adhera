@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { guardModule } from "@/lib/auth/require-module"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -10,6 +11,9 @@ export async function GET() {
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+
+  const guard = await guardModule(u.associationId, "boutique")
+  if (guard) return guard
 
   const produits = await prisma.boutiqueProduit.findMany({
     where:   { associationId: u.associationId, status: "ACTIVE" },

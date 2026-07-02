@@ -26,6 +26,8 @@ export async function GET() {
   if (!isCtx(ctx)) return ctx
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produits = await prisma.boutiqueProduit.findMany({
     where:   { associationId: ctx.associationId },

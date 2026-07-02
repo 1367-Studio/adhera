@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -9,6 +10,8 @@ export async function GET(req: Request) {
   if (!isCtx(ctx)) return ctx
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const { searchParams } = new URL(req.url)
   const status  = searchParams.get("status") || undefined

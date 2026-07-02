@@ -33,6 +33,9 @@ export async function GET() {
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
+  const guard = await guardModule(u.associationId, "boutique")
+  if (guard) return guard
+
   const membre = await getMembre(u.id!, u.associationId)
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
