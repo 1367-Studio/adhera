@@ -40,16 +40,20 @@ export async function POST(req: Request) {
       ...(recipientIds?.length ? { id: { in: recipientIds } } : {}),
       ...(typeId ? { typeId } : {}),
     },
-    select: { phone: true },
+    select: { id: true, firstName: true, lastName: true, phone: true },
     take:   500,
   })
 
-  const jobs = membres.filter(m => m.phone).map(m => ({ to: m.phone!, body }))
-  if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0 })
+  const recipients = membres.filter(m => m.phone)
+  const jobs = recipients.map(m => ({ to: m.phone!, body }))
+  if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
 
   const results = await sendSmsBatch(jobs, ctx.associationId)
   const sent    = results.filter(Boolean).length
-  const failed  = results.length - sent
+  const failedMembers = recipients
+    .filter((_, i) => !results[i])
+    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
+  const failed  = failedMembers.length
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
   if (sent > 0) {
@@ -69,5 +73,5 @@ export async function POST(req: Request) {
     })
   }
 
-  return NextResponse.json({ sent, failed })
+  return NextResponse.json({ sent, failed, failedMembers })
 }

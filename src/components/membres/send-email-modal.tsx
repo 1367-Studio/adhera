@@ -354,7 +354,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         toast.error(`Aucun email envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
       } else {
         toast.success(`Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
-        if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
+        if (data.failed > 0) {
+          const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
+          const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? ` et ${names.length - 5} autre(s)` : "")
+          toast.warning(
+            `${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}${preview ? ` : ${preview}` : ""}`,
+          )
+        }
       }
       onOpenChange(false)
     } catch {

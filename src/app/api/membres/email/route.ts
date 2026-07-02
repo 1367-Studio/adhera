@@ -48,19 +48,22 @@ export async function POST(req: Request) {
       ...(recipientIds?.length ? { id: { in: recipientIds } } : {}),
       ...(typeId ? { typeId } : {}),
     },
-    select: { email: true },
+    select: { id: true, firstName: true, lastName: true, email: true },
   })
 
-  const payloads = membres
-    .filter(m => m.email)
-    .map(m => customEmail({
-      associationName: assoc.name,
-      subject,
-      bodyHtml,
-      recipientEmail:  m.email!,
-    }))
+  const recipients = membres.filter(m => m.email)
+  const payloads = recipients.map(m => customEmail({
+    associationName: assoc.name,
+    subject,
+    bodyHtml,
+    recipientEmail:  m.email!,
+  }))
 
-  const { sent, failed } = await sendEmailBulk(payloads)
+  const { sent, failed, failedRecipients } = await sendEmailBulk(payloads)
+  const failedEmails = new Set(failedRecipients)
+  const failedMembers = recipients
+    .filter(m => failedEmails.has(m.email!))
+    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
   await writeActivityLog({
@@ -78,5 +81,5 @@ export async function POST(req: Request) {
     },
   })
 
-  return NextResponse.json({ sent, failed })
+  return NextResponse.json({ sent, failed, failedMembers })
 }
