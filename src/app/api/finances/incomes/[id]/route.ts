@@ -1,24 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { incomeUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.income.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
@@ -59,20 +49,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   await writeActivityLog({ associationId, actorId: userId, action: "INCOME_UPDATED", entity: "Income", entityId: id })
   return NextResponse.json(income)
-}
+}, { roles: FINANCE, module: "finances" })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.income.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
@@ -94,4 +75,4 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   await writeActivityLog({ associationId, actorId: userId, action: "INCOME_DELETED", entity: "Income", entityId: id })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: FINANCE, module: "finances" })

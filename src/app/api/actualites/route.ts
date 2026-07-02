@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { actualiteSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -43,17 +43,8 @@ export async function GET(req: Request) {
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
 }
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  const guard = await guardModule(associationId, "actualites")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body = await req.json()
   const parsed = actualiteSchema.safeParse(body)
@@ -79,4 +70,4 @@ export async function POST(req: Request) {
 
   await writeActivityLog({ associationId, actorId: userId, action: "ACTUALITE_CREATED", entity: "Actualite", entityId: actualite.id, label: actualite.title })
   return NextResponse.json(actualite, { status: 201 })
-}
+}, { roles: MANAGERS, module: "actualites" })

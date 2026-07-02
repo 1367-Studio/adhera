@@ -1,21 +1,13 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { incomeSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const guard = await guardModule(ctx.associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -56,18 +48,10 @@ export async function GET(req: Request) {
   ])
 
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+}, { roles: FINANCE, module: "finances" })
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  const guard = await guardModule(associationId, "finances")
-  if (guard) return guard
-  if (!FINANCE.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json()
   const parsed = incomeSchema.safeParse(body)
@@ -91,4 +75,4 @@ export async function POST(req: Request) {
 
   await writeActivityLog({ associationId, actorId: userId, action: "INCOME_CREATED", entity: "Income", entityId: income.id, label: description || `Recette ${Number(income.amount)}€`, metadata: { amount: Number(income.amount) } })
   return NextResponse.json(income, { status: 201 })
-}
+}, { roles: FINANCE, module: "finances" })

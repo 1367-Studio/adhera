@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { actualiteUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
 import { stripHtml } from "@/lib/utils"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -14,17 +13,9 @@ const include = {
   recipients: { select: { membreId: true } },
 }
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "actualites")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const { id } = await params
   const existing = await prisma.actualite.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -114,23 +105,15 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     metadata: Object.keys(changes).length > 0 ? { changes } : undefined,
   })
   return NextResponse.json(updated)
-}
+}, { roles: MANAGERS, module: "actualites" })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "actualites")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const { id } = await params
   const existing = await prisma.actualite.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   await prisma.actualite.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "ACTUALITE_DELETED", entity: "Actualite", entityId: id, label: existing.title })
   return NextResponse.json({ ok: true })
-}
+}, { roles: MANAGERS, module: "actualites" })

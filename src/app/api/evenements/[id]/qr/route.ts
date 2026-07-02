@@ -1,21 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { randomBytes } from "crypto"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS    = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const QR_TTL_HOURS = 24
 
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const evenement = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -28,21 +21,14 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   })
 
   return NextResponse.json({ qrToken: updated.qrToken, qrExpiresAt: updated.qrExpiresAt })
-}
+}, { roles: MANAGERS })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const evenement = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   await prisma.evenement.update({ where: { id }, data: { qrToken: null, qrExpiresAt: null } })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: MANAGERS })

@@ -1,33 +1,18 @@
 import { NextResponse } from "next/server"
 import { GetObjectCommand } from "@aws-sdk/client-s3"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { r2 } from "@/lib/r2"
 import { makeGroqClient, platformClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const MAX_BYTES = 25 * 1024 * 1024
 
 // POST — transcribe via Groq Whisper
 // Accepts either a multipart audio file OR uses the meeting's R2 recordingKey
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const guard = await guardModule(associationId, "reunions")
-  if (guard) return guard
-
-  const { id } = await params
+export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId } = ctx
 
   const [meeting, assoc] = await Promise.all([
     prisma.meeting.findFirst({ where: { id, associationId } }),
@@ -108,4 +93,4 @@ export async function POST(
     const msg = err instanceof Error ? err.message : "Erreur transcription"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-}
+}, { roles: MANAGERS, module: "reunions" })
