@@ -20,19 +20,27 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   if (!actualite) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
+  const membre = await prisma.membre.findFirst({
+    where:  { userId, associationId, deletedAt: null },
+    select: { id: true },
+  })
+
+  if (actualite.recipientMode === "SELECTED") {
+    const recipient = membre
+      ? await prisma.actualiteRecipient.findUnique({
+          where: { actualiteId_membreId: { actualiteId: id, membreId: membre.id } },
+        })
+      : null
+    if (!recipient) return NextResponse.json({ error: "Non autorisé" }, { status: 403 })
+  }
+
   let evenementRsvp: string | null = null
-  if (actualite.evenementId) {
-    const membre = await prisma.membre.findFirst({
-      where:  { userId, associationId, deletedAt: null },
-      select: { id: true },
+  if (actualite.evenementId && membre) {
+    const participation = await prisma.participation.findUnique({
+      where:  { membreId_evenementId: { membreId: membre.id, evenementId: actualite.evenementId } },
+      select: { rsvp: true },
     })
-    if (membre) {
-      const participation = await prisma.participation.findUnique({
-        where:  { membreId_evenementId: { membreId: membre.id, evenementId: actualite.evenementId } },
-        select: { rsvp: true },
-      })
-      evenementRsvp = participation?.rsvp ?? null
-    }
+    evenementRsvp = participation?.rsvp ?? null
   }
 
   return NextResponse.json({ ...actualite, evenementRsvp })

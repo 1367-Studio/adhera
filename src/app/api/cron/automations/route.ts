@@ -11,11 +11,12 @@ const BATCH_SIZE = 100
 
 export async function POST(req: Request) {
   const secret = process.env.CRON_SECRET
-  if (secret) {
-    const auth = req.headers.get("authorization")
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  if (!secret) {
+    console.error("[cron/automations] CRON_SECRET is not configured — refusing to run")
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 })
+  }
+  if (req.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const now = new Date()

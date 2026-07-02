@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { guardModule } from "@/lib/auth/require-module"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -34,6 +35,8 @@ export async function POST() {
   if (!isCtx(ctx)) return ctx
   const { associationId, role } = ctx
 
+  const guard = await guardModule(associationId, "finances")
+  if (guard) return guard
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }

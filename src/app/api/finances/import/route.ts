@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { importColumnMappingSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { Prisma } from "@prisma/client"
+import { guardModule } from "@/lib/auth/require-module"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -12,6 +13,8 @@ export async function POST(req: Request) {
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
 
+  const guard = await guardModule(associationId, "finances")
+  if (guard) return guard
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }

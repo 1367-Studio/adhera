@@ -3,12 +3,18 @@ import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { financeCategorySchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export async function GET(req: Request) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
+  const guard = await guardModule(ctx.associationId, "finances")
+  if (guard) return guard
+  if (!FINANCE.includes(ctx.role)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -26,6 +32,8 @@ export async function POST(req: Request) {
   if (!isCtx(ctx)) return ctx
   const { associationId, role, userId } = ctx
 
+  const guard = await guardModule(associationId, "finances")
+  if (guard) return guard
   if (!FINANCE.includes(role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }

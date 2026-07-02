@@ -41,7 +41,8 @@ export async function GET(
       : Promise.resolve([]),
     mods.actualites
       ? prisma.actualite.findMany({
-          where:   { associationId: assoc.id, publishedAt: { not: null, lte: now } },
+          // Anonymous visitors can never be an authorized SELECTED recipient — only ALL-audience posts are public.
+          where:   { associationId: assoc.id, publishedAt: { not: null, lte: now }, recipientMode: "ALL" },
           orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
           take:    20,
           select:  { id: true, title: true, content: true, imageUrl: true, pinned: true, publishedAt: true },
