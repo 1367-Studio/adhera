@@ -1,27 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth(async (_req, ctx) => {
   const meetings = await prisma.meeting.findMany({
     where: {
-      associationId: u.associationId,
+      associationId: ctx.associationId,
       status: { in: ["SCHEDULED", "LIVE", "ENDED"] },
-      participants: { some: { membreId: membre.id } },
+      participants: { some: { membreId: ctx.membreId! } },
     },
     orderBy: { createdAt: "desc" },
     select: {
@@ -37,4 +23,4 @@ export async function GET() {
   })
 
   return NextResponse.json(meetings)
-}
+})

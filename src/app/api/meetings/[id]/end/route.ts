@@ -51,4 +51,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: MANAGERS })
+}, { roles: MANAGERS, module: "reunions" })

@@ -1,37 +1,25 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { checkInReceiptEmail } from "@/lib/email"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const { token } = await params
+export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
+  const { associationId, membreId } = ctx
 
   const evenement = await prisma.evenement.findUnique({
     where:   { qrToken: token },
     include: { _count: { select: { participations: { where: { present: true } } } } },
   })
   if (!evenement) return NextResponse.json({ error: "QR Code invalide" }, { status: 404 })
-  if (evenement.associationId !== u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  if (evenement.associationId !== associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
   const expired = evenement.qrExpiresAt ? evenement.qrExpiresAt < new Date() : false
 
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId, deletedAt: null },
-  })
-
-  const alreadyCheckedIn = membre
+  const alreadyCheckedIn = membreId
     ? !!(await prisma.participation.findUnique({
-        where: { membreId_evenementId: { membreId: membre.id, evenementId: evenement.id } },
+        where: { membreId_evenementId: { membreId, evenementId: evenement.id } },
         select: { present: true },
       }).then(p => p?.present))
     : false
@@ -43,26 +31,21 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     alreadyCheckedIn,
     totalPresent:     evenement._count.participations,
   })
-}
+}, { requireMembre: false })
 
-export async function POST(_req: Request, { params }: { params: Promise<{ token: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const { token } = await params
+export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
+  const { associationId, membreId } = ctx
 
   const evenement = await prisma.evenement.findUnique({ where: { qrToken: token } })
   if (!evenement) return NextResponse.json({ error: "QR Code invalide" }, { status: 404 })
-  if (evenement.associationId !== u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  if (evenement.associationId !== associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   if (evenement.qrExpiresAt && evenement.qrExpiresAt < new Date()) {
     return NextResponse.json({ error: "QR Code expiré" }, { status: 422 })
   }
 
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId, deletedAt: null },
+  const membre = await prisma.membre.findUnique({
+    where:  { id: membreId! },
+    select: { id: true, firstName: true, email: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
@@ -85,9 +68,9 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
     const memberFirst    = membre.firstName
     const eventTitle     = evenement.title
     const eventDate      = evenement.date
-    const associationId  = evenement.associationId
+    const associationIdForEmail = evenement.associationId
     Promise.resolve().then(async () => {
-      const assoc = await prisma.association.findUnique({ where: { id: associationId }, select: { name: true } })
+      const assoc = await prisma.association.findUnique({ where: { id: associationIdForEmail }, select: { name: true } })
       if (assoc) await sendEmail(checkInReceiptEmail({
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
@@ -96,4 +79,4 @@ export async function POST(_req: Request, { params }: { params: Promise<{ token:
   }
 
   return NextResponse.json({ success: true, alreadyCheckedIn: wasAlreadyPresent, evenement: { title: evenement.title, date: evenement.date } })
-}
+})

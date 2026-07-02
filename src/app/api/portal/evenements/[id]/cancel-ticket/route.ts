@@ -1,32 +1,14 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "evenements")
-  if (guard) return guard
-
-  const { id: evenementId } = await params
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
+export const POST = withPortalAuth<{ id: string }>(async (_req, ctx, { id: evenementId }) => {
+  const { associationId, userId, membreId } = ctx
 
   const evenement = await prisma.evenement.findFirst({
-    where:  { id: evenementId, associationId: u.associationId },
+    where:  { id: evenementId, associationId },
     select: { title: true, date: true, price: true, associationId: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -34,7 +16,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Impossible d'annuler un billet pour un événement déjà passé." }, { status: 422 })
 
   const participation = await prisma.participation.findUnique({
-    where: { membreId_evenementId: { membreId: membre.id, evenementId } },
+    where: { membreId_evenementId: { membreId: membreId!, evenementId } },
   })
   if (!participation?.ticketPaidAt)
     return NextResponse.json({ error: "Aucun billet payé pour cet événement." }, { status: 404 })
@@ -60,15 +42,15 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     prisma.income.deleteMany({
       where: {
         associationId: evenement.associationId,
-        memberId:      membre.id,
+        memberId:      membreId!,
         description:   `Billet (Stripe) — ${evenement.title}`,
       },
     }),
   ])
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:       u.id,
+    associationId,
+    actorId:       userId,
     action:        "TICKET_REFUNDED",
     entity:        "Participation",
     entityId:      participation.id,
@@ -76,4 +58,4 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   })
 
   return NextResponse.json({ ok: true })
-}
+}, { module: "evenements" })
