@@ -1,4 +1,5 @@
 import { jsPDF } from "jspdf"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 
 type DonForReceipt = {
@@ -24,33 +25,45 @@ type AssociationForReceipt = {
 }
 
 async function assignReceiptNumber(donId: string, associationId: string): Promise<string> {
-  const year = new Date().getFullYear()
+  const year   = new Date().getFullYear()
   const prefix = `${year}-`
 
-  const last = await prisma.don.findFirst({
-    where: {
-      associationId,
-      receiptNumber: { startsWith: prefix },
-      paidAt: { not: null },
-    },
-    orderBy: { receiptNumber: "desc" },
-    select: { receiptNumber: true },
-  })
+  // Read-max-then-write-next races when two donations for the same association are
+  // receipted concurrently. `@@unique([associationId, receiptNumber])` turns that race
+  // into a constraint violation instead of a silent duplicate — retry with a freshly
+  // re-read max on conflict.
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const last = await prisma.don.findFirst({
+      where: {
+        associationId,
+        receiptNumber: { startsWith: prefix },
+        paidAt: { not: null },
+      },
+      orderBy: { receiptNumber: "desc" },
+      select: { receiptNumber: true },
+    })
 
-  let seq = 1
-  if (last?.receiptNumber) {
-    const num = parseInt(last.receiptNumber.split("-")[1] ?? "0", 10)
-    seq = num + 1
+    let seq = 1
+    if (last?.receiptNumber) {
+      const num = parseInt(last.receiptNumber.split("-")[1] ?? "0", 10)
+      seq = num + 1
+    }
+
+    const receiptNumber = `${prefix}${String(seq).padStart(4, "0")}`
+
+    try {
+      await prisma.don.update({
+        where: { id: donId },
+        data:  { receiptNumber, receiptIssuedAt: new Date() },
+      })
+      return receiptNumber
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") continue
+      throw err
+    }
   }
 
-  const receiptNumber = `${prefix}${String(seq).padStart(4, "0")}`
-
-  await prisma.don.update({
-    where: { id: donId },
-    data:  { receiptNumber, receiptIssuedAt: new Date() },
-  })
-
-  return receiptNumber
+  throw new Error("Impossible d'attribuer un numéro de reçu fiscal unique")
 }
 
 export async function generateRecuFiscal(

@@ -20,13 +20,15 @@ export function useNotifications() {
 
   useEffect(() => {
     if (!associationId) return
+    const pusher = getPusherClient()
+    if (!pusher) return
     const channelName = `private-association-${associationId}`
-    const channel = getPusherClient().subscribe(channelName)
+    const channel = pusher.subscribe(channelName)
     channel.bind("new-notification", () => {
       qc.invalidateQueries({ queryKey: QK })
     })
     return () => {
-      getPusherClient().unsubscribe(channelName)
+      pusher.unsubscribe(channelName)
     }
   }, [associationId, qc])
 

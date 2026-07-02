@@ -52,15 +52,18 @@ export const GET = withAdminAuth(async (req, ctx) => {
     },
   })
 
+  const now = new Date()
   const result = materials.map(m => {
     const confirmedLoans = m.loans.filter(l => l.status === "CONFIRME")
     const pendingLoans   = m.loans.filter(l => l.status === "DEMANDE")
+    const overdueCount   = confirmedLoans.filter(l => l.expectedReturnAt && l.expectedReturnAt < now).length
     return {
       ...m,
       loanedQty:            confirmedLoans.reduce((s, l) => s + l.quantity, 0),
       availableQty:         m.quantity - confirmedLoans.reduce((s, l) => s + l.quantity, 0),
       pendingDemandesCount: pendingLoans.length,
       pendingDemandes:      pendingLoans,
+      overdueCount,
       loans:                undefined,
     }
   })

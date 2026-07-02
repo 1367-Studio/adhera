@@ -284,13 +284,17 @@ export function adminWelcomeEmail(p: {
 }
 
 export function passwordResetEmail(p: {
-  email:    string
-  resetUrl: string
+  email:        string
+  resetUrl:     string
+  accountLabel: string
 }) {
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Réinitialisation du mot de passe</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Vous avez demandé à réinitialiser le mot de passe associé à <strong>${p.email}</strong>.<br>
+      Vous avez demandé à réinitialiser le mot de passe associé à <strong>${p.email}</strong>
+      pour le compte lié à <strong>${p.accountLabel}</strong>.<br>
+      Si vous avez plusieurs comptes avec cet email, vous recevrez un lien distinct pour chacun —
+      utilisez bien celui-ci pour réinitialiser ce compte précis.<br>
       Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe.
     </p>
     ${btn("Réinitialiser mon mot de passe", p.resetUrl)}
@@ -299,7 +303,7 @@ export function passwordResetEmail(p: {
     </p>`
   return {
     to:      p.email,
-    subject: "Réinitialisation de votre mot de passe Adhéra",
+    subject: `Réinitialisation de votre mot de passe Adhéra — ${p.accountLabel}`,
     html:    layout("Adhéra", content),
   }
 }

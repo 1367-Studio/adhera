@@ -22,7 +22,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Ce lien a expiré. Demandez-en un nouveau." }, { status: 400 })
   }
 
-  const user = await prisma.user.findFirst({ where: { email: record.email, deletedAt: null } })
+  // The token is bound to a specific account (userId), not just the email — the same
+  // email can legitimately belong to unrelated accounts in different associations.
+  const user = await prisma.user.findFirst({ where: { id: record.userId, deletedAt: null, active: true } })
   if (!user) {
     return NextResponse.json({ error: "Compte introuvable." }, { status: 400 })
   }

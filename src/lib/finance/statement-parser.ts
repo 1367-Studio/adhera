@@ -27,11 +27,36 @@ function parseDate(val: unknown): string {
 function parseAmount(val: unknown): number {
   if (val === null || val === undefined || val === "") return 0
   if (typeof val === "number") return val
-  return parseFloat(String(val).replace(/\s/g, "").replace(",", ".")) || 0
+
+  const s = String(val).trim().replace(/[\s€$]/g, "")
+  if (!s) return 0
+
+  // Whichever separator appears last is the decimal point (French "1.234,56" vs.
+  // US "1,234.56") — strip every other occurrence of either as a thousands separator
+  // instead of blindly replacing the first comma, which mangled "1.234,56" into "1.234".
+  const lastComma = s.lastIndexOf(",")
+  const lastDot   = s.lastIndexOf(".")
+
+  let normalized = s
+  if (lastComma > lastDot) {
+    normalized = s.replace(/\./g, "").replace(",", ".")
+  } else if (lastDot > lastComma) {
+    normalized = s.replace(/,/g, "")
+  }
+
+  return parseFloat(normalized) || 0
 }
 
-function makeExternalId(bankAccountId: string, row: Omit<ImportRow, "externalId">): string {
-  const raw = `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}`
+function makeExternalId(bankAccountId: string, row: Omit<ImportRow, "externalId">, occurrence: number): string {
+  // Keep the hash identical to before for the first row of a given shape (occurrence 0)
+  // so re-importing a previously-imported file still dedups correctly against rows
+  // already stored under the old scheme. Only genuine duplicate-shaped rows *within
+  // the same import* (two distinct transactions sharing date/label/amount/type — e.g.
+  // several members paying the same fee the same day) get a distinguishing suffix,
+  // instead of silently colliding and being dropped as a "duplicate".
+  const raw = occurrence === 0
+    ? `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}`
+    : `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}|${occurrence}`
   return crypto.createHash("sha256").update(raw).digest("hex").slice(0, 32)
 }
 
@@ -44,6 +69,7 @@ export function parseStatementBuffer(
   const rows     = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" })
 
   const result: ImportRow[] = []
+  const shapeOccurrences = new Map<string, number>()
 
   for (const row of rows) {
     const rawDate  = row[mapping.dateColumn]
@@ -73,8 +99,12 @@ export function parseStatementBuffer(
       ? parseAmount(row[mapping.balanceColumn]) || undefined
       : undefined
 
-    const partial = { transactionDate: dateStr, label: rawLabel, amount, type, balanceAfter }
-    const externalId = makeExternalId(mapping.bankAccountId, partial as Omit<ImportRow, "externalId">)
+    const partial  = { transactionDate: dateStr, label: rawLabel, amount, type, balanceAfter }
+    const shapeKey = `${dateStr}|${rawLabel}|${amount}|${type}`
+    const occurrence = shapeOccurrences.get(shapeKey) ?? 0
+    shapeOccurrences.set(shapeKey, occurrence + 1)
+
+    const externalId = makeExternalId(mapping.bankAccountId, partial as Omit<ImportRow, "externalId">, occurrence)
 
     result.push({ ...partial, externalId } as ImportRow)
   }

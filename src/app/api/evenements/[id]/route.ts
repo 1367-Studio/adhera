@@ -37,6 +37,21 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const { date, endDate, description, location, lat, lng, price, capacity, ...rest } = parsed.data
+
+  if (capacity != null) {
+    const reservedParticipations = await prisma.participation.findMany({
+      where:  { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+      select: { quantity: true, paidQuantity: true },
+    })
+    const reserved = reservedParticipations.reduce((sum, p) => sum + (p.paidQuantity ?? p.quantity), 0)
+    if (capacity < reserved) {
+      return NextResponse.json(
+        { error: `Impossible : ${reserved} place(s) déjà réservée(s) ou payée(s)` },
+        { status: 409 },
+      )
+    }
+  }
+
   const evenement = await prisma.evenement.update({
     where: { id },
     data: {

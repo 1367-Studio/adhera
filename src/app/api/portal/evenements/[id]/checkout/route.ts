@@ -32,10 +32,26 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
 
   const existing = await prisma.participation.findUnique({
     where:  { membreId_evenementId: { membreId: ctx.membreId!, evenementId } },
-    select: { ticketPaidAt: true },
+    select: { ticketPaidAt: true, stripeSessionId: true, quantity: true },
   })
   if (existing?.ticketPaidAt)
     return NextResponse.json({ error: "Billet déjà acheté" }, { status: 422 })
+
+  // Reuse an already-open Stripe checkout session for the same quantity instead of
+  // minting a new one on every click/retry — otherwise a member can end up with two
+  // valid payable sessions for the same ticket, and a second real charge would have
+  // nothing in the app to reconcile against. If the quantity changed since the last
+  // attempt, expire the stale session so it can't still be paid in parallel.
+  let staleSessionId: string | null = null
+  if (existing?.stripeSessionId) {
+    const existingSession = await stripe.checkout.sessions.retrieve(existing.stripeSessionId).catch(() => null)
+    if (existingSession?.status === "open") {
+      if (existing.quantity === quantity && existingSession.url) {
+        return NextResponse.json({ url: existingSession.url })
+      }
+      staleSessionId = existingSession.id
+    }
+  }
 
   if (evenement.capacity != null) {
     const { _sum } = await prisma.participation.aggregate({
@@ -77,6 +93,10 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     }
   }
 
+  if (staleSessionId) {
+    await stripe.checkout.sessions.expire(staleSessionId).catch(() => {})
+  }
+
   const amountCents    = Math.round(Number(evenement.price) * 100)
   const totalCents     = amountCents * quantity
   const applicationFee = Math.round(totalCents * PLATFORM_FEE)
@@ -102,10 +122,19 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     metadata:    { participationId: participation.id },
     success_url: `${APP_URL}/portal/${slug}/evenements?ticket=success&eid=${evenementId}`,
     cancel_url:  `${APP_URL}/portal/${slug}/evenements?ticket=cancelled&eid=${evenementId}`,
+    // The capacity slot is already held (rsvp: CONFIRME) before this session exists, and
+    // only released back on `checkout.session.expired` — shorten Stripe's default 24h
+    // window (the minimum Stripe allows) so an abandoned checkout doesn't hold a spot all day.
+    expires_at:  Math.floor(Date.now() / 1000) + 30 * 60,
   })
 
   if (!checkoutSession.url)
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
+
+  await prisma.participation.update({
+    where: { id: participation.id },
+    data:  { stripeSessionId: checkoutSession.id },
+  })
 
   await writeActivityLog({
     associationId: ctx.associationId,

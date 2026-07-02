@@ -42,6 +42,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       ...(typeId ? { typeId } : {}),
     },
     select: { id: true, firstName: true, lastName: true, email: true },
+    take:   500,
   })
 
   const recipients = membres.filter(m => m.email)

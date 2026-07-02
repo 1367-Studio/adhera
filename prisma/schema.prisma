@@ -227,9 +227,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
-  association   Association?   @relation(fields: [associationId], references: [id])
-  notifications Notification[]
-  membre        Membre?
+  association         Association?         @relation(fields: [associationId], references: [id])
+  notifications       Notification[]
+  membre              Membre?
+  passwordResetTokens PasswordResetToken[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -331,16 +332,17 @@ model Participation {
 }
 
 model Cotisation {
-  id            String           @id @default(cuid())
-  membreId      String
-  associationId String
-  amount        Decimal          @db.Decimal(10, 2)
-  year          Int
-  paidAt        DateTime?
-  status        CotisationStatus @default(EN_ATTENTE)
-  note          String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id              String           @id @default(cuid())
+  membreId        String
+  associationId   String
+  amount          Decimal          @db.Decimal(10, 2)
+  year            Int
+  paidAt          DateTime?
+  status          CotisationStatus @default(EN_ATTENTE)
+  note            String?
+  stripeSessionId String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   membre      Membre      @relation(fields: [membreId], references: [id])
   association Association @relation(fields: [associationId], references: [id])
@@ -364,12 +366,14 @@ model Don {
   receiptIssuedAt DateTime?
   stripeSessionId String?   @unique
   paidAt          DateTime?
+  refundedAt      DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   association Association @relation(fields: [associationId], references: [id])
   membre      Membre?     @relation(fields: [membreId], references: [id])
 
+  @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
 }
 
@@ -597,9 +601,14 @@ model SondageReponseItem {
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
+  userId    String
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
 }
 
 // ─── Boutique ─────────────────────────────────────────────────────────────────
@@ -815,8 +824,8 @@ model BankReconciliation {
   id                String    @id @default(cuid())
   associationId     String
   bankTransactionId String
-  incomeId          String?
-  expenseId         String?
+  incomeId          String?   @unique
+  expenseId         String?   @unique
   matchScore        Int       @default(0)
   matchedBy         MatchedBy @default(AUTO)
   matchedAt         DateTime  @default(now())

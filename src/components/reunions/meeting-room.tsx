@@ -340,6 +340,12 @@ function RoomInner({
   return (
     <div className="flex rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
       <div className="flex flex-col flex-1 min-w-0">
+        {recording && (
+          <div className="flex items-center justify-center gap-1.5 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 shrink-0">
+            <CircleIcon className="size-2 fill-current animate-pulse" />
+            Cette réunion est enregistrée{!isAdmin ? " et pourra être transcrite" : ""}
+          </div>
+        )}
         <div className="flex-1 p-2 min-h-0 overflow-hidden">
           <VideoGrid />
         </div>

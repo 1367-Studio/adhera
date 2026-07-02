@@ -10,9 +10,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const don = await prisma.don.findFirst({
-    where: { id, associationId: ctx.associationId, paidAt: { not: null } },
+    where: { id, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
-  if (!don) return NextResponse.json({ error: "Don introuvable" }, { status: 404 })
+  if (!don) return NextResponse.json({ error: "Don introuvable ou remboursé" }, { status: 404 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },

@@ -10,17 +10,25 @@ export const r2 = new S3Client({
   },
 })
 
-export async function uploadToR2(file: File, prefix: string): Promise<string> {
-  const ext = file.name.split(".").pop() || "bin"
+const EXT_BY_CONTENT_TYPE: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png":  "png",
+  "image/webp": "webp",
+  "image/gif":  "gif",
+}
+
+// `buffer` and `contentType` should come from server-side content sniffing, not from the
+// client-supplied filename/Content-Type header — those are trivially spoofable.
+export async function uploadToR2(buffer: Buffer, prefix: string, contentType: string): Promise<string> {
+  const ext = EXT_BY_CONTENT_TYPE[contentType] || "bin"
   const key = `${prefix}/${randomBytes(8).toString("hex")}.${ext}`
-  const buffer = Buffer.from(await file.arrayBuffer())
 
   await r2.send(
     new PutObjectCommand({
       Bucket:      process.env.R2_BUCKET_NAME!,
       Key:         key,
       Body:        buffer,
-      ContentType: file.type,
+      ContentType: contentType,
     }),
   )
 

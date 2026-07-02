@@ -20,6 +20,16 @@ export const POST = withPortalAuth(async (req, ctx) => {
   if (!cotisation.association.stripeConnectId || !cotisation.association.slug)
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
+  // Reuse an already-open Stripe checkout session instead of minting a new one on every
+  // click/retry — otherwise a member can end up with two valid payable sessions for the
+  // same due, and a second real charge would have nothing in the app to reconcile against.
+  if (cotisation.stripeSessionId) {
+    const existingSession = await stripe.checkout.sessions.retrieve(cotisation.stripeSessionId).catch(() => null)
+    if (existingSession?.status === "open" && existingSession.url) {
+      return NextResponse.json({ url: existingSession.url })
+    }
+  }
+
   const amountCents     = Math.round(Number(cotisation.amount) * 100)
   const applicationFee  = Math.round(amountCents * PLATFORM_FEE)
   const slug            = cotisation.association.slug
@@ -50,6 +60,11 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   if (!checkoutSession.url)
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
+
+  await prisma.cotisation.update({
+    where: { id: cotisationId },
+    data:  { stripeSessionId: checkoutSession.id },
+  })
 
   return NextResponse.json({ url: checkoutSession.url })
 }, { module: "cotisations" })

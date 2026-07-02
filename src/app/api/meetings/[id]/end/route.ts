@@ -11,6 +11,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const meeting = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
+  if (meeting.status === "ENDED") return NextResponse.json({ ok: true })
 
   if (meeting.egressId) {
     try {
@@ -36,19 +37,21 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     // Room may already be empty/deleted
   }
 
-  await prisma.meeting.update({
-    where: { id },
+  const { count } = await prisma.meeting.updateMany({
+    where: { id, status: { not: "ENDED" } },
     data:  { egressId: null, status: "ENDED", endedAt: new Date() },
   })
 
-  await writeActivityLog({
-    associationId,
-    actorId: ctx.userId,
-    action:  "MEETING_ENDED",
-    entity:  "Meeting",
-    entityId: id,
-    label:   meeting.title,
-  })
+  if (count > 0) {
+    await writeActivityLog({
+      associationId,
+      actorId: ctx.userId,
+      action:  "MEETING_ENDED",
+      entity:  "Meeting",
+      entityId: id,
+      label:   meeting.title,
+    })
+  }
 
   return NextResponse.json({ ok: true })
 }, { roles: MANAGERS, module: "reunions" })

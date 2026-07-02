@@ -4,6 +4,12 @@ import { format } from "date-fns"
 import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
+// Neutralize CSV/formula injection (Nom/Prénom/Email come from public, unauthenticated
+// self-registration) — Excel/Sheets execute a cell starting with =, +, - or @ as a formula.
+function sanitizeCell(value: string): string {
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+}
+
 const RSVP_LABELS: Record<string, string> = {
   CONFIRME: "J'y serai",
   PROVAVEL: "Si possible",
@@ -38,9 +44,9 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const p = m.participations[0]
     const base = {
       "#":     i + 1,
-      Nom:     m.lastName,
-      Prénom:  m.firstName,
-      Email:   m.email ?? "",
+      Nom:     sanitizeCell(m.lastName),
+      Prénom:  sanitizeCell(m.firstName),
+      Email:   sanitizeCell(m.email ?? ""),
       Présent: p?.present ? "Oui" : "Non",
     }
     if (hasFee) {

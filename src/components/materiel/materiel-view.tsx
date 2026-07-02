@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import {
   PlusIcon, SearchIcon, PackageIcon,
-  MapPinIcon, ClockIcon, CheckIcon, XIcon,
+  MapPinIcon, ClockIcon, CheckIcon, XIcon, AlertCircleIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
@@ -112,6 +112,12 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
           )}
         </div>
         <div className="flex items-center gap-2">
+          {material.overdueCount > 0 && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+              <AlertCircleIcon className="size-2.5" />
+              {material.overdueCount} en retard
+            </span>
+          )}
           {material.pendingDemandesCount > 0 && (
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
               <ClockIcon className="size-2.5" />

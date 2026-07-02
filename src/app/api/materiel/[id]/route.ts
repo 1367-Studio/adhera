@@ -89,6 +89,16 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
+  const activeLoans = await prisma.materialLoan.count({
+    where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+  })
+  if (activeLoans > 0) {
+    return NextResponse.json(
+      { error: `Impossible : ${activeLoans} prêt(s) en cours pour cet article` },
+      { status: 409 },
+    )
+  }
+
   await prisma.material.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_DELETED", entity: "Material", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })

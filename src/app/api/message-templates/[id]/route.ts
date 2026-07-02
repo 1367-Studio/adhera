@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { findUnknownVars } from "@/lib/automation"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -26,6 +27,18 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+
+  const unknownVars = findUnknownVars([
+    parsed.data.subject ?? existing.subject,
+    parsed.data.body    ?? existing.body,
+    ("smsBody" in parsed.data ? parsed.data.smsBody : existing.smsBody) ?? "",
+  ].join("\n"))
+  if (unknownVars.length > 0) {
+    return NextResponse.json(
+      { error: `Variable(s) inconnue(s) : ${unknownVars.map(v => `{{${v}}}`).join(", ")}` },
+      { status: 422 },
+    )
+  }
 
   const updateData: Record<string, unknown> = {}
   if (parsed.data.name    != null) updateData.name    = parsed.data.name

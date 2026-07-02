@@ -154,6 +154,10 @@ function RequestModal({
 
 // ─── Status badge ─────────────────────────────────────────────────────────────
 
+function isOverdue(loan: { expectedReturnAt: string | null; status: string }): boolean {
+  return !!loan.expectedReturnAt && loan.status === "CONFIRME" && new Date(loan.expectedReturnAt) < new Date()
+}
+
 function LoanStatusBadge({ status }: { status: "DEMANDE" | "CONFIRME" }) {
   if (status === "CONFIRME") {
     return (
@@ -301,7 +305,10 @@ export default function MaterielPage() {
             <h2 className="text-sm font-semibold">Mes emprunts en cours</h2>
             <div className="space-y-2">
               {myActiveLoans.map(loan => (
-                <div key={loan.id} className="rounded-xl border bg-card px-4 py-3 flex items-start justify-between gap-3">
+                <div key={loan.id} className={cn(
+                  "rounded-xl border bg-card px-4 py-3 flex items-start justify-between gap-3",
+                  isOverdue(loan) && "border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20",
+                )}>
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{loan.material.name}</p>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1">
@@ -309,9 +316,13 @@ export default function MaterielPage() {
                         <span className="text-xs text-muted-foreground">×{loan.quantity}</span>
                       )}
                       {loan.expectedReturnAt && (
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span className={cn(
+                          "text-xs flex items-center gap-1",
+                          isOverdue(loan) ? "text-red-600 font-medium" : "text-muted-foreground",
+                        )}>
                           <ClockIcon className="size-3" />
                           Retour prévu le {format(new Date(loan.expectedReturnAt), "d MMM yyyy", { locale: fr })}
+                          {isOverdue(loan) && " (en retard)"}
                         </span>
                       )}
                       {loan.notes && (

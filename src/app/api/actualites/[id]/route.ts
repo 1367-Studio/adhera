@@ -32,6 +32,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const syncingRecipients = recipientMode !== undefined || recipientIds !== undefined
   const newMode = recipientMode ?? existing.recipientMode
 
+  if (!wasPublished && nowPublished && newMode === "SELECTED") {
+    const recipientCount = syncingRecipients
+      ? (recipientIds?.length ?? 0)
+      : await prisma.actualiteRecipient.count({ where: { actualiteId: id } })
+    if (recipientCount === 0) {
+      return NextResponse.json({ error: "Sélectionnez au moins un destinataire avant de publier." }, { status: 422 })
+    }
+  }
+
   const updated = await prisma.$transaction(async (tx) => {
     if (syncingRecipients) {
       await tx.actualiteRecipient.deleteMany({ where: { actualiteId: id } })
@@ -84,7 +93,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       skipDuplicates: true,
     })
     if (pusherReady) {
-      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {})
+      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
     }
   }
 

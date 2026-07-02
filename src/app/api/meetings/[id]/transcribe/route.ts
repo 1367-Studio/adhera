@@ -5,6 +5,7 @@ import { r2 } from "@/lib/r2"
 import { makeGroqClient, platformClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { rateLimit } from "@/lib/rate-limit"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const MAX_BYTES = 25 * 1024 * 1024
@@ -23,6 +24,10 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   ])
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
+
+  if (!assoc?.aiApiKey && !rateLimit(`ai-transcribe:${associationId}`, 10, 10 * 60_000)) {
+    return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+  }
 
   const client = assoc?.aiApiKey ? makeGroqClient(assoc.aiApiKey) : platformClient
   if (!client) {

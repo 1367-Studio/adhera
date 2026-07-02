@@ -55,7 +55,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
-    select: { id: true, status: true, title: true },
+    select: { id: true, status: true, title: true, _count: { select: { reponses: true } } },
   })
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
   if (sondage.status === "FERME")
@@ -67,6 +67,12 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   const { title, description, recipientMode, anonymous, deadline, questions, recipientIds } = parsed.data
+
+  // Rebuilding `questions` cascade-deletes every submitted SondageReponseItem
+  // (onDelete: Cascade) and the unique [sondageId, membreId] constraint means those
+  // members could never re-submit — block it once real answers exist.
+  if (questions && sondage._count.reponses > 0)
+    return NextResponse.json({ error: "Ce sondage a déjà des réponses — les questions ne peuvent plus être modifiées." }, { status: 400 })
 
   await prisma.$transaction(async tx => {
     await tx.sondage.update({

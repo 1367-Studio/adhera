@@ -27,7 +27,7 @@ export function withAdminAuth<Params = Record<string, string>>(
       if (guard) return guard
     }
     if (options.roles && !options.roles.includes(ctx.role)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     const params = context ? await context.params : ({} as Params)

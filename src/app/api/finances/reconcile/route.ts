@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { reconcileActionSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -43,46 +44,55 @@ export const POST = withAdminAuth(async (req, ctx) => {
       return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
     }
 
-    if (incomeId) {
-      const income = await prisma.income.findFirst({ where: { id: incomeId, associationId } })
-      if (!income) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
+    try {
+      if (incomeId) {
+        const income = await prisma.income.findFirst({ where: { id: incomeId, associationId } })
+        if (!income) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
-      await prisma.$transaction([
-        prisma.bankReconciliation.create({
-          data: {
-            associationId,
-            bankTransactionId,
-            incomeId,
-            matchScore:      0,
-            matchedBy:       "USER",
-            matchedByUserId: userId,
-          },
-        }),
-        prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-        prisma.income.update({ where: { id: incomeId }, data: { status: "PAID" } }),
-      ])
+        await prisma.$transaction([
+          prisma.bankReconciliation.create({
+            data: {
+              associationId,
+              bankTransactionId,
+              incomeId,
+              matchScore:      0,
+              matchedBy:       "USER",
+              matchedByUserId: userId,
+            },
+          }),
+          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
+          prisma.income.update({ where: { id: incomeId }, data: { status: "PAID" } }),
+        ])
 
-      await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_INCOME", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { incomeId } })
-    } else if (expenseId) {
-      const expense = await prisma.expense.findFirst({ where: { id: expenseId, associationId } })
-      if (!expense) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+        await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_INCOME", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { incomeId } })
+      } else if (expenseId) {
+        const expense = await prisma.expense.findFirst({ where: { id: expenseId, associationId } })
+        if (!expense) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
 
-      await prisma.$transaction([
-        prisma.bankReconciliation.create({
-          data: {
-            associationId,
-            bankTransactionId,
-            expenseId,
-            matchScore:      0,
-            matchedBy:       "USER",
-            matchedByUserId: userId,
-          },
-        }),
-        prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-        prisma.expense.update({ where: { id: expenseId }, data: { status: "VALIDATED" } }),
-      ])
+        await prisma.$transaction([
+          prisma.bankReconciliation.create({
+            data: {
+              associationId,
+              bankTransactionId,
+              expenseId,
+              matchScore:      0,
+              matchedBy:       "USER",
+              matchedByUserId: userId,
+            },
+          }),
+          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
+          prisma.expense.update({ where: { id: expenseId }, data: { status: "VALIDATED" } }),
+        ])
 
-      await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_EXPENSE", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { expenseId } })
+        await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_EXPENSE", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { expenseId } })
+      }
+    } catch (err) {
+      // Unique constraint on incomeId/expenseId — this record is already linked to
+      // another bank transaction.
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        return NextResponse.json({ error: "Cette recette/dépense est déjà conciliée avec une autre transaction" }, { status: 409 })
+      }
+      throw err
     }
 
     return NextResponse.json({ status: "MATCHED" })

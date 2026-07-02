@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { rateLimit } from "@/lib/rate-limit"
 
 const schema = z.object({
   action:      z.enum(["generate", "improve", "rephrase", "summarize"]),
@@ -42,6 +43,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
     where:  { id: ctx.associationId },
     select: { aiApiKey: true, aiModel: true },
   })
+
+  // Only throttle associations riding on the platform's shared fallback key — one with
+  // its own key uses its own quota/cost, not ours.
+  if (!assoc?.aiApiKey && !rateLimit(`ai-write:${ctx.associationId}`, 20, 10 * 60_000)) {
+    return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+  }
 
   const client = assoc?.aiApiKey
     ? makeGroqClient(assoc.aiApiKey)

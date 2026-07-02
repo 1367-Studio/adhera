@@ -108,6 +108,10 @@ export const POST = withPortalAuth(async (req, ctx) => {
       metadata:    { commandeId: commande.id },
       success_url: `${APP_URL}/portal/${assoc.slug}/boutique/commandes?payment=success`,
       cancel_url:  `${APP_URL}/portal/${assoc.slug}/boutique/panier`,
+      // Stock is reserved (decremented) as soon as the commande is created, below, and
+      // only released back on `checkout.session.expired` — shorten Stripe's default 24h
+      // window (the minimum Stripe allows) so an abandoned cart doesn't lock stock all day.
+      expires_at:  Math.floor(Date.now() / 1000) + 30 * 60,
     })
   } catch {
     // Stripe failed — cancel commande and restore stock

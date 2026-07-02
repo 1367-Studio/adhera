@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { findUnknownVars } from "@/lib/automation"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -31,6 +32,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+
+  const unknownVars = findUnknownVars([parsed.data.subject, parsed.data.body, parsed.data.smsBody ?? ""].join("\n"))
+  if (unknownVars.length > 0) {
+    return NextResponse.json(
+      { error: `Variable(s) inconnue(s) : ${unknownVars.map(v => `{{${v}}}`).join(", ")}` },
+      { status: 422 },
+    )
+  }
 
   const template = await prisma.messageTemplate.create({
     data: {

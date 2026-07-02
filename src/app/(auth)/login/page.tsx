@@ -4,8 +4,8 @@ import { LoginForm } from "@/components/layout/login-form"
 
 export const metadata: Metadata = { title: "Connexion" }
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string }> }) {
-  const { callbackUrl } = await searchParams
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ callbackUrl?: string; suspended?: string }> }) {
+  const { callbackUrl, suspended } = await searchParams
 
   return (
     <div className="w-full max-w-sm">
@@ -21,6 +21,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             Entrez vos identifiants pour accéder à votre espace.
           </p>
         </div>
+
+        {suspended && (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            L&apos;abonnement de votre association est suspendu. Contactez votre administrateur pour régulariser la situation.
+          </p>
+        )}
 
         <LoginForm callbackUrl={callbackUrl} />
 

@@ -38,17 +38,33 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Vous avez déjà une demande en cours pour cet article" }, { status: 409 })
   }
 
-  const loan = await prisma.materialLoan.create({
-    data: {
-      materialId:       id,
-      membreId:         ctx.membreId!,
-      quantity:         parsed.data.quantity,
-      status:           "DEMANDE",
-      expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
-      notes:            parsed.data.notes ?? null,
-    },
-    include: { material: { select: { name: true } } },
-  })
+  let loan
+  try {
+    loan = await prisma.$transaction(async tx => {
+      const activeLoans = await tx.materialLoan.aggregate({
+        where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+        _sum:  { quantity: true },
+      })
+      const available = material.quantity - (activeLoans._sum.quantity ?? 0)
+      if (parsed.data.quantity > available) {
+        throw new Error(`Seulement ${available} unité(s) disponible(s)`)
+      }
+
+      return tx.materialLoan.create({
+        data: {
+          materialId:       id,
+          membreId:         ctx.membreId!,
+          quantity:         parsed.data.quantity,
+          status:           "DEMANDE",
+          expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
+          notes:            parsed.data.notes ?? null,
+        },
+        include: { material: { select: { name: true } } },
+      })
+    }, { isolationLevel: "Serializable" })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erreur" }, { status: 409 })
+  }
 
   await writeActivityLog({
     associationId: ctx.associationId,

@@ -14,7 +14,10 @@ function defaultDate() {
   const d = new Date()
   d.setDate(d.getDate() + 1)
   d.setHours(14, 0, 0, 0)
-  return d.toISOString().slice(0, 16)
+  // Build the datetime-local string from local getters — going through toISOString()
+  // would convert through UTC and shift the displayed hour by the browser's UTC offset.
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
 interface EvenementFormProps {

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -49,20 +50,30 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
     }
   }
 
-  const reponse = await prisma.sondageReponse.create({
-    data: {
-      sondageId: id,
-      membreId:  ctx.membreId!,  // always stored for dedup; anonymity is enforced at result display level
-      items: {
-        create: Object.entries(answers)
-          .filter(([, v]) => v !== null && v !== undefined && v !== "")
-          .map(([questionId, value]) => ({
-            questionId,
-            value: Array.isArray(value) ? JSON.stringify(value) : String(value),
-          })),
+  let reponse
+  try {
+    reponse = await prisma.sondageReponse.create({
+      data: {
+        sondageId: id,
+        membreId:  ctx.membreId!,  // always stored for dedup; anonymity is enforced at result display level
+        items: {
+          create: Object.entries(answers)
+            .filter(([, v]) => v !== null && v !== undefined && v !== "")
+            .map(([questionId, value]) => ({
+              questionId,
+              value: Array.isArray(value) ? JSON.stringify(value) : String(value),
+            })),
+        },
       },
-    },
-  })
+    })
+  } catch (err) {
+    // Race with another concurrent submission (double-click) hitting the same
+    // @@unique([sondageId, membreId]) constraint the check above already tries to catch.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return NextResponse.json({ error: "Vous avez déjà répondu à ce sondage" }, { status: 409 })
+    }
+    throw err
+  }
 
   await writeActivityLog({
     associationId: ctx.associationId,

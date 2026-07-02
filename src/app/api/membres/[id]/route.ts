@@ -42,12 +42,23 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const emailChanged = email !== undefined && email !== existing.email
 
-  if (emailChanged && email && existing.userId) {
-    const conflict = await prisma.user.findFirst({
-      where: { email, associationId, id: { not: existing.userId } },
+  if (emailChanged && email) {
+    // Members created via public self-registration have no linked User (userId: null) —
+    // check for conflicts against other Membre rows too, not just the User table, so two
+    // members can't silently end up sharing an email.
+    const membreConflict = await prisma.membre.findFirst({
+      where: { email, associationId, deletedAt: null, id: { not: id } },
     })
-    if (conflict) {
-      return NextResponse.json({ field: "email", error: "Cet email est déjà utilisé." }, { status: 409 })
+    if (membreConflict) {
+      return NextResponse.json({ field: "email", error: "Cet email est déjà utilisé par un autre membre." }, { status: 409 })
+    }
+    if (existing.userId) {
+      const conflict = await prisma.user.findFirst({
+        where: { email, associationId, id: { not: existing.userId }, deletedAt: null },
+      })
+      if (conflict) {
+        return NextResponse.json({ field: "email", error: "Cet email est déjà utilisé." }, { status: 409 })
+      }
     }
   }
 
@@ -100,7 +111,13 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.$transaction(async (tx) => {
     await tx.membre.update({ where: { id }, data: { deletedAt: new Date() } })
     if (existing.userId) {
-      await tx.user.update({ where: { id: existing.userId }, data: { active: false } })
+      // Scramble the email so it's released for reuse — `@@unique([email, associationId])`
+      // has no exclusion for soft-deleted rows, so leaving the real email in place would
+      // permanently block anyone from ever registering with it again in this association.
+      await tx.user.update({
+        where: { id: existing.userId },
+        data:  { active: false, deletedAt: new Date(), email: `deleted+${existing.userId}@deleted.invalid` },
+      })
     }
   })
 

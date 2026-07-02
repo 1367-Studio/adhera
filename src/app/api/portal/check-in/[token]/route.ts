@@ -51,14 +51,39 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
 
   const existing = await prisma.participation.findUnique({
     where:  { membreId_evenementId: { membreId: membre.id, evenementId: evenement.id } },
-    select: { present: true },
+    select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true, paidQuantity: true },
   })
+
+  // Self check-in must not grant entry to someone who never reserved/paid for a spot —
+  // require a paid ticket for paid events, or a confirmed RSVP for free ones.
+  const isPaidEvent        = evenement.price != null && Number(evenement.price) > 0
+  const hasValidReservation = isPaidEvent ? !!existing?.ticketPaidAt : existing?.rsvp === "CONFIRME"
+  if (!hasValidReservation) {
+    return NextResponse.json({
+      error: isPaidEvent
+        ? "Aucun billet payé pour cet événement."
+        : "Confirmez votre présence (RSVP) avant de scanner ce QR code.",
+    }, { status: 422 })
+  }
+
   const wasAlreadyPresent = existing?.present === true
 
-  await prisma.participation.upsert({
-    where:  { membreId_evenementId: { membreId: membre.id, evenementId: evenement.id } },
-    create: { membreId: membre.id, evenementId: evenement.id, present: true },
-    update: { present: true },
+  if (!wasAlreadyPresent && evenement.capacity != null) {
+    const presentParticipations = await prisma.participation.findMany({
+      where:  { evenementId: evenement.id, present: true, membreId: { not: membre.id } },
+      select: { quantity: true, paidQuantity: true },
+    })
+    const occupiedSlots =
+      presentParticipations.reduce((sum, p) => sum + (p.paidQuantity ?? p.quantity), 0) +
+      (existing?.paidQuantity ?? existing?.quantity ?? 1)
+    if (occupiedSlots > evenement.capacity) {
+      return NextResponse.json({ error: "Capacité maximale atteinte" }, { status: 422 })
+    }
+  }
+
+  await prisma.participation.update({
+    where: { membreId_evenementId: { membreId: membre.id, evenementId: evenement.id } },
+    data:  { present: true },
   })
 
   pusherServer.trigger(`event-${evenement.id}`, "check-in", { membreId: membre.id }).catch(() => {})
