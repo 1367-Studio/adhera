@@ -16,6 +16,7 @@ import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 
@@ -150,7 +151,22 @@ function PaidEventSection({
   price:             string | null
 }) {
   const [quantity, setQuantity] = useState(ticketQuantity)
+  const [confirmCancel, setConfirmCancel] = useState(false)
   const setRsvpMutation = useSetRsvp(evenementId)
+  const qc = useQueryClient()
+
+  const cancelTicketMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/portal/evenements/${evenementId}/cancel-ticket`, { method: "POST" })
+      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      return res.json()
+    },
+    onSuccess: () => {
+      toast.success("Billet annulé — vous serez remboursé sous quelques jours.")
+      qc.invalidateQueries({ queryKey: ["portal-evenements"] })
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+  })
 
   useEffect(() => { setQuantity(ticketQuantity) }, [ticketQuantity])
   const unitPrice = price != null ? Number(price) : null
@@ -167,9 +183,28 @@ function PaidEventSection({
 
   if (ticketPaid) {
     return (
-      <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
-        <CheckCircleIcon className="size-3.5" />
-        {ticketQuantity > 1 ? `${ticketQuantity} billets achetés` : "Billet acheté"}
+      <div className="space-y-1.5">
+        <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
+          <CheckCircleIcon className="size-3.5" />
+          {ticketQuantity > 1 ? `${ticketQuantity} billets achetés` : "Billet acheté"}
+        </div>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="w-full text-muted-foreground text-xs h-7"
+          onClick={() => setConfirmCancel(true)}
+        >
+          Annuler et demander un remboursement
+        </Button>
+        <ConfirmDialog
+          open={confirmCancel}
+          onOpenChange={setConfirmCancel}
+          title="Annuler ce billet ?"
+          description="Vous serez intégralement remboursé sur votre moyen de paiement d'origine."
+          confirmLabel="Annuler et rembourser"
+          loading={cancelTicketMutation.isPending}
+          onConfirm={() => { cancelTicketMutation.mutate(); setConfirmCancel(false) }}
+        />
       </div>
     )
   }
