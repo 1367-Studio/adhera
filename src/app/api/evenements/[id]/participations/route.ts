@@ -115,7 +115,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const ctx = await getAssociationCtx()
   if (!isCtx(ctx)) return ctx
-  const { associationId, userId } = ctx
+  const { associationId, role, userId } = ctx
+
+  if (!MANAGERS.includes(role))
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const { id: evenementId } = await params
 

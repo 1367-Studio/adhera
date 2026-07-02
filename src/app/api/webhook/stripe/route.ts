@@ -109,6 +109,16 @@ export async function POST(req: Request) {
           }
         }
       } else if (cotisationId) {
+        const paidAt = new Date()
+        // Atomic conditional update: only the first of any concurrent/duplicate webhook
+        // deliveries for this cotisation will match and flip the status, preventing a
+        // duplicate Income row from a race between two "PAYE" transitions.
+        const { count } = await prisma.cotisation.updateMany({
+          where: { id: cotisationId, status: { not: "PAYE" } },
+          data:  { status: "PAYE", paidAt },
+        })
+        if (count === 0) break
+
         const cotisation = await prisma.cotisation.findUnique({
           where:   { id: cotisationId },
           include: {
@@ -116,13 +126,7 @@ export async function POST(req: Request) {
             association: { select: { name: true } },
           },
         })
-        if (!cotisation || cotisation.status === "PAYE") break
-
-        const paidAt = new Date()
-        await prisma.cotisation.update({
-          where: { id: cotisationId },
-          data:  { status: "PAYE", paidAt },
-        })
+        if (!cotisation) break
 
         if (cotisation.amount != null) {
           await prisma.income.create({

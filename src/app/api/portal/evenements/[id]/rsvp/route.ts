@@ -40,7 +40,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const existingParticipation = await prisma.participation.findUnique({
     where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    select: { rsvp: true },
+    select: { rsvp: true, quantity: true },
   })
   const wasAlreadyConfirme = existingParticipation?.rsvp === "CONFIRME"
 
@@ -62,6 +62,27 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     create: { membreId: membre.id, evenementId, rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
     update: { rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
   })
+
+  // Re-verify capacity after upsert to handle concurrent RSVPs for the last spot(s)
+  if (parsed.data.rsvp === "CONFIRME" && evenement.capacity != null) {
+    const { _sum: postCheck } = await prisma.participation.aggregate({
+      where: {
+        evenementId,
+        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
+      },
+      _sum: { quantity: true },
+    })
+    if ((postCheck.quantity ?? 0) > evenement.capacity) {
+      await prisma.participation.update({
+        where: { id: participation.id },
+        data:  {
+          rsvp:     existingParticipation?.rsvp ?? null,
+          quantity: existingParticipation?.quantity ?? 1,
+        },
+      })
+      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    }
+  }
 
   if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme) {
     const assoc = await prisma.association.findUnique({
