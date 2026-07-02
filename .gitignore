@@ -39,3 +39,6 @@ next-env.d.ts
 STATUS.md
 MODULES.md
 FINANCE_MODULE.md
+
+# stray generated PDFs at repo root (e.g. test Cerfa receipts)
+/*.pdf

@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             },
           },
         })
-        if (commande && commande.status !== "PAID") {
+        if (commande && commande.status === "PENDING") {
           const paidAt = new Date()
 
           await prisma.boutiqueCommande.update({

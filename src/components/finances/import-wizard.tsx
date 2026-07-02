@@ -131,6 +131,40 @@ function AutoBadge() {
   return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">Détecté</span>
 }
 
+function RequiredLabel({ required = true, detected, children }: { required?: boolean; detected?: boolean; children: React.ReactNode }) {
+  return (
+    <label className="text-sm font-medium">
+      {children}
+      {required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
+      {detected && <AutoBadge />}
+    </label>
+  )
+}
+
+type ColOption = { value: string; label: string }
+
+function ColumnField({
+  label, required, detected, value, onChange, options, placeholder = "Sélectionner",
+}: {
+  label:    string
+  required?: boolean
+  detected?: boolean
+  value:    string
+  onChange: (v: string) => void
+  options:  ColOption[]
+  placeholder?: string
+}) {
+  return (
+    <div>
+      <RequiredLabel required={required} detected={detected}>{label}</RequiredLabel>
+      <Select value={value} onValueChange={v => onChange(v ?? "")}>
+        <SelectTrigger className="mt-1"><SelectValue placeholder={placeholder} /></SelectTrigger>
+        <SelectContent>{options.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
+      </Select>
+    </div>
+  )
+}
+
 export function ImportWizard() {
   const [step, setStep]           = useState<Step>(1)
   const [file, setFile]           = useState<File | null>(null)
@@ -353,7 +387,7 @@ export function ImportWizard() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium">Compte bancaire *</label>
+                  <RequiredLabel>Compte bancaire</RequiredLabel>
                   <Select value={mapping.bankAccountId} onValueChange={v => setMapping(m => ({ ...m, bankAccountId: v ?? "" }))}>
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Sélectionner un compte">
@@ -368,24 +402,24 @@ export function ImportWizard() {
                   </Select>
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium">Colonne de date *{autoDetected.has("dateColumn") && <AutoBadge />}</label>
-                  <Select value={mapping.dateColumn} onValueChange={v => updateMapping("dateColumn", v ?? "")}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                    <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
+                <ColumnField
+                  label="Colonne de date"
+                  detected={autoDetected.has("dateColumn")}
+                  value={mapping.dateColumn}
+                  onChange={v => updateMapping("dateColumn", v)}
+                  options={colOptions}
+                />
+
+                <ColumnField
+                  label="Colonne de libellé"
+                  detected={autoDetected.has("labelColumn")}
+                  value={mapping.labelColumn}
+                  onChange={v => updateMapping("labelColumn", v)}
+                  options={colOptions}
+                />
 
                 <div>
-                  <label className="text-sm font-medium">Colonne de libellé *{autoDetected.has("labelColumn") && <AutoBadge />}</label>
-                  <Select value={mapping.labelColumn} onValueChange={v => updateMapping("labelColumn", v ?? "")}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                    <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Format des montants *{autoDetected.has("valueMode") && <AutoBadge />}</label>
+                  <RequiredLabel detected={autoDetected.has("valueMode")}>Format des montants</RequiredLabel>
                   <Select value={mapping.valueMode} onValueChange={v => updateMapping("valueMode", v as "single" | "split")}>
                     <SelectTrigger className="mt-1">
                       <SelectValue>
@@ -400,41 +434,43 @@ export function ImportWizard() {
                 </div>
 
                 {mapping.valueMode === "single" && (
-                  <div>
-                    <label className="text-sm font-medium">Colonne montant *{autoDetected.has("amountColumn") && <AutoBadge />}</label>
-                    <Select value={mapping.amountColumn} onValueChange={v => updateMapping("amountColumn", v ?? "")}>
-                      <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                      <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </div>
+                  <ColumnField
+                    label="Colonne montant"
+                    detected={autoDetected.has("amountColumn")}
+                    value={mapping.amountColumn}
+                    onChange={v => updateMapping("amountColumn", v)}
+                    options={colOptions}
+                  />
                 )}
 
                 {mapping.valueMode === "split" && (
                   <>
-                    <div>
-                      <label className="text-sm font-medium">Colonne débit *{autoDetected.has("debitColumn") && <AutoBadge />}</label>
-                      <Select value={mapping.debitColumn} onValueChange={v => updateMapping("debitColumn", v ?? "")}>
-                        <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                        <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium">Colonne crédit *{autoDetected.has("creditColumn") && <AutoBadge />}</label>
-                      <Select value={mapping.creditColumn} onValueChange={v => updateMapping("creditColumn", v ?? "")}>
-                        <SelectTrigger className="mt-1"><SelectValue placeholder="Sélectionner" /></SelectTrigger>
-                        <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                      </Select>
-                    </div>
+                    <ColumnField
+                      label="Colonne débit"
+                      detected={autoDetected.has("debitColumn")}
+                      value={mapping.debitColumn}
+                      onChange={v => updateMapping("debitColumn", v)}
+                      options={colOptions}
+                    />
+                    <ColumnField
+                      label="Colonne crédit"
+                      detected={autoDetected.has("creditColumn")}
+                      value={mapping.creditColumn}
+                      onChange={v => updateMapping("creditColumn", v)}
+                      options={colOptions}
+                    />
                   </>
                 )}
 
-                <div>
-                  <label className="text-sm font-medium">Colonne solde (optionnel){autoDetected.has("balanceColumn") && <AutoBadge />}</label>
-                  <Select value={mapping.balanceColumn} onValueChange={v => updateMapping("balanceColumn", v ?? "")}>
-                    <SelectTrigger className="mt-1"><SelectValue placeholder="—" /></SelectTrigger>
-                    <SelectContent>{colOptions.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
+                <ColumnField
+                  label="Colonne solde (optionnel)"
+                  required={false}
+                  detected={autoDetected.has("balanceColumn")}
+                  value={mapping.balanceColumn}
+                  onChange={v => updateMapping("balanceColumn", v)}
+                  options={colOptions}
+                  placeholder="—"
+                />
               </div>
 
               {/* Preview of first 3 rows */}
