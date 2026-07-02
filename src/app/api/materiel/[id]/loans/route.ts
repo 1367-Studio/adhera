@@ -35,28 +35,35 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 422 })
 
-  const activeLoans = await prisma.materialLoan.aggregate({
-    where: { materialId: id, returnedAt: null, status: "CONFIRME" },
-    _sum:  { quantity: true },
-  })
-  const loaned    = activeLoans._sum.quantity ?? 0
-  const available = material.quantity - loaned
-  if (parsed.data.quantity > available) {
-    return NextResponse.json({ error: `Seulement ${available} unité(s) disponible(s)` }, { status: 409 })
-  }
+  let loan
+  try {
+    loan = await prisma.$transaction(async tx => {
+      const activeLoans = await tx.materialLoan.aggregate({
+        where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+        _sum:  { quantity: true },
+      })
+      const loaned    = activeLoans._sum.quantity ?? 0
+      const available = material.quantity - loaned
+      if (parsed.data.quantity > available) {
+        throw new Error(`Seulement ${available} unité(s) disponible(s)`)
+      }
 
-  const loan = await prisma.materialLoan.create({
-    data: {
-      materialId:       id,
-      membreId:         parsed.data.membreId ?? null,
-      borrowerName:     parsed.data.borrowerName ?? null,
-      quantity:         parsed.data.quantity,
-      borrowedAt:       parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date(),
-      expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
-      notes:            parsed.data.notes ?? null,
-    },
-    include: { membre: { select: { firstName: true, lastName: true } } },
-  })
+      return tx.materialLoan.create({
+        data: {
+          materialId:       id,
+          membreId:         parsed.data.membreId ?? null,
+          borrowerName:     parsed.data.borrowerName ?? null,
+          quantity:         parsed.data.quantity,
+          borrowedAt:       parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date(),
+          expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
+          notes:            parsed.data.notes ?? null,
+        },
+        include: { membre: { select: { firstName: true, lastName: true } } },
+      })
+    }, { isolationLevel: "Serializable" })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erreur" }, { status: 409 })
+  }
 
   const borrower = loan.membre
     ? `${loan.membre.firstName} ${loan.membre.lastName}`

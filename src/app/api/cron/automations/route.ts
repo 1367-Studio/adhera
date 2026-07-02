@@ -36,6 +36,16 @@ export async function POST(req: Request) {
 
   for (const rule of rules) {
     try {
+      // Atomically claim this rule so a concurrent/duplicate cron invocation processing
+      // the same rule can't also send: only proceeds if nextRunAt still matches what we
+      // just read. processRule always overwrites nextRunAt with the real value before
+      // returning, so this transient bump is safely superseded on every code path.
+      const claimed = await prisma.automationRule.updateMany({
+        where: { id: rule.id, nextRunAt: rule.nextRunAt },
+        data:  { nextRunAt: new Date(now.getTime() + 86_400_000) },
+      })
+      if (claimed.count === 0) continue
+
       const sent = await processRule(rule, now)
       totalSent += sent
     } catch (err) {
