@@ -14,7 +14,7 @@ SaaS platform for managing French associations (loi 1901). Built for presidents,
 - **Sondages** — polls/surveys creation and distribution
 - **Boutique** — online store for member purchases
 - **Réunions** — video meetings and general assemblies (LiveKit, with recording)
-- **SMS notifications** — via Twilio
+- **SMS notifications** — via your own Twilio account (BYOK, configured per association, no shared platform key)
 - **Portal** — member self-service area: news feed, events with RSVP, ticket purchase, cotisation status, profile
 - **Public site** — customizable association page with sections (hero, events, news, membership form, contact)
 - **Notifications** — real-time push via Pusher
@@ -30,7 +30,7 @@ SaaS platform for managing French associations (loi 1901). Built for presidents,
 - **Storage:** Cloudflare R2
 - **Real-time:** Pusher
 - **Email:** Resend
-- **SMS:** Twilio
+- **SMS:** Twilio (bring-your-own-key, per association)
 - **Video meetings:** LiveKit
 - **AI:** Groq
 

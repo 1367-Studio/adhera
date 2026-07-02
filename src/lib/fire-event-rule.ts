@@ -54,7 +54,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
   }
 
   if ((channel === "SMS" || channel === "BOTH") && mods.sms && rule.template.smsBody && membre.phone) {
-    sendSms(membre.phone, substituteVars(rule.template.smsBody, vars)).catch(() => {})
+    sendSms(membre.phone, substituteVars(rule.template.smsBody, vars), associationId).catch(() => {})
     dispatched = true
   }
 

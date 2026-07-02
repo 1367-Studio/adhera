@@ -47,7 +47,7 @@ export async function POST(req: Request) {
   const jobs = membres.filter(m => m.phone).map(m => ({ to: m.phone!, body }))
   if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0 })
 
-  const results = await sendSmsBatch(jobs)
+  const results = await sendSmsBatch(jobs, ctx.associationId)
   const sent    = results.filter(Boolean).length
   const failed  = results.length - sent
 

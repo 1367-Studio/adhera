@@ -176,6 +176,9 @@ model Association {
   canIssueTaxReceipts  Boolean            @default(false)
   aiApiKey             String?
   aiModel              String?
+  smsAccountSid        String?
+  smsAuthToken         String?
+  smsPhoneNumber       String?
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripeConnectId      String?
