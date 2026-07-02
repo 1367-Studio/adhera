@@ -42,7 +42,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   const { id } = await params
   const existing = await prisma.membreType.findFirst({
     where:   { id, associationId },
-    include: { _count: { select: { membres: true } } },
+    include: { _count: { select: { membres: { where: { deletedAt: null } } } } },
   })
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 

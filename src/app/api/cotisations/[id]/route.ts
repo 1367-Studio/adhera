@@ -22,7 +22,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const { id } = await params
-  const existing = await prisma.cotisation.findFirst({ where: { id, associationId } })
+  const existing = await prisma.cotisation.findFirst({ where: { id, associationId, membre: { deletedAt: null } } })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
 
   const body = await req.json()
@@ -105,7 +105,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
 
   const { id } = await params
   const existing = await prisma.cotisation.findFirst({
-    where:   { id, associationId },
+    where:   { id, associationId, membre: { deletedAt: null } },
     include: { membre: { select: { firstName: true, lastName: true } } },
   })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })

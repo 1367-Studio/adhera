@@ -136,6 +136,14 @@ export async function DELETE(_req: Request, { params }: Params) {
   })
   if (!produit) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
+  const commandeItemCount = await prisma.boutiqueCommandeItem.count({ where: { produitId: id } })
+  if (commandeItemCount > 0) {
+    return NextResponse.json(
+      { error: `Impossible de supprimer : ce produit a été commandé ${commandeItemCount} fois. Archivez-le plutôt.` },
+      { status: 409 },
+    )
+  }
+
   await prisma.boutiqueProduit.delete({ where: { id } })
 
   await writeActivityLog({

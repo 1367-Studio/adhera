@@ -93,9 +93,12 @@ export default function BoutiquePage() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => fetch(`/api/boutique/produits/${id}`, { method: "DELETE" }).then(r => r.json()),
+    mutationFn: (id: string) => fetch(`/api/boutique/produits/${id}`, { method: "DELETE" }).then(async r => {
+      if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+      return r.json()
+    }),
     onSuccess:  () => { qc.invalidateQueries({ queryKey: ["boutique-produits"] }); toast.success("Produit supprimé") },
-    onError:    () => toast.error("Erreur lors de la suppression"),
+    onError:    (err) => toast.error(err instanceof Error ? err.message : "Erreur lors de la suppression"),
   })
 
   const updateCommandeStatus = useMutation({
@@ -215,7 +218,14 @@ export default function BoutiquePage() {
         <RowActions
           actions={[
             { label: "Modifier",   icon: <FileEditIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
-            { label: "Supprimer",  icon: <ArchiveIcon  className="size-3.5" />, onClick: () => setDeleteTarget(p), destructive: true, separator: true },
+            {
+              label:       p._count.commandeItems > 0 ? "Supprimer (déjà commandé)" : "Supprimer",
+              icon:        <ArchiveIcon className="size-3.5" />,
+              onClick:     () => setDeleteTarget(p),
+              destructive: true,
+              separator:   true,
+              disabled:    p._count.commandeItems > 0,
+            },
           ]}
         />
       ),

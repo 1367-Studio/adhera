@@ -18,11 +18,12 @@ export async function GET(req: Request) {
   const status = searchParams.get("status") ?? undefined
   const search = searchParams.get("search")?.trim()
 
-  const where: Record<string, unknown> = { associationId }
+  const where: Record<string, unknown> = { associationId, membre: { deletedAt: null } }
   if (year)   where.year   = parseInt(year)
   if (status) where.status = status
   if (search) {
     where.membre = {
+      deletedAt: null,
       OR: [
         { firstName: { contains: search, mode: "insensitive" } },
         { lastName:  { contains: search, mode: "insensitive" } },
