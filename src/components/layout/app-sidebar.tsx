@@ -100,7 +100,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {visible.map(item => (
-                <SidebarMenuItem key={item.href}>
+                <SidebarMenuItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
                     isActive={isActive(item.href, pathname)}
@@ -120,7 +120,7 @@ export function AppSidebar() {
       {["ADMIN", "PRESIDENT"].includes(userRole) && (
         <SidebarFooter>
           <SidebarMenu>
-            <SidebarMenuItem>
+            <SidebarMenuItem data-tour="nav-parametres">
               <SidebarMenuButton
                 render={<Link href="/dashboard/parametres" />}
                 isActive={isActive("/dashboard/parametres", pathname)}

@@ -15,6 +15,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { UserMenu } from "@/components/layout/user-menu"
 import { NotificationBell } from "@/components/layout/notification-bell"
+import { HelpButton } from "@/components/layout/help-button"
 import { isManager } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
@@ -42,6 +43,7 @@ interface HeaderProps {
     role?:  string
   }
   showSidebar?:     boolean
+  showTour?:        boolean
   logoutRedirect?:  string
   associationSlug?: string
 }
@@ -72,7 +74,7 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   )
 }
 
-export function Header({ user, showSidebar = false, logoutRedirect, associationSlug }: HeaderProps) {
+export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug }: HeaderProps) {
   const pathname = usePathname()
   const looksLikeId = (s: string) => /^[a-z0-9]{20,}$/i.test(s) || /^[0-9a-f-]{36}$/i.test(s)
   const segments = pathname.split("/").filter(Boolean)
@@ -116,11 +118,20 @@ export function Header({ user, showSidebar = false, logoutRedirect, associationS
 
       <div className="ml-auto flex items-center gap-2">
         {associationSlug && isManager(user.role ?? "") && (
-          <ViewSwitcher slug={associationSlug} pathname={pathname} />
+          <span data-tour="view-switcher" className="flex items-center">
+            <ViewSwitcher slug={associationSlug} pathname={pathname} />
+          </span>
         )}
-        <NotificationBell />
-        <ThemeToggle />
-        <UserMenu user={user} logoutRedirect={logoutRedirect} />
+        {showTour && <HelpButton />}
+        <span data-tour="notifications" className="flex items-center">
+          <NotificationBell />
+        </span>
+        <span data-tour="theme-toggle" className="flex items-center">
+          <ThemeToggle />
+        </span>
+        <span data-tour="user-menu" className="flex items-center">
+          <UserMenu user={user} logoutRedirect={logoutRedirect} />
+        </span>
       </div>
     </header>
   )
