@@ -1,35 +1,18 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
+type Params = { id: string }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params
-
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId!, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const don = await prisma.don.findFirst({
-    where: { id, membreId: membre.id, associationId: u.associationId!, paidAt: { not: null } },
+    where: { id, membreId: ctx.membreId!, associationId: ctx.associationId, paidAt: { not: null } },
   })
   if (!don) return NextResponse.json({ error: "Don introuvable" }, { status: 404 })
 
   const assoc = await prisma.association.findUnique({
-    where:  { id: u.associationId! },
+    where:  { id: ctx.associationId },
     select: {
       id: true, name: true, address: true, city: true,
       siren: true, rna: true, canIssueTaxReceipts: true,
@@ -47,4 +30,4 @@ export async function GET(
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-}
+})

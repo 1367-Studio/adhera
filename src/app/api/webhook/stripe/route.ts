@@ -35,12 +35,25 @@ export async function POST(req: Request) {
       const participationId = sess.metadata?.participationId
       const donId           = sess.metadata?.donId
       const commandeId      = sess.metadata?.commandeId
+      // Stored on the Income row so a later `charge.refunded` event can find and
+      // reverse the exact record it created, instead of matching on description text.
+      const paymentIntentId = typeof sess.payment_intent === "string" ? sess.payment_intent : sess.payment_intent?.id ?? null
 
       if (commandeId) {
+        const paidAt = new Date()
+        // Atomic conditional update: only the first of any concurrent/duplicate webhook
+        // deliveries for this commande will match and flip the status, preventing a
+        // duplicate Income row from a race between two "PAID" transitions.
+        const { count: commandeClaimed } = await prisma.boutiqueCommande.updateMany({
+          where: { id: commandeId, status: "PENDING" },
+          data:  { status: "PAID" },
+        })
+        if (commandeClaimed === 0) break
+
         const commande = await prisma.boutiqueCommande.findUnique({
           where:   { id: commandeId },
           include: {
-            membre:      { select: { firstName: true, userId: true, user: { select: { email: true } } } },
+            membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
             association: { select: { id: true, name: true, slug: true } },
             items:       {
               include: {
@@ -50,21 +63,18 @@ export async function POST(req: Request) {
             },
           },
         })
-        if (commande && commande.status !== "PAID") {
-          const paidAt = new Date()
-
-          await prisma.boutiqueCommande.update({
-            where: { id: commandeId },
-            data:  { status: "PAID" },
-          })
-          await prisma.tresorerieEntry.create({
+        if (commande) {
+          await prisma.income.create({
             data: {
               associationId: commande.associationId,
-              type:          "ENTREE",
+              memberId:      commande.membreId ?? undefined,
               amount:        commande.totalAmount / 100,
-              description:   "Vente boutique (Stripe)",
+              description:   commande.membre ? `Vente boutique — ${commande.membre.firstName} ${commande.membre.lastName}` : "Vente boutique",
+              paymentMethod: "STRIPE",
+              source:        "STRIPE",
+              status:        "PAID",
               date:          paidAt,
-              category:      "Boutique",
+              reference:     paymentIntentId,
             },
           })
 
@@ -107,6 +117,16 @@ export async function POST(req: Request) {
           }
         }
       } else if (cotisationId) {
+        const paidAt = new Date()
+        // Atomic conditional update: only the first of any concurrent/duplicate webhook
+        // deliveries for this cotisation will match and flip the status, preventing a
+        // duplicate Income row from a race between two "PAYE" transitions.
+        const { count } = await prisma.cotisation.updateMany({
+          where: { id: cotisationId, status: { not: "PAYE" } },
+          data:  { status: "PAYE", paidAt },
+        })
+        if (count === 0) break
+
         const cotisation = await prisma.cotisation.findUnique({
           where:   { id: cotisationId },
           include: {
@@ -114,23 +134,26 @@ export async function POST(req: Request) {
             association: { select: { name: true } },
           },
         })
-        if (!cotisation || cotisation.status === "PAYE") break
+        if (!cotisation) break
 
-        const paidAt = new Date()
-        await prisma.cotisation.update({
-          where: { id: cotisationId },
-          data:  { status: "PAYE", paidAt },
-        })
+        // Use what Stripe actually charged (locked in at checkout session creation), not
+        // the cotisation's current `amount` — an admin could have edited the price while
+        // the checkout session was still open, which would otherwise record an Income
+        // that doesn't match the real payment.
+        const chargedAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(cotisation.amount)
 
         if (cotisation.amount != null) {
-          await prisma.tresorerieEntry.create({
+          await prisma.income.create({
             data: {
               associationId: cotisation.associationId,
-              type:        "ENTREE",
-              amount:      cotisation.amount,
-              description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-              category:    "Cotisation",
-              date:        paidAt,
+              memberId:      cotisation.membreId,
+              amount:        chargedAmount,
+              description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
+              paymentMethod: "STRIPE",
+              source:        "STRIPE",
+              status:        "PAID",
+              date:          paidAt,
+              reference:     paymentIntentId,
             },
           })
         }
@@ -140,7 +163,7 @@ export async function POST(req: Request) {
             firstName:       cotisation.membre.firstName,
             email:           cotisation.membre.email,
             associationName: cotisation.association.name,
-            amount:          Number(cotisation.amount),
+            amount:          chargedAmount,
             period:          String(cotisation.year),
             paidAt,
           })).catch(() => {})
@@ -155,6 +178,16 @@ export async function POST(req: Request) {
           metadata:      { amount: Number(cotisation.amount) },
         })
       } else if (participationId) {
+        const paidAt = new Date()
+        // Atomic conditional update: only the first of any concurrent/duplicate webhook
+        // deliveries for this ticket will match and flip ticketPaidAt, preventing a
+        // duplicate Income row from a race between two "paid" transitions.
+        const { count: ticketClaimed } = await prisma.participation.updateMany({
+          where: { id: participationId, ticketPaidAt: null },
+          data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id },
+        })
+        if (ticketClaimed === 0) break
+
         const participation = await prisma.participation.findUnique({
           where:   { id: participationId },
           include: {
@@ -171,21 +204,23 @@ export async function POST(req: Request) {
             membre: { select: { firstName: true, email: true } },
           },
         })
-        if (participation && !participation.ticketPaidAt && participation.evenement) {
-          const paidAt = new Date()
+        if (participation && participation.evenement) {
           await prisma.participation.update({
             where: { id: participationId },
-            data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id, paidQuantity: participation.quantity ?? 1 },
+            data:  { paidQuantity: participation.quantity ?? 1 },
           })
           const totalAmount = Number(participation.evenement.price!) * (participation.quantity ?? 1)
-          await prisma.tresorerieEntry.create({
+          await prisma.income.create({
             data: {
               associationId: participation.evenement.associationId,
-              type:          "ENTREE",
+              memberId:      participation.membreId,
               amount:        totalAmount,
               description:   `Billet (Stripe) — ${participation.evenement.title}`,
+              paymentMethod: "STRIPE",
+              source:        "STRIPE",
+              status:        "PAID",
               date:          paidAt,
-              category:      "Événement",
+              reference:     paymentIntentId,
             },
           })
           await writeActivityLog({
@@ -215,28 +250,35 @@ export async function POST(req: Request) {
           }
         }
       } else if (donId) {
+        const paidAt = new Date()
+        // Atomic conditional update: only the first of any concurrent/duplicate webhook
+        // deliveries for this don will match and flip paidAt, preventing a duplicate
+        // Income row (and a duplicate fiscal receipt number) from a race between two
+        // "paid" transitions.
+        const { count: donClaimed } = await prisma.don.updateMany({
+          where: { id: donId, paidAt: null },
+          data:  { paidAt, stripeSessionId: sess.id },
+        })
+        if (donClaimed === 0) break
+
         const don = await prisma.don.findUnique({
           where:   { id: donId },
           include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true } } },
         })
-        if (!don || don.paidAt) break
+        if (!don) break
 
-        const paidAt = new Date()
-        await prisma.don.update({
-          where: { id: donId },
-          data:  { paidAt, stripeSessionId: sess.id },
-        })
-
-        await prisma.tresorerieEntry.create({
+        await prisma.income.create({
           data: {
             associationId: don.associationId,
-            type:          "ENTREE",
             amount:        don.amount,
             description:   don.anonymous
               ? "Don anonyme"
               : `Don de ${don.firstName} ${don.lastName}`,
-            date:     paidAt,
-            category: "Don",
+            paymentMethod: "STRIPE",
+            source:        "STRIPE",
+            status:        "PAID",
+            date:          paidAt,
+            reference:     paymentIntentId,
           },
         })
 
@@ -332,6 +374,71 @@ export async function POST(req: Request) {
           })
         ),
       ])
+      break
+    }
+
+    // Safety net for refunds issued outside the app's own self-service cancellation
+    // flows (Stripe Dashboard, disputes/chargebacks) — reverses the Income and the
+    // paid state of whichever entity the charge belongs to.
+    case "charge.refunded": {
+      const charge         = event.data.object as Stripe.Charge
+      const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id
+      if (!paymentIntentId) break
+
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId).catch(() => null)
+      if (!paymentIntent) break
+
+      const { cotisationId, participationId, donId, commandeId, associationId } = paymentIntent.metadata
+
+      await prisma.income.updateMany({
+        where: { reference: paymentIntentId, status: "PAID" },
+        data:  { status: "CANCELLED" },
+      })
+
+      if (donId) {
+        const { count } = await prisma.don.updateMany({
+          where: { id: donId, refundedAt: null },
+          data:  { refundedAt: new Date() },
+        })
+        if (count > 0 && associationId) {
+          await writeActivityLog({ associationId, action: "DON_REFUNDED", entity: "Don", entityId: donId })
+        }
+      } else if (cotisationId) {
+        const { count } = await prisma.cotisation.updateMany({
+          where: { id: cotisationId, status: "PAYE" },
+          data:  { status: "EN_ATTENTE", paidAt: null },
+        })
+        if (count > 0 && associationId) {
+          await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
+        }
+      } else if (participationId) {
+        const { count } = await prisma.participation.updateMany({
+          where: { id: participationId, ticketPaidAt: { not: null } },
+          data:  { ticketPaidAt: null, stripeSessionId: null, paidQuantity: null, rsvp: null, quantity: 1 },
+        })
+        if (count > 0 && associationId) {
+          await writeActivityLog({ associationId, action: "TICKET_REFUNDED", entity: "Participation", entityId: participationId })
+        }
+      } else if (commandeId) {
+        const commande = await prisma.boutiqueCommande.findUnique({
+          where:   { id: commandeId },
+          include: { items: { select: { varianteId: true, quantity: true } } },
+        })
+        if (commande && commande.status === "PAID") {
+          await prisma.$transaction([
+            prisma.boutiqueCommande.update({ where: { id: commandeId }, data: { status: "CANCELLED" } }),
+            ...commande.items.map(item =>
+              prisma.boutiqueVariante.update({
+                where: { id: item.varianteId },
+                data:  { stock: { increment: item.quantity } },
+              })
+            ),
+          ])
+          if (associationId) {
+            await writeActivityLog({ associationId, action: "COMMANDE_REFUNDED", entity: "BoutiqueCommande", entityId: commandeId })
+          }
+        }
+      }
       break
     }
 

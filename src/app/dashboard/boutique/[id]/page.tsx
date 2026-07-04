@@ -8,7 +8,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
   ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon,
-  PencilIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon,
+  PencilIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, BanknoteIcon,
 } from "lucide-react"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
@@ -19,6 +19,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { RowActions } from "@/components/ui/row-actions"
+import { Modal } from "@/components/ui/modal"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { cn } from "@/lib/utils"
 
 type VarianteRow = { _key: string; id?: string; label: string; price: number; stock: string }
@@ -28,7 +30,8 @@ type Produit     = {
   status: "DRAFT" | "ACTIVE" | "ARCHIVED"; variantes: Variante[]
 }
 
-type CommandeItem = { quantity: number; unitPrice: number; produit: { id: string; name: string }; variante: { label: string } }
+type CommandeItem = { id: string; quantity: number; unitPrice: number; produit: { id: string; name: string }; variante: { label: string } }
+type EditItem     = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
 type Commande = {
   id:            string
   status:        "PENDING" | "PAID" | "CANCELLED"
@@ -60,7 +63,10 @@ export default function EditProduitPage() {
   const router  = useRouter()
   const qc      = useQueryClient()
 
-  const [activeTab, setActiveTab] = useState("edit")
+  const [activeTab, setActiveTab]       = useState("edit")
+  const [payTarget, setPayTarget]       = useState<Commande | null>(null)
+  const [stripePayTarget, setStripePayTarget] = useState<Commande | null>(null)
+  const [editItems, setEditItems]       = useState<EditItem[]>([])
   const [name, setName]             = useState("")
   const [description, setDescription] = useState("")
   const [imageUrl, setImageUrl]     = useState("")
@@ -151,6 +157,54 @@ export default function EditProduitPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
 
+  const updateCommandeStatus = useMutation({
+    mutationFn: ({ commandeId, status, items }: { commandeId: string; status: string; items?: { id: string; quantity: number }[] }) =>
+      fetch(`/api/boutique/commandes/${commandeId}`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ status, ...(items ? { items } : {}) }),
+      }).then(async r => {
+        if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+        return r.json()
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["boutique-commandes-produit", id] })
+      toast.success("Commande mise à jour")
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+  })
+
+  function openPayModal(c: Commande) {
+    if (c.paymentMethod === "STRIPE") { setStripePayTarget(c); return }
+    setEditItems(c.items.map(i => ({
+      id:            i.id,
+      qty:           i.quantity,
+      originalQty:   i.quantity,
+      unitPrice:     i.unitPrice,
+      produitName:   i.produit.name,
+      varianteLabel: i.variante.label,
+    })))
+    setPayTarget(c)
+  }
+
+  function adjustQty(itemId: string, delta: number) {
+    setEditItems(prev => prev.map(i =>
+      i.id === itemId ? { ...i, qty: Math.min(i.originalQty, Math.max(0, i.qty + delta)) } : i
+    ))
+  }
+
+  async function handleEncaisser() {
+    if (!payTarget) return
+    try {
+      await updateCommandeStatus.mutateAsync({
+        commandeId: payTarget.id,
+        status:     "PAID",
+        items:      editItems.map(i => ({ id: i.id, quantity: i.qty })),
+      })
+      setPayTarget(null)
+    } catch { /* onError shows toast */ }
+  }
+
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
     if (!name.trim()) { toast.error("Le nom est obligatoire"); return }
@@ -235,7 +289,7 @@ export default function EditProduitPage() {
       cell: (c) => c.status === "PENDING" ? (
         <RowActions
           actions={[
-            { label: "Marquer payée", icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique?commande=${c.id}`) },
+            { label: "Marquer payée", icon: <BanknoteIcon className="size-3.5" />, onClick: () => openPayModal(c) },
           ]}
         />
       ) : null,
@@ -446,6 +500,87 @@ export default function EditProduitPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Pay modal — MANUAL */}
+      {(() => {
+        const fmt = (cents: number) => (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+        const adjustedTotal = editItems.reduce((s, i) => s + i.unitPrice * i.qty, 0)
+        const hasAdjustment = adjustedTotal !== (payTarget?.totalAmount ?? 0)
+        const hasZeroItems  = editItems.some(i => i.qty === 0)
+        return (
+          <Modal
+            open={!!payTarget}
+            onOpenChange={o => { if (!o) setPayTarget(null) }}
+            title="Encaisser la commande"
+            size="sm"
+            footer={
+              <>
+                <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
+                <Button loading={updateCommandeStatus.isPending} disabled={adjustedTotal === 0} onClick={handleEncaisser}>
+                  <BanknoteIcon className="mr-1.5 size-4" />
+                  Encaisser {fmt(adjustedTotal)}
+                </Button>
+              </>
+            }
+          >
+            {payTarget && (
+              <div className="space-y-4 py-1">
+                {payTarget.membre && (
+                  <p className="text-sm text-muted-foreground">
+                    Commande de <span className="font-medium text-foreground">{payTarget.membre.firstName} {payTarget.membre.lastName}</span>
+                  </p>
+                )}
+                <div className="space-y-3">
+                  {editItems.map(item => {
+                    const notCollected = item.qty === 0
+                    return (
+                      <div key={item.id} className={cn("flex items-center gap-3", notCollected && "opacity-50")}>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("text-sm font-medium truncate", notCollected && "line-through")}>{item.produitName}</p>
+                          <p className="text-xs text-muted-foreground">{item.varianteLabel}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button type="button" onClick={() => adjustQty(item.id, -1)} disabled={item.qty <= 0} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">−</button>
+                          <span className="w-6 text-center text-sm font-semibold tabular-nums">{item.qty}</span>
+                          <button type="button" onClick={() => adjustQty(item.id, +1)} disabled={item.qty >= item.originalQty} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">+</button>
+                          <span className={cn("w-20 text-right text-sm tabular-nums", notCollected ? "text-muted-foreground/50 line-through" : "text-muted-foreground")}>{fmt(item.unitPrice * item.qty)}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                {(hasAdjustment || hasZeroItems) && (
+                  <div className="border-t pt-3 space-y-1.5">
+                    {hasAdjustment && (
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>Total commandé</span>
+                        <span className="line-through">{fmt(payTarget.totalAmount)}</span>
+                      </div>
+                    )}
+                    {hasZeroItems && (
+                      <p className="text-xs text-muted-foreground">Le stock des articles non retirés sera restauré.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </Modal>
+        )
+      })()}
+
+      {/* Pay confirm — STRIPE */}
+      <ConfirmDialog
+        open={!!stripePayTarget}
+        onOpenChange={o => { if (!o) setStripePayTarget(null) }}
+        title="Marquer comme payée ?"
+        description={`Cette commande Stripe (${stripePayTarget ? (stripePayTarget.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : ""}) sera marquée comme payée manuellement.`}
+        confirmLabel="Confirmer le paiement"
+        loading={updateCommandeStatus.isPending}
+        onConfirm={() => {
+          if (stripePayTarget) updateCommandeStatus.mutate({ commandeId: stripePayTarget.id, status: "PAID" })
+          setStripePayTarget(null)
+        }}
+      />
     </div>
   )
 }

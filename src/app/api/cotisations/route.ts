@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { cotisationSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -18,11 +15,12 @@ export async function GET(req: Request) {
   const status = searchParams.get("status") ?? undefined
   const search = searchParams.get("search")?.trim()
 
-  const where: Record<string, unknown> = { associationId }
+  const where: Record<string, unknown> = { associationId, membre: { deletedAt: null } }
   if (year)   where.year   = parseInt(year)
   if (status) where.status = status
   if (search) {
     where.membre = {
+      deletedAt: null,
       OR: [
         { firstName: { contains: search, mode: "insensitive" } },
         { lastName:  { contains: search, mode: "insensitive" } },
@@ -51,19 +49,10 @@ export async function GET(req: Request) {
   ])
   const totalPaye = Number(aggregate._sum.amount ?? 0)
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), totalPaye })
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  const guard = await guardModule(associationId, "cotisations")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body = await req.json()
   const parsed = cotisationSchema.safeParse(body)
@@ -94,13 +83,14 @@ export async function POST(req: Request) {
   })
 
   if (cotisation.status === "PAYE" && cotisation.amount != null) {
-    await prisma.tresorerieEntry.create({
+    await prisma.income.create({
       data: {
         associationId,
-        type:        "ENTREE",
+        memberId:    cotisation.membreId,
         amount:      cotisation.amount,
         description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-        category:    "Cotisation",
+        source:      "MANUAL",
+        status:      "PAID",
         date:        cotisation.paidAt ?? new Date(),
       },
     })
@@ -108,4 +98,4 @@ export async function POST(req: Request) {
 
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
   return NextResponse.json(cotisation, { status: 201 })
-}
+}, { roles: MANAGERS, module: "cotisations" })

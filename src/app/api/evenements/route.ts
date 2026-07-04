@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { evenementSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { pusherServer } from "@/lib/pusher-server"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -71,19 +68,10 @@ export async function GET(req: Request) {
   const enriched = data.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
 
   return NextResponse.json({ data: enriched, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  const guard = await guardModule(associationId, "evenements")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body = await req.json()
   const parsed = evenementSchema.safeParse(body)
@@ -128,4 +116,4 @@ export async function POST(req: Request) {
   })()
 
   return NextResponse.json(evenement, { status: 201 })
-}
+}, { roles: MANAGERS, module: "evenements" })

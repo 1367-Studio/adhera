@@ -1,26 +1,18 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params
-
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!FINANCE.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const don = await prisma.don.findFirst({
-    where: { id, associationId: ctx.associationId, paidAt: { not: null } },
+    where: { id, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
-  if (!don) return NextResponse.json({ error: "Don introuvable" }, { status: 404 })
+  if (!don) return NextResponse.json({ error: "Don introuvable ou remboursé" }, { status: 404 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -41,4 +33,4 @@ export async function GET(
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-}
+})

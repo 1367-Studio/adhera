@@ -207,7 +207,6 @@ export function useMarkPaid(evenementId: string) {
       markPaid(evenementId, membreId, paidQuantity),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
-      qc.invalidateQueries({ queryKey: ["tresorerie"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
     ]),
   })

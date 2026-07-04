@@ -1,12 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
 import { APP_URL } from "@/lib/env"
-
-type SessionUser = { id?: string; associationId?: string | null }
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 const PLATFORM_FEE = 0.015
 
@@ -16,16 +13,7 @@ const schema = z.object({
   anonymous: z.boolean().optional().default(false),
 })
 
-export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "dons")
-  if (guard) return guard
-
+export const POST = withPortalAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success)
@@ -33,14 +21,14 @@ export async function POST(req: Request) {
 
   const { amount, message, anonymous } = parsed.data
 
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId!, deletedAt: null },
+  const membre = await prisma.membre.findUnique({
+    where:  { id: ctx.membreId! },
     select: { id: true, firstName: true, lastName: true, email: true, address: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
   const assoc = await prisma.association.findUnique({
-    where:  { id: u.associationId! },
+    where:  { id: ctx.associationId },
     select: { id: true, name: true, slug: true, stripeConnectId: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
@@ -96,4 +84,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json({ url: checkoutSession.url })
-}
+}, { module: "dons" })

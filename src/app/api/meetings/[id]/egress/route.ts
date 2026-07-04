@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server"
 import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload } from "livekit-server-sdk"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -27,22 +26,9 @@ function makeS3Upload() {
 }
 
 // POST — start recording
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  const guard = await guardModule(associationId, "reunions")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const meeting = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
@@ -83,25 +69,12 @@ export async function POST(
   })
 
   return NextResponse.json({ egressId: info.egressId, recordingKey })
-}
+}, { roles: MANAGERS, module: "reunions" })
 
 // DELETE — stop recording
-export async function DELETE(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  const guard = await guardModule(associationId, "reunions")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const meeting = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
@@ -129,4 +102,4 @@ export async function DELETE(
   })
 
   return NextResponse.json({ recordingKey: meeting.recordingKey })
-}
+}, { roles: MANAGERS, module: "reunions" })

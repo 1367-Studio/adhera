@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const now        = new Date()
@@ -17,8 +15,8 @@ export async function GET() {
     evenementsMois,
     cotisationsEnAttente,
     cotisationsPayees,
-    tresorerieEntrees,
-    tresorerieSorties,
+    totalIncomes,
+    totalExpenses,
     prochainEvenement,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
@@ -28,12 +26,12 @@ export async function GET() {
       where: { associationId, status: "PAYE", year },
       _sum: { amount: true },
     }),
-    prisma.tresorerieEntry.aggregate({
-      where: { associationId, type: "ENTREE" },
+    prisma.income.aggregate({
+      where: { associationId, status: "PAID" },
       _sum: { amount: true },
     }),
-    prisma.tresorerieEntry.aggregate({
-      where: { associationId, type: "SORTIE" },
+    prisma.expense.aggregate({
+      where: { associationId, status: "VALIDATED" },
       _sum: { amount: true },
     }),
     prisma.evenement.findFirst({
@@ -43,7 +41,7 @@ export async function GET() {
     }),
   ])
 
-  const solde = Number(tresorerieEntrees._sum.amount ?? 0) - Number(tresorerieSorties._sum.amount ?? 0)
+  const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
   const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0)
 
   return NextResponse.json({
@@ -54,4 +52,4 @@ export async function GET() {
     solde,
     prochainEvenement,
   })
-}
+})

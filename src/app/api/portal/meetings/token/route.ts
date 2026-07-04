@@ -1,26 +1,16 @@
 import { NextResponse } from "next/server"
 import { AccessToken } from "livekit-server-sdk"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-
-export async function POST(req: Request) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const guard = await guardModule(u.associationId, "reunions")
-  if (guard) return guard
+export const POST = withPortalAuth(async (req, ctx) => {
+  const { associationId, membreId } = ctx
 
   const { meetingId } = await req.json()
   if (!meetingId) return NextResponse.json({ error: "meetingId requis" }, { status: 422 })
 
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId },
+  const membre = await prisma.membre.findUnique({
+    where:  { id: membreId! },
     select: { id: true, firstName: true, lastName: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -29,7 +19,7 @@ export async function POST(req: Request) {
     where: { meetingId, membreId: membre.id },
     include: { meeting: { select: { roomName: true, associationId: true, status: true } } },
   })
-  if (!participant || participant.meeting.associationId !== u.associationId) {
+  if (!participant || participant.meeting.associationId !== associationId) {
     return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
   }
   if (participant.meeting.status === "ENDED" || participant.meeting.status === "CANCELLED") {
@@ -62,4 +52,4 @@ export async function POST(req: Request) {
 
   const token = await at.toJwt()
   return NextResponse.json({ token, roomName: participant.meeting.roomName, serverUrl: process.env.LIVEKIT_URL })
-}
+}, { module: "reunions" })

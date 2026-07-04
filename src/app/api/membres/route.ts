@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomBytes } from "crypto"
 import bcrypt from "bcryptjs"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
@@ -13,9 +13,7 @@ import { APP_URL } from "@/lib/env"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -52,16 +50,10 @@ export async function GET(req: Request) {
     prisma.membre.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, role: actorRole, userId } = ctx
-
-  if (!MANAGERS.includes(actorRole)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
 
   const body = await req.json()
   const parsed = membreCreateSchema.safeParse(body)
@@ -139,4 +131,4 @@ export async function POST(req: Request) {
   await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id, label: `${membre.firstName} ${membre.lastName}` })
 
   return NextResponse.json(membre, { status: 201 })
-}
+}, { roles: MANAGERS })

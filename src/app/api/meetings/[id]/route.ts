@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
-
-  const { id } = await params
 
   const meeting = await prisma.meeting.findFirst({
     where: { id, associationId },
@@ -23,18 +19,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
   return NextResponse.json(meeting)
-}
+})
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
@@ -61,18 +50,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
 
   return NextResponse.json(meeting)
-}
+}, { roles: MANAGERS })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
@@ -88,4 +70,4 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   })
 
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: MANAGERS })

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
+import { findUnknownVars } from "@/lib/automation"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -18,20 +18,27 @@ async function resolve(id: string, associationId: string) {
   return prisma.messageTemplate.findFirst({ where: { id, associationId } })
 }
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+
+  const unknownVars = findUnknownVars([
+    parsed.data.subject ?? existing.subject,
+    parsed.data.body    ?? existing.body,
+    ("smsBody" in parsed.data ? parsed.data.smsBody : existing.smsBody) ?? "",
+  ].join("\n"))
+  if (unknownVars.length > 0) {
+    return NextResponse.json(
+      { error: `Variable(s) inconnue(s) : ${unknownVars.map(v => `{{${v}}}`).join(", ")}` },
+      { status: 422 },
+    )
+  }
 
   const updateData: Record<string, unknown> = {}
   if (parsed.data.name    != null) updateData.name    = parsed.data.name
@@ -40,19 +47,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   if ("smsBody" in parsed.data)    updateData.smsBody = parsed.data.smsBody || null
 
   const updated = await prisma.messageTemplate.update({ where: { id }, data: updateData })
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_UPDATED", entity: "MessageTemplate", entityId: id, label: updated.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_UPDATED", entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
-}
+}, { roles: ALLOWED_ROLES })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const usedByRules = await prisma.automationRule.count({ where: { templateId: id } })
@@ -61,6 +63,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   }
 
   await prisma.messageTemplate.delete({ where: { id } })
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "TEMPLATE_DELETED", entity: "MessageTemplate", entityId: id, label: existing.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_DELETED", entity: "MessageTemplate", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: ALLOWED_ROLES })

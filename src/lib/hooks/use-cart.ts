@@ -10,6 +10,7 @@ export type CartItem = {
   price:         number // cents
   quantity:      number
   imageUrl:      string | null
+  stock:         number // snapshot of available stock when added — server re-validates at checkout
 }
 
 const STORAGE_KEY = "adhera_boutique_cart"
@@ -18,7 +19,9 @@ function readCart(slug: string): CartItem[] {
   if (typeof window === "undefined") return []
   try {
     const raw = localStorage.getItem(`${STORAGE_KEY}_${slug}`)
-    return raw ? JSON.parse(raw) : []
+    const items = raw ? (JSON.parse(raw) as CartItem[]) : []
+    // Carts persisted before the `stock` field existed won't have it — don't let that break capping.
+    return items.map(i => ({ ...i, stock: i.stock ?? 99 }))
   } catch {
     return []
   }
@@ -47,8 +50,10 @@ export function useCart(slug: string) {
     setItems(prev => {
       const existing = prev.find(i => i.varianteId === item.varianteId)
       const next = existing
-        ? prev.map(i => i.varianteId === item.varianteId ? { ...i, quantity: Math.min(i.quantity + qty, 99) } : i)
-        : [...prev, { ...item, quantity: qty }]
+        ? prev.map(i => i.varianteId === item.varianteId
+            ? { ...i, stock: item.stock, quantity: Math.min(i.quantity + qty, 99, item.stock) }
+            : i)
+        : [...prev, { ...item, quantity: Math.min(qty, item.stock) }]
       writeCart(slug, next)
       return next
     })
@@ -57,7 +62,7 @@ export function useCart(slug: string) {
   function updateQuantity(varianteId: string, quantity: number) {
     if (quantity < 1) return removeItem(varianteId)
     setItems(prev => {
-      const next = prev.map(i => i.varianteId === varianteId ? { ...i, quantity } : i)
+      const next = prev.map(i => i.varianteId === varianteId ? { ...i, quantity: Math.min(quantity, i.stock) } : i)
       writeCart(slug, next)
       return next
     })

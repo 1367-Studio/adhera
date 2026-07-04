@@ -37,13 +37,21 @@ type Evenement = {
   confirmedCount: number
 }
 
-function toDatetimeLocal(iso: string) {
-  return iso.slice(0, 16)
-}
-
 function dateToDatetimeLocal(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+// The <input type="datetime-local"> value has no timezone — it represents wall-clock
+// time in the browser's own timezone. Round-trip through a real Date so it converts to
+// the correct UTC instant, instead of a server (running in UTC) misreading "14:00" as
+// 14:00 UTC and shifting every event by the local UTC offset.
+function toDatetimeLocal(iso: string) {
+  return dateToDatetimeLocal(new Date(iso))
+}
+
+function localDatetimeToISO(value: string): string {
+  return new Date(value).toISOString()
 }
 
 type ViewMode = "list" | "calendar"
@@ -95,7 +103,11 @@ export function EvenementsView() {
 
   async function handleCreate(data: EvenementInput) {
     try {
-      await createMutation.mutateAsync(data)
+      await createMutation.mutateAsync({
+        ...data,
+        date:    localDatetimeToISO(data.date),
+        endDate: data.endDate ? localDatetimeToISO(data.endDate) : data.endDate,
+      })
       toast.success("Événement créé avec succès")
       setCreateOpen(false)
     } catch (err) {
@@ -105,7 +117,11 @@ export function EvenementsView() {
 
   async function handleUpdate(data: EvenementInput) {
     try {
-      await updateMutation.mutateAsync(data)
+      await updateMutation.mutateAsync({
+        ...data,
+        date:    localDatetimeToISO(data.date),
+        endDate: data.endDate ? localDatetimeToISO(data.endDate) : data.endDate,
+      })
       toast.success("Événement mis à jour")
       setEditTarget(null)
     } catch (err) {

@@ -1,11 +1,8 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth(async (req, ctx) => {
   const { searchParams } = new URL(req.url)
   const typeId = searchParams.get("typeId") ?? undefined
 
@@ -20,4 +17,4 @@ export async function GET(req: Request) {
   })
 
   return NextResponse.json({ count })
-}
+})

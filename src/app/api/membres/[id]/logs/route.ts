@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
 const DEFAULT_PAGE_SIZE = 20
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId } = ctx
-
-  const { id } = await params
 
   const membre = await prisma.membre.findFirst({
     where:  { id, associationId },
@@ -69,4 +65,4 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     totalPages: Math.ceil(total / pageSize),
     pageSize,
   })
-}
+})

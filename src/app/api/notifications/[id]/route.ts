@@ -1,19 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string }
+export const PATCH = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { userId } = ctx
 
-export async function PATCH(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u    = session.user as SessionUser
-  const { id } = await params
-
-  const notif = await prisma.notification.findFirst({ where: { id, userId: u.id! } })
+  const notif = await prisma.notification.findFirst({ where: { id, userId } })
   if (!notif) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   await prisma.notification.update({ where: { id }, data: { read: true } })
   return NextResponse.json({ ok: true })
-}
+})

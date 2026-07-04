@@ -8,10 +8,10 @@ export default async function PortalLoginPage({
   searchParams,
 }: {
   params:       Promise<{ slug: string }>
-  searchParams: Promise<{ callbackUrl?: string }>
+  searchParams: Promise<{ callbackUrl?: string; suspended?: string }>
 }) {
-  const { slug }        = await params
-  const { callbackUrl } = await searchParams
+  const { slug }                    = await params
+  const { callbackUrl, suspended }  = await searchParams
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
@@ -28,6 +28,12 @@ export default async function PortalLoginPage({
               Connectez-vous pour accéder à votre espace.
             </p>
           </div>
+
+          {suspended && (
+            <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              L&apos;abonnement de cette association est suspendu. Contactez l&apos;administrateur pour régulariser la situation.
+            </p>
+          )}
 
           <PortalLoginForm slug={slug} callbackUrl={callbackUrl} />
         </div>

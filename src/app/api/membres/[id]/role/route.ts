@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -8,16 +8,13 @@ type AssignableRole = typeof ASSIGNABLE_ROLES[number]
 
 const PRESIDENT_ASSIGNABLE_ROLES: AssignableRole[] = ["MEMBRE", "SECRETAIRE", "TRESORIER", "PRESIDENT"]
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, role: actorRole, userId: actorId } = ctx
 
   if (actorRole !== "ADMIN" && actorRole !== "PRESIDENT") {
     return NextResponse.json({ error: "Seul un administrateur ou le président peut modifier les rôles" }, { status: 403 })
   }
 
-  const { id } = await params
   const { role } = await req.json() as { role: AssignableRole }
 
   if (!ASSIGNABLE_ROLES.includes(role)) {
@@ -70,4 +67,4 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
 
   return NextResponse.json({ ok: true })
-}
+})

@@ -1,26 +1,19 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-type Params = { params: Promise<{ id: string }> }
+type Params = { id: string }
 
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+const updateSchema = z.object({
+  status: z.literal("CANCELLED").optional(),
+  items:  z.array(z.object({ id: z.string(), quantity: z.number().int().min(0) })).optional(),
+})
 
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where:  { userId: u.id!, associationId: u.associationId, deletedAt: null },
-    select: { id: true },
-  })
-  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
+export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const commande = await prisma.boutiqueCommande.findFirst({
-    where:   { id, associationId: u.associationId, membreId: membre.id },
+    where:   { id, associationId: ctx.associationId, membreId: ctx.membreId! },
     include: {
       items: {
         include: {
@@ -33,4 +26,98 @@ export async function GET(_req: Request, { params }: Params) {
   if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 })
 
   return NextResponse.json(commande)
-}
+}, { module: "boutique" })
+
+export const PATCH = withPortalAuth<Params>(async (req, ctx, { id }) => {
+  const commande = await prisma.boutiqueCommande.findFirst({
+    where:  { id, associationId: ctx.associationId, membreId: ctx.membreId! },
+    select: { id: true, status: true, paymentMethod: true },
+  })
+  if (!commande) return NextResponse.json({ error: "Commande introuvable" }, { status: 404 })
+
+  const body   = await req.json().catch(() => null)
+  const parsed = updateSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
+
+  const { status, items: itemUpdates } = parsed.data
+  if (!status && !itemUpdates?.length) {
+    return NextResponse.json({ error: "Aucune modification fournie" }, { status: 422 })
+  }
+
+  if (commande.status !== "PENDING") {
+    return NextResponse.json({ error: "Cette commande ne peut plus être modifiée." }, { status: 422 })
+  }
+
+  // A Stripe checkout session (if any) was created for the original total — editing quantities
+  // here would desync it from what's actually charged. Only cancellation is safe for STRIPE orders.
+  if (itemUpdates?.length && commande.paymentMethod === "STRIPE") {
+    return NextResponse.json({ error: "Une commande payée par carte ne peut être qu'annulée, pas modifiée." }, { status: 422 })
+  }
+
+  try {
+    await prisma.$transaction(async tx => {
+      if (status === "CANCELLED") {
+        const currentItems = await tx.boutiqueCommandeItem.findMany({ where: { commandeId: id } })
+        for (const item of currentItems) {
+          if (item.quantity > 0) {
+            await tx.boutiqueVariante.update({
+              where: { id: item.varianteId },
+              data:  { stock: { increment: item.quantity } },
+            })
+          }
+        }
+        await tx.boutiqueCommande.update({ where: { id }, data: { status: "CANCELLED" } })
+        return
+      }
+
+      const currentItems = await tx.boutiqueCommandeItem.findMany({
+        where:  { commandeId: id },
+        select: { id: true, quantity: true, unitPrice: true, varianteId: true },
+      })
+
+      let newTotal = 0
+      for (const cur of currentItems) {
+        const upd    = itemUpdates!.find(u => u.id === cur.id)
+        const newQty = upd ? Math.min(Math.max(0, upd.quantity), cur.quantity) : cur.quantity
+        if (newQty < cur.quantity) {
+          await tx.boutiqueVariante.update({
+            where: { id: cur.varianteId },
+            data:  { stock: { increment: cur.quantity - newQty } },
+          })
+          await tx.boutiqueCommandeItem.update({ where: { id: cur.id }, data: { quantity: newQty } })
+        }
+        newTotal += cur.unitPrice * newQty
+      }
+
+      if (newTotal === 0) {
+        throw new Error("Le montant ne peut pas être nul — annulez la commande si vous ne voulez plus aucun article.")
+      }
+
+      await tx.boutiqueCommande.update({ where: { id }, data: { totalAmount: newTotal } })
+    })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erreur" }, { status: 422 })
+  }
+
+  await writeActivityLog({
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
+    action:        status === "CANCELLED" ? "BOUTIQUE_COMMANDE_CANCELLED" : "BOUTIQUE_COMMANDE_UPDATED",
+    entity:        "BoutiqueCommande",
+    entityId:      id,
+    label:         status === "CANCELLED" ? "Annulée par le membre" : "Modifiée par le membre",
+  })
+
+  const updated = await prisma.boutiqueCommande.findUnique({
+    where:   { id },
+    include: {
+      items: {
+        include: {
+          produit:  { select: { name: true, imageUrl: true } },
+          variante: { select: { label: true, price: true } },
+        },
+      },
+    },
+  })
+  return NextResponse.json(updated)
+}, { module: "boutique" })

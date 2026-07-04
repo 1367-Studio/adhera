@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
-  const guard = await guardModule(ctx.associationId, "sms")
-  if (guard) return guard
-
+export const GET = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
@@ -30,4 +23,4 @@ export async function GET(req: Request) {
   })
 
   return NextResponse.json({ count })
-}
+}, { module: "sms" })

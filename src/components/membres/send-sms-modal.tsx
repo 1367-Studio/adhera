@@ -266,7 +266,13 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
       }
 
       toast.success(`SMS envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
-      if (data.failed > 0) toast.warning(`${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}`)
+      if (data.failed > 0) {
+        const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
+        const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? ` et ${names.length - 5} autre(s)` : "")
+        toast.warning(
+          `${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}${preview ? ` : ${preview}` : ""}`,
+        )
+      }
       onOpenChange(false)
     } catch {
       toast.error("Erreur réseau")

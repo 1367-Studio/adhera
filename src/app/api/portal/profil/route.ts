@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { computeMemberDiff, writeActivityLog } from "@/lib/activity-log"
-
-type SessionUser = { id?: string; associationId?: string | null }
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 const phoneRegex = /^[+\d][\d\s.\-()]{5,19}$/
 
@@ -20,29 +18,15 @@ const updateSchema = z.object({
   ),
 })
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({
-    where: { userId: u.id!, associationId: u.associationId, deletedAt: null },
-  })
-  if (!membre) return NextResponse.json({ error: "Profil introuvable" }, { status: 404 })
+export const GET = withPortalAuth(async (_req, ctx) => {
+  const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })
+  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
   return NextResponse.json(membre)
-}
+})
 
-export async function PATCH(req: Request) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await prisma.membre.findFirst({ where: { userId: u.id!, associationId: u.associationId, deletedAt: null } })
-  if (!membre) return NextResponse.json({ error: "Profil introuvable" }, { status: 404 })
+export const PATCH = withPortalAuth(async (req, ctx) => {
+  const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })
+  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
   const body   = await req.json()
   const parsed = updateSchema.safeParse(body)
@@ -66,8 +50,8 @@ export async function PATCH(req: Request) {
   )
   if (Object.keys(changes).length > 0) {
     await writeActivityLog({
-      associationId: u.associationId!,
-      actorId:  u.id,
+      associationId: ctx.associationId,
+      actorId:  ctx.userId,
       action:   "PROFIL_UPDATED",
       entity:   "Membre",
       entityId: membre.id,
@@ -77,4 +61,4 @@ export async function PATCH(req: Request) {
   }
 
   return NextResponse.json(updated)
-}
+})

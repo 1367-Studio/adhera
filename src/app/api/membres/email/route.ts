@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmailBulk } from "@/lib/mail"
 import { customEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -16,13 +15,7 @@ const schema = z.object({
   typeId:       z.string().optional(),
 })
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
-  const guard = await guardModule(ctx.associationId, "messages")
-  if (guard) return guard
-
+export const POST = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   }
@@ -48,19 +41,23 @@ export async function POST(req: Request) {
       ...(recipientIds?.length ? { id: { in: recipientIds } } : {}),
       ...(typeId ? { typeId } : {}),
     },
-    select: { email: true },
+    select: { id: true, firstName: true, lastName: true, email: true },
+    take:   500,
   })
 
-  const payloads = membres
-    .filter(m => m.email)
-    .map(m => customEmail({
-      associationName: assoc.name,
-      subject,
-      bodyHtml,
-      recipientEmail:  m.email!,
-    }))
+  const recipients = membres.filter(m => m.email)
+  const payloads = recipients.map(m => customEmail({
+    associationName: assoc.name,
+    subject,
+    bodyHtml,
+    recipientEmail:  m.email!,
+  }))
 
-  const { sent, failed } = await sendEmailBulk(payloads)
+  const { sent, failed, failedRecipients } = await sendEmailBulk(payloads)
+  const failedEmails = new Set(failedRecipients)
+  const failedMembers = recipients
+    .filter(m => failedEmails.has(m.email!))
+    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
   await writeActivityLog({
@@ -78,5 +75,5 @@ export async function POST(req: Request) {
     },
   })
 
-  return NextResponse.json({ sent, failed })
-}
+  return NextResponse.json({ sent, failed, failedMembers })
+}, { module: "messages" })

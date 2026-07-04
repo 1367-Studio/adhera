@@ -62,8 +62,17 @@ export default function CotisationPortalPage() {
   useEffect(() => {
     const payment = searchParams.get("payment")
     if (payment === "success") {
-      toast.success("Paiement effectué ! Votre cotisation est maintenant réglée.")
-      refetch()
+      toast.success("Paiement effectué !")
+      // The Stripe webhook that flips the cotisation to PAYE can lag slightly behind
+      // this redirect — poll briefly instead of a single refetch that may still show EN_ATTENTE.
+      let attempts = 0
+      const poll = async () => {
+        attempts++
+        const result = await refetch()
+        const stillPending = result.data?.some(c => c.year === currentYear() && c.status === "EN_ATTENTE")
+        if (stillPending && attempts < 5) setTimeout(poll, 1500)
+      }
+      poll()
     } else if (payment === "cancelled") {
       toast.info("Paiement annulé.")
     }

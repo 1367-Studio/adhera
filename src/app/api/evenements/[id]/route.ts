@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { evenementUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
-  const { id } = await params
   const evenement = await prisma.evenement.findFirst({
     where: { id, associationId },
     include: {
@@ -26,21 +22,11 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   return NextResponse.json(evenement)
-}
+})
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "evenements")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
@@ -51,6 +37,21 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
 
   const { date, endDate, description, location, lat, lng, price, capacity, ...rest } = parsed.data
+
+  if (capacity != null) {
+    const reservedParticipations = await prisma.participation.findMany({
+      where:  { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+      select: { quantity: true, paidQuantity: true },
+    })
+    const reserved = reservedParticipations.reduce((sum, p) => sum + (p.paidQuantity ?? p.quantity), 0)
+    if (capacity < reserved) {
+      return NextResponse.json(
+        { error: `Impossible : ${reserved} place(s) déjà réservée(s) ou payée(s)` },
+        { status: 409 },
+      )
+    }
+  }
+
   const evenement = await prisma.evenement.update({
     where: { id },
     data: {
@@ -73,25 +74,23 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   )
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id, label: evenement.title, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(evenement)
-}
+}, { roles: MANAGERS, module: "evenements" })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(associationId, "evenements")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const existing = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
+
+  const participationCount = await prisma.participation.count({ where: { evenementId: id } })
+  if (participationCount > 0) {
+    return NextResponse.json(
+      { error: `Impossible de supprimer : ${participationCount} membre(s) ont une réponse ou un billet pour cet événement.` },
+      { status: 409 },
+    )
+  }
 
   await prisma.evenement.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_DELETED", entity: "Evenement", entityId: id, label: existing.title })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: MANAGERS, module: "evenements" })

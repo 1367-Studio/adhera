@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -21,14 +22,11 @@ const updateSchema = z.object({
   variantes:   z.array(varianteSchema).min(1).max(20).optional(),
 })
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:   { id, associationId: ctx.associationId },
@@ -40,14 +38,13 @@ export async function GET(_req: Request, { params }: Params) {
   if (!produit) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(produit)
-}
+})
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:  { id, associationId: ctx.associationId },
@@ -114,20 +111,27 @@ export async function PATCH(req: Request, { params }: Params) {
   })
 
   return NextResponse.json(updated)
-}
+})
 
-export async function DELETE(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!["ADMIN", "PRESIDENT"].includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const guard = await guardModule(ctx.associationId, "boutique")
+  if (guard) return guard
 
   const produit = await prisma.boutiqueProduit.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, name: true },
   })
   if (!produit) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+
+  const commandeItemCount = await prisma.boutiqueCommandeItem.count({ where: { produitId: id } })
+  if (commandeItemCount > 0) {
+    return NextResponse.json(
+      { error: `Impossible de supprimer : ce produit a été commandé ${commandeItemCount} fois. Archivez-le plutôt.` },
+      { status: 409 },
+    )
+  }
 
   await prisma.boutiqueProduit.delete({ where: { id } })
 
@@ -141,4 +145,4 @@ export async function DELETE(_req: Request, { params }: Params) {
   })
 
   return NextResponse.json({ ok: true })
-}
+})

@@ -82,11 +82,13 @@ export default function PresencesPage() {
 
   // Real-time check-in updates via Pusher
   useEffect(() => {
-    const channel = getPusherClient().subscribe(`event-${id}`)
+    const pusher = getPusherClient()
+    if (!pusher) return
+    const channel = pusher.subscribe(`event-${id}`)
     channel.bind("check-in", () => {
       qc.invalidateQueries({ queryKey: ["evenements", id, "participations"] })
     })
-    return () => { getPusherClient().unsubscribe(`event-${id}`) }
+    return () => { pusher.unsubscribe(`event-${id}`) }
   }, [id, qc])
 
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)

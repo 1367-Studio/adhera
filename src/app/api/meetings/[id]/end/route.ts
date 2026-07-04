@@ -1,30 +1,17 @@
 import { NextResponse } from "next/server"
 import { EgressClient, RoomServiceClient } from "livekit-server-sdk"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role } = ctx
+export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  const guard = await guardModule(associationId, "reunions")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  const { id } = await params
   const meeting = await prisma.meeting.findFirst({ where: { id, associationId } })
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
+  if (meeting.status === "ENDED") return NextResponse.json({ ok: true })
 
   if (meeting.egressId) {
     try {
@@ -50,19 +37,21 @@ export async function POST(
     // Room may already be empty/deleted
   }
 
-  await prisma.meeting.update({
-    where: { id },
+  const { count } = await prisma.meeting.updateMany({
+    where: { id, status: { not: "ENDED" } },
     data:  { egressId: null, status: "ENDED", endedAt: new Date() },
   })
 
-  await writeActivityLog({
-    associationId,
-    actorId: ctx.userId,
-    action:  "MEETING_ENDED",
-    entity:  "Meeting",
-    entityId: id,
-    label:   meeting.title,
-  })
+  if (count > 0) {
+    await writeActivityLog({
+      associationId,
+      actorId: ctx.userId,
+      action:  "MEETING_ENDED",
+      entity:  "Meeting",
+      entityId: id,
+      label:   meeting.title,
+    })
+  }
 
   return NextResponse.json({ ok: true })
-}
+}, { roles: MANAGERS, module: "reunions" })

@@ -32,9 +32,16 @@ export async function POST(req: Request) {
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   const existing = await prisma.user.findFirst({
-    where: { email: email.toLowerCase(), associationId: association.id },
+    where: { email: email.toLowerCase(), associationId: association.id, deletedAt: null },
   })
   if (existing) return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 })
+
+  if (typeId) {
+    const validType = await prisma.membreType.findFirst({
+      where: { id: typeId, associationId: association.id },
+    })
+    if (!validType) return NextResponse.json({ error: "Type de membre invalide." }, { status: 422 })
+  }
 
   const password     = generatePassword()
   const passwordHash = await bcrypt.hash(password, 12)

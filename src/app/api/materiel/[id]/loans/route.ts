@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -17,53 +15,52 @@ const schema = z.object({
   notes:            z.string().max(500).optional().nullable(),
 }).refine(d => d.membreId || d.borrowerName, { message: "Emprunteur requis" })
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(u.associationId, "materiel")
-  if (guard) return guard
-
-  const { id } = await params
-  const material = await prisma.material.findFirst({ where: { id, associationId: u.associationId } })
+  const material = await prisma.material.findFirst({ where: { id, associationId } })
   if (!material) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 422 })
 
-  const activeLoans = await prisma.materialLoan.aggregate({
-    where: { materialId: id, returnedAt: null, status: "CONFIRME" },
-    _sum:  { quantity: true },
-  })
-  const loaned    = activeLoans._sum.quantity ?? 0
-  const available = material.quantity - loaned
-  if (parsed.data.quantity > available) {
-    return NextResponse.json({ error: `Seulement ${available} unité(s) disponible(s)` }, { status: 409 })
-  }
+  let loan
+  try {
+    loan = await prisma.$transaction(async tx => {
+      const activeLoans = await tx.materialLoan.aggregate({
+        where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+        _sum:  { quantity: true },
+      })
+      const loaned    = activeLoans._sum.quantity ?? 0
+      const available = material.quantity - loaned
+      if (parsed.data.quantity > available) {
+        throw new Error(`Seulement ${available} unité(s) disponible(s)`)
+      }
 
-  const loan = await prisma.materialLoan.create({
-    data: {
-      materialId:       id,
-      membreId:         parsed.data.membreId ?? null,
-      borrowerName:     parsed.data.borrowerName ?? null,
-      quantity:         parsed.data.quantity,
-      borrowedAt:       parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date(),
-      expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
-      notes:            parsed.data.notes ?? null,
-    },
-    include: { membre: { select: { firstName: true, lastName: true } } },
-  })
+      return tx.materialLoan.create({
+        data: {
+          materialId:       id,
+          membreId:         parsed.data.membreId ?? null,
+          borrowerName:     parsed.data.borrowerName ?? null,
+          quantity:         parsed.data.quantity,
+          borrowedAt:       parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date(),
+          expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
+          notes:            parsed.data.notes ?? null,
+        },
+        include: { membre: { select: { firstName: true, lastName: true } } },
+      })
+    }, { isolationLevel: "Serializable" })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erreur" }, { status: 409 })
+  }
 
   const borrower = loan.membre
     ? `${loan.membre.firstName} ${loan.membre.lastName}`
     : (parsed.data.borrowerName ?? "Externe")
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:  u.id,
+    associationId,
+    actorId:  userId,
     action:   "LOAN_CREATED",
     entity:   "MaterialLoan",
     entityId: loan.id,
@@ -72,4 +69,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   return NextResponse.json(loan, { status: 201 })
-}
+}, { roles: ALLOWED, module: "materiel" })

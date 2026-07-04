@@ -9,6 +9,7 @@ import { useMessageTemplates, useDeleteTemplate, type MessageTemplate } from "@/
 import { TemplateModal } from "@/components/messages/template-modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
+import { RowActions } from "@/components/ui/row-actions"
 
 export function TemplatesManager() {
   const { data: templates = [], isLoading } = useMessageTemplates()
@@ -70,23 +71,11 @@ export function TemplatesManager() {
                   {t._count.rules} règle{t._count.rules !== 1 ? "s" : ""} · modifié le {format(new Date(t.updatedAt), "d MMM yyyy", { locale: fr })}
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0 pt-0.5">
-                <button
-                  type="button"
-                  onClick={() => openEdit(t)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                  title="Modifier"
-                >
-                  <PencilIcon className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDeleteTarget(t)}
-                  className="text-muted-foreground hover:text-destructive transition-colors"
-                  title="Supprimer"
-                >
-                  <Trash2Icon className="size-3.5" />
-                </button>
+              <div className="shrink-0">
+                <RowActions actions={[
+                  { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => openEdit(t) },
+                  { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(t) },
+                ]} />
               </div>
             </div>
           ))}

@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const PAGE_SIZE = 50
 
-export async function GET(req: Request) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth(async (req, ctx) => {
+  const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
   const ruleId = searchParams.get("ruleId") ?? undefined
@@ -19,7 +14,7 @@ export async function GET(req: Request) {
   const skip   = (page - 1) * PAGE_SIZE
 
   const where = {
-    rule: { associationId: u.associationId },
+    rule: { associationId },
     ...(ruleId ? { ruleId } : {}),
   }
 
@@ -38,4 +33,4 @@ export async function GET(req: Request) {
   ])
 
   return NextResponse.json({ logs, total, page, pageSize: PAGE_SIZE })
-}
+}, { roles: ALLOWED_ROLES })

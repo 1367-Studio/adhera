@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { parseModules } from "@/lib/modules"
+import { rateLimit, requestIp } from "@/lib/rate-limit"
 
 const schema = z.object({
   firstName: z.string().min(1).max(80),
@@ -16,6 +17,10 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params
+
+  if (!rateLimit(`inscription:${requestIp(req)}`, 5, 10 * 60_000)) {
+    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
+  }
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },

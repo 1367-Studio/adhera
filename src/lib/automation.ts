@@ -56,6 +56,23 @@ function nextRecurring(config: Record<string, unknown>, from: Date): Date {
 
 // ─── Variable substitution ────────────────────────────────────────────────────
 
+// Must stay in sync with the keys returned by buildVars() below — used to catch typos
+// in template variables at creation time, before they can reach real recipients as a
+// literal unresolved "{{...}}" token.
+export const KNOWN_TEMPLATE_VARS = [
+  "prenom", "nom", "email", "association", "lien_portal",
+  "annee_cotisation", "montant_cotisation", "titre_evenement", "date_evenement", "lieu_evenement",
+] as const
+
+export function findUnknownVars(text: string): string[] {
+  const found = new Set<string>()
+  for (const match of text.matchAll(/\{\{(\w+)\}\}/g)) {
+    const key = match[1]
+    if (!(KNOWN_TEMPLATE_VARS as readonly string[]).includes(key)) found.add(key)
+  }
+  return [...found]
+}
+
 export function substituteVars(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => vars[key] ?? `{{${key}}}`)
 }

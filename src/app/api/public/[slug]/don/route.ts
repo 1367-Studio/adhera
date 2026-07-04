@@ -4,6 +4,7 @@ import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
+import { rateLimit, requestIp } from "@/lib/rate-limit"
 
 const PLATFORM_FEE = 0.015
 
@@ -45,6 +46,10 @@ export async function POST(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params
+
+  if (!rateLimit(`don:${requestIp(req)}`, 5, 10 * 60_000)) {
+    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
+  }
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },

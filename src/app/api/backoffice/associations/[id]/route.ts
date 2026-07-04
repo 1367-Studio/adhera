@@ -1,15 +1,13 @@
 import { NextResponse }  from "next/server"
-import { auth }          from "@/lib/auth/config"
 import { prisma }        from "@/lib/prisma/client"
 import { z }             from "zod"
-import type { SessionUser } from "@/lib/user-context"
+import { withSuperAdminAuth } from "@/lib/api-wrapper"
 
 const patchSchema = z.object({
   internalNotes: z.string().optional(),
   modules: z.object({
     evenements:  z.boolean(),
     cotisations: z.boolean(),
-    tresorerie:  z.boolean(),
     actualites:  z.boolean(),
     messages:    z.boolean(),
     materiel:    z.boolean(),
@@ -20,20 +18,11 @@ const patchSchema = z.object({
     boutique:    z.boolean(),
     reunions:    z.boolean(),
     sms:         z.boolean(),
+    finances:    z.boolean(),
   }).optional(),
 })
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const session = await auth()
-  const user    = session?.user as SessionUser | undefined
-  if (!user || user.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
-  }
-
-  const { id } = await params
+export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, _ctx, { id }) => {
   const body   = await req.json()
   const parsed = patchSchema.safeParse(body)
   if (!parsed.success) {
@@ -62,4 +51,4 @@ export async function PATCH(
   } catch {
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 })
   }
-}
+})

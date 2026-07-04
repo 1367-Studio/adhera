@@ -22,10 +22,10 @@ interface CurrencyInputProps {
 }
 
 export function CurrencyInput({ value, onChange, className }: CurrencyInputProps) {
-  const [cents, setCents]  = useState(() => Math.round((value ?? 0) * 100))
-  const internal           = useRef(false)
-  const savedRef           = useRef(cents)
-  const touchedRef         = useRef(false)
+  const [cents, setCents] = useState(() => Math.round((value ?? 0) * 100))
+  const internal          = useRef(false)
+  const savedRef          = useRef(cents)
+  const touchedRef        = useRef(false)
 
   useEffect(() => {
     if (internal.current) { internal.current = false; return }
@@ -40,23 +40,37 @@ export function CurrencyInput({ value, onChange, className }: CurrencyInputProps
     onChange(next / 100)
   }
 
-  function handleFocus() { savedRef.current = cents; touchedRef.current = false; emit(0) }
+  function handleFocus() {
+    savedRef.current   = cents
+    touchedRef.current = false
+    // Display stays unchanged — user sees the pre-filled value until they type
+  }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.metaKey || e.ctrlKey) return
     if (e.key === "Backspace" || e.key === "Delete") {
-      e.preventDefault(); touchedRef.current = true; emit(Math.floor(cents / 10)); return
+      e.preventDefault()
+      // First keystroke clears to zero; subsequent ones shift right
+      emit(touchedRef.current ? Math.floor(cents / 10) : 0)
+      touchedRef.current = true
+      return
     }
     if (e.key >= "0" && e.key <= "9") {
-      e.preventDefault(); touchedRef.current = true
-      emit(Math.min(cents * 10 + parseInt(e.key, 10), MAX_CENTS)); return
+      e.preventDefault()
+      // First keystroke starts accumulator fresh from this digit
+      const next = touchedRef.current
+        ? Math.min(cents * 10 + parseInt(e.key, 10), MAX_CENTS)
+        : parseInt(e.key, 10)
+      emit(next)
+      touchedRef.current = true
+      return
     }
     if (["Tab", "Enter", "Escape", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return
     e.preventDefault()
   }
 
   function handleBlur() {
-    if (!touchedRef.current) emit(savedRef.current)
+    if (!touchedRef.current) setCents(savedRef.current)
   }
 
   return (
@@ -87,12 +101,11 @@ function fmtCents(cents: number): string {
 }
 
 export function CurrencyField({ label, error, hint, required, value, onChange, onBlur }: CurrencyFieldProps) {
-  const [cents, setCents]  = useState(() => Math.round((value ?? 0) * 100))
-  const internal           = useRef(false)
-  const savedRef           = useRef(cents)
-  const touchedRef         = useRef(false)
+  const [cents, setCents] = useState(() => Math.round((value ?? 0) * 100))
+  const internal          = useRef(false)
+  const savedRef          = useRef(cents)
+  const touchedRef        = useRef(false)
 
-  // Sync when form resets externally (e.g. dialog closes and reopens)
   useEffect(() => {
     if (internal.current) { internal.current = false; return }
     const ext = Math.round((value ?? 0) * 100)
@@ -107,9 +120,9 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
   }
 
   function handleFocus() {
-    savedRef.current  = cents
+    savedRef.current   = cents
     touchedRef.current = false
-    emit(0)
+    // Display stays unchanged — user sees the pre-filled value until they type
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -117,15 +130,18 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
 
     if (e.key === "Backspace" || e.key === "Delete") {
       e.preventDefault()
+      emit(touchedRef.current ? Math.floor(cents / 10) : 0)
       touchedRef.current = true
-      emit(Math.floor(cents / 10))
       return
     }
 
     if (e.key >= "0" && e.key <= "9") {
       e.preventDefault()
+      const next = touchedRef.current
+        ? Math.min(cents * 10 + parseInt(e.key, 10), MAX_CENTS)
+        : parseInt(e.key, 10)
+      emit(next)
       touchedRef.current = true
-      emit(Math.min(cents * 10 + parseInt(e.key, 10), MAX_CENTS))
       return
     }
 
@@ -134,8 +150,7 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
   }
 
   function handleBlur() {
-    // If user focused but didn't type anything, restore the original value
-    if (!touchedRef.current) emit(savedRef.current)
+    if (!touchedRef.current) setCents(savedRef.current)
     onBlur?.()
   }
 

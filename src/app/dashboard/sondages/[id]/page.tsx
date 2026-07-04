@@ -132,6 +132,9 @@ export default function SondageDetailPage() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      // Once a sondage has responses, rebuilding `questions` would cascade-delete every
+      // submitted answer — only send it while the questionnaire is still editable.
+      const questionsEditable = (sondage?._count.reponses ?? 0) === 0
       const res = await fetch(`/api/sondages/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -142,16 +145,18 @@ export default function SondageDetailPage() {
           deadline:     deadline ? `${deadline}T23:59:59.000Z` : null,
           recipientMode,
           recipientIds: recipientMode === "SELECTED" ? recipientIds : undefined,
-          questions:   questions.map(q => ({
-            clientKey: q._key,
-            id:        q.id,
-            type:      q.type,
-            label:     q.label,
-            required:  q.required,
-            order:     q.order,
-            options:   q.options,
-            condition: q.condition,
-          })),
+          ...(questionsEditable ? {
+            questions: questions.map(q => ({
+              clientKey: q._key,
+              id:        q.id,
+              type:      q.type,
+              label:     q.label,
+              required:  q.required,
+              order:     q.order,
+              options:   q.options,
+              condition: q.condition,
+            })),
+          } : {}),
         }),
       })
       if (!res.ok) {
@@ -207,7 +212,8 @@ export default function SondageDetailPage() {
     return <p className="text-muted-foreground text-sm">Sondage introuvable.</p>
   }
 
-  const editable = sondage.status !== "FERME"
+  const editable         = sondage.status !== "FERME"
+  const questionsEditable = editable && sondage._count.reponses === 0
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -430,7 +436,12 @@ export default function SondageDetailPage() {
                 {/* Right — questions */}
                 <div className="lg:col-span-3 p-5 space-y-3">
                   <h2 className="text-sm font-semibold">Questions <span className="ml-0.5 text-destructive" aria-hidden>*</span></h2>
-                  {editable ? (
+                  {!questionsEditable && editable && (
+                    <p className="text-xs text-muted-foreground -mt-2">
+                      Ce sondage a déjà des réponses — les questions ne peuvent plus être modifiées.
+                    </p>
+                  )}
+                  {questionsEditable ? (
                     <SondageFormBuilder
                       key={sondage.id}
                       initialQuestions={toBuilderQuestions(sondage.questions)}

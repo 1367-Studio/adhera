@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const meetings = await prisma.meeting.findMany({
@@ -25,19 +22,10 @@ export async function GET() {
   })
 
   return NextResponse.json(meetings)
-}
+})
 
-export async function POST(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  const guard = await guardModule(associationId, "reunions")
-  if (guard) return guard
-
-  if (!MANAGERS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const POST = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body = await req.json()
   const { title, description, scheduledAt, participantIds, instant } = body
@@ -123,4 +111,4 @@ export async function POST(req: Request) {
   })
 
   return NextResponse.json(meeting, { status: 201 })
-}
+}, { roles: MANAGERS, module: "reunions" })

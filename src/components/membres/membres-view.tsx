@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon, SmartphoneIcon } from "lucide-react"
-import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole } from "@/hooks/use-membres"
+import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon, SmartphoneIcon, KeyIcon } from "lucide-react"
+import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
@@ -180,9 +180,19 @@ export function MembresView() {
     if (result && result.totalPages > 0 && page > result.totalPages) setPage(result.totalPages)
   }, [result, page])
 
-  const createMutation = useCreateMembre()
-  const updateMutation = useUpdateMembre(editTarget?.id ?? "")
-  const deleteMutation = useDeleteMembre()
+  const createMutation      = useCreateMembre()
+  const updateMutation      = useUpdateMembre(editTarget?.id ?? "")
+  const deleteMutation      = useDeleteMembre()
+  const createAccessMutation = useCreateAccess()
+
+  async function handleCreateAccess(m: Membre) {
+    try {
+      await createAccessMutation.mutateAsync(m.id)
+      toast.success(`Accès créé pour ${m.firstName} ${m.lastName} — un email lui a été envoyé`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
 
   async function handleCreate(data: MembreCreateInput) {
     try {
@@ -267,6 +277,9 @@ export function MembresView() {
             { label: "Historique", icon: <HistoryIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
             ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
               { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
+            ] : []),
+            ...(!m.userId && m.email ? [
+              { label: "Créer un accès", icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
             ] : []),
             ...(!isSelf ? [
               { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },

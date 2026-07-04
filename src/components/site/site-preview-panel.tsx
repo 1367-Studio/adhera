@@ -3,6 +3,7 @@
 import { MapPinIcon } from "lucide-react"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { isColorDark } from "@/lib/color"
+import { RichTextView } from "@/components/ui/rich-text-view"
 
 type MembreType  = { id: string; name: string; color: string }
 type PublicEvent = {
@@ -119,7 +120,7 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                   <div className="max-w-2xl mx-auto">
                     {section.title && <h2 className="text-xl font-bold mb-4 text-gray-900">{section.title}</h2>}
                     {"content" in section && section.content
-                      ? <div className="text-gray-600 text-sm leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: section.content }} />
+                      ? <RichTextView content={section.content} className="text-gray-600 text-sm leading-relaxed" />
                       : <p className="text-gray-300 italic text-sm">Contenu à renseigner…</p>
                     }
                   </div>

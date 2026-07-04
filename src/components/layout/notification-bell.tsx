@@ -67,25 +67,28 @@ export function NotificationBell() {
                 <div
                   key={n.id}
                   className={cn(
-                    "px-4 py-3 text-sm transition-colors cursor-pointer",
-                    !n.read ? "bg-primary/5" : "hover:bg-muted/30",
+                    "flex gap-2.5 px-4 py-3 text-sm transition-colors cursor-pointer",
+                    !n.read ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-muted/30",
                   )}
                   onClick={() => {
                     if (!n.read) markRead.mutate(n.id)
                     if (n.link) { setOpen(false); router.push(n.link) }
                   }}
                 >
-                  <p className={cn("font-medium leading-snug", !n.read && "text-foreground")}>
-                    {n.title}
-                  </p>
-                  {n.body && (
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      {stripHtml(n.body)}
+                  <span className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", !n.read ? "bg-primary" : "bg-transparent")} />
+                  <div className="min-w-0 flex-1">
+                    <p className={cn("leading-snug", !n.read ? "font-semibold text-foreground" : "font-medium text-muted-foreground")}>
+                      {n.title}
                     </p>
-                  )}
-                  <p className="text-[10px] text-muted-foreground/60 mt-1">
-                    {format(new Date(n.createdAt), "d MMM à HH:mm", { locale: fr })}
-                  </p>
+                    {n.body && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {stripHtml(n.body)}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                      {format(new Date(n.createdAt), "d MMM à HH:mm", { locale: fr })}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>

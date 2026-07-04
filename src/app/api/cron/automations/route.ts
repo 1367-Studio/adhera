@@ -11,11 +11,12 @@ const BATCH_SIZE = 100
 
 export async function POST(req: Request) {
   const secret = process.env.CRON_SECRET
-  if (secret) {
-    const auth = req.headers.get("authorization")
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+  if (!secret) {
+    console.error("[cron/automations] CRON_SECRET is not configured — refusing to run")
+    return NextResponse.json({ error: "Server misconfigured" }, { status: 500 })
+  }
+  if (req.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
   const now = new Date()
@@ -35,6 +36,16 @@ export async function POST(req: Request) {
 
   for (const rule of rules) {
     try {
+      // Atomically claim this rule so a concurrent/duplicate cron invocation processing
+      // the same rule can't also send: only proceeds if nextRunAt still matches what we
+      // just read. processRule always overwrites nextRunAt with the real value before
+      // returning, so this transient bump is safely superseded on every code path.
+      const claimed = await prisma.automationRule.updateMany({
+        where: { id: rule.id, nextRunAt: rule.nextRunAt },
+        data:  { nextRunAt: new Date(now.getTime() + 86_400_000) },
+      })
+      if (claimed.count === 0) continue
+
       const sent = await processRule(rule, now)
       totalSent += sent
     } catch (err) {
@@ -174,7 +185,7 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })))
+      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
       const succeeded = chunk.filter((_, idx) => results[idx])
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
@@ -290,7 +301,7 @@ async function processEventReminder(
 
       for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
         const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-        const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })))
+        const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
         const succeeded = chunk.filter((_, idx) => results[idx])
         if (succeeded.length > 0) {
           await prisma.automationLog.createMany({

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
+type Params = { loanId: string }
 
 const patchSchema = z.object({
   quantity:         z.number().int().min(1).optional(),
@@ -18,24 +18,12 @@ const patchSchema = z.object({
   notes: z.string().max(500).trim().optional().nullable(),
 })
 
-async function getMembre(userId: string, associationId: string) {
-  return prisma.membre.findFirst({
-    where:  { userId, associationId, deletedAt: null },
+export const PATCH = withPortalAuth<Params>(async (req, ctx, { loanId }) => {
+  const membre = await prisma.membre.findUnique({
+    where:  { id: ctx.membreId! },
     select: { id: true, firstName: true, lastName: true },
   })
-}
-
-export async function PATCH(req: Request, { params }: { params: Promise<{ loanId: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await getMembre(u.id!, u.associationId)
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
-  const { loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
     where:   { id: loanId, membreId: membre.id },
@@ -60,8 +48,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ loanId
   })
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:  u.id,
+    associationId: ctx.associationId,
+    actorId:  ctx.userId,
     action:   "LOAN_UPDATED",
     entity:   "MaterialLoan",
     entityId: loanId,
@@ -69,19 +57,14 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ loanId
   })
 
   return NextResponse.json(updated)
-}
+})
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ loanId: string }> }) {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
-  const membre = await getMembre(u.id!, u.associationId)
+export const DELETE = withPortalAuth<Params>(async (_req, ctx, { loanId }) => {
+  const membre = await prisma.membre.findUnique({
+    where:  { id: ctx.membreId! },
+    select: { id: true, firstName: true, lastName: true },
+  })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-
-  const { loanId } = await params
 
   const loan = await prisma.materialLoan.findFirst({
     where:   { id: loanId, membreId: membre.id },
@@ -93,8 +76,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ loan
   await prisma.materialLoan.delete({ where: { id: loanId } })
 
   await writeActivityLog({
-    associationId: u.associationId,
-    actorId:  u.id,
+    associationId: ctx.associationId,
+    actorId:  ctx.userId,
     action:   "LOAN_CANCELLED",
     entity:   "MaterialLoan",
     entityId: loanId,
@@ -102,4 +85,4 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ loan
   })
 
   return NextResponse.json({ ok: true })
-}
+})

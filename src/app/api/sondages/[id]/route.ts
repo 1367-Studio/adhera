@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Prisma } from "@prisma/client"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
+import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
@@ -32,13 +32,7 @@ const updateSchema = z.object({
   recipientIds:  z.array(z.string()).optional(),
 })
 
-type Params = { params: Promise<{ id: string }> }
-
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -53,19 +47,15 @@ export async function GET(_req: Request, { params }: Params) {
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(sondage)
-}
+})
 
-export async function PATCH(req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
-    select: { id: true, status: true, title: true },
+    select: { id: true, status: true, title: true, _count: { select: { reponses: true } } },
   })
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
   if (sondage.status === "FERME")
@@ -77,6 +67,12 @@ export async function PATCH(req: Request, { params }: Params) {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   const { title, description, recipientMode, anonymous, deadline, questions, recipientIds } = parsed.data
+
+  // Rebuilding `questions` cascade-deletes every submitted SondageReponseItem
+  // (onDelete: Cascade) and the unique [sondageId, membreId] constraint means those
+  // members could never re-submit — block it once real answers exist.
+  if (questions && sondage._count.reponses > 0)
+    return NextResponse.json({ error: "Ce sondage a déjà des réponses — les questions ne peuvent plus être modifiées." }, { status: 400 })
 
   await prisma.$transaction(async tx => {
     await tx.sondage.update({
@@ -147,13 +143,9 @@ export async function PATCH(req: Request, { params }: Params) {
     include: { questions: { orderBy: { order: "asc" } }, recipients: { select: { membreId: true } }, _count: { select: { reponses: true, questions: true } } },
   })
   return NextResponse.json(updated)
-}
+})
 
-export async function DELETE(_req: Request, { params }: Params) {
-  const { id } = await params
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!["ADMIN", "PRESIDENT"].includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
@@ -175,4 +167,4 @@ export async function DELETE(_req: Request, { params }: Params) {
   })
 
   return NextResponse.json({ ok: true })
-}
+})

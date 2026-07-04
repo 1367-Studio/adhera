@@ -1,29 +1,21 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { associationSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
-export async function GET() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const association = await prisma.association.findUnique({ where: { id: associationId } })
   if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json(association)
-}
+})
 
-export async function PATCH(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, role, userId } = ctx
-
-  if (!ADMINS.includes(role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const PATCH = withAdminAuth(async (req, ctx) => {
+  const { associationId, userId } = ctx
 
   const body   = await req.json()
   const parsed = associationSchema.safeParse(body)
@@ -45,4 +37,4 @@ export async function PATCH(req: Request) {
     label:    association.name,
   })
   return NextResponse.json(association)
-}
+}, { roles: ADMINS })

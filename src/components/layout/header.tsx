@@ -24,7 +24,6 @@ const routeLabels: Record<string, string> = {
   membres:      "Membres",
   evenements:   "Événements",
   cotisations:  "Cotisations",
-  tresorerie:   "Trésorerie",
   actualites:   "Actualités",
   messages:     "Messages",
   materiel:     "Matériel",

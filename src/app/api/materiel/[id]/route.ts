@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { writeActivityLog } from "@/lib/activity-log"
-import { guardModule } from "@/lib/auth/require-module"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -25,16 +23,11 @@ async function resolve(id: string, associationId: string) {
   return prisma.material.findFirst({ where: { id, associationId } })
 }
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
 
-  const { id } = await params
   const material = await prisma.material.findFirst({
-    where:   { id, associationId: u.associationId },
+    where:   { id, associationId },
     include: {
       loans: {
         orderBy: { borrowedAt: "desc" },
@@ -49,20 +42,12 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     .reduce((s, l) => s + l.quantity, 0)
 
   return NextResponse.json({ ...material, loanedQty, availableQty: material.quantity - loanedQty })
-}
+}, { roles: ALLOWED })
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(u.associationId, "materiel")
-  if (guard) return guard
-
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
@@ -94,25 +79,27 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     },
   })
 
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "MATERIEL_UPDATED", entity: "Material", entityId: id, label: updated.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_UPDATED", entity: "Material", entityId: id, label: updated.name })
   return NextResponse.json(updated)
-}
+}, { roles: ALLOWED, module: "materiel" })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const guard = await guardModule(u.associationId, "materiel")
-  if (guard) return guard
-
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
+  const activeLoans = await prisma.materialLoan.count({
+    where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+  })
+  if (activeLoans > 0) {
+    return NextResponse.json(
+      { error: `Impossible : ${activeLoans} prêt(s) en cours pour cet article` },
+      { status: 409 },
+    )
+  }
+
   await prisma.material.delete({ where: { id } })
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "MATERIEL_DELETED", entity: "Material", entityId: id, label: existing.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_DELETED", entity: "Material", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: ALLOWED, module: "materiel" })

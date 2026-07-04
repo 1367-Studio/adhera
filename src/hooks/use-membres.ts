@@ -98,3 +98,16 @@ export function useChangeRole() {
     onSuccess:  () => invalidateAll(qc),
   })
 }
+
+async function createAccess(id: string) {
+  const res = await fetch(`/api/membres/${id}/create-access`, { method: "POST" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la création de l'accès"))
+}
+
+export function useCreateAccess() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: createAccess,
+    onSuccess:  () => invalidateAll(qc),
+  })
+}

@@ -16,6 +16,7 @@ import { useCurrentUser, useModules } from "@/lib/user-context"
 import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
+import { SmsSettings } from "@/components/sms/sms-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
 type Association = {
@@ -29,9 +30,9 @@ type Association = {
 type Tab = "general" | "paiements" | "integrations"
 
 const ALL_TABS = [
-  { value: "general"      as Tab, label: "Général",      icon: <BuildingIcon   className="size-3.5" />, module: null   },
-  { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, module: "dons" },
-  { value: "integrations" as Tab, label: "Intégrations", icon: <ZapIcon        className="size-3.5" />, module: "ia"  },
+  { value: "general"      as Tab, label: "Général",      icon: <BuildingIcon   className="size-3.5" />, modules: null            },
+  { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
+  { value: "integrations" as Tab, label: "Intégrations", icon: <ZapIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
 ] as const
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
@@ -43,7 +44,7 @@ export function ParametresView() {
   const qc       = useQueryClient()
   const [tab, setTab] = useState<Tab>("general")
 
-  const tabs = ALL_TABS.filter(t => !t.module || modules[t.module])
+  const tabs = ALL_TABS.filter(t => !t.modules || t.modules.some(m => modules[m]))
 
   useEffect(() => {
     if (!tabs.some(t => t.value === tab)) setTab("general")
@@ -160,8 +161,17 @@ export function ParametresView() {
 
       {/* ── Intégrations ──────────────────────────────────────────────── */}
       {tab === "integrations" && (
-        <div className="rounded-xl border bg-card p-6">
-          <AiSettings canEdit={canEdit} />
+        <div className="space-y-6">
+          {modules.ia && (
+            <div className="rounded-xl border bg-card p-6">
+              <AiSettings canEdit={canEdit} />
+            </div>
+          )}
+          {modules.sms && (
+            <div className="rounded-xl border bg-card p-6">
+              <SmsSettings canEdit={canEdit} />
+            </div>
+          )}
         </div>
       )}
     </div>

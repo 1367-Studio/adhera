@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-
-type SessionUser = { id?: string; associationId?: string | null }
+import { withPortalAuth } from "@/lib/api-wrapper"
 
 type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
 
@@ -43,16 +41,12 @@ async function getConfirmedCounts(evenementIds: string[]): Promise<Record<string
   return result
 }
 
-export async function GET() {
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+export const GET = withPortalAuth(async (_req, ctx) => {
+  const { associationId, userId } = ctx
 
   const now = new Date()
   const participationSelect = {
-    where:  { membre: { userId: u.id! } },
+    where:  { membre: { userId } },
     select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true },
   }
 
@@ -60,13 +54,13 @@ export async function GET() {
 
   const [upcomingRaw, pastRaw] = await Promise.all([
     prisma.evenement.findMany({
-      where:   { associationId: u.associationId, date: { gte: now } },
+      where:   { associationId, date: { gte: now } },
       orderBy: { date: "asc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect },
     }),
     prisma.evenement.findMany({
-      where:   { associationId: u.associationId, date: { lt: now } },
+      where:   { associationId, date: { lt: now } },
       orderBy: { date: "desc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect },
@@ -93,4 +87,4 @@ export async function GET() {
     upcomingHasMore,
     pastHasMore,
   })
-}
+}, { requireMembre: false })

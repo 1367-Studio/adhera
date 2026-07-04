@@ -1,14 +1,12 @@
 import { NextResponse } from "next/server"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { APP_URL } from "@/lib/env"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
-export async function POST() {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, role } = ctx
 
   if (!ADMINS.includes(role))
@@ -55,4 +53,4 @@ export async function POST() {
   })
 
   return NextResponse.json({ url: accountLink.url })
-}
+})

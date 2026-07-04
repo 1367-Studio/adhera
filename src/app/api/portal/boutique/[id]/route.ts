@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { withPortalAuth } from "@/lib/api-wrapper"
 
-type SessionUser = { id?: string; associationId?: string | null }
-type Params = { params: Promise<{ id: string }> }
+type Params = { id: string }
 
-export async function GET(_req: Request, { params }: Params) {
-  const { id } = await params
-  const session = await auth()
-  if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-
-  const u = session.user as SessionUser
-  if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-
+export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const produit = await prisma.boutiqueProduit.findFirst({
-    where:   { id, associationId: u.associationId, status: "ACTIVE" },
+    where:   { id, associationId: ctx.associationId, status: "ACTIVE" },
     include: {
       variantes: {
         orderBy: { createdAt: "asc" },
@@ -25,4 +17,4 @@ export async function GET(_req: Request, { params }: Params) {
   if (!produit) return NextResponse.json({ error: "Produit introuvable" }, { status: 404 })
 
   return NextResponse.json(produit)
-}
+}, { module: "boutique", requireMembre: false })

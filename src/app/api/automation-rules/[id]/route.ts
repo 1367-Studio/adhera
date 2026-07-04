@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Prisma } from "@prisma/client"
-import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
-import type { SessionUser } from "@/lib/user-context"
 import { computeNextRunAt } from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -23,15 +22,10 @@ async function resolve(id: string, associationId: string) {
   return prisma.automationRule.findFirst({ where: { id, associationId } })
 }
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const body   = await req.json().catch(() => null)
@@ -62,22 +56,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     include: { template: { select: { name: true } } },
   })
 
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_UPDATED", entity: "AutomationRule", entityId: id, label: updated.name, metadata: parsed.data.status ? { status: parsed.data.status } : undefined })
+  await writeActivityLog({ associationId, actorId: userId, action: "RULE_UPDATED", entity: "AutomationRule", entityId: id, label: updated.name, metadata: parsed.data.status ? { status: parsed.data.status } : undefined })
   return NextResponse.json(updated)
-}
+}, { roles: ALLOWED_ROLES })
 
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth()
-  const u = session?.user as SessionUser | undefined
-  if (!u?.associationId || !ALLOWED_ROLES.includes(u.role ?? "")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId, userId } = ctx
 
-  const { id } = await params
-  const existing = await resolve(id, u.associationId)
+  const existing = await resolve(id, associationId)
   if (!existing) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   await prisma.automationRule.delete({ where: { id } })
-  await writeActivityLog({ associationId: u.associationId, actorId: u.id, action: "RULE_DELETED", entity: "AutomationRule", entityId: id, label: existing.name })
+  await writeActivityLog({ associationId, actorId: userId, action: "RULE_DELETED", entity: "AutomationRule", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}
+}, { roles: ALLOWED_ROLES })

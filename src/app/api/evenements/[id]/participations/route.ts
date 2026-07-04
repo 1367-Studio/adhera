@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenementId }) => {
   const { associationId } = ctx
-
-  const { id: evenementId } = await params
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -39,17 +35,14 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   }))
 
   return NextResponse.json(data)
-}
+})
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
   const { associationId, role, userId } = ctx
 
   if (!MANAGERS.includes(role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const { id: evenementId } = await params
   const { membreId, paidQuantity: rawPaid } = await req.json() as { membreId: string; paidQuantity?: number }
 
   const evenement = await prisma.evenement.findFirst({
@@ -85,16 +78,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     update: { ticketPaidAt: paidAt, paidQuantity: paidQty },
   })
 
-  await prisma.tresorerieEntry.create({
+  await prisma.income.create({
     data: {
       associationId,
-      type:        "ENTREE",
+      memberId:    membreId,
       amount:      total,
       description: paidQty > 1
         ? `${paidQty} billets (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`
         : `Billet (espèces) — ${evenement.title} — ${membre.firstName} ${membre.lastName}`,
+      source:      "MANUAL",
+      status:      "PAID",
       date:        paidAt,
-      category:    "Événement",
     },
   })
 
@@ -109,14 +103,13 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   })
 
   return NextResponse.json(participation)
-}
+})
 
-export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
-  const { associationId, userId } = ctx
+export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
+  const { associationId, role, userId } = ctx
 
-  const { id: evenementId } = await params
+  if (!MANAGERS.includes(role))
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -169,4 +162,4 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   }
 
   return NextResponse.json(participation)
-}
+})

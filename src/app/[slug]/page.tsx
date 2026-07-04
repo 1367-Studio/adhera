@@ -48,7 +48,8 @@ async function getSiteData(slug: string) {
       : Promise.resolve([]),
     mods.actualites
       ? prisma.actualite.findMany({
-          where:   { association: { slug }, publishedAt: { not: null, lte: now } },
+          // Anonymous visitors can never be an authorized SELECTED recipient — only ALL-audience posts are public.
+          where:   { association: { slug }, publishedAt: { not: null, lte: now }, recipientMode: "ALL" },
           orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
           take:    20,
           select:  { id: true, title: true, content: true, imageUrl: true, pinned: true, publishedAt: true },

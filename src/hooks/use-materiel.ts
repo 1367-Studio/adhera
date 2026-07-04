@@ -47,6 +47,7 @@ export type Material = {
   availableQty:         number
   pendingDemandesCount: number
   pendingDemandes:      PendingDemande[]
+  overdueCount:         number
   _count:               { loans: number }
 }
 

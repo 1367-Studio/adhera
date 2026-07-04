@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { format } from "date-fns"
 import { utils, write } from "xlsx"
+import { withAdminAuth } from "@/lib/api-wrapper"
+
+// Neutralize CSV/formula injection (Nom/Prénom/Email come from public, unauthenticated
+// self-registration) — Excel/Sheets execute a cell starting with =, +, - or @ as a formula.
+function sanitizeCell(value: string): string {
+  return /^[=+\-@\t\r]/.test(value) ? `'${value}` : value
+}
 
 const RSVP_LABELS: Record<string, string> = {
   CONFIRME: "J'y serai",
@@ -11,12 +17,9 @@ const RSVP_LABELS: Record<string, string> = {
   ABSENT:   "Absent",
 }
 
-export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId } = ctx
 
-  const { id } = await params
   const fmt    = new URL(req.url).searchParams.get("format") ?? "csv"
 
   const evenement = await prisma.evenement.findFirst({ where: { id, associationId } })
@@ -41,9 +44,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     const p = m.participations[0]
     const base = {
       "#":     i + 1,
-      Nom:     m.lastName,
-      Prénom:  m.firstName,
-      Email:   m.email ?? "",
+      Nom:     sanitizeCell(m.lastName),
+      Prénom:  sanitizeCell(m.firstName),
+      Email:   sanitizeCell(m.email ?? ""),
       Présent: p?.present ? "Oui" : "Non",
     }
     if (hasFee) {
@@ -86,4 +89,4 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       "Content-Disposition": `attachment; filename="presences_${date}_${slug}.csv"`,
     },
   })
-}
+})

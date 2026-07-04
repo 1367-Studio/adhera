@@ -30,11 +30,6 @@ enum CotisationStatus {
   EXONERE
 }
 
-enum TresorerieType {
-  ENTREE
-  SORTIE
-}
-
 enum RsvpStatus {
   CONFIRME
   PROVAVEL
@@ -124,6 +119,47 @@ enum QuestionType {
   YES_NO
 }
 
+enum BankTransactionType {
+  CREDIT
+  DEBIT
+}
+
+enum BankTransactionStatus {
+  UNMATCHED
+  MATCHED
+  PENDING
+  IGNORED
+  DUPLICATE
+}
+
+enum FinanceCategoryType {
+  INCOME
+  EXPENSE
+}
+
+enum IncomeSource {
+  MANUAL
+  STRIPE
+  BANK_IMPORT
+}
+
+enum IncomeStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum ExpenseStatus {
+  DRAFT
+  VALIDATED
+  CANCELLED
+}
+
+enum MatchedBy {
+  AUTO
+  USER
+}
+
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -140,6 +176,9 @@ model Association {
   canIssueTaxReceipts  Boolean            @default(false)
   aiApiKey             String?
   aiModel              String?
+  smsAccountSid        String?
+  smsAuthToken         String?
+  smsPhoneNumber       String?
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripeConnectId      String?
@@ -158,7 +197,6 @@ model Association {
   membreTypes       MembreType[]
   evenements        Evenement[]
   cotisations       Cotisation[]
-  tresorerie        TresorerieEntry[]
   actualites        Actualite[]
   messageTemplates  MessageTemplate[]
   automationRules   AutomationRule[]
@@ -169,6 +207,12 @@ model Association {
   boutiqueProduits  BoutiqueProduit[]
   boutiqueCommandes BoutiqueCommande[]
   meetings          Meeting[]
+  bankAccounts      BankAccount[]
+  bankTransactions  BankTransaction[]
+  financeCategories FinanceCategory[]
+  incomes           Income[]
+  expenses          Expense[]
+  bankReconciliations BankReconciliation[]
 }
 
 model User {
@@ -183,9 +227,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
-  association   Association?   @relation(fields: [associationId], references: [id])
-  notifications Notification[]
-  membre        Membre?
+  association         Association?         @relation(fields: [associationId], references: [id])
+  notifications       Notification[]
+  membre              Membre?
+  passwordResetTokens PasswordResetToken[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -236,6 +281,7 @@ model Membre {
   sondageReponses     SondageReponse[]
   boutiqueCommandes   BoutiqueCommande[]
   meetingsAsParticipant MeetingParticipant[]
+  incomes             Income[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -286,16 +332,17 @@ model Participation {
 }
 
 model Cotisation {
-  id            String           @id @default(cuid())
-  membreId      String
-  associationId String
-  amount        Decimal          @db.Decimal(10, 2)
-  year          Int
-  paidAt        DateTime?
-  status        CotisationStatus @default(EN_ATTENTE)
-  note          String?
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id              String           @id @default(cuid())
+  membreId        String
+  associationId   String
+  amount          Decimal          @db.Decimal(10, 2)
+  year            Int
+  paidAt          DateTime?
+  status          CotisationStatus @default(EN_ATTENTE)
+  note            String?
+  stripeSessionId String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   membre      Membre      @relation(fields: [membreId], references: [id])
   association Association @relation(fields: [associationId], references: [id])
@@ -319,30 +366,15 @@ model Don {
   receiptIssuedAt DateTime?
   stripeSessionId String?   @unique
   paidAt          DateTime?
+  refundedAt      DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   association Association @relation(fields: [associationId], references: [id])
   membre      Membre?     @relation(fields: [membreId], references: [id])
 
+  @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
-}
-
-model TresorerieEntry {
-  id            String         @id @default(cuid())
-  associationId String
-  type          TresorerieType
-  amount        Decimal        @db.Decimal(10, 2)
-  description   String
-  date          DateTime
-  category      String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  association Association @relation(fields: [associationId], references: [id])
-
-  @@index([associationId, date])
-  @@index([associationId, type])
 }
 
 model Notification {
@@ -569,9 +601,14 @@ model SondageReponseItem {
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
+  userId    String
   token     String   @unique
   expiresAt DateTime
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
 }
 
 // ─── Boutique ─────────────────────────────────────────────────────────────────
@@ -673,5 +710,135 @@ model MeetingParticipant {
   membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
 
   @@unique([meetingId, membreId])
+}
+
+// ─── Finances & Conciliation bancaire ────────────────────────────────────────
+
+model BankAccount {
+  id             String   @id @default(cuid())
+  associationId  String
+  bankName       String
+  accountName    String
+  ibanLast4      String?
+  currency       String   @default("EUR")
+  openingBalance Decimal  @default(0) @db.Decimal(10, 2)
+  currentBalance Decimal  @default(0) @db.Decimal(10, 2)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  association  Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  transactions BankTransaction[]
+
+  @@index([associationId])
+}
+
+model BankTransaction {
+  id              String                @id @default(cuid())
+  associationId   String
+  bankAccountId   String
+  transactionDate DateTime
+  label           String
+  amount          Decimal               @db.Decimal(10, 2)
+  type            BankTransactionType
+  balanceAfter    Decimal?              @db.Decimal(10, 2)
+  externalId      String?
+  status          BankTransactionStatus @default(UNMATCHED)
+  rawData         Json?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankAccount     BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  reconciliations BankReconciliation[]
+
+  @@unique([bankAccountId, externalId])
+  @@index([associationId, status])
+  @@index([associationId, transactionDate])
+}
+
+model FinanceCategory {
+  id             String              @id @default(cuid())
+  associationId  String
+  name           String
+  type           FinanceCategoryType
+  accountingCode String?
+  isDefault      Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes     Income[]
+  expenses    Expense[]
+
+  @@index([associationId, type])
+}
+
+model Income {
+  id            String       @id @default(cuid())
+  associationId String
+  memberId      String?
+  amount        Decimal      @db.Decimal(10, 2)
+  categoryId    String?
+  paymentMethod String?
+  date          DateTime
+  description   String?
+  source        IncomeSource @default(MANUAL)
+  status        IncomeStatus @default(PENDING)
+  reference     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre          Membre?            @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId, status])
+  @@index([associationId, date])
+}
+
+model Expense {
+  id            String        @id @default(cuid())
+  associationId String
+  amount        Decimal       @db.Decimal(10, 2)
+  categoryId    String?
+  date          DateTime
+  vendor        String?
+  description   String?
+  receiptUrl    String?
+  internalNote  String?
+  status        ExpenseStatus @default(DRAFT)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId, status])
+  @@index([associationId, date])
+}
+
+model BankReconciliation {
+  id                String    @id @default(cuid())
+  associationId     String
+  bankTransactionId String
+  incomeId          String?   @unique
+  expenseId         String?   @unique
+  matchScore        Int       @default(0)
+  matchedBy         MatchedBy @default(AUTO)
+  matchedAt         DateTime  @default(now())
+  matchedByUserId   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  association     Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  income          Income?         @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense         Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+
+  @@index([bankTransactionId])
+  @@index([associationId])
 }
 

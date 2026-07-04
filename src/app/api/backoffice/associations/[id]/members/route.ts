@@ -1,28 +1,11 @@
 import { NextResponse }    from "next/server"
-import { auth }            from "@/lib/auth/config"
 import { prisma }          from "@/lib/prisma/client"
 import { z }               from "zod"
-import type { SessionUser } from "@/lib/user-context"
+import { withSuperAdminAuth } from "@/lib/api-wrapper"
 
 const ASSIGNABLE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE", "MEMBRE"] as const
 
-function superadminOnly(user: SessionUser | undefined) {
-  if (!user || user.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
-  }
-}
-
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const session = await auth()
-  const user    = session?.user as SessionUser | undefined
-  const guard   = superadminOnly(user)
-  if (guard) return guard
-
-  const { id } = await params
-
+export const GET = withSuperAdminAuth<{ id: string }>(async (_req, _ctx, { id }) => {
   const exists = await prisma.association.findUnique({
     where:  { id, deletedAt: null },
     select: { id: true },
@@ -46,24 +29,14 @@ export async function GET(
   })
 
   return NextResponse.json(membres)
-}
+})
 
 const patchSchema = z.object({
   userId: z.string().min(1),
   role:   z.enum(ASSIGNABLE_ROLES),
 })
 
-export async function PATCH(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const session = await auth()
-  const user    = session?.user as SessionUser | undefined
-  const guard   = superadminOnly(user)
-  if (guard) return guard
-
-  const { id } = await params
-
+export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, _ctx, { id }) => {
   const body   = await req.json()
   const parsed = patchSchema.safeParse(body)
   if (!parsed.success) {
@@ -103,4 +76,4 @@ export async function PATCH(
   })
 
   return NextResponse.json({ ok: true })
-}
+})
