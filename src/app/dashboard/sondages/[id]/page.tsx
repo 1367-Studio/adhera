@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { SondageFormBuilder } from "@/components/sondages/sondage-form-builder"
 import { SondageResultats } from "@/components/sondages/sondage-resultats"
 import { SondageRepondesIndividuelles } from "@/components/sondages/sondage-reponses-individuelles"
@@ -435,12 +436,23 @@ export default function SondageDetailPage() {
 
                 {/* Right — questions */}
                 <div className="lg:col-span-3 p-5 space-y-3">
-                  <h2 className="text-sm font-semibold">Questions <span className="ml-0.5 text-destructive" aria-hidden>*</span></h2>
-                  {!questionsEditable && editable && (
-                    <p className="text-xs text-muted-foreground -mt-2">
-                      Ce sondage a déjà des réponses — les questions ne peuvent plus être modifiées.
-                    </p>
-                  )}
+                  <h2 className="text-sm font-semibold flex items-center gap-1.5">
+                    Questions <span className="ml-0.5 text-destructive" aria-hidden>*</span>
+                    {!questionsEditable && editable && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger render={<span className="inline-flex text-muted-foreground" />}>
+                            <LockIcon className="size-3.5" />
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="max-w-64">
+                            Ce sondage a déjà reçu des réponses — les questions sont verrouillées pour ne pas
+                            invalider les réponses déjà enregistrées. Le titre, la description, l&apos;échéance
+                            et les destinataires restent modifiables.
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </h2>
                   {questionsEditable ? (
                     <SondageFormBuilder
                       key={sondage.id}
