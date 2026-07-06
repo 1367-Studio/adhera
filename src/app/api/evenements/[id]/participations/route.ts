@@ -23,7 +23,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     }),
     prisma.participation.findMany({
       where:  { evenementId },
-      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true },
+      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
     }),
   ])
 
@@ -42,6 +42,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         present:         p?.present ?? false,
         rsvp:            p?.rsvp ?? null,
         ticketPaidAt:    p?.ticketPaidAt ?? null,
+        stripeSessionId: p?.stripeSessionId ?? null,
         isGuest:         false,
       }
     }),
@@ -56,6 +57,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         present:         p.present,
         rsvp:            p.rsvp,
         ticketPaidAt:    p.ticketPaidAt,
+        stripeSessionId: p.stripeSessionId,
         isGuest:         p.membreId == null,
       })),
   ].sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))

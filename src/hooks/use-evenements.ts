@@ -87,6 +87,16 @@ async function markPaid(evenementId: string, ref: RowRef) {
   return res.json()
 }
 
+async function cancelPayment(evenementId: string, ref: RowRef) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations/cancel-payment`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(ref),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
 async function togglePresence(evenementId: string, ref: RowRef, present: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method: "POST",
@@ -236,6 +246,17 @@ export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (ref: RowRef) => markPaid(evenementId, ref),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    ]),
+  })
+}
+
+export function useCancelPayment(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (ref: RowRef) => cancelPayment(evenementId, ref),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),

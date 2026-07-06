@@ -13,7 +13,7 @@ import {
   InfoIcon, PencilIcon, QrCodeIcon, RefreshCwIcon, SearchIcon, Trash2Icon, UserPlusIcon, UsersIcon, XIcon,
 } from "lucide-react"
 import {
-  useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid,
+  useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
 } from "@/hooks/use-evenements"
 import { useCurrentUser } from "@/lib/user-context"
@@ -33,6 +33,7 @@ type PresenceRow = {
   present:         boolean
   rsvp:            string | null
   ticketPaidAt:    string | null
+  stripeSessionId: string | null
   isGuest:         boolean
 }
 
@@ -73,6 +74,7 @@ export default function PresencesPage() {
   const [qrExpiresAt, setQrExpiresAt]   = useState<string | null>(null)
   const [pendingIds, setPendingIds]      = useState<Set<string>>(new Set())
   const [payingIds, setPayingIds]        = useState<Set<string>>(new Set())
+  const [cancelPayIds, setCancelPayIds]   = useState<Set<string>>(new Set())
   const [search, setSearch]             = useState("")
   const [revokeConfirmOpen,     setRevokeConfirmOpen]     = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
@@ -120,6 +122,7 @@ export default function PresencesPage() {
 
   const toggle     = useTogglePresence(id)
   const markPaid    = useMarkPaid(id)
+  const cancelPaid  = useCancelPayment(id)
   const addGuest    = useAddGuest(id)
   const editGuest   = useEditGuest(id)
   const deleteGuest = useDeleteGuest(id)
@@ -138,6 +141,17 @@ export default function PresencesPage() {
       onSuccess: () => toast.success(`${row.firstName} ${row.lastName} marqué comme payé`),
       onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
       onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
+    })
+  }
+
+  function handleCancelPayment(row: PresenceRow) {
+    const key = rowKey(row)
+    if (cancelPayIds.has(key)) return
+    setCancelPayIds(prev => new Set(prev).add(key))
+    cancelPaid.mutate(rowRef(row), {
+      onSuccess: () => toast.success(`Paiement de ${row.firstName} ${row.lastName} annulé`),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+      onSettled: () => setCancelPayIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
   }
 
@@ -647,10 +661,29 @@ export default function PresencesPage() {
 
                   {hasFee && (
                     row.ticketPaidAt ? (
-                      <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400 shrink-0">
-                        <CheckIcon className="size-3" />
-                        Payé
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400">
+                          <CheckIcon className="size-3" />
+                          Payé
+                        </span>
+                        {!row.stripeSessionId && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger render={<span />}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleCancelPayment(row)}
+                                  disabled={cancelPayIds.has(rowKey(row))}
+                                  className="flex items-center justify-center size-5 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                >
+                                  <XIcon className="size-3" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Annuler ce paiement en espèces</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
                     ) : row.rsvp === "CONFIRME" ? (
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
