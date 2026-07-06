@@ -399,6 +399,26 @@ export async function POST(req: Request) {
 
       const { cotisationId, orderId, donId, commandeId, associationId } = paymentIntent.metadata
 
+      // A single checkout (cotisation, ticket order, don, commande) can bundle several
+      // paid seats/items behind one PaymentIntent. When the refund is partial (e.g. the
+      // portal's own cancel-ticket flow refunding a single companion seat), the app has
+      // already applied the matching Participation/Income change directly — blanket-
+      // reversing everything tied to this paymentIntent here would also wipe out seats
+      // or income rows that are still legitimately paid. Only treat this as the "external
+      // refund" safety net (Stripe Dashboard, disputes) when the whole charge was refunded.
+      if (charge.amount_refunded < charge.amount) {
+        if (associationId) {
+          await writeActivityLog({
+            associationId,
+            action:   "PARTIAL_REFUND_RECEIVED",
+            entity:   "Payment",
+            entityId: paymentIntentId,
+            metadata: { amountRefunded: charge.amount_refunded, amount: charge.amount },
+          })
+        }
+        break
+      }
+
       await prisma.income.updateMany({
         where: { reference: paymentIntentId, status: "PAID" },
         data:  { status: "CANCELLED" },
