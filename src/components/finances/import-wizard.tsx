@@ -34,8 +34,7 @@ type ColumnMapping = {
 
 type ImportResult = { imported: number; duplicates: number; errors: number; toReconcile: number }
 
-function makeExternalId(bankAccountId: string, row: Omit<ParsedRow, "externalId">): string {
-  const raw = `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}`
+function fnv1a(raw: string): string {
   // FNV-1a 32-bit — deterministic, collision-resistant enough for dedup
   let h = 0x811c9dc5
   for (let i = 0; i < raw.length; i++) {
@@ -43,6 +42,18 @@ function makeExternalId(bankAccountId: string, row: Omit<ParsedRow, "externalId"
     h = (h * 0x01000193) >>> 0
   }
   return h.toString(16).padStart(8, "0") + raw.length.toString(36)
+}
+
+function makeExternalId(bankAccountId: string, row: Omit<ParsedRow, "externalId">, occurrence: number): string {
+  // Keep the hash identical to before for the first row of a given shape (occurrence 0) so
+  // re-importing a previously-imported file still dedups correctly. Only genuine distinct
+  // transactions that happen to share date/label/amount/type within the same import (e.g.
+  // several members paying the same fee the same day) get a distinguishing suffix, instead
+  // of silently colliding and being dropped as a "duplicate".
+  const raw = occurrence === 0
+    ? `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}`
+    : `${bankAccountId}|${row.transactionDate}|${row.label}|${row.amount}|${row.type}|${occurrence}`
+  return fnv1a(raw)
 }
 
 function parseDate(val: unknown): string {
@@ -65,7 +76,24 @@ function parseDate(val: unknown): string {
 function parseAmount(val: unknown): number {
   if (!val && val !== 0) return 0
   if (typeof val === "number") return val
-  return parseFloat(String(val).replace(/\s/g, "").replace(",", ".")) || 0
+
+  const s = String(val).trim().replace(/[\s€$]/g, "")
+  if (!s) return 0
+
+  // Whichever separator appears last is the decimal point (French "1.234,56" vs.
+  // US "1,234.56") — strip every other occurrence of either as a thousands separator
+  // instead of blindly replacing the first comma, which mangled "1.234,56" into "1.234".
+  const lastComma = s.lastIndexOf(",")
+  const lastDot   = s.lastIndexOf(".")
+
+  let normalized = s
+  if (lastComma > lastDot) {
+    normalized = s.replace(/\./g, "").replace(",", ".")
+  } else if (lastDot > lastComma) {
+    normalized = s.replace(/,/g, "")
+  }
+
+  return parseFloat(normalized) || 0
 }
 
 function normalizeHeader(s: string): string {
@@ -226,6 +254,7 @@ export function ImportWizard() {
 
   function parseRows(): ParsedRow[] {
     const result: ParsedRow[] = []
+    const shapeOccurrences = new Map<string, number>()
     for (const row of rawRows) {
       const dateStr = parseDate(row[mapping.dateColumn])
       const label   = String(row[mapping.labelColumn] ?? "").trim()
@@ -239,10 +268,13 @@ export function ImportWizard() {
         amount = Math.abs(raw)
         type   = raw >= 0 ? "CREDIT" : "DEBIT"
       } else {
+        // Use non-zero (not > 0) so banks that export the debit column as already-negative
+        // (a common convention) aren't silently skipped — only the *column* the value is in
+        // determines credit vs. debit here, not its sign.
         const debit  = mapping.debitColumn  ? parseAmount(row[mapping.debitColumn])  : 0
         const credit = mapping.creditColumn ? parseAmount(row[mapping.creditColumn]) : 0
-        if (credit > 0)     { amount = credit; type = "CREDIT" }
-        else if (debit > 0) { amount = debit;  type = "DEBIT" }
+        if (credit !== 0)     { amount = Math.abs(credit); type = "CREDIT" }
+        else if (debit !== 0) { amount = Math.abs(debit);  type = "DEBIT" }
         else continue
       }
 
@@ -250,7 +282,10 @@ export function ImportWizard() {
 
       const balanceAfter = mapping.balanceColumn ? parseAmount(row[mapping.balanceColumn]) || undefined : undefined
       const partial = { transactionDate: dateStr, label, amount, type, balanceAfter }
-      result.push({ ...partial, externalId: makeExternalId(mapping.bankAccountId, partial) } as ParsedRow)
+      const shapeKey = `${dateStr}|${label}|${amount}|${type}`
+      const occurrence = shapeOccurrences.get(shapeKey) ?? 0
+      shapeOccurrences.set(shapeKey, occurrence + 1)
+      result.push({ ...partial, externalId: makeExternalId(mapping.bankAccountId, partial, occurrence) } as ParsedRow)
     }
     return result
   }
