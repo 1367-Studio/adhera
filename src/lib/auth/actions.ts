@@ -29,6 +29,11 @@ export async function logout(redirectTo = "/login") {
 }
 
 export async function signInWithGoogleDashboard() {
+  // Clear a stale portal-slug cookie from an abandoned portal Google sign-in (see
+  // signInWithGooglePortal below) — otherwise the signIn callback in auth/config.ts would
+  // still find it and treat this dashboard sign-in as a portal one for that association.
+  const cookieStore = await cookies()
+  cookieStore.delete(OAUTH_PORTAL_SLUG_COOKIE)
   await signIn("google", { redirectTo: "/dashboard" })
 }
 
