@@ -7,9 +7,9 @@ type Params = { id: string }
 
 export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
   const don = await prisma.don.findFirst({
-    where: { id, membreId: ctx.membreId!, associationId: ctx.associationId, paidAt: { not: null } },
+    where: { id, membreId: ctx.membreId!, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
-  if (!don) return NextResponse.json({ error: "Don introuvable" }, { status: 404 })
+  if (!don) return NextResponse.json({ error: "Don introuvable ou remboursé" }, { status: 404 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
