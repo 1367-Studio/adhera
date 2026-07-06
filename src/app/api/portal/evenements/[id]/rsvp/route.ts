@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
@@ -9,10 +10,19 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 
 type Params = { id: string }
 
+const guestSchema = z.object({
+  firstName: z.string().min(1).max(80),
+  lastName:  z.string().min(1).max(80),
+  email:     z.string().email().optional().or(z.literal("")),
+})
+
 const bodySchema = z.object({
   rsvp:     z.enum(["CONFIRME", "PROVAVEL", "INCERTO", "ABSENT"]),
-  quantity: z.number().int().min(1).optional().default(1),
+  quantity: z.number().int().min(1).max(10).optional().default(1),
+  guests:   z.array(guestSchema).max(9).optional().default([]),
 })
+
+class EventFullError extends Error {}
 
 export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }) => {
   const evenement = await prisma.evenement.findFirst({
@@ -30,53 +40,86 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
-  const existingParticipation = await prisma.participation.findUnique({
-    where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    select: { rsvp: true, quantity: true },
+  const selfTicket = await prisma.participation.findFirst({
+    where:  { membreId: membre.id, evenementId },
+    select: { id: true, rsvp: true, orderId: true },
   })
-  const wasAlreadyConfirme = existingParticipation?.rsvp === "CONFIRME"
+  const wasAlreadyConfirme = selfTicket?.rsvp === "CONFIRME"
+  const orderId            = selfTicket?.orderId ?? randomUUID()
 
-  if (parsed.data.rsvp === "CONFIRME" && evenement.capacity != null) {
-    const { _sum } = await prisma.participation.aggregate({
-      where: {
-        evenementId,
-        membreId: { not: membre.id },
-        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
-      },
-      _sum: { quantity: true },
-    })
-    if ((_sum.quantity ?? 0) + parsed.data.quantity > evenement.capacity)
-      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
-  }
+  const { rsvp, quantity, guests } = parsed.data
+  // Pad/truncate the supplied guest names to the number of companion seats requested,
+  // filling any gap with an editable placeholder rather than rejecting the request.
+  const guestNames = Array.from({ length: quantity - 1 }, (_, i) => guests[i] ?? { firstName: "Invité", lastName: String(i + 2), email: undefined })
 
-  const participation = await prisma.participation.upsert({
-    where:  { membreId_evenementId: { membreId: membre.id, evenementId } },
-    create: { membreId: membre.id, evenementId, rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
-    update: { rsvp: parsed.data.rsvp, rsvpAt: new Date(), quantity: parsed.data.quantity },
-  })
+  let participationId: string
+  try {
+    participationId = await prisma.$transaction(async (tx) => {
+      let selfId: string
+      if (selfTicket) {
+        // Backfill orderId if this row predates any order (e.g. an admin marked the
+        // member present/paid before they ever RSVP'd) — otherwise the companions
+        // created below end up on an orderId the member's own row doesn't share,
+        // silently breaking group check-in/cancel for this booking.
+        await tx.participation.update({ where: { id: selfTicket.id }, data: { rsvp, rsvpAt: new Date(), orderId } })
+        selfId = selfTicket.id
+      } else {
+        const created = await tx.participation.create({
+          data: {
+            membreId: membre.id, evenementId, orderId,
+            firstName: membre.firstName, lastName: membre.lastName, email: membre.email,
+            rsvp, rsvpAt: new Date(),
+          },
+          select: { id: true },
+        })
+        selfId = created.id
+      }
 
-  // Re-verify capacity after upsert to handle concurrent RSVPs for the last spot(s)
-  if (parsed.data.rsvp === "CONFIRME" && evenement.capacity != null) {
-    const { _sum: postCheck } = await prisma.participation.aggregate({
-      where: {
-        evenementId,
-        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
-      },
-      _sum: { quantity: true },
-    })
-    if ((postCheck.quantity ?? 0) > evenement.capacity) {
-      await prisma.participation.update({
-        where: { id: participation.id },
-        data:  {
-          rsvp:     existingParticipation?.rsvp ?? null,
-          quantity: existingParticipation?.quantity ?? 1,
-        },
+      // Reconcile the companion rows already on this order with the requested guest list:
+      // update names in place for the overlap, create the extra ones, drop the surplus.
+      const existingCompanions = await tx.participation.findMany({
+        where:   { orderId, membreId: null },
+        orderBy: { createdAt: "asc" },
+        select:  { id: true, ticketPaidAt: true },
       })
-      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
-    }
+
+      for (let i = 0; i < guestNames.length; i++) {
+        const g = guestNames[i]
+        if (existingCompanions[i]) {
+          await tx.participation.update({
+            where: { id: existingCompanions[i].id },
+            data:  { firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp, rsvpAt: new Date() },
+          })
+        } else {
+          await tx.participation.create({
+            data: { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp, rsvpAt: new Date() },
+          })
+        }
+      }
+      if (existingCompanions.length > guestNames.length) {
+        // A companion who's already been paid in cash at the door must never be
+        // silently dropped just because the member later shrinks the party size.
+        const removable = existingCompanions.slice(guestNames.length).filter(c => !c.ticketPaidAt)
+        if (removable.length) {
+          await tx.participation.deleteMany({ where: { id: { in: removable.map(c => c.id) } } })
+        }
+      }
+
+      if (rsvp === "CONFIRME" && evenement.capacity != null) {
+        const occupied = await tx.participation.count({
+          where: { evenementId, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        })
+        if (occupied > evenement.capacity) throw new EventFullError()
+      }
+
+      return selfId
+    })
+  } catch (err) {
+    if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    throw err
   }
 
-  if (parsed.data.rsvp === "CONFIRME" && !wasAlreadyConfirme) {
+  if (rsvp === "CONFIRME" && !wasAlreadyConfirme) {
     const assoc = await prisma.association.findUnique({
       where:  { id: ctx.associationId },
       select: { name: true, slug: true, modules: true },
@@ -117,17 +160,17 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
     }
   }
 
-  if (existingParticipation?.rsvp !== parsed.data.rsvp) {
+  if (selfTicket?.rsvp !== rsvp) {
     await writeActivityLog({
       associationId: ctx.associationId,
       actorId:  ctx.userId,
       action:   "RSVP_UPDATED",
       entity:   "Participation",
-      entityId: participation.id,
+      entityId: participationId,
       label:    evenement.title,
-      metadata: { rsvp: parsed.data.rsvp },
+      metadata: { rsvp, quantity },
     })
   }
 
-  return NextResponse.json(participation)
+  return NextResponse.json({ id: participationId, rsvp, quantity })
 }, { module: "evenements" })

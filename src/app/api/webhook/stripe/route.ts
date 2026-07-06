@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     case "checkout.session.completed": {
       const sess            = event.data.object as Stripe.Checkout.Session
       const cotisationId    = sess.metadata?.cotisationId
-      const participationId = sess.metadata?.participationId
+      const orderId         = sess.metadata?.orderId
       const donId           = sess.metadata?.donId
       const commandeId      = sess.metadata?.commandeId
       // Stored on the Income row so a later `charge.refunded` event can find and
@@ -177,19 +177,19 @@ export async function POST(req: Request) {
           label:         `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`,
           metadata:      { amount: Number(cotisation.amount) },
         })
-      } else if (participationId) {
+      } else if (orderId) {
         const paidAt = new Date()
         // Atomic conditional update: only the first of any concurrent/duplicate webhook
-        // deliveries for this ticket will match and flip ticketPaidAt, preventing a
+        // deliveries for this order will match and flip ticketPaidAt, preventing a
         // duplicate Income row from a race between two "paid" transitions.
-        const { count: ticketClaimed } = await prisma.participation.updateMany({
-          where: { id: participationId, ticketPaidAt: null },
+        const { count: ticketsClaimed } = await prisma.participation.updateMany({
+          where: { orderId, ticketPaidAt: null },
           data:  { ticketPaidAt: paidAt, stripeSessionId: sess.id },
         })
-        if (ticketClaimed === 0) break
+        if (ticketsClaimed === 0) break
 
-        const participation = await prisma.participation.findUnique({
-          where:   { id: participationId },
+        const tickets = await prisma.participation.findMany({
+          where:   { orderId },
           include: {
             evenement: {
               select: {
@@ -201,49 +201,55 @@ export async function POST(req: Request) {
                 association:  { select: { name: true, slug: true } },
               },
             },
-            membre: { select: { firstName: true, email: true } },
           },
         })
-        if (participation && participation.evenement) {
-          await prisma.participation.update({
-            where: { id: participationId },
-            data:  { paidQuantity: participation.quantity ?? 1 },
-          })
-          const totalAmount = Number(participation.evenement.price!) * (participation.quantity ?? 1)
-          await prisma.income.create({
-            data: {
-              associationId: participation.evenement.associationId,
-              memberId:      participation.membreId,
-              amount:        totalAmount,
-              description:   `Billet (Stripe) — ${participation.evenement.title}`,
-              paymentMethod: "STRIPE",
-              source:        "STRIPE",
-              status:        "PAID",
-              date:          paidAt,
-              reference:     paymentIntentId,
-            },
+        // The buyer is whichever ticket in the order is tied to the logged-in member —
+        // that's who receives the purchase confirmation email, same as the checkout flow.
+        const buyerTicket = tickets.find(t => t.membreId) ?? tickets[0]
+        if (buyerTicket?.evenement) {
+          const evenement  = buyerTicket.evenement
+          const quantity   = tickets.length
+          const unitAmount = Number(evenement.price!)
+          const totalAmount = unitAmount * quantity
+
+          await prisma.participation.updateMany({ where: { orderId }, data: { amount: unitAmount } })
+
+          // One Income row per seat (not a single lump sum) so cancelling a single
+          // companion later can remove just that seat's revenue without touching the rest.
+          await prisma.income.createMany({
+            data: tickets.map(t => ({
+              associationId:   evenement.associationId,
+              memberId:        t.membreId,
+              participationId: t.id,
+              amount:          unitAmount,
+              description:     `Billet (Stripe) — ${evenement.title} — ${t.firstName} ${t.lastName}`,
+              paymentMethod:   "STRIPE",
+              source:          "STRIPE",
+              status:          "PAID",
+              date:            paidAt,
+              reference:       paymentIntentId,
+            })),
           })
           await writeActivityLog({
-            associationId: participation.evenement.associationId,
+            associationId: evenement.associationId,
             action:        "TICKET_PAID",
             entity:        "Participation",
-            entityId:      participationId,
-            label:         participation.evenement.title,
-            metadata:      { quantity: participation.quantity ?? 1, amount: totalAmount, stripeSessionId: sess.id },
+            entityId:      buyerTicket.id,
+            label:         evenement.title,
+            metadata:      { quantity, amount: totalAmount, stripeSessionId: sess.id },
           })
-          if (participation.membre?.email && participation.evenement.association) {
-            const ev    = participation.evenement
-            const assoc = ev.association!
+          if (buyerTicket.email && evenement.association) {
+            const assoc = evenement.association
             const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${assoc.slug}/evenements`
             sendEmail(ticketPurchaseEmail({
-              firstName:       participation.membre.firstName,
-              email:           participation.membre.email,
+              firstName:       buyerTicket.firstName,
+              email:           buyerTicket.email,
               associationName: assoc.name,
-              eventTitle:      ev.title,
-              eventDate:       ev.date,
-              eventLocation:   ev.location,
+              eventTitle:      evenement.title,
+              eventDate:       evenement.date,
+              eventLocation:   evenement.location,
               amount:          totalAmount,
-              quantity:        participation.quantity ?? 1,
+              quantity,
               paidAt,
               portalUrl,
             })).catch(() => {})
@@ -328,26 +334,29 @@ export async function POST(req: Request) {
     }
 
     case "checkout.session.expired": {
-      const sess            = event.data.object as Stripe.Checkout.Session
-      const commandeId      = sess.metadata?.commandeId
-      const participationId = sess.metadata?.participationId
+      const sess       = event.data.object as Stripe.Checkout.Session
+      const commandeId = sess.metadata?.commandeId
+      const orderId    = sess.metadata?.orderId
 
-      if (participationId) {
-        const expiredParticipation = await prisma.participation.findUnique({
-          where:  { id: participationId },
-          select: { evenement: { select: { title: true, associationId: true } } },
+      if (orderId) {
+        const anyTicket = await prisma.participation.findFirst({
+          where:  { orderId },
+          select: { id: true, evenement: { select: { title: true, associationId: true } } },
         })
+        // Release the held slots so someone else can take them — the rows themselves stay
+        // (same orderId) so a retry from the portal reuses and renames them instead of
+        // minting duplicates.
         await prisma.participation.updateMany({
-          where: { id: participationId, ticketPaidAt: null },
-          data:  { rsvp: null, quantity: 1 },
+          where: { orderId, ticketPaidAt: null },
+          data:  { rsvp: null },
         })
-        if (expiredParticipation?.evenement) {
+        if (anyTicket?.evenement) {
           await writeActivityLog({
-            associationId: expiredParticipation.evenement.associationId,
+            associationId: anyTicket.evenement.associationId,
             action:        "TICKET_CHECKOUT_EXPIRED",
             entity:        "Participation",
-            entityId:      participationId,
-            label:         expiredParticipation.evenement.title,
+            entityId:      anyTicket.id,
+            label:         anyTicket.evenement.title,
             metadata:      { stripeSessionId: sess.id },
           })
         }
@@ -388,7 +397,7 @@ export async function POST(req: Request) {
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId).catch(() => null)
       if (!paymentIntent) break
 
-      const { cotisationId, participationId, donId, commandeId, associationId } = paymentIntent.metadata
+      const { cotisationId, orderId, donId, commandeId, associationId } = paymentIntent.metadata
 
       await prisma.income.updateMany({
         where: { reference: paymentIntentId, status: "PAID" },
@@ -411,13 +420,14 @@ export async function POST(req: Request) {
         if (count > 0 && associationId) {
           await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
         }
-      } else if (participationId) {
+      } else if (orderId) {
+        const refundedTicket = await prisma.participation.findFirst({ where: { orderId }, select: { id: true } })
         const { count } = await prisma.participation.updateMany({
-          where: { id: participationId, ticketPaidAt: { not: null } },
-          data:  { ticketPaidAt: null, stripeSessionId: null, paidQuantity: null, rsvp: null, quantity: 1 },
+          where: { orderId, ticketPaidAt: { not: null } },
+          data:  { ticketPaidAt: null, stripeSessionId: null, amount: null, rsvp: null },
         })
-        if (count > 0 && associationId) {
-          await writeActivityLog({ associationId, action: "TICKET_REFUNDED", entity: "Participation", entityId: participationId })
+        if (count > 0 && associationId && refundedTicket) {
+          await writeActivityLog({ associationId, action: "TICKET_REFUNDED", entity: "Participation", entityId: refundedTicket.id })
         }
       } else if (commandeId) {
         const commande = await prisma.boutiqueCommande.findUnique({

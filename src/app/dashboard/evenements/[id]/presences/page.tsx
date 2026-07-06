@@ -10,9 +10,12 @@ import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
 import {
   ArrowLeftIcon, BanknoteIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, DownloadIcon,
-  QrCodeIcon, RefreshCwIcon, SearchIcon, UsersIcon, XIcon,
+  InfoIcon, PencilIcon, QrCodeIcon, RefreshCwIcon, SearchIcon, Trash2Icon, UserPlusIcon, UsersIcon, XIcon,
 } from "lucide-react"
-import { useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid } from "@/hooks/use-evenements"
+import {
+  useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid,
+  useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
+} from "@/hooks/use-evenements"
 import { useCurrentUser } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -22,15 +25,23 @@ import { Modal } from "@/components/ui/modal"
 import { cn } from "@/lib/utils"
 
 type PresenceRow = {
-  membreId:        string
+  membreId:        string | null
   firstName:       string
   lastName:        string
+  email:           string | null
   participationId: string | null
   present:         boolean
   rsvp:            string | null
   ticketPaidAt:    string | null
-  quantity:        number
-  paidQuantity:    number | null
+  isGuest:         boolean
+}
+
+function rowRef(row: PresenceRow): RowRef {
+  return row.participationId ? { participationId: row.participationId } : { membreId: row.membreId! }
+}
+
+function rowKey(row: PresenceRow): string {
+  return row.participationId ?? row.membreId!
 }
 
 type Evenement = {
@@ -65,8 +76,15 @@ export default function PresencesPage() {
   const [search, setSearch]             = useState("")
   const [revokeConfirmOpen,     setRevokeConfirmOpen]     = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
-  const [payTarget, setPayTarget]        = useState<PresenceRow | null>(null)
-  const [payQuantity, setPayQuantity]    = useState(1)
+  const [addGuestOpen, setAddGuestOpen] = useState(false)
+  const [guestFirstName, setGuestFirstName] = useState("")
+  const [guestLastName,  setGuestLastName]  = useState("")
+  const [guestEmail,     setGuestEmail]     = useState("")
+  const [editTarget, setEditTarget]     = useState<PresenceRow | null>(null)
+  const [editFirstName, setEditFirstName] = useState("")
+  const [editLastName,  setEditLastName]  = useState("")
+  const [editEmail,     setEditEmail]     = useState("")
+  const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -95,52 +113,89 @@ export default function PresencesPage() {
 
   const typed          = rows as PresenceRow[]
   const hasFee         = !!ev?.price && Number(ev.price) > 0
-  const presentsCount  = hasFee
-    ? typed.reduce((sum, r) => r.present ? sum + (r.paidQuantity ?? r.quantity ?? 1) : sum, 0)
-    : typed.filter(r => r.present).length
+  const presentsCount  = typed.filter(r => r.present).length
   const reservedCount  = hasFee
-    ? typed.reduce((sum, r) => {
-        if (r.ticketPaidAt != null) return sum + (r.paidQuantity ?? r.quantity ?? 1)
-        if (r.rsvp === "CONFIRME")  return sum + (r.quantity ?? 1)
-        return sum
-      }, 0)
+    ? typed.filter(r => r.ticketPaidAt != null || r.rsvp === "CONFIRME").length
     : 0
 
   const toggle     = useTogglePresence(id)
-  const markPaid   = useMarkPaid(id)
-  const generateQr = useGenerateQr(id)
-  const revokeQr   = useRevokeQr(id)
+  const markPaid    = useMarkPaid(id)
+  const addGuest    = useAddGuest(id)
+  const editGuest   = useEditGuest(id)
+  const deleteGuest = useDeleteGuest(id)
+  const generateQr  = useGenerateQr(id)
+  const revokeQr    = useRevokeQr(id)
 
   const filtered = search.trim()
     ? typed.filter(r => `${r.lastName} ${r.firstName}`.toLowerCase().includes(search.toLowerCase()))
     : typed
 
-  function openPayDialog(row: PresenceRow) {
-    if (row.rsvp !== null && row.quantity <= 1) {
-      setPayingIds(prev => new Set(prev).add(row.membreId))
-      markPaid.mutate(
-        { membreId: row.membreId },
-        {
-          onSuccess: () => toast.success(`${row.firstName} ${row.lastName} marqué comme payé`),
-          onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
-          onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(row.membreId); return s }),
-        },
-      )
-    } else {
-      setPayQuantity(row.rsvp ? row.quantity : 1)
-      setPayTarget(row)
+  function handleMarkPaid(row: PresenceRow) {
+    const key = rowKey(row)
+    if (payingIds.has(key)) return
+    setPayingIds(prev => new Set(prev).add(key))
+    markPaid.mutate(rowRef(row), {
+      onSuccess: () => toast.success(`${row.firstName} ${row.lastName} marqué comme payé`),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+      onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
+    })
+  }
+
+  async function handleAddGuest() {
+    if (!guestFirstName.trim() || !guestLastName.trim()) return
+    try {
+      await addGuest.mutateAsync({ firstName: guestFirstName.trim(), lastName: guestLastName.trim(), email: guestEmail.trim() || undefined })
+      toast.success(`${guestFirstName} ${guestLastName} ajouté·e et marqué·e présent·e`)
+      setAddGuestOpen(false)
+      setGuestFirstName(""); setGuestLastName(""); setGuestEmail("")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  function openEdit(row: PresenceRow) {
+    setEditTarget(row)
+    setEditFirstName(row.firstName)
+    setEditLastName(row.lastName)
+    setEditEmail(row.email ?? "")
+  }
+
+  async function handleEditGuest() {
+    if (!editTarget || !editFirstName.trim() || !editLastName.trim()) return
+    try {
+      await editGuest.mutateAsync({
+        participationId: editTarget.participationId!,
+        firstName: editFirstName.trim(), lastName: editLastName.trim(), email: editEmail.trim() || undefined,
+      })
+      toast.success("Invité·e mis·e à jour")
+      setEditTarget(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  async function handleDeleteGuest() {
+    if (!deleteTarget) return
+    try {
+      await deleteGuest.mutateAsync(deleteTarget.participationId!)
+      toast.success(`${deleteTarget.firstName} ${deleteTarget.lastName} retiré·e de la liste`)
+      setDeleteTarget(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+      setDeleteTarget(null)
     }
   }
 
   async function handleToggle(row: PresenceRow) {
-    if (pendingIds.has(row.membreId)) return
-    setPendingIds(prev => new Set(prev).add(row.membreId))
+    const key = rowKey(row)
+    if (pendingIds.has(key)) return
+    setPendingIds(prev => new Set(prev).add(key))
     try {
-      await toggle.mutateAsync({ membreId: row.membreId, present: !row.present })
+      await toggle.mutateAsync({ ...rowRef(row), present: !row.present })
     } catch {
       toast.error("Erreur lors de la mise à jour")
     } finally {
-      setPendingIds(prev => { const s = new Set(prev); s.delete(row.membreId); return s })
+      setPendingIds(prev => { const s = new Set(prev); s.delete(key); return s })
     }
   }
 
@@ -256,19 +311,17 @@ export default function PresencesPage() {
       autoTable(doc, {
         ...commonTableOpts,
         startY:       y,
-        head:         [["#", "Membre", "Présent", "Paiement", "Places"]],
+        head:         [["#", "Membre", "Présent", "Paiement"]],
         body:         typed.map((r, i) => [
           i + 1,
           `${r.lastName} ${r.firstName}`,
           r.present ? "Oui" : "",
           r.ticketPaidAt ? "Payé" : r.rsvp === "CONFIRME" ? "Réservé" : "—",
-          r.ticketPaidAt ? String(r.paidQuantity ?? r.quantity) : String(r.quantity),
         ]),
         columnStyles: {
           0: { cellWidth: 10, halign: "center" },
           2: { cellWidth: 20, halign: "center" },
           3: { cellWidth: 26 },
-          4: { cellWidth: 16, halign: "center" },
         },
         didParseCell: (data) => {
           if (data.section !== "body") return
@@ -341,6 +394,7 @@ export default function PresencesPage() {
   const capacity = ev.capacity
   const pct      = capacity ? Math.min(100, Math.round((presentsCount / capacity) * 100)) : null
   const isFull   = capacity != null && presentsCount >= capacity
+  const isPast   = new Date(ev.date) < new Date()
 
   return (
     <div className="space-y-5 mt-4">
@@ -433,7 +487,23 @@ export default function PresencesPage() {
 
         {/* QR Panel */}
         <div className="rounded-xl border bg-card p-4 space-y-4">
-          <h2 className="text-sm font-semibold">QR Code de check-in</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-sm font-semibold">QR Code de check-in</h2>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={<span className="inline-flex" />}>
+                  <InfoIcon className="size-3.5 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-64">
+                  Un seul QR pour tout l&apos;événement, valide 24h. Chaque participant le scanne
+                  avec son téléphone, se connecte au portail si besoin, puis confirme sa venue —
+                  cela marque présent son billet et ceux de ses invité·e·s nommé·e·s. Il faut avoir
+                  un billet payé (événement payant) ou un RSVP confirmé (événement gratuit) pour
+                  que ça marche.
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
 
           {activeQrValid ? (
             <>
@@ -501,17 +571,23 @@ export default function PresencesPage() {
 
         {/* Member list */}
         <div className="rounded-xl border bg-card overflow-hidden">
-          <div className="p-3 border-b">
-            <div className="relative">
+          <div className="p-3 border-b flex items-center gap-2">
+            <div className="relative flex-1">
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
-                placeholder="Rechercher un membre…"
+                placeholder="Rechercher…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
+            {!isPast && (
+              <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddGuestOpen(true)}>
+                <UserPlusIcon className="mr-1.5 size-3.5" />
+                Ajouter un invité
+              </Button>
+            )}
           </div>
 
           {loadingRows ? (
@@ -528,7 +604,7 @@ export default function PresencesPage() {
             <div className="divide-y max-h-[60vh] overflow-y-auto">
               {filtered.map(row => (
                 <div
-                  key={row.membreId}
+                  key={rowKey(row)}
                   className={cn(
                     "flex items-center gap-2 px-4 py-3 text-sm transition-colors",
                     row.present
@@ -539,11 +615,18 @@ export default function PresencesPage() {
                   <button
                     type="button"
                     onClick={() => handleToggle(row)}
-                    disabled={pendingIds.has(row.membreId)}
+                    disabled={pendingIds.has(rowKey(row))}
                     className="flex flex-1 items-center justify-between gap-3 text-left min-w-0"
                   >
-                    <span className={cn("font-medium truncate", row.present && "text-green-700 dark:text-green-400")}>
-                      {row.lastName} {row.firstName}
+                    <span className="flex items-center gap-1.5 min-w-0">
+                      <span className={cn("font-medium truncate", row.present && "text-green-700 dark:text-green-400")}>
+                        {row.lastName} {row.firstName}
+                      </span>
+                      {row.isGuest && (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
+                          Invité
+                        </span>
+                      )}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
                       {!hasFee && row.rsvp && RSVP_LABELS[row.rsvp] && (
@@ -566,20 +649,18 @@ export default function PresencesPage() {
                     row.ticketPaidAt ? (
                       <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400 shrink-0">
                         <CheckIcon className="size-3" />
-                        {row.paidQuantity && row.paidQuantity < row.quantity
-                          ? `Payé ×${row.paidQuantity}/${row.quantity}`
-                          : "Payé"}
+                        Payé
                       </span>
                     ) : row.rsvp === "CONFIRME" ? (
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
                           <BookmarkIcon className="size-3" />
-                          {row.quantity > 1 ? `Réservé ×${row.quantity}` : "Réservé"}
+                          Réservé
                         </span>
                         <button
                           type="button"
-                          onClick={() => openPayDialog(row)}
-                          disabled={payingIds.has(row.membreId)}
+                          onClick={() => handleMarkPaid(row)}
+                          disabled={payingIds.has(rowKey(row))}
                           className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                         >
                           <BanknoteIcon className="size-3" />
@@ -589,14 +670,35 @@ export default function PresencesPage() {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => openPayDialog(row)}
-                        disabled={payingIds.has(row.membreId)}
+                        onClick={() => handleMarkPaid(row)}
+                        disabled={payingIds.has(rowKey(row))}
                         className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                       >
                         <BanknoteIcon className="size-3" />
                         Marquer payé
                       </button>
                     )
+                  )}
+
+                  {row.isGuest && !isPast && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(row)}
+                        className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                        title="Modifier"
+                      >
+                        <PencilIcon className="size-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(row)}
+                        className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        title="Retirer"
+                      >
+                        <Trash2Icon className="size-3.5" />
+                      </button>
+                    </div>
                   )}
                 </div>
               ))}
@@ -605,85 +707,57 @@ export default function PresencesPage() {
         </div>
       </div>
 
-      {/* Payment quantity dialog */}
+      {/* Add walk-in guest */}
       <Modal
-        open={!!payTarget}
-        onOpenChange={o => { if (!o) setPayTarget(null) }}
-        title="Encaisser le paiement"
+        open={addGuestOpen}
+        onOpenChange={setAddGuestOpen}
+        title="Ajouter un invité"
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setAddGuestOpen(false)}>Annuler</Button>
             <Button
-              loading={markPaid.isPending}
-              onClick={async () => {
-                if (!payTarget) return
-                try {
-                  await markPaid.mutateAsync({ membreId: payTarget.membreId, paidQuantity: payQuantity })
-                  toast.success(`${payTarget.firstName} ${payTarget.lastName} — ${payQuantity} billet${payQuantity > 1 ? "s" : ""} encaissé${payQuantity > 1 ? "s" : ""}`)
-                  setPayTarget(null)
-                } catch {
-                  toast.error("Erreur")
-                }
-              }}
+              loading={addGuest.isPending}
+              disabled={!guestFirstName.trim() || !guestLastName.trim()}
+              onClick={handleAddGuest}
             >
-              <BanknoteIcon className="mr-1.5 size-4" />
-              Encaisser
+              <UserPlusIcon className="mr-1.5 size-4" />
+              Ajouter et marquer présent
             </Button>
           </>
         }
       >
-        {payTarget && (() => {
-          const maxQty = payTarget.rsvp
-            ? payTarget.quantity
-            : (capacity != null ? Math.max(1, capacity - presentsCount) : 20)
-          return (
-          <div className="space-y-4 py-2">
-            <p className="text-sm text-muted-foreground">
-              {payTarget.rsvp ? (
-                <>
-                  <span className="font-medium text-foreground">{payTarget.firstName} {payTarget.lastName}</span> a réservé{" "}
-                  <span className="font-medium text-foreground">{payTarget.quantity} billet{payTarget.quantity > 1 ? "s" : ""}</span>.{" "}
-                  Combien sont encaissés maintenant ?
-                </>
-              ) : (
-                <>
-                  Combien de billets pour{" "}
-                  <span className="font-medium text-foreground">{payTarget.firstName} {payTarget.lastName}</span> ?
-                </>
-              )}
-            </p>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => setPayQuantity(q => Math.max(1, q - 1))}
-                className="size-8 rounded-full border flex items-center justify-center text-lg font-medium hover:bg-muted transition-colors disabled:opacity-40"
-                disabled={payQuantity <= 1}
-              >
-                −
-              </button>
-              <span className="text-2xl font-bold w-12 text-center tabular-nums">{payQuantity}</span>
-              <button
-                type="button"
-                onClick={() => setPayQuantity(q => Math.min(maxQty, q + 1))}
-                className="size-8 rounded-full border flex items-center justify-center text-lg font-medium hover:bg-muted transition-colors disabled:opacity-40"
-                disabled={payQuantity >= maxQty}
-              >
-                +
-              </button>
-              {payTarget.rsvp && <span className="text-sm text-muted-foreground">/ {payTarget.quantity}</span>}
-            </div>
-            {ev?.price && (
-              <p className="text-sm font-medium">
-                Total :{" "}
-                <span className="text-foreground">
-                  {(Number(ev.price) * payQuantity).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-                </span>
-              </p>
-            )}
+        <div className="space-y-3 py-2">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">Prénom</label>
+            <input
+              type="text"
+              value={guestFirstName}
+              onChange={e => setGuestFirstName(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
           </div>
-          )
-        })()}
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">Nom</label>
+            <input
+              type="text"
+              value={guestLastName}
+              onChange={e => setGuestLastName(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">
+              Email <span className="text-muted-foreground font-normal">(optionnel)</span>
+            </label>
+            <input
+              type="email"
+              value={guestEmail}
+              onChange={e => setGuestEmail(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+        </div>
       </Modal>
 
       {/* Revoke confirmation */}
@@ -706,6 +780,73 @@ export default function PresencesPage() {
         confirmLabel="Régénérer"
         loading={generateQr.isPending}
         onConfirm={() => { setRegenerateConfirmOpen(false); handleGenerateQr() }}
+      />
+
+      {/* Edit guest */}
+      <Modal
+        open={!!editTarget}
+        onOpenChange={o => { if (!o) setEditTarget(null) }}
+        title="Modifier l'invité·e"
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setEditTarget(null)}>Annuler</Button>
+            <Button
+              loading={editGuest.isPending}
+              disabled={!editFirstName.trim() || !editLastName.trim()}
+              onClick={handleEditGuest}
+            >
+              Enregistrer
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 py-2">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">Prénom</label>
+            <input
+              type="text"
+              value={editFirstName}
+              onChange={e => setEditFirstName(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">Nom</label>
+            <input
+              type="text"
+              value={editLastName}
+              onChange={e => setEditLastName(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-foreground">
+              Email <span className="text-muted-foreground font-normal">(optionnel)</span>
+            </label>
+            <input
+              type="email"
+              value={editEmail}
+              onChange={e => setEditEmail(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Remove guest */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={o => { if (!o) setDeleteTarget(null) }}
+        title={`Retirer ${deleteTarget?.firstName} ${deleteTarget?.lastName} ?`}
+        description={
+          deleteTarget?.present
+            ? "Cette personne est déjà marquée présente — retirer sa fiche effacera aussi cette présence."
+            : "Cette personne sera retirée de la liste de présences de cet événement."
+        }
+        confirmLabel="Retirer"
+        loading={deleteGuest.isPending}
+        onConfirm={handleDeleteGuest}
       />
     </div>
   )

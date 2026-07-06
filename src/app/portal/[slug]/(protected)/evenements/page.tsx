@@ -11,7 +11,7 @@ import {
   MinusIcon, PlusIcon,
 } from "lucide-react"
 import { toast } from "sonner"
-import { useSetRsvp } from "@/hooks/use-evenements"
+import { useSetRsvp, type GuestInput } from "@/hooks/use-evenements"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -35,12 +35,82 @@ type Evenement = {
   lng:            number | null
   price:          string | null
   capacity:       number | null
-  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null; quantity: number }[]
+  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null }[]
+  partySize:      number
   rsvpCounts:     RsvpCounts
   confirmedCount: number
 }
 
+function GuestNameFields({
+  count,
+  guests,
+  onChange,
+}: {
+  count:    number
+  guests:   GuestInput[]
+  onChange: (guests: GuestInput[]) => void
+}) {
+  if (count <= 0) return null
+  return (
+    <div className="space-y-1.5">
+      <span className="text-xs text-muted-foreground">Vos invités :</span>
+      {Array.from({ length: count }).map((_, i) => {
+        const g = guests[i] ?? { firstName: "", lastName: "" }
+        return (
+          <div key={i} className="space-y-1">
+            <div className="flex gap-1.5">
+              <input
+                type="text"
+                placeholder={`Prénom invité ${i + 1}`}
+                value={g.firstName}
+                onChange={e => {
+                  const next = [...guests]
+                  next[i] = { ...g, firstName: e.target.value }
+                  onChange(next)
+                }}
+                className="w-1/2 rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
+              />
+              <input
+                type="text"
+                placeholder={`Nom invité ${i + 1}`}
+                value={g.lastName}
+                onChange={e => {
+                  const next = [...guests]
+                  next[i] = { ...g, lastName: e.target.value }
+                  onChange(next)
+                }}
+                className="w-1/2 rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
+              />
+            </div>
+            <input
+              type="email"
+              placeholder="Email invité (optionnel)"
+              value={g.email ?? ""}
+              onChange={e => {
+                const next = [...guests]
+                next[i] = { ...g, email: e.target.value }
+                onChange(next)
+              }}
+              className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 type ApiResponse = { upcoming: Evenement[]; past: Evenement[]; upcomingHasMore: boolean; pastHasMore: boolean }
+
+type TicketRow = {
+  id:           string
+  firstName:    string
+  lastName:     string
+  isSelf:       boolean
+  present:      boolean
+  ticketPaidAt: string | null
+  rsvp:         RsvpStatus | null
+}
 
 const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: string; activeColor: string }[] = [
   {
@@ -73,13 +143,13 @@ const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: stri
   },
 ]
 
-function TicketButton({ evenementId, quantity }: { evenementId: string; quantity: number }) {
+function TicketButton({ evenementId, quantity, guests }: { evenementId: string; quantity: number; guests: GuestInput[] }) {
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/portal/evenements/${evenementId}/checkout`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ quantity }),
+        body:    JSON.stringify({ quantity, guests }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
       return res.json() as Promise<{ url: string }>
@@ -151,19 +221,36 @@ function PaidEventSection({
   price:             string | null
 }) {
   const [quantity, setQuantity] = useState(ticketQuantity)
-  const [confirmCancel, setConfirmCancel] = useState(false)
+  const [guests, setGuests]     = useState<GuestInput[]>([])
+  const [cancelTarget, setCancelTarget] = useState<string | "ALL" | null>(null)
+  const [confirmCancelReservation, setConfirmCancelReservation] = useState(false)
   const setRsvpMutation = useSetRsvp(evenementId)
   const qc = useQueryClient()
 
+  // Fetched whenever there's a live reservation (paid or not) — needed both to list
+  // individual paid seats and to know how many companions are already paid in cash
+  // when warning about cancelling an unpaid reservation.
+  const ticketsQuery = useQuery<TicketRow[]>({
+    queryKey: ["portal-evenements", evenementId, "tickets"],
+    queryFn:  () => fetch(`/api/portal/evenements/${evenementId}/tickets`).then(r => r.json()),
+    enabled:  rsvp === "CONFIRME",
+  })
+  const tickets = ticketsQuery.data ?? []
+
   const cancelTicketMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch(`/api/portal/evenements/${evenementId}/cancel-ticket`, { method: "POST" })
+    mutationFn: async (participationId?: string) => {
+      const res = await fetch(`/api/portal/evenements/${evenementId}/cancel-ticket`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(participationId ? { participationId } : {}),
+      })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
       return res.json()
     },
     onSuccess: () => {
       toast.success("Billet annulé — vous serez remboursé sous quelques jours.")
       qc.invalidateQueries({ queryKey: ["portal-evenements"] })
+      qc.invalidateQueries({ queryKey: ["portal-evenements", evenementId, "tickets"] })
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
   })
@@ -188,22 +275,55 @@ function PaidEventSection({
           <CheckCircleIcon className="size-3.5" />
           {ticketQuantity > 1 ? `${ticketQuantity} billets achetés` : "Billet acheté"}
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="w-full text-muted-foreground text-xs h-7"
-          onClick={() => setConfirmCancel(true)}
-        >
-          Annuler et demander un remboursement
-        </Button>
+        {ticketQuantity > 1 ? (
+          <div className="space-y-1">
+            {tickets.length === 0 && ticketsQuery.isLoading && (
+              <p className="text-xs text-muted-foreground">Chargement…</p>
+            )}
+            {tickets.map(t => (
+              <div key={t.id} className="flex items-center justify-between gap-2 text-xs">
+                <span className="truncate">
+                  {t.lastName} {t.firstName}{t.isSelf ? " (vous)" : ""}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setCancelTarget(t.id)}
+                  className="shrink-0 text-[11px] text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
+                >
+                  Annuler
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="w-full text-muted-foreground text-xs h-7"
+            onClick={() => setCancelTarget("ALL")}
+          >
+            Annuler et demander un remboursement
+          </Button>
+        )}
         <ConfirmDialog
-          open={confirmCancel}
-          onOpenChange={setConfirmCancel}
-          title="Annuler ce billet ?"
-          description="Vous serez intégralement remboursé sur votre moyen de paiement d'origine."
+          open={!!cancelTarget}
+          onOpenChange={o => { if (!o) setCancelTarget(null) }}
+          title={ticketQuantity > 1 ? "Annuler cette place ?" : "Annuler ce billet ?"}
+          description={(() => {
+            if (cancelTarget === "ALL" || ticketQuantity <= 1)
+              return "Vous serez remboursé·e sur votre moyen de paiement d'origine."
+            const target = tickets.find(t => t.id === cancelTarget)
+            return target?.isSelf
+              ? "Vous serez remboursé·e pour votre place. Vos invité·e·s resteront inscrit·e·s et ne seront pas remboursé·e·s."
+              : "Vous serez remboursé·e pour cette place. Le reste de votre réservation n'est pas affecté."
+          })()}
           confirmLabel="Annuler et rembourser"
           loading={cancelTicketMutation.isPending}
-          onConfirm={() => { cancelTicketMutation.mutate(); setConfirmCancel(false) }}
+          onConfirm={() => {
+            const target = cancelTarget && cancelTarget !== "ALL" ? cancelTarget : undefined
+            cancelTicketMutation.mutate(target)
+            setCancelTarget(null)
+          }}
         />
       </div>
     )
@@ -222,19 +342,38 @@ function PaidEventSection({
         {maxQtyConfirme > 1 && (
           <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} />
         )}
+        <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
         {TotalLine}
-        {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} />}
+        {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} />}
         <Button
           size="sm"
           variant="ghost"
           className="w-full text-muted-foreground text-xs h-8"
           loading={setRsvpMutation.isPending}
-          onClick={() => setRsvpMutation.mutate({ rsvp: "ABSENT" }, {
-            onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
-          })}
+          onClick={() => setConfirmCancelReservation(true)}
         >
           Annuler la réservation
         </Button>
+        <ConfirmDialog
+          open={confirmCancelReservation}
+          onOpenChange={setConfirmCancelReservation}
+          title="Annuler la réservation ?"
+          description={(() => {
+            if (ticketQuantity <= 1) return "Vous pourrez réserver à nouveau si vous changez d'avis."
+            const paidCompanions = tickets.filter(t => !t.isSelf && t.ticketPaidAt).length
+            return paidCompanions > 0
+              ? `Vos invité·e·s pas encore payé·e·s seront retiré·e·s. Les ${paidCompanions} invité·e·s déjà payé·e·s en espèces resteront inscrit·e·s.`
+              : `Cela annulera aussi la réservation de vos ${ticketQuantity - 1} invité·e·s.`
+          })()}
+          confirmLabel="Annuler la réservation"
+          loading={setRsvpMutation.isPending}
+          onConfirm={() => {
+            setConfirmCancelReservation(false)
+            setRsvpMutation.mutate({ rsvp: "ABSENT" }, {
+              onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+            })
+          }}
+        />
       </div>
     )
   }
@@ -253,14 +392,15 @@ function PaidEventSection({
       {maxQty > 1 && (
         <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
       )}
+      <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
       {TotalLine}
-      {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} />}
+      {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} />}
       <Button
         size="sm"
         variant={connectEnabled ? "outline" : "default"}
         className="w-full"
         loading={setRsvpMutation.isPending}
-        onClick={() => setRsvpMutation.mutate({ rsvp: "CONFIRME", quantity }, {
+        onClick={() => setRsvpMutation.mutate({ rsvp: "CONFIRME", quantity, guests }, {
           onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
         })}
       >
@@ -319,6 +459,63 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
   )
 }
 
+function FreeEventGuestsPanel({
+  evenementId,
+  partySize,
+  remainingCapacity,
+}: {
+  evenementId:       string
+  partySize:         number
+  remainingCapacity: number | null
+}) {
+  const [quantity, setQuantity] = useState(partySize)
+  const [guests, setGuests]     = useState<GuestInput[]>([])
+  // Only pre-expand when the member already has companions — otherwise the panel would
+  // clutter every free-event card even for the common case of attending alone.
+  const [expanded, setExpanded] = useState(partySize > 1)
+  const mutation = useSetRsvp(evenementId)
+
+  useEffect(() => { setQuantity(partySize) }, [partySize])
+
+  const maxQty = remainingCapacity != null ? Math.min(10, partySize + remainingCapacity) : 10
+  const dirty  = quantity !== partySize || guests.length > 0
+
+  if (maxQty <= 1 && !dirty) return null
+
+  if (!expanded) {
+    return (
+      <button
+        type="button"
+        onClick={() => setExpanded(true)}
+        className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+      >
+        + Ajouter des invités
+      </button>
+    )
+  }
+
+  return (
+    <div className="space-y-2 rounded-lg border border-dashed p-2.5">
+      <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
+      <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
+      {dirty && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="w-full h-7 text-xs"
+          loading={mutation.isPending}
+          onClick={() => mutation.mutate({ rsvp: "CONFIRME", quantity, guests }, {
+            onSuccess: () => toast.success("Invités mis à jour"),
+            onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+          })}
+        >
+          Mettre à jour mes invités
+        </Button>
+      )}
+    </div>
+  )
+}
+
 function RsvpCounters({ counts }: { counts: RsvpCounts }) {
   const total = counts.CONFIRME + counts.PROVAVEL + counts.INCERTO + counts.ABSENT
   if (total === 0) return null
@@ -347,7 +544,7 @@ function EventCard({
   const participation    = ev.participations[0] ?? null
   const currentRsvp      = participation?.rsvp ?? null
   const ticketPaid       = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
-  const ticketQuantity   = participation?.quantity ?? 1
+  const ticketQuantity   = participation ? ev.partySize : 1
   const hasFee           = ev.price != null && Number(ev.price) > 0
   const remainingCapacity = ev.capacity != null ? Math.max(0, ev.capacity - ev.confirmedCount) : null
   const isFull           = ev.capacity != null && ev.confirmedCount >= ev.capacity && !ticketPaid && currentRsvp !== "CONFIRME"
@@ -463,6 +660,9 @@ function EventCard({
             {currentRsvp ? "Votre réponse :" : "Confirmez votre participation :"}
           </p>
           <RsvpButtons evenementId={ev.id} current={currentRsvp} />
+          {currentRsvp === "CONFIRME" && (
+            <FreeEventGuestsPanel evenementId={ev.id} partySize={ticketQuantity} remainingCapacity={remainingCapacity} />
+          )}
         </div>
       ) : null}
     </div>

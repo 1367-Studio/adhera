@@ -224,7 +224,7 @@ async function processEventReminder(
     include: {
       participations: {
         where:   { rsvp: { in: ["CONFIRME", "PROVAVEL"] } },
-        include: { membre: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } } },
+        include: { membre: { select: { phone: true } } },
       },
     },
   })
@@ -248,16 +248,17 @@ async function processEventReminder(
 
   for (const event of events) {
     const notifiedIds = notifiedByEvent.get(event.id) ?? new Set<string>()
-    const targets = event.participations.filter(p => !notifiedIds.has(p.membreId))
+    const targets = event.participations.filter(p => !(p.membreId && notifiedIds.has(p.membreId)))
 
-    // Email
+    // Email — name/email are snapshotted on the participation row itself, so this
+    // works the same for a member's own ticket and for a guest who never had a Membre.
     if (opts.emailEnabled) {
       const emailJobs = targets
-        .filter(p => p.membre.email)
+        .filter(p => p.email)
         .map(p => {
           const { subject, html } = eventReminderEmail({
-            firstName:       p.membre.firstName,
-            email:           p.membre.email!,
+            firstName:       p.firstName,
+            email:           p.email!,
             associationName: rule.association.name,
             eventTitle:      event.title,
             eventDate:       event.date,
@@ -265,7 +266,7 @@ async function processEventReminder(
             portalUrl,
             daysBefore,
           })
-          return { membreId: p.membreId, payload: { to: p.membre.email!, subject, html } }
+          return { membreId: p.membreId, payload: { to: p.email!, subject, html } }
         })
 
       for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
@@ -284,19 +285,19 @@ async function processEventReminder(
     if (opts.smsEnabled && rule.template.smsBody) {
       const smsBody = rule.template.smsBody
       const smsJobs = targets
-        .filter(p => p.membre.phone)
+        .filter(p => p.membre?.phone)
         .map(p => {
           const vars = buildVars({
-            prenom:         p.membre.firstName,
-            nom:            p.membre.lastName,
-            email:          p.membre.email ?? "",
+            prenom:         p.firstName,
+            nom:            p.lastName,
+            email:          p.email ?? "",
             association:    rule.association.name,
             slug:           rule.association.slug,
             titreEvenement: event.title,
             dateEvenement:  event.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" }),
             lieuEvenement:  event.location ?? undefined,
           })
-          return { membreId: p.membreId, to: p.membre.phone!, body: substituteVars(smsBody, vars) }
+          return { membreId: p.membreId, to: p.membre!.phone!, body: substituteVars(smsBody, vars) }
         })
 
       for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {

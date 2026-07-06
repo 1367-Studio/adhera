@@ -27,8 +27,8 @@ export const GET = withPortalAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   let evenementRsvp: string | null = null
   if (actualite.evenementId && membreId) {
-    const participation = await prisma.participation.findUnique({
-      where:  { membreId_evenementId: { membreId, evenementId: actualite.evenementId } },
+    const participation = await prisma.participation.findFirst({
+      where:  { membreId, evenementId: actualite.evenementId },
       select: { rsvp: true },
     })
     evenementRsvp = participation?.rsvp ?? null

@@ -313,22 +313,27 @@ model Evenement {
 
 model Participation {
   id              String      @id @default(cuid())
-  membreId        String
+  membreId        String?                          // null = convive sans compte membre
   evenementId     String
+  firstName       String                            // capturé sur la ligne — pas de join Membre pour l'affichage
+  lastName        String
+  email           String?
   present         Boolean     @default(false)
   rsvp            RsvpStatus?
   rsvpAt          DateTime?
   ticketPaidAt    DateTime?
-  quantity        Int         @default(1)
-  paidQuantity    Int?
-  stripeSessionId String?     @unique
+  amount          Decimal?    @db.Decimal(10, 2)     // montant payé pour CETTE place
+  orderId         String?                            // regroupe les places d'une même réservation/paiement
+  stripeSessionId String?
   createdAt       DateTime    @default(now())
 
-  membre    Membre    @relation(fields: [membreId], references: [id])
+  membre    Membre?   @relation(fields: [membreId], references: [id])
   evenement Evenement @relation(fields: [evenementId], references: [id])
+  incomes   Income[]
 
-  @@unique([membreId, evenementId])
   @@index([evenementId])
+  @@index([orderId])
+  @@index([membreId, evenementId])
 }
 
 model Cotisation {
@@ -778,6 +783,7 @@ model Income {
   id            String       @id @default(cuid())
   associationId String
   memberId      String?
+  participationId String?    // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
   amount        Decimal      @db.Decimal(10, 2)
   categoryId    String?
   paymentMethod String?
@@ -791,6 +797,7 @@ model Income {
 
   association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre          Membre?            @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  participation   Participation?     @relation(fields: [participationId], references: [id], onDelete: SetNull)
   category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 

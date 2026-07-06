@@ -59,12 +59,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const ids = data.map(e => e.id)
   const confirmedGroups = ids.length > 0
     ? await prisma.participation.groupBy({
-        by:    ["evenementId"],
-        where: { evenementId: { in: ids }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
-        _sum:  { quantity: true },
+        by:     ["evenementId"],
+        where:  { evenementId: { in: ids }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        _count: { _all: true },
       })
     : []
-  const confirmedMap = Object.fromEntries(confirmedGroups.map(g => [g.evenementId, g._sum.quantity ?? 0]))
+  const confirmedMap = Object.fromEntries(confirmedGroups.map(g => [g.evenementId, g._count._all]))
   const enriched = data.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
 
   return NextResponse.json({ data: enriched, total, page, limit, totalPages: Math.ceil(total / limit) })

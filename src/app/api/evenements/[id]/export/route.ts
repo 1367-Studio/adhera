@@ -25,23 +25,38 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const evenement = await prisma.evenement.findFirst({ where: { id, associationId } })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  const membres = await prisma.membre.findMany({
-    where:   { associationId, deletedAt: null, status: "ACTIF" },
-    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-    include: {
-      participations: {
-        where:  { evenementId: id },
-        select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true },
-      },
-    },
-  })
+  // Same reasoning as /participations: active members are listed even without a ticket
+  // (so a walk-in who never RSVP'd still shows up), and every Participation row —
+  // a member's named companions, a non-ACTIF member's own ticket, or a guest added at
+  // the door — is merged on top so nobody with a real ticket is missing from the export.
+  const [membres, participations] = await Promise.all([
+    prisma.membre.findMany({
+      where:   { associationId, deletedAt: null, status: "ACTIF" },
+      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+      select:  { id: true, firstName: true, lastName: true },
+    }),
+    prisma.participation.findMany({
+      where:  { evenementId: id },
+      select: { membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true },
+    }),
+  ])
+
+  const byMembre    = new Map(participations.filter(p => p.membreId).map(p => [p.membreId as string, p]))
+  const membreIds   = new Set(membres.map(m => m.id))
 
   const slug    = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
   const date    = format(evenement.date, "yyyy-MM-dd")
   const hasFee  = evenement.price != null && Number(evenement.price) > 0
 
-  const rows = membres.map((m, i) => {
-    const p = m.participations[0]
+  const allRows = [
+    ...membres.map(m => ({ firstName: m.firstName, lastName: m.lastName, email: byMembre.get(m.id)?.email ?? null, p: byMembre.get(m.id) })),
+    ...participations
+      .filter(p => !p.membreId || !membreIds.has(p.membreId))
+      .map(p => ({ firstName: p.firstName, lastName: p.lastName, email: p.email, p })),
+  ]
+
+  const rows = allRows.map((m, i) => {
+    const p = m.p
     const base = {
       "#":     i + 1,
       Nom:     sanitizeCell(m.lastName),
@@ -53,7 +68,6 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       return {
         ...base,
         Paiement: p?.ticketPaidAt ? "Payé" : p?.rsvp === "CONFIRME" ? "Réservé" : "",
-        Places:   p?.quantity ?? "",
         RSVP:     "",
       }
     }
@@ -66,7 +80,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     utils.book_append_sheet(wb, ws, "Présences")
 
     ws["!cols"] = hasFee
-      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 8 }, { wch: 14 }]
+      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 }]
       : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
 
     const buf = write(wb, { type: "buffer", bookType: "xlsx" })

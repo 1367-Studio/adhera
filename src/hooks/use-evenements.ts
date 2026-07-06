@@ -50,11 +50,13 @@ async function deleteEvenement(id: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression"))
 }
 
-async function setRsvp(evenementId: string, rsvp: string, quantity?: number) {
+export type GuestInput = { firstName: string; lastName: string; email?: string }
+
+async function setRsvp(evenementId: string, rsvp: string, quantity?: number, guests?: GuestInput[]) {
   const res = await fetch(`/api/portal/evenements/${evenementId}/rsvp`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ rsvp, ...(quantity != null && { quantity }) }),
+    body:    JSON.stringify({ rsvp, ...(quantity != null && { quantity }), ...(guests != null && { guests }) }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -71,24 +73,53 @@ async function revokeQr(evenementId: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
 }
 
-async function markPaid(evenementId: string, membreId: string, paidQuantity?: number) {
+// A row identifies either an existing ticket (participationId) or an active member who
+// hasn't RSVP'd yet (membreId) — the backend creates the ticket on first use in that case.
+export type RowRef = { participationId: string; membreId?: undefined } | { membreId: string; participationId?: undefined }
+
+async function markPaid(evenementId: string, ref: RowRef) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ membreId, ...(paidQuantity != null && { paidQuantity }) }),
+    body:    JSON.stringify(ref),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
 }
 
-async function togglePresence(evenementId: string, membreId: string, present: boolean) {
+async function togglePresence(evenementId: string, ref: RowRef, present: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ membreId, present }),
+    body: JSON.stringify({ ...ref, present }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
+}
+
+async function addGuest(evenementId: string, guest: GuestInput) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations/guest`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(guest),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
+async function editGuest(evenementId: string, participationId: string, guest: GuestInput) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations/${participationId}`, {
+    method:  "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(guest),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
+async function deleteGuest(evenementId: string, participationId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations/${participationId}`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
 }
 
 async function fetchEvenementsByMonth(year: number, month: number) {
@@ -188,7 +219,8 @@ export function useDeleteEvenement() {
 export function useSetRsvp(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ rsvp, quantity }: { rsvp: string; quantity?: number }) => setRsvp(evenementId, rsvp, quantity),
+    mutationFn: ({ rsvp, quantity, guests }: { rsvp: string; quantity?: number; guests?: GuestInput[] }) =>
+      setRsvp(evenementId, rsvp, quantity, guests),
     onSuccess:  () => Promise.all([
       qc.invalidateQueries({ queryKey: QK }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
@@ -203,8 +235,7 @@ export function useSetRsvp(evenementId: string) {
 export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ membreId, paidQuantity }: { membreId: string; paidQuantity?: number }) =>
-      markPaid(evenementId, membreId, paidQuantity),
+    mutationFn: (ref: RowRef) => markPaid(evenementId, ref),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
@@ -215,14 +246,47 @@ export function useMarkPaid(evenementId: string) {
 export function useTogglePresence(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ membreId, present }: { membreId: string; present: boolean }) =>
-      togglePresence(evenementId, membreId, present),
+    mutationFn: ({ present, ...ref }: RowRef & { present: boolean }) =>
+      togglePresence(evenementId, ref as RowRef, present),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
       qc.invalidateQueries({ queryKey: ["dashboard"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
       qc.invalidateQueries({ queryKey: ["membre-logs"] }),
+    ]),
+  })
+}
+
+export function useAddGuest(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (guest: GuestInput) => addGuest(evenementId, guest),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+      qc.invalidateQueries({ queryKey: QK }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    ]),
+  })
+}
+
+export function useEditGuest(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ participationId, ...guest }: GuestInput & { participationId: string }) =>
+      editGuest(evenementId, participationId, guest),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+  })
+}
+
+export function useDeleteGuest(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (participationId: string) => deleteGuest(evenementId, participationId),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+      qc.invalidateQueries({ queryKey: QK }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
     ]),
   })
 }

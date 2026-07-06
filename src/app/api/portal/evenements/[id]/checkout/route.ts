@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
+import { z } from "zod"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -10,9 +12,23 @@ const MAX_QUANTITY  = 10
 
 type Params = { id: string }
 
+const guestSchema = z.object({
+  firstName: z.string().min(1).max(80),
+  lastName:  z.string().min(1).max(80),
+  email:     z.string().email().optional().or(z.literal("")),
+})
+
+const bodySchema = z.object({
+  quantity: z.number().int().min(1).max(MAX_QUANTITY).optional().default(1),
+  guests:   z.array(guestSchema).max(MAX_QUANTITY - 1).optional().default([]),
+})
+
+class EventFullError extends Error {}
+
 export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId }) => {
-  const body     = await req.json().catch(() => ({})) as { quantity?: number }
-  const quantity = Math.max(1, Math.min(MAX_QUANTITY, Number(body?.quantity) || 1))
+  const parsed = bodySchema.safeParse(await req.json().catch(() => ({})))
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
+  const { quantity, guests } = parsed.data
 
   const evenement = await prisma.evenement.findFirst({
     where:   { id: evenementId, associationId: ctx.associationId },
@@ -30,71 +46,105 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   if (!connectAccount.charges_enabled)
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
-  const existing = await prisma.participation.findUnique({
-    where:  { membreId_evenementId: { membreId: ctx.membreId!, evenementId } },
-    select: { ticketPaidAt: true, stripeSessionId: true, quantity: true },
+  const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })
+  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
+
+  const selfTicket = await prisma.participation.findFirst({
+    where:  { membreId: membre.id, evenementId },
+    select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true },
   })
-  if (existing?.ticketPaidAt)
+  if (selfTicket?.ticketPaidAt)
     return NextResponse.json({ error: "Billet déjà acheté" }, { status: 422 })
 
-  // Reuse an already-open Stripe checkout session for the same quantity instead of
-  // minting a new one on every click/retry — otherwise a member can end up with two
-  // valid payable sessions for the same ticket, and a second real charge would have
-  // nothing in the app to reconcile against. If the quantity changed since the last
-  // attempt, expire the stale session so it can't still be paid in parallel.
-  let staleSessionId: string | null = null
-  if (existing?.stripeSessionId) {
-    const existingSession = await stripe.checkout.sessions.retrieve(existing.stripeSessionId).catch(() => null)
+  const orderId = selfTicket?.orderId ?? randomUUID()
+  const existingCompanions = selfTicket
+    ? await prisma.participation.findMany({
+        where:   { orderId, membreId: null },
+        orderBy: { createdAt: "asc" },
+        select:  { id: true, ticketPaidAt: true },
+      })
+    : []
+
+  // Whether an already-open Stripe session can still be reused depends only on the seat
+  // count matching (its line item quantity is locked in) — resolved after the names below
+  // are persisted, so reusing the link never leaves stale names sitting in the database.
+  const canReuseSession = existingCompanions.length === quantity - 1
+
+  const guestNames = Array.from({ length: quantity - 1 }, (_, i) => guests[i] ?? { firstName: "Invité", lastName: String(i + 2), email: undefined })
+
+  let ticketIds: string[]
+  try {
+    ticketIds = await prisma.$transaction(async (tx) => {
+      // Hold the slot(s) immediately so simultaneous requests can't oversell
+      let selfId: string
+      if (selfTicket) {
+        // Backfill orderId if this row predates any order (e.g. an admin marked the
+        // member present/paid before they ever RSVP'd) — otherwise the companions
+        // created below end up on an orderId the member's own row doesn't share,
+        // silently breaking group check-in/cancel for this booking.
+        await tx.participation.update({ where: { id: selfTicket.id }, data: { rsvp: "CONFIRME", orderId } })
+        selfId = selfTicket.id
+      } else {
+        const created = await tx.participation.create({
+          data: {
+            membreId: membre.id, evenementId, orderId, rsvp: "CONFIRME",
+            firstName: membre.firstName, lastName: membre.lastName, email: membre.email,
+          },
+          select: { id: true },
+        })
+        selfId = created.id
+      }
+
+      const companionIds: string[] = []
+      for (let i = 0; i < guestNames.length; i++) {
+        const g = guestNames[i]
+        if (existingCompanions[i]) {
+          await tx.participation.update({
+            where: { id: existingCompanions[i].id },
+            data:  { firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME" },
+          })
+          companionIds.push(existingCompanions[i].id)
+        } else {
+          const created = await tx.participation.create({
+            data:   { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME" },
+            select: { id: true },
+          })
+          companionIds.push(created.id)
+        }
+      }
+      if (existingCompanions.length > guestNames.length) {
+        // A companion who's already been paid in cash at the door must never be
+        // silently dropped just because the buyer later shrinks the party size.
+        const removable = existingCompanions.slice(guestNames.length).filter(c => !c.ticketPaidAt)
+        if (removable.length) {
+          await tx.participation.deleteMany({ where: { id: { in: removable.map(c => c.id) } } })
+        }
+      }
+
+      if (evenement.capacity != null) {
+        const occupied = await tx.participation.count({
+          where: { evenementId, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        })
+        if (occupied > evenement.capacity) throw new EventFullError()
+      }
+
+      return [selfId, ...companionIds]
+    })
+  } catch (err) {
+    if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    throw err
+  }
+
+  // Now that names/companions are persisted, decide whether the still-open session from
+  // a previous attempt can be handed back as-is, or must be expired and replaced.
+  if (selfTicket?.stripeSessionId) {
+    const existingSession = await stripe.checkout.sessions.retrieve(selfTicket.stripeSessionId).catch(() => null)
     if (existingSession?.status === "open") {
-      if (existing.quantity === quantity && existingSession.url) {
+      if (canReuseSession && existingSession.url) {
         return NextResponse.json({ url: existingSession.url })
       }
-      staleSessionId = existingSession.id
+      await stripe.checkout.sessions.expire(existingSession.id).catch(() => {})
     }
-  }
-
-  if (evenement.capacity != null) {
-    const { _sum } = await prisma.participation.aggregate({
-      where: {
-        evenementId,
-        membreId: { not: ctx.membreId! },
-        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
-      },
-      _sum: { quantity: true },
-    })
-    const usedSlots = _sum.quantity ?? 0
-    if (usedSlots + quantity > evenement.capacity)
-      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
-  }
-
-  // Hold the slot(s) immediately so simultaneous requests can't oversell
-  const participation = await prisma.participation.upsert({
-    where:  { membreId_evenementId: { membreId: ctx.membreId!, evenementId } },
-    create: { membreId: ctx.membreId!, evenementId, rsvp: "CONFIRME", quantity },
-    update: { rsvp: "CONFIRME", quantity },
-    select: { id: true },
-  })
-
-  // Re-verify capacity after upsert to handle race conditions
-  if (evenement.capacity != null) {
-    const { _sum: postCheck } = await prisma.participation.aggregate({
-      where: {
-        evenementId,
-        OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
-      },
-      _sum: { quantity: true },
-    })
-    if ((postCheck.quantity ?? 0) > evenement.capacity) {
-      await prisma.participation.update({
-        where: { id: participation.id },
-        data:  { rsvp: null, quantity: 1 },
-      })
-      return NextResponse.json({ error: "Événement complet" }, { status: 422 })
-    }
-  }
-
-  if (staleSessionId) {
-    await stripe.checkout.sessions.expire(staleSessionId).catch(() => {})
   }
 
   const amountCents    = Math.round(Number(evenement.price) * 100)
@@ -117,22 +167,22 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: evenement.association.stripeConnectId },
-      metadata:               { participationId: participation.id, associationId: ctx.associationId },
+      metadata:               { orderId, associationId: ctx.associationId },
     },
-    metadata:    { participationId: participation.id },
+    metadata:    { orderId },
     success_url: `${APP_URL}/portal/${slug}/evenements?ticket=success&eid=${evenementId}`,
     cancel_url:  `${APP_URL}/portal/${slug}/evenements?ticket=cancelled&eid=${evenementId}`,
-    // The capacity slot is already held (rsvp: CONFIRME) before this session exists, and
+    // The capacity slots are already held (rsvp: CONFIRME) before this session exists, and
     // only released back on `checkout.session.expired` — shorten Stripe's default 24h
-    // window (the minimum Stripe allows) so an abandoned checkout doesn't hold a spot all day.
+    // window (the minimum Stripe allows) so an abandoned checkout doesn't hold spots all day.
     expires_at:  Math.floor(Date.now() / 1000) + 30 * 60,
   })
 
   if (!checkoutSession.url)
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
 
-  await prisma.participation.update({
-    where: { id: participation.id },
+  await prisma.participation.updateMany({
+    where: { id: { in: ticketIds } },
     data:  { stripeSessionId: checkoutSession.id },
   })
 
@@ -141,7 +191,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     actorId:       ctx.userId,
     action:        "TICKET_CHECKOUT_STARTED",
     entity:        "Participation",
-    entityId:      participation.id,
+    entityId:      ticketIds[0],
     label:         evenement.title,
     metadata:      { quantity, amount: Number(evenement.price) * quantity },
   })

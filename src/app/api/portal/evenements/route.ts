@@ -32,13 +32,23 @@ async function getConfirmedCounts(evenementIds: string[]): Promise<Record<string
       evenementId: { in: evenementIds },
       OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }],
     },
-    _sum: { quantity: true },
+    _count: { _all: true },
   })
 
   const result: Record<string, number> = {}
   for (const id of evenementIds) result[id] = 0
-  for (const g of groups) result[g.evenementId] = g._sum.quantity ?? 0
+  for (const g of groups) result[g.evenementId] = g._count._all
   return result
+}
+
+async function getPartySizes(orderIds: string[]): Promise<Record<string, number>> {
+  if (!orderIds.length) return {}
+  const groups = await prisma.participation.groupBy({
+    by:     ["orderId"],
+    where:  { orderId: { in: orderIds } },
+    _count: { _all: true },
+  })
+  return Object.fromEntries(groups.map(g => [g.orderId!, g._count._all]))
 }
 
 export const GET = withPortalAuth(async (_req, ctx) => {
@@ -47,7 +57,7 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const now = new Date()
   const participationSelect = {
     where:  { membre: { userId } },
-    select: { present: true, rsvp: true, ticketPaidAt: true, quantity: true },
+    select: { present: true, rsvp: true, ticketPaidAt: true, orderId: true },
   }
 
   const LIMIT = 10
@@ -72,14 +82,23 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const upcoming        = upcomingRaw.slice(0, LIMIT)
   const past            = pastRaw.slice(0, LIMIT)
 
-  const allIds = [...upcoming, ...past].map(e => e.id)
-  const [rsvpCounts, confirmedCounts] = await Promise.all([
+  const allIds     = [...upcoming, ...past].map(e => e.id)
+  const orderIds   = [...upcoming, ...past]
+    .map(e => e.participations[0]?.orderId)
+    .filter((id): id is string => !!id)
+  const [rsvpCounts, confirmedCounts, partySizes] = await Promise.all([
     getRsvpCounts(allIds),
     getConfirmedCounts(allIds),
+    getPartySizes(orderIds),
   ])
 
   const withCounts = (list: typeof upcoming) =>
-    list.map(e => ({ ...e, rsvpCounts: rsvpCounts[e.id], confirmedCount: confirmedCounts[e.id] }))
+    list.map(e => ({
+      ...e,
+      rsvpCounts:     rsvpCounts[e.id],
+      confirmedCount: confirmedCounts[e.id],
+      partySize:      e.participations[0]?.orderId ? (partySizes[e.participations[0].orderId] ?? 1) : 1,
+    }))
 
   return NextResponse.json({
     upcoming:        withCounts(upcoming),
