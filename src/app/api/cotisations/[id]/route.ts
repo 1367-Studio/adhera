@@ -20,6 +20,19 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
+  const revertingStripePayment =
+    existing.status === "PAYE" &&
+    parsed.data.status !== undefined &&
+    parsed.data.status !== "PAYE" &&
+    !!existing.stripeSessionId
+
+  if (revertingStripePayment) {
+    return NextResponse.json(
+      { error: "Cette cotisation a été payée par carte — remboursez le paiement depuis Stripe avant de modifier son statut." },
+      { status: 422 },
+    )
+  }
+
   const { paidAt, note, amount, ...rest } = parsed.data
   const cotisation = await prisma.cotisation.update({
     where: { id },
@@ -88,6 +101,13 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
     include: { membre: { select: { firstName: true, lastName: true } } },
   })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
+
+  if (existing.status === "PAYE" && existing.stripeSessionId) {
+    return NextResponse.json(
+      { error: "Cette cotisation a été payée par carte — remboursez le paiement depuis Stripe avant de la supprimer." },
+      { status: 422 },
+    )
+  }
 
   await prisma.$transaction([
     prisma.income.deleteMany({
