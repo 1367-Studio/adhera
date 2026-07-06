@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useModules } from "@/lib/user-context"
+import { FinanceCharts } from "@/components/dashboard/finance-charts"
 
 type DashboardData = {
   membresActifs:         number
@@ -176,6 +177,8 @@ export function TableauDeBord() {
           )}
         </div>
       )}
+
+      <FinanceCharts />
     </div>
   )
 }
