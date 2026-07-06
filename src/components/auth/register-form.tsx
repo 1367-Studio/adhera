@@ -274,15 +274,13 @@ function PaymentForm({
 }) {
   const stripe   = useStripe()
   const elements = useElements()
-  const [loading,    setLoading]    = useState(false)
-  const [error,      setError]      = useState("")
-  const [emailTaken, setEmailTaken] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error,   setError]   = useState("")
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!stripe || !elements) return
     setError("")
-    setEmailTaken(false)
     setLoading(true)
 
     try {
@@ -326,7 +324,6 @@ function PaymentForm({
         }),
       })
       const data = await res.json()
-      if (res.status === 409) { setEmailTaken(true); return }
       if (!res.ok) throw new Error(data.error ?? "Erreur lors de la création du compte")
 
       onSuccess()
@@ -375,15 +372,6 @@ function PaymentForm({
           }}
         />
       </div>
-
-      {emailTaken && (
-        <div className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
-          Un compte existe déjà avec cette adresse.{" "}
-          <Link href="/login" className="underline underline-offset-2 font-medium">
-            Se connecter →
-          </Link>
-        </div>
-      )}
 
       {error && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>

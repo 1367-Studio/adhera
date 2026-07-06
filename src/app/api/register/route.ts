@@ -27,9 +27,10 @@ export async function POST(req: Request) {
 
   const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan } = parsed.data
 
-  const existingUser = await prisma.user.findFirst({ where: { email: email.toLowerCase() } })
-  if (existingUser) return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 })
-
+  // Email is only unique per-association (@@unique([email, associationId])), same as
+  // login/reset — an existing portal member (or admin of another association) must be
+  // able to register their own new paid association with the same address. The new
+  // association below always gets a fresh id, so there's nothing to collide with here.
   const priceId = plan === "yearly" ? STRIPE_PRICE_YEARLY : STRIPE_PRICE_MONTHLY
 
   let subscription: Awaited<ReturnType<typeof stripe.subscriptions.create>>
