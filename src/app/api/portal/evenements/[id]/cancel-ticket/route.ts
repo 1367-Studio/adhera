@@ -68,6 +68,17 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
     select: { id: true },
   })
 
+  // Find linked bank transactions before deleting the reconciliation link, mirroring
+  // what deleting an Income directly already does — otherwise a transaction reconciled
+  // against one of these seats is left pointing at nothing, stuck at MATCHED forever.
+  const reconciliations = paidIncomes.length
+    ? await prisma.bankReconciliation.findMany({
+        where:  { incomeId: { in: paidIncomes.map(i => i.id) } },
+        select: { bankTransactionId: true },
+      })
+    : []
+  const txIds = reconciliations.map(r => r.bankTransactionId)
+
   const selfTarget       = targets.find(t => t.membreId)
   const companionTargets = targets.filter(t => !t.membreId)
 
@@ -81,6 +92,10 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
     ...(companionTargets.length ? [prisma.participation.deleteMany({
       where: { id: { in: companionTargets.map(t => t.id) } },
     })] : []),
+    prisma.bankReconciliation.deleteMany({ where: { incomeId: { in: paidIncomes.map(i => i.id) } } }),
+    ...(txIds.length > 0
+      ? [prisma.bankTransaction.updateMany({ where: { id: { in: txIds } }, data: { status: "UNMATCHED" } })]
+      : []),
     prisma.income.deleteMany({ where: { id: { in: paidIncomes.map(i => i.id) } } }),
   ])
 

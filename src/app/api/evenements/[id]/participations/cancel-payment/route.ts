@@ -31,8 +31,27 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   if (participation.stripeSessionId)
     return NextResponse.json({ error: "Ce billet a été payé par carte — annulez-le depuis le paiement Stripe" }, { status: 422 })
 
+  const paidIncomes = await prisma.income.findMany({
+    where:  { participationId: participation.id, status: "PAID" },
+    select: { id: true },
+  })
+  // Find linked bank transactions before deleting the reconciliation link — otherwise a
+  // transaction reconciled against this income is left pointing at nothing, stuck at
+  // MATCHED forever.
+  const reconciliations = paidIncomes.length
+    ? await prisma.bankReconciliation.findMany({
+        where:  { incomeId: { in: paidIncomes.map(i => i.id) } },
+        select: { bankTransactionId: true },
+      })
+    : []
+  const txIds = reconciliations.map(r => r.bankTransactionId)
+
   await prisma.$transaction([
-    prisma.income.deleteMany({ where: { participationId: participation.id, status: "PAID" } }),
+    prisma.bankReconciliation.deleteMany({ where: { incomeId: { in: paidIncomes.map(i => i.id) } } }),
+    ...(txIds.length > 0
+      ? [prisma.bankTransaction.updateMany({ where: { id: { in: txIds } }, data: { status: "UNMATCHED" } })]
+      : []),
+    prisma.income.deleteMany({ where: { id: { in: paidIncomes.map(i => i.id) } } }),
     prisma.participation.update({
       where: { id: participation.id },
       data:  { ticketPaidAt: null, amount: null },
