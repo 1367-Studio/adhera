@@ -3,6 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
 const PAGE_SIZE = 50
+const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -64,4 +65,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalPages: Math.ceil(total / PAGE_SIZE),
     pageSize:   PAGE_SIZE,
   })
-})
+}, { roles: MANAGERS })

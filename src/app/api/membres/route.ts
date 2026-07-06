@@ -50,7 +50,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.membre.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-})
+}, { roles: MANAGERS })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, role: actorRole, userId } = ctx
