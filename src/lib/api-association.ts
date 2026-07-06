@@ -2,9 +2,10 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 
 type SessionUser = {
-  id?:            string
-  role?:          string
-  associationId?: string | null
+  id?:                 string
+  role?:               string
+  associationId?:      string | null
+  subscriptionStatus?: string | null
 }
 
 export type AssociationCtx = {
@@ -19,6 +20,10 @@ export async function getAssociationCtx(): Promise<AssociationCtx | NextResponse
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  // Mirrors the hard block enforced at the page level in src/proxy.ts.
+  if (u.subscriptionStatus === "CANCELLED") {
+    return NextResponse.json({ error: "Subscription cancelled" }, { status: 403 })
+  }
 
   return {
     associationId: u.associationId,

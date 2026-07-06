@@ -77,8 +77,12 @@ export function withPortalAuth<Params = Record<string, string>>(
     const session = await auth()
     if (!session?.user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const u = session.user as { id?: string; associationId?: string | null }
+    const u = session.user as { id?: string; associationId?: string | null; subscriptionStatus?: string | null }
     if (!u.associationId || !u.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    // Mirrors the hard block enforced at the page level in src/proxy.ts.
+    if (u.subscriptionStatus === "CANCELLED") {
+      return NextResponse.json({ error: "Subscription cancelled" }, { status: 403 })
+    }
 
     if (options.module) {
       const guard = await guardModule(u.associationId, options.module)

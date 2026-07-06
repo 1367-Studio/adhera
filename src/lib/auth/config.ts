@@ -219,44 +219,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       u.associationSlug = association?.slug ?? null
       return true
     },
-    authorized({ auth: session, request }) {
-      const isLoggedIn  = !!session?.user
-      const { pathname } = request.nextUrl
-
-      // Portal login pages — always public
-      if (/^\/portal\/[^/]+\/login/.test(pathname)) return true
-
-      const user = session?.user as { role?: string; subscriptionStatus?: string | null } | undefined
-      // A cancelled subscription hard-blocks the association's dashboard/portal — but never
-      // the platform's own SUPER_ADMIN accounts, which aren't tied to a single association's billing.
-      const isSuspended = isLoggedIn && user?.role !== "SUPER_ADMIN" && user?.subscriptionStatus === "CANCELLED"
-
-      // Portal protected pages — redirect to slug-specific login
-      const portalMatch = pathname.match(/^\/portal\/([^/]+)/)
-      if (portalMatch) {
-        if (!isLoggedIn || isSuspended) {
-          const slug     = portalMatch[1]
-          const loginUrl = new URL(`/portal/${slug}/login`, request.url)
-          if (!isLoggedIn) loginUrl.searchParams.set("callbackUrl", pathname)
-          if (isSuspended) loginUrl.searchParams.set("suspended", "1")
-          return Response.redirect(loginUrl)
-        }
-        return true
-      }
-
-      if (pathname.startsWith("/dashboard")) {
-        if (!isLoggedIn) return false
-        if (isSuspended) {
-          const loginUrl = new URL("/login", request.url)
-          loginUrl.searchParams.set("suspended", "1")
-          return Response.redirect(loginUrl)
-        }
-        return true
-      }
-
-      if (pathname.startsWith("/backoffice")) return isLoggedIn
-      return true
-    },
     async jwt({ token, user }) {
       if (user) {
         token.id              = user.id

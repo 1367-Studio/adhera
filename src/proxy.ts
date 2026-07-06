@@ -7,6 +7,11 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isLoggedIn = !!session?.user
 
+  const user = session?.user as { role?: string; subscriptionStatus?: string | null } | undefined
+  // A cancelled subscription hard-blocks the association's dashboard/portal — but never
+  // the platform's own SUPER_ADMIN accounts, which aren't tied to a single association's billing.
+  const isSuspended = isLoggedIn && user?.role !== "SUPER_ADMIN" && user?.subscriptionStatus === "CANCELLED"
+
   const isPortalPublic   = /^\/portal\/[^/]+\/(login|register)/.test(pathname)
   const portalMatch      = pathname.match(/^\/portal\/([^/]+)/)
   const isDashboard      = pathname.startsWith("/dashboard")
@@ -17,18 +22,24 @@ export async function proxy(request: NextRequest) {
 
   // Portal protected routes — ALWAYS redirect to slug-specific login, never /login
   if (portalMatch) {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || isSuspended) {
       const slug     = portalMatch[1]
       const loginUrl = new URL(`/portal/${slug}/login`, request.url)
-      loginUrl.searchParams.set("callbackUrl", pathname)
+      if (!isLoggedIn) loginUrl.searchParams.set("callbackUrl", pathname)
+      if (isSuspended) loginUrl.searchParams.set("suspended", "1")
       return NextResponse.redirect(loginUrl)
     }
     return NextResponse.next()
   }
 
   // Dashboard — redirect to admin login
-  if (isDashboard && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", request.url))
+  if (isDashboard) {
+    if (!isLoggedIn) return NextResponse.redirect(new URL("/login", request.url))
+    if (isSuspended) {
+      const loginUrl = new URL("/login", request.url)
+      loginUrl.searchParams.set("suspended", "1")
+      return NextResponse.redirect(loginUrl)
+    }
   }
 
   // Already logged in on admin login page → go to dashboard
