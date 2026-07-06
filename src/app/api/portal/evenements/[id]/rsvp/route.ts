@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
@@ -123,6 +124,11 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
     })
   } catch (err) {
     if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    // Double-click / network retry racing another request for the same (membreId,
+    // evenementId) self-ticket unique index — the other request already created it.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return NextResponse.json({ error: "Cette réservation vient d'être enregistrée — rechargez la page." }, { status: 409 })
+    }
     throw err
   }
 
