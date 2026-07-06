@@ -43,6 +43,19 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
     return NextResponse.json({ error: "QR Code expiré" }, { status: 422 })
   }
 
+  // The QR's own 24h expiry only bounds how long ago it was generated, not whether the
+  // event is actually happening now — an admin could generate it well before the event, or
+  // it could still be valid well after. Reject check-in outside a grace window around the
+  // event itself so a still-active link can't be used for a remote or off-day check-in.
+  const now         = new Date()
+  const eventStart  = evenement.date
+  const eventEnd    = evenement.endDate ?? new Date(eventStart.getTime() + 24 * 3_600_000)
+  const graceBefore = 3 * 3_600_000
+  const graceAfter  = 6 * 3_600_000
+  if (now < new Date(eventStart.getTime() - graceBefore) || now > new Date(eventEnd.getTime() + graceAfter)) {
+    return NextResponse.json({ error: "Le check-in n'est pas ouvert pour cet événement en ce moment." }, { status: 422 })
+  }
+
   const membre = await prisma.membre.findUnique({
     where:  { id: membreId! },
     select: { id: true, firstName: true, email: true },
