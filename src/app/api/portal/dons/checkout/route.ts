@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -34,6 +34,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   if (!assoc.stripeConnectId)
+    return NextResponse.json({ error: "Paiement en ligne non disponible" }, { status: 400 })
+  if (!(await connectAccountChargesEnabled(assoc.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible" }, { status: 400 })
 
   const don = await prisma.don.create({

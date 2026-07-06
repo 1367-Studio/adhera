@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -69,6 +69,8 @@ export async function POST(
   if (!modules.dons) return NextResponse.json({ error: "Module dons désactivé" }, { status: 403 })
 
   if (!assoc.stripeConnectId)
+    return NextResponse.json({ error: "Paiement en ligne non disponible" }, { status: 400 })
+  if (!(await connectAccountChargesEnabled(assoc.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible" }, { status: 400 })
 
   const body   = await req.json().catch(() => null)

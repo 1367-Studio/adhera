@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
 import { Prisma } from "@prisma/client"
-import { stripe } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { APP_URL } from "@/lib/env"
@@ -43,8 +43,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   if (!evenement.association.stripeConnectId)
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
-  const connectAccount = await stripe.accounts.retrieve(evenement.association.stripeConnectId)
-  if (!connectAccount.charges_enabled)
+  if (!(await connectAccountChargesEnabled(evenement.association.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
   const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })

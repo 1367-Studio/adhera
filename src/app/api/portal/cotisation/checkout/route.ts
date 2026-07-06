@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -18,6 +18,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Cotisation introuvable ou déjà réglée" }, { status: 404 })
 
   if (!cotisation.association.stripeConnectId || !cotisation.association.slug)
+    return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
+  if (!(await connectAccountChargesEnabled(cotisation.association.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
   // Reuse an already-open Stripe checkout session instead of minting a new one on every
