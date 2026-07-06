@@ -237,18 +237,21 @@ async function processEventReminder(
   const eventIds = events.map(e => e.id)
   const allLogs  = await prisma.automationLog.findMany({
     where:  { ruleId: rule.id, eventId: { in: eventIds } },
-    select: { membreId: true, eventId: true },
+    select: { participationId: true, eventId: true },
   })
+  // Keyed by participationId (not membreId) so a guest with no Membre account — whose
+  // participation row always has membreId null — is deduped correctly instead of being
+  // re-sent the reminder on every cron run that finds them still within the day window.
   const notifiedByEvent = new Map<string, Set<string>>()
   for (const log of allLogs) {
-    if (!log.eventId || !log.membreId) continue
+    if (!log.eventId || !log.participationId) continue
     if (!notifiedByEvent.has(log.eventId)) notifiedByEvent.set(log.eventId, new Set())
-    notifiedByEvent.get(log.eventId)!.add(log.membreId)
+    notifiedByEvent.get(log.eventId)!.add(log.participationId)
   }
 
   for (const event of events) {
     const notifiedIds = notifiedByEvent.get(event.id) ?? new Set<string>()
-    const targets = event.participations.filter(p => !(p.membreId && notifiedIds.has(p.membreId)))
+    const targets = event.participations.filter(p => !notifiedIds.has(p.id))
 
     // Email — name/email are snapshotted on the participation row itself, so this
     // works the same for a member's own ticket and for a guest who never had a Membre.
@@ -266,7 +269,7 @@ async function processEventReminder(
             portalUrl,
             daysBefore,
           })
-          return { membreId: p.membreId, payload: { to: p.email!, subject, html } }
+          return { membreId: p.membreId, participationId: p.id, payload: { to: p.email!, subject, html } }
         })
 
       for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
@@ -274,7 +277,7 @@ async function processEventReminder(
         const ok    = await sendEmailBatch(chunk.map(j => j.payload))
         if (ok) {
           await prisma.automationLog.createMany({
-            data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id, subject: j.payload.subject })),
+            data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, participationId: j.participationId, eventId: event.id, subject: j.payload.subject })),
           })
           sent += chunk.length
         }
@@ -297,7 +300,7 @@ async function processEventReminder(
             dateEvenement:  event.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" }),
             lieuEvenement:  event.location ?? undefined,
           })
-          return { membreId: p.membreId, to: p.membre!.phone!, body: substituteVars(smsBody, vars) }
+          return { membreId: p.membreId, participationId: p.id, to: p.membre!.phone!, body: substituteVars(smsBody, vars) }
         })
 
       for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
@@ -306,7 +309,7 @@ async function processEventReminder(
         const succeeded = chunk.filter((_, idx) => results[idx])
         if (succeeded.length > 0) {
           await prisma.automationLog.createMany({
-            data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, eventId: event.id })),
+            data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, participationId: j.participationId, eventId: event.id })),
           })
           sent += succeeded.length
         }

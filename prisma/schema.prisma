@@ -327,9 +327,10 @@ model Participation {
   stripeSessionId String?
   createdAt       DateTime    @default(now())
 
-  membre    Membre?   @relation(fields: [membreId], references: [id])
-  evenement Evenement @relation(fields: [evenementId], references: [id])
-  incomes   Income[]
+  membre         Membre?         @relation(fields: [membreId], references: [id])
+  evenement      Evenement       @relation(fields: [evenementId], references: [id])
+  incomes        Income[]
+  automationLogs AutomationLog[]
 
   @@index([evenementId])
   @@index([orderId])
@@ -505,15 +506,17 @@ model AutomationRule {
 }
 
 model AutomationLog {
-  id       String   @id @default(cuid())
-  ruleId   String
-  membreId String?
-  eventId  String?
-  subject  String?
-  sentAt   DateTime @default(now())
+  id              String   @id @default(cuid())
+  ruleId          String
+  membreId        String?
+  participationId String?  // dedup key for EVENT_REMINDER targets that have no Membre (guests) — membreId alone can't identify them
+  eventId         String?
+  subject         String?
+  sentAt          DateTime @default(now())
 
-  rule   AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
-  membre Membre?        @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  rule          AutomationRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  membre        Membre?        @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  participation Participation? @relation(fields: [participationId], references: [id], onDelete: SetNull)
 
   @@index([ruleId, sentAt])
   @@index([ruleId, eventId])
