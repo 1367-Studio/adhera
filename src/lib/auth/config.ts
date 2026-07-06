@@ -98,6 +98,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET names instead.
       clientId:     process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Without this, Google silently signs in with the browser's sole active session
+      // instead of showing the account chooser.
+      authorization: { params: { prompt: "select_account" } },
     }),
   ],
   pages: {
