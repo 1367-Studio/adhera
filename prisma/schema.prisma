@@ -830,7 +830,7 @@ model Expense {
 model BankReconciliation {
   id                String    @id @default(cuid())
   associationId     String
-  bankTransactionId String
+  bankTransactionId String    @unique
   incomeId          String?   @unique
   expenseId         String?   @unique
   matchScore        Int       @default(0)
@@ -845,7 +845,6 @@ model BankReconciliation {
   income          Income?         @relation(fields: [incomeId], references: [id], onDelete: SetNull)
   expense         Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
 
-  @@index([bankTransactionId])
   @@index([associationId])
 }
 

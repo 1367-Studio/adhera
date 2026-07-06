@@ -87,9 +87,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_EXPENSE", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { expenseId } })
       }
     } catch (err) {
-      // Unique constraint on incomeId/expenseId — this record is already linked to
-      // another bank transaction.
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        const target = Array.isArray(err.meta?.target) ? err.meta.target as string[] : []
+        // Unique constraint on bankTransactionId — a concurrent request already matched
+        // this same transaction between our status check above and this insert.
+        if (target.includes("bankTransactionId")) {
+          return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
+        }
+        // Unique constraint on incomeId/expenseId — this record is already linked to
+        // another bank transaction.
         return NextResponse.json({ error: "Cette recette/dépense est déjà conciliée avec une autre transaction" }, { status: 409 })
       }
       throw err
