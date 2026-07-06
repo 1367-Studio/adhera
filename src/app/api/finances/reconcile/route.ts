@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { reconcileActionSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { computeMatchScore } from "@/lib/finance/match-score"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -46,8 +47,16 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
     try {
       if (incomeId) {
-        const income = await prisma.income.findFirst({ where: { id: incomeId, associationId } })
+        const income = await prisma.income.findFirst({
+          where:   { id: incomeId, associationId },
+          include: { membre: { select: { firstName: true, lastName: true } } },
+        })
         if (!income) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
+
+        const matchScore = computeMatchScore(
+          { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+          { amount: income.amount, date: income.date, reference: income.reference, membre: income.membre },
+        )
 
         await prisma.$transaction([
           prisma.bankReconciliation.create({
@@ -55,7 +64,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
               associationId,
               bankTransactionId,
               incomeId,
-              matchScore:      0,
+              matchScore,
               matchedBy:       "USER",
               matchedByUserId: userId,
             },
@@ -69,13 +78,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
         const expense = await prisma.expense.findFirst({ where: { id: expenseId, associationId } })
         if (!expense) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
 
+        const matchScore = computeMatchScore(
+          { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+          { amount: expense.amount, date: expense.date, reference: null, membre: null },
+        )
+
         await prisma.$transaction([
           prisma.bankReconciliation.create({
             data: {
               associationId,
               bankTransactionId,
               expenseId,
-              matchScore:      0,
+              matchScore,
               matchedBy:       "USER",
               matchedByUserId: userId,
             },

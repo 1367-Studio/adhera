@@ -121,8 +121,10 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   MEMBRE_DELETED:           { label: "Membre archivé",      color: DEL    },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscrit (portail)",   color: SKY    },
   MEMBRE_ROLE_CHANGED:      { label: "Rôle modifié",        color: BLUE   },
+  MEMBRE_ACCESS_CREATED:    { label: "Accès créé",          color: BLUE_L },
   PROFIL_UPDATED:           { label: "Profil modifié",      color: BLUE_L },
   EMAIL_SENT_BULK:          { label: "E-mail envoyé",       color: AMB_L  },
+  SMS_SENT_BULK:            { label: "SMS envoyé",          color: AMB_L  },
   // Actualités (amber)
   ACTUALITE_CREATED:        { label: "Actualité créée",     color: AMB    },
   ACTUALITE_UPDATED:        { label: "Actualité modifiée",  color: AMB_L  },
@@ -133,16 +135,38 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   EVENEMENT_DELETED:        { label: "Événement supprimé",  color: DEL    },
   PRESENCE_MARKED:          { label: "Présence marquée",    color: TEAL   },
   RSVP_UPDATED:             { label: "RSVP mis à jour",     color: VIO    },
+  PARTICIPATION_GUEST_UPDATED: { label: "Invité modifié",   color: VIO_L  },
+  PARTICIPATION_GUEST_REMOVED: { label: "Invité retiré",    color: DEL    },
   TICKET_CHECKOUT_STARTED:  { label: "Paiement initié",     color: VIO_L  },
   TICKET_PAID:              { label: "Ticket payé",         color: EME    },
+  TICKET_PAYMENT_CANCELLED: { label: "Paiement annulé",     color: DEL    },
+  TICKET_REFUNDED:          { label: "Ticket remboursé",    color: DEL    },
   // Cotisations (emerald)
   COTISATION_CREATED:       { label: "Cotisation créée",    color: EME    },
   COTISATION_UPDATED:       { label: "Cotisation modifiée", color: EME_L  },
   COTISATION_DELETED:       { label: "Cotisation supprimée",color: DEL    },
-  // Trésorerie (cyan)
-  TRESORERIE_CREATED:       { label: "Entrée ajoutée",      color: CYA    },
-  TRESORERIE_UPDATED:       { label: "Entrée modifiée",     color: CYA_L  },
-  TRESORERIE_DELETED:       { label: "Entrée supprimée",    color: DEL    },
+  COTISATION_REFUNDED:      { label: "Cotisation remboursée", color: DEL  },
+  // Finances (cyan)
+  BANK_ACCOUNT_CREATED:     { label: "Compte bancaire ajouté",   color: CYA   },
+  BANK_ACCOUNT_UPDATED:     { label: "Compte bancaire modifié",  color: CYA_L },
+  BANK_ACCOUNT_DELETED:     { label: "Compte bancaire supprimé", color: DEL   },
+  BANK_STATEMENT_IMPORTED:  { label: "Relevé importé",           color: CYA   },
+  BANK_TX_STATUS_UPDATED:   { label: "Transaction mise à jour",  color: CYA_L },
+  TX_IGNORED:               { label: "Transaction ignorée",      color: SLA_L },
+  TX_MARKED_DUPLICATE:      { label: "Marquée doublon",          color: SLA_L },
+  TX_MATCHED_INCOME:        { label: "Recette conciliée",        color: CYA   },
+  TX_MATCHED_EXPENSE:       { label: "Dépense conciliée",        color: CYA   },
+  TX_UNMATCHED:             { label: "Conciliation annulée",     color: SLA_L },
+  INCOME_CREATED:           { label: "Recette ajoutée",          color: CYA   },
+  INCOME_UPDATED:           { label: "Recette modifiée",         color: CYA_L },
+  INCOME_DELETED:           { label: "Recette supprimée",        color: DEL   },
+  EXPENSE_CREATED:          { label: "Dépense ajoutée",          color: CYA   },
+  EXPENSE_UPDATED:          { label: "Dépense modifiée",         color: CYA_L },
+  EXPENSE_DELETED:          { label: "Dépense supprimée",        color: DEL   },
+  FINANCE_CATEGORY_CREATED: { label: "Catégorie créée",          color: CYA   },
+  FINANCE_CATEGORY_UPDATED: { label: "Catégorie modifiée",       color: CYA_L },
+  FINANCE_CATEGORY_DELETED: { label: "Catégorie supprimée",      color: DEL   },
+  PARTIAL_REFUND_RECEIVED:  { label: "Remboursement partiel",    color: AMB_L },
   // Matériel (orange)
   MATERIEL_CREATED:         { label: "Matériel ajouté",     color: ORA    },
   MATERIEL_UPDATED:         { label: "Matériel modifié",    color: ORA_L  },
@@ -190,8 +214,10 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   BOUTIQUE_PRODUIT_DELETED:  { label: "Produit supprimé",       color: DEL    },
   BOUTIQUE_COMMANDE_CREATED: { label: "Commande créée",         color: PINK   },
   BOUTIQUE_COMMANDE_UPDATED: { label: "Commande mise à jour",   color: PINK_L },
+  COMMANDE_REFUNDED:         { label: "Commande remboursée",    color: DEL    },
   // Dons (teal)
   DON_PAID:                 { label: "Don reçu",             color: TEAL   },
+  DON_REFUNDED:              { label: "Don remboursé",       color: DEL    },
   // Cotisation Stripe
   COTISATION_PAID:          { label: "Cotisation payée (Stripe)", color: EME },
   // Association / Site (rose)
@@ -222,6 +248,12 @@ const ENTITY_LABELS: Record<string, string> = {
   SondageReponse:   "Sondages – Réponses",
   Meeting:          "Réunions",
   Don:              "Dons",
+  BankAccount:      "Comptes bancaires",
+  BankTransaction:  "Transactions bancaires",
+  Income:           "Recettes",
+  Expense:          "Dépenses",
+  FinanceCategory:  "Catégories finances",
+  Payment:          "Paiements",
 }
 
 const GENERIC_FIELD_LABELS: Record<string, Record<string, string>> = {
@@ -251,6 +283,11 @@ const ENTITY_OPTIONS = [
   { value: "SondageReponse",   label: "Sondages – Réponses"   },
   { value: "Meeting",          label: "Réunions"              },
   { value: "Don",              label: "Dons"                  },
+  { value: "BankAccount",      label: "Comptes bancaires"     },
+  { value: "BankTransaction",  label: "Transactions bancaires" },
+  { value: "Income",           label: "Recettes"               },
+  { value: "Expense",          label: "Dépenses"               },
+  { value: "FinanceCategory",  label: "Catégories finances"    },
 ]
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
