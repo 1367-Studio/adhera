@@ -102,7 +102,7 @@ export default function NouveauSondagePage() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 py-4">
         <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeftIcon className="size-4" />
         </Button>
