@@ -75,6 +75,13 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   let ticketIds: string[]
   try {
     ticketIds = await prisma.$transaction(async (tx) => {
+      if (evenement.capacity != null) {
+        // Serialize concurrent checkouts for this event so the occupancy count below
+        // can't race with another request also counting seats before either commits —
+        // without this, two buyers going for the last spot at the same time could both pass.
+        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenementId} FOR UPDATE`
+      }
+
       // Hold the slot(s) immediately so simultaneous requests can't oversell
       let selfId: string
       if (selfTicket) {

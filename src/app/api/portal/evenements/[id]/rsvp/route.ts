@@ -55,6 +55,13 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   let participationId: string
   try {
     participationId = await prisma.$transaction(async (tx) => {
+      if (rsvp === "CONFIRME" && evenement.capacity != null) {
+        // Serialize concurrent RSVPs for this event so the occupancy count below can't
+        // race with another request also counting seats before either commits — without
+        // this, two people confirming for the last spot at the same time could both pass.
+        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenementId} FOR UPDATE`
+      }
+
       let selfId: string
       if (selfTicket) {
         // Backfill orderId if this row predates any order (e.g. an admin marked the
