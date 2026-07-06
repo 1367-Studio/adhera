@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -689,6 +689,16 @@ function SkeletonCard() {
 }
 
 export default function EvenementsPortalPage() {
+  return (
+    <Suspense fallback={null}>
+      <EvenementsPortalPageInner />
+    </Suspense>
+  )
+}
+
+// useSearchParams() (for the Stripe ticket=success/cancelled redirect) requires a
+// Suspense boundary above it, or `next build` fails prerendering this page.
+function EvenementsPortalPageInner() {
   const searchParams   = useSearchParams()
   const router         = useRouter()
   const queryClient    = useQueryClient()

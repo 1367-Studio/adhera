@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
 import { format } from "date-fns"
@@ -43,6 +43,14 @@ function currentYear() {
 }
 
 export default function CotisationPortalPage() {
+  return (
+    <Suspense fallback={null}>
+      <CotisationPortalPageInner />
+    </Suspense>
+  )
+}
+
+function CotisationPortalPageInner() {
   const searchParams = useSearchParams()
   const [paymentEnabled, setPaymentEnabled] = useState(false)
 

@@ -6,7 +6,7 @@ import { ExternalLinkIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, CreditCa
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
-import { useEffect } from "react"
+import { useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 
 type ConnectStatus = {
@@ -25,6 +25,16 @@ const statusConfig = {
 }
 
 export function StripeConnectSettings({ canEdit }: { canEdit: boolean }) {
+  return (
+    <Suspense fallback={null}>
+      <StripeConnectSettingsInner canEdit={canEdit} />
+    </Suspense>
+  )
+}
+
+// useSearchParams() (for the Stripe Connect return redirect) requires a Suspense
+// boundary above it, or `next build` fails prerendering whatever page renders this.
+function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
   const searchParams = useSearchParams()
   const qc           = useQueryClient()
 

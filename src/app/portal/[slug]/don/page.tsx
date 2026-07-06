@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { HeartHandshakeIcon, InfoIcon, ShieldCheckIcon } from "lucide-react"
@@ -15,6 +15,14 @@ type AssocInfo = {
 }
 
 export default function PublicDonPage() {
+  return (
+    <Suspense fallback={null}>
+      <PublicDonPageInner />
+    </Suspense>
+  )
+}
+
+function PublicDonPageInner() {
   const { slug }       = useParams<{ slug: string }>()
   const searchParams   = useSearchParams()
 

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -40,6 +40,14 @@ const STATUS_VARIANT: Record<string, "secondary" | "default" | "destructive"> = 
 }
 
 export default function MesCommandesPage() {
+  return (
+    <Suspense fallback={null}>
+      <MesCommandesPageInner />
+    </Suspense>
+  )
+}
+
+function MesCommandesPageInner() {
   const { slug }       = useParams<{ slug: string }>()
   const router         = useRouter()
   const searchParams   = useSearchParams()

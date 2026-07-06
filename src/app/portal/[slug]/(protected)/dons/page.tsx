@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useParams } from "next/navigation"
 import { format } from "date-fns"
@@ -25,6 +25,14 @@ type Don = {
 }
 
 export default function DonsPortalPage() {
+  return (
+    <Suspense fallback={null}>
+      <DonsPortalPageInner />
+    </Suspense>
+  )
+}
+
+function DonsPortalPageInner() {
   const { slug }       = useParams<{ slug: string }>()
   const searchParams   = useSearchParams()
 

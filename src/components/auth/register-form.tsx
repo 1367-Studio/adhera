@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
@@ -414,6 +414,16 @@ type Step = "info" | "payment" | "done"
 const GOOGLE_PREFILL_KEY = "adhera-google-prefill"
 
 export function RegisterForm() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterFormInner />
+    </Suspense>
+  )
+}
+
+// useSearchParams() (for the Google prefill) requires a Suspense boundary above it, or
+// `next build` fails prerendering this page — the wrapper above provides that.
+function RegisterFormInner() {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
