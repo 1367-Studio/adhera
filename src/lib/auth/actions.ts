@@ -1,6 +1,7 @@
 "use server"
 
-import { signIn, signOut } from "@/lib/auth/config"
+import { cookies } from "next/headers"
+import { signIn, signOut, OAUTH_PORTAL_SLUG_COOKIE } from "@/lib/auth/config"
 import { AuthError } from "next-auth"
 
 type LoginState = { error?: string } | undefined
@@ -25,4 +26,23 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
 
 export async function logout(redirectTo = "/login") {
   await signOut({ redirectTo })
+}
+
+export async function signInWithGoogleDashboard() {
+  await signIn("google", { redirectTo: "/dashboard" })
+}
+
+export async function signInWithGooglePortal(slug: string, callbackUrl?: string) {
+  const cookieStore = await cookies()
+  // Read back by the signIn callback in auth/config.ts to know which association this
+  // Google sign-in is scoped to — short-lived since it only needs to survive the redirect
+  // to Google's consent screen and back.
+  cookieStore.set(OAUTH_PORTAL_SLUG_COOKIE, slug, {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge:   600,
+    path:     "/",
+  })
+  await signIn("google", { redirectTo: callbackUrl ?? `/portal/${slug}/actualites` })
 }

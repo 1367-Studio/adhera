@@ -1,13 +1,31 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import Google from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
+import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const credentialsSchema = z.object({
   email:    z.string().email(),
   password: z.string().min(1),
 })
+
+// Set by signInWithGooglePortal() right before redirecting to Google — its presence tells
+// the signIn callback below this is a portal (member) sign-in scoped to one association,
+// as opposed to a dashboard (staff) sign-in with no association context at all.
+export const OAUTH_PORTAL_SLUG_COOKIE = "oauth-portal-slug"
+
+function generateRandomPassword(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
+  return Array.from({ length: 24 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+}
+
+function splitName(fullName: string | null | undefined): { firstName: string; lastName: string } {
+  const parts = (fullName ?? "").trim().split(/\s+/)
+  return { firstName: parts[0] || "Membre", lastName: parts.slice(1).join(" ") || "" }
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -74,6 +92,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
+    Google({
+      // Explicit, rather than relying on Google's default env var auto-detection
+      // (AUTH_GOOGLE_ID/AUTH_GOOGLE_SECRET) — this project's .env uses the more common
+      // GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET names instead.
+      clientId:     process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
   ],
   pages: {
     signIn: "/login",
@@ -81,6 +106,116 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: { strategy: "jwt" },
   callbacks: {
+    // Google has no notion of our associations/roles, so this callback resolves (or, for
+    // the portal, creates) the matching internal User/Membre and stamps the extra fields
+    // the jwt callback below already expects from the Credentials provider's authorize().
+    async signIn({ user, account, profile }) {
+      if (account?.provider !== "google") return true
+
+      const email = (profile?.email ?? user.email ?? "").toLowerCase()
+      if (!email) return false
+
+      const cookieStore = await cookies()
+      const slug = cookieStore.get(OAUTH_PORTAL_SLUG_COOKIE)?.value ?? null
+      if (slug) cookieStore.delete(OAUTH_PORTAL_SLUG_COOKIE)
+
+      const { firstName, lastName } = splitName(profile?.name ?? user.name)
+      const u = user as typeof user & { role?: string; associationId?: string | null; associationSlug?: string | null }
+
+      if (slug) {
+        // Portal (member) sign-in — the association is known from the URL the button was
+        // clicked on, carried across the Google redirect via a short-lived cookie.
+        const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
+        if (!association) return `/portal/${slug}/login?error=association`
+
+        let dbUser = await prisma.user.findFirst({
+          where: { email, associationId: association.id, deletedAt: null },
+        })
+
+        if (!dbUser) {
+          const passwordHash = await bcrypt.hash(generateRandomPassword(), 12)
+          let membreId: string | null = null
+
+          dbUser = await prisma.$transaction(async (tx) => {
+            const created = await tx.user.create({
+              data: {
+                email, name: `${firstName} ${lastName}`.trim() || email,
+                passwordHash, role: "MEMBRE", associationId: association.id,
+              },
+            })
+
+            // Link to an existing unlinked Membre by email if available, same as the
+            // portal self-registration route, to avoid creating a duplicate person.
+            const existingMembre = await tx.membre.findFirst({
+              where: { email, associationId: association.id, userId: null, deletedAt: null },
+              select: { id: true },
+            })
+            if (existingMembre) {
+              await tx.membre.update({
+                where: { id: existingMembre.id },
+                data:  { userId: created.id, firstName, lastName, status: "ACTIF" },
+              })
+              membreId = existingMembre.id
+            } else {
+              const membre = await tx.membre.create({
+                data: { firstName, lastName, email, associationId: association.id, userId: created.id, status: "ACTIF" },
+              })
+              membreId = membre.id
+            }
+            return created
+          })
+
+          if (membreId) {
+            await writeActivityLog({
+              associationId: association.id,
+              action:        "MEMBRE_PORTAL_REGISTERED",
+              entity:        "Membre",
+              entityId:      membreId,
+              label:         `${firstName} ${lastName}`.trim() || email,
+              metadata:      { via: "google" },
+            })
+          }
+        }
+
+        if (!dbUser.active) return `/portal/${slug}/login?error=inactive`
+
+        u.id              = dbUser.id
+        u.email           = dbUser.email
+        u.name            = dbUser.name
+        u.role            = dbUser.role
+        u.associationId   = dbUser.associationId
+        u.associationSlug = slug
+        return true
+      }
+
+      // Dashboard (staff) sign-in — no association context at all. Never auto-create here:
+      // that would let anyone with a Google account self-promote into some association's
+      // admin. Instead route to the existing paid-signup wizard with the name/email
+      // prefilled; nothing is written to the database unless that flow completes.
+      const candidates = await prisma.user.findMany({ where: { email, deletedAt: null, active: true } })
+
+      if (candidates.length === 0) {
+        const params = new URLSearchParams({ g_name: `${firstName} ${lastName}`.trim(), g_email: email })
+        return `/register?${params.toString()}`
+      }
+      // Email is unique per-association, not globally — the same address can legitimately
+      // belong to unrelated accounts in different associations. Google only proves email
+      // ownership, not which of several accounts to open, so fall back to password login.
+      if (candidates.length > 1) return "/login?error=multi"
+
+      const dbUser = candidates[0]
+      const association = dbUser.associationId
+        ? await prisma.association.findUnique({ where: { id: dbUser.associationId }, select: { slug: true } })
+        : null
+
+      u.id              = dbUser.id
+      u.email           = dbUser.email
+      u.name            = dbUser.name
+      u.role            = dbUser.role
+      u.associationId   = dbUser.associationId
+      u.associationSlug = association?.slug ?? null
+      return true
+    },
     authorized({ auth: session, request }) {
       const isLoggedIn  = !!session?.user
       const { pathname } = request.nextUrl

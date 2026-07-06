@@ -1,16 +1,19 @@
 "use client"
 
 import Link from "next/link"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { authenticate } from "@/lib/auth/actions"
+import { authenticate, signInWithGoogleDashboard } from "@/lib/auth/actions"
 import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { GoogleIcon } from "@/components/icons/google-icon"
 import { LoaderCircleIcon } from "lucide-react"
 
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
+  const [googleLoading, setGoogleLoading] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     mode: "onSubmit",
@@ -24,6 +27,15 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
 
     const result = await authenticate(undefined, formData)
     if (result?.error) toast.error(result.error)
+  }
+
+  async function handleGoogle() {
+    setGoogleLoading(true)
+    try {
+      await signInWithGoogleDashboard()
+    } finally {
+      setGoogleLoading(false)
+    }
   }
 
   return (
@@ -60,6 +72,26 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         {isSubmitting && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
         Se connecter
+      </Button>
+
+      <div className="relative flex items-center gap-2 py-1">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-xs text-muted-foreground/60 shrink-0">ou</span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        disabled={googleLoading}
+        onClick={handleGoogle}
+      >
+        {googleLoading
+          ? <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
+          : <GoogleIcon className="mr-2 size-4" />
+        }
+        Continuer avec Google
       </Button>
     </form>
   )

@@ -1,16 +1,19 @@
 "use client"
 
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import Link from "next/link"
-import { authenticate } from "@/lib/auth/actions"
+import { authenticate, signInWithGooglePortal } from "@/lib/auth/actions"
 import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { GoogleIcon } from "@/components/icons/google-icon"
 import { LoaderCircleIcon } from "lucide-react"
 
 export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackUrl?: string }) {
+  const [googleLoading, setGoogleLoading] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     mode:     "onSubmit",
@@ -25,6 +28,15 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
 
     const result = await authenticate(undefined, formData)
     if (result?.error) toast.error(result.error)
+  }
+
+  async function handleGoogle() {
+    setGoogleLoading(true)
+    try {
+      await signInWithGooglePortal(slug, callbackUrl)
+    } finally {
+      setGoogleLoading(false)
+    }
   }
 
   return (
@@ -68,6 +80,20 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
           <span className="text-xs text-muted-foreground/60 shrink-0">ou</span>
           <div className="flex-1 h-px bg-border" />
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          disabled={googleLoading}
+          onClick={handleGoogle}
+        >
+          {googleLoading
+            ? <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
+            : <GoogleIcon className="mr-2 size-4" />
+          }
+          Continuer avec Google
+        </Button>
 
         <Link
           href={`/portal/${slug}/register`}

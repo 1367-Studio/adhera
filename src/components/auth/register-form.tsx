@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
@@ -410,12 +411,42 @@ function PaymentForm({
 
 type Step = "info" | "payment" | "done"
 
+const GOOGLE_PREFILL_KEY = "adhera-google-prefill"
+
 export function RegisterForm() {
+  const router       = useRouter()
+  const searchParams = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
   const [plan,         setPlan]         = useState<Plan>("monthly")
   const [info,         setInfo]         = useState<Info | null>(null)
   const [customerId,   setCustomerId]   = useState("")
   const [clientSecret, setClientSecret] = useState("")
+  const [googlePrefill, setGooglePrefill] = useState<Partial<Info> | null>(null)
+
+  // Arriving from "Continuer avec Google" on /login (no matching account found there):
+  // the name/email come back as query params, get stashed in localStorage so they survive
+  // a refresh mid-wizard, and the URL is cleaned up immediately.
+  useEffect(() => {
+    const gName  = searchParams.get("g_name")
+    const gEmail = searchParams.get("g_email")
+    if (gName || gEmail) {
+      const [firstName, ...rest] = (gName ?? "").trim().split(/\s+/)
+      const prefill = { firstName: firstName || "", lastName: rest.join(" "), email: gEmail ?? "" }
+      localStorage.setItem(GOOGLE_PREFILL_KEY, JSON.stringify(prefill))
+      setGooglePrefill(prefill)
+      router.replace("/register")
+      return
+    }
+    const stored = localStorage.getItem(GOOGLE_PREFILL_KEY)
+    if (stored) {
+      try { setGooglePrefill(JSON.parse(stored)) } catch { /* ignore malformed value */ }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (step === "done") localStorage.removeItem(GOOGLE_PREFILL_KEY)
+  }, [step])
 
   if (step === "done") {
     return (
@@ -442,7 +473,11 @@ export function RegisterForm() {
 
       {step === "info" && (
         <StepInfo
-          defaultValues={info ?? undefined}
+          // react-hook-form only reads defaultValues once at mount — force a remount once
+          // the Google prefill (read from localStorage/query params after mount) arrives,
+          // otherwise the fields would stay empty despite the prop changing.
+          key={info ? "edit" : googlePrefill ? "google-prefill" : "empty"}
+          defaultValues={info ?? googlePrefill ?? undefined}
           existingCustomerId={customerId || undefined}
           onNext={(i, cid, cs) => {
             setInfo(i)
