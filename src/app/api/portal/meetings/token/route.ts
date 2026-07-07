@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { AccessToken } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
 export const POST = withPortalAuth(async (req, ctx) => {
   const { associationId, membreId } = ctx
@@ -17,7 +18,14 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   const participant = await prisma.meetingParticipant.findFirst({
     where: { meetingId, membreId: membre.id },
-    include: { meeting: { select: { roomName: true, associationId: true, status: true } } },
+    include: {
+      meeting: {
+        select: {
+          id: true, roomName: true, associationId: true, status: true,
+          livekitUrl: true, livekitApiKey: true, livekitApiSecret: true,
+        },
+      },
+    },
   })
   if (!participant || participant.meeting.associationId !== associationId) {
     return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
@@ -40,10 +48,18 @@ export const POST = withPortalAuth(async (req, ctx) => {
     })
   }
 
+  let livekit
+  try {
+    livekit = await getLiveKitConfigForMeeting(participant.meeting)
+  } catch (err) {
+    if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
+    throw err
+  }
+
   const identity = `membre-${membre.id}`
   const name     = `${membre.firstName} ${membre.lastName}`
 
-  const at = new AccessToken(process.env.LIVEKIT_API_KEY!, process.env.LIVEKIT_API_SECRET!, {
+  const at = new AccessToken(livekit.apiKey, livekit.apiSecret, {
     identity,
     name,
     ttl: "4h",
@@ -51,5 +67,5 @@ export const POST = withPortalAuth(async (req, ctx) => {
   at.addGrant({ roomJoin: true, room: participant.meeting.roomName, canPublish: true, canSubscribe: true })
 
   const token = await at.toJwt()
-  return NextResponse.json({ token, roomName: participant.meeting.roomName, serverUrl: process.env.LIVEKIT_URL })
+  return NextResponse.json({ token, roomName: participant.meeting.roomName, serverUrl: livekit.url })
 }, { module: "reunions" })

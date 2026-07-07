@@ -3,15 +3,12 @@ import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload } from "live
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { getLiveKitConfigForMeeting, LiveKitConfigError, type LiveKitConfig } from "@/lib/livekit/config"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-function makeEgressClient() {
-  return new EgressClient(
-    process.env.LIVEKIT_URL!,
-    process.env.LIVEKIT_API_KEY!,
-    process.env.LIVEKIT_API_SECRET!,
-  )
+function makeEgressClient(livekit: LiveKitConfig) {
+  return new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
 }
 
 function makeS3Upload() {
@@ -36,9 +33,17 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     return NextResponse.json({ egressId: meeting.egressId, recordingKey: meeting.recordingKey })
   }
 
+  let livekit
+  try {
+    livekit = await getLiveKitConfigForMeeting(meeting)
+  } catch (err) {
+    if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
+    throw err
+  }
+
   const recordingKey = `meetings/${id}/recording-${Date.now()}.ogg`
 
-  const egressClient = makeEgressClient()
+  const egressClient = makeEgressClient(livekit)
   const info = await egressClient.startRoomCompositeEgress(
     meeting.roomName,
     new EncodedFileOutput({
@@ -80,10 +85,11 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   if (meeting.egressId) {
     try {
-      const egressClient = makeEgressClient()
+      const livekit = await getLiveKitConfigForMeeting(meeting)
+      const egressClient = makeEgressClient(livekit)
       await egressClient.stopEgress(meeting.egressId)
     } catch {
-      // Egress may have already stopped (room empty, timeout, etc.)
+      // Egress may have already stopped (room empty, timeout, etc.), or LiveKit not configured
     }
   }
 

@@ -179,6 +179,9 @@ model Association {
   smsAccountSid        String?
   smsAuthToken         String?
   smsPhoneNumber       String?
+  livekitUrl           String?
+  livekitApiKey        String?
+  livekitApiSecret     String?
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripeConnectId      String?
@@ -699,6 +702,13 @@ model Meeting {
   summary       String?
   egressId      String?
   recordingKey  String?
+  // Snapshot of whichever LiveKit account (platform or the association's own) actually
+  // created this meeting's room, pinned on first use — later changes to the association's
+  // LiveKit settings must not point an in-progress/already-created meeting at a different
+  // account than the one its room actually lives on.
+  livekitUrl        String?
+  livekitApiKey     String?
+  livekitApiSecret  String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 

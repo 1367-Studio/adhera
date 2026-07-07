@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { AccessToken } from "livekit-server-sdk"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
+import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -15,11 +16,19 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Cette réunion est terminée" }, { status: 403 })
   }
 
+  let livekit
+  try {
+    livekit = await getLiveKitConfigForMeeting(meeting)
+  } catch (err) {
+    if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
+    throw err
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } })
   const identity = userId
   const name = user?.name ?? user?.email ?? identity
 
-  const at = new AccessToken(process.env.LIVEKIT_API_KEY!, process.env.LIVEKIT_API_SECRET!, {
+  const at = new AccessToken(livekit.apiKey, livekit.apiSecret, {
     identity,
     name,
     ttl: "4h",
@@ -27,5 +36,5 @@ export const POST = withAdminAuth(async (req, ctx) => {
   at.addGrant({ roomJoin: true, room: meeting.roomName, canPublish: true, canSubscribe: true })
 
   const token = await at.toJwt()
-  return NextResponse.json({ token, roomName: meeting.roomName, serverUrl: process.env.LIVEKIT_URL })
+  return NextResponse.json({ token, roomName: meeting.roomName, serverUrl: livekit.url })
 }, { module: "reunions" })

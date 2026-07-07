@@ -1,16 +1,51 @@
 import { NextResponse } from "next/server"
-import { WebhookReceiver, EgressClient, RoomServiceClient } from "livekit-server-sdk"
+import { WebhookReceiver, EgressClient, type WebhookEvent } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { pusherServer } from "@/lib/pusher-server"
+import { getLiveKitConfigForRoom } from "@/lib/livekit/config"
 
 export const dynamic = "force-dynamic"
 
-const LIVEKIT_API_KEY    = process.env.LIVEKIT_API_KEY
-const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET
-const receiver = LIVEKIT_API_KEY && LIVEKIT_API_SECRET
-  ? new WebhookReceiver(LIVEKIT_API_KEY, LIVEKIT_API_SECRET)
-  : null
+// Only used to parse the payload far enough to read `room.name` before we know which
+// LiveKit account it belongs to — verification never happens against these placeholder
+// credentials (see verifyEvent's skipAuth pass below).
+const bootstrapReceiver = new WebhookReceiver("unverified", "unverified")
+
+type VerifyResult =
+  | { ok: true; event: WebhookEvent }
+  | { ok: false; reason: "malformed_payload" }
+  | { ok: false; reason: "unknown_room"; roomName: string }
+  | { ok: false; reason: "signature_mismatch"; roomName: string }
+
+// An association can bring its own LiveKit project (BYOK, same as the Twilio/Groq
+// integrations), which means events for its meetings arrive signed with *its* key, not the
+// platform's. We can't know which key to verify with until we know which room the event is
+// about — so we parse once unauthenticated just to read the room name, look up which
+// association owns it, then re-verify the same payload for real with that account's secret
+// (falling back to the platform's) before trusting anything in it.
+async function verifyEvent(body: string, authHeader: string | undefined): Promise<VerifyResult> {
+  let unverified: WebhookEvent
+  try {
+    unverified = await bootstrapReceiver.receive(body, authHeader, true)
+  } catch {
+    return { ok: false, reason: "malformed_payload" }
+  }
+
+  const roomName = unverified.room?.name
+  if (!roomName) return { ok: false, reason: "malformed_payload" }
+
+  const livekit = await getLiveKitConfigForRoom(roomName)
+  if (!livekit) return { ok: false, reason: "unknown_room", roomName }
+
+  try {
+    const receiver = new WebhookReceiver(livekit.apiKey, livekit.apiSecret)
+    const event = await receiver.receive(body, authHeader)
+    return { ok: true, event }
+  } catch {
+    return { ok: false, reason: "signature_mismatch", roomName }
+  }
+}
 
 // Fallback close for meetings nobody explicitly ended via the "Encerrer" button (e.g. every
 // participant just clicked "Quitter", or a browser crashed). Only acts on `room_finished`,
@@ -25,8 +60,11 @@ async function endMeetingByRoomName(roomName: string) {
 
   if (meeting.egressId) {
     try {
-      const egressClient = new EgressClient(process.env.LIVEKIT_URL!, LIVEKIT_API_KEY!, LIVEKIT_API_SECRET!)
-      await egressClient.stopEgress(meeting.egressId)
+      const livekit = await getLiveKitConfigForRoom(roomName)
+      if (livekit) {
+        const egressClient = new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
+        await egressClient.stopEgress(meeting.egressId)
+      }
     } catch {
       // Egress may have already stopped
     }
@@ -58,22 +96,28 @@ async function endMeetingByRoomName(roomName: string) {
 }
 
 export async function POST(req: Request) {
-  if (!receiver) {
-    console.error("LiveKit webhook: LIVEKIT_API_KEY/LIVEKIT_API_SECRET missing, cannot verify events")
-    return NextResponse.json({ error: "Webhook misconfigured" }, { status: 500 })
-  }
-
   const body = await req.text()
   const authHeader = req.headers.get("Authorization") ?? undefined
 
-  let event
-  try {
-    event = await receiver.receive(body, authHeader)
-  } catch (err) {
-    console.error("LiveKit webhook: signature verification failed", err)
+  const result = await verifyEvent(body, authHeader)
+  if (!result.ok) {
+    switch (result.reason) {
+      case "malformed_payload":
+        console.error("LiveKit webhook: malformed payload (couldn't parse room name)")
+        break
+      case "unknown_room":
+        console.error(`LiveKit webhook: no meeting matches room "${result.roomName}" (deleted meeting or stray webhook?)`)
+        break
+      case "signature_mismatch":
+        console.error(`LiveKit webhook: signature mismatch for room "${result.roomName}" — payload doesn't match the account on file for that meeting`)
+        break
+    }
+    // Response stays generic regardless of cause — no need to tell a caller which of these
+    // failure modes it hit.
     return NextResponse.json({ error: "Signature invalide" }, { status: 400 })
   }
 
+  const { event } = result
   const roomName = event.room?.name
   if (roomName && event.event === "room_finished") {
     await endMeetingByRoomName(roomName)

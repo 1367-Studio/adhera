@@ -17,6 +17,7 @@ import { MembreTypesManager } from "@/components/parametres/membre-types-manager
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
 import { SmsSettings } from "@/components/sms/sms-settings"
+import { LiveKitSettings } from "@/components/reunions/livekit-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
 type Association = {
@@ -170,6 +171,11 @@ export function ParametresView() {
           {modules.sms && (
             <div className="rounded-xl border bg-card p-6">
               <SmsSettings canEdit={canEdit} />
+            </div>
+          )}
+          {modules.reunions && (
+            <div className="rounded-xl border bg-card p-6">
+              <LiveKitSettings canEdit={canEdit} />
             </div>
           )}
         </div>

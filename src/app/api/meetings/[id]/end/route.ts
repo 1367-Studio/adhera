@@ -3,6 +3,7 @@ import { EgressClient, RoomServiceClient } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -13,13 +14,17 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
   if (meeting.status === "ENDED") return NextResponse.json({ ok: true })
 
+  let livekit
+  try {
+    livekit = await getLiveKitConfigForMeeting(meeting)
+  } catch (err) {
+    if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
+    throw err
+  }
+
   if (meeting.egressId) {
     try {
-      const egressClient = new EgressClient(
-        process.env.LIVEKIT_URL!,
-        process.env.LIVEKIT_API_KEY!,
-        process.env.LIVEKIT_API_SECRET!,
-      )
+      const egressClient = new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
       await egressClient.stopEgress(meeting.egressId)
     } catch {
       // Egress may have already stopped
@@ -27,11 +32,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   try {
-    const roomClient = new RoomServiceClient(
-      process.env.LIVEKIT_URL!,
-      process.env.LIVEKIT_API_KEY!,
-      process.env.LIVEKIT_API_SECRET!,
-    )
+    const roomClient = new RoomServiceClient(livekit.url, livekit.apiKey, livekit.apiSecret)
     await roomClient.deleteRoom(meeting.roomName)
   } catch {
     // Room may already be empty/deleted
