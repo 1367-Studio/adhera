@@ -272,7 +272,17 @@ function Controls({
         {isCameraEnabled ? <VideoCameraIcon className="size-5" /> : <VideoCameraSlashIcon className="size-5" />}
       </TrackToggle>
 
-      {isAdmin ? (
+      <Button
+        variant="outline"
+        className="rounded-full px-5 h-11"
+        onClick={handleLeave}
+        disabled={ending}
+      >
+        <PhoneSlashIcon className="size-4 mr-2" />
+        Quitter
+      </Button>
+
+      {isAdmin && (
         <Button
           variant="destructive"
           className="rounded-full px-5 h-11"
@@ -282,15 +292,6 @@ function Controls({
         >
           <PhoneSlashIcon className="size-4 mr-2" />
           Encerrer
-        </Button>
-      ) : (
-        <Button
-          variant="outline"
-          className="rounded-full px-5 h-11"
-          onClick={handleLeave}
-        >
-          <PhoneSlashIcon className="size-4 mr-2" />
-          Quitter
         </Button>
       )}
     </div>
