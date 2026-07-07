@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { BuildingsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, CreditCardIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -20,6 +21,7 @@ import { SmsSettings } from "@/components/sms/sms-settings"
 import { LiveKitSettings } from "@/components/reunions/livekit-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
+import { BillingSettings } from "@/components/parametres/billing-settings"
 type Association = {
   id:      string
   name:    string
@@ -28,22 +30,37 @@ type Association = {
   country: string
 }
 
-type Tab = "general" | "paiements" | "integrations"
+type Tab = "general" | "paiements" | "abonnement" | "integrations"
 
 const ALL_TABS = [
   { value: "general"      as Tab, label: "Général",      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
   { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
+  { value: "abonnement"   as Tab, label: "Abonnement",   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
   { value: "integrations" as Tab, label: "Intégrations", icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
 ] as const
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 export function ParametresView() {
+  return (
+    <Suspense fallback={null}>
+      <ParametresViewInner />
+    </Suspense>
+  )
+}
+
+// useSearchParams() (pour revenir sur l'onglet Abonnement après le Customer Portal
+// Stripe) exige une limite Suspense au-dessus, sous peine d'échec du prerendering.
+function ParametresViewInner() {
   const { role } = useCurrentUser()
   const modules  = useModules()
   const canEdit  = ADMINS.includes(role)
   const qc       = useQueryClient()
-  const [tab, setTab] = useState<Tab>("general")
+  const searchParams = useSearchParams()
+  const [tab, setTab] = useState<Tab>(() => {
+    const fromUrl = searchParams.get("tab")
+    return (ALL_TABS.some(t => t.value === fromUrl) ? fromUrl : "general") as Tab
+  })
 
   const tabs = ALL_TABS.filter(t => !t.modules || t.modules.some(m => modules[m]))
 
@@ -156,6 +173,15 @@ export function ParametresView() {
           </div>
           <div className="rounded-xl border bg-card p-6">
             <IdentityDonsSettings canEdit={canEdit} />
+          </div>
+        </div>
+      )}
+
+      {/* ── Abonnement ────────────────────────────────────────────────── */}
+      {tab === "abonnement" && (
+        <div className="space-y-6">
+          <div className="rounded-xl border bg-card p-6">
+            <BillingSettings canEdit={canEdit} />
           </div>
         </div>
       )}

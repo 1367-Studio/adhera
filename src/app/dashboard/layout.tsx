@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/config"
 import { UserProvider, type SessionUser } from "@/lib/user-context"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { Header } from "@/components/layout/header"
+import { PastDueBanner } from "@/components/layout/past-due-banner"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { TopLoader } from "@/components/top-loader"
 import { prisma } from "@/lib/prisma/client"
@@ -38,6 +39,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
+          <PastDueBanner />
           <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} />
           <main className="flex flex-1 flex-col gap-4 p-4 pt-0 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
