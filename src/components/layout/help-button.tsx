@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { HelpCircleIcon } from "lucide-react"
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTour } from "@/lib/tour/use-tour"
 import { useSidebar } from "@/components/ui/sidebar"
 
@@ -47,7 +47,7 @@ export function HelpButton() {
       aria-label="Aide et visite guidée"
       title="Visite guidée"
     >
-      <HelpCircleIcon className="size-4" />
+      <QuestionIcon className="size-4" />
     </button>
   )
 }

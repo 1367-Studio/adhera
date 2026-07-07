@@ -10,7 +10,7 @@ import { loadStripe } from "@stripe/stripe-js"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { LoaderCircleIcon, CheckCircle2Icon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "lucide-react"
+import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
@@ -69,7 +69,7 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
                 active ? "bg-primary text-primary-foreground" :
                          "bg-muted text-muted-foreground"
               )}>
-                {done ? <CheckCircle2Icon className="size-3.5" /> : i + 1}
+                {done ? <CheckCircleIcon className="size-3.5" /> : i + 1}
               </div>
               <span className={cn(
                 "text-sm transition-colors",
@@ -237,7 +237,7 @@ function StepInfo({
 
       <Button type="submit" className="w-full h-11 text-sm font-medium mt-2" disabled={loading}>
         {loading
-          ? <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
+          ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
         }
         Continuer vers le paiement
@@ -246,7 +246,7 @@ function StepInfo({
       <div className="flex items-center justify-center gap-4 pt-1">
         {["20 jours gratuits", "Sans engagement", "Annulation facile"].map(t => (
           <span key={t} className="flex items-center gap-1 text-xs text-muted-foreground">
-            <CheckCircle2Icon className="size-3 text-emerald-500" />
+            <CheckCircleIcon className="size-3 text-emerald-500" />
             {t}
           </span>
         ))}
@@ -382,7 +382,7 @@ function PaymentForm({
           <ArrowLeftIcon className="size-4" />
         </Button>
         <Button type="submit" className="flex-1 h-11 text-sm font-medium" disabled={loading || !stripe}>
-          {loading && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+          {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
           Démarrer mon essai gratuit
         </Button>
       </div>
@@ -450,7 +450,7 @@ function RegisterFormInner() {
     return (
       <div className="flex flex-col items-center gap-4 py-10 text-center">
         <div className="size-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
-          <CheckCircle2Icon className="size-7 text-emerald-500" />
+          <CheckCircleIcon className="size-7 text-emerald-500" />
         </div>
         <div className="space-y-1">
           <p className="font-semibold">Compte créé avec succès !</p>

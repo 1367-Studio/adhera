@@ -3,11 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import {
-  SendIcon, AlertTriangleIcon, UsersIcon, TagIcon, UserCheckIcon,
-  SearchIcon, CheckIcon, PencilIcon, ChevronRightIcon, LoaderCircleIcon,
-  FileTextIcon, BookmarkPlusIcon,
-} from "lucide-react"
+import { PaperPlaneTiltIcon, WarningIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -105,7 +101,7 @@ function MemberPickList({
     <div className="rounded-lg border overflow-hidden">
       <div className="p-2 border-b bg-muted/30 space-y-2">
         <div className="relative">
-          <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+          <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Rechercher…"
@@ -534,7 +530,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                     onClick={() => { setSaveTemplateName(subject.trim()); setSaveTemplateOpen(true) }}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <BookmarkPlusIcon className="size-3.5" />
+                    <BookmarkIcon className="size-3.5" />
                     Enregistrer comme modèle
                   </button>
                 )}
@@ -560,8 +556,8 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
               <Button variant="outline" onClick={handleClose}>Annuler</Button>
               <Button onClick={handleContinue} disabled={countLoading}>
                 {countLoading
-                  ? <LoaderCircleIcon className="mr-1.5 size-4 animate-spin" />
-                  : <ChevronRightIcon className="mr-1.5 size-4" />
+                  ? <CircleNotchIcon className="mr-1.5 size-4 animate-spin" />
+                  : <CaretRightIcon className="mr-1.5 size-4" />
                 }
                 Continuer
               </Button>
@@ -570,7 +566,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         ) : (
           <div className="space-y-5">
             <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
-              <AlertTriangleIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
+              <WarningIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Confirmation d'envoi</p>
                 <p className="text-sm text-amber-700 dark:text-amber-400">
@@ -592,11 +588,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setStep("compose")} disabled={sending}>
-                <PencilIcon className="mr-1.5 size-3.5" />
+                <PencilSimpleIcon className="mr-1.5 size-3.5" />
                 Modifier
               </Button>
               <Button onClick={handleSend} loading={sending}>
-                <SendIcon className="mr-1.5 size-4" />
+                <PaperPlaneTiltIcon className="mr-1.5 size-4" />
                 Envoyer maintenant
               </Button>
             </div>

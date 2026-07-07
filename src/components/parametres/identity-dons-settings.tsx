@@ -5,8 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
-import { InfoIcon } from "lucide-react"
-
+import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
 type IdentityData = {
   address:            string | null
   phone:              string | null

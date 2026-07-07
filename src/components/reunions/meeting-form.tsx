@@ -6,8 +6,7 @@ import { FormField } from "@/components/ui/form-field"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckboxField } from "@/components/ui/checkbox-field"
-import { VideoIcon, CalendarIcon } from "lucide-react"
-
+import { VideoCameraIcon, CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr";
 type Membre = { id: string; firstName: string; lastName: string }
 
 type Props = {
@@ -107,12 +106,12 @@ export function MeetingForm({ membres, loading, onSubmit, onCancel }: Props) {
         <Button type="submit" disabled={loading || !title.trim()}>
           {instant ? (
             <>
-              <VideoIcon className="mr-2 h-4 w-4" />
+              <VideoCameraIcon className="mr-2 h-4 w-4" />
               Démarrer
             </>
           ) : (
             <>
-              <CalendarIcon className="mr-2 h-4 w-4" />
+              <CalendarBlankIcon className="mr-2 h-4 w-4" />
               Planifier
             </>
           )}

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AssociationNotes } from "@/components/backoffice/association-notes"
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { parseModules }     from "@/lib/modules"
-import { ChevronLeftIcon, UsersIcon } from "lucide-react"
+import { CaretLeftIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -82,7 +82,7 @@ export default async function AssociationDetailPage({ params }: { params: Promis
           href="/backoffice/associations"
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
-          <ChevronLeftIcon className="size-3.5" />
+          <CaretLeftIcon className="size-3.5" />
           Toutes les associations
         </Link>
         <div className="flex items-center justify-between gap-3 flex-wrap">

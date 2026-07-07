@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { LoaderCircleIcon, MailIcon, MailCheckIcon, ArrowLeftIcon } from "lucide-react"
+import { CircleNotchIcon, EnvelopeSimpleIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -44,7 +44,7 @@ export function ForgotPasswordForm() {
     return (
       <div className="rounded-xl border bg-card p-6 space-y-4 text-center">
         <div className="mx-auto size-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <MailCheckIcon className="size-6 text-primary" />
+          <EnvelopeSimpleIcon className="size-6 text-primary" />
         </div>
         <div className="space-y-1.5">
           <p className="font-medium">Vérifiez votre boite mail</p>
@@ -74,14 +74,14 @@ export function ForgotPasswordForm() {
         placeholder="contact@association.fr"
         autoComplete="email"
         autoFocus
-        leadingIcon={<MailIcon />}
+        leadingIcon={<EnvelopeSimpleIcon />}
         value={email}
         onChange={(e) => { setEmail(e.target.value); setEmailError("") }}
         error={emailError}
       />
 
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+        {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         Envoyer le lien
       </Button>
     </form>

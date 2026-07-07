@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import * as XLSX from "xlsx"
-import { DownloadIcon, TrendingUpIcon, TrendingDownIcon } from "lucide-react"
+import { DownloadSimpleIcon, TrendUpIcon, TrendDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -136,7 +136,7 @@ export function ReportsView() {
               </SelectContent>
             </Select>
             <Button size="sm" variant="outline" onClick={exportExcel} disabled={loading}>
-              <DownloadIcon className="mr-1.5 size-4" />
+              <DownloadSimpleIcon className="mr-1.5 size-4" />
               Exporter Excel
             </Button>
           </div>
@@ -165,7 +165,7 @@ export function ReportsView() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-xl border bg-card p-4">
             <div className="flex items-center gap-2 mb-3">
-              <TrendingUpIcon className="size-4 text-green-600" />
+              <TrendUpIcon className="size-4 text-green-600" />
               <h3 className="font-semibold text-sm">Recettes par catégorie</h3>
             </div>
             {Object.keys(incomeByCategory).length > 0
@@ -176,7 +176,7 @@ export function ReportsView() {
 
           <div className="rounded-xl border bg-card p-4">
             <div className="flex items-center gap-2 mb-3">
-              <TrendingDownIcon className="size-4 text-destructive" />
+              <TrendDownIcon className="size-4 text-destructive" />
               <h3 className="font-semibold text-sm">Dépenses par catégorie</h3>
             </div>
             {Object.keys(expenseByCategory).length > 0

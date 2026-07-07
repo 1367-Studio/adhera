@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreHorizontalIcon } from "lucide-react"
+import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +37,7 @@ export function RowActions({ actions, tip }: RowActionsProps) {
         />
       }
     >
-      <MoreHorizontalIcon className="size-4" />
+      <DotsThreeIcon className="size-4" />
       <span className="sr-only">Ações</span>
     </DropdownMenuTrigger>
   )

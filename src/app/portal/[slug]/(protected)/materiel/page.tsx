@@ -3,10 +3,7 @@
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import {
-  PackageIcon, MapPinIcon, ClockIcon, CheckCircle2Icon,
-  XCircleIcon, PlusIcon, SearchIcon, PencilIcon, Trash2Icon,
-} from "lucide-react"
+import { PackageIcon, MapPinIcon, ClockIcon, CheckCircleIcon, XCircleIcon, PlusIcon, MagnifyingGlassIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -162,7 +159,7 @@ function LoanStatusBadge({ status }: { status: "DEMANDE" | "CONFIRME" }) {
   if (status === "CONFIRME") {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-        <CheckCircle2Icon className="size-3" /> Confirmé
+        <CheckCircleIcon className="size-3" /> Confirmé
       </span>
     )
   }
@@ -340,7 +337,7 @@ export default function MaterielPage() {
                           className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                           title="Modifier"
                         >
-                          <PencilIcon className="size-3.5" />
+                          <PencilSimpleIcon className="size-3.5" />
                         </button>
                         <button
                           type="button"
@@ -348,7 +345,7 @@ export default function MaterielPage() {
                           className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                           title="Annuler la demande"
                         >
-                          <Trash2Icon className="size-3.5" />
+                          <TrashIcon className="size-3.5" />
                         </button>
                       </>
                     )}
@@ -364,7 +361,7 @@ export default function MaterielPage() {
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-sm font-semibold">Catalogue</h2>
             <div className="relative">
-              <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+              <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Rechercher…"
@@ -424,7 +421,7 @@ export default function MaterielPage() {
 
                     {alreadyLoaned ? (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <CheckCircle2Icon className="size-3.5 text-green-500" />
+                        <CheckCircleIcon className="size-3.5 text-green-500" />
                         Demande en cours
                       </div>
                     ) : noStock || unavailable ? (

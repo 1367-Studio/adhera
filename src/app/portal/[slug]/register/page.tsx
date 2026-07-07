@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeftIcon } from "lucide-react"
+import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { PortalRegisterForm } from "@/components/auth/portal-register-form"
 
 export const metadata: Metadata = { title: "Créer un compte — Espace membre" }

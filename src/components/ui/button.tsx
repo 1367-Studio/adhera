@@ -1,7 +1,6 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
-import { LoaderCircleIcon } from "lucide-react"
-
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 
 const ICON_SIZES = new Set(["icon", "icon-sm", "icon-xs", "icon-lg"])
@@ -61,10 +60,10 @@ function Button({
       {...props}
     >
       {isIcon ? (
-        loading ? <LoaderCircleIcon className="size-4 animate-spin" /> : children
+        loading ? <CircleNotchIcon className="size-4 animate-spin" /> : children
       ) : (
         <>
-          {loading && <LoaderCircleIcon className="size-4 animate-spin" />}
+          {loading && <CircleNotchIcon className="size-4 animate-spin" />}
           {children}
         </>
       )}

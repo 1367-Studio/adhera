@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { CheckCircleIcon, ClockIcon, GiftIcon, CreditCardIcon } from "lucide-react"
+import { CheckCircleIcon, ClockIcon, GiftIcon, CreditCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"

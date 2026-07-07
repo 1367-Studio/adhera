@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { ImageIcon, Loader2Icon, XIcon, UploadIcon } from "lucide-react"
+import { ImageIcon, CircleNotchIcon, XIcon, UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
@@ -94,7 +94,7 @@ export function ImageUpload({
               disabled={uploading}
               className="flex items-center gap-1.5 bg-background/90 text-foreground text-xs font-medium px-3 py-1.5 rounded-md hover:bg-background transition-colors"
             >
-              {uploading ? <Loader2Icon className="size-3.5 animate-spin" /> : <UploadIcon className="size-3.5" />}
+              {uploading ? <CircleNotchIcon className="size-3.5 animate-spin" /> : <UploadSimpleIcon className="size-3.5" />}
               Remplacer
             </button>
             <button
@@ -123,7 +123,7 @@ export function ImageUpload({
           )}
         >
           {uploading ? (
-            <Loader2Icon className="size-5 animate-spin" />
+            <CircleNotchIcon className="size-5 animate-spin" />
           ) : (
             <>
               <ImageIcon className="size-5" />

@@ -1,7 +1,7 @@
 "use client"
 
 import { useId } from "react"
-import { ChevronUpIcon, ChevronDownIcon, Trash2Icon, PlusIcon, GitBranchIcon } from "lucide-react"
+import { CaretUpIcon, CaretDownIcon, TrashIcon, PlusIcon, GitBranchIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import {
   QUESTION_TYPE_LABELS, QUESTION_TYPES, CONDITIONAL_TRIGGER_TYPES,
@@ -115,7 +115,7 @@ export function QuestionBuilder({
             onClick={onMoveUp}
             className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30"
           >
-            <ChevronUpIcon className="size-4" />
+            <CaretUpIcon className="size-4" />
           </button>
           <button
             type="button"
@@ -123,14 +123,14 @@ export function QuestionBuilder({
             onClick={onMoveDown}
             className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-30"
           >
-            <ChevronDownIcon className="size-4" />
+            <CaretDownIcon className="size-4" />
           </button>
           <button
             type="button"
             onClick={onDelete}
             className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10"
           >
-            <Trash2Icon className="size-4" />
+            <TrashIcon className="size-4" />
           </button>
         </div>
       </div>
@@ -156,7 +156,7 @@ export function QuestionBuilder({
                 onClick={() => removeOption(i)}
                 className="text-muted-foreground hover:text-destructive disabled:opacity-30"
               >
-                <Trash2Icon className="size-3.5" />
+                <TrashIcon className="size-3.5" />
               </button>
             </div>
           ))}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LayoutTemplateIcon, ZapIcon, ClockIcon, ListChecksIcon } from "lucide-react"
+import { LayoutIcon, LightningIcon, ClockIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { Button } from "@/components/ui/button"
@@ -13,8 +13,8 @@ import { CampagneModal } from "@/components/messages/campagne-modal"
 type View = "templates" | "rules" | "historique"
 
 const OPTIONS = [
-  { value: "templates"  as View, label: "Modèles",        icon: <LayoutTemplateIcon className="size-3.5" /> },
-  { value: "rules"      as View, label: "Automatisations", icon: <ZapIcon            className="size-3.5" /> },
+  { value: "templates"  as View, label: "Modèles",        icon: <LayoutIcon className="size-3.5" /> },
+  { value: "rules"      as View, label: "Automatisations", icon: <LightningIcon            className="size-3.5" /> },
   { value: "historique" as View, label: "Historique",      icon: <ClockIcon          className="size-3.5" /> },
 ]
 

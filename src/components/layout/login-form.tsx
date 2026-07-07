@@ -10,8 +10,7 @@ import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { GoogleIcon } from "@/components/icons/google-icon"
-import { LoaderCircleIcon } from "lucide-react"
-
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const [googleLoading, setGoogleLoading] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
@@ -70,7 +69,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
       />
 
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
-        {isSubmitting && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+        {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         Se connecter
       </Button>
 
@@ -88,7 +87,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
         onClick={handleGoogle}
       >
         {googleLoading
-          ? <LoaderCircleIcon className="mr-2 size-4 animate-spin" />
+          ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <GoogleIcon className="mr-2 size-4" />
         }
         Continuer avec Google

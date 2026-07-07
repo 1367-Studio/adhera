@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -39,7 +39,7 @@ export function Pagination({ page, totalPages, total, limit, onPageChange, class
           onClick={() => onPageChange(page - 1)}
           aria-label="Page précédente"
         >
-          <ChevronLeftIcon className="size-4" />
+          <CaretLeftIcon className="size-4" />
         </Button>
 
         {pages.map((p, i) =>
@@ -65,7 +65,7 @@ export function Pagination({ page, totalPages, total, limit, onPageChange, class
           onClick={() => onPageChange(page + 1)}
           aria-label="Page suivante"
         >
-          <ChevronRightIcon className="size-4" />
+          <CaretRightIcon className="size-4" />
         </Button>
       </div>
     </div>

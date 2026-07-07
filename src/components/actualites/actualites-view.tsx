@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import {
-  PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon,
-  PinIcon, SendIcon, EyeOffIcon, CalendarIcon, ImageIcon,
-  LayoutGridIcon, ListIcon,
-} from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PushPinIcon, PaperPlaneTiltIcon, EyeSlashIcon, CalendarBlankIcon, ImageIcon, GridFourIcon, ListIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -108,17 +104,17 @@ function PostCard({
             )}
             {post.pinned && (
               <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium px-2 py-0.5">
-                <PinIcon className="size-2.5" /> Épinglé
+                <PushPinIcon className="size-2.5" /> Épinglé
               </span>
             )}
           </div>
           <RowActions
             actions={[
-              { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: onEdit },
+              { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: onEdit },
               post.publishedAt
-                ? { label: "Dépublier", icon: <EyeOffIcon className="size-3.5" />, onClick: togglePublish, separator: true }
-                : { label: "Publier",   icon: <SendIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
-              { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
+                ? { label: "Dépublier", icon: <EyeSlashIcon className="size-3.5" />, onClick: togglePublish, separator: true }
+                : { label: "Publier",   icon: <PaperPlaneTiltIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
+              { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
             ]}
           />
         </div>
@@ -136,7 +132,7 @@ function PostCard({
             <>
               <span>·</span>
               <span className="flex items-center gap-1 min-w-0">
-                <CalendarIcon className="size-3 shrink-0" />
+                <CalendarBlankIcon className="size-3 shrink-0" />
                 <span className="truncate">{post.evenement.title}</span>
               </span>
             </>
@@ -184,7 +180,7 @@ function PostRow({
         )}
         {post.pinned && (
           <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium px-2 py-0.5">
-            <PinIcon className="size-2.5" /> Épinglé
+            <PushPinIcon className="size-2.5" /> Épinglé
           </span>
         )}
       </div>
@@ -193,7 +189,7 @@ function PostRow({
 
       {post.evenement && (
         <span className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-          <CalendarIcon className="size-3" />
+          <CalendarBlankIcon className="size-3" />
           <span className="truncate max-w-[120px]">{post.evenement.title}</span>
         </span>
       )}
@@ -202,11 +198,11 @@ function PostRow({
 
       <RowActions
         actions={[
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: onEdit },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: onEdit },
           post.publishedAt
-            ? { label: "Dépublier", icon: <EyeOffIcon className="size-3.5" />, onClick: togglePublish, separator: true }
-            : { label: "Publier",   icon: <SendIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
+            ? { label: "Dépublier", icon: <EyeSlashIcon className="size-3.5" />, onClick: togglePublish, separator: true }
+            : { label: "Publier",   icon: <PaperPlaneTiltIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
         ]}
       />
     </div>
@@ -214,7 +210,7 @@ function PostRow({
 }
 
 const VIEW_OPTIONS = [
-  { value: "grid" as const, label: "Grille", icon: <LayoutGridIcon className="size-3.5" /> },
+  { value: "grid" as const, label: "Grille", icon: <GridFourIcon className="size-3.5" /> },
   { value: "list" as const, label: "Liste",  icon: <ListIcon        className="size-3.5" /> },
 ]
 
@@ -298,7 +294,7 @@ export function ActualitesView() {
 
       {/* Search */}
       <div className="relative w-72">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
         <input
           type="text"
           placeholder="Rechercher une actualité…"

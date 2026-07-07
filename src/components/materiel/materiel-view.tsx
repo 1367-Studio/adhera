@@ -1,10 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import {
-  PlusIcon, SearchIcon, PackageIcon,
-  MapPinIcon, ClockIcon, CheckIcon, XIcon, AlertCircleIcon,
-} from "lucide-react"
+import { PlusIcon, MagnifyingGlassIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
 import { MaterialModal } from "@/components/materiel/material-modal"
@@ -114,7 +111,7 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
         <div className="flex items-center gap-2">
           {material.overdueCount > 0 && (
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-              <AlertCircleIcon className="size-2.5" />
+              <WarningCircleIcon className="size-2.5" />
               {material.overdueCount} en retard
             </span>
           )}
@@ -229,7 +226,7 @@ export function MaterielView() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-sm">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
           <input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}

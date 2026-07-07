@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LogOutIcon, PencilIcon, KeyRoundIcon } from "lucide-react"
+import { SignOutIcon, PencilSimpleIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,11 +70,11 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
 
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => setModal("profile")}>
-              <PencilIcon className="mr-2 size-4" />
+              <PencilSimpleIcon className="mr-2 size-4" />
               Modifier le profil
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setModal("password")}>
-              <KeyRoundIcon className="mr-2 size-4" />
+              <KeyIcon className="mr-2 size-4" />
               Changer le mot de passe
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -83,7 +83,7 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
 
           <DropdownMenuGroup>
             <DropdownMenuItem variant="destructive" onClick={logoutAction}>
-              <LogOutIcon className="mr-2 size-4" />
+              <SignOutIcon className="mr-2 size-4" />
               Se déconnecter
             </DropdownMenuItem>
           </DropdownMenuGroup>

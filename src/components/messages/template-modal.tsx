@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { GripHorizontalIcon, MessageSquareTextIcon } from "lucide-react"
+import { DotsSixIcon, ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
@@ -129,7 +129,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
                 }}
                 className="inline-flex items-center gap-1 rounded-md border bg-muted/40 px-2 py-0.5 text-xs font-mono cursor-grab active:cursor-grabbing select-none hover:bg-muted hover:border-foreground/20 transition-colors"
               >
-                <GripHorizontalIcon className="size-2.5 text-muted-foreground" />
+                <DotsSixIcon className="size-2.5 text-muted-foreground" />
                 {v.token}
                 <span className="text-muted-foreground ml-0.5 font-sans normal-case">— {v.label}</span>
               </button>
@@ -150,7 +150,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         {sms && (
           <div className="space-y-2 rounded-xl border bg-muted/20 p-4">
             <div className="flex items-center gap-2">
-              <MessageSquareTextIcon className="size-4 text-muted-foreground" />
+              <ChatTextIcon className="size-4 text-muted-foreground" />
               <p className="text-sm font-medium">Corps du SMS</p>
             </div>
             <p className="text-xs text-muted-foreground">Texte court envoyé par SMS. Laissez vide si ce modèle n'est pas utilisé avec un canal SMS.</p>

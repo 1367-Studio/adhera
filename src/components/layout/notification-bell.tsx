@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { BellIcon, CheckCheckIcon, LoaderCircleIcon } from "lucide-react"
+import { BellIcon, ChecksIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/use-notifications"
@@ -49,8 +49,8 @@ export function NotificationBell() {
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 disabled:opacity-50"
                 >
                   {markAllRead.isPending
-                    ? <LoaderCircleIcon className="size-3 animate-spin" />
-                    : <CheckCheckIcon className="size-3" />
+                    ? <CircleNotchIcon className="size-3 animate-spin" />
+                    : <ChecksIcon className="size-3" />
                   }
                   Tout lire
                 </button>

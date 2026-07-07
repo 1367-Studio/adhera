@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import {
-  GlobeIcon, EyeOffIcon, PlusIcon, Trash2Icon,
-  ChevronUpIcon, ChevronDownIcon, ExternalLinkIcon,
-  SaveIcon, PencilIcon,
-} from "lucide-react"
+import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -148,7 +144,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <Badge variant={published ? "default" : "secondary"} className="gap-1.5">
-            {published ? <GlobeIcon className="size-3" /> : <EyeOffIcon className="size-3" />}
+            {published ? <GlobeIcon className="size-3" /> : <EyeSlashIcon className="size-3" />}
             {published ? "Publié" : "Non publié"}
           </Badge>
         </div>
@@ -160,7 +156,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <ExternalLinkIcon className="size-3.5" />
+              <ArrowSquareOutIcon className="size-3.5" />
               Voir le site
             </a>
           )}
@@ -180,7 +176,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
                 loading={saveMutation.isPending}
                 onClick={save}
               >
-                <SaveIcon className="size-3.5 mr-1.5" />
+                <FloppyDiskIcon className="size-3.5 mr-1.5" />
                 Enregistrer
               </Button>
             </>
@@ -247,14 +243,14 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
                 disabled={idx === 0 || !canEdit}
                 className="p-0.5 rounded hover:bg-muted disabled:opacity-30"
               >
-                <ChevronUpIcon className="size-3.5" />
+                <CaretUpIcon className="size-3.5" />
               </button>
               <button
                 onClick={() => moveSection(section.id, 1)}
                 disabled={idx === sections.length - 1 || !canEdit}
                 className="p-0.5 rounded hover:bg-muted disabled:opacity-30"
               >
-                <ChevronDownIcon className="size-3.5" />
+                <CaretDownIcon className="size-3.5" />
               </button>
             </div>
 
@@ -266,10 +262,10 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
             {canEdit && (
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="icon" className="size-7" onClick={() => openEdit(section)}>
-                  <PencilIcon className="size-3.5" />
+                  <PencilSimpleIcon className="size-3.5" />
                 </Button>
                 <Button variant="ghost" size="icon" className="size-7 text-destructive hover:text-destructive" onClick={() => setDeletingId(section.id)}>
-                  <Trash2Icon className="size-3.5" />
+                  <TrashIcon className="size-3.5" />
                 </Button>
               </div>
             )}

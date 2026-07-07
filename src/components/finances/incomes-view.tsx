@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, TrendingUpIcon, CheckCircle2Icon, ClockIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from "@/hooks/use-incomes"
@@ -39,7 +39,7 @@ const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 const statusConfig = {
   PENDING:   { label: "En attente", variant: "secondary" as const, icon: ClockIcon },
-  PAID:      { label: "Payé",       variant: "default" as const,   icon: CheckCircle2Icon },
+  PAID:      { label: "Payé",       variant: "default" as const,   icon: CheckCircleIcon },
   CANCELLED: { label: "Annulé",     variant: "destructive" as const, icon: XIcon },
 }
 
@@ -148,8 +148,8 @@ export function IncomesView() {
       className: "w-10",
       cell: (i) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(i) },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(i) },
         ]} />
       ),
     },
@@ -170,7 +170,7 @@ export function IncomesView() {
 
       <div className="flex flex-wrap gap-2">
         <div className="relative w-60">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Rechercher…"

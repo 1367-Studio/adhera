@@ -1,6 +1,6 @@
 "use client"
 
-import { LightbulbIcon, XIcon } from "lucide-react"
+import { LightbulbIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTip } from "@/hooks/use-tip"
 import { cn } from "@/lib/utils"
 

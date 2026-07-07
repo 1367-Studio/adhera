@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -169,8 +169,8 @@ export function CotisationsView() {
       className: "w-10",
       cell: (c) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
         ]} />
       ),
     },
@@ -192,7 +192,7 @@ export function CotisationsView() {
       <div className="flex flex-wrap gap-2">
         {/* Search */}
         <div className="relative w-60">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Rechercher un membre…"

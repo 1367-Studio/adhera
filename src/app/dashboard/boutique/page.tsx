@@ -6,10 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import {
-  PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon,
-  EyeIcon, ArchiveIcon, FileEditIcon, BanknoteIcon,
-} from "lucide-react"
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -217,7 +214,7 @@ export default function BoutiquePage() {
       cell: (p) => (
         <RowActions
           actions={[
-            { label: "Modifier",   icon: <FileEditIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
+            { label: "Modifier",   icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
             {
               label:       p._count.commandeItems > 0 ? "Supprimer (déjà commandé)" : "Supprimer",
               icon:        <ArchiveIcon className="size-3.5" />,
@@ -401,7 +398,7 @@ export default function BoutiquePage() {
                   disabled={adjustedTotal === 0}
                   onClick={handleEncaisser}
                 >
-                  <BanknoteIcon className="mr-1.5 size-4" />
+                  <MoneyIcon className="mr-1.5 size-4" />
                   Encaisser {fmt(adjustedTotal)}
                 </Button>
               </>

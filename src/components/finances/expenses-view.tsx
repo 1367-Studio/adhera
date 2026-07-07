@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, PaperclipIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
@@ -143,8 +143,8 @@ export function ExpensesView() {
       className: "w-10",
       cell: (e) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
         ]} />
       ),
     },

@@ -4,10 +4,7 @@ import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import {
-  ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon,
-  CreditCardIcon, HandCoinsIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon, CreditCardIcon, HandCoinsIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/hooks/use-cart"
 

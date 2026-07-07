@@ -5,11 +5,7 @@ import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import {
-  CalendarIcon, MapPinIcon, LoaderCircleIcon, ExternalLinkIcon,
-  ChevronRightIcon, TicketIcon, CheckCircleIcon, BanIcon, BookmarkIcon,
-  MinusIcon, PlusIcon,
-} from "lucide-react"
+import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon, MinusIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useSetRsvp, type GuestInput } from "@/hooks/use-evenements"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -336,7 +332,7 @@ function PaidEventSection({
     return (
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
-          <BookmarkIcon className="size-3.5" />
+          <BookmarkSimpleIcon className="size-3.5" />
           Réservé – paiement sur place
         </div>
         {maxQtyConfirme > 1 && (
@@ -381,7 +377,7 @@ function PaidEventSection({
   if (isFull) {
     return (
       <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
-        <BanIcon className="size-3.5" />
+        <ProhibitIcon className="size-3.5" />
         Événement complet
       </div>
     )
@@ -404,7 +400,7 @@ function PaidEventSection({
           onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
         })}
       >
-        <BookmarkIcon className="size-3.5 mr-1.5" />
+        <BookmarkSimpleIcon className="size-3.5 mr-1.5" />
         Réserver – payer sur place
       </Button>
     </div>
@@ -448,7 +444,7 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
             )}
           >
             {isLoading
-              ? <LoaderCircleIcon className="size-3 shrink-0 animate-spin" />
+              ? <CircleNotchIcon className="size-3 shrink-0 animate-spin" />
               : <span className={cn("size-2 rounded-full shrink-0", opt.dot)} />
             }
             {opt.label}
@@ -565,7 +561,7 @@ function EventCard({
         )}
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-0.5">
           <span className="flex items-center gap-1">
-            <CalendarIcon className="size-3" />
+            <CalendarBlankIcon className="size-3" />
             {format(new Date(ev.date), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
           </span>
           {ev.location && (
@@ -578,7 +574,7 @@ function EventCard({
                   rel="noopener noreferrer"
                   className="hover:underline inline-flex items-center gap-0.5"
                 >
-                  {ev.location} <ExternalLinkIcon className="size-2.5" />
+                  {ev.location} <ArrowSquareOutIcon className="size-2.5" />
                 </a>
               ) : ev.location}
             </span>
@@ -776,7 +772,7 @@ function EvenementsPortalPageInner() {
             </div>
             {upcomingHasMore && (
               <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
-                <ChevronRightIcon className="size-3.5" />
+                <CaretRightIcon className="size-3.5" />
                 D'autres événements à venir ne sont pas affichés. Contactez votre association pour plus d'informations.
               </p>
             )}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { SparklesIcon, XIcon, CornerDownLeftIcon, RefreshCwIcon } from "lucide-react"
+import { SparkleIcon, XIcon, ArrowElbowDownLeftIcon, ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -58,7 +58,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <SparklesIcon className="size-3.5 text-violet-600 dark:text-violet-400" />
+          <SparkleIcon className="size-3.5 text-violet-600 dark:text-violet-400" />
           <span className="text-xs font-semibold text-violet-700 dark:text-violet-300">Assistant IA</span>
         </div>
         <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -106,7 +106,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
           loading={loading}
           className="bg-violet-600 hover:bg-violet-700 text-white shrink-0"
         >
-          {!loading && <CornerDownLeftIcon className="size-3.5" />}
+          {!loading && <ArrowElbowDownLeftIcon className="size-3.5" />}
         </Button>
       </div>
 
@@ -134,7 +134,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
               Insérer
             </Button>
             <Button size="sm" variant="ghost" onClick={handleGenerate} loading={loading} className="ml-auto text-muted-foreground">
-              <RefreshCwIcon className="size-3" />
+              <ArrowsClockwiseIcon className="size-3" />
             </Button>
           </div>
         </div>

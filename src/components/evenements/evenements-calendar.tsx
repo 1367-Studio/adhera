@@ -7,7 +7,7 @@ import {
   addMonths, subMonths,
 } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ChevronLeftIcon, ChevronRightIcon, MapPinIcon, UsersIcon, PlusIcon, PencilIcon } from "lucide-react"
+import { CaretLeftIcon, CaretRightIcon, MapPinIcon, UsersIcon, PlusIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { RowActions } from "@/components/ui/row-actions"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -80,7 +80,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" className="size-8" onClick={goPrev}>
-            <ChevronLeftIcon className="size-4" />
+            <CaretLeftIcon className="size-4" />
           </Button>
           {/* key forces re-mount → fade-in on every month change */}
           <h2
@@ -91,7 +91,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
             {format(current, "MMMM yyyy", { locale: fr })}
           </h2>
           <Button variant="outline" size="icon" className="size-8" onClick={goNext}>
-            <ChevronRightIcon className="size-4" />
+            <CaretRightIcon className="size-4" />
           </Button>
         </div>
         <TooltipProvider>
@@ -248,7 +248,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                       )}
                       <RowActions actions={[
                         { label: "Présences", icon: <UsersIcon className="size-3.5" />,  onClick: () => onPresencesClick(ev) },
-                        { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => onEditClick(ev), separator: true },
+                        { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => onEditClick(ev), separator: true },
                       ]} />
                     </div>
                   </div>

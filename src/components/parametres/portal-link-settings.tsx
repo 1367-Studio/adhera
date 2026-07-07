@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { ClipboardIcon, CheckIcon, ExternalLinkIcon } from "lucide-react"
+import { ClipboardIcon, CheckIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 
 export function PortalLinkSettings({ slug }: { slug: string }) {
@@ -69,7 +69,7 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
         </Button>
 
         <Button variant="outline" size="sm" onClick={handleOpen}>
-          <ExternalLinkIcon className="mr-1.5 size-4" />
+          <ArrowSquareOutIcon className="mr-1.5 size-4" />
           Ouvrir
         </Button>
       </div>

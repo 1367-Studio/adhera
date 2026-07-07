@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import { HeartHandshakeIcon, InfoIcon, ShieldCheckIcon } from "lucide-react"
+import { HandshakeIcon, InfoIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -105,7 +105,7 @@ function PublicDonPageInner() {
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center size-12 rounded-full bg-violet-100 dark:bg-violet-900/30 mb-2">
-            <HeartHandshakeIcon className="size-6 text-violet-600 dark:text-violet-400" />
+            <HandshakeIcon className="size-6 text-violet-600 dark:text-violet-400" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">Faire un don</h1>
           {assoc?.name && (
@@ -240,7 +240,7 @@ function PublicDonPageInner() {
             loading={loading}
             className="w-full bg-violet-600 hover:bg-violet-700 text-white"
           >
-            <HeartHandshakeIcon className="size-4 mr-2" />
+            <HandshakeIcon className="size-4 mr-2" />
             Faire un don{amount && amount > 0 ? ` de ${amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}` : ""}
           </Button>
 

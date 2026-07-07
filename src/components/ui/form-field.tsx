@@ -1,7 +1,7 @@
 "use client"
 
 import { forwardRef, useState } from "react"
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
@@ -68,7 +68,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
               aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
             >
               {showPassword
-                ? <EyeOffIcon className="size-4" />
+                ? <EyeSlashIcon className="size-4" />
                 : <EyeIcon className="size-4" />
               }
             </button>

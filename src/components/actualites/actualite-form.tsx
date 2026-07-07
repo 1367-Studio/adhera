@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { SearchIcon, CheckIcon, UsersIcon } from "lucide-react"
+import { MagnifyingGlassIcon, CheckIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { actualiteSchema, type ActualiteInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
@@ -181,7 +181,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
           <div className="rounded-lg border bg-muted/10 overflow-hidden">
             {/* Search */}
             <div className="relative border-b">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Rechercher un membre…"
@@ -191,7 +191,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
               />
             </div>
 
-            {/* List */}
+            {/* ListIcon */}
             <div className="max-h-48 overflow-y-auto divide-y">
               {filteredMembres.length === 0 ? (
                 <div className="flex items-center justify-center gap-2 py-6 text-muted-foreground text-sm">

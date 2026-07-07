@@ -5,7 +5,7 @@ import { toast }    from "sonner"
 import { Badge }    from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Loader2Icon } from "lucide-react"
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import type { UserRole } from "@prisma/client"
 
 type Role = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
@@ -135,7 +135,7 @@ export function MembersTable({ associationId, initialMembers }: { associationId:
                             ))}
                           </SelectContent>
                         </Select>
-                        {isRowPending && <Loader2Icon className="size-3.5 animate-spin text-muted-foreground shrink-0" />}
+                        {isRowPending && <CircleNotchIcon className="size-3.5 animate-spin text-muted-foreground shrink-0" />}
                       </div>
                     ) : (
                       <Tooltip>

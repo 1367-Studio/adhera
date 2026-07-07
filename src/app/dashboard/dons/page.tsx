@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { DownloadIcon, SearchIcon, XIcon, HeartHandshakeIcon, UsersIcon, TrendingUpIcon } from "lucide-react"
+import { DownloadSimpleIcon, MagnifyingGlassIcon, XIcon, HandshakeIcon, UsersIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
@@ -120,7 +120,7 @@ export default function DonsPage() {
           title="Générer le reçu fiscal"
           className="h-7 px-2"
         >
-          <DownloadIcon className="size-3.5" />
+          <DownloadSimpleIcon className="size-3.5" />
         </Button>
       ) : null,
     },
@@ -138,7 +138,7 @@ export default function DonsPage() {
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-xl border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <TrendingUpIcon className="size-3.5" />
+            <TrendUpIcon className="size-3.5" />
             Total {yearFilter}
           </div>
           <p className={cn("text-xl font-bold", totalAmount > 0 ? "text-green-600 dark:text-green-400" : "")}>
@@ -154,7 +154,7 @@ export default function DonsPage() {
         </div>
         <div className="rounded-xl border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <HeartHandshakeIcon className="size-3.5" />
+            <HandshakeIcon className="size-3.5" />
             Don moyen
           </div>
           <p className="text-xl font-bold">
@@ -166,7 +166,7 @@ export default function DonsPage() {
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
         <div className="relative w-60">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Rechercher…"

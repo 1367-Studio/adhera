@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { BuildingIcon, CreditCardIcon, ZapIcon } from "lucide-react"
+import { BuildingsIcon, CreditCardIcon, LightningIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -30,9 +30,9 @@ type Association = {
 type Tab = "general" | "paiements" | "integrations"
 
 const ALL_TABS = [
-  { value: "general"      as Tab, label: "Général",      icon: <BuildingIcon   className="size-3.5" />, modules: null            },
+  { value: "general"      as Tab, label: "Général",      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
   { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
-  { value: "integrations" as Tab, label: "Intégrations", icon: <ZapIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
+  { value: "integrations" as Tab, label: "Intégrations", icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
 ] as const
 
 const ADMINS = ["ADMIN", "PRESIDENT"]

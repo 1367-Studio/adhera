@@ -6,10 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import {
-  ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon,
-  PencilIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, BanknoteIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon, PencilSimpleIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
@@ -289,7 +286,7 @@ export default function EditProduitPage() {
       cell: (c) => c.status === "PENDING" ? (
         <RowActions
           actions={[
-            { label: "Marquer payée", icon: <BanknoteIcon className="size-3.5" />, onClick: () => openPayModal(c) },
+            { label: "Marquer payée", icon: <MoneyIcon className="size-3.5" />, onClick: () => openPayModal(c) },
           ]}
         />
       ) : null,
@@ -346,7 +343,7 @@ export default function EditProduitPage() {
               onClick={() => updateStatusMutation.mutate("DRAFT")}
               loading={updateStatusMutation.isPending}
             >
-              <PencilIcon className="mr-1.5 size-4" />
+              <PencilSimpleIcon className="mr-1.5 size-4" />
               Réactiver
             </Button>
           )}
@@ -356,7 +353,7 @@ export default function EditProduitPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="edit">
-            <PencilIcon className="size-3.5" />
+            <PencilSimpleIcon className="size-3.5" />
             Produit
           </TabsTrigger>
           <TabsTrigger value="commandes">
@@ -517,7 +514,7 @@ export default function EditProduitPage() {
               <>
                 <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
                 <Button loading={updateCommandeStatus.isPending} disabled={adjustedTotal === 0} onClick={handleEncaisser}>
-                  <BanknoteIcon className="mr-1.5 size-4" />
+                  <MoneyIcon className="mr-1.5 size-4" />
                   Encaisser {fmt(adjustedTotal)}
                 </Button>
               </>

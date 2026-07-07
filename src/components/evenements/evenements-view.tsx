@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, UsersIcon, BookmarkIcon, ListIcon, CalendarDaysIcon, MapPinIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -196,7 +196,7 @@ export function EvenementsView() {
             </span>
             {hasFee && e.confirmedCount > 0 && (
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <BookmarkIcon className="size-3.5" />
+                <BookmarkSimpleIcon className="size-3.5" />
                 {e.confirmedCount} réservé{e.confirmedCount !== 1 ? "s" : ""}
                 {e.capacity != null && ` / ${e.capacity}`}
               </span>
@@ -213,8 +213,8 @@ export function EvenementsView() {
       cell: (e) => (
         <RowActions actions={[
           { label: "Présences", icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
         ]} />
       ),
     },
@@ -230,7 +230,7 @@ export function EvenementsView() {
             <ViewToggle
               options={[
                 { value: "list",     label: "Liste",      icon: <ListIcon         className="size-3.5" /> },
-                { value: "calendar", label: "Calendrier", icon: <CalendarDaysIcon className="size-3.5" /> },
+                { value: "calendar", label: "Calendrier", icon: <CalendarDotsIcon className="size-3.5" /> },
               ]}
               value={view}
               onChange={setView}
@@ -252,7 +252,7 @@ export function EvenementsView() {
       ) : (
         <>
           <div className="relative w-72">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               placeholder="Rechercher un événement…"

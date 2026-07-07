@@ -4,7 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { LinkIcon, MinusIcon, TrendingUpIcon, TrendingDownIcon, RotateCcwIcon } from "lucide-react"
+import { LinkIcon, MinusIcon, TrendUpIcon, TrendDownIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { useBankTransactions, useReconcile, useReactivateTransaction } from "@/hooks/use-bank-transactions"
 import { useBankAccounts } from "@/hooks/use-bank-accounts"
 import { PageHeader } from "@/components/ui/page-header"
@@ -164,7 +164,7 @@ export function ReconciliationView() {
       className: "w-32 text-right",
       cell: (tx) => (
         <span className={cn("font-semibold tabular-nums flex items-center justify-end gap-1", tx.type === "CREDIT" ? "text-green-600 dark:text-green-400" : "text-destructive")}>
-          {tx.type === "CREDIT" ? <TrendingUpIcon className="size-3.5" /> : <TrendingDownIcon className="size-3.5" />}
+          {tx.type === "CREDIT" ? <TrendUpIcon className="size-3.5" /> : <TrendDownIcon className="size-3.5" />}
           {tx.type === "CREDIT" ? "+" : "−"}{fmt(tx.amount)}
         </span>
       ),
@@ -192,7 +192,7 @@ export function ReconciliationView() {
               onClick={() => handleUnmatch(tx)}
               title="Annuler la conciliation"
             >
-              <RotateCcwIcon className="size-3 mr-1" />Déconcilier
+              <ArrowCounterClockwiseIcon className="size-3 mr-1" />Déconcilier
             </Button>
           )
         }
@@ -204,7 +204,7 @@ export function ReconciliationView() {
               onClick={() => handleReactivate(tx)}
               title="Remettre en non-concilié"
             >
-              <RotateCcwIcon className="size-3 mr-1" />Réactiver
+              <ArrowCounterClockwiseIcon className="size-3 mr-1" />Réactiver
             </Button>
           )
         }

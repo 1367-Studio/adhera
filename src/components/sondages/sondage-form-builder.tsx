@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
-import { PlusIcon, ClipboardListIcon } from "lucide-react"
+import { PlusIcon, ClipboardTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { QuestionBuilder } from "./question-builder"
 import type { QuestionType, QuestionCondition } from "@/lib/sondages/types"
@@ -81,7 +81,7 @@ export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBu
     <div className="space-y-3">
       {questions.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground space-y-2">
-          <ClipboardListIcon className="size-8 mx-auto text-muted-foreground/50" />
+          <ClipboardTextIcon className="size-8 mx-auto text-muted-foreground/50" />
           <p>Aucune question. Ajoutez-en une ci-dessous.</p>
         </div>
       ) : (

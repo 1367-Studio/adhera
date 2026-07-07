@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CheckCircle2Icon, AlertCircleIcon, ClockIcon, LoaderCircleIcon } from "lucide-react"
+import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 
 type EventInfo = {
@@ -79,7 +79,7 @@ export default function CheckInPage() {
         </div>
 
         {state === "loading" && (
-          <LoaderCircleIcon className="size-12 mx-auto text-muted-foreground animate-spin" />
+          <CircleNotchIcon className="size-12 mx-auto text-muted-foreground animate-spin" />
         )}
 
         {(state === "ready" || state === "checking-in") && info && (
@@ -92,7 +92,7 @@ export default function CheckInPage() {
               </p>
             </div>
             <Button size="lg" className="w-full" onClick={handleCheckIn} loading={state === "checking-in"}>
-              <CheckCircle2Icon className="mr-2 size-5" />
+              <CheckCircleIcon className="mr-2 size-5" />
               Confirmer ma présence
             </Button>
             <p className="text-xs text-muted-foreground">
@@ -103,7 +103,7 @@ export default function CheckInPage() {
 
         {state === "success" && (
           <div className="space-y-3">
-            <CheckCircle2Icon className="size-16 mx-auto text-green-500" />
+            <CheckCircleIcon className="size-16 mx-auto text-green-500" />
             <h2 className="text-xl font-semibold text-green-700 dark:text-green-400">Présence enregistrée !</h2>
             <p className="text-sm text-muted-foreground">
               Votre présence pour <strong>{info?.title}</strong> a été confirmée.
@@ -113,7 +113,7 @@ export default function CheckInPage() {
 
         {state === "already" && (
           <div className="space-y-3">
-            <CheckCircle2Icon className="size-16 mx-auto text-blue-500" />
+            <CheckCircleIcon className="size-16 mx-auto text-blue-500" />
             <h2 className="text-xl font-semibold">Déjà enregistré</h2>
             <p className="text-sm text-muted-foreground">
               Votre présence pour <strong>{info?.title}</strong> a déjà été confirmée.
@@ -131,7 +131,7 @@ export default function CheckInPage() {
 
         {state === "invalid" && (
           <div className="space-y-3">
-            <AlertCircleIcon className="size-16 mx-auto text-destructive" />
+            <WarningCircleIcon className="size-16 mx-auto text-destructive" />
             <h2 className="text-xl font-semibold">QR Code invalide</h2>
             <p className="text-sm text-muted-foreground">Ce lien ne correspond à aucun événement.</p>
           </div>
@@ -139,7 +139,7 @@ export default function CheckInPage() {
 
         {state === "error" && (
           <div className="space-y-3">
-            <AlertCircleIcon className="size-16 mx-auto text-destructive" />
+            <WarningCircleIcon className="size-16 mx-auto text-destructive" />
             <h2 className="text-xl font-semibold">Erreur</h2>
             <p className="text-sm text-muted-foreground">{errMsg || "Une erreur est survenue."}</p>
             <Button variant="outline" onClick={handleRetry}>Réessayer</Button>

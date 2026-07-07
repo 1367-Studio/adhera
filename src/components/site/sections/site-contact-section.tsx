@@ -1,6 +1,5 @@
 import type { ContactSection } from "@/types/site-config"
-import { MapPinIcon } from "lucide-react"
-
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 type Props = {
   section: ContactSection
   city:    string | null

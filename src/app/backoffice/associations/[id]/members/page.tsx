@@ -3,8 +3,7 @@ import Link            from "next/link"
 import type { Metadata } from "next"
 import { prisma }      from "@/lib/prisma/client"
 import { MembersTable } from "@/components/backoffice/members-table"
-import { ChevronLeftIcon } from "lucide-react"
-
+import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const assoc  = await prisma.association.findUnique({ where: { id }, select: { name: true } })
@@ -43,7 +42,7 @@ export default async function AssociationMembersPage({ params }: { params: Promi
           href={`/backoffice/associations/${id}`}
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3"
         >
-          <ChevronLeftIcon className="size-3.5" />
+          <CaretLeftIcon className="size-3.5" />
           {assoc.name}
         </Link>
         <h2 className="text-xl font-semibold tracking-tight">Membres</h2>

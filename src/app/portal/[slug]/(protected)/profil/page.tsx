@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { UserIcon, PhoneIcon, MapPinIcon, CalendarIcon, MailIcon } from "lucide-react"
+import { UserIcon, PhoneIcon, MapPinIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -148,14 +148,14 @@ export default function ProfilPage() {
           <div>
             <p className="text-muted-foreground text-xs mb-0.5">Email</p>
             <p className="flex items-center gap-1.5">
-              <MailIcon className="size-3 text-muted-foreground" />
+              <EnvelopeSimpleIcon className="size-3 text-muted-foreground" />
               {membre.email ?? <span className="text-muted-foreground italic">Non renseigné</span>}
             </p>
           </div>
           <div>
             <p className="text-muted-foreground text-xs mb-0.5">Date de naissance</p>
             <p className="flex items-center gap-1.5">
-              <CalendarIcon className="size-3 text-muted-foreground" />
+              <CalendarBlankIcon className="size-3 text-muted-foreground" />
               {membre.birthDate
                 ? new Date(membre.birthDate).toLocaleDateString("fr-FR")
                 : <span className="text-muted-foreground italic">Non renseignée</span>
@@ -185,7 +185,7 @@ export default function ProfilPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="birthDate" className="flex items-center gap-1.5">
-                <CalendarIcon className="size-3.5" /> Date de naissance
+                <CalendarBlankIcon className="size-3.5" /> Date de naissance
               </Label>
               <Input id="birthDate" type="date" max={new Date().toISOString().split("T")[0]} {...register("birthDate")} />
               {errors.birthDate && <p className="text-destructive text-xs">{errors.birthDate.message}</p>}

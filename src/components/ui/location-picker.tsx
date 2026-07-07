@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import dynamic from "next/dynamic"
-import { MapPinIcon, LoaderCircleIcon, XCircleIcon, ExternalLinkIcon } from "lucide-react"
+import { MapPinIcon, CircleNotchIcon, XCircleIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 
 const MapPickerInner = dynamic(
@@ -139,7 +139,7 @@ export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, er
             )}
           />
           {searching ? (
-            <LoaderCircleIcon className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground animate-spin pointer-events-none" />
+            <CircleNotchIcon className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground animate-spin pointer-events-none" />
           ) : query ? (
             <button
               type="button"
@@ -184,7 +184,7 @@ export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, er
               rel="noopener noreferrer"
               className="ml-0.5 inline-flex items-center gap-0.5 underline hover:text-foreground"
             >
-              Voir sur Google Maps <ExternalLinkIcon className="size-3" />
+              Voir sur Google Maps <ArrowSquareOutIcon className="size-3" />
             </a>
           </p>
         )}

@@ -6,7 +6,7 @@ import { useEffect, useState, Suspense } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ArrowLeftIcon, ShoppingBagIcon, PackageIcon, PencilIcon, XIcon } from "lucide-react"
+import { ArrowLeftIcon, ShoppingBagIcon, PackageIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Modal } from "@/components/ui/modal"
@@ -198,7 +198,7 @@ function MesCommandesPageInner() {
                   <div className="flex gap-2">
                     {c.paymentMethod === "MANUAL" && (
                       <Button size="sm" variant="outline" onClick={() => openEditModal(c)}>
-                        <PencilIcon className="mr-1.5 size-3.5" />
+                        <PencilSimpleIcon className="mr-1.5 size-3.5" />
                         Modifier
                       </Button>
                     )}

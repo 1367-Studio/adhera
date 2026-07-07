@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-import { ShoppingBagIcon, ShoppingCartIcon, PackageIcon } from "lucide-react"
+import { ShoppingBagIcon, ShoppingCartIcon, PackageIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/hooks/use-cart"

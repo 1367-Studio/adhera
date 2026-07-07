@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { LoaderCircleIcon, LockIcon, AlertCircleIcon } from "lucide-react"
+import { CircleNotchIcon, LockIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 
 interface Props {
@@ -83,13 +83,13 @@ export function ResetPasswordForm({ token }: Props) {
 
       {errors.token && (
         <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          <AlertCircleIcon className="size-4 shrink-0" />
+          <WarningCircleIcon className="size-4 shrink-0" />
           <span>{errors.token}</span>
         </div>
       )}
 
       <Button type="submit" className="w-full mt-2" disabled={loading}>
-        {loading && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+        {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         Enregistrer le nouveau mot de passe
       </Button>
     </form>

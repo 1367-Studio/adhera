@@ -4,8 +4,7 @@ import {
   BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid,
 } from "recharts"
-import { StarIcon, MessageSquareIcon, UsersIcon } from "lucide-react"
-
+import { StarIcon, ChatIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 type TextResult = {
   questionId: string
   type:       "TEXT_SHORT" | "TEXT_LONG"

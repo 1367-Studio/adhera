@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ArrowLeftIcon, CheckCircleIcon, LockIcon, BarChart2Icon, PencilIcon, RefreshCwIcon, ClipboardListIcon, SearchIcon, UsersIcon, CheckIcon, ListIcon } from "lucide-react"
+import { ArrowLeftIcon, CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockwiseIcon, ClipboardTextIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon, ListIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -235,7 +235,7 @@ export default function SondageDetailPage() {
           <ArrowLeftIcon className="size-4" />
         </Button>
         <div className="rounded-xl bg-primary/10 p-2.5 shrink-0">
-          <ClipboardListIcon className="size-6 text-primary" />
+          <ClipboardTextIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -274,11 +274,11 @@ export default function SondageDetailPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="edit">
-            <PencilIcon className="size-3.5" />
+            <PencilSimpleIcon className="size-3.5" />
             Questionnaire
           </TabsTrigger>
           <TabsTrigger value="resultats">
-            <BarChart2Icon className="size-3.5" />
+            <ChartBarIcon className="size-3.5" />
             Résultats
           </TabsTrigger>
           <TabsTrigger value="reponses">
@@ -358,7 +358,7 @@ export default function SondageDetailPage() {
                   {recipientMode === "SELECTED" && (
                   <div className="rounded-lg border bg-muted/10 overflow-hidden">
                     <div className="relative border-b">
-                      <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
                       <input
                         type="text"
                         placeholder="Rechercher un membre…"
@@ -489,7 +489,7 @@ export default function SondageDetailPage() {
           <div className="pt-4 space-y-4">
             <div className="flex justify-end">
               <Button variant="outline" size="sm" onClick={() => refetchResultats()} disabled={resultatsLoading}>
-                <RefreshCwIcon className={`mr-1.5 size-3.5 ${resultatsLoading ? "animate-spin" : ""}`} />
+                <ArrowsClockwiseIcon className={`mr-1.5 size-3.5 ${resultatsLoading ? "animate-spin" : ""}`} />
                 Actualiser
               </Button>
             </div>
@@ -513,7 +513,7 @@ export default function SondageDetailPage() {
           <div className="pt-4 space-y-4">
             <div className="flex justify-end">
               <Button variant="outline" size="sm" onClick={() => refetchReponses()} disabled={reponsesLoading}>
-                <RefreshCwIcon className={`mr-1.5 size-3.5 ${reponsesLoading ? "animate-spin" : ""}`} />
+                <ArrowsClockwiseIcon className={`mr-1.5 size-3.5 ${reponsesLoading ? "animate-spin" : ""}`} />
                 Actualiser
               </Button>
             </div>

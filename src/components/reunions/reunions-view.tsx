@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { VideoIcon, PlusIcon, PlayIcon, Trash2Icon, UsersIcon, CalendarIcon, FileTextIcon, ClockIcon } from "lucide-react"
+import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMeetings, useCreateMeeting, useDeleteMeeting, type Meeting } from "@/hooks/use-meetings"
@@ -110,7 +110,7 @@ export function ReunionsView() {
         <div className="text-sm text-muted-foreground">Chargement…</div>
       ) : meetings.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
-          <VideoIcon className="h-10 w-10 text-muted-foreground" />
+          <VideoCameraIcon className="h-10 w-10 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">Aucune réunion pour le moment</p>
           <Button variant="outline" onClick={() => setFormOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
@@ -169,7 +169,7 @@ function MeetingCard({
       return { icon: <PlayIcon className="h-3 w-3" />, label: format(new Date(meeting.startedAt), "d MMM yyyy à HH:mm", { locale: fr }) }
     }
     const anchor = meeting.scheduledAt ?? meeting.createdAt
-    return { icon: <CalendarIcon className="h-3 w-3" />, label: format(new Date(anchor), "d MMM yyyy à HH:mm", { locale: fr }) }
+    return { icon: <CalendarBlankIcon className="h-3 w-3" />, label: format(new Date(anchor), "d MMM yyyy à HH:mm", { locale: fr }) }
   })()
 
   const durationLabel = useMemo(() => {
@@ -227,7 +227,7 @@ function MeetingCard({
           </Button>
         )}
         <Button size="sm" variant="ghost" onClick={onDelete} className="text-destructive hover:text-destructive">
-          <Trash2Icon className="h-4 w-4" />
+          <TrashIcon className="h-4 w-4" />
         </Button>
       </div>
     </div>

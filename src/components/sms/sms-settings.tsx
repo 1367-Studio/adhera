@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { MessageSquareTextIcon, CheckCircle2Icon, LoaderCircleIcon, AlertTriangleIcon } from "lucide-react"
+import { ChatTextIcon, CheckCircleIcon, CircleNotchIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 
@@ -106,7 +106,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-2 mb-0.5">
-          <MessageSquareTextIcon className="size-3.5 text-sky-600" />
+          <ChatTextIcon className="size-3.5 text-sky-600" />
           <h3 className="text-sm font-semibold">Notifications SMS</h3>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -118,7 +118,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
       {/* Status */}
       {data?.smsConfigured ? (
         <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
-          <CheckCircle2Icon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
+          <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
             <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Compte Twilio configuré</p>
             {data.smsPhoneNumber && (
@@ -128,7 +128,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
         </div>
       ) : (
         <div className="rounded-xl border bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2.5">
-          <AlertTriangleIcon className="size-4 mt-0.5 shrink-0 text-amber-600" />
+          <WarningIcon className="size-4 mt-0.5 shrink-0 text-amber-600" />
           <p className="text-sm text-amber-700 dark:text-amber-300">
             Aucun compte Twilio configuré — l'envoi de SMS ne fonctionnera pas tant que vous n'aurez pas renseigné vos identifiants.
           </p>
@@ -169,8 +169,8 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
               disabled={!canSave || saving}
             >
               {saving
-                ? <><LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
-                : <><MessageSquareTextIcon className="mr-1.5 size-3.5" />Enregistrer</>
+                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
+                : <><ChatTextIcon className="mr-1.5 size-3.5" />Enregistrer</>
               }
             </Button>
             {data?.smsConfigured && (

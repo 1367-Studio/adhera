@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPinIcon } from "lucide-react"
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { isColorDark } from "@/lib/color"
 import { RichTextView } from "@/components/ui/rich-text-view"

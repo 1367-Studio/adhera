@@ -1,5 +1,4 @@
-import { UsersIcon, CalendarIcon, CoinsIcon, LandmarkIcon } from "lucide-react"
-
+import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon } from "@phosphor-icons/react/dist/ssr";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -37,8 +36,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             {[
               { Icon: UsersIcon,    label: "Gestion des membres & adhérents" },
               { Icon: CoinsIcon,    label: "Suivi des cotisations"           },
-              { Icon: CalendarIcon, label: "Événements & présences"          },
-              { Icon: LandmarkIcon, label: "Trésorerie simplifiée"           },
+              { Icon: CalendarBlankIcon, label: "Événements & présences"          },
+              { Icon: BankIcon, label: "Trésorerie simplifiée"           },
             ].map(({ Icon, label }) => (
               <li key={label} className="flex items-center gap-3">
                 <span className="flex size-8 items-center justify-center rounded-lg bg-white/5">

@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { AlertCircleIcon, AlertTriangleIcon, SendIcon } from "lucide-react"
+import { WarningCircleIcon, WarningIcon, PaperPlaneTiltIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -309,7 +309,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
 
         {templates.length === 0 ? (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
-            <AlertCircleIcon className="size-4 shrink-0 mt-0.5" />
+            <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
             <span>Aucun modèle disponible. Créez d'abord un modèle dans l'onglet <strong>Modèles</strong>.</span>
           </div>
         ) : (
@@ -349,7 +349,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* Warning: SMS channel selected but template has no smsBody */}
         {warnMissingSmsBody && (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
-            <AlertTriangleIcon className="size-4 shrink-0 mt-0.5" />
+            <WarningIcon className="size-4 shrink-0 mt-0.5" />
             <span>Le modèle sélectionné n'a pas de corps SMS. Modifiez le modèle pour activer l'envoi SMS.</span>
           </div>
         )}
@@ -386,7 +386,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
                 }
               }}
             >
-              <SendIcon className="mr-1.5 size-3.5" /> Tester (config sauvegardée)
+              <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> Tester (config sauvegardée)
             </Button>
           )}
           <div className={`flex gap-2 ${isEditing ? "" : "ml-auto"}`}>

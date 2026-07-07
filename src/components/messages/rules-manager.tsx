@@ -4,7 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilIcon, Trash2Icon, BotIcon, PauseCircleIcon, PlayCircleIcon, ClockIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, RobotIcon, PauseCircleIcon, PlayCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useAutomationRules, useDeleteRule, useToggleRuleStatus,
   type AutomationRule,
@@ -122,7 +122,7 @@ export function RulesManager() {
         </div>
       ) : rules.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
-          <BotIcon className="size-8 text-muted-foreground/40" />
+          <RobotIcon className="size-8 text-muted-foreground/40" />
           <div>
             <p className="text-sm font-medium">Aucune règle</p>
             <p className="text-xs text-muted-foreground">Créez une première règle pour automatiser vos envois.</p>
@@ -186,7 +186,7 @@ export function RulesManager() {
                   className="text-muted-foreground hover:text-foreground transition-colors"
                   title="Modifier"
                 >
-                  <PencilIcon className="size-3.5" />
+                  <PencilSimpleIcon className="size-3.5" />
                 </button>
                 <button
                   type="button"
@@ -194,7 +194,7 @@ export function RulesManager() {
                   className="text-muted-foreground hover:text-destructive transition-colors"
                   title="Supprimer"
                 >
-                  <Trash2Icon className="size-3.5" />
+                  <TrashIcon className="size-3.5" />
                 </button>
               </div>
             </div>

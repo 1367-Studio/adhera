@@ -1,5 +1,5 @@
 import type { EventsSection } from "@/types/site-config"
-import { CalendarIcon, MapPinIcon } from "lucide-react"
+import { CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
 
 function toHtml(content: string): string {
@@ -54,7 +54,7 @@ export function SiteEventsSection({ section, events, color }: Props) {
 
                 <div className="space-y-1 text-xs text-gray-500">
                   <div className="flex items-center gap-1.5">
-                    <CalendarIcon className="size-3.5 shrink-0" />
+                    <CalendarBlankIcon className="size-3.5 shrink-0" />
                     <span>
                       {new Date(event.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
                       {event.endDate && ` — ${new Date(event.endDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}

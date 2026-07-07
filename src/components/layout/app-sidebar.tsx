@@ -2,23 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-  LayoutDashboardIcon,
-  UsersIcon,
-  CalendarIcon,
-  CoinsIcon,
-  SettingsIcon,
-  NewspaperIcon,
-  MailIcon,
-  PackageIcon,
-  GlobeIcon,
-  ActivityIcon,
-  HeartIcon,
-  ClipboardListIcon,
-  ShoppingBagIcon,
-  VideoIcon,
-  BanknoteIcon,
-} from "lucide-react"
+import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -42,20 +26,20 @@ const MANAGERS: UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 const navigationItems: NavItem[] = [
-  { name: "Tableau de bord", href: "/dashboard",             icon: LayoutDashboardIcon, roles: MANAGERS },
+  { name: "Tableau de bord", href: "/dashboard",             icon: SquaresFourIcon, roles: MANAGERS },
   { name: "Membres",         href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
-  { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
+  { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarBlankIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
   { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
-  { name: "Finances",        href: "/dashboard/finances",    icon: BanknoteIcon,         roles: FINANCE,   moduleKey: "finances"    },
+  { name: "Finances",        href: "/dashboard/finances",    icon: MoneyIcon,         roles: FINANCE,   moduleKey: "finances"    },
   { name: "Dons",            href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
-  { name: "Réunions",        href: "/dashboard/reunions",    icon: VideoIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
-  { name: "Sondages",        href: "/dashboard/sondages",    icon: ClipboardListIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
+  { name: "Réunions",        href: "/dashboard/reunions",    icon: VideoCameraIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
+  { name: "Sondages",        href: "/dashboard/sondages",    icon: ClipboardTextIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
   { name: "Boutique",        href: "/dashboard/boutique",    icon: ShoppingBagIcon,      roles: MANAGERS,  moduleKey: "boutique"    },
   { name: "Actualités",      href: "/dashboard/actualites",  icon: NewspaperIcon,        roles: MANAGERS,  moduleKey: "actualites"  },
-  { name: "Messages",        href: "/dashboard/messages",    icon: MailIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
+  { name: "Messages",        href: "/dashboard/messages",    icon: EnvelopeSimpleIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
   { name: "Matériel",        href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },
   { name: "Site web",        href: "/dashboard/site",        icon: GlobeIcon,            roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site" },
-  { name: "Historique",      href: "/dashboard/activite",    icon: ActivityIcon,         roles: MANAGERS },
+  { name: "Historique",      href: "/dashboard/activite",    icon: PulseIcon,         roles: MANAGERS },
 
 ]
 
@@ -127,7 +111,7 @@ export function AppSidebar() {
                 tooltip="Paramètres"
                 onClick={() => { if (isMobile) setOpenMobile(false) }}
               >
-                <SettingsIcon />
+                <GearIcon />
                 <span>Paramètres</span>
               </SidebarMenuButton>
             </SidebarMenuItem>

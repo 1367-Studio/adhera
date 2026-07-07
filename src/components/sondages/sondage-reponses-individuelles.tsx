@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ChevronDownIcon, UserIcon, ShieldIcon, UserXIcon } from "lucide-react"
+import { CaretDownIcon, UserIcon, ShieldIcon, UserMinusIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 
 type QuestionCondition = {
@@ -82,7 +82,7 @@ function ReponseCard({ reponse, questions, anonymous }: {
 
   const { name, icon } = (() => {
     if (anonymous)              return { name: `Répondant #${reponse.index}`, icon: <ShieldIcon className="size-4 text-muted-foreground" /> }
-    if (reponse.memberDeleted)  return { name: "Membre supprimé",             icon: <UserXIcon  className="size-4 text-muted-foreground/60" /> }
+    if (reponse.memberDeleted)  return { name: "Membre supprimé",             icon: <UserMinusIcon  className="size-4 text-muted-foreground/60" /> }
     if (reponse.membre)         return { name: `${reponse.membre.firstName} ${reponse.membre.lastName}`, icon: <UserIcon className="size-4 text-muted-foreground" /> }
     return { name: `Répondant #${reponse.index}`, icon: <UserIcon className="size-4 text-muted-foreground" /> }
   })()
@@ -106,7 +106,7 @@ function ReponseCard({ reponse, questions, anonymous }: {
             {" · "}{answeredCount} / {shownQuestions.length} question{shownQuestions.length !== 1 ? "s" : ""} répondue{answeredCount !== 1 ? "s" : ""}
           </p>
         </div>
-        <ChevronDownIcon
+        <CaretDownIcon
           className={cn("size-4 text-muted-foreground shrink-0 transition-transform", open && "rotate-180")}
         />
       </button>

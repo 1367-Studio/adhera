@@ -8,10 +8,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import {
-  ArrowLeftIcon, BanknoteIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, DownloadIcon,
-  InfoIcon, PencilIcon, QrCodeIcon, RefreshCwIcon, SearchIcon, Trash2Icon, UserPlusIcon, UsersIcon, XIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
@@ -425,9 +422,9 @@ export default function PresencesPage() {
 
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
-            <DownloadIcon className="mr-1.5 size-4" />
+            <DownloadSimpleIcon className="mr-1.5 size-4" />
             Exporter
-            <ChevronDownIcon className="ml-1 size-3" />
+            <CaretDownIcon className="ml-1 size-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => window.location.href = `/api/evenements/${id}/export?format=csv`}>
@@ -472,7 +469,7 @@ export default function PresencesPage() {
               <>
                 <span className="text-muted-foreground/40">·</span>
                 <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <BookmarkIcon className="size-3.5" />
+                  <BookmarkSimpleIcon className="size-3.5" />
                   {reservedCount} réservé{reservedCount !== 1 ? "s" : ""}
                   {capacity && ` / ${capacity}`}
                 </span>
@@ -496,7 +493,7 @@ export default function PresencesPage() {
         )}
       </div>
 
-      {/* Two columns: QR + List */}
+      {/* Two columns: QR + ListIcon */}
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 items-start">
 
         {/* QR Panel */}
@@ -543,7 +540,7 @@ export default function PresencesPage() {
                     <Tooltip>
                       <TooltipTrigger render={<span className="flex-1" />}>
                         <Button variant="outline" size="sm" className="w-full" onClick={() => setRegenerateConfirmOpen(true)} loading={generateQr.isPending}>
-                          <RefreshCwIcon className="mr-1.5 size-3.5" />
+                          <ArrowsClockwiseIcon className="mr-1.5 size-3.5" />
                           Régénérer
                         </Button>
                       </TooltipTrigger>
@@ -587,7 +584,7 @@ export default function PresencesPage() {
         <div className="rounded-xl border bg-card overflow-hidden">
           <div className="p-3 border-b flex items-center gap-2">
             <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Rechercher…"
@@ -687,7 +684,7 @@ export default function PresencesPage() {
                     ) : row.rsvp === "CONFIRME" ? (
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
-                          <BookmarkIcon className="size-3" />
+                          <BookmarkSimpleIcon className="size-3" />
                           Réservé
                         </span>
                         <button
@@ -696,7 +693,7 @@ export default function PresencesPage() {
                           disabled={payingIds.has(rowKey(row))}
                           className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                         >
-                          <BanknoteIcon className="size-3" />
+                          <MoneyIcon className="size-3" />
                           Marquer payé
                         </button>
                       </div>
@@ -707,7 +704,7 @@ export default function PresencesPage() {
                         disabled={payingIds.has(rowKey(row))}
                         className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                       >
-                        <BanknoteIcon className="size-3" />
+                        <MoneyIcon className="size-3" />
                         Marquer payé
                       </button>
                     )
@@ -721,7 +718,7 @@ export default function PresencesPage() {
                         className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                         title="Modifier"
                       >
-                        <PencilIcon className="size-3.5" />
+                        <PencilSimpleIcon className="size-3.5" />
                       </button>
                       <button
                         type="button"
@@ -729,7 +726,7 @@ export default function PresencesPage() {
                         className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                         title="Retirer"
                       >
-                        <Trash2Icon className="size-3.5" />
+                        <TrashIcon className="size-3.5" />
                       </button>
                     </div>
                   )}

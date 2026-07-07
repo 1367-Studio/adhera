@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { AlertCircleIcon } from "lucide-react"
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
 
 export const metadata: Metadata = { title: "Nouveau mot de passe" }
@@ -29,7 +29,7 @@ export default async function ResetPasswordPage({
           <ResetPasswordForm token={token} />
         ) : (
           <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-3 text-sm text-destructive">
-            <AlertCircleIcon className="size-4 shrink-0" />
+            <WarningCircleIcon className="size-4 shrink-0" />
             <span>Lien invalide. Veuillez demander un nouveau lien de réinitialisation.</span>
           </div>
         )}

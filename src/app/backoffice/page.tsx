@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BuildingIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, EuroIcon } from "lucide-react"
-
+import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CurrencyEurIcon } from "@phosphor-icons/react/dist/ssr";
 export const metadata: Metadata = {
   title: "Vue d'ensemble — Backoffice Adhéra",
 }
@@ -51,10 +50,10 @@ export default async function BackofficePage() {
   const { total, active, trial, problem, monthly } = await getStats()
 
   const kpis = [
-    { title: "Associations",  value: total,   icon: BuildingIcon,     description: "enregistrées sur la plateforme" },
+    { title: "Associations",  value: total,   icon: BuildingsIcon,     description: "enregistrées sur la plateforme" },
     { title: "Actives",       value: active,  icon: CheckCircleIcon,  description: "abonnement actif"               },
     { title: "En essai",      value: trial,   icon: ClockIcon,        description: "période d'évaluation"           },
-    { title: "Attention",     value: problem, icon: AlertCircleIcon,  description: "en retard ou annulées"          },
+    { title: "Attention",     value: problem, icon: WarningCircleIcon,  description: "en retard ou annulées"          },
   ]
 
   return (
@@ -73,7 +72,7 @@ export default async function BackofficePage() {
       <StatCard
         title="Revenu mensuel estimé"
         value={`${monthly.toFixed(2)} €`}
-        icon={EuroIcon}
+        icon={CurrencyEurIcon}
         description={`associations actives × ${MRR_PER_ACTIVE.toFixed(2)} €/mois`}
         className="max-w-xs"
       />

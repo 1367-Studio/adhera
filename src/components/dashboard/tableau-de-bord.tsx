@@ -4,10 +4,7 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import {
-  UsersIcon, CalendarIcon, CoinsIcon, LandmarkIcon,
-  TrendingUpIcon, ArrowRightIcon, AlertCircleIcon,
-} from "lucide-react"
+import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useModules } from "@/lib/user-context"
 import { FinanceCharts } from "@/components/dashboard/finance-charts"
@@ -49,7 +46,7 @@ export function TableauDeBord() {
     {
       label:     "Événements ce mois",
       value:     data?.evenementsMois ?? "—",
-      icon:      CalendarIcon,
+      icon:      CalendarBlankIcon,
       href:      "/dashboard/evenements",
       color:     "text-violet-600 dark:text-violet-400",
       bg:        "bg-violet-50 dark:bg-violet-950/30",
@@ -68,7 +65,7 @@ export function TableauDeBord() {
     {
       label:     "Solde financier",
       value:     data ? fmt(data.solde) : "—",
-      icon:      LandmarkIcon,
+      icon:      BankIcon,
       href:      "/dashboard/finances",
       color:     data && data.solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
       bg:        data && data.solde >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30",
@@ -99,7 +96,7 @@ export function TableauDeBord() {
               <span className="text-sm text-muted-foreground">{stat.label}</span>
               <div className={cn("flex size-8 items-center justify-center rounded-lg", stat.bg)}>
                 {stat.alert
-                  ? <AlertCircleIcon className={cn("size-4", stat.color)} />
+                  ? <WarningCircleIcon className={cn("size-4", stat.color)} />
                   : <stat.icon className={cn("size-4", stat.color)} />
                 }
               </div>
@@ -124,7 +121,7 @@ export function TableauDeBord() {
           {modules.evenements && (
             <div className="rounded-xl border bg-card p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <CalendarIcon className="size-4 text-muted-foreground" />
+                <CalendarBlankIcon className="size-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Prochain événement</span>
               </div>
               {isLoading ? (
@@ -151,7 +148,7 @@ export function TableauDeBord() {
           {modules.cotisations && (
             <div className="rounded-xl border bg-card p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <TrendingUpIcon className="size-4 text-muted-foreground" />
+                <TrendUpIcon className="size-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Cotisations {new Date().getFullYear()}</span>
               </div>
               {isLoading ? (
@@ -167,7 +164,7 @@ export function TableauDeBord() {
                       href="/dashboard/cotisations"
                       className="text-xs text-amber-600 hover:underline flex items-center gap-1 mt-1"
                     >
-                      <AlertCircleIcon className="size-3" />
+                      <WarningCircleIcon className="size-3" />
                       {data?.cotisationsEnAttente} en attente de paiement
                     </Link>
                   )}

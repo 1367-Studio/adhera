@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState, useEffect } from "react"
 import { format, differenceInDays } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PinIcon, CalendarIcon, MapPinIcon, ArrowRightIcon, ImageIcon, ChevronRightIcon, Loader2Icon } from "lucide-react"
+import { PushPinIcon, CalendarBlankIcon, MapPinIcon, ArrowRightIcon, ImageIcon, CaretRightIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
@@ -64,7 +64,7 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
         <div className="absolute top-2.5 left-2.5 z-20 flex gap-1.5">
           {post.pinned && (
             <span className="inline-flex items-center gap-1.5 bg-orange-500/80 backdrop-blur-md border border-orange-300/30 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-lg">
-              <PinIcon className="size-2.5" /> Épinglé
+              <PushPinIcon className="size-2.5" /> Épinglé
             </span>
           )}
           {nouveau && (
@@ -94,14 +94,14 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
           href={`/portal/${slug}/actualites/${post.id}`}
           className="inline-flex items-center gap-0.5 text-xs font-medium text-primary hover:underline self-start"
         >
-          Lire la suite <ChevronRightIcon className="size-3.5" />
+          Lire la suite <CaretRightIcon className="size-3.5" />
         </Link>
 
         {post.evenement && (
           <div className="rounded-xl border bg-muted/30 p-3 space-y-2 mt-1">
             <div className="flex items-center justify-between gap-2">
               <p className="text-[11px] font-semibold text-primary uppercase tracking-wider flex items-center gap-1">
-                <CalendarIcon className="size-3.5" /> Événement associé
+                <CalendarBlankIcon className="size-3.5" /> Événement associé
               </p>
               {post.evenementRsvp && <RsvpBadge rsvp={post.evenementRsvp} />}
             </div>
@@ -112,7 +112,7 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
               </div>
               <div className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
-                  <CalendarIcon className="size-3" />
+                  <CalendarBlankIcon className="size-3" />
                   {format(new Date(post.evenement.date), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
                 </span>
                 {post.evenement.location && (
@@ -225,7 +225,7 @@ export default function ActualitesPortalPage() {
                 disabled={isFetching}
                 className="flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
-                {isFetching ? <Loader2Icon className="size-4 animate-spin" /> : null}
+                {isFetching ? <CircleNotchIcon className="size-4 animate-spin" /> : null}
                 Charger plus
               </button>
             </div>

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilIcon, Trash2Icon, FileTextIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, FileTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMessageTemplates, useDeleteTemplate, type MessageTemplate } from "@/hooks/use-message-templates"
 import { TemplateModal } from "@/components/messages/template-modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -73,8 +73,8 @@ export function TemplatesManager() {
               </div>
               <div className="shrink-0">
                 <RowActions actions={[
-                  { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => openEdit(t) },
-                  { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(t) },
+                  { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openEdit(t) },
+                  { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(t) },
                 ]} />
               </div>
             </div>

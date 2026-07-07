@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ArrowLeftIcon, CalendarIcon, MapPinIcon, PinIcon, ExternalLinkIcon } from "lucide-react"
+import { ArrowLeftIcon, CalendarBlankIcon, MapPinIcon, PushPinIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
@@ -97,7 +97,7 @@ export default function ActualiteDetailPage() {
         <div className="flex flex-wrap items-center gap-2">
           {post.pinned && (
             <span className="inline-flex items-center gap-1.5 bg-orange-500/80 border border-orange-300/30 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
-              <PinIcon className="size-2.5" /> Épinglé
+              <PushPinIcon className="size-2.5" /> Épinglé
             </span>
           )}
           <time className="text-xs text-muted-foreground">
@@ -113,7 +113,7 @@ export default function ActualiteDetailPage() {
         <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1.5">
-              <CalendarIcon className="size-3.5" />
+              <CalendarBlankIcon className="size-3.5" />
               Événement associé
             </p>
             {post.evenementRsvp && <RsvpBadge rsvp={post.evenementRsvp} />}
@@ -126,7 +126,7 @@ export default function ActualiteDetailPage() {
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <CalendarIcon className="size-3" />
+                <CalendarBlankIcon className="size-3" />
                 {format(new Date(ev.date), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
                 {ev.endDate && <> — {format(new Date(ev.endDate), "HH'h'mm", { locale: fr })}</>}
               </span>
@@ -140,7 +140,7 @@ export default function ActualiteDetailPage() {
                       rel="noopener noreferrer"
                       className="hover:underline inline-flex items-center gap-0.5"
                     >
-                      {ev.location} <ExternalLinkIcon className="size-2.5" />
+                      {ev.location} <ArrowSquareOutIcon className="size-2.5" />
                     </a>
                   ) : ev.location}
                 </span>
@@ -156,7 +156,7 @@ export default function ActualiteDetailPage() {
               href={`/portal/${slug}/evenements`}
               className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
             >
-              Gérer ma participation <ExternalLinkIcon className="size-3" />
+              Gérer ma participation <ArrowSquareOutIcon className="size-3" />
             </Link>
           )}
         </div>

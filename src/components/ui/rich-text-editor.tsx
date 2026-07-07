@@ -6,10 +6,7 @@ import StarterKit from "@tiptap/starter-kit"
 import LinkExtension from "@tiptap/extension-link"
 import Underline from "@tiptap/extension-underline"
 import Placeholder from "@tiptap/extension-placeholder"
-import {
-  Bold, Italic, Underline as UnderlineIcon,
-  List, ListOrdered, Heading2, Heading3, SparklesIcon,
-} from "lucide-react"
+import { TextBIcon, TextItalicIcon, TextUnderlineIcon as UnderlineIcon, ListIcon, ListNumbersIcon, TextHTwoIcon, TextHThreeIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { AiWriter } from "@/components/ai/ai-writer"
@@ -36,10 +33,10 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
   return (
     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b bg-muted/30">
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(editor.isActive("bold"))}>
-        <Bold size={14} />
+        <TextBIcon size={14} />
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={btn(editor.isActive("italic"))}>
-        <Italic size={14} />
+        <TextItalicIcon size={14} />
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={btn(editor.isActive("underline"))}>
         <UnderlineIcon size={14} />
@@ -48,19 +45,19 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
       <div className="w-px h-4 bg-border mx-1" />
 
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(editor.isActive("heading", { level: 2 }))}>
-        <Heading2 size={14} />
+        <TextHTwoIcon size={14} />
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(editor.isActive("heading", { level: 3 }))}>
-        <Heading3 size={14} />
+        <TextHThreeIcon size={14} />
       </button>
 
       <div className="w-px h-4 bg-border mx-1" />
 
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(editor.isActive("bulletList"))}>
-        <List size={14} />
+        <ListIcon size={14} />
       </button>
       <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={btn(editor.isActive("orderedList"))}>
-        <ListOrdered size={14} />
+        <ListNumbersIcon size={14} />
       </button>
 
       {aiEnabled && (
@@ -76,7 +73,7 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
                 : "text-muted-foreground hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/30",
             )}
           >
-            <SparklesIcon size={13} />
+            <SparkleIcon size={13} />
             IA
           </button>
         </>

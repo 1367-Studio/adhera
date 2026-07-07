@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { MailIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { EnvelopeSimpleIcon, CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { useAutomationLogs } from "@/hooks/use-automation-logs"
 import { Button } from "@/components/ui/button"
 
@@ -28,7 +28,7 @@ export function HistoriqueView() {
         </div>
       ) : !data || data.logs.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
-          <MailIcon className="size-8 text-muted-foreground/40" />
+          <EnvelopeSimpleIcon className="size-8 text-muted-foreground/40" />
           <div>
             <p className="text-sm font-medium">Aucun envoi enregistré</p>
             <p className="text-xs text-muted-foreground">Les envois apparaîtront ici dès qu'une règle sera exécutée.</p>
@@ -89,7 +89,7 @@ export function HistoriqueView() {
                   disabled={page <= 1}
                   onClick={() => setPage(p => p - 1)}
                 >
-                  <ChevronLeftIcon className="size-4" />
+                  <CaretLeftIcon className="size-4" />
                 </Button>
                 <Button
                   variant="ghost"
@@ -97,7 +97,7 @@ export function HistoriqueView() {
                   disabled={page >= totalPages}
                   onClick={() => setPage(p => p + 1)}
                 >
-                  <ChevronRightIcon className="size-4" />
+                  <CaretRightIcon className="size-4" />
                 </Button>
               </div>
             </div>

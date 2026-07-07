@@ -4,7 +4,7 @@ import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
 import * as XLSX from "xlsx"
-import { UploadIcon, ChevronRightIcon, CheckCircle2Icon, FileIcon } from "lucide-react"
+import { UploadSimpleIcon, CaretRightIcon, CheckCircleIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -374,9 +374,9 @@ export function ImportWizard() {
           { n: 4, label: "Résultat" },
         ].map((s, i) => (
           <div key={s.n} className="flex items-center gap-1">
-            {i > 0 && <ChevronRightIcon className="size-4 text-muted-foreground" />}
+            {i > 0 && <CaretRightIcon className="size-4 text-muted-foreground" />}
             <span className={cn("font-medium", step === s.n ? "text-foreground" : step > s.n ? "text-green-600 dark:text-green-400" : "text-muted-foreground")}>
-              {step > s.n ? <CheckCircle2Icon className="inline size-4" /> : `${s.n}.`} {s.label}
+              {step > s.n ? <CheckCircleIcon className="inline size-4" /> : `${s.n}.`} {s.label}
             </span>
           </div>
         ))}
@@ -397,7 +397,7 @@ export function ImportWizard() {
             className="hidden"
             onChange={e => { const f = e.target.files?.[0]; if (f) handleFileSelect(f) }}
           />
-          <UploadIcon className="size-10 mx-auto text-muted-foreground mb-3" />
+          <UploadSimpleIcon className="size-10 mx-auto text-muted-foreground mb-3" />
           <p className="font-medium">Glissez-déposez votre relevé ici</p>
           <p className="text-sm text-muted-foreground mt-1">CSV ou Excel (.xlsx, .xls) — export depuis votre banque</p>
         </div>
@@ -603,7 +603,7 @@ export function ImportWizard() {
       {/* Step 4: Result */}
       {step === 4 && result && (
         <div className="rounded-xl border bg-card p-8 text-center space-y-4">
-          <CheckCircle2Icon className="size-12 mx-auto text-green-600 dark:text-green-400" />
+          <CheckCircleIcon className="size-12 mx-auto text-green-600 dark:text-green-400" />
           <h3 className="text-xl font-bold">Importation réussie</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg mx-auto">
             <div>

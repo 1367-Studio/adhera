@@ -2,8 +2,7 @@
 
 import { useState } from "react"
 import type { MembershipSection } from "@/types/site-config"
-import { CheckCircleIcon } from "lucide-react"
-
+import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
 type MembreType = { id: string; name: string; color: string }
 
 type Props = {

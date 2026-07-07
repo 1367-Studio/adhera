@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { TrendingUpIcon, TrendingDownIcon, LandmarkIcon, ScaleIcon, AlertCircleIcon, ReceiptIcon } from "lucide-react"
+import { TrendUpIcon, TrendDownIcon, BankIcon, ScalesIcon, WarningCircleIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
@@ -134,23 +134,23 @@ export function FinanceDashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <StatCard title={`Recettes ${year}`} value={s.totalIncomes}  icon={TrendingUpIcon}   colorClass="bg-green-50 dark:bg-green-950/30" prefix="+" />
-          <StatCard title={`Dépenses ${year}`} value={-s.totalExpenses} icon={TrendingDownIcon} colorClass="bg-red-50 dark:bg-red-950/30" />
+          <StatCard title={`Recettes ${year}`} value={s.totalIncomes}  icon={TrendUpIcon}   colorClass="bg-green-50 dark:bg-green-950/30" prefix="+" />
+          <StatCard title={`Dépenses ${year}`} value={-s.totalExpenses} icon={TrendDownIcon} colorClass="bg-red-50 dark:bg-red-950/30" />
           <StatCard
             title={`Résultat ${year}`}
             value={s.result}
-            icon={ScaleIcon}
+            icon={ScalesIcon}
             colorClass={s.result >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30"}
             prefix={s.result >= 0 ? "+" : ""}
           />
           <StatCard
             title={`Résultat cumulé`}
             value={s.cumulativeResult}
-            icon={LandmarkIcon}
+            icon={BankIcon}
             colorClass="bg-blue-50 dark:bg-blue-950/30"
             prefix={s.cumulativeResult >= 0 ? "+" : ""}
           />
-          <CountCard title="Transactions non conciliées" value={s.unmatched}       icon={AlertCircleIcon} colorClass="bg-orange-50 dark:bg-orange-950/30" label="à traiter" />
+          <CountCard title="Transactions non conciliées" value={s.unmatched}       icon={WarningCircleIcon} colorClass="bg-orange-50 dark:bg-orange-950/30" label="à traiter" />
           <CountCard title="Justificatifs en attente"    value={s.pendingReceipts} icon={ReceiptIcon}     colorClass="bg-yellow-50 dark:bg-yellow-950/30" label="dépenses brouillon" />
         </div>
       )}

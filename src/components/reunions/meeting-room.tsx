@@ -13,10 +13,7 @@ import {
   useChat,
 } from "@livekit/components-react"
 import { Track } from "livekit-client"
-import {
-  Loader2, MicIcon, MicOffIcon, VideoIcon, VideoOffIcon,
-  PhoneOffIcon, CircleIcon, SquareIcon, MessageCircleIcon, SendIcon, UsersIcon,
-} from "lucide-react"
+import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMeetingToken } from "@/hooks/use-meetings"
@@ -145,7 +142,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           disabled={isSending || !text.trim()}
           className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
         >
-          <SendIcon className="size-3.5" />
+          <PaperPlaneTiltIcon className="size-3.5" />
         </button>
       </div>
     </div>
@@ -240,7 +237,7 @@ function Controls({
             chatOpen ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted",
           )}
         >
-          <MessageCircleIcon className="size-5" />
+          <ChatCircleIcon className="size-5" />
         </button>
         {unreadCount > 0 && !chatOpen && (
           <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
@@ -259,7 +256,7 @@ function Controls({
         )}
         showIcon={false}
       >
-        {isMicrophoneEnabled ? <MicIcon className="size-5" /> : <MicOffIcon className="size-5" />}
+        {isMicrophoneEnabled ? <MicrophoneIcon className="size-5" /> : <MicrophoneSlashIcon className="size-5" />}
       </TrackToggle>
 
       <TrackToggle
@@ -272,7 +269,7 @@ function Controls({
         )}
         showIcon={false}
       >
-        {isCameraEnabled ? <VideoIcon className="size-5" /> : <VideoOffIcon className="size-5" />}
+        {isCameraEnabled ? <VideoCameraIcon className="size-5" /> : <VideoCameraSlashIcon className="size-5" />}
       </TrackToggle>
 
       {isAdmin ? (
@@ -283,7 +280,7 @@ function Controls({
           loading={ending}
           disabled={ending}
         >
-          <PhoneOffIcon className="size-4 mr-2" />
+          <PhoneSlashIcon className="size-4 mr-2" />
           Encerrer
         </Button>
       ) : (
@@ -292,7 +289,7 @@ function Controls({
           className="rounded-full px-5 h-11"
           onClick={handleLeave}
         >
-          <PhoneOffIcon className="size-4 mr-2" />
+          <PhoneSlashIcon className="size-4 mr-2" />
           Quitter
         </Button>
       )}
@@ -382,7 +379,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
   if (isLoading) {
     return (
       <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <CircleNotchIcon className="size-8 animate-spin text-muted-foreground" />
       </div>
     )
   }

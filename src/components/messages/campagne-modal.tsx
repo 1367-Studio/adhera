@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, Trash2Icon, AlertCircleIcon } from "lucide-react"
+import { PlusIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -157,7 +157,7 @@ export function CampagneModal({ open, onOpenChange }: Props) {
 
         {noTemplates && (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
-            <AlertCircleIcon className="size-4 shrink-0 mt-0.5" />
+            <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
             <span>Aucun modèle disponible. Créez d'abord un modèle dans l'onglet <strong>Modèles</strong>.</span>
           </div>
         )}
@@ -255,7 +255,7 @@ export function CampagneModal({ open, onOpenChange }: Props) {
                     onClick={() => removeStep(step.key)}
                     className="text-muted-foreground hover:text-destructive transition-colors"
                   >
-                    <Trash2Icon className="size-3.5" />
+                    <TrashIcon className="size-3.5" />
                   </button>
                 </div>
               ))}

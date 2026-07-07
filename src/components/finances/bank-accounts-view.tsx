@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, LandmarkIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, BankIcon } from "@phosphor-icons/react/dist/ssr";
 import { useBankAccounts, useCreateBankAccount, useUpdateBankAccount, useDeleteBankAccount } from "@/hooks/use-bank-accounts"
 import type { BankAccountInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -76,7 +76,7 @@ export function BankAccountsView() {
       cell: (a) => (
         <div className="flex items-center gap-2.5">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <LandmarkIcon className="size-4 text-muted-foreground" />
+            <BankIcon className="size-4 text-muted-foreground" />
           </div>
           <div>
             <p className="font-medium">{a.accountName}</p>
@@ -109,8 +109,8 @@ export function BankAccountsView() {
       className: "w-10",
       cell: (a) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilIcon className="size-3.5" />, onClick: () => setEditTarget(a) },
-          { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(a) },
+          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(a) },
+          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(a) },
         ]} />
       ),
     },

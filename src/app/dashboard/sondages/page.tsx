@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { PlusIcon, ClipboardListIcon, UsersIcon, CheckCircleIcon, LockIcon, FileEditIcon, SearchIcon } from "lucide-react"
+import { PlusIcon, ClipboardTextIcon, UsersIcon, CheckCircleIcon, LockIcon, NotePencilIcon, MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -35,7 +35,7 @@ const STATUS_VARIANT: Record<string, "secondary" | "default" | "outline"> = {
   FERME:     "outline",
 }
 const STATUS_ICON = {
-  BROUILLON: <FileEditIcon className="size-3" />,
+  BROUILLON: <NotePencilIcon className="size-3" />,
   ACTIF:     <CheckCircleIcon className="size-3" />,
   FERME:     <LockIcon className="size-3" />,
 }
@@ -112,7 +112,7 @@ export default function SondagesPage() {
       />
 
       <div className="relative max-w-sm">
-        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
         <input
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
@@ -132,7 +132,7 @@ export default function SondagesPage() {
         </div>
       ) : sondages.length === 0 ? (
         <div className="rounded-xl border border-dashed p-12 text-center space-y-3">
-          <ClipboardListIcon className="size-10 text-muted-foreground/50 mx-auto" />
+          <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">Aucun sondage. Créez votre premier questionnaire.</p>
           <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />

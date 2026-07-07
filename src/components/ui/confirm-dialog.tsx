@@ -3,8 +3,7 @@
 import { toast } from "sonner"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
-import { LoaderCircleIcon } from "lucide-react"
-
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 interface ConfirmDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -48,7 +47,7 @@ export function ConfirmDialog({
             Annuler
           </Button>
           <Button variant="destructive" onClick={handleConfirm} disabled={loading || confirmDisabled}>
-            {loading && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+            {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
             {confirmLabel}
           </Button>
         </>

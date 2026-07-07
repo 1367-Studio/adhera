@@ -6,7 +6,7 @@ import { useSearchParams, useParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { HeartHandshakeIcon, DownloadIcon, CheckCircleIcon, ClockIcon } from "lucide-react"
+import { HandshakeIcon, DownloadSimpleIcon, CheckCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { portalFetch } from "@/lib/portal-fetch"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -70,7 +70,7 @@ function DonsPortalPageInner() {
           onClick={() => window.location.href = `/portal/${slug}/don`}
           className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white shrink-0"
         >
-          <HeartHandshakeIcon className="size-3.5" />
+          <HandshakeIcon className="size-3.5" />
           Faire un don
         </Button>
       </div>
@@ -86,7 +86,7 @@ function DonsPortalPageInner() {
         </div>
       ) : dons.length === 0 ? (
         <div className="rounded-xl border border-dashed p-10 text-center space-y-3">
-          <HeartHandshakeIcon className="size-8 text-muted-foreground mx-auto" />
+          <HandshakeIcon className="size-8 text-muted-foreground mx-auto" />
           <p className="text-sm text-muted-foreground">Vous n'avez pas encore effectué de don.</p>
           <Button
             size="sm"
@@ -133,7 +133,7 @@ function DonsPortalPageInner() {
                       onClick={() => downloadRecu(don.id)}
                       className="gap-1.5 shrink-0"
                     >
-                      <DownloadIcon className="size-3.5" />
+                      <DownloadSimpleIcon className="size-3.5" />
                       Reçu fiscal
                     </Button>
                   )}

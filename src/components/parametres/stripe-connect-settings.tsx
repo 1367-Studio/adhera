@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { ExternalLinkIcon, CheckCircleIcon, ClockIcon, AlertCircleIcon, CreditCardIcon } from "lucide-react"
+import { ArrowSquareOutIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CreditCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -19,7 +19,7 @@ type ConnectStatus = {
 
 const statusConfig = {
   not_connected: { label: "Non connecté",  variant: "secondary" as const, icon: <CreditCardIcon  className="size-3.5" /> },
-  incomplete:    { label: "Incomplet",     variant: "secondary" as const, icon: <AlertCircleIcon className="size-3.5 text-yellow-500" /> },
+  incomplete:    { label: "Incomplet",     variant: "secondary" as const, icon: <WarningCircleIcon className="size-3.5 text-yellow-500" /> },
   pending:       { label: "En attente",    variant: "outline"   as const, icon: <ClockIcon        className="size-3.5 text-blue-500"   /> },
   enabled:       { label: "Actif",         variant: "default"   as const, icon: <CheckCircleIcon  className="size-3.5 text-green-500"  /> },
 }
@@ -119,7 +119,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                       loading={dashboardMutation.isPending}
                       onClick={() => dashboardMutation.mutate()}
                     >
-                      <ExternalLinkIcon className="size-3.5 mr-1.5" />
+                      <ArrowSquareOutIcon className="size-3.5 mr-1.5" />
                       Dashboard Stripe
                     </Button>
                   </>

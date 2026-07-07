@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { ArrowLeftIcon, SearchIcon, UsersIcon, CheckIcon } from "lucide-react"
+import { ArrowLeftIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -181,7 +181,7 @@ export default function NouveauSondagePage() {
             {recipientMode === "SELECTED" && (
               <div className="rounded-lg border bg-muted/10 overflow-hidden">
                 <div className="relative border-b">
-                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
                   <input
                     type="text"
                     placeholder="Rechercher un membre…"

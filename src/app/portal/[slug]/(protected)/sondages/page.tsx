@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ClipboardListIcon, CheckCircleIcon, ClockIcon, ChevronRightIcon } from "lucide-react"
+import { ClipboardTextIcon, CheckCircleIcon, ClockIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { portalFetch } from "@/lib/portal-fetch"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -48,7 +48,7 @@ export default function SondagesPortalPage() {
         </div>
       ) : sondages.length === 0 ? (
         <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
-          <ClipboardListIcon className="size-10 text-muted-foreground/50 mx-auto" />
+          <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">Aucun sondage actif pour le moment.</p>
         </div>
       ) : (
@@ -96,7 +96,7 @@ export default function SondagesPortalPage() {
               {!s.repondu && (
                 <Button size="sm" variant="outline" className="shrink-0 gap-1" onClick={() => router.push(`/portal/${slug}/sondages/${s.id}`)}>
                   Répondre
-                  <ChevronRightIcon className="size-3.5" />
+                  <CaretRightIcon className="size-3.5" />
                 </Button>
               )}
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SearchIcon, XIcon, MailIcon, HistoryIcon, ShieldIcon, SmartphoneIcon, KeyIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -273,8 +273,8 @@ export function MembresView() {
         const isSelf = m.userId === currentUser.id
         return (
           <RowActions actions={[
-            { label: "Modifier",   icon: <PencilIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
-            { label: "Historique", icon: <HistoryIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
+            { label: "Modifier",   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+            { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
             ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
               { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
             ] : []),
@@ -282,7 +282,7 @@ export function MembresView() {
               { label: "Créer un accès", icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
             ] : []),
             ...(!isSelf ? [
-              { label: "Supprimer", icon: <Trash2Icon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
+              { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
             ] : []),
           ]} />
         )
@@ -302,12 +302,12 @@ export function MembresView() {
         action={
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
-              <MailIcon className="mr-1.5 size-4" />
+              <EnvelopeSimpleIcon className="mr-1.5 size-4" />
               Envoyer un email
             </Button>
             {modules.sms && (
               <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
-                <SmartphoneIcon className="mr-1.5 size-4" />
+                <DeviceMobileIcon className="mr-1.5 size-4" />
                 Envoyer un SMS
               </Button>
             )}
@@ -322,7 +322,7 @@ export function MembresView() {
       <div className="flex flex-wrap gap-2">
         {/* Search */}
         <div className="relative w-72">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
             placeholder="Rechercher un membre…"

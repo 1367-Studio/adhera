@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { UserPlusIcon, PencilIcon, Trash2Icon, GlobeIcon, LoaderCircleIcon, AlertCircleIcon } from "lucide-react"
+import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -45,9 +45,9 @@ const STATUS_LABELS: Record<string, string> = {
 
 const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   MEMBRE_CREATED:           { label: "Membre ajouté",          icon: <UserPlusIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  MEMBRE_UPDATED:           { label: "Informations modifiées", icon: <PencilIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  PROFIL_UPDATED:           { label: "Profil modifié",         icon: <PencilIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  MEMBRE_DELETED:           { label: "Membre archivé",         icon: <Trash2Icon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
+  MEMBRE_UPDATED:           { label: "Informations modifiées", icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  PROFIL_UPDATED:           { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  MEMBRE_DELETED:           { label: "Membre archivé",         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscription portail",    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
 }
 
@@ -101,7 +101,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-10 text-muted-foreground">
-        <LoaderCircleIcon className="size-4 animate-spin mr-2" />
+        <CircleNotchIcon className="size-4 animate-spin mr-2" />
         <span className="text-sm">Chargement…</span>
       </div>
     )
@@ -110,7 +110,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
   if (isError) {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-        <AlertCircleIcon className="size-4 shrink-0" />
+        <WarningCircleIcon className="size-4 shrink-0" />
         Impossible de charger l'historique.
       </div>
     )
@@ -133,7 +133,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
           {logs.map((log) => {
             const cfg = ACTION_CONFIG[log.action] ?? {
               label: log.action,
-              icon:  <PencilIcon className="size-3.5" />,
+              icon:  <PencilSimpleIcon className="size-3.5" />,
               color: "bg-gray-100 text-gray-700",
             }
 
@@ -177,7 +177,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
               className="h-7 text-xs"
             >
               {isFetchingNextPage ? (
-                <><LoaderCircleIcon className="size-3 animate-spin mr-1.5" />Chargement…</>
+                <><CircleNotchIcon className="size-3 animate-spin mr-1.5" />Chargement…</>
               ) : (
                 "Voir plus"
               )}

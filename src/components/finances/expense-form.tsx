@@ -10,8 +10,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import { toast } from "sonner"
-import { UploadIcon, FileIcon, XIcon, ExternalLinkIcon } from "lucide-react"
-
+import { UploadSimpleIcon, FileIcon, XIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 const statusOptions = [
   { value: "DRAFT",     label: "Brouillon" },
   { value: "VALIDATED", label: "Validée" },
@@ -53,7 +52,7 @@ function ReceiptUpload({ value, onChange }: { value: string; onChange: (url: str
           {isPdf ? "Facture PDF" : "Justificatif image"}
         </span>
         <a href={value} target="_blank" rel="noopener noreferrer" title="Voir le justificatif">
-          <ExternalLinkIcon className="size-4 text-muted-foreground hover:text-foreground" />
+          <ArrowSquareOutIcon className="size-4 text-muted-foreground hover:text-foreground" />
         </a>
         <button type="button" onClick={() => onChange("")} title="Supprimer">
           <XIcon className="size-4 text-muted-foreground hover:text-destructive" />
@@ -73,7 +72,7 @@ function ReceiptUpload({ value, onChange }: { value: string; onChange: (url: str
       />
       {uploading
         ? <span className="text-xs">Upload en cours…</span>
-        : <><UploadIcon className="size-4 shrink-0" /><span>Joindre image ou PDF (max 10 Mo)</span></>
+        : <><UploadSimpleIcon className="size-4 shrink-0" /><span>Joindre image ou PDF (max 10 Mo)</span></>
       }
     </label>
   )

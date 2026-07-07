@@ -6,12 +6,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  ArrowLeftIcon,
-  CheckCircleIcon,
-  StarIcon,
-  ClipboardListIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, CheckCircleIcon, StarIcon, ClipboardTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -380,7 +375,7 @@ export default function SondageFormPage() {
           <ArrowLeftIcon className="size-4" />
         </Button>
         <div className="rounded-xl bg-primary/10 p-2.5 shrink-0">
-          <ClipboardListIcon className="size-6 text-primary" />
+          <ClipboardTextIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">

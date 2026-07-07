@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useMembreTypes, useCreateMembreType, useUpdateMembreType, useDeleteMembreType,
   type MembreType,
@@ -157,7 +157,7 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
         </div>
       )}
 
-      {/* List */}
+      {/* ListIcon */}
       {isLoading ? (
         <div className="space-y-2">
           {[0,1,2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
@@ -194,14 +194,14 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
                           onClick={() => setEditTarget(t)}
                           className="text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <PencilIcon className="size-3.5" />
+                          <PencilSimpleIcon className="size-3.5" />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(t)}
                           className="text-muted-foreground hover:text-destructive transition-colors"
                         >
-                          <Trash2Icon className="size-3.5" />
+                          <TrashIcon className="size-3.5" />
                         </button>
                       </>
                     )}

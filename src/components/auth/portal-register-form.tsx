@@ -10,8 +10,7 @@ import { portalRegisterSchema, type PortalRegisterInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
-import { LoaderCircleIcon } from "lucide-react"
-
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 type MembreType = { id: string; name: string }
 
 export function PortalRegisterForm({ slug }: { slug: string }) {
@@ -98,7 +97,7 @@ export function PortalRegisterForm({ slug }: { slug: string }) {
       )}
 
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
-        {isSubmitting && <LoaderCircleIcon className="mr-2 size-4 animate-spin" />}
+        {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         Créer mon compte
       </Button>
     </form>

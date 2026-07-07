@@ -1,11 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
-import {
-  GlobeIcon, EyeOffIcon, PlusIcon, Trash2Icon,
-  ChevronUpIcon, ChevronDownIcon, ExternalLinkIcon,
-  SaveIcon, PencilIcon, ChevronRightIcon, XIcon, CopyIcon, CheckIcon,
-} from "lucide-react"
+import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -42,7 +38,7 @@ function Panel({ title, children, defaultOpen = false }: { title: string; childr
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
       >
-        <ChevronRightIcon className={`size-3.5 shrink-0 transition-transform duration-150 ${open ? "rotate-90" : ""}`} />
+        <CaretRightIcon className={`size-3.5 shrink-0 transition-transform duration-150 ${open ? "rotate-90" : ""}`} />
         {title}
       </button>
       {open && <div className="px-4 pb-4 pt-1 space-y-3">{children}</div>}
@@ -176,7 +172,7 @@ export function SiteControlsPanel({
       <div className="px-4 py-3 border-b space-y-2.5 shrink-0">
         <div className="flex items-center justify-between gap-2">
           <Badge variant={published ? "default" : "secondary"} className="gap-1.5 text-xs">
-            {published ? <GlobeIcon className="size-3" /> : <EyeOffIcon className="size-3" />}
+            {published ? <GlobeIcon className="size-3" /> : <EyeSlashIcon className="size-3" />}
             {published ? "Publié" : "Non publié"}
           </Badge>
           {siteUrl && published && (
@@ -195,7 +191,7 @@ export function SiteControlsPanel({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted transition-colors"
               >
-                <ExternalLinkIcon className="size-3" />
+                <ArrowSquareOutIcon className="size-3" />
                 Ouvrir
               </a>
             </div>
@@ -207,7 +203,7 @@ export function SiteControlsPanel({
               {published ? "Dépublier" : "Publier"}
             </Button>
             <Button size="sm" className="flex-1 h-8 text-xs" disabled={!isDirty} loading={isSaving} onClick={onSave}>
-              <SaveIcon className="size-3 mr-1" />
+              <FloppyDiskIcon className="size-3 mr-1" />
               Enregistrer
             </Button>
           </div>
@@ -385,14 +381,14 @@ export function SiteControlsPanel({
                     disabled={idx === 0 || !canEdit}
                     className="p-0.5 rounded hover:bg-muted disabled:opacity-30"
                   >
-                    <ChevronUpIcon className="size-3.5" />
+                    <CaretUpIcon className="size-3.5" />
                   </button>
                   <button
                     onClick={() => moveSection(section.id, 1)}
                     disabled={idx === sections.length - 1 || !canEdit}
                     className="p-0.5 rounded hover:bg-muted disabled:opacity-30"
                   >
-                    <ChevronDownIcon className="size-3.5" />
+                    <CaretDownIcon className="size-3.5" />
                   </button>
                 </div>
 
@@ -404,10 +400,10 @@ export function SiteControlsPanel({
                 {canEdit && (
                   <div className="flex items-center gap-0.5">
                     <Button variant="ghost" size="icon" className="size-6" onClick={() => openSheet(section)}>
-                      <PencilIcon className="size-3" />
+                      <PencilSimpleIcon className="size-3" />
                     </Button>
                     <Button variant="ghost" size="icon" className="size-6 text-destructive hover:text-destructive" onClick={() => setDeletingId(section.id)}>
-                      <Trash2Icon className="size-3" />
+                      <TrashIcon className="size-3" />
                     </Button>
                   </div>
                 )}

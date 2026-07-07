@@ -4,11 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format, formatDistanceStrict } from "date-fns"
 import { fr } from "date-fns/locale"
-import {
-  PlusIcon, CheckIcon, Trash2Icon, PencilIcon,
-  MapPinIcon, HashIcon, PackageIcon, AlertCircleIcon,
-  XIcon, ClockIcon, CornerDownLeftIcon,
-} from "lucide-react"
+import { PlusIcon, CheckIcon, TrashIcon, PencilSimpleIcon, MapPinIcon, HashIcon, PackageIcon, WarningCircleIcon, XIcon, ClockIcon, ArrowElbowDownLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet"
@@ -115,10 +111,10 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
               </div>
               <div className="flex gap-1.5 shrink-0">
                 <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => setEditModalOpen(true)}>
-                  <PencilIcon className="size-3.5" />
+                  <PencilSimpleIcon className="size-3.5" />
                 </Button>
                 <Button size="sm" variant="ghost" className="h-7 px-2 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setConfirmDelete(true)}>
-                  <Trash2Icon className="size-3.5" />
+                  <TrashIcon className="size-3.5" />
                 </Button>
               </div>
             </div>
@@ -245,12 +241,12 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                           <div className="flex items-center justify-between gap-2">
                             <p className="text-sm font-medium">{borrowerLabel(loan)}{loan.quantity > 1 && <span className="text-muted-foreground ml-1">×{loan.quantity}</span>}</p>
                             <div className="flex items-center gap-1">
-                              {isOverdue(loan) && <AlertCircleIcon className="size-3.5 text-red-500" />}
+                              {isOverdue(loan) && <WarningCircleIcon className="size-3.5 text-red-500" />}
                               <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending} className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title="Marquer comme rendu">
-                                <CornerDownLeftIcon className="size-3" /> Rendu
+                                <ArrowElbowDownLeftIcon className="size-3" /> Rendu
                               </button>
                               <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
-                                <Trash2Icon className="size-3.5" />
+                                <TrashIcon className="size-3.5" />
                               </button>
                             </div>
                           </div>
@@ -305,7 +301,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                             </span>
                           </div>
                           <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
-                            <Trash2Icon className="size-3" />
+                            <TrashIcon className="size-3" />
                           </button>
                         </div>
                       ))}

@@ -7,11 +7,7 @@ import { useModules } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import {
-  ArrowLeftIcon, UsersIcon, CalendarIcon, ClockIcon,
-  SparklesIcon, SaveIcon, VideoIcon, PlayIcon,
-  FileAudioIcon, Loader2Icon, CircleIcon,
-} from "lucide-react"
+import { ArrowLeftIcon, UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -217,7 +213,7 @@ export default function ReunionDetailPage() {
                   disabled={isTranscribing}
                 >
                   {transcribeRecording.isPending
-                    ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
+                    ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                     : <FileAudioIcon className="size-3.5 mr-1.5" />}
                   {transcribeRecording.isPending ? "Transcription…" : "Transcrire l'enregistrement"}
                 </Button>
@@ -243,7 +239,7 @@ export default function ReunionDetailPage() {
                     disabled={isTranscribing}
                   >
                     {transcribeUpload.isPending
-                      ? <Loader2Icon className="size-3.5 mr-1.5 animate-spin" />
+                      ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                       : <FileAudioIcon className="size-3.5 mr-1.5" />}
                     {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
                   </Button>
@@ -257,7 +253,7 @@ export default function ReunionDetailPage() {
                   onClick={() => saveTranscript.mutate()}
                   loading={saveTranscript.isPending}
                 >
-                  <SaveIcon className="size-3.5 mr-1.5" />
+                  <FloppyDiskIcon className="size-3.5 mr-1.5" />
                   Sauvegarder
                 </Button>
               )}
@@ -266,7 +262,7 @@ export default function ReunionDetailPage() {
 
           {isTranscribing && (
             <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
-              <Loader2Icon className="size-4 animate-spin shrink-0" />
+              <CircleNotchIcon className="size-4 animate-spin shrink-0" />
               Whisper transcrit l'audio… Cela peut prendre quelques instants.
             </div>
           )}
@@ -289,13 +285,13 @@ export default function ReunionDetailPage() {
           <div className="rounded-xl border bg-card p-4 space-y-2 text-sm text-muted-foreground">
             {meeting.scheduledAt && (
               <span className="flex items-center gap-1.5">
-                <CalendarIcon className="size-4 shrink-0" />
+                <CalendarBlankIcon className="size-4 shrink-0" />
                 Planifiée le {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
               </span>
             )}
             {meeting.startedAt && (
               <span className="flex items-center gap-1.5">
-                <VideoIcon className="size-4 shrink-0" />
+                <VideoCameraIcon className="size-4 shrink-0" />
                 Démarrée le {format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
               </span>
             )}
@@ -337,7 +333,7 @@ export default function ReunionDetailPage() {
                   loading={summarize.isPending}
                   disabled={!transcript.trim()}
                 >
-                  <SparklesIcon className="size-3.5 mr-1.5" />
+                  <SparkleIcon className="size-3.5 mr-1.5" />
                   {meeting.summary ? "Regénérer" : "Générer"}
                 </Button>
               </div>
@@ -348,7 +344,7 @@ export default function ReunionDetailPage() {
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed p-6 text-center">
-                  <SparklesIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
+                  <SparkleIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">
                     {transcript.trim()
                       ? "Cliquez sur « Générer » pour créer le compte-rendu."

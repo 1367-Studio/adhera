@@ -5,29 +5,24 @@ import { toast } from "sonner"
 import type { AssocModules } from "@/lib/modules"
 import { MODULE_LABELS } from "@/lib/modules"
 import { Button } from "@/components/ui/button"
-import {
-  AlertTriangleIcon, CalendarIcon, CreditCardIcon,
-  NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparklesIcon,
-  HeartIcon, BarChart3Icon, ShoppingBagIcon, VideoIcon, MessageSquareTextIcon,
-  BanknoteIcon,
-} from "lucide-react"
-import type { LucideIcon } from "lucide-react"
+import { WarningIcon, CalendarBlankIcon, CreditCardIcon, NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparkleIcon, HeartIcon, ChartBarIcon, ShoppingBagIcon, VideoCameraIcon, ChatTextIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import type { Icon as LucideIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils"
 
 const MODULE_META: Record<keyof AssocModules, { icon: LucideIcon; description: string }> = {
-  evenements:  { icon: CalendarIcon,    description: "Agenda, inscriptions et billetterie" },
+  evenements:  { icon: CalendarBlankIcon,    description: "Agenda, inscriptions et billetterie" },
   cotisations: { icon: CreditCardIcon,  description: "Suivi des adhésions et paiements" },
   actualites:  { icon: NewspaperIcon,   description: "Articles et communications membres" },
   messages:    { icon: BellIcon,        description: "Emails automatiques et notifications" },
   materiel:    { icon: PackageIcon,     description: "Inventaire et prêt de matériel" },
   site:        { icon: GlobeIcon,       description: "Page publique de l'association" },
-  ia:          { icon: SparklesIcon,    description: "Rédaction assistée par IA" },
+  ia:          { icon: SparkleIcon,    description: "Rédaction assistée par IA" },
   dons:        { icon: HeartIcon,       description: "Collecte de dons en ligne" },
-  sondages:    { icon: BarChart3Icon,   description: "Création et diffusion de sondages" },
+  sondages:    { icon: ChartBarIcon,   description: "Création et diffusion de sondages" },
   boutique:    { icon: ShoppingBagIcon, description: "Vente de produits aux membres" },
-  reunions:    { icon: VideoIcon,             description: "Réunions et assemblées générales" },
-  sms:         { icon: MessageSquareTextIcon, description: "Notifications SMS via Twilio" },
-  finances:    { icon: BanknoteIcon,          description: "Conciliation bancaire et comptabilité" },
+  reunions:    { icon: VideoCameraIcon,             description: "Réunions et assemblées générales" },
+  sms:         { icon: ChatTextIcon, description: "Notifications SMS via Twilio" },
+  finances:    { icon: MoneyIcon,          description: "Conciliation bancaire et comptabilité" },
 }
 
 interface Props {
@@ -115,7 +110,7 @@ export function ModuleToggles({ associationId, initialModules }: Props) {
 
               {key === "site" && !enabled && saved[key] && (
                 <p className="flex items-center gap-1 text-[11px] text-amber-600">
-                  <AlertTriangleIcon className="size-3 shrink-0" />
+                  <WarningIcon className="size-3 shrink-0" />
                   Retirera le site public immédiatement.
                 </p>
               )}

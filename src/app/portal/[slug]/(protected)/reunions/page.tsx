@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { VideoIcon, CalendarIcon, PlayIcon, ClockIcon } from "lucide-react"
+import { VideoCameraIcon, CalendarBlankIcon, PlayIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
@@ -68,7 +68,7 @@ export default function ReunionsPortalPage() {
         </div>
       ) : active.length === 0 && ended.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-12 text-center space-y-3">
-          <VideoIcon className="size-10 text-muted-foreground/50 mx-auto" />
+          <VideoCameraIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">Aucune réunion planifiée pour le moment.</p>
         </div>
       ) : (
@@ -87,7 +87,7 @@ export default function ReunionsPortalPage() {
                     )}
                     {meeting.scheduledAt && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <CalendarIcon className="size-3" />
+                        <CalendarBlankIcon className="size-3" />
                         {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
                       </p>
                     )}

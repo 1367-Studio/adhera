@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { BotIcon, CheckCircle2Icon, LoaderCircleIcon, SparklesIcon } from "lucide-react"
+import { RobotIcon, CheckCircleIcon, CircleNotchIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 
@@ -98,7 +98,7 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-2 mb-0.5">
-          <SparklesIcon className="size-3.5 text-violet-600" />
+          <SparkleIcon className="size-3.5 text-violet-600" />
           <h3 className="text-sm font-semibold">Assistant IA</h3>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -111,7 +111,7 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
       {/* Status */}
       {data?.aiApiKeyConfigured ? (
         <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
-          <CheckCircle2Icon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
+          <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
             <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Clé personnalisée configurée</p>
             {data.aiModel && (
@@ -121,7 +121,7 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
         </div>
       ) : data?.usingPlatformKey ? (
         <div className="rounded-xl border bg-violet-50 dark:bg-violet-950/20 p-3 flex items-start gap-2.5">
-          <SparklesIcon className="size-4 mt-0.5 shrink-0 text-violet-600" />
+          <SparkleIcon className="size-4 mt-0.5 shrink-0 text-violet-600" />
           <p className="text-sm text-violet-700 dark:text-violet-300">
             Clé de la plateforme active — vous pouvez utiliser l'IA sans configuration.
           </p>
@@ -162,8 +162,8 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
               disabled={!canSave || saving}
             >
               {saving
-                ? <><LoaderCircleIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
-                : <><BotIcon className="mr-1.5 size-3.5" />Enregistrer</>
+                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
+                : <><RobotIcon className="mr-1.5 size-3.5" />Enregistrer</>
               }
             </Button>
             {data?.aiApiKeyConfigured && (

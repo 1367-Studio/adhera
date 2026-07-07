@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboardIcon, BuildingIcon, LogOutIcon } from "lucide-react"
+import { SquaresFourIcon, BuildingsIcon, SignOutIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -12,8 +12,8 @@ import {
 import { signOut } from "next-auth/react"
 
 const navItems = [
-  { name: "Vue d'ensemble", href: "/backoffice",              icon: LayoutDashboardIcon },
-  { name: "Associations",   href: "/backoffice/associations", icon: BuildingIcon        },
+  { name: "Vue d'ensemble", href: "/backoffice",              icon: SquaresFourIcon },
+  { name: "Associations",   href: "/backoffice/associations", icon: BuildingsIcon        },
 ]
 
 function isActive(href: string, pathname: string) {
@@ -69,7 +69,7 @@ export function BackofficeSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: "/login" })}>
-              <LogOutIcon />
+              <SignOutIcon />
               <span>Se déconnecter</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

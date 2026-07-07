@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilIcon, Trash2Icon, SparklesIcon } from "lucide-react"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFinanceCategories, useCreateFinanceCategory, useUpdateFinanceCategory, useDeleteFinanceCategory, useSeedFinanceCategories } from "@/hooks/use-finance-categories"
 import type { FinanceCategoryInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -44,10 +44,10 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
           </div>
           <div className="flex items-center gap-1">
             <Button size="icon" variant="ghost" className="size-7" onClick={() => onEdit(c)}>
-              <PencilIcon className="size-3.5" />
+              <PencilSimpleIcon className="size-3.5" />
             </Button>
             <Button size="icon" variant="ghost" className="size-7 text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
-              <Trash2Icon className="size-3.5" />
+              <TrashIcon className="size-3.5" />
             </Button>
           </div>
         </li>
@@ -117,7 +117,7 @@ export function CategoriesView() {
         description="Gérez les catégories de recettes et de dépenses."
         action={
           <Button size="sm" variant="outline" onClick={handleSeed} loading={seedMutation.isPending}>
-            <SparklesIcon className="mr-1.5 size-4" />
+            <SparkleIcon className="mr-1.5 size-4" />
             Initialiser les catégories par défaut
           </Button>
         }

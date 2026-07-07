@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { FilterXIcon, ChevronLeftIcon, ChevronRightIcon, AlertCircleIcon } from "lucide-react"
+import { FunnelXIcon, CaretLeftIcon, CaretRightIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
@@ -481,7 +481,7 @@ export function ActiviteView() {
 
         {hasFilters && (
           <Button size="sm" variant="ghost" onClick={resetFilters} className="h-9 gap-1.5 text-muted-foreground">
-            <FilterXIcon className="size-3.5" />
+            <FunnelXIcon className="size-3.5" />
             Réinitialiser
           </Button>
         )}
@@ -490,7 +490,7 @@ export function ActiviteView() {
       {isError && (
         <div className="flex items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           <div className="flex items-center gap-2">
-            <AlertCircleIcon className="size-4 shrink-0" />
+            <WarningCircleIcon className="size-4 shrink-0" />
             Erreur lors du chargement des activités.
           </div>
           <Button size="sm" variant="outline" onClick={() => refetch()} className="h-7 text-xs text-destructive border-destructive/40 hover:bg-destructive/10">
@@ -560,10 +560,10 @@ export function ActiviteView() {
           <span>Page {page} de {totalPages}</span>
           <div className="flex gap-1">
             <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-              <ChevronLeftIcon className="size-4" />
+              <CaretLeftIcon className="size-4" />
             </Button>
             <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-              <ChevronRightIcon className="size-4" />
+              <CaretRightIcon className="size-4" />
             </Button>
           </div>
         </div>

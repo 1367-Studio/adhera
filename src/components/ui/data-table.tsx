@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from "lucide-react"
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Table,
   TableBody,
@@ -109,7 +109,7 @@ function CardList<T>({
                 {actionsCol.cell(row)}
               </div>
             ) : isClickable ? (
-              <ChevronRightIcon className="shrink-0 size-4 text-muted-foreground mt-0.5" />
+              <CaretRightIcon className="shrink-0 size-4 text-muted-foreground mt-0.5" />
             ) : null}
           </div>
 
