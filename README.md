@@ -49,6 +49,13 @@ npm run dev
 
 See [`.env.example`](.env.example) for all required variables.
 
+## Branches & Deployment
+
+- **`main`** — production. Deploys to the production environment, backed by the production database and the production Stripe account.
+- **`developer`** — staging. Deploys to a Vercel Preview environment, backed by a separate staging database and a separate (test-mode) Stripe account, so nothing here ever touches production data or real charges.
+
+Workflow: commit and push to `developer` first, verify the change on its preview deployment, then open a pull request from `developer` into `main` to release it to production. Don't commit straight to `main`.
+
 ## Architecture
 
 ### Multi-tenancy
