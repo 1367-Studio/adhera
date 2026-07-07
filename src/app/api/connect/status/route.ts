@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
+import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
@@ -15,7 +15,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!assoc.stripeConnectId)
     return NextResponse.json({ status: "not_connected" })
 
-  const account = await stripe.accounts.retrieve(assoc.stripeConnectId)
+  let account
+  try {
+    account = await stripe.accounts.retrieve(assoc.stripeConnectId)
+  } catch (err) {
+    if (!isStaleStripeResourceError(err)) throw err
+    // Compte supprimé ou accès révoqué côté Stripe — distinct de "jamais connecté"
+    // pour que l'admin comprenne qu'il faut reconnecter, pas configurer pour la
+    // première fois. /api/connect/onboard recrée un compte propre au prochain clic.
+    console.error("[stripe-connect] stale/inaccessible account for association", associationId, err)
+    return NextResponse.json({ status: "invalid" })
+  }
 
   const status = account.charges_enabled
     ? "enabled"

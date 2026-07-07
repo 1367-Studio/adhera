@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
+import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
 
@@ -10,7 +10,12 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   })
   if (!assoc?.stripeConnectId) return NextResponse.json({ enabled: false })
 
-  const account = await stripe.accounts.retrieve(assoc.stripeConnectId)
-
-  return NextResponse.json({ enabled: account.charges_enabled === true })
+  try {
+    const account = await stripe.accounts.retrieve(assoc.stripeConnectId)
+    return NextResponse.json({ enabled: account.charges_enabled === true })
+  } catch (err) {
+    if (!isStaleStripeResourceError(err)) throw err
+    console.error("[stripe-connect] stale/inaccessible account for association", ctx.associationId, err)
+    return NextResponse.json({ enabled: false })
+  }
 }, { requireMembre: false })

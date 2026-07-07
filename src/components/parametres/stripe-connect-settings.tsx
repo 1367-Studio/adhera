@@ -10,7 +10,7 @@ import { useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 
 type ConnectStatus = {
-  status:           "not_connected" | "incomplete" | "pending" | "enabled"
+  status:           "not_connected" | "incomplete" | "pending" | "enabled" | "invalid"
   chargesEnabled?:  boolean
   detailsSubmitted?: boolean
   payoutsEnabled?:  boolean
@@ -18,10 +18,11 @@ type ConnectStatus = {
 }
 
 const statusConfig = {
-  not_connected: { label: "Non connecté",  variant: "secondary" as const, icon: <CreditCardIcon  className="size-3.5" /> },
-  incomplete:    { label: "Incomplet",     variant: "secondary" as const, icon: <WarningCircleIcon className="size-3.5 text-yellow-500" /> },
-  pending:       { label: "En attente",    variant: "outline"   as const, icon: <ClockIcon        className="size-3.5 text-blue-500"   /> },
-  enabled:       { label: "Actif",         variant: "default"   as const, icon: <CheckCircleIcon  className="size-3.5 text-green-500"  /> },
+  not_connected: { label: "Non connecté",     variant: "secondary" as const, icon: <CreditCardIcon  className="size-3.5" /> },
+  incomplete:    { label: "Incomplet",        variant: "secondary" as const, icon: <WarningCircleIcon className="size-3.5 text-yellow-500" /> },
+  pending:       { label: "En attente",       variant: "outline"   as const, icon: <ClockIcon        className="size-3.5 text-blue-500"   /> },
+  enabled:       { label: "Actif",            variant: "default"   as const, icon: <CheckCircleIcon  className="size-3.5 text-green-500"  /> },
+  invalid:       { label: "Connexion perdue", variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
 }
 
 export function StripeConnectSettings({ canEdit }: { canEdit: boolean }) {
@@ -139,6 +140,22 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                   onClick={() => onboardMutation.mutate()}
                 >
                   Compléter l'inscription
+                </Button>
+              )}
+            </div>
+          ) : status === "invalid" ? (
+            <div className="space-y-2">
+              <p className="text-xs text-destructive">
+                La connexion à votre compte Stripe a été perdue (compte supprimé ou accès révoqué).
+                Le paiement en ligne est désactivé jusqu'à reconnexion.
+              </p>
+              {canEdit && (
+                <Button
+                  size="sm"
+                  loading={onboardMutation.isPending}
+                  onClick={() => onboardMutation.mutate()}
+                >
+                  Reconnecter Stripe
                 </Button>
               )}
             </div>
