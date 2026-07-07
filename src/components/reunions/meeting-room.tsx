@@ -15,6 +15,7 @@ import {
 import { Track } from "livekit-client"
 import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { useMeetingToken } from "@/hooks/use-meetings"
 import { toast } from "sonner"
@@ -228,21 +229,34 @@ function Controls({
   return (
     <div className="flex items-center justify-center gap-3 px-6 py-4 border-t bg-card shrink-0">
       {isAdmin && (
-        <button
-          onClick={handleToggleRecording}
-          disabled={toggling || ending}
-          className={cn(
-            "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition-colors mr-2",
-            recording
-              ? "border-red-300 text-red-500 bg-red-500/10 hover:bg-red-500/20"
-              : "border-muted text-muted-foreground hover:bg-muted",
-          )}
-        >
-          {recording
-            ? <><CircleIcon className="size-2 fill-current animate-pulse" /> Enregistrement</>
-            : <><SquareIcon className="size-3" /> Enregistrer</>
-          }
-        </button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  onClick={handleToggleRecording}
+                  disabled={toggling || ending}
+                  className={cn(
+                    "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition-colors mr-2",
+                    recording
+                      ? "border-red-300 text-red-500 bg-red-500/10 hover:bg-red-500/20"
+                      : "border-muted text-muted-foreground hover:bg-muted",
+                  )}
+                />
+              }
+            >
+              {recording
+                ? <><SquareIcon className="size-3 animate-pulse" /> Enregistrement</>
+                : <><CircleIcon className="size-2 fill-current" /> Enregistrer</>
+              }
+            </TooltipTrigger>
+            <TooltipContent>
+              {recording
+                ? "Arrêter l'enregistrement de la réunion"
+                : "Démarrer l'enregistrement (visible par les participants)"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       )}
 
       <div className="relative">
