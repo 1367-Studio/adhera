@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useState, useEffect } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { toast } from "sonner"
 import { VideoCameraIcon, CalendarBlankIcon, PlayIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
+import { useMeetingEndedListener } from "@/hooks/use-meetings"
 
 type Meeting = {
   id:          string
@@ -24,13 +26,44 @@ const STATUS_LABELS = { SCHEDULED: "Planifiée", LIVE: "En cours", ENDED: "Termi
 const STATUS_VARIANTS = { SCHEDULED: "secondary", LIVE: "default", ENDED: "outline" } as const
 
 export default function ReunionsPortalPage() {
+  const qc = useQueryClient()
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null)
+  const [refreshingId, setRefreshingId] = useState<string | null>(null)
 
-  const { data: meetings = [], isLoading } = useQuery<Meeting[]>({
+  const { data: meetings = [], isLoading, isFetching, isError } = useQuery<Meeting[]>({
     queryKey: ["portal-meetings"],
     queryFn:  () => fetch("/api/portal/meetings").then(r => r.json()),
     staleTime: 0,
   })
+
+  // Cross-tab: an admin ending this meeting elsewhere, or the LiveKit webhook auto-closing
+  // it, should refresh this list immediately too.
+  useMeetingEndedListener(() => qc.invalidateQueries({ queryKey: ["portal-meetings"] }))
+
+  // After leaving the call, the meeting's status may have just flipped (ended by an
+  // admin or by the LiveKit webhook) — keep the join button in a loading state until the
+  // invalidated query settles, instead of flashing a stale "Rejoindre".
+  useEffect(() => {
+    if (refreshingId && !isFetching) {
+      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      setRefreshingId(null)
+    }
+  }, [isFetching, isError, refreshingId])
+
+  // Failsafe: never leave the join button stuck disabled if the refetch never settles.
+  useEffect(() => {
+    if (!refreshingId) return
+    const t = setTimeout(() => setRefreshingId(null), 8000)
+    return () => clearTimeout(t)
+  }, [refreshingId])
+
+  function handleLeave(opts?: { ended?: boolean }) {
+    if (opts?.ended) {
+      setRefreshingId(activeMeetingId)
+      qc.invalidateQueries({ queryKey: ["portal-meetings"] })
+    }
+    setActiveMeetingId(null)
+  }
 
   if (activeMeetingId) {
     const meeting = meetings.find(m => m.id === activeMeetingId)
@@ -38,11 +71,11 @@ export default function ReunionsPortalPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{meeting?.title ?? "Réunion"}</h2>
-          <Button variant="outline" size="sm" onClick={() => setActiveMeetingId(null)}>
+          <Button variant="outline" size="sm" onClick={() => handleLeave()}>
             Quitter
           </Button>
         </div>
-        <MeetingRoom meetingId={activeMeetingId} onLeave={() => setActiveMeetingId(null)} tokenEndpoint="/api/portal/meetings/token" />
+        <MeetingRoom meetingId={activeMeetingId} onLeave={handleLeave} tokenEndpoint="/api/portal/meetings/token" />
       </div>
     )
   }
@@ -92,7 +125,12 @@ export default function ReunionsPortalPage() {
                       </p>
                     )}
                   </div>
-                  <Button size="sm" onClick={() => setActiveMeetingId(meeting.id)}>
+                  <Button
+                    size="sm"
+                    onClick={() => setActiveMeetingId(meeting.id)}
+                    loading={meeting.id === refreshingId}
+                    disabled={meeting.id === refreshingId}
+                  >
                     <PlayIcon className="size-4 mr-1.5" />
                     {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
                   </Button>

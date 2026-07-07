@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useMeetings, useCreateMeeting, useDeleteMeeting, type Meeting } from "@/hooks/use-meetings"
+import { useMeetings, useCreateMeeting, useDeleteMeeting, useMeetingEndedListener, MEETINGS_QK, type Meeting } from "@/hooks/use-meetings"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
@@ -33,13 +33,36 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
 }
 
 export function ReunionsView() {
-  const { data: meetings = [], isLoading } = useMeetings()
+  const qc = useQueryClient()
+  const { data: meetings = [], isLoading, isFetching, isError } = useMeetings()
   const createMeeting = useCreateMeeting()
   const deleteMeeting = useDeleteMeeting()
 
   const [formOpen, setFormOpen] = useState(false)
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null)
+  const [refreshingId, setRefreshingId] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+
+  // Cross-tab: another admin (or another tab of the same admin) ending a meeting, or the
+  // LiveKit webhook auto-closing one, should refresh this list immediately too.
+  useMeetingEndedListener(() => qc.invalidateQueries({ queryKey: MEETINGS_QK }))
+
+  // After leaving a call, the meeting's status may have just flipped (ended by us or
+  // by the LiveKit webhook) — keep the card's join button in a loading state until the
+  // invalidated query settles, instead of flashing a stale "Rejoindre".
+  useEffect(() => {
+    if (refreshingId && !isFetching) {
+      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      setRefreshingId(null)
+    }
+  }, [isFetching, isError, refreshingId])
+
+  // Failsafe: never leave the join button stuck disabled if the refetch never settles.
+  useEffect(() => {
+    if (!refreshingId) return
+    const t = setTimeout(() => setRefreshingId(null), 8000)
+    return () => clearTimeout(t)
+  }, [refreshingId])
 
   const { data: membres = [] } = useQuery<Membre[]>({
     queryKey: ["membres-select"],
@@ -86,7 +109,13 @@ export function ReunionsView() {
         </h2>
         <MeetingRoom
           meetingId={activeMeetingId}
-          onLeave={() => setActiveMeetingId(null)}
+          onLeave={(opts) => {
+            if (opts?.ended) {
+              setRefreshingId(activeMeetingId)
+              qc.invalidateQueries({ queryKey: MEETINGS_QK })
+            }
+            setActiveMeetingId(null)
+          }}
           isAdmin
         />
       </div>
@@ -123,6 +152,7 @@ export function ReunionsView() {
             <MeetingCard
               key={meeting.id}
               meeting={meeting}
+              refreshing={meeting.id === refreshingId}
               onJoin={() => setActiveMeetingId(meeting.id)}
               onDelete={() => setDeleteId(meeting.id)}
             />
@@ -153,10 +183,12 @@ export function ReunionsView() {
 
 function MeetingCard({
   meeting,
+  refreshing,
   onJoin,
   onDelete,
 }: {
   meeting: Meeting
+  refreshing: boolean
   onJoin: () => void
   onDelete: () => void
 }) {
@@ -215,7 +247,7 @@ function MeetingCard({
 
       <div className="flex items-center gap-2 pt-1">
         {canJoin && (
-          <Button size="sm" onClick={onJoin} className="flex-1">
+          <Button size="sm" onClick={onJoin} className="flex-1" loading={refreshing} disabled={refreshing}>
             <PlayIcon className="mr-1 h-3 w-3" />
             {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
           </Button>

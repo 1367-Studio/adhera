@@ -19,12 +19,16 @@ import { cn } from "@/lib/utils"
 import { useMeetingToken } from "@/hooks/use-meetings"
 import { toast } from "sonner"
 
+type LeaveOpts = { ended?: boolean }
+
 type Props = {
   meetingId:      string
-  onLeave:        () => void
+  onLeave:        (opts?: LeaveOpts) => void
   tokenEndpoint?: string
   isAdmin?:       boolean
 }
+
+const END_TIMEOUT_MS = 15_000
 
 function initials(name: string) {
   return name.split(" ").map(n => n[0] ?? "").join("").slice(0, 2).toUpperCase()
@@ -158,19 +162,22 @@ function Controls({
   chatOpen,
   onChatToggle,
   unreadCount,
+  ending,
+  onEndingChange,
 }: {
   meetingId:         string
   isAdmin:           boolean
-  onLeave:           () => void
+  onLeave:           (opts?: LeaveOpts) => void
   recording:         boolean
   onRecordingChange: (v: boolean) => void
   chatOpen:          boolean
   onChatToggle:      () => void
   unreadCount:       number
+  ending:            boolean
+  onEndingChange:    (v: boolean) => void
 }) {
   const { isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant()
   const room               = useRoomContext()
-  const [ending,   setEnding]   = useState(false)
   const [toggling, setToggling] = useState(false)
 
   async function handleToggleRecording() {
@@ -195,12 +202,21 @@ function Controls({
   }
 
   async function handleEnd() {
-    setEnding(true)
+    onEndingChange(true)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), END_TIMEOUT_MS)
     try {
-      await fetch(`/api/meetings/${meetingId}/end`, { method: "POST" })
-    } finally {
+      const res = await fetch(`/api/meetings/${meetingId}/end`, { method: "POST", signal: controller.signal })
+      if (!res.ok) throw new Error("end failed")
       room.disconnect()
-      onLeave()
+      onLeave({ ended: true })
+    } catch {
+      // Timed out or failed server-side: don't pretend it worked — surface the error and
+      // hand control back so the admin can retry or fall back to "Quitter" themselves.
+      toast.error("Impossible de finaliser la réunion. Réessayez.")
+      onEndingChange(false)
+    } finally {
+      clearTimeout(timeout)
     }
   }
 
@@ -214,7 +230,7 @@ function Controls({
       {isAdmin && (
         <button
           onClick={handleToggleRecording}
-          disabled={toggling}
+          disabled={toggling || ending}
           className={cn(
             "flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-full border transition-colors mr-2",
             recording
@@ -232,6 +248,7 @@ function Controls({
       <div className="relative">
         <button
           onClick={onChatToggle}
+          disabled={ending}
           className={cn(
             "flex size-11 items-center justify-center rounded-full border transition-colors",
             chatOpen ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted",
@@ -248,6 +265,7 @@ function Controls({
 
       <TrackToggle
         source={Track.Source.Microphone}
+        disabled={ending}
         className={cn(
           "flex size-11 items-center justify-center rounded-full border transition-colors",
           isMicrophoneEnabled
@@ -261,6 +279,7 @@ function Controls({
 
       <TrackToggle
         source={Track.Source.Camera}
+        disabled={ending}
         className={cn(
           "flex size-11 items-center justify-center rounded-full border transition-colors",
           isCameraEnabled
@@ -305,11 +324,12 @@ function RoomInner({
 }: {
   meetingId: string
   isAdmin:   boolean
-  onLeave:   () => void
+  onLeave:   (opts?: LeaveOpts) => void
 }) {
   const [recording,    setRecording]    = useState(false)
   const [chatOpen,     setChatOpen]     = useState(false)
   const [unreadCount,  setUnreadCount]  = useState(0)
+  const [ending,       setEnding]       = useState(false)
   const { chatMessages } = useChat()
   const prevCountRef = useRef(0)
 
@@ -336,7 +356,13 @@ function RoomInner({
   }
 
   return (
-    <div className="flex rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
+    <div className="relative flex rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
+      {ending && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
+          <CircleNotchIcon className="size-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Finalisation de la réunion…</p>
+        </div>
+      )}
       <div className="flex flex-col flex-1 min-w-0">
         {recording && (
           <div className="flex items-center justify-center gap-1.5 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 shrink-0">
@@ -357,6 +383,8 @@ function RoomInner({
           chatOpen={chatOpen}
           onChatToggle={handleChatToggle}
           unreadCount={unreadCount}
+          ending={ending}
+          onEndingChange={setEnding}
         />
       </div>
       {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
@@ -369,11 +397,14 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
   const [kickedOut, setKickedOut] = useState(false)
 
   const handleDisconnected = useCallback(() => {
+    // Reason unknown at this layer (could be the meeting truly ending elsewhere, or just a
+    // network blip) — treat it as a potential status change so callers refresh rather than
+    // trust possibly-stale cached data.
     if (isAdmin) {
-      onLeave()
+      onLeave({ ended: true })
     } else {
       setKickedOut(true)
-      setTimeout(onLeave, 3000)
+      setTimeout(() => onLeave({ ended: true }), 3000)
     }
   }, [isAdmin, onLeave])
 

@@ -1,5 +1,8 @@
+import { useEffect, useRef } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { apiErrorMessage } from "@/lib/api-error"
+import { getPusherClient } from "@/lib/pusher-client"
+import { useCurrentUser } from "@/lib/user-context"
 
 export type MeetingParticipant = {
   id: string
@@ -73,7 +76,8 @@ async function fetchToken(meetingId: string, endpoint: string) {
   return res.json() as Promise<{ token: string; roomName: string; serverUrl: string }>
 }
 
-const QK = ["meetings"]
+export const MEETINGS_QK = ["meetings"]
+const QK = MEETINGS_QK
 
 export function useMeetings() {
   return useQuery({ queryKey: QK, queryFn: fetchMeetings, staleTime: 0 })
@@ -102,6 +106,31 @@ export function useDeleteMeeting() {
     mutationFn: deleteMeeting,
     onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
   })
+}
+
+// Notifies any tab open on this association the moment a meeting is auto-closed by the
+// LiveKit webhook (e.g. everyone left without anyone clicking "Encerrer"), instead of
+// leaving a stale "Rejoindre" showing until the next window refocus/remount.
+export function useMeetingEndedListener(onEnded: (meetingId: string) => void) {
+  const { associationId } = useCurrentUser()
+  const onEndedRef = useRef(onEnded)
+  onEndedRef.current = onEnded
+
+  useEffect(() => {
+    if (!associationId) return
+    const pusher = getPusherClient()
+    if (!pusher) return
+
+    const channelName = `private-association-${associationId}`
+    const channel = pusher.subscribe(channelName)
+    const handler = (data: { meetingId: string }) => onEndedRef.current(data.meetingId)
+    channel.bind("meeting-ended", handler)
+
+    return () => {
+      channel.unbind("meeting-ended", handler)
+      pusher.unsubscribe(channelName)
+    }
+  }, [associationId])
 }
 
 export function useMeetingToken(meetingId: string | null, endpoint = "/api/meetings/token") {

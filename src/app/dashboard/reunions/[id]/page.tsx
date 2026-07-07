@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
+import { useMeetingEndedListener } from "@/hooks/use-meetings"
 
 type MeetingParticipant = {
   id:     string
@@ -53,12 +54,36 @@ export default function ReunionDetailPage() {
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
+  const [awaitingRefresh, setAwaitingRefresh] = useState(false)
 
-  const { data: meeting, isLoading } = useQuery<Meeting>({
+  const { data: meeting, isLoading, isFetching, isError } = useQuery<Meeting>({
     queryKey:  ["meeting", id],
     queryFn:   () => fetch(`/api/meetings/${id}`).then(r => r.json()),
     staleTime: 0,
   })
+
+  // Cross-tab: this meeting being auto-closed by the LiveKit webhook (or ended from another
+  // tab) should refresh this page immediately too.
+  useMeetingEndedListener((endedMeetingId) => {
+    if (endedMeetingId === id) qc.invalidateQueries({ queryKey: ["meeting", id] })
+  })
+
+  // After leaving the call, the meeting's status may have just flipped (ended by us or
+  // by the LiveKit webhook) — keep the join button in a loading state until the
+  // invalidated query settles, instead of flashing a stale "Rejoindre".
+  useEffect(() => {
+    if (awaitingRefresh && !isFetching) {
+      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      setAwaitingRefresh(false)
+    }
+  }, [isFetching, isError, awaitingRefresh])
+
+  // Failsafe: never leave the join button stuck disabled if the refetch never settles.
+  useEffect(() => {
+    if (!awaitingRefresh) return
+    const t = setTimeout(() => setAwaitingRefresh(false), 8000)
+    return () => clearTimeout(t)
+  }, [awaitingRefresh])
 
   useEffect(() => {
     if (meeting) setTranscript(meeting.transcript ?? "")
@@ -146,7 +171,13 @@ export default function ReunionDetailPage() {
         <h2 className="text-lg font-semibold">{meeting.title}</h2>
         <MeetingRoom
           meetingId={id}
-          onLeave={() => { setInRoom(false); qc.invalidateQueries({ queryKey: ["meeting", id] }) }}
+          onLeave={(opts) => {
+            setInRoom(false)
+            if (opts?.ended) {
+              setAwaitingRefresh(true)
+              qc.invalidateQueries({ queryKey: ["meeting", id] })
+            }
+          }}
           isAdmin
         />
       </div>
@@ -190,7 +221,7 @@ export default function ReunionDetailPage() {
           )}
         </div>
         {canJoin && (
-          <Button size="sm" onClick={() => setInRoom(true)}>
+          <Button size="sm" onClick={() => setInRoom(true)} loading={awaitingRefresh} disabled={awaitingRefresh}>
             <PlayIcon className="size-4 mr-1.5" />
             {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
           </Button>
