@@ -14,8 +14,10 @@ import { cn } from "@/lib/utils"
 
 type Don = {
   id:            string
+  donorType:     "INDIVIDUAL" | "COMPANY"
   firstName:     string
   lastName:      string
+  companyName:   string | null
   email:         string
   amount:        string
   message:       string | null
@@ -76,12 +78,22 @@ export default function DonsPage() {
     {
       key:       "donor",
       header:    "Donateur",
-      cell: (d) => d.anonymous
-        ? <span className="text-muted-foreground italic">Anonyme</span>
-        : <div>
-            <p className="font-medium">{d.firstName} {d.lastName}</p>
+      // Le don peut être "anonyme" pour un futur affichage public, mais ce tableau est
+      // interne (finance/admin) : l'identité réelle doit toujours rester visible ici.
+      cell: (d) => (
+          <div>
+            <p className="font-medium flex items-center gap-1.5">
+              {d.donorType === "COMPANY" ? (d.companyName ?? `${d.firstName} ${d.lastName}`) : `${d.firstName} ${d.lastName}`}
+              {d.donorType === "COMPANY" && (
+                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Entreprise</Badge>
+              )}
+              {d.anonymous && (
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0">Anonyme</Badge>
+              )}
+            </p>
             <p className="text-xs text-muted-foreground">{d.email}</p>
-          </div>,
+          </div>
+      ),
     },
     {
       key:       "message",

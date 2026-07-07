@@ -6,12 +6,19 @@ import { toast } from "sonner"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
+import { ORGANISME_CATEGORY_GROUPS } from "@/lib/organisme-category"
+
+type OrganismeCategory = typeof ORGANISME_CATEGORY_GROUPS[number]["options"][number]["value"]
+
 type IdentityData = {
   address:            string | null
   phone:              string | null
   siren:              string | null
   rna:                string | null
   canIssueTaxReceipts: boolean
+  objet:              string | null
+  organismeCategory:  OrganismeCategory
+  organismeCategoryDetail: string | null
 }
 
 interface IdentityDonsSettingsProps {
@@ -31,6 +38,9 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
   const [siren, setSiren]                           = useState("")
   const [rna, setRna]                               = useState("")
   const [canIssueTaxReceipts, setCanIssueTaxReceipts] = useState(false)
+  const [objet, setObjet]                           = useState("")
+  const [organismeCategory, setOrganismeCategory]   = useState<OrganismeCategory>("ASSOCIATION_LOI_1901")
+  const [organismeCategoryDetail, setOrganismeCategoryDetail] = useState("")
   const [dirty, setDirty]                           = useState(false)
 
   useEffect(() => {
@@ -40,6 +50,9 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
     setSiren(data.siren ?? "")
     setRna(data.rna ?? "")
     setCanIssueTaxReceipts(data.canIssueTaxReceipts)
+    setObjet(data.objet ?? "")
+    setOrganismeCategory(data.organismeCategory ?? "ASSOCIATION_LOI_1901")
+    setOrganismeCategoryDetail(data.organismeCategoryDetail ?? "")
     setDirty(false)
   }, [data])
 
@@ -48,7 +61,10 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
       const res = await fetch("/api/association/identity", {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ address, phone, siren, rna, canIssueTaxReceipts }),
+        body:    JSON.stringify({
+          address, phone, siren, rna, canIssueTaxReceipts,
+          objet, organismeCategory, organismeCategoryDetail,
+        }),
       })
       if (!res.ok) {
         const d = await res.json()
@@ -108,6 +124,45 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
             onChange={e => { setRna(e.target.value); setDirty(true) }}
           />
         </div>
+
+        <FormField
+          label="Objet de l'association"
+          placeholder="Ex : promotion du sport amateur auprès des jeunes"
+          disabled={!canEdit}
+          value={objet}
+          onChange={e => { setObjet(e.target.value); setDirty(true) }}
+        />
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Catégorie de l'organisme
+          </label>
+          <select
+            disabled={!canEdit}
+            value={organismeCategory}
+            onChange={e => { setOrganismeCategory(e.target.value as OrganismeCategory); setDirty(true) }}
+            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+          >
+            {ORGANISME_CATEGORY_GROUPS.map(group => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">
+            Catégorie cochée sur les reçus fiscaux (Cerfa 11580 / 16216), utilisée pour les dons d'entreprises.
+          </p>
+        </div>
+
+        <FormField
+          label="Précisions sur la catégorie (optionnel)"
+          placeholder="Ex : date de reconnaissance d'utilité publique"
+          disabled={!canEdit}
+          value={organismeCategoryDetail}
+          onChange={e => { setOrganismeCategoryDetail(e.target.value); setDirty(true) }}
+        />
       </div>
 
       {/* Toggle reçu fiscal */}
@@ -143,6 +198,17 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
               Les reçus fiscaux seront envoyés automatiquement par e-mail après chaque don
               et disponibles au téléchargement dans l'espace membre.
               Conservation obligatoire : 6 ans minimum.
+            </span>
+          </div>
+        )}
+
+        {canIssueTaxReceipts && !objet.trim() && (
+          <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+            <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
+            <span>
+              Vérifiez l'Objet et la Catégorie de l'organisme ci-dessus avant de recevoir des dons
+              d'entreprises : ils sont imprimés sur le reçu fiscal (Cerfa 16216) et le défaut
+              « Association loi 1901 » peut ne pas correspondre à votre situation.
             </span>
           </div>
         )}

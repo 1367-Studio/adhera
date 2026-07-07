@@ -455,15 +455,20 @@ export function donConfirmationEmail(p: {
   paidAt:              Date
   canIssueTaxReceipts: boolean
   receiptNumber?:      string
+  donorType?:          "INDIVIDUAL" | "COMPANY"
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
 
+  const isCompany = p.donorType === "COMPANY"
+
   const receiptBlock = p.canIssueTaxReceipts
     ? `<p style="margin:16px 0 0;font-size:13px;color:#3f3f46;">
         Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `(n° ${p.receiptNumber}) ` : ""}est joint à cet email.
-        Conservez-le pour votre déclaration de revenus — il vous permet de bénéficier d'une réduction d'impôt
-        de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI).
+        Conservez-le pour votre déclaration ${isCompany ? "fiscale" : "de revenus"} — il vous permet de bénéficier
+        d'une réduction d'impôt ${isCompany
+          ? "de <strong>60 %</strong>, dans la limite de 0,5 % de votre chiffre d'affaires HT (ou 20 000 € si ce montant est plus élevé) — Art. 238 bis du CGI."
+          : "de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI)."}
       </p>`
     : ""
 

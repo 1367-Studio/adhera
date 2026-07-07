@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
+import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { withPortalAuth } from "@/lib/api-wrapper"
 
 type Params = { id: string }
@@ -16,12 +16,13 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
     select: {
       id: true, name: true, address: true, city: true,
       siren: true, rna: true, canIssueTaxReceipts: true,
+      objet: true, organismeCategory: true,
     },
   })
   if (!assoc || !assoc.canIssueTaxReceipts)
     return NextResponse.json({ error: "Reçu fiscal non disponible" }, { status: 403 })
 
-  const pdf  = await generateRecuFiscal(don, assoc)
+  const pdf  = await generateRecuFiscalForDon(don, assoc)
   const name = `recu-fiscal-${don.receiptNumber ?? don.id}.pdf`
 
   return new NextResponse(new Uint8Array(pdf), {

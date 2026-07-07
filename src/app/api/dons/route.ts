@@ -32,10 +32,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   if (search) {
     where.OR = [
-      { firstName: { contains: search, mode: "insensitive" } },
-      { lastName:  { contains: search, mode: "insensitive" } },
-      { email:     { contains: search, mode: "insensitive" } },
-      { message:   { contains: search, mode: "insensitive" } },
+      { firstName:   { contains: search, mode: "insensitive" } },
+      { lastName:    { contains: search, mode: "insensitive" } },
+      { companyName: { contains: search, mode: "insensitive" } },
+      { email:       { contains: search, mode: "insensitive" } },
+      { message:     { contains: search, mode: "insensitive" } },
     ]
   }
 

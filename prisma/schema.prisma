@@ -160,6 +160,38 @@ enum MatchedBy {
   USER
 }
 
+enum DonorType {
+  INDIVIDUAL
+  COMPANY
+}
+
+// Catégories de l'organisme bénéficiaire cochées sur les Cerfa 11580 (2041-RD) et
+// 16216 (2041-MEC-SD) — union des deux listes, utilisée pour l'attestation imprimée
+// sur le reçu fiscal entreprise.
+enum OrganismeCategory {
+  ASSOCIATION_LOI_1901
+  FONDATION_RECONNUE_UTILITE_PUBLIQUE
+  FONDATION_UNIVERSITAIRE_PARTENARIALE
+  FONDATION_ENTREPRISE
+  MUSEE_DE_FRANCE
+  AIDE_ALIMENTAIRE_SOCIALE
+  AUTRE_INTERET_GENERAL
+  ASSOCIATION_CULTUELLE_ALSACE_MOSELLE
+  ETABLISSEMENT_ENSEIGNEMENT_SUPERIEUR
+  ETABLISSEMENT_ENSEIGNEMENT_SUPERIEUR_CONSULAIRE
+  ORGANISME_RECHERCHE_SCIENTIFIQUE
+  ORGANISME_SPECTACLE_EXPOSITIONS
+  PROJET_THESE_DOCTORAT
+  SOCIETE_EXPOSITIONS_UNIVERSELLES
+  SOCIETE_PROGRAMME_AUDIOVISUEL
+  FONDATION_PATRIMOINE
+  FONDS_DOTATION
+  ORGANISME_AIDE_PME
+  FEDERATION_ORGANISMES_AGREES
+  ORGANISME_PROTECTION_BIENS_CULTURELS
+  ORGANISME_UE_SIMILAIRE
+}
+
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
@@ -174,6 +206,9 @@ model Association {
   siren                String?
   rna                  String?
   canIssueTaxReceipts  Boolean            @default(false)
+  objet                String?
+  organismeCategory    OrganismeCategory  @default(ASSOCIATION_LOI_1901)
+  organismeCategoryDetail String?
   aiApiKey             String?
   aiModel              String?
   smsAccountSid        String?
@@ -364,8 +399,11 @@ model Don {
   id              String    @id @default(cuid())
   associationId   String
   membreId        String?
+  donorType       DonorType @default(INDIVIDUAL)
   firstName       String
   lastName        String
+  companyName     String?
+  siret           String?
   email           String
   address         String?
   amount          Decimal   @db.Decimal(10, 2)

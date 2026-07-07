@@ -5,7 +5,9 @@ import { useParams, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { HandshakeIcon, InfoIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { CurrencyInput } from "@/components/ui/currency-field"
 import { cn } from "@/lib/utils"
+import { isValidSiret } from "@/lib/siret"
 
 const SUGGESTED = [10, 20, 50, 100]
 
@@ -29,10 +31,12 @@ function PublicDonPageInner() {
   const [assoc, setAssoc]             = useState<AssocInfo | null>(null)
   const [loadingAssoc, setLoadingAssoc] = useState(true)
 
-  const [selected, setSelected]   = useState<number | null>(null)
-  const [custom, setCustom]       = useState("")
+  const [amount, setAmount] = useState(0)
+  const [donorType, setDonorType] = useState<"INDIVIDUAL" | "COMPANY">("INDIVIDUAL")
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName]   = useState("")
+  const [companyName, setCompanyName] = useState("")
+  const [siret, setSiret]         = useState("")
   const [email, setEmail]         = useState("")
   const [address, setAddress]     = useState("")
   const [message, setMessage]     = useState("")
@@ -55,29 +59,32 @@ function PublicDonPageInner() {
     if (p === "cancelled") toast.info("Don annulé.")
   }, [searchParams])
 
-  const amount = selected ?? (custom ? parseFloat(custom.replace(",", ".")) : null)
   const canSubmit =
     !loading &&
-    !!amount && amount > 0 &&
+    amount > 0 &&
     firstName.trim() &&
     lastName.trim() &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+    (donorType === "INDIVIDUAL" || (companyName.trim() && isValidSiret(siret.trim())))
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!canSubmit || !amount) return
+    if (!canSubmit) return
     setLoading(true)
     try {
       const res = await fetch(`/api/public/${slug}/don`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName:  lastName.trim(),
-          email:     email.trim(),
-          address:   address.trim() || undefined,
+          donorType,
+          firstName:   firstName.trim(),
+          lastName:    lastName.trim(),
+          companyName: donorType === "COMPANY" ? companyName.trim() : undefined,
+          siret:       donorType === "COMPANY" ? siret.trim() : undefined,
+          email:       email.trim(),
+          address:     address.trim() || undefined,
           amount,
-          message:   message.trim() || undefined,
+          message:     message.trim() || undefined,
           anonymous,
         }),
       })
@@ -120,8 +127,10 @@ function PublicDonPageInner() {
             <div className="text-sm text-violet-800 dark:text-violet-300 space-y-1">
               <p className="font-semibold">Votre don est déductible des impôts</p>
               <p className="text-xs text-violet-700 dark:text-violet-400">
-                75 % de réduction jusqu'à 1 000 €, puis 66 % — Art. 200 CGI.
-                Un reçu fiscal vous sera envoyé par e-mail.
+                {donorType === "COMPANY"
+                  ? "60 % de réduction dans la limite de 0,5 % du chiffre d'affaires HT — Art. 238 bis CGI."
+                  : "75 % de réduction jusqu'à 1 000 €, puis 66 % — Art. 200 CGI."}
+                {" "}Un reçu fiscal vous sera envoyé par e-mail.
               </p>
             </div>
           </div>
@@ -136,10 +145,10 @@ function PublicDonPageInner() {
                 <button
                   key={v}
                   type="button"
-                  onClick={() => { setSelected(v); setCustom("") }}
+                  onClick={() => setAmount(v)}
                   className={cn(
                     "rounded-lg border py-2.5 text-sm font-semibold transition-colors",
-                    selected === v && !custom
+                    amount === v
                       ? "bg-violet-600 border-violet-600 text-white"
                       : "border-input hover:border-violet-400 hover:text-violet-700",
                   )}
@@ -148,23 +157,74 @@ function PublicDonPageInner() {
                 </button>
               ))}
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                min="1"
-                step="0.01"
-                placeholder="Autre montant (€)"
-                value={custom}
-                onChange={e => { setCustom(e.target.value); setSelected(null) }}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
-              />
-            </div>
+            <CurrencyInput value={amount} onChange={setAmount} />
           </div>
+
+          {/* Type de donateur */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setDonorType("INDIVIDUAL")}
+              className={cn(
+                "rounded-lg border py-2 text-sm font-medium transition-colors",
+                donorType === "INDIVIDUAL"
+                  ? "bg-violet-600 border-violet-600 text-white"
+                  : "border-input hover:border-violet-400",
+              )}
+            >
+              Particulier
+            </button>
+            <button
+              type="button"
+              onClick={() => setDonorType("COMPANY")}
+              className={cn(
+                "rounded-lg border py-2 text-sm font-medium transition-colors",
+                donorType === "COMPANY"
+                  ? "bg-violet-600 border-violet-600 text-white"
+                  : "border-input hover:border-violet-400",
+              )}
+            >
+              Entreprise
+            </button>
+          </div>
+
+          {donorType === "COMPANY" && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Nom de l'entreprise *</label>
+                <input
+                  type="text"
+                  required
+                  value={companyName}
+                  onChange={e => setCompanyName(e.target.value)}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">SIRET *</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={14}
+                  value={siret}
+                  onChange={e => setSiret(e.target.value.replace(/\D/g, ""))}
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                />
+                {siret.length > 0 && siret.length < 14 && (
+                  <p className="text-xs text-amber-600">
+                    SIRET incomplet ({siret.length}/14 chiffres)
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Identité */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Prénom *</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {donorType === "COMPANY" ? "Prénom du contact *" : "Prénom *"}
+              </label>
               <input
                 type="text"
                 required
@@ -174,7 +234,9 @@ function PublicDonPageInner() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Nom *</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                {donorType === "COMPANY" ? "Nom du contact *" : "Nom *"}
+              </label>
               <input
                 type="text"
                 required
@@ -230,7 +292,7 @@ function PublicDonPageInner() {
               className="mt-0.5 rounded border-input accent-violet-600"
             />
             <span className="text-sm text-muted-foreground">
-              Je souhaite rester anonyme (mon nom ne sera pas affiché dans la liste des donateurs)
+              Je souhaite rester anonyme dans tout affichage public de donateurs (n'affecte pas votre reçu fiscal)
             </span>
           </label>
 
@@ -241,15 +303,16 @@ function PublicDonPageInner() {
             className="w-full bg-violet-600 hover:bg-violet-700 text-white"
           >
             <HandshakeIcon className="size-4 mr-2" />
-            Faire un don{amount && amount > 0 ? ` de ${amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}` : ""}
+            Faire un don{amount > 0 ? ` de ${amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}` : ""}
           </Button>
 
           {/* RGPD */}
           <div className="flex gap-2 text-xs text-muted-foreground">
             <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
             <p>
-              Vos données (nom, e-mail) sont collectées uniquement pour la confirmation du paiement et
-              l'émission du reçu fiscal (Art. 200 CGI). Aucune utilisation commerciale. Durée de
+              Vos données ({donorType === "COMPANY" ? "nom, e-mail, raison sociale, SIRET" : "nom, e-mail"}) sont
+              collectées uniquement pour la confirmation du paiement et l'émission du reçu fiscal
+              ({donorType === "COMPANY" ? "Art. 238 bis" : "Art. 200"} CGI). Aucune utilisation commerciale. Durée de
               conservation : 6 ans minimum (obligation fiscale).
             </p>
           </div>

@@ -3,7 +3,7 @@ import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail } from "@/lib/email"
-import { generateRecuFiscal } from "@/lib/pdf/recu-fiscal"
+import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import type Stripe from "stripe"
@@ -269,7 +269,7 @@ export async function POST(req: Request) {
 
         const don = await prisma.don.findUnique({
           where:   { id: donId },
-          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true } } },
+          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true } } },
         })
         if (!don) break
 
@@ -277,9 +277,9 @@ export async function POST(req: Request) {
           data: {
             associationId: don.associationId,
             amount:        don.amount,
-            description:   don.anonymous
-              ? "Don anonyme"
-              : `Don de ${don.firstName} ${don.lastName}`,
+            // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
+            // comptabilité interne — l'association doit toujours savoir qui a donné.
+            description:   `Don de ${don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`}`,
             paymentMethod: "STRIPE",
             source:        "STRIPE",
             status:        "PAID",
@@ -295,7 +295,7 @@ export async function POST(req: Request) {
           if (assoc.canIssueTaxReceipts) {
             const updatedDon = await prisma.don.findUnique({ where: { id: donId } })
             if (updatedDon) {
-              const pdf = await generateRecuFiscal(updatedDon, assoc).catch(() => null)
+              const pdf = await generateRecuFiscalForDon(updatedDon, assoc).catch(() => null)
               if (pdf) {
                 pdfAttachment = {
                   filename: `recu-fiscal-${updatedDon.receiptNumber ?? donId}.pdf`,
@@ -316,6 +316,7 @@ export async function POST(req: Request) {
               paidAt,
               canIssueTaxReceipts: assoc.canIssueTaxReceipts,
               receiptNumber:       refreshed?.receiptNumber ?? undefined,
+              donorType:           don.donorType,
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
           }).catch(() => {})
@@ -326,7 +327,7 @@ export async function POST(req: Request) {
           action:        "DON_PAID",
           entity:        "Don",
           entityId:      donId,
-          label:         don.anonymous ? "Don anonyme" : `${don.firstName} ${don.lastName}`,
+          label:         don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`,
           metadata:      { amount: Number(don.amount) },
         })
       }

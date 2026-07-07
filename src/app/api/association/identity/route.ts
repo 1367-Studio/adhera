@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { OrganismeCategory } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
@@ -12,6 +13,9 @@ const schema = z.object({
   siren:              z.string().trim().max(14).regex(/^\d{9}(\d{5})?$|^$/, "SIREN invalide (9 ou 14 chiffres)").optional().or(z.literal("")),
   rna:                z.string().trim().max(10).regex(/^W\d{9}$|^$/, "RNA invalide (ex: W751234567)").optional().or(z.literal("")),
   canIssueTaxReceipts: z.boolean().optional(),
+  objet:              z.string().trim().max(500).optional().or(z.literal("")),
+  organismeCategory:   z.nativeEnum(OrganismeCategory).optional(),
+  organismeCategoryDetail: z.string().trim().max(300).optional().or(z.literal("")),
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
@@ -23,6 +27,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
       siren:              true,
       rna:                true,
       canIssueTaxReceipts: true,
+      objet:              true,
+      organismeCategory:  true,
+      organismeCategoryDetail: true,
     },
   })
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -36,7 +43,7 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { address, phone, siren, rna, canIssueTaxReceipts } = parsed.data
+  const { address, phone, siren, rna, canIssueTaxReceipts, objet, organismeCategory, organismeCategoryDetail } = parsed.data
 
   // Bloqueio: não permitir ativar recibos fiscais sem SIREN ou RNA
   if (canIssueTaxReceipts) {
@@ -62,6 +69,9 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
       ...(siren              !== undefined ? { siren:              siren || null }              : {}),
       ...(rna                !== undefined ? { rna:                rna || null }                : {}),
       ...(canIssueTaxReceipts !== undefined ? { canIssueTaxReceipts }                           : {}),
+      ...(objet              !== undefined ? { objet:              objet || null }              : {}),
+      ...(organismeCategory  !== undefined ? { organismeCategory }                              : {}),
+      ...(organismeCategoryDetail !== undefined ? { organismeCategoryDetail: organismeCategoryDetail || null } : {}),
     },
   })
 

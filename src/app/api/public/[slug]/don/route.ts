@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { isValidSiret } from "@/lib/siret"
 
 const PLATFORM_FEE = 0.015
 
@@ -32,14 +33,23 @@ export async function GET(
 }
 
 const schema = z.object({
-  firstName: z.string().trim().min(1).max(100),
-  lastName:  z.string().trim().min(1).max(100),
-  email:     z.string().email().max(200),
-  address:   z.string().trim().max(300).optional(),
-  amount:    z.number().positive().max(100000),
-  message:   z.string().trim().max(500).optional(),
-  anonymous: z.boolean().optional().default(false),
-})
+  donorType:   z.enum(["INDIVIDUAL", "COMPANY"]).optional().default("INDIVIDUAL"),
+  firstName:   z.string().trim().min(1).max(100),
+  lastName:    z.string().trim().min(1).max(100),
+  companyName: z.string().trim().min(1).max(200).optional(),
+  siret:       z.string().trim().regex(/^\d{14}$/, "SIRET invalide (14 chiffres)").optional(),
+  email:       z.string().email().max(200),
+  address:     z.string().trim().max(300).optional(),
+  amount:      z.number().positive().max(100000),
+  message:     z.string().trim().max(500).optional(),
+  anonymous:   z.boolean().optional().default(false),
+}).refine(
+  d => d.donorType !== "COMPANY" || (!!d.companyName && !!d.siret),
+  { message: "Nom de l'entreprise et SIRET requis pour un don d'entreprise", path: ["companyName"] },
+).refine(
+  d => d.donorType !== "COMPANY" || !d.siret || isValidSiret(d.siret),
+  { message: "Numéro de SIRET invalide", path: ["siret"] },
+)
 
 export async function POST(
   req: Request,
@@ -78,13 +88,16 @@ export async function POST(
   if (!parsed.success)
     return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { firstName, lastName, email, address, amount, message, anonymous } = parsed.data
+  const { donorType, firstName, lastName, companyName, siret, email, address, amount, message, anonymous } = parsed.data
 
   const don = await prisma.don.create({
     data: {
       associationId: assoc.id,
+      donorType,
       firstName,
       lastName,
+      companyName: donorType === "COMPANY" ? companyName : null,
+      siret:       donorType === "COMPANY" ? siret : null,
       email,
       address:   address || null,
       amount,

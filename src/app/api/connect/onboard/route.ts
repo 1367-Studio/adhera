@@ -19,6 +19,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   let connectId = assoc.stripeConnectId
+  let detailsSubmitted = false
 
   if (!connectId) {
     const account = await stripe.accounts.create({
@@ -41,9 +42,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
       await stripe.accounts.del(connectId).catch(() => null)
       throw err
     }
+  } else {
+    // Un compte peut déjà avoir un ID enregistré sans avoir terminé l'onboarding
+    // (ex : abandon en cours de route) — Stripe refuse un lien "account_update"
+    // tant que l'onboarding initial n'est pas complet.
+    const account = await stripe.accounts.retrieve(connectId)
+    detailsSubmitted = account.details_submitted
   }
 
-  const linkType = assoc.stripeConnectId ? "account_update" : "account_onboarding"
+  const linkType = detailsSubmitted ? "account_update" : "account_onboarding"
 
   const accountLink = await stripe.accountLinks.create({
     account:     connectId,
