@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   LiveKitRoom,
   RoomAudioRenderer,
@@ -9,6 +9,7 @@ import {
   useLocalParticipant,
   useTracks,
   useRoomContext,
+  useRoomInfo,
   isTrackReference,
   useChat,
 } from "@livekit/components-react"
@@ -159,7 +160,6 @@ function Controls({
   isAdmin,
   onLeave,
   recording,
-  onRecordingChange,
   chatOpen,
   onChatToggle,
   unreadCount,
@@ -170,7 +170,6 @@ function Controls({
   isAdmin:           boolean
   onLeave:           (opts?: LeaveOpts) => void
   recording:         boolean
-  onRecordingChange: (v: boolean) => void
   chatOpen:          boolean
   onChatToggle:      () => void
   unreadCount:       number
@@ -184,16 +183,17 @@ function Controls({
   async function handleToggleRecording() {
     setToggling(true)
     try {
+      // Don't flip local state here — the room's metadata (updated server-side once
+      // egress actually starts/stops) is what drives `recording` for every participant,
+      // via useRoomInfo in RoomInner. This avoids the admin's own UI claiming "recording"
+      // before it's actually confirmed, and everyone else finding out in real time instead
+      // of only at their next join.
       if (recording) {
-        await fetch(`/api/meetings/${meetingId}/egress`, { method: "DELETE" })
-        onRecordingChange(false)
+        const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "DELETE" })
+        if (!res.ok) toast.error("Impossible d'arrêter l'enregistrement.")
       } else {
         const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "POST" })
-        if (res.ok) {
-          onRecordingChange(true)
-        } else {
-          toast.error("Impossible de démarrer l'enregistrement.")
-        }
+        if (!res.ok) toast.error("Impossible de démarrer l'enregistrement.")
       }
     } catch {
       toast.error("Erreur lors de la gestion de l'enregistrement.")
@@ -340,20 +340,25 @@ function RoomInner({
   isAdmin:   boolean
   onLeave:   (opts?: LeaveOpts) => void
 }) {
-  const [recording,    setRecording]    = useState(false)
   const [chatOpen,     setChatOpen]     = useState(false)
   const [unreadCount,  setUnreadCount]  = useState(0)
   const [ending,       setEnding]       = useState(false)
   const { chatMessages } = useChat()
   const prevCountRef = useRef(0)
 
-  // Sync recording state from DB on mount (handles admin re-joining after mic fix)
-  useEffect(() => {
-    fetch(`/api/meetings/${meetingId}`)
-      .then(r => r.json())
-      .then(m => { if (m.egressId) setRecording(true) })
-      .catch(() => {})
-  }, [meetingId])
+  // Driven by LiveKit room metadata (set server-side in the egress start/stop routes),
+  // which LiveKit pushes live to every connected participant — not just whoever clicked
+  // "Enregistrer". A plain useState + one-time mount fetch would only ever reflect
+  // whatever was true at join time, so anyone already in the room when recording starts
+  // would never find out.
+  const { metadata } = useRoomInfo()
+  const recording = useMemo(() => {
+    try {
+      return !!(metadata && JSON.parse(metadata).recording)
+    } catch {
+      return false
+    }
+  }, [metadata])
 
   // Badge: count new messages received while chat is closed
   useEffect(() => {
@@ -393,7 +398,6 @@ function RoomInner({
           isAdmin={isAdmin}
           onLeave={onLeave}
           recording={recording}
-          onRecordingChange={setRecording}
           chatOpen={chatOpen}
           onChatToggle={handleChatToggle}
           unreadCount={unreadCount}

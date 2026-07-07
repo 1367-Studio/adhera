@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { EgressClient, EncodedFileOutput, EncodedFileType, S3Upload } from "livekit-server-sdk"
+import { EgressClient, RoomServiceClient, EncodedFileOutput, EncodedFileType, S3Upload } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
@@ -9,6 +9,18 @@ const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 function makeEgressClient(livekit: LiveKitConfig) {
   return new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
+}
+
+// Room metadata is pushed live to every connected participant by LiveKit itself — this is
+// what the client reads (via useRoomInfo) to show the "recording" banner in real time,
+// instead of the old per-client local state that only the admin who clicked ever saw.
+async function setRoomRecordingMetadata(livekit: LiveKitConfig, roomName: string, recording: boolean) {
+  try {
+    const roomClient = new RoomServiceClient(livekit.url, livekit.apiKey, livekit.apiSecret)
+    await roomClient.updateRoomMetadata(roomName, JSON.stringify({ recording }))
+  } catch {
+    // Non-fatal: egress itself already started/stopped; worst case the live banner lags.
+  }
 }
 
 function makeS3Upload() {
@@ -54,6 +66,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     { audioOnly: true },
   )
 
+  await setRoomRecordingMetadata(livekit, meeting.roomName, true)
+
   await prisma.meeting.update({
     where: { id },
     data:  {
@@ -88,6 +102,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
       const livekit = await getLiveKitConfigForMeeting(meeting)
       const egressClient = makeEgressClient(livekit)
       await egressClient.stopEgress(meeting.egressId)
+      await setRoomRecordingMetadata(livekit, meeting.roomName, false)
     } catch {
       // Egress may have already stopped (room empty, timeout, etc.), or LiveKit not configured
     }
