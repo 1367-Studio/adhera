@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { SignOutIcon, PencilSimpleIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
@@ -33,7 +34,16 @@ interface UserMenuProps {
 
 export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
   const [modal, setModal] = useState<"profile" | "password" | null>(null)
+  const queryClient = useQueryClient()
   const logoutAction = logout.bind(null, logoutRedirect ?? "/login")
+
+  // Le QueryClient vit dans le layout racine et ne démonte jamais entre deux
+  // sessions (navigation soft via Server Action) — sans ça, les données de
+  // l'utilisateur précédent restent affichées jusqu'à un F5.
+  function handleLogout() {
+    queryClient.clear()
+    logoutAction()
+  }
 
   const initials = user.name
     ?.split(" ")
@@ -82,7 +92,7 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuItem variant="destructive" onClick={logoutAction}>
+            <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <SignOutIcon className="mr-2 size-4" />
               Se déconnecter
             </DropdownMenuItem>
