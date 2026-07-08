@@ -77,7 +77,10 @@ export function TableauDeBord() {
 
   return (
     <div className="space-y-6 py-4">
-      <div>
+      <div
+        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+        style={{ animationFillMode: "both" }}
+      >
         <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           Vue d&apos;ensemble de votre association
@@ -86,31 +89,36 @@ export function TableauDeBord() {
 
       {/* Stats grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map(stat => (
-          <Link
+        {stats.map((stat, i) => (
+          <div
             key={stat.label}
-            href={stat.href}
-            className="group rounded-xl border bg-card p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
+            className="animate-in fade-in slide-in-from-bottom-3 duration-300"
+            style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
           >
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">{stat.label}</span>
-              <div className={cn("flex size-8 items-center justify-center rounded-lg", stat.bg)}>
-                {stat.alert
-                  ? <WarningCircleIcon className={cn("size-4", stat.color)} />
-                  : <stat.icon className={cn("size-4", stat.color)} />
-                }
+            <Link
+              href={stat.href}
+              className="group rounded-xl border bg-card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">{stat.label}</span>
+                <div className={cn("flex size-8 items-center justify-center rounded-lg", stat.bg)}>
+                  {stat.alert
+                    ? <WarningCircleIcon className={cn("size-4", stat.color)} />
+                    : <stat.icon className={cn("size-4", stat.color)} />
+                  }
+                </div>
               </div>
-            </div>
-            <div className="flex items-end justify-between">
-              <span className={cn(
-                "text-2xl font-bold tabular-nums",
-                isLoading && "animate-pulse text-muted-foreground",
-              )}>
-                {isLoading ? "…" : stat.value}
-              </span>
-              <ArrowRightIcon className="size-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
-            </div>
-          </Link>
+              <div className="flex items-end justify-between">
+                <span className={cn(
+                  "text-2xl font-bold tabular-nums",
+                  isLoading && "animate-pulse text-muted-foreground",
+                )}>
+                  {isLoading ? "…" : stat.value}
+                </span>
+                <ArrowRightIcon className="size-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
+              </div>
+            </Link>
+          </div>
         ))}
       </div>
 
@@ -119,7 +127,10 @@ export function TableauDeBord() {
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Prochain événement */}
           {modules.evenements && (
-            <div className="rounded-xl border bg-card p-5 space-y-3">
+            <div
+              className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              style={{ animationDelay: "240ms", animationFillMode: "both" }}
+            >
               <div className="flex items-center gap-2">
                 <CalendarBlankIcon className="size-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Prochain événement</span>
@@ -146,7 +157,10 @@ export function TableauDeBord() {
 
           {/* Cotisations de l'année */}
           {modules.cotisations && (
-            <div className="rounded-xl border bg-card p-5 space-y-3">
+            <div
+              className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              style={{ animationDelay: "300ms", animationFillMode: "both" }}
+            >
               <div className="flex items-center gap-2">
                 <TrendUpIcon className="size-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Cotisations {new Date().getFullYear()}</span>
@@ -175,7 +189,12 @@ export function TableauDeBord() {
         </div>
       )}
 
-      <FinanceCharts />
+      <div
+        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+        style={{ animationDelay: "360ms", animationFillMode: "both" }}
+      >
+        <FinanceCharts />
+      </div>
     </div>
   )
 }
