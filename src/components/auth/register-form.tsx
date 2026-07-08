@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
+import type { PricingInfo } from "@/lib/stripe"
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
@@ -92,13 +93,26 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
 
 type Plan = "monthly" | "yearly"
 
-function PlanSelector({ plan, onChange }: { plan: Plan; onChange: (p: Plan) => void }) {
+// Single formatting helper for every euro amount shown in this form — all of them derive
+// from the `pricing` prop (fetched live from Stripe), never from a separately typed string.
+function euros(cents: number): string {
+  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+}
+
+function PlanSelector({ plan, onChange, pricing }: { plan: Plan; onChange: (p: Plan) => void; pricing: PricingInfo }) {
+  const monthlyPrice   = euros(pricing.monthlyAmountCents)
+  const yearlyEquiv    = euros(Math.round(pricing.yearlyAmountCents / 12))
+  const yearlyTotal    = euros(pricing.yearlyAmountCents)
+  const discountPct    = Math.round((1 - (pricing.yearlyAmountCents / 12) / pricing.monthlyAmountCents) * 100)
+
+  const options = [
+    { id: "monthly" as Plan, label: "Mensuel", price: monthlyPrice, note: null, billingNote: "Prélevé chaque mois" },
+    { id: "yearly"  as Plan, label: "Annuel",  price: yearlyEquiv,  note: `−${discountPct} %`, billingNote: `Facturé ${yearlyTotal} en une fois /an` },
+  ]
+
   return (
     <div className="grid grid-cols-2 gap-3">
-      {([
-        { id: "monthly" as Plan, label: "Mensuel", price: "29,90 €", period: "/mois", note: null },
-        { id: "yearly"  as Plan, label: "Annuel",  price: "24,90 €", period: "/mois", note: "−17 %" },
-      ] as const).map(opt => (
+      {options.map(opt => (
         <button
           key={opt.id}
           type="button"
@@ -118,8 +132,11 @@ function PlanSelector({ plan, onChange }: { plan: Plan; onChange: (p: Plan) => v
           <p className="text-xs font-medium text-muted-foreground">{opt.label}</p>
           <p className="mt-1 text-xl font-bold">
             {opt.price}
-            <span className="text-xs font-normal text-muted-foreground">{opt.period}</span>
+            <span className="text-xs font-normal text-muted-foreground">/mois</span>
           </p>
+          {/* Disclosed here, on the plan-choice step, not only on the payment step below —
+              the annual plan isn't a cheaper monthly draft, it's a single yearly charge. */}
+          <p className="mt-1 text-[11px] text-muted-foreground">{opt.billingNote}</p>
         </button>
       ))}
     </div>
@@ -133,10 +150,12 @@ type Info = { associationName: string; city: string; firstName: string; lastName
 function StepInfo({
   defaultValues,
   existingCustomerId,
+  pricing,
   onNext,
 }: {
   defaultValues?:      Partial<Info>
   existingCustomerId?: string
+  pricing:             PricingInfo
   onNext: (info: Info, customerId: string, clientSecret: string) => void
 }) {
   const [loading,  setLoading]  = useState(false)
@@ -244,7 +263,7 @@ function StepInfo({
       </Button>
 
       <div className="flex items-center justify-center gap-4 pt-1">
-        {["20 jours gratuits", "Sans engagement", "Annulation facile"].map(t => (
+        {[`${pricing.trialDays} jours gratuits`, "Sans engagement", "Annulation facile"].map(t => (
           <span key={t} className="flex items-center gap-1 text-xs text-muted-foreground">
             <CheckCircleIcon className="size-3 text-emerald-500" />
             {t}
@@ -262,6 +281,7 @@ function PaymentForm({
   customerId,
   clientSecret,
   plan,
+  pricing,
   onBack,
   onSuccess,
 }: {
@@ -269,6 +289,7 @@ function PaymentForm({
   customerId:   string
   clientSecret: string
   plan:         Plan
+  pricing:      PricingInfo
   onBack:       () => void
   onSuccess:    () => void
 }) {
@@ -334,6 +355,11 @@ function PaymentForm({
     }
   }
 
+  const monthlyPrice = euros(pricing.monthlyAmountCents)
+  const yearlyEquiv  = euros(Math.round(pricing.yearlyAmountCents / 12))
+  const yearlyTotal  = euros(pricing.yearlyAmountCents)
+  const discountPct  = Math.round((1 - (pricing.yearlyAmountCents / 12) / pricing.monthlyAmountCents) * 100)
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-xl border bg-card p-4 space-y-3">
@@ -347,18 +373,18 @@ function PaymentForm({
         <div className="space-y-1.5 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>{info.associationName}</span>
-            <span>20 jours offerts</span>
+            <span>{pricing.trialDays} jours offerts</span>
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>Après la période d&apos;essai</span>
             <span className="font-medium text-foreground">
-              {plan === "yearly" ? "24,90 €/mois" : "29,90 €/mois"}
+              {plan === "yearly" ? `${yearlyEquiv}/mois` : `${monthlyPrice}/mois`}
             </span>
           </div>
           {plan === "yearly" && (
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span className="text-amber-600 dark:text-amber-400">Facturé en une fois · 298,80 €/an</span>
-              <span className="text-emerald-600">−17 %</span>
+              <span className="text-amber-600 dark:text-amber-400">Facturé en une fois · {yearlyTotal}/an</span>
+              <span className="text-emerald-600">−{discountPct} %</span>
             </div>
           )}
         </div>
@@ -389,7 +415,7 @@ function PaymentForm({
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <LockIcon className="size-3" />
-        <span>Paiement sécurisé par Stripe · Annulez avant 20 jours pour ne rien payer</span>
+        <span>Paiement sécurisé par Stripe · Annulez avant {pricing.trialDays} jours pour ne rien payer</span>
       </div>
     </form>
   )
@@ -401,17 +427,17 @@ type Step = "info" | "payment" | "done"
 
 const GOOGLE_PREFILL_KEY = "adhera-google-prefill"
 
-export function RegisterForm() {
+export function RegisterForm({ pricing }: { pricing: PricingInfo }) {
   return (
     <Suspense fallback={null}>
-      <RegisterFormInner />
+      <RegisterFormInner pricing={pricing} />
     </Suspense>
   )
 }
 
 // useSearchParams() (for the Google prefill) requires a Suspense boundary above it, or
 // `next build` fails prerendering this page — the wrapper above provides that.
-function RegisterFormInner() {
+function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
@@ -465,7 +491,7 @@ function RegisterFormInner() {
 
   return (
     <div className="space-y-6">
-      <PlanSelector plan={plan} onChange={setPlan} />
+      <PlanSelector plan={plan} onChange={setPlan} pricing={pricing} />
 
       <StepIndicator current={step as "info" | "payment"} />
 
@@ -477,6 +503,7 @@ function RegisterFormInner() {
           key={info ? "edit" : googlePrefill ? "google-prefill" : "empty"}
           defaultValues={info ?? googlePrefill ?? undefined}
           existingCustomerId={customerId || undefined}
+          pricing={pricing}
           onNext={(i, cid, cs) => {
             setInfo(i)
             setCustomerId(cid)
@@ -493,6 +520,7 @@ function RegisterFormInner() {
             customerId={customerId}
             clientSecret={clientSecret}
             plan={plan}
+            pricing={pricing}
             onBack={() => setStep("info")}
             onSuccess={() => setStep("done")}
           />

@@ -267,12 +267,13 @@ export function adminWelcomeEmail(p: {
   email:           string
   associationName: string
   loginUrl:        string
+  trialDays:       number
 }) {
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur Adhéra, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre association <strong>${p.associationName}</strong> a été créée avec succès.<br>
-      Vous disposez de <strong>20 jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.
+      Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.
     </p>
     ${btn("Accéder à mon tableau de bord", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`
