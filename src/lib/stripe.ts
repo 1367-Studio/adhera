@@ -6,7 +6,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY!
 export const STRIPE_PRICE_YEARLY  = process.env.STRIPE_PRICE_YEARLY!
-export const TRIAL_DAYS           = 20
+export const TRIAL_DAYS           = 15
 
 // Distingue "cette ressource Stripe (compte Connect, customer...) n'est plus
 // accessible" (supprimée, accès révoqué, ID d'un autre compte plateforme après

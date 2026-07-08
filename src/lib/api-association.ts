@@ -14,7 +14,9 @@ export type AssociationCtx = {
   role:          string
 }
 
-export async function getAssociationCtx(): Promise<AssociationCtx | NextResponse> {
+export async function getAssociationCtx(
+  options: { allowWhenSuspended?: boolean } = {},
+): Promise<AssociationCtx | NextResponse> {
   const session = await auth()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
@@ -23,6 +25,12 @@ export async function getAssociationCtx(): Promise<AssociationCtx | NextResponse
   // Mirrors the hard block enforced at the page level in src/proxy.ts.
   if (u.subscriptionStatus === "CANCELLED") {
     return NextResponse.json({ error: "Subscription cancelled" }, { status: 403 })
+  }
+  // SUSPENDED still blocks regular admin routes, but the standby screen's own actions
+  // (reactivate/export/cancel) opt out via allowWhenSuspended — those are the only
+  // things a suspended association is allowed to do.
+  if (u.subscriptionStatus === "SUSPENDED" && !options.allowWhenSuspended) {
+    return NextResponse.json({ error: "Subscription suspended" }, { status: 403 })
   }
 
   return {

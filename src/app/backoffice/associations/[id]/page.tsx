@@ -14,6 +14,7 @@ const subLabel: Record<string, { label: string; variant: "default" | "secondary"
   TRIAL:     { label: "Essai",      variant: "secondary"   },
   ACTIVE:    { label: "Actif",      variant: "default"     },
   PAST_DUE:  { label: "En retard",  variant: "destructive" },
+  SUSPENDED: { label: "Suspendu",   variant: "destructive" },
   CANCELLED: { label: "Annulé",     variant: "outline"     },
 }
 
@@ -28,6 +29,7 @@ async function getAssociation(id: string) {
       country:              true,
       subscriptionStatus:   true,
       trialEndsAt:          true,
+      suspendedAt:          true,
       stripeCustomerId:     true,
       stripeSubscriptionId: true,
       sitePublished:        true,
@@ -145,6 +147,9 @@ export default async function AssociationDetailPage({ params }: { params: Promis
             <CardContent className="space-y-2 text-sm">
               {assoc.trialEndsAt && (
                 <Row label="Essai jusqu'au" value={new Date(assoc.trialEndsAt).toLocaleDateString("fr-FR")} />
+              )}
+              {assoc.suspendedAt && (
+                <Row label="Suspendu depuis" value={new Date(assoc.suspendedAt).toLocaleDateString("fr-FR")} />
               )}
               <Row label="Stripe Customer"      value={assoc.stripeCustomerId}     />
               <Row label="Stripe Subscription"  value={assoc.stripeSubscriptionId} />

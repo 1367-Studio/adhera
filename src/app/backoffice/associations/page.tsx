@@ -11,6 +11,7 @@ const subLabel: Record<string, { label: string; variant: "default" | "secondary"
   TRIAL:     { label: "Essai",     variant: "secondary"   },
   ACTIVE:    { label: "Actif",     variant: "default"     },
   PAST_DUE:  { label: "En retard", variant: "destructive" },
+  SUSPENDED: { label: "Suspendu",  variant: "destructive" },
   CANCELLED: { label: "Annulé",    variant: "outline"     },
 }
 

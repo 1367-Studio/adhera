@@ -16,10 +16,10 @@ type Handler<Ctx, Params> = (req: Request, ctx: Ctx, params: Params) => Promise<
  */
 export function withAdminAuth<Params = Record<string, string>>(
   handler: Handler<AssociationCtx, Params>,
-  options: { roles?: readonly string[]; module?: keyof AssocModules } = {},
+  options: { roles?: readonly string[]; module?: keyof AssocModules; allowWhenSuspended?: boolean } = {},
 ) {
   return async (req: Request, context?: RouteContext<Params>) => {
-    const ctx = await getAssociationCtx()
+    const ctx = await getAssociationCtx({ allowWhenSuspended: options.allowWhenSuspended })
     if (!isCtx(ctx)) return ctx
 
     if (options.module) {
@@ -79,8 +79,10 @@ export function withPortalAuth<Params = Record<string, string>>(
 
     const u = session.user as { id?: string; associationId?: string | null; subscriptionStatus?: string | null }
     if (!u.associationId || !u.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-    // Mirrors the hard block enforced at the page level in src/proxy.ts.
-    if (u.subscriptionStatus === "CANCELLED") {
+    // Mirrors the hard block enforced at the page level in src/proxy.ts. A member has no
+    // billing actions available, so SUSPENDED is blocked the same as CANCELLED here —
+    // only the association's own admin gets the standby screen with reactivate/export/cancel.
+    if (u.subscriptionStatus === "CANCELLED" || u.subscriptionStatus === "SUSPENDED") {
       return NextResponse.json({ error: "Subscription cancelled" }, { status: 403 })
     }
 

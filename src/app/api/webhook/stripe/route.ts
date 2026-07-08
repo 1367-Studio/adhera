@@ -11,9 +11,10 @@ import type Stripe from "stripe"
 export const dynamic = "force-dynamic"
 
 function toSubscriptionStatus(status: Stripe.Subscription.Status) {
-  if (status === "trialing") return "TRIAL"    as const
-  if (status === "active")   return "ACTIVE"   as const
-  if (status === "past_due") return "PAST_DUE" as const
+  if (status === "trialing") return "TRIAL"     as const
+  if (status === "active")   return "ACTIVE"    as const
+  if (status === "past_due") return "PAST_DUE"  as const
+  if (status === "unpaid")   return "SUSPENDED" as const
   return "CANCELLED" as const
 }
 
@@ -476,10 +477,27 @@ export async function POST(req: Request) {
     // ── SaaS subscription lifecycle ───────────────────────────────────────
     case "customer.subscription.created":
     case "customer.subscription.updated": {
-      const sub = event.data.object as Stripe.Subscription
-      await prisma.association.updateMany({
-        where: { stripeSubscriptionId: sub.id },
-        data:  { subscriptionStatus: toSubscriptionStatus(sub.status) },
+      const sub       = event.data.object as Stripe.Subscription
+      const newStatus = toSubscriptionStatus(sub.status)
+
+      // Fetched (rather than a blind updateMany) so we can tell whether this transition
+      // is entering or leaving SUSPENDED — needed to stamp/clear suspendedAt, which
+      // drives the "suspended since" messaging on the standby screen and backoffice.
+      const assoc = await prisma.association.findFirst({
+        where:  { stripeSubscriptionId: sub.id },
+        select: { id: true, subscriptionStatus: true },
+      })
+      if (!assoc) break
+
+      await prisma.association.update({
+        where: { id: assoc.id },
+        data:  {
+          subscriptionStatus: newStatus,
+          suspendedAt:
+            newStatus === "SUSPENDED"
+              ? (assoc.subscriptionStatus === "SUSPENDED" ? undefined : new Date())
+              : null,
+        },
       })
       break
     }
@@ -487,7 +505,7 @@ export async function POST(req: Request) {
       const sub = event.data.object as Stripe.Subscription
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
-        data:  { subscriptionStatus: "CANCELLED" },
+        data:  { subscriptionStatus: "CANCELLED", suspendedAt: null },
       })
       break
     }

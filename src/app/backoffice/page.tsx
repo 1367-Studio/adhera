@@ -17,7 +17,7 @@ async function getStats() {
   const total    = assocs.length
   const active   = assocs.filter(a => a.subscriptionStatus === "ACTIVE").length
   const trial    = assocs.filter(a => a.subscriptionStatus === "TRIAL").length
-  const problem  = assocs.filter(a => ["PAST_DUE", "CANCELLED"].includes(a.subscriptionStatus)).length
+  const problem  = assocs.filter(a => ["PAST_DUE", "SUSPENDED", "CANCELLED"].includes(a.subscriptionStatus)).length
   const monthly  = active * MRR_PER_ACTIVE
 
   return { total, active, trial, problem, monthly }

@@ -6,7 +6,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
-export const POST = withAdminAuth(async (_req, ctx) => {
+export const POST = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
     select: { stripeCustomerId: true },
@@ -14,10 +14,20 @@ export const POST = withAdminAuth(async (_req, ctx) => {
   if (!assoc?.stripeCustomerId)
     return NextResponse.json({ error: "Aucun abonnement associé à ce compte" }, { status: 400 })
 
+  // The standby screen reactivates from within itself (returnTo: "standby") so the
+  // Stripe redirect lands back on a page that polls for the webhook-confirmed status
+  // change, instead of bouncing through /dashboard/parametres and getting redirected
+  // straight back to the standby screen while the webhook is still in flight.
+  const body       = await req.json().catch(() => null) as { returnTo?: string } | null
+  const returnPath = body?.returnTo === "standby"
+    ? "/dashboard/abonnement-suspendu"
+    : "/dashboard/parametres?tab=abonnement"
+  const separator  = returnPath.includes("?") ? "&" : "?"
+
   try {
     const session = await stripe.billingPortal.sessions.create({
       customer:   assoc.stripeCustomerId,
-      return_url: `${APP_URL}/dashboard/parametres?tab=abonnement&billing=updated`,
+      return_url: `${APP_URL}${returnPath}${separator}billing=updated`,
     })
     return NextResponse.json({ url: session.url })
   } catch (err) {
@@ -36,4 +46,4 @@ export const POST = withAdminAuth(async (_req, ctx) => {
       { status: 502 },
     )
   }
-}, { roles: ADMINS })
+}, { roles: ADMINS, allowWhenSuspended: true })
