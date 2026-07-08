@@ -2,11 +2,19 @@ import Stripe from "stripe"
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-05-27.dahlia" as never,
+  // Lets the SDK transparently retry transient network failures (timeouts, connection
+  // resets) with its own generated idempotency key, instead of a blip surfacing as a raw
+  // error to someone mid-payment.
+  maxNetworkRetries: 2,
 })
 
 export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY!
 export const STRIPE_PRICE_YEARLY  = process.env.STRIPE_PRICE_YEARLY!
 export const TRIAL_DAYS           = 15
+
+// Platform commission on Connect destination charges (cotisations, dons, tickets,
+// boutique) — single source so every checkout route computes the same fee.
+export const PLATFORM_FEE = 0.015
 
 export function toSubscriptionStatus(status: Stripe.Subscription.Status) {
   if (status === "trialing") return "TRIAL"     as const

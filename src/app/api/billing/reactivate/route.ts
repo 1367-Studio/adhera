@@ -56,6 +56,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
       customer:               assoc.stripeCustomerId,
       items:                  [{ price: priceId }],
       default_payment_method: paymentMethodId,
+    }, {
+      // The claim above is the real defense against a double-subscribe race — this is
+      // defense in depth against a network retry of this exact call landing after the
+      // claim succeeded but before Stripe's response came back.
+      idempotencyKey: `reactivate-sub-${ctx.associationId}-${priceId}`,
     })
   } catch {
     // Release the claim — a failed payment must not leave the account sitting on the

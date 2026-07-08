@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
-
-const PLATFORM_FEE = 0.015
 
 const itemSchema = z.object({
   produitId:  z.string(),

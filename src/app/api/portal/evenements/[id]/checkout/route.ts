@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server"
 import { randomUUID } from "crypto"
 import { Prisma } from "@prisma/client"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 
-const PLATFORM_FEE = 0.015
 const MAX_QUANTITY  = 10
 
 type Params = { id: string }
