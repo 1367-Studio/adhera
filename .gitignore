@@ -42,6 +42,7 @@ FINANCE_MODULE.md
 AUDIT.md
 docs/audit-2026-07-06.md
 docs/seed-full-demo.ts
+docs/prompt-recriar-cerfa-pdfs.md
 
 # stray generated PDFs at repo root (e.g. test Cerfa receipts)
 /*.pdf
