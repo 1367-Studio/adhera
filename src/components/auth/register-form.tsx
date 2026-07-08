@@ -62,11 +62,13 @@ type Info = { associationName: string; city: string; firstName: string; lastName
 function StepInfo({
   defaultValues,
   existingCustomerId,
+  viaGoogle,
   pricing,
   onNext,
 }: {
   defaultValues?:      Partial<Info>
   existingCustomerId?: string
+  viaGoogle?:          boolean
   pricing:             PricingInfo
   onNext: (info: Info, customerId: string, clientSecret: string) => void
 }) {
@@ -152,15 +154,22 @@ function StepInfo({
         {...register("email")}
       />
 
-      <FormField
-        label="Mot de passe"
-        type="password"
-        placeholder="Min. 8 caractères"
-        autoComplete="new-password"
-        required
-        error={errors.password?.message}
-        {...register("password")}
-      />
+      <div className="space-y-1.5">
+        <FormField
+          label="Mot de passe"
+          type="password"
+          placeholder="Min. 8 caractères"
+          autoComplete="new-password"
+          required
+          error={errors.password?.message}
+          {...register("password")}
+        />
+        {viaGoogle && (
+          <p className="text-xs text-muted-foreground">
+            Google n&apos;est pas encore relié à ce compte — choisissez un mot de passe pour vous connecter ensuite.
+          </p>
+        )}
+      </div>
 
       {apiError && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{apiError}</p>
@@ -360,20 +369,23 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const [googlePrefill, setGooglePrefill] = useState<Partial<Info> | null>(null)
 
   // Arriving from "Continuer avec Google" on /login (no matching account found there):
-  // the name/email come back as query params, get stashed in localStorage so they survive
-  // a refresh mid-wizard, and the URL is cleaned up immediately.
+  // the name/email come back as query params, get stashed in sessionStorage so they
+  // survive a refresh mid-wizard, and the URL is cleaned up immediately. sessionStorage
+  // (not localStorage) on purpose — this can carry someone else's name/email, and a
+  // shared/public computer shouldn't keep prefilling a stranger's info into /register
+  // days later just because the tab/browser was reopened.
   useEffect(() => {
     const gName  = searchParams.get("g_name")
     const gEmail = searchParams.get("g_email")
     if (gName || gEmail) {
       const [firstName, ...rest] = (gName ?? "").trim().split(/\s+/)
       const prefill = { firstName: firstName || "", lastName: rest.join(" "), email: gEmail ?? "" }
-      localStorage.setItem(GOOGLE_PREFILL_KEY, JSON.stringify(prefill))
+      sessionStorage.setItem(GOOGLE_PREFILL_KEY, JSON.stringify(prefill))
       setGooglePrefill(prefill)
       router.replace("/register")
       return
     }
-    const stored = localStorage.getItem(GOOGLE_PREFILL_KEY)
+    const stored = sessionStorage.getItem(GOOGLE_PREFILL_KEY)
     if (stored) {
       try { setGooglePrefill(JSON.parse(stored)) } catch { /* ignore malformed value */ }
     }
@@ -381,7 +393,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }, [])
 
   useEffect(() => {
-    if (step === "done") localStorage.removeItem(GOOGLE_PREFILL_KEY)
+    if (step === "done") sessionStorage.removeItem(GOOGLE_PREFILL_KEY)
   }, [step])
 
   if (step === "done") {
@@ -392,7 +404,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
         </div>
         <div className="space-y-1">
           <p className="font-semibold">Compte créé avec succès !</p>
-          <p className="text-sm text-muted-foreground">Vos identifiants vous ont été envoyés par email.</p>
+          <p className="text-sm text-muted-foreground">Connectez-vous avec l&apos;email et le mot de passe que vous venez de définir.</p>
         </div>
         <Link href="/login" className="text-sm text-primary underline underline-offset-4">
           Se connecter
@@ -410,11 +422,12 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
       {step === "info" && (
         <StepInfo
           // react-hook-form only reads defaultValues once at mount — force a remount once
-          // the Google prefill (read from localStorage/query params after mount) arrives,
+          // the Google prefill (read from sessionStorage/query params after mount) arrives,
           // otherwise the fields would stay empty despite the prop changing.
           key={info ? "edit" : googlePrefill ? "google-prefill" : "empty"}
           defaultValues={info ?? googlePrefill ?? undefined}
           existingCustomerId={customerId || undefined}
+          viaGoogle={!!googlePrefill}
           pricing={pricing}
           onNext={(i, cid, cs) => {
             setInfo(i)
