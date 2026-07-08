@@ -8,7 +8,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import { ArrowLeftIcon, MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
@@ -46,11 +46,27 @@ type Evenement = {
   id:          string
   title:       string
   date:        string
+  endDate:     string | null
   location:    string | null
   price:       string | null
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
+}
+
+// Mirrors the grace window enforced server-side in /api/portal/check-in/[token] —
+// self check-in is only accepted from 3h before the event start to 6h after it ends
+// (or start + 24h if no end date is set), so a still-valid QR can't be used off-day.
+const CHECKIN_GRACE_BEFORE_MS = 3 * 3_600_000
+const CHECKIN_GRACE_AFTER_MS  = 6 * 3_600_000
+
+function getCheckInWindow(ev: Evenement) {
+  const start = new Date(ev.date)
+  const end   = ev.endDate ? new Date(ev.endDate) : new Date(start.getTime() + 24 * 3_600_000)
+  return {
+    opensAt:  new Date(start.getTime() - CHECKIN_GRACE_BEFORE_MS),
+    closesAt: new Date(end.getTime() + CHECKIN_GRACE_AFTER_MS),
+  }
 }
 
 const RSVP_LABELS: Record<string, { label: string; classes: string }> = {
@@ -107,6 +123,14 @@ export default function PresencesPage() {
     })
     return () => { pusher.unsubscribe(`event-${id}`) }
   }, [id, qc])
+
+  // Re-render every minute so the check-in window banner updates on its own —
+  // this page is typically left open at the door for the whole event.
+  const [, forceTick] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => forceTick(t => t + 1), 60_000)
+    return () => clearInterval(interval)
+  }, [])
 
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)
 
@@ -407,6 +431,12 @@ export default function PresencesPage() {
   const isFull   = capacity != null && presentsCount >= capacity
   const isPast   = new Date(ev.date) < new Date()
 
+  const now = new Date()
+  const { opensAt: checkInOpensAt, closesAt: checkInClosesAt } = getCheckInWindow(ev)
+  const checkInWindowState =
+    now < checkInOpensAt  ? "before" :
+    now > checkInClosesAt ? "after"  : "open"
+
   return (
     <div className="space-y-5 mt-4">
       {/* Back + export */}
@@ -447,6 +477,30 @@ export default function PresencesPage() {
           {format(new Date(ev.date), "EEEE dd MMMM yyyy · HH:mm", { locale: fr })}
         </p>
       </div>
+
+      {/* Check-in window status */}
+      {checkInWindowState !== "open" && (
+        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400 text-xs px-3 py-2.5">
+          <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
+          <span>
+            {checkInWindowState === "before" ? (
+              <>
+                Le check-in via QR Code n&apos;ouvrira que le{" "}
+                <strong>{format(checkInOpensAt, "dd MMM · HH:mm", { locale: fr })}</strong> (3h avant le début de l&apos;événement).
+              </>
+            ) : (
+              <>
+                Le check-in via QR Code est fermé depuis le{" "}
+                <strong>{format(checkInClosesAt, "dd MMM · HH:mm", { locale: fr })}</strong>{" "}
+                {ev.endDate
+                  ? "(6h après la fin de l'événement)."
+                  : "(aucune heure de fin n'est définie pour cet événement — la fenêtre se ferme 6h après début + 24h par défaut)."}
+              </>
+            )}{" "}
+            Vous pouvez toujours cocher les présences manuellement dans la liste ci-dessous.
+          </span>
+        </div>
+      )}
 
       {/* Counter */}
       <div className="rounded-xl border bg-card p-4 space-y-2">
