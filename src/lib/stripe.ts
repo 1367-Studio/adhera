@@ -8,6 +8,22 @@ export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY!
 export const STRIPE_PRICE_YEARLY  = process.env.STRIPE_PRICE_YEARLY!
 export const TRIAL_DAYS           = 15
 
+export function toSubscriptionStatus(status: Stripe.Subscription.Status) {
+  if (status === "trialing") return "TRIAL"     as const
+  if (status === "active")   return "ACTIVE"    as const
+  if (status === "past_due") return "PAST_DUE"  as const
+  if (status === "unpaid")   return "SUSPENDED" as const
+  return "CANCELLED" as const
+}
+
+// `current_period_end` moved off the top-level Subscription object onto each
+// subscription item in this API version — read it from the first (and, for this
+// app's single-price subscriptions, only) item.
+export function subscriptionPeriodEnd(sub: Stripe.Subscription): Date | null {
+  const unix = sub.items.data[0]?.current_period_end
+  return unix ? new Date(unix * 1000) : null
+}
+
 export type PricingInfo = {
   trialDays:          number
   monthlyAmountCents: number

@@ -15,7 +15,15 @@ type BillingStatus = { subscriptionStatus: string | null; suspendedAt: string | 
 
 const POLL_TIMEOUT_MS = 30_000
 
-export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: boolean; suspendedAt: string | null }) {
+export function SuspendedSubscriptionView({
+  canEdit,
+  subscriptionStatus,
+  suspendedAt,
+}: {
+  canEdit:             boolean
+  subscriptionStatus:  "SUSPENDED" | "CANCELLED"
+  suspendedAt:         string | null
+}) {
   const router               = useRouter()
   const searchParams         = useSearchParams()
   const returningFromBilling = searchParams.get("billing") === "updated"
@@ -32,14 +40,15 @@ export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: b
   const { data } = useQuery<BillingStatus>({
     queryKey:        ["billing-status"],
     queryFn:         () => fetch("/api/billing").then(r => r.json()),
-    initialData:     { subscriptionStatus: "SUSPENDED", suspendedAt },
+    initialData:     { subscriptionStatus, suspendedAt },
     refetchInterval: polling ? 2000 : false,
   })
 
-  const status = data?.subscriptionStatus ?? "SUSPENDED"
+  const status = data?.subscriptionStatus ?? subscriptionStatus
+  const isCancelled = status === "CANCELLED"
 
   useEffect(() => {
-    if (status !== "SUSPENDED") {
+    if (status !== "SUSPENDED" && status !== "CANCELLED") {
       if (returningFromBilling) toast.success("Abonnement réactivé !")
       router.replace("/dashboard")
     }
@@ -105,11 +114,18 @@ export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: b
         <CardHeader>
           <div className="flex items-center gap-2 text-destructive">
             <WarningCircleIcon className="size-5" />
-            <CardTitle>Abonnement suspendu</CardTitle>
+            <CardTitle>{isCancelled ? "Abonnement résilié" : "Abonnement suspendu"}</CardTitle>
           </div>
           <CardDescription>
             {polling ? (
               "Nous confirmons votre paiement, merci de patienter quelques secondes..."
+            ) : isCancelled ? (
+              <>
+                Votre abonnement a été résilié et l&apos;accès au tableau de bord est bloqué. Vos données sont conservées
+                {" "}: {canEdit
+                  ? "vous pouvez les exporter ou vous réabonner à tout moment."
+                  : "contactez un administrateur de l'association pour réabonner l'association."}
+              </>
             ) : (
               <>
                 {suspendedSinceLabel
@@ -131,10 +147,17 @@ export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: b
 
         {canEdit && (
           <CardContent className="flex flex-col gap-2">
-            <Button loading={portalMutation.isPending} onClick={() => portalMutation.mutate()}>
-              <ArrowClockwiseIcon className="mr-2 size-4" />
-              Réactiver mon abonnement
-            </Button>
+            {isCancelled ? (
+              <Button onClick={() => router.push("/dashboard/reactiver-abonnement")}>
+                <ArrowClockwiseIcon className="mr-2 size-4" />
+                Se réabonner
+              </Button>
+            ) : (
+              <Button loading={portalMutation.isPending} onClick={() => portalMutation.mutate()}>
+                <ArrowClockwiseIcon className="mr-2 size-4" />
+                Réactiver mon abonnement
+              </Button>
+            )}
             <Button variant="outline" loading={exporting} onClick={handleExport}>
               <DownloadSimpleIcon className="mr-2 size-4" />
               Exporter mes données
@@ -143,7 +166,7 @@ export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: b
         )}
 
         <CardFooter className="justify-between border-t pt-4">
-          {canEdit ? (
+          {canEdit && !isCancelled ? (
             <Button variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setCancelOpen(true)}>
               Annuler définitivement mon abonnement
             </Button>
@@ -155,7 +178,7 @@ export function SuspendedSubscriptionView({ canEdit, suspendedAt }: { canEdit: b
         </CardFooter>
       </Card>
 
-      {canEdit && (
+      {canEdit && !isCancelled && (
         <ConfirmDialog
           open={cancelOpen}
           onOpenChange={setCancelOpen}

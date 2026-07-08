@@ -9,7 +9,7 @@ import { VideoCameraIcon, CalendarBlankIcon, PlayIcon, ClockIcon } from "@phosph
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
-import { useMeetingEndedListener } from "@/hooks/use-meetings"
+import { useMeetingEndedListener, useMeetingCreatedListener } from "@/hooks/use-meetings"
 
 type Meeting = {
   id:          string
@@ -39,6 +39,20 @@ export default function ReunionsPortalPage() {
   // Cross-tab: an admin ending this meeting elsewhere, or the LiveKit webhook auto-closing
   // it, should refresh this list immediately too.
   useMeetingEndedListener(() => qc.invalidateQueries({ queryKey: ["portal-meetings"] }))
+
+  // Cross-tab: an admin creating a meeting (instant or scheduled) should show up on this
+  // list immediately, without waiting for a remount. The broadcast goes to the whole
+  // association, not just invited members, so only toast once the refetched list confirms
+  // this member is actually a participant — otherwise we'd leak a private meeting's title
+  // to members who weren't invited.
+  useMeetingCreatedListener(async (data) => {
+    await qc.invalidateQueries({ queryKey: ["portal-meetings"] })
+    if (data.status !== "LIVE") return
+    const list = qc.getQueryData<Meeting[]>(["portal-meetings"]) ?? []
+    if (list.some(m => m.id === data.meetingId)) {
+      toast.info(`${data.title} — réunion en cours`, { description: "Rejoignez maintenant." })
+    }
+  })
 
   // After leaving the call, the meeting's status may have just flipped (ended by an
   // admin or by the LiveKit webhook) — keep the join button in a loading state until the

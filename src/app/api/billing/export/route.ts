@@ -262,4 +262,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       "Content-Disposition": `attachment; filename="export_donnees_${date}.xlsx"`,
     },
   })
-}, { roles: ADMINS, allowWhenSuspended: true })
+}, { roles: ADMINS, allowWhenLocked: true })

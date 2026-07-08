@@ -46,4 +46,4 @@ export const POST = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS, allowWhenSuspended: true })
+}, { roles: ADMINS, allowWhenLocked: true })

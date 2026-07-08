@@ -2,53 +2,21 @@
 
 import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, unstable_rethrow } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import type { PricingInfo } from "@/lib/stripe"
-import { loadStripe } from "@stripe/stripe-js"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { APP_NAME } from "@/config/brand"
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
-
-const stripeAppearance = {
-  theme:     "flat" as const,
-  variables: {
-    colorPrimary:    "#000000",
-    colorBackground: "#ffffff",
-    colorText:       "#111318",
-    colorDanger:     "#ef4444",
-    fontFamily:      "inherit",
-    borderRadius:    "8px",
-    spacingUnit:     "4px",
-    fontSizeBase:    "14px",
-  },
-  rules: {
-    ".Input": {
-      border:          "1px solid #e5e7eb",
-      boxShadow:       "none",
-      padding:         "10px 12px",
-      backgroundColor: "#ffffff",
-    },
-    ".Input:focus": {
-      border:    "1px solid #000000",
-      boxShadow: "0 0 0 3px rgba(0,0,0,0.08)",
-      outline:   "none",
-    },
-    ".Label": {
-      fontSize:     "12px",
-      fontWeight:   "500",
-      color:        "#374151",
-      marginBottom: "6px",
-    },
-  },
-}
+import { signInWithGoogleDashboard } from "@/lib/auth/actions"
+import { stripePromise, stripeAppearance, euros, PlanSelector, type Plan } from "@/components/billing/stripe-elements-shared"
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
@@ -90,60 +58,6 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
   )
 }
 
-// ─── Plan selector ────────────────────────────────────────────────────────────
-
-type Plan = "monthly" | "yearly"
-
-// Single formatting helper for every euro amount shown in this form — all of them derive
-// from the `pricing` prop (fetched live from Stripe), never from a separately typed string.
-function euros(cents: number): string {
-  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
-}
-
-function PlanSelector({ plan, onChange, pricing }: { plan: Plan; onChange: (p: Plan) => void; pricing: PricingInfo }) {
-  const monthlyPrice   = euros(pricing.monthlyAmountCents)
-  const yearlyEquiv    = euros(Math.round(pricing.yearlyAmountCents / 12))
-  const yearlyTotal    = euros(pricing.yearlyAmountCents)
-  const discountPct    = Math.round((1 - (pricing.yearlyAmountCents / 12) / pricing.monthlyAmountCents) * 100)
-
-  const options = [
-    { id: "monthly" as Plan, label: "Mensuel", price: monthlyPrice, note: null, billingNote: "Prélevé chaque mois" },
-    { id: "yearly"  as Plan, label: "Annuel",  price: yearlyEquiv,  note: `−${discountPct} %`, billingNote: `Facturé ${yearlyTotal} en une fois /an` },
-  ]
-
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {options.map(opt => (
-        <button
-          key={opt.id}
-          type="button"
-          onClick={() => onChange(opt.id)}
-          className={cn(
-            "relative rounded-xl border p-4 text-left transition-all",
-            plan === opt.id
-              ? "border-foreground bg-foreground/5 ring-1 ring-foreground"
-              : "border-border hover:border-muted-foreground/40"
-          )}
-        >
-          {opt.note && (
-            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-semibold text-white whitespace-nowrap">
-              {opt.note}
-            </span>
-          )}
-          <p className="text-xs font-medium text-muted-foreground">{opt.label}</p>
-          <p className="mt-1 text-xl font-bold">
-            {opt.price}
-            <span className="text-xs font-normal text-muted-foreground">/mois</span>
-          </p>
-          {/* Disclosed here, on the plan-choice step, not only on the payment step below —
-              the annual plan isn't a cheaper monthly draft, it's a single yearly charge. */}
-          <p className="mt-1 text-[11px] text-muted-foreground">{opt.billingNote}</p>
-        </button>
-      ))}
-    </div>
-  )
-}
-
 // ─── Step 1: info ─────────────────────────────────────────────────────────────
 
 type Info = { associationName: string; city: string; firstName: string; lastName: string; email: string; password: string }
@@ -151,11 +65,13 @@ type Info = { associationName: string; city: string; firstName: string; lastName
 function StepInfo({
   defaultValues,
   existingCustomerId,
+  viaGoogle,
   pricing,
   onNext,
 }: {
   defaultValues?:      Partial<Info>
   existingCustomerId?: string
+  viaGoogle?:          boolean
   pricing:             PricingInfo
   onNext: (info: Info, customerId: string, clientSecret: string) => void
 }) {
@@ -241,15 +157,22 @@ function StepInfo({
         {...register("email")}
       />
 
-      <FormField
-        label="Mot de passe"
-        type="password"
-        placeholder="Min. 8 caractères"
-        autoComplete="new-password"
-        required
-        error={errors.password?.message}
-        {...register("password")}
-      />
+      <div className="space-y-1.5">
+        <FormField
+          label="Mot de passe"
+          type="password"
+          placeholder="Min. 8 caractères"
+          autoComplete="new-password"
+          required
+          error={errors.password?.message}
+          {...register("password")}
+        />
+        {viaGoogle && (
+          <p className="text-xs text-muted-foreground">
+            Pour cette première création de compte, choisissez un mot de passe. Vous pourrez ensuite vous connecter avec Google.
+          </p>
+        )}
+      </div>
 
       {apiError && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{apiError}</p>
@@ -447,22 +370,26 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const [customerId,   setCustomerId]   = useState("")
   const [clientSecret, setClientSecret] = useState("")
   const [googlePrefill, setGooglePrefill] = useState<Partial<Info> | null>(null)
+  const [googleSigningIn, setGoogleSigningIn] = useState(false)
 
   // Arriving from "Continuer avec Google" on /login (no matching account found there):
-  // the name/email come back as query params, get stashed in localStorage so they survive
-  // a refresh mid-wizard, and the URL is cleaned up immediately.
+  // the name/email come back as query params, get stashed in sessionStorage so they
+  // survive a refresh mid-wizard, and the URL is cleaned up immediately. sessionStorage
+  // (not localStorage) on purpose — this can carry someone else's name/email, and a
+  // shared/public computer shouldn't keep prefilling a stranger's info into /register
+  // days later just because the tab/browser was reopened.
   useEffect(() => {
     const gName  = searchParams.get("g_name")
     const gEmail = searchParams.get("g_email")
     if (gName || gEmail) {
       const [firstName, ...rest] = (gName ?? "").trim().split(/\s+/)
       const prefill = { firstName: firstName || "", lastName: rest.join(" "), email: gEmail ?? "" }
-      localStorage.setItem(GOOGLE_PREFILL_KEY, JSON.stringify(prefill))
+      sessionStorage.setItem(GOOGLE_PREFILL_KEY, JSON.stringify(prefill))
       setGooglePrefill(prefill)
       router.replace("/register")
       return
     }
-    const stored = localStorage.getItem(GOOGLE_PREFILL_KEY)
+    const stored = sessionStorage.getItem(GOOGLE_PREFILL_KEY)
     if (stored) {
       try { setGooglePrefill(JSON.parse(stored)) } catch { /* ignore malformed value */ }
     }
@@ -470,10 +397,19 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }, [])
 
   useEffect(() => {
-    if (step === "done") localStorage.removeItem(GOOGLE_PREFILL_KEY)
+    if (step === "done") sessionStorage.removeItem(GOOGLE_PREFILL_KEY)
   }, [step])
 
   if (step === "done") {
+    // The email field in step 1 is pre-filled from Google but stays editable — only offer
+    // the Google CTA if the email actually submitted still matches the Google account's,
+    // otherwise signInWithGoogleDashboard() would find no matching user and bounce them
+    // straight back to /register right after they just successfully signed up.
+    const showGoogleCta = !!(
+      googlePrefill?.email && info?.email &&
+      googlePrefill.email.trim().toLowerCase() === info.email.trim().toLowerCase()
+    )
+
     return (
       <div className="flex flex-col items-center gap-4 py-10 text-center">
         <div className="size-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
@@ -481,10 +417,47 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
         </div>
         <div className="space-y-1">
           <p className="font-semibold">Compte créé avec succès !</p>
-          <p className="text-sm text-muted-foreground">Vos identifiants vous ont été envoyés par email.</p>
+          <p className="text-sm text-muted-foreground">
+            {showGoogleCta
+              ? "Connectez-vous avec Google pour accéder à votre tableau de bord."
+              : "Connectez-vous avec l'email et le mot de passe que vous venez de définir."}
+          </p>
         </div>
-        <Link href="/login" className="text-sm text-primary underline underline-offset-4">
-          Se connecter
+        {showGoogleCta && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={googleSigningIn}
+            onClick={async () => {
+              setGoogleSigningIn(true)
+              try {
+                await signInWithGoogleDashboard()
+              } catch (err) {
+                unstable_rethrow(err)
+                toast.error("La connexion avec Google a échoué. Réessayez ou connectez-vous avec votre mot de passe.")
+              } finally {
+                setGoogleSigningIn(false)
+              }
+            }}
+          >
+            {googleSigningIn
+              ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
+              : <GoogleIcon className="mr-2 size-4" />
+            }
+            Continuer avec Google
+          </Button>
+        )}
+        {/* Always keep a way to the plain login, even when the Google CTA is shown above —
+            it can fail (existing account elsewhere, blocked third-party cookies, etc.) and
+            the account does have a password set (see the step-1 hint). */}
+        <Link
+          href="/login"
+          className={cn(
+            "text-primary underline underline-offset-4",
+            showGoogleCta ? "text-xs text-muted-foreground" : "text-sm"
+          )}
+        >
+          {showGoogleCta ? "Ou connectez-vous avec votre email et mot de passe" : "Se connecter"}
         </Link>
       </div>
     )
@@ -499,11 +472,12 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
       {step === "info" && (
         <StepInfo
           // react-hook-form only reads defaultValues once at mount — force a remount once
-          // the Google prefill (read from localStorage/query params after mount) arrives,
+          // the Google prefill (read from sessionStorage/query params after mount) arrives,
           // otherwise the fields would stay empty despite the prop changing.
           key={info ? "edit" : googlePrefill ? "google-prefill" : "empty"}
           defaultValues={info ?? googlePrefill ?? undefined}
           existingCustomerId={customerId || undefined}
+          viaGoogle={!!googlePrefill}
           pricing={pricing}
           onNext={(i, cid, cs) => {
             setInfo(i)

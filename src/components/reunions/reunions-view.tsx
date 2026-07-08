@@ -7,7 +7,7 @@ import { fr } from "date-fns/locale"
 import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useMeetings, useCreateMeeting, useDeleteMeeting, useMeetingEndedListener, MEETINGS_QK, type Meeting } from "@/hooks/use-meetings"
+import { useMeetings, useCreateMeeting, useDeleteMeeting, useMeetingEndedListener, useMeetingCreatedListener, MEETINGS_QK, type Meeting } from "@/hooks/use-meetings"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
@@ -15,6 +15,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
 import { MeetingForm } from "@/components/reunions/meeting-form"
 import { Badge } from "@/components/ui/badge"
+import { useCurrentUser } from "@/lib/user-context"
 
 type Membre = { id: string; firstName: string; lastName: string }
 
@@ -34,6 +35,7 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
 
 export function ReunionsView() {
   const qc = useQueryClient()
+  const { id: currentUserId } = useCurrentUser()
   const { data: meetings = [], isLoading, isFetching, isError } = useMeetings()
   const createMeeting = useCreateMeeting()
   const deleteMeeting = useDeleteMeeting()
@@ -46,6 +48,18 @@ export function ReunionsView() {
   // Cross-tab: another admin (or another tab of the same admin) ending a meeting, or the
   // LiveKit webhook auto-closing one, should refresh this list immediately too.
   useMeetingEndedListener(() => qc.invalidateQueries({ queryKey: MEETINGS_QK }))
+
+  // Cross-tab: another admin creating a meeting (instant or scheduled) should show up on
+  // this list immediately, without waiting for a remount. Skip the extra invalidate for
+  // our own creations (useCreateMeeting's onSuccess already did it) and only toast for
+  // meetings someone else started live — we already got a local "Réunion démarrée" toast.
+  useMeetingCreatedListener((data) => {
+    if (data.createdById === currentUserId) return
+    qc.invalidateQueries({ queryKey: MEETINGS_QK })
+    if (data.status === "LIVE") {
+      toast.info(`${data.title} — réunion en cours`, { description: "Une réunion vient de démarrer." })
+    }
+  })
 
   // After leaving a call, the meeting's status may have just flipped (ended by us or
   // by the LiveKit webhook) — keep the card's join button in a loading state until the

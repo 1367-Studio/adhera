@@ -33,11 +33,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       })
     : null
 
-  // Suspended accounts only ever render the dedicated standby screen (enforced by
-  // src/proxy.ts, which bounces every other /dashboard/* path back to it) — skip the
-  // sidebar/header chrome entirely so clicking a nav link doesn't just look like a bug
-  // that bounces you straight back to where you started.
-  if (assocRow?.subscriptionStatus === "SUSPENDED") {
+  // Suspended/cancelled accounts only ever render the dedicated standby screen (and,
+  // for cancelled ones, the reactivation checkout page reached from it) — enforced by
+  // src/proxy.ts, which bounces every other /dashboard/* path back to the standby
+  // screen. Skip the sidebar/header chrome entirely so clicking a nav link doesn't just
+  // look like a bug that bounces you straight back to where you started.
+  if (assocRow?.subscriptionStatus === "SUSPENDED" || assocRow?.subscriptionStatus === "CANCELLED") {
     return (
       <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)}>
         <TopLoader />
