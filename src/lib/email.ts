@@ -286,6 +286,40 @@ export function adminWelcomeEmail(p: {
   }
 }
 
+export function subscriptionPaymentFailedEmail(p: {
+  email:           string
+  associationName: string
+  amount:          number | null
+  attemptCount:    number
+  nextAttemptAt:   Date | null
+  billingUrl:      string
+}) {
+  const amountStr = p.amount != null
+    ? p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+    : "—"
+  const nextAttemptStr = p.nextAttemptAt
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le paiement de votre abonnement a échoué</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Le prélèvement de <strong>${amountStr}</strong> pour l'abonnement ${APP_NAME} de
+      <strong>${p.associationName}</strong> n'a pas pu être effectué${p.attemptCount > 1 ? ` (tentative n°${p.attemptCount})` : ""}.<br>
+      ${nextAttemptStr
+        ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong>.`
+        : "Mettez à jour votre moyen de paiement dès que possible pour éviter une suspension de l'accès."}
+    </p>
+    ${btn("Mettre à jour mon moyen de paiement", p.billingUrl)}
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      L'accès au tableau de bord sera suspendu si le paiement continue d'échouer.
+    </p>`
+  return {
+    to:      p.email,
+    subject: `Échec de paiement — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 export function passwordResetEmail(p: {
   email:        string
   resetUrl:     string
