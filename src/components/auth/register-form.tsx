@@ -166,7 +166,7 @@ function StepInfo({
         />
         {viaGoogle && (
           <p className="text-xs text-muted-foreground">
-            Google n&apos;est pas encore relié à ce compte — choisissez un mot de passe pour vous connecter ensuite.
+            Pour cette première création de compte, choisissez un mot de passe. Vous pourrez ensuite vous connecter avec Google.
           </p>
         )}
       </div>
