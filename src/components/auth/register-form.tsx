@@ -2,17 +2,20 @@
 
 import { useState, useEffect, Suspense } from "react"
 import Link from "next/link"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, unstable_rethrow } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import type { PricingInfo } from "@/lib/stripe"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { APP_NAME } from "@/config/brand"
+import { signInWithGoogleDashboard } from "@/lib/auth/actions"
 import { stripePromise, stripeAppearance, euros, PlanSelector, type Plan } from "@/components/billing/stripe-elements-shared"
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
@@ -367,6 +370,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const [customerId,   setCustomerId]   = useState("")
   const [clientSecret, setClientSecret] = useState("")
   const [googlePrefill, setGooglePrefill] = useState<Partial<Info> | null>(null)
+  const [googleSigningIn, setGoogleSigningIn] = useState(false)
 
   // Arriving from "Continuer avec Google" on /login (no matching account found there):
   // the name/email come back as query params, get stashed in sessionStorage so they
@@ -397,6 +401,15 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }, [step])
 
   if (step === "done") {
+    // The email field in step 1 is pre-filled from Google but stays editable — only offer
+    // the Google CTA if the email actually submitted still matches the Google account's,
+    // otherwise signInWithGoogleDashboard() would find no matching user and bounce them
+    // straight back to /register right after they just successfully signed up.
+    const showGoogleCta = !!(
+      googlePrefill?.email && info?.email &&
+      googlePrefill.email.trim().toLowerCase() === info.email.trim().toLowerCase()
+    )
+
     return (
       <div className="flex flex-col items-center gap-4 py-10 text-center">
         <div className="size-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
@@ -404,10 +417,47 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
         </div>
         <div className="space-y-1">
           <p className="font-semibold">Compte créé avec succès !</p>
-          <p className="text-sm text-muted-foreground">Connectez-vous avec l&apos;email et le mot de passe que vous venez de définir.</p>
+          <p className="text-sm text-muted-foreground">
+            {showGoogleCta
+              ? "Connectez-vous avec Google pour accéder à votre tableau de bord."
+              : "Connectez-vous avec l'email et le mot de passe que vous venez de définir."}
+          </p>
         </div>
-        <Link href="/login" className="text-sm text-primary underline underline-offset-4">
-          Se connecter
+        {showGoogleCta && (
+          <Button
+            type="button"
+            variant="outline"
+            disabled={googleSigningIn}
+            onClick={async () => {
+              setGoogleSigningIn(true)
+              try {
+                await signInWithGoogleDashboard()
+              } catch (err) {
+                unstable_rethrow(err)
+                toast.error("La connexion avec Google a échoué. Réessayez ou connectez-vous avec votre mot de passe.")
+              } finally {
+                setGoogleSigningIn(false)
+              }
+            }}
+          >
+            {googleSigningIn
+              ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
+              : <GoogleIcon className="mr-2 size-4" />
+            }
+            Continuer avec Google
+          </Button>
+        )}
+        {/* Always keep a way to the plain login, even when the Google CTA is shown above —
+            it can fail (existing account elsewhere, blocked third-party cookies, etc.) and
+            the account does have a password set (see the step-1 hint). */}
+        <Link
+          href="/login"
+          className={cn(
+            "text-primary underline underline-offset-4",
+            showGoogleCta ? "text-xs text-muted-foreground" : "text-sm"
+          )}
+        >
+          {showGoogleCta ? "Ou connectez-vous avec votre email et mot de passe" : "Se connecter"}
         </Link>
       </div>
     )
