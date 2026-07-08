@@ -29,9 +29,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const assocRow = u.associationId
     ? await prisma.association.findUnique({
         where:  { id: u.associationId },
-        select: { modules: true },
+        select: { modules: true, subscriptionStatus: true },
       })
     : null
+
+  // Suspended accounts only ever render the dedicated standby screen (enforced by
+  // src/proxy.ts, which bounces every other /dashboard/* path back to it) — skip the
+  // sidebar/header chrome entirely so clicking a nav link doesn't just look like a bug
+  // that bounces you straight back to where you started.
+  if (assocRow?.subscriptionStatus === "SUSPENDED") {
+    return (
+      <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)}>
+        <TopLoader />
+        {children}
+      </UserProvider>
+    )
+  }
 
   return (
     <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)}>

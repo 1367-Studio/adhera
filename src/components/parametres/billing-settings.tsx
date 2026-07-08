@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
 
 type BillingStatus = {
-  subscriptionStatus: "TRIAL" | "ACTIVE" | "PAST_DUE" | "CANCELLED" | null
+  subscriptionStatus: "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
   trialEndsAt:        string | null
   hasBilling:         boolean
 }
@@ -19,6 +19,7 @@ const statusConfig = {
   TRIAL:     { label: "Essai gratuit",       variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
   ACTIVE:    { label: "Actif",               variant: "default"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
   PAST_DUE:  { label: "Paiement en retard",  variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
+  SUSPENDED: { label: "Suspendu",            variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
   CANCELLED: { label: "Annulé",              variant: "secondary"   as const, icon: <XCircleIcon       className="size-3.5" /> },
 }
 
@@ -99,13 +100,23 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
             </p>
           )}
 
+          {/* Defensive only: src/proxy.ts redirects every SUSPENDED admin away from
+              /dashboard/parametres to /dashboard/abonnement-suspendu before this component
+              can render, so this branch shouldn't actually be reachable in normal use. */}
+          {status === "SUSPENDED" && (
+            <p className="text-xs text-destructive">
+              Votre abonnement est suspendu suite à plusieurs échecs de paiement.
+              Rendez-vous sur l&apos;écran dédié pour le réactiver, exporter vos données ou l&apos;annuler définitivement.
+            </p>
+          )}
+
           {status === "CANCELLED" && (
             <p className="text-xs text-muted-foreground">
               Votre abonnement a été annulé. Contactez le support pour le réactiver.
             </p>
           )}
 
-          {canEdit && data?.hasBilling && status !== "CANCELLED" && (
+          {canEdit && data?.hasBilling && status !== "CANCELLED" && status !== "SUSPENDED" && (
             <Button
               size="sm"
               variant={status === "PAST_DUE" ? "default" : "outline"}

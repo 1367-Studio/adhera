@@ -67,7 +67,7 @@ function DonsPortalPageInner() {
         </div>
         <Button
           size="sm"
-          onClick={() => window.location.href = `/portal/${slug}/don`}
+          onClick={() => window.location.href = `/portal/${slug}/dons/nouveau`}
           className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white shrink-0"
         >
           <HandshakeIcon className="size-3.5" />
@@ -91,7 +91,7 @@ function DonsPortalPageInner() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => window.location.href = `/portal/${slug}/don`}
+            onClick={() => window.location.href = `/portal/${slug}/dons/nouveau`}
           >
             Faire mon premier don
           </Button>

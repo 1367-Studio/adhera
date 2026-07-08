@@ -16,7 +16,7 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
     select: {
       id: true, name: true, address: true, city: true,
       siren: true, rna: true, canIssueTaxReceipts: true,
-      objet: true, organismeCategory: true,
+      objet: true, organismeCategory: true, organismeCategoryDetail: true,
     },
   })
   if (!assoc || !assoc.canIssueTaxReceipts)

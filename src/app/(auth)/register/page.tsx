@@ -1,10 +1,13 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { RegisterForm } from "@/components/auth/register-form"
+import { getPricingInfo } from "@/lib/stripe"
 
 export const metadata: Metadata = { title: "Créer un compte" }
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const pricing = await getPricingInfo()
+
   return (
     <div className="w-full max-w-md">
       <div className="lg:hidden flex items-center gap-2 mb-8">
@@ -16,11 +19,11 @@ export default function RegisterPage() {
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold tracking-tight">Créer un compte</h1>
           <p className="text-sm text-muted-foreground">
-            20 jours d'essai gratuit · Sans engagement · Annulation facile
+            {pricing.trialDays} jours d'essai gratuit · Sans engagement · Annulation facile
           </p>
         </div>
 
-        <RegisterForm />
+        <RegisterForm pricing={pricing} />
 
         <p className="text-center text-sm text-muted-foreground">
           Déjà un compte ?{" "}

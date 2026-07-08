@@ -89,7 +89,7 @@ export async function POST(req: Request) {
 
     const loginUrl = `${APP_URL}/login`
     Promise.resolve().then(async () => {
-      await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl }))
+      await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: TRIAL_DAYS }))
     }).catch(() => {})
 
     return NextResponse.json({ ok: true })

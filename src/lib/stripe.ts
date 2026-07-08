@@ -6,7 +6,38 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY!
 export const STRIPE_PRICE_YEARLY  = process.env.STRIPE_PRICE_YEARLY!
-export const TRIAL_DAYS           = 20
+export const TRIAL_DAYS           = 15
+
+export type PricingInfo = {
+  trialDays:          number
+  monthlyAmountCents: number
+  yearlyAmountCents:  number
+}
+
+let pricingCache: { data: PricingInfo; expiresAt: number } | null = null
+const PRICING_CACHE_TTL_MS = 5 * 60 * 1000
+
+// Fetched live from the actual Stripe Price objects, never hardcoded — so the register
+// page, the welcome email and the real checkout can't drift from each other. This is
+// exactly the kind of mismatch that happened when the yearly Price was briefly configured
+// at 29,90 €/an instead of 358,80 €/an: nothing would have caught the UI still saying one
+// number while Stripe charged another.
+export async function getPricingInfo(): Promise<PricingInfo> {
+  if (pricingCache && pricingCache.expiresAt > Date.now()) return pricingCache.data
+
+  const [monthly, yearly] = await Promise.all([
+    stripe.prices.retrieve(STRIPE_PRICE_MONTHLY),
+    stripe.prices.retrieve(STRIPE_PRICE_YEARLY),
+  ])
+
+  const data: PricingInfo = {
+    trialDays:          TRIAL_DAYS,
+    monthlyAmountCents: monthly.unit_amount ?? 0,
+    yearlyAmountCents:  yearly.unit_amount ?? 0,
+  }
+  pricingCache = { data, expiresAt: Date.now() + PRICING_CACHE_TTL_MS }
+  return data
+}
 
 // Distingue "cette ressource Stripe (compte Connect, customer...) n'est plus
 // accessible" (supprimée, accès révoqué, ID d'un autre compte plateforme après

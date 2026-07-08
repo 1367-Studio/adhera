@@ -29,7 +29,7 @@ export function ConfirmDialog({
     try {
       await onConfirm()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Ocorreu um erro")
+      toast.error(err instanceof Error ? err.message : "Une erreur est survenue")
     }
   }
 

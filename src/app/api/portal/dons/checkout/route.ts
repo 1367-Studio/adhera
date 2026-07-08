@@ -7,6 +7,28 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 
 const PLATFORM_FEE = 0.015
 
+export const GET = withPortalAuth(async (_req, ctx) => {
+  const [assoc, membre] = await Promise.all([
+    prisma.association.findUnique({
+      where:  { id: ctx.associationId },
+      select: { name: true, canIssueTaxReceipts: true, stripeConnectId: true },
+    }),
+    prisma.membre.findUnique({
+      where:  { id: ctx.membreId! },
+      select: { email: true, address: true },
+    }),
+  ])
+  if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
+  return NextResponse.json({
+    name:                assoc.name,
+    canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+    paymentEnabled:      !!assoc.stripeConnectId,
+    hasEmail:            !!membre?.email,
+    hasAddress:          !!membre?.address,
+  })
+}, { module: "dons" })
+
 const schema = z.object({
   amount:    z.number().positive().max(100000),
   message:   z.string().trim().max(500).optional(),
@@ -26,6 +48,10 @@ export const POST = withPortalAuth(async (req, ctx) => {
     select: { id: true, firstName: true, lastName: true, email: true, address: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
+  // L'email est requis même côté serveur : sans lui, la confirmation et le reçu fiscal
+  // ne partent jamais nulle part (voir sendEmail côté webhook), en silence.
+  if (!membre.email)
+    return NextResponse.json({ error: "Ajoutez un e-mail à votre profil avant de faire un don." }, { status: 422 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
