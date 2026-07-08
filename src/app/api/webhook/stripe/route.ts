@@ -269,7 +269,7 @@ export async function POST(req: Request) {
 
         const don = await prisma.don.findUnique({
           where:   { id: donId },
-          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true } } },
+          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true } } },
         })
         if (!don) break
 
