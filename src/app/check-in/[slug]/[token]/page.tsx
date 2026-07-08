@@ -6,6 +6,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { APP_NAME } from "@/config/brand"
 
 type EventInfo = {
   title:            string
@@ -75,7 +76,7 @@ export default function CheckInPage() {
 
         <div className="flex items-center justify-center gap-2 mb-8">
           <div className="size-6 rounded-md bg-foreground" />
-          <span className="text-base font-semibold">Adhéra</span>
+          <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 
         {state === "loading" && (

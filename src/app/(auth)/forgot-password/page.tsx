@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
+import { APP_NAME } from "@/config/brand"
 
 export const metadata: Metadata = { title: "Mot de passe oublié" }
 
@@ -17,7 +18,7 @@ export default async function ForgotPasswordPage({
     <div className="w-full max-w-sm">
       <div className="lg:hidden flex items-center gap-2 mb-8">
         <div className="size-6 rounded-md bg-foreground" />
-        <span className="text-base font-semibold">Adhéra</span>
+        <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">

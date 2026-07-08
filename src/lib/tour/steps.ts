@@ -3,6 +3,8 @@
 // the DOM (feature disabled or hidden by role/module) are skipped at runtime,
 // so the same list works for every role and module configuration.
 
+import { APP_NAME } from "@/config/brand"
+
 export interface TourStepDef {
   /** CSS selector of the target element. Empty string = centered popover (no target). */
   selector: string
@@ -16,7 +18,7 @@ export interface TourStepDef {
 export const dashboardTour: TourStepDef[] = [
   {
     selector: "",
-    title: "Bienvenue sur Adhéra 👋",
+    title: `Bienvenue sur ${APP_NAME} 👋`,
     description:
       "Faisons un tour rapide de votre espace de gestion. Vous découvrirez à quoi sert chaque section et comment démarrer. Vous pourrez relancer cette visite à tout moment avec le bouton d'aide en haut à droite.",
   },
@@ -72,7 +74,7 @@ export const dashboardTour: TourStepDef[] = [
     selector: '[data-tour="nav-reunions"]',
     title: "Réunions",
     description:
-      "Organisez des réunions en visioconférence directement dans Adhéra. Créez une réunion et partagez le lien avec les participants.",
+      `Organisez des réunions en visioconférence directement dans ${APP_NAME}. Créez une réunion et partagez le lien avec les participants.`,
     side: "right",
     align: "start",
   },

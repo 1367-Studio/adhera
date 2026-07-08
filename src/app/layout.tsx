@@ -4,12 +4,13 @@ import { ThemeProvider } from "@/components/layout/theme-provider"
 import { Providers } from "@/components/layout/providers"
 import { Toaster } from "@/components/ui/sonner"
 import { TopLoader } from "@/components/top-loader"
+import { APP_NAME } from "@/config/brand"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: { default: "Adhéra", template: "%s · Adhéra" },
+  title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description: "Gestion simplifiée pour associations françaises",
 }
 

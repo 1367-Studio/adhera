@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { RegisterForm } from "@/components/auth/register-form"
 import { getPricingInfo } from "@/lib/stripe"
+import { APP_NAME } from "@/config/brand"
 
 export const metadata: Metadata = { title: "Créer un compte" }
 
@@ -12,7 +13,7 @@ export default async function RegisterPage() {
     <div className="w-full max-w-md">
       <div className="lg:hidden flex items-center gap-2 mb-8">
         <div className="size-6 rounded-md bg-foreground" />
-        <span className="text-base font-semibold">Adhéra</span>
+        <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">

@@ -1,9 +1,10 @@
 import { Resend } from "resend"
+import { APP_NAME } from "@/config/brand"
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
 export function getFrom(): string {
-  return process.env.RESEND_FROM_EMAIL ?? "Adhéra <onboarding@resend.dev>"
+  return process.env.RESEND_FROM_EMAIL ?? `${APP_NAME} <onboarding@resend.dev>`
 }
 
 const DEV_TO = "hello@1367studio.com"

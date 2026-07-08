@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { APP_NAME } from "@/config/brand"
 import { Modal } from "@/components/ui/modal"
 import { cn } from "@/lib/utils"
 
@@ -278,7 +279,7 @@ export default function PresencesPage() {
     doc.setTextColor(255, 255, 255)
     doc.setFontSize(10)
     doc.setFont("helvetica", "bold")
-    doc.text("ADHÉRA", M, 13)
+    doc.text(APP_NAME.toUpperCase(), M, 13)
     doc.setFont("helvetica", "normal")
     doc.setFontSize(9)
     doc.text("Liste de présences", W - M, 13, { align: "right" })
@@ -409,7 +410,7 @@ export default function PresencesPage() {
       doc.setFont("helvetica", "normal")
       doc.setTextColor(...ZINC)
       doc.text(`Page ${p} / ${pageCount}`, M, 292)
-      doc.text("Généré par Adhéra", W - M, 292, { align: "right" })
+      doc.text(`Généré par ${APP_NAME}`, W - M, 292, { align: "right" })
     }
 
     doc.save(`presences_${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`)

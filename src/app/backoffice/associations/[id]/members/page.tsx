@@ -4,10 +4,11 @@ import type { Metadata } from "next"
 import { prisma }      from "@/lib/prisma/client"
 import { MembersTable } from "@/components/backoffice/members-table"
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { APP_NAME } from "@/config/brand"
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const assoc  = await prisma.association.findUnique({ where: { id }, select: { name: true } })
-  return { title: assoc ? `Membres — ${assoc.name} — Backoffice Adhéra` : "Membres — Backoffice Adhéra" }
+  return { title: assoc ? `Membres — ${assoc.name} — Backoffice ${APP_NAME}` : `Membres — Backoffice ${APP_NAME}` }
 }
 
 export default async function AssociationMembersPage({ params }: { params: Promise<{ id: string }> }) {

@@ -1,4 +1,5 @@
 import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon } from "@phosphor-icons/react/dist/ssr";
+import { APP_NAME } from "@/config/brand"
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -14,9 +15,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="flex items-center gap-2.5 relative">
           <div className="size-8 rounded-lg bg-white flex items-center justify-center">
-            <span className="text-xs font-bold text-zinc-900">A</span>
+            <span className="text-xs font-bold text-zinc-900">{APP_NAME.charAt(0)}</span>
           </div>
-          <span className="text-lg font-semibold text-white tracking-tight">Adhéra</span>
+          <span className="text-lg font-semibold text-white tracking-tight">{APP_NAME}</span>
         </div>
 
         <div className="relative space-y-10">
@@ -50,7 +51,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <p className="relative text-xs text-zinc-600">
-          © {new Date().getFullYear()} Adhéra · Données hébergées en France
+          © {new Date().getFullYear()} {APP_NAME} · Données hébergées en France
         </p>
       </div>
 
