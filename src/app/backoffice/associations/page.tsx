@@ -2,9 +2,10 @@ import Link       from "next/link"
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
 import { Badge }  from "@/components/ui/badge"
+import { APP_NAME } from "@/config/brand"
 
 export const metadata: Metadata = {
-  title: "Associations — Backoffice Adhéra",
+  title: `Associations — Backoffice ${APP_NAME}`,
 }
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {

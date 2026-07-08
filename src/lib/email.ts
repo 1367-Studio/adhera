@@ -1,3 +1,5 @@
+import { APP_NAME } from "@/config/brand"
+
 // ─── Base layout ─────────────────────────────────────────────────────────────
 
 function layout(associationName: string, content: string): string {
@@ -24,7 +26,7 @@ function layout(associationName: string, content: string): string {
         <tr>
           <td style="padding:20px 40px;border-top:1px solid #e4e4e7;background:#fafafa;">
             <p style="margin:0;font-size:12px;color:#71717a;text-align:center;">
-              Email automatique envoyé par ${associationName} via Adhéra.<br>
+              Email automatique envoyé par ${associationName} via ${APP_NAME}.<br>
               Veuillez ne pas répondre directement à cet email.
             </p>
           </td>
@@ -270,7 +272,7 @@ export function adminWelcomeEmail(p: {
   trialDays:       number
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur Adhéra, ${p.firstName} !</h2>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre association <strong>${p.associationName}</strong> a été créée avec succès.<br>
       Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.
@@ -279,8 +281,8 @@ export function adminWelcomeEmail(p: {
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`
   return {
     to:      p.email,
-    subject: `Bienvenue sur Adhéra — ${p.associationName}`,
-    html:    layout("Adhéra", content),
+    subject: `Bienvenue sur ${APP_NAME} — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
   }
 }
 
@@ -304,8 +306,8 @@ export function passwordResetEmail(p: {
     </p>`
   return {
     to:      p.email,
-    subject: `Réinitialisation de votre mot de passe Adhéra — ${p.accountLabel}`,
-    html:    layout("Adhéra", content),
+    subject: `Réinitialisation de votre mot de passe ${APP_NAME} — ${p.accountLabel}`,
+    html:    layout(APP_NAME, content),
   }
 }
 

@@ -9,6 +9,7 @@ import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { parseModules }     from "@/lib/modules"
 import { CaretLeftIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
+import { APP_NAME } from "@/config/brand"
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
@@ -65,7 +66,7 @@ function Row({ label, value }: { label: string; value?: string | null }) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const assoc  = await prisma.association.findUnique({ where: { id }, select: { name: true } })
-  return { title: assoc ? `${assoc.name} — Backoffice Adhéra` : "Association — Backoffice Adhéra" }
+  return { title: assoc ? `${assoc.name} — Backoffice ${APP_NAME}` : `Association — Backoffice ${APP_NAME}` }
 }
 
 export default async function AssociationDetailPage({ params }: { params: Promise<{ id: string }> }) {

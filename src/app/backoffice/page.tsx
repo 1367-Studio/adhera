@@ -2,8 +2,9 @@ import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CurrencyEurIcon } from "@phosphor-icons/react/dist/ssr";
+import { APP_NAME } from "@/config/brand"
 export const metadata: Metadata = {
-  title: "Vue d'ensemble — Backoffice Adhéra",
+  title: `Vue d'ensemble — Backoffice ${APP_NAME}`,
 }
 
 const MRR_PER_ACTIVE = 29.90

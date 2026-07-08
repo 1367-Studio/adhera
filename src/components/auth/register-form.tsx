@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
+import { APP_NAME } from "@/config/brand"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -364,7 +365,7 @@ function PaymentForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-xl border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Adhéra · Essai gratuit</span>
+          <span className="text-sm font-medium">{APP_NAME} · Essai gratuit</span>
           <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
             0 € aujourd&apos;hui
           </span>

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
+import { APP_NAME } from "@/config/brand"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
@@ -68,10 +69,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">A</span>
+                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">Adhéra</span>
+                <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Associations</span>
               </div>
             </SidebarMenuButton>
