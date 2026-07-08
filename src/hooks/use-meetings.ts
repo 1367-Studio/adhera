@@ -108,13 +108,10 @@ export function useDeleteMeeting() {
   })
 }
 
-// Notifies any tab open on this association the moment a meeting is auto-closed by the
-// LiveKit webhook (e.g. everyone left without anyone clicking "Encerrer"), instead of
-// leaving a stale "Rejoindre" showing until the next window refocus/remount.
-export function useMeetingEndedListener(onEnded: (meetingId: string) => void) {
+function useMeetingChannelListener<T>(event: string, onEvent: (data: T) => void) {
   const { associationId } = useCurrentUser()
-  const onEndedRef = useRef(onEnded)
-  onEndedRef.current = onEnded
+  const onEventRef = useRef(onEvent)
+  onEventRef.current = onEvent
 
   useEffect(() => {
     if (!associationId) return
@@ -123,14 +120,34 @@ export function useMeetingEndedListener(onEnded: (meetingId: string) => void) {
 
     const channelName = `private-association-${associationId}`
     const channel = pusher.subscribe(channelName)
-    const handler = (data: { meetingId: string }) => onEndedRef.current(data.meetingId)
-    channel.bind("meeting-ended", handler)
+    const handler = (data: T) => onEventRef.current(data)
+    channel.bind(event, handler)
 
     return () => {
-      channel.unbind("meeting-ended", handler)
+      channel.unbind(event, handler)
       pusher.unsubscribe(channelName)
     }
-  }, [associationId])
+  }, [associationId, event])
+}
+
+// Notifies any tab open on this association the moment a meeting is auto-closed by the
+// LiveKit webhook (e.g. everyone left without anyone clicking "Encerrer"), instead of
+// leaving a stale "Rejoindre" showing until the next window refocus/remount.
+export function useMeetingEndedListener(onEnded: (meetingId: string) => void) {
+  useMeetingChannelListener<{ meetingId: string }>("meeting-ended", (data) => onEnded(data.meetingId))
+}
+
+export type MeetingCreatedPayload = {
+  meetingId: string
+  title: string
+  status: "SCHEDULED" | "LIVE"
+  createdById: string
+}
+
+// Notifies any tab already open on the meetings list the moment someone creates a meeting
+// (instant or scheduled), so it appears/updates live instead of only on next mount.
+export function useMeetingCreatedListener(onCreated: (data: MeetingCreatedPayload) => void) {
+  useMeetingChannelListener<MeetingCreatedPayload>("meeting-created", onCreated)
 }
 
 export function useMeetingToken(meetingId: string | null, endpoint = "/api/meetings/token") {

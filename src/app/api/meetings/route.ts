@@ -101,6 +101,17 @@ export const POST = withAdminAuth(async (req, ctx) => {
     await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
   }
 
+  // Lets any dashboard/portal tab already open on this association pick up the new
+  // meeting immediately instead of waiting on the next window refocus/remount.
+  await pusherServer
+    .trigger(`private-association-${associationId}`, "meeting-created", {
+      meetingId:   meeting.id,
+      title:       meeting.title,
+      status:      meeting.status,
+      createdById: meeting.createdById,
+    })
+    .catch(() => {})
+
   await writeActivityLog({
     associationId,
     actorId: userId,
