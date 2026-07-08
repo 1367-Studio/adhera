@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe } from "@/lib/stripe"
+import { stripe, toSubscriptionStatus, subscriptionPeriodEnd } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail } from "@/lib/email"
@@ -9,14 +9,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import type Stripe from "stripe"
 
 export const dynamic = "force-dynamic"
-
-function toSubscriptionStatus(status: Stripe.Subscription.Status) {
-  if (status === "trialing") return "TRIAL"     as const
-  if (status === "active")   return "ACTIVE"    as const
-  if (status === "past_due") return "PAST_DUE"  as const
-  if (status === "unpaid")   return "SUSPENDED" as const
-  return "CANCELLED" as const
-}
 
 export async function POST(req: Request) {
   const body      = await req.text()
@@ -497,6 +489,8 @@ export async function POST(req: Request) {
             newStatus === "SUSPENDED"
               ? (assoc.subscriptionStatus === "SUSPENDED" ? undefined : new Date())
               : null,
+          cancelAtPeriodEnd:   sub.cancel_at_period_end,
+          currentPeriodEndsAt: subscriptionPeriodEnd(sub),
         },
       })
       break
@@ -505,7 +499,7 @@ export async function POST(req: Request) {
       const sub = event.data.object as Stripe.Subscription
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
-        data:  { subscriptionStatus: "CANCELLED", suspendedAt: null },
+        data:  { subscriptionStatus: "CANCELLED", suspendedAt: null, cancelAtPeriodEnd: false, currentPeriodEndsAt: null },
       })
       break
     }

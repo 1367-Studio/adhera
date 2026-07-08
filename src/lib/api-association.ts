@@ -15,22 +15,19 @@ export type AssociationCtx = {
 }
 
 export async function getAssociationCtx(
-  options: { allowWhenSuspended?: boolean } = {},
+  options: { allowWhenLocked?: boolean } = {},
 ): Promise<AssociationCtx | NextResponse> {
   const session = await auth()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
   const u = session.user as SessionUser
   if (!u.associationId) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
-  // Mirrors the hard block enforced at the page level in src/proxy.ts.
-  if (u.subscriptionStatus === "CANCELLED") {
-    return NextResponse.json({ error: "Subscription cancelled" }, { status: 403 })
-  }
-  // SUSPENDED still blocks regular admin routes, but the standby screen's own actions
-  // (reactivate/export/cancel) opt out via allowWhenSuspended — those are the only
-  // things a suspended association is allowed to do.
-  if (u.subscriptionStatus === "SUSPENDED" && !options.allowWhenSuspended) {
-    return NextResponse.json({ error: "Subscription suspended" }, { status: 403 })
+  // CANCELLED and SUSPENDED both mirror the hard block enforced at the page level in
+  // src/proxy.ts, but the standby screen's own actions (reactivate/export/reactivate-
+  // via-checkout) opt out via allowWhenLocked — those are the only things a locked-out
+  // association is allowed to do.
+  if ((u.subscriptionStatus === "CANCELLED" || u.subscriptionStatus === "SUSPENDED") && !options.allowWhenLocked) {
+    return NextResponse.json({ error: "Subscription locked" }, { status: 403 })
   }
 
   return {

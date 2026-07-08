@@ -46,4 +46,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
       { status: 502 },
     )
   }
-}, { roles: ADMINS, allowWhenSuspended: true })
+}, { roles: ADMINS, allowWhenLocked: true })

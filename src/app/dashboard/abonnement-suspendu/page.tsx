@@ -16,10 +16,16 @@ export default async function AbonnementSuspenduPage() {
   // Authoritative guard read straight from the DB: without this, any admin could reach
   // this URL directly (typed, bookmarked) while ACTIVE/TRIAL/PAST_DUE and see a "cancel
   // definitively" button for a subscription that was never actually at risk. src/proxy.ts
-  // only pushes suspended admins *into* this page — it doesn't stop anyone else visiting it.
-  if (!assoc || assoc.subscriptionStatus !== "SUSPENDED") redirect("/dashboard")
+  // only pushes locked-out admins *into* this page — it doesn't stop anyone else visiting it.
+  if (!assoc || !["SUSPENDED", "CANCELLED"].includes(assoc.subscriptionStatus)) redirect("/dashboard")
 
   const canEdit = u.role === "ADMIN" || u.role === "PRESIDENT"
 
-  return <SuspendedSubscriptionView canEdit={canEdit} suspendedAt={assoc.suspendedAt?.toISOString() ?? null} />
+  return (
+    <SuspendedSubscriptionView
+      canEdit={canEdit}
+      subscriptionStatus={assoc.subscriptionStatus as "SUSPENDED" | "CANCELLED"}
+      suspendedAt={assoc.suspendedAt?.toISOString() ?? null}
+    />
+  )
 }

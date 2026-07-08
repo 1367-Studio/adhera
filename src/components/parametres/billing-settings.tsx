@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
 
 type BillingStatus = {
-  subscriptionStatus: "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
-  trialEndsAt:        string | null
-  hasBilling:         boolean
+  subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
+  trialEndsAt:         string | null
+  cancelAtPeriodEnd:   boolean
+  currentPeriodEndsAt: string | null
+  hasBilling:          boolean
 }
 
 const statusConfig = {
@@ -113,6 +115,14 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
           {status === "CANCELLED" && (
             <p className="text-xs text-muted-foreground">
               Votre abonnement a été annulé. Contactez le support pour le réactiver.
+            </p>
+          )}
+
+          {data?.cancelAtPeriodEnd && data?.currentPeriodEndsAt && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              Votre abonnement a été résilié et prendra fin le{" "}
+              {new Date(data.currentPeriodEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
+              Vous conservez l&apos;accès complet jusqu&apos;à cette date.
             </p>
           )}
 

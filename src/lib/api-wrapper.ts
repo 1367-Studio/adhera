@@ -16,10 +16,10 @@ type Handler<Ctx, Params> = (req: Request, ctx: Ctx, params: Params) => Promise<
  */
 export function withAdminAuth<Params = Record<string, string>>(
   handler: Handler<AssociationCtx, Params>,
-  options: { roles?: readonly string[]; module?: keyof AssocModules; allowWhenSuspended?: boolean } = {},
+  options: { roles?: readonly string[]; module?: keyof AssocModules; allowWhenLocked?: boolean } = {},
 ) {
   return async (req: Request, context?: RouteContext<Params>) => {
-    const ctx = await getAssociationCtx({ allowWhenSuspended: options.allowWhenSuspended })
+    const ctx = await getAssociationCtx({ allowWhenLocked: options.allowWhenLocked })
     if (!isCtx(ctx)) return ctx
 
     if (options.module) {
