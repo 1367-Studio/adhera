@@ -85,36 +85,39 @@
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --card: #0f172a;
-  --card-foreground: #f8fafc;
-  --popover: #0f172a;
-  --popover-foreground: #f8fafc;
+  /* True neutral black/gray scale — no blue tint, unlike the old slate-based one — so
+     the accent colors (primary blue, chart palette, semantic finance colors) are the
+     only hues on screen instead of competing with a tinted background. */
+  --background: #000000;
+  --foreground: #fafafa;
+  --card: #141414;
+  --card-foreground: #fafafa;
+  --popover: #141414;
+  --popover-foreground: #fafafa;
   --primary: #38bdf8;
   --primary-foreground: #082f49;
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
+  --secondary: #1f1f1f;
+  --secondary-foreground: #fafafa;
+  --muted: #1f1f1f;
+  --muted-foreground: #a3a3a3;
   --accent: #0c2d4a;
   --accent-foreground: #bae6fd;
   --destructive: #f87171;
-  --border: #1e293b;
-  --input: #1e293b;
+  --border: #262626;
+  --input: #262626;
   --ring: #38bdf8;
   --chart-1: #38bdf8;
   --chart-2: #0ea5e9;
   --chart-3: #06b6d4;
   --chart-4: #fb7185;
   --chart-5: #94a3b8;
-  --sidebar: #0f172a;
-  --sidebar-foreground: #f8fafc;
+  --sidebar: #141414;
+  --sidebar-foreground: #fafafa;
   --sidebar-primary: #38bdf8;
   --sidebar-primary-foreground: #082f49;
-  --sidebar-accent: #1e293b;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #1e293b;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #262626;
   --sidebar-ring: #38bdf8;
 }
 
@@ -158,9 +161,9 @@ header.sticky {
 }
 
 .dark header.sticky {
-  background: rgba(2, 6, 23, 0.9) !important;
+  background: rgba(0, 0, 0, 0.9) !important;
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid #1e293b !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 
 [data-slot="sidebar-inset"] {
@@ -192,8 +195,8 @@ header.sticky {
 
 .dark [data-sidebar="menu-button"][data-active="true"],
 .dark [data-sidebar="menu-button"][data-active] {
-  background: rgba(248, 250, 252, 0.1) !important;
-  color: #f8fafc !important;
+  background: rgba(250, 250, 250, 0.1) !important;
+  color: var(--sidebar-accent-foreground) !important;
 }
 
 [data-sidebar="footer"] {
@@ -203,13 +206,13 @@ header.sticky {
 /* ── Tables ───────────────────────────────────────────────────────────────── */
 
 [data-slot="table-wrapper"] {
-  background: #ffffff !important;
+  background: var(--card) !important;
   border: 1.5px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
 }
 .dark [data-slot="table-wrapper"] {
-  background: #0f172a !important;
+  background: var(--card) !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
@@ -233,12 +236,12 @@ header.sticky {
 /* ── Cards ────────────────────────────────────────────────────────────────── */
 
 [data-slot="card"] {
-  background: #ffffff !important;
+  background: var(--card) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
 }
 .dark [data-slot="card"] {
-  background: #0f172a !important;
+  background: var(--card) !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
@@ -246,12 +249,12 @@ header.sticky {
 /* ── Modals ───────────────────────────────────────────────────────────────── */
 
 [data-slot="dialog-content"] {
-  background: #ffffff !important;
+  background: var(--popover) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06), 0 32px 72px rgba(0, 0, 0, 0.12) !important;
 }
 .dark [data-slot="dialog-content"] {
-  background: #0f172a !important;
+  background: var(--popover) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
 }
@@ -264,13 +267,13 @@ header.sticky {
 
 [data-slot="popover-content"],
 [role="listbox"] {
-  background: #ffffff !important;
+  background: var(--popover) !important;
   border: 1px solid var(--border) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.08) !important;
 }
 .dark [data-slot="popover-content"],
 .dark [role="listbox"] {
-  background: #0f172a !important;
+  background: var(--popover) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.3) !important;
 }
@@ -307,6 +310,25 @@ header.sticky {
   [data-sidebar="menu-item"],
   [data-sidebar="header"],
   [data-sidebar="footer"] {
+    animation: none !important;
+  }
+}
+
+/* ── Bar grow-in (dashboard progress bars — not Recharts, so no built-in
+   animation to opt into; this mirrors it for plain-div bars) ────────────── */
+
+@keyframes bar-grow-in {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.animate-bar-grow-in {
+  animation: bar-grow-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bar-grow-in {
     animation: none !important;
   }
 }
