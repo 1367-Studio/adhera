@@ -14,6 +14,7 @@ const SUGGESTED = [10, 20, 50, 100]
 type AssocInfo = {
   name:               string
   canIssueTaxReceipts: boolean
+  paymentEnabled:     boolean
 }
 
 export default function PublicDonPage() {
@@ -46,10 +47,12 @@ function PublicDonPageInner() {
   useEffect(() => {
     fetch(`/api/public/${slug}/don`)
       .then(r => r.json())
-      .then((d: { name?: string; canIssueTaxReceipts?: boolean }) => {
-        setAssoc({ name: d.name ?? "", canIssueTaxReceipts: d.canIssueTaxReceipts ?? false })
+      .then((d: { name?: string; canIssueTaxReceipts?: boolean; paymentEnabled?: boolean }) => {
+        setAssoc({ name: d.name ?? "", canIssueTaxReceipts: d.canIssueTaxReceipts ?? false, paymentEnabled: d.paymentEnabled ?? false })
       })
-      .catch(() => setAssoc({ name: "", canIssueTaxReceipts: false }))
+      // A network/parse failure here must not leave the form silently submittable —
+      // treat it the same as "payment unavailable" instead of defaulting to enabled.
+      .catch(() => setAssoc({ name: "", canIssueTaxReceipts: false, paymentEnabled: false }))
       .finally(() => setLoadingAssoc(false))
   }, [slug])
 
@@ -61,6 +64,7 @@ function PublicDonPageInner() {
 
   const canSubmit =
     !loading &&
+    !!assoc?.paymentEnabled &&
     amount > 0 &&
     firstName.trim() &&
     lastName.trim() &&
@@ -136,6 +140,11 @@ function PublicDonPageInner() {
           </div>
         )}
 
+        {assoc && !assoc.paymentEnabled ? (
+          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+            Le paiement en ligne n&apos;est pas disponible pour le moment.
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="rounded-xl border bg-card shadow-sm p-6 space-y-5">
           {/* Montants suggérés */}
           <div className="space-y-2">
@@ -317,6 +326,7 @@ function PublicDonPageInner() {
             </p>
           </div>
         </form>
+        )}
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
@@ -51,6 +52,19 @@ export async function POST(req: Request) {
       // going back a step) naturally gets a fresh key since priceId differs.
       idempotencyKey: `register-sub-${customerId}-${priceId}`,
     })
+    // A prior attempt on this same (customer, plan) can have failed after creating the DB
+    // records below, in which case the cleanup path further down already cancelled this
+    // exact subscription — but the idempotency key above is still cached by Stripe, so a
+    // retry with the same inputs would otherwise silently get that dead subscription back.
+    // Detect that and force a genuinely new one instead of proceeding with a cancelled sub.
+    if (subscription.status === "canceled") {
+      subscription = await stripe.subscriptions.create({
+        customer:               customerId,
+        items:                  [{ price: priceId }],
+        trial_period_days:      TRIAL_DAYS,
+        default_payment_method: paymentMethodId,
+      }, { idempotencyKey: `register-sub-${customerId}-${priceId}-retry-${randomUUID()}` })
+    }
   } catch {
     return NextResponse.json({ error: "Erreur de paiement. Vérifiez vos informations." }, { status: 402 })
   }
@@ -100,8 +114,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true })
   } catch {
-    try { await stripe.subscriptions.cancel(subscription.id) } catch {}
-    try { await stripe.customers.del(customerId) } catch {}
+    try { await stripe.subscriptions.cancel(subscription.id) } catch (err) { console.error(`[register] failed to cancel orphaned subscription ${subscription.id}:`, err) }
+    try { await stripe.customers.del(customerId) } catch (err) { console.error(`[register] failed to delete orphaned customer ${customerId}:`, err) }
     return NextResponse.json({ error: "Erreur lors de la création du compte" }, { status: 500 })
   }
 }
