@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
-
-const PLATFORM_FEE = 0.015
 
 export async function GET(
   _req: Request,
@@ -25,10 +23,16 @@ export async function GET(
   const modules = parseModules(assoc.modules)
   if (!modules.dons) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
+  // A Connect id exists as soon as the Express account is created, before onboarding
+  // actually finishes — checking only that would let a donor fill out the whole form
+  // (amount, identity, SIRET for a company) and only discover payment isn't actually
+  // available when they submit and hit the POST's own check below.
+  const paymentEnabled = !!assoc.stripeConnectId && await connectAccountChargesEnabled(assoc.stripeConnectId)
+
   return NextResponse.json({
     name:                assoc.name,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
-    paymentEnabled:      !!assoc.stripeConnectId,
+    paymentEnabled,
   })
 }
 

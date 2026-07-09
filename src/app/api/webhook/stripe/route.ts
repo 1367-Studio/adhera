@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { stripe, toSubscriptionStatus, subscriptionPeriodEnd } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail } from "@/lib/email"
+import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -202,8 +202,14 @@ export async function POST(req: Request) {
         if (buyerTicket?.evenement) {
           const evenement  = buyerTicket.evenement
           const quantity   = tickets.length
-          const unitAmount = Number(evenement.price!)
-          const totalAmount = unitAmount * quantity
+          // Use what Stripe actually charged (locked in at checkout session creation),
+          // not the event's current price — an admin could have edited the price while
+          // the checkout session was still open. Every seat in the order shares the same
+          // single line item, so amount_total is always evenly divisible by quantity.
+          // This amount also drives later self-service refunds (cancel-ticket route), so
+          // getting it wrong here can make a refund attempt exceed what was ever charged.
+          const totalAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(evenement.price!) * quantity
+          const unitAmount  = totalAmount / quantity
 
           await prisma.participation.updateMany({ where: { orderId }, data: { amount: unitAmount } })
 
@@ -288,11 +294,36 @@ export async function POST(req: Request) {
           if (assoc.canIssueTaxReceipts) {
             const updatedDon = await prisma.don.findUnique({ where: { id: donId } })
             if (updatedDon) {
-              const pdf = await generateRecuFiscalForDon(updatedDon, assoc).catch(() => null)
-              if (pdf) {
+              try {
+                const pdf = await generateRecuFiscalForDon(updatedDon, assoc)
                 pdfAttachment = {
                   filename: `recu-fiscal-${updatedDon.receiptNumber ?? donId}.pdf`,
                   content:  pdf,
+                }
+              } catch (err) {
+                // Previously swallowed silently — the confirmation email still goes out
+                // below without the attachment, but the donor then never gets a receipt
+                // and nobody notices unless they think to check. Flag it for an admin
+                // instead; they (or the donor, via the portal download route) can
+                // regenerate later — it reuses the receiptNumber already assigned above,
+                // so retrying doesn't burn a second sequential number.
+                console.error(`[recu-fiscal] failed to generate for don ${donId}:`, err)
+                const admins = await prisma.user.findMany({
+                  where:  { associationId: don.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+                  select: { id: true },
+                })
+                if (admins.length) {
+                  const donorLabel = don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`
+                  await prisma.notification.createMany({
+                    data: admins.map(a => ({
+                      userId: a.id,
+                      title:  "Échec de génération d'un reçu fiscal",
+                      body:   `Le reçu fiscal pour le don de ${donorLabel} n'a pas pu être généré automatiquement — téléchargez-le et renvoyez-le manuellement.`,
+                      link:   "/dashboard/dons",
+                    })),
+                    skipDuplicates: true,
+                  })
+                  await pusherServer.trigger(`private-association-${don.associationId}`, "new-notification", {}).catch(() => {})
                 }
               }
             }
@@ -402,13 +433,76 @@ export async function POST(req: Request) {
       // refund" safety net (Stripe Dashboard, disputes) when the whole charge was refunded.
       if (charge.amount_refunded < charge.amount) {
         if (associationId) {
+          // Stripe can redeliver the same event; charge.amount_refunded is the *cumulative*
+          // total refunded on the charge, so blindly re-running this on a redelivery (or on
+          // a second, later partial refund of the same charge that we haven't seen yet vs.
+          // one we have) would double-subtract from the ledger. Guard on this specific
+          // event's id — recorded in the activity log we're about to write anyway — before
+          // doing anything mutating.
+          const alreadyProcessed = await prisma.activityLog.findFirst({
+            where: {
+              associationId,
+              action:   "PARTIAL_REFUND_RECEIVED",
+              entityId: paymentIntentId,
+              metadata: { path: ["stripeEventId"], equals: event.id },
+            },
+            select: { id: true },
+          })
+          if (alreadyProcessed) break
+
           await writeActivityLog({
             associationId,
             action:   "PARTIAL_REFUND_RECEIVED",
             entity:   "Payment",
             entityId: paymentIntentId,
-            metadata: { amountRefunded: charge.amount_refunded, amount: charge.amount },
+            metadata: { amountRefunded: charge.amount_refunded, amount: charge.amount, stripeEventId: event.id },
           })
+
+          // Reflect the actual amount kept in the ledger instead of leaving it at the
+          // pre-refund total — an activity-log entry alone doesn't correct the books.
+          // When one PaymentIntent backs several Income rows (a multi-seat ticket order),
+          // there's no way to tell from the charge alone which seat the refund applies to,
+          // so the cut is spread evenly (all seats in one order always share the same
+          // price today, so this is exact, not an approximation).
+          const incomes = await prisma.income.findMany({ where: { reference: paymentIntentId, status: "PAID" } })
+          if (incomes.length) {
+            const refundedEuros = charge.amount_refunded / 100
+            const perRowCut     = refundedEuros / incomes.length
+            await prisma.$transaction(
+              incomes.map(i => prisma.income.update({
+                where: { id: i.id },
+                data:  { amount: Math.max(0, Number(i.amount) - perRowCut) },
+              }))
+            )
+          }
+
+          // A partial Dashboard refund is easy to miss — it doesn't touch any status the
+          // admin normally looks at (Cotisation stays PAYE, Don stays un-refunded). Surface
+          // it as a real notification instead of leaving it buried in the activity log.
+          const admins = await prisma.user.findMany({
+            where:  { associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+            select: { id: true },
+          })
+          if (admins.length) {
+            const amountLabel = (charge.amount_refunded / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+            let body = `Un remboursement partiel de ${amountLabel} a été reçu depuis Stripe. Le grand livre a été ajusté en conséquence.`
+            if (donId) {
+              const don = await prisma.don.findUnique({ where: { id: donId }, select: { receiptNumber: true } })
+              if (don?.receiptNumber) {
+                body += ` Ce don a déjà un reçu fiscal émis (n°${don.receiptNumber}) — vérifiez s'il doit être corrigé ou annulé manuellement.`
+              }
+            }
+            await prisma.notification.createMany({
+              data: admins.map(a => ({
+                userId: a.id,
+                title:  "Remboursement partiel reçu",
+                body,
+                link:   "/dashboard/tresorerie",
+              })),
+              skipDuplicates: true,
+            })
+            await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+          }
         }
         break
       }
@@ -501,6 +595,80 @@ export async function POST(req: Request) {
         where: { stripeSubscriptionId: sub.id },
         data:  { subscriptionStatus: "CANCELLED", suspendedAt: null, cancelAtPeriodEnd: false, currentPeriodEndsAt: null },
       })
+      break
+    }
+
+    // A failed subscription charge otherwise only surfaces once the account is already
+    // SUSPENDED (via customer.subscription.updated, after Stripe's dunning retries run
+    // out) — nothing tells the admin about the very first failed attempt, so they only
+    // find out once they're already locked out. This fires proactively, once per invoice
+    // attempt, so they can fix the card before that happens.
+    case "invoice.payment_failed": {
+      const invoice    = event.data.object as Stripe.Invoice
+      const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id
+      if (!customerId) break
+
+      const assoc = await prisma.association.findFirst({
+        where:  { stripeCustomerId: customerId },
+        select: { id: true, name: true },
+      })
+      if (!assoc) break
+
+      // Stripe can redeliver this event for the same failed attempt — guard on it so an
+      // admin doesn't get the same "your payment failed" email twice.
+      const alreadyProcessed = await prisma.activityLog.findFirst({
+        where: {
+          associationId: assoc.id,
+          action:        "SUBSCRIPTION_PAYMENT_FAILED",
+          entityId:      invoice.id,
+          metadata:      { path: ["stripeEventId"], equals: event.id },
+        },
+        select: { id: true },
+      })
+      if (alreadyProcessed) break
+
+      const admins = await prisma.user.findMany({
+        where:  { associationId: assoc.id, role: "ADMIN", active: true },
+        select: { id: true, email: true },
+      })
+      if (!admins.length) break
+
+      await writeActivityLog({
+        associationId: assoc.id,
+        action:        "SUBSCRIPTION_PAYMENT_FAILED",
+        entity:        "Invoice",
+        entityId:      invoice.id ?? null,
+        metadata:      { amountDue: invoice.amount_due, attemptCount: invoice.attempt_count, stripeEventId: event.id },
+      })
+
+      const billingUrl    = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/parametres`
+      const attemptCount  = invoice.attempt_count ?? 1
+      const nextAttemptAt = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null
+      const amount        = invoice.amount_due != null ? invoice.amount_due / 100 : null
+
+      for (const admin of admins) {
+        if (!admin.email) continue
+        sendEmail(subscriptionPaymentFailedEmail({
+          email:           admin.email,
+          associationName: assoc.name,
+          amount,
+          attemptCount,
+          nextAttemptAt,
+          billingUrl,
+        })).catch(() => {})
+      }
+
+      await prisma.notification.createMany({
+        data: admins.map(a => ({
+          userId: a.id,
+          title:  "Échec de paiement",
+          body:   "Le prélèvement de votre abonnement a échoué. Mettez à jour votre moyen de paiement.",
+          link:   "/dashboard/parametres",
+        })),
+        skipDuplicates: true,
+      })
+      await pusherServer.trigger(`private-association-${assoc.id}`, "new-notification", {}).catch(() => {})
+
       break
     }
   }

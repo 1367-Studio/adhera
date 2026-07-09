@@ -43,7 +43,7 @@ export function ForgotPasswordForm() {
   if (submitted) {
     return (
       <div className="rounded-xl border bg-card p-6 space-y-4 text-center">
-        <div className="mx-auto size-12 rounded-full bg-primary/10 flex items-center justify-center">
+        <div className="mx-auto size-12 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
           <EnvelopeSimpleIcon className="size-6 text-primary" />
         </div>
         <div className="space-y-1.5">

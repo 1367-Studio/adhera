@@ -311,7 +311,9 @@ export default function SondageFormPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 animate-pulse">
+      // py-4 matches the real header's spacing (line ~368) so the page doesn't jump
+      // down once the actual content replaces this skeleton.
+      <div className="space-y-4 py-4 animate-pulse">
         <div className="h-8 w-64 bg-muted rounded" />
         <div className="h-48 bg-muted rounded-xl" />
       </div>
@@ -374,7 +376,7 @@ export default function SondageFormPage() {
         >
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <div className="rounded-xl bg-primary/10 p-2.5 shrink-0">
+        <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ClipboardTextIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">

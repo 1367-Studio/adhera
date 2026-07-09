@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
-
-const PLATFORM_FEE = 0.015
 
 export const GET = withPortalAuth(async (_req, ctx) => {
   const [assoc, membre] = await Promise.all([
@@ -20,10 +18,16 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   ])
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
+  // A Connect id exists as soon as the Express account is created, before onboarding
+  // actually finishes — checking only that would let a donor fill out the whole form
+  // (amount, SIRET for a company) and only discover payment isn't actually available
+  // when they submit and hit the POST's own check below.
+  const paymentEnabled = !!assoc.stripeConnectId && await connectAccountChargesEnabled(assoc.stripeConnectId)
+
   return NextResponse.json({
     name:                assoc.name,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
-    paymentEnabled:      !!assoc.stripeConnectId,
+    paymentEnabled,
     hasEmail:            !!membre?.email,
     hasAddress:          !!membre?.address,
   })

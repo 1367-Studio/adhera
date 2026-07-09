@@ -235,7 +235,7 @@ export function MembresView() {
             <p className="font-medium">{m.lastName} {m.firstName}</p>
             {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
             {m.user && m.user.role !== "MEMBRE" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
                 <ShieldIcon className="size-2.5" />
                 {ROLE_LABELS[m.user.role]}
               </span>

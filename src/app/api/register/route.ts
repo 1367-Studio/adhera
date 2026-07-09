@@ -44,6 +44,12 @@ export async function POST(req: Request) {
       items:                  [{ price: priceId }],
       trial_period_days:      TRIAL_DAYS,
       default_payment_method: paymentMethodId,
+    }, {
+      // Stable per (customer, plan): a network retry or accidental double-submit of this
+      // same registration attempt returns the subscription already created instead of
+      // opening a second one on the same customer. Changing plan and resubmitting (e.g.
+      // going back a step) naturally gets a fresh key since priceId differs.
+      idempotencyKey: `register-sub-${customerId}-${priceId}`,
     })
   } catch {
     return NextResponse.json({ error: "Erreur de paiement. Vérifiez vos informations." }, { status: 402 })

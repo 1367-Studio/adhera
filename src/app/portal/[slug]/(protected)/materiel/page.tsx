@@ -287,7 +287,7 @@ export default function MaterielPage() {
                       Votre demande du {format(new Date(loan.borrowedAt), "d MMM yyyy", { locale: fr })} n&apos;a pas pu être accordée.
                     </p>
                   </div>
-                  <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">
+                  <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-destructive/10 dark:bg-destructive/25 text-destructive">
                     <XCircleIcon className="size-3" /> Refusé
                   </span>
                 </div>

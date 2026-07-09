@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, Suspense } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useParams } from "next/navigation"
 import { format } from "date-fns"
@@ -36,21 +36,34 @@ function DonsPortalPageInner() {
   const { slug }       = useParams<{ slug: string }>()
   const searchParams   = useSearchParams()
 
+  // Coming back from Stripe just after paying — the webhook that actually flips the don
+  // to "payé" can lag a few seconds behind the redirect, so poll briefly instead of
+  // leaving it showing "En attente" right under a "Merci pour votre don !" toast.
+  const [polling, setPolling] = useState(false)
+
   const { data: dons = [], isLoading, refetch } = useQuery<Don[]>({
     queryKey: ["portal-dons"],
     queryFn:  () => portalFetch("/api/portal/dons") as Promise<Don[]>,
     staleTime: 0,
+    refetchInterval: polling ? 2000 : false,
   })
 
   useEffect(() => {
     const p = searchParams.get("payment")
     if (p === "success") {
       toast.success("Merci pour votre don ! Un e-mail de confirmation vous a été envoyé.")
+      setPolling(true)
       refetch()
     } else if (p === "cancelled") {
       toast.info("Don annulé.")
     }
   }, [searchParams, refetch])
+
+  useEffect(() => {
+    if (!polling) return
+    const t = setTimeout(() => setPolling(false), 20_000)
+    return () => clearTimeout(t)
+  }, [polling])
 
   const canIssueReceipts = dons[0]?.association.canIssueTaxReceipts ?? false
 

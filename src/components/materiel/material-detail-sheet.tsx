@@ -282,7 +282,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               demande du {format(new Date(loan.borrowedAt), "d MMM yy", { locale: fr })}
                             </span>
                           </div>
-                          <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive">
+                          <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-destructive/10 dark:bg-destructive/25 text-destructive">
                             Refusé
                           </span>
                         </div>

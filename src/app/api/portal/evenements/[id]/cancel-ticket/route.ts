@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import Stripe from "stripe"
 import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 
 const bodySchema = z.object({ participationId: z.string().optional() })
+
+// Thrown (and caught) purely to force the claim transaction below to roll back —
+// never actually surfaced past this file.
+class TicketAlreadyClaimedError extends Error {}
 
 export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
   const { associationId, userId, membreId } = ctx
@@ -55,13 +60,56 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
   // Refund what was actually charged per seat (locked in on the participation row at
   // payment time), not the event's current price — an admin may have changed it since.
   const refundAmountCents = targets.reduce((sum, t) => sum + Math.round(Number(t.amount ?? evenement.price) * 100), 0)
+  const targetIds = targets.map(t => t.id)
 
-  await stripe.refunds.create({
-    payment_intent:         paymentIntentId,
-    amount:                 refundAmountCents,
-    reverse_transfer:       true,
-    refund_application_fee: true,
-  })
+  // Claim these seats atomically before ever calling Stripe. A double-click or a second
+  // tab hitting this endpoint for the same seats at the same time must not both reach
+  // stripe.refunds.create — that would issue two real refunds for the same money. The
+  // conditional updateMany only matches rows still paid; if a concurrent call already
+  // claimed one of these seats, the count comes up short and the whole transaction is
+  // thrown away (nothing gets written) instead of risking two payouts.
+  try {
+    await prisma.$transaction(async (tx) => {
+      const { count } = await tx.participation.updateMany({
+        where: { id: { in: targetIds }, ticketPaidAt: { not: null } },
+        data:  { ticketPaidAt: null, stripeSessionId: null, amount: null, rsvp: null },
+      })
+      if (count !== targetIds.length) throw new TicketAlreadyClaimedError()
+    })
+  } catch (err) {
+    if (err instanceof TicketAlreadyClaimedError) {
+      return NextResponse.json({ error: "Ce billet est déjà en cours d'annulation." }, { status: 409 })
+    }
+    throw err
+  }
+
+  try {
+    await stripe.refunds.create({
+      payment_intent:         paymentIntentId,
+      amount:                 refundAmountCents,
+      reverse_transfer:       true,
+      refund_application_fee: true,
+    }, {
+      // Stable for this exact set of seats — safe to reuse on a network retry of this
+      // same call (params never change once targetIds is fixed), so Stripe returns the
+      // original refund instead of creating a second one.
+      idempotencyKey: `ticket-refund-${targetIds.slice().sort().join("-")}`,
+    })
+  } catch (err) {
+    // The claim above already committed — undo it so the seat doesn't sit "cancelled"
+    // in the DB when no money actually moved.
+    await prisma.$transaction(
+      targets.map(t => prisma.participation.update({
+        where: { id: t.id },
+        data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount, rsvp: t.rsvp },
+      }))
+    )
+    console.error(`[cancel-ticket] Stripe refund failed for seats ${targetIds.join(",")}:`, err)
+    const message = err instanceof Stripe.errors.StripeError
+      ? err.message
+      : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
+    return NextResponse.json({ error: message }, { status: 502 })
+  }
 
   const paidIncomes = await prisma.income.findMany({
     where:  { participationId: { in: targets.map(t => t.id) }, status: "PAID" },
@@ -79,16 +127,12 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
     : []
   const txIds = reconciliations.map(r => r.bankTransactionId)
 
-  const selfTarget       = targets.find(t => t.membreId)
+  // The buyer's own seat was already reset (kept, not deleted) by the claim transaction
+  // above, so they can re-reserve later without hitting the one-self-ticket-per-event
+  // constraint — only a cancelled companion still needs removing here.
   const companionTargets = targets.filter(t => !t.membreId)
 
   await prisma.$transaction([
-    // The buyer's own seat is reset (kept) so they can re-reserve later without hitting
-    // the one-self-ticket-per-event constraint; a cancelled companion is just removed.
-    ...(selfTarget ? [prisma.participation.update({
-      where: { id: selfTarget.id },
-      data:  { ticketPaidAt: null, stripeSessionId: null, amount: null, rsvp: null },
-    })] : []),
     ...(companionTargets.length ? [prisma.participation.deleteMany({
       where: { id: { in: companionTargets.map(t => t.id) } },
     })] : []),
