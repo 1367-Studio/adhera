@@ -7,6 +7,7 @@ import { fr } from "date-fns/locale"
 import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useModules } from "@/lib/user-context"
+import { usePalette, hexToRgba } from "@/lib/finance-palette"
 import { FinanceCharts } from "@/components/dashboard/finance-charts"
 
 type DashboardData = {
@@ -24,6 +25,7 @@ function fmt(n: number) {
 
 export function TableauDeBord() {
   const modules = useModules()
+  const pal = usePalette()
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
     queryFn:  async () => {
@@ -33,14 +35,21 @@ export function TableauDeBord() {
     },
   })
 
+  const cotisationsAlert = !!data?.cotisationsEnAttente
+  const soldePositive    = !data || data.solde >= 0
+
+  // Membres/Événements are plain counts with no real financial meaning, so they share
+  // one neutral accent instead of an arbitrary color each. Cotisations and Solde reuse
+  // the exact same palette as the charts just below (usePalette) — same yellow for "en
+  // attente", same green/red for paid/negative — instead of unrelated Tailwind shades,
+  // so a color means the same thing everywhere on this screen.
   const allStats = [
     {
       label:     "Membres actifs",
       value:     data?.membresActifs ?? "—",
       icon:      UsersIcon,
       href:      "/dashboard/membres",
-      color:     "text-sky-600 dark:text-sky-400",
-      bg:        "bg-sky-50 dark:bg-sky-950/30",
+      neutral:   true,
       moduleKey: null,
     },
     {
@@ -48,8 +57,7 @@ export function TableauDeBord() {
       value:     data?.evenementsMois ?? "—",
       icon:      CalendarBlankIcon,
       href:      "/dashboard/evenements",
-      color:     "text-violet-600 dark:text-violet-400",
-      bg:        "bg-violet-50 dark:bg-violet-950/30",
+      neutral:   true,
       moduleKey: "evenements" as const,
     },
     {
@@ -57,9 +65,9 @@ export function TableauDeBord() {
       value:     data?.cotisationsEnAttente ?? "—",
       icon:      CoinsIcon,
       href:      "/dashboard/cotisations",
-      color:     data?.cotisationsEnAttente ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground",
-      bg:        data?.cotisationsEnAttente ? "bg-amber-50 dark:bg-amber-950/30" : "bg-muted/40",
-      alert:     !!data?.cotisationsEnAttente,
+      neutral:   !cotisationsAlert,
+      accent:    pal.enAttente,
+      alert:     cotisationsAlert,
       moduleKey: "cotisations" as const,
     },
     {
@@ -67,8 +75,8 @@ export function TableauDeBord() {
       value:     data ? fmt(data.solde) : "—",
       icon:      BankIcon,
       href:      "/dashboard/finances",
-      color:     data && data.solde >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive",
-      bg:        data && data.solde >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30",
+      neutral:   false,
+      accent:    soldePositive ? pal.recettes : pal.depenses,
       moduleKey: "finances" as const,
     },
   ]
@@ -101,18 +109,27 @@ export function TableauDeBord() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
-                <div className={cn("flex size-8 items-center justify-center rounded-lg", stat.bg)}>
+                <div
+                  className={cn("flex size-8 items-center justify-center rounded-lg", stat.neutral && "bg-accent")}
+                  style={!stat.neutral ? { backgroundColor: hexToRgba(stat.accent!, pal.dark ? 0.2 : 0.12) } : undefined}
+                >
                   {stat.alert
-                    ? <WarningCircleIcon className={cn("size-4", stat.color)} />
-                    : <stat.icon className={cn("size-4", stat.color)} />
+                    ? <WarningCircleIcon className="size-4" style={{ color: stat.accent }} />
+                    : <stat.icon
+                        className={cn("size-4", stat.neutral && "text-accent-foreground")}
+                        style={!stat.neutral ? { color: stat.accent } : undefined}
+                      />
                   }
                 </div>
               </div>
               <div className="flex items-end justify-between">
-                <span className={cn(
-                  "text-2xl font-bold tabular-nums",
-                  isLoading && "animate-pulse text-muted-foreground",
-                )}>
+                <span
+                  className={cn(
+                    "text-2xl font-bold tabular-nums",
+                    isLoading && "animate-pulse text-muted-foreground",
+                  )}
+                  style={!isLoading && !stat.neutral ? { color: stat.accent } : undefined}
+                >
                   {isLoading ? "…" : stat.value}
                 </span>
                 <ArrowRightIcon className="size-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
@@ -169,14 +186,15 @@ export function TableauDeBord() {
                 <div className="h-12 rounded-lg bg-muted animate-pulse" />
               ) : (
                 <div className="space-y-1">
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400 tabular-nums">
+                  <p className="text-2xl font-bold tabular-nums" style={{ color: pal.payees }}>
                     {fmt(data?.cotisationsEncaissees ?? 0)}
                   </p>
                   <p className="text-xs text-muted-foreground">encaissé cette année</p>
                   {(data?.cotisationsEnAttente ?? 0) > 0 && (
                     <Link
                       href="/dashboard/cotisations"
-                      className="text-xs text-amber-600 hover:underline flex items-center gap-1 mt-1"
+                      className="text-xs hover:underline flex items-center gap-1 mt-1"
+                      style={{ color: pal.enAttente }}
                     >
                       <WarningCircleIcon className="size-3" />
                       {data?.cotisationsEnAttente} en attente de paiement

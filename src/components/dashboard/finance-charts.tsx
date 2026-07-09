@@ -1,12 +1,12 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useTheme } from "next-themes"
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
+  BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Legend,
   Tooltip, LabelList, ResponsiveContainer,
 } from "recharts"
 import { useModules } from "@/lib/user-context"
+import { usePalette } from "@/lib/finance-palette"
 import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -18,28 +18,6 @@ type FinanceChartsData = {
   cotisations:      { status: string; label: string; count: number; amount: number }[]
   monthly:          { label: string; recettes: number; depenses: number }[]
   incomeByCategory: { name: string; amount: number }[]
-}
-
-// ─── Palette (validated — see docs/audit-2026-07-06.md conventions / dataviz skill) ──
-// Light/dark steps from the reference categorical palette; assignment (which hue means
-// which entity) is fixed and never re-derived from the data, only the L/C step swaps
-// per mode.
-
-function usePalette() {
-  const { resolvedTheme } = useTheme()
-  const dark = resolvedTheme === "dark"
-  return {
-    dark,
-    recettes:   "#008300",                  // green — identical step both modes
-    depenses:   dark ? "#e66767" : "#e34948", // red
-    payees:     "#008300",                  // green
-    enAttente:  dark ? "#c98500" : "#eda100", // yellow
-    exonerees:  dark ? "#3987e5" : "#2a78d6", // blue
-    sequential: dark ? "#3987e5" : "#2a78d6", // blue, single hue for magnitude ranking
-    axis:       "#898781",                   // muted ink — same both modes
-    grid:       dark ? "#2c2c2a" : "#e1e0d9", // hairline gridline
-    cursor:     dark ? "rgba(255,255,255,0.06)" : "rgba(11,11,11,0.05)",
-  }
 }
 
 function fmt(n: number) {
@@ -83,6 +61,27 @@ function CategoryTip({ active, payload }: {
       <p className="font-medium">{payload[0].payload.name}</p>
       <p className="font-semibold">{fmt(payload[0].value)}</p>
     </div>
+  )
+}
+
+// Lollipop mark (thick rounded line + end dot) instead of a filled block — reads
+// lighter/more current than a solid bar. The end dot is a surface-color ring with a
+// smaller colored center (dataviz skill: "dots carry a surface-color ring so they
+// stay legible where they cross the line"), not a solid colored disc.
+function LollipopBar({ x, y, width, height, color }: {
+  x?: number; y?: number; width?: number; height?: number; color: string
+}) {
+  if (x == null || y == null || width == null || height == null) return null
+  const cy      = y + height / 2
+  const outerR  = Math.min(height / 2 + 1, 9)
+  const innerR  = outerR * 0.45
+  const x2      = Math.max(x + width - outerR, x)
+  return (
+    <g style={{ filter: `drop-shadow(0 0 4px ${color}88)` }}>
+      <line x1={x} y1={cy} x2={x2} y2={cy} stroke={color} strokeWidth={6} strokeLinecap="round" />
+      <circle cx={x + width} cy={cy} r={outerR} fill="var(--card)" stroke={color} strokeWidth={2} />
+      <circle cx={x + width} cy={cy} r={innerR} fill={color} />
+    </g>
   )
 }
 
@@ -135,29 +134,48 @@ export function FinanceCharts() {
   const cotisationColor: Record<string, string> = {
     PAYE: pal.payees, EN_ATTENTE: pal.enAttente, EXONERE: pal.exonerees,
   }
+  const paidAmount = data.cotisations.find(c => c.status === "PAYE")?.amount ?? 0
+  const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
 
   return (
     <div className="grid items-start gap-4 lg:grid-cols-3">
 
       {/* Cotisations — part-to-whole → stacked bar, never a donut */}
       {data.hasCotisations && (
-        <div className={cn("rounded-xl border bg-card p-5", !data.hasFinances && "lg:col-span-3")}>
-          <p className="mb-4 text-xs font-medium text-muted-foreground">Cotisations {data.year}</p>
+        <div className={cn(
+          "relative overflow-hidden rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30",
+          !data.hasFinances && "lg:col-span-3",
+        )}>
+          {/* Soft glow behind the hero figure — decorative only, clipped to the card by
+              the parent's overflow-hidden so it never bleeds past the rounded corners. */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -left-10 -top-16 size-40 rounded-full opacity-20 blur-3xl"
+            style={{ background: pal.recettes }}
+          />
+          <p className="relative mb-1 text-xs font-medium text-muted-foreground">Cotisations {data.year}</p>
+          {/* Hero figure: % already collected — the one number a progress bar exists to
+              answer, and distinct from the raw totals already listed below/elsewhere. */}
+          <p className="relative mb-4 text-3xl font-semibold">
+            {paidPct}<span className="text-lg text-muted-foreground"> % encaissé</span>
+          </p>
 
-          <div className="flex h-6 w-full gap-0.5 overflow-hidden rounded-md">
-            {data.cotisations.map(c => (
+          <div className="relative flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
+            {data.cotisations.map((c, i) => (
               <div
                 key={c.status}
+                className="animate-bar-grow-in"
                 style={{
-                  width:      `${cotisationDenom > 0 ? Math.max(((cotisationTotal > 0 ? c.amount : c.count) / cotisationDenom) * 100, 2) : 0}%`,
-                  background: cotisationColor[c.status] ?? pal.axis,
+                  width:           `${cotisationDenom > 0 ? Math.max(((cotisationTotal > 0 ? c.amount : c.count) / cotisationDenom) * 100, 2) : 0}%`,
+                  background:      cotisationColor[c.status] ?? pal.axis,
+                  boxShadow:       `0 0 8px ${cotisationColor[c.status] ?? pal.axis}88`,
+                  animationDelay: `${i * 80}ms`,
                 }}
-                className="first:rounded-l-md last:rounded-r-md"
               />
             ))}
           </div>
 
-          <div className="mt-3 space-y-1.5">
+          <div className="mt-4 space-y-1.5">
             {data.cotisations.map(c => (
               <div key={c.status} className="flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2">
@@ -174,38 +192,72 @@ export function FinanceCharts() {
         </div>
       )}
 
-      {/* Recettes vs Dépenses — trend over time, 2 distinct series → grouped bar */}
+      {/* Recettes vs Dépenses — trend over time, 2 distinct series → area chart
+          (dataviz skill: "trend over time" → line/area; bar is for comparing discrete
+          categories, not a continuous monthly progression). */}
       {data.hasFinances && (
-        <div className={`rounded-xl border bg-card p-5 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
+        <div className={`rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
           <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes vs dépenses — 6 derniers mois</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={data.monthly} barGap={2} barCategoryGap="30%" margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-              <CartesianGrid vertical={false} strokeDasharray="3 3" stroke={pal.grid} />
+          {/* debounce: avoids a known Recharts+ResizeObserver race where the container's
+              first reported size is stale/zero — without it the chart can settle into its
+              final layout before the mount animation gets a correct size to animate from,
+              so it just appears instead of growing in. */}
+          <ResponsiveContainer width="100%" height={200} debounce={50}>
+            <AreaChart data={data.monthly} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+              <defs>
+                {/* Wash fill fading to fully transparent — the line itself carries the
+                    series color at full strength, the fill is just a soft trend cue. */}
+                <linearGradient id="fc-recettes" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stopColor={pal.recettes} stopOpacity={0.35} />
+                  <stop offset="100%" stopColor={pal.recettes} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="fc-depenses" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"  stopColor={pal.depenses} stopOpacity={0.35} />
+                  <stop offset="100%" stopColor={pal.depenses} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              {/* Solid hairline, not dashed — dashing reads as a threshold/projection,
+                  not a plain grid (dataviz skill anti-pattern). */}
+              <CartesianGrid vertical={false} stroke={pal.grid} />
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
               <YAxis hide />
-              <Tooltip content={<MonthlyTip pal={pal} />} cursor={{ fill: pal.cursor }} />
+              <Tooltip content={<MonthlyTip pal={pal} />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
               <Legend
-                iconType="square"
+                iconType="plainline"
                 wrapperStyle={{ fontSize: 12, color: pal.axis }}
                 formatter={(value) => (value === "recettes" ? "Recettes" : "Dépenses")}
               />
-              <Bar dataKey="recettes" name="recettes" fill={pal.recettes} radius={[4, 4, 0, 0]} maxBarSize={20} />
-              <Bar dataKey="depenses" name="depenses" fill={pal.depenses} radius={[4, 4, 0, 0]} maxBarSize={20} />
-            </BarChart>
+              <Area
+                type="monotone" dataKey="recettes" name="recettes"
+                stroke={pal.recettes} strokeWidth={2} fill="url(#fc-recettes)"
+                dot={{ r: 3, fill: pal.recettes, strokeWidth: 0 }}
+                activeDot={{ r: 5, fill: pal.recettes, stroke: "var(--card)", strokeWidth: 2 }}
+                animationDuration={600} animationEasing="ease-out"
+                style={{ filter: `drop-shadow(0 0 4px ${pal.recettes}88)` }}
+              />
+              <Area
+                type="monotone" dataKey="depenses" name="depenses"
+                stroke={pal.depenses} strokeWidth={2} fill="url(#fc-depenses)"
+                dot={{ r: 3, fill: pal.depenses, strokeWidth: 0 }}
+                activeDot={{ r: 5, fill: pal.depenses, stroke: "var(--card)", strokeWidth: 2 }}
+                animationDuration={600} animationEasing="ease-out"
+                style={{ filter: `drop-shadow(0 0 4px ${pal.depenses}88)` }}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       )}
 
       {/* Recettes par catégorie — magnitude ranking → single-hue sequential bar */}
       {data.hasFinances && data.incomeByCategory.length > 0 && (
-        <div className="rounded-xl border bg-card p-5 lg:col-span-3">
+        <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30 lg:col-span-3">
           <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes par catégorie — {data.year}</p>
-          <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)}>
+          <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
             <BarChart
               data={data.incomeByCategory}
               layout="vertical"
-              barSize={16}
-              margin={{ top: 0, right: 88, bottom: 0, left: 8 }}
+              barSize={20}
+              margin={{ top: 0, right: 100, bottom: 0, left: 8 }}
             >
               <XAxis type="number" hide />
               <YAxis
@@ -217,8 +269,16 @@ export function FinanceCharts() {
                 width={140}
               />
               <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
-              <Bar dataKey="amount" fill={pal.sequential} radius={[0, 4, 4, 0]}>
-                <LabelList dataKey="amount" position="right" formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+              <Bar
+                dataKey="amount"
+                shape={(props: { x?: number; y?: number; width?: number; height?: number }) => (
+                  <LollipopBar {...props} color={pal.sequential} />
+                )}
+                animationDuration={500} animationEasing="ease-out"
+              >
+                {/* Default offset assumes a flush bar end — the ring marker extends past
+                    that point, so push the label out further to clear it. */}
+                <LabelList dataKey="amount" position="right" offset={16} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
