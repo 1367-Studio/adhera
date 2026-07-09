@@ -41,7 +41,7 @@ export function NotificationBell() {
               button — the button isn't flush against the screen edge (ThemeToggle/UserMenu
               sit after it in the header), so `right-0` relative to it alone overflowed off
               the left edge of narrow screens and got clipped. */}
-          <div className="fixed inset-x-2 top-14 z-50 rounded-xl border border-border bg-card shadow-xl sm:absolute sm:inset-x-auto sm:left-auto sm:right-0 sm:top-10 sm:w-80">
+          <div className="fixed inset-x-2 top-14 z-50 overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:absolute sm:inset-x-auto sm:left-auto sm:right-0 sm:top-10 sm:w-80">
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <span className="text-sm font-medium">
                 Notifications{unread.length > 0 && ` (${unread.length})`}
@@ -71,8 +71,12 @@ export function NotificationBell() {
                 <div
                   key={n.id}
                   className={cn(
-                    "flex gap-2.5 px-4 py-3 text-sm transition-colors cursor-pointer",
-                    !n.read ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-muted/30",
+                    // A translucent primary wash across the whole row read as a washed-out
+                    // pale blue, especially in dark mode — a left accent border marks
+                    // "unread" clearly without tinting the row itself; hover stays neutral
+                    // for every row instead of colored.
+                    "flex gap-2.5 border-l-2 px-4 py-3 text-sm transition-colors cursor-pointer hover:bg-muted/40",
+                    !n.read ? "border-l-primary" : "border-l-transparent",
                   )}
                   onClick={() => {
                     if (!n.read) markRead.mutate(n.id)

@@ -13,7 +13,11 @@ const badgeVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
         destructive:
-          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+          // A near-black surface leaves a 10–20%-opacity fill with barely any contrast
+          // against it (the old navy dark background had enough of its own hue for the
+          // tint to read; true neutral black doesn't) — a visible border compensates
+          // without depending on the fill alone.
+          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/25 dark:border-destructive/40 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
         outline:
           "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
         ghost:

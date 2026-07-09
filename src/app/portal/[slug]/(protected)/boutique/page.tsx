@@ -43,7 +43,7 @@ export default function BoutiquePortalPage() {
   return (
     <div className="space-y-5 pb-10">
       <div className="flex items-center gap-3 py-4">
-        <div className="rounded-xl bg-primary/10 p-2.5 shrink-0">
+        <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
