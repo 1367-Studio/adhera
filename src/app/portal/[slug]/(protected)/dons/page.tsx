@@ -65,6 +65,12 @@ function DonsPortalPageInner() {
     return () => clearTimeout(t)
   }, [polling])
 
+  // Stop as soon as the webhook actually lands instead of always riding out the full
+  // 20s — dons are ordered newest-first, so the most recent one is the one just paid.
+  useEffect(() => {
+    if (polling && dons[0]?.paidAt) setPolling(false)
+  }, [polling, dons])
+
   const canIssueReceipts = dons[0]?.association.canIssueTaxReceipts ?? false
 
   function downloadRecu(donId: string) {

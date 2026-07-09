@@ -26,7 +26,7 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
     cn(
       "p-1.5 rounded transition-colors",
       active
-        ? "bg-primary/10 text-primary"
+        ? "bg-primary/10 dark:bg-primary/20 text-primary"
         : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
     )
 

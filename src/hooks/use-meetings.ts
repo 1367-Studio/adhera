@@ -111,7 +111,9 @@ export function useDeleteMeeting() {
 function useMeetingChannelListener<T>(event: string, onEvent: (data: T) => void) {
   const { associationId } = useCurrentUser()
   const onEventRef = useRef(onEvent)
-  onEventRef.current = onEvent
+  useEffect(() => {
+    onEventRef.current = onEvent
+  })
 
   useEffect(() => {
     if (!associationId) return

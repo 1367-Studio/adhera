@@ -38,18 +38,19 @@ export function TableauDeBord() {
   const cotisationsAlert = !!data?.cotisationsEnAttente
   const soldePositive    = !data || data.solde >= 0
 
-  // Membres/Événements are plain counts with no real financial meaning, so they share
-  // one neutral accent instead of an arbitrary color each. Cotisations and Solde reuse
-  // the exact same palette as the charts just below (usePalette) — same yellow for "en
-  // attente", same green/red for paid/negative — instead of unrelated Tailwind shades,
-  // so a color means the same thing everywhere on this screen.
+  // Membres/Événements are plain counts with no real financial meaning, so they get no
+  // accent color (null → neutral rendering below) instead of an arbitrary one each.
+  // Cotisations and Solde reuse the exact same palette as the charts just below
+  // (usePalette) — same yellow for "en attente", same green/red for paid/negative —
+  // instead of unrelated Tailwind shades, so a color means the same thing everywhere on
+  // this screen.
   const allStats = [
     {
       label:     "Membres actifs",
       value:     data?.membresActifs ?? "—",
       icon:      UsersIcon,
       href:      "/dashboard/membres",
-      neutral:   true,
+      accent:    null as string | null,
       moduleKey: null,
     },
     {
@@ -57,7 +58,7 @@ export function TableauDeBord() {
       value:     data?.evenementsMois ?? "—",
       icon:      CalendarBlankIcon,
       href:      "/dashboard/evenements",
-      neutral:   true,
+      accent:    null as string | null,
       moduleKey: "evenements" as const,
     },
     {
@@ -65,8 +66,7 @@ export function TableauDeBord() {
       value:     data?.cotisationsEnAttente ?? "—",
       icon:      CoinsIcon,
       href:      "/dashboard/cotisations",
-      neutral:   !cotisationsAlert,
-      accent:    pal.enAttente,
+      accent:    cotisationsAlert ? pal.enAttente : null,
       alert:     cotisationsAlert,
       moduleKey: "cotisations" as const,
     },
@@ -75,7 +75,6 @@ export function TableauDeBord() {
       value:     data ? fmt(data.solde) : "—",
       icon:      BankIcon,
       href:      "/dashboard/finances",
-      neutral:   false,
       accent:    soldePositive ? pal.recettes : pal.depenses,
       moduleKey: "finances" as const,
     },
@@ -110,14 +109,14 @@ export function TableauDeBord() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{stat.label}</span>
                 <div
-                  className={cn("flex size-8 items-center justify-center rounded-lg", stat.neutral && "bg-accent")}
-                  style={!stat.neutral ? { backgroundColor: hexToRgba(stat.accent!, pal.dark ? 0.2 : 0.12) } : undefined}
+                  className={cn("flex size-8 items-center justify-center rounded-lg", !stat.accent && "bg-accent")}
+                  style={stat.accent ? { backgroundColor: hexToRgba(stat.accent, pal.dark ? 0.2 : 0.12) } : undefined}
                 >
                   {stat.alert
-                    ? <WarningCircleIcon className="size-4" style={{ color: stat.accent }} />
+                    ? <WarningCircleIcon className="size-4" style={stat.accent ? { color: stat.accent } : undefined} />
                     : <stat.icon
-                        className={cn("size-4", stat.neutral && "text-accent-foreground")}
-                        style={!stat.neutral ? { color: stat.accent } : undefined}
+                        className={cn("size-4", !stat.accent && "text-accent-foreground")}
+                        style={stat.accent ? { color: stat.accent } : undefined}
                       />
                   }
                 </div>
@@ -128,7 +127,7 @@ export function TableauDeBord() {
                     "text-2xl font-bold tabular-nums",
                     isLoading && "animate-pulse text-muted-foreground",
                   )}
-                  style={!isLoading && !stat.neutral ? { color: stat.accent } : undefined}
+                  style={!isLoading && stat.accent ? { color: stat.accent } : undefined}
                 >
                   {isLoading ? "…" : stat.value}
                 </span>

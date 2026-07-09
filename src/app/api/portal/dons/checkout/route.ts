@@ -22,7 +22,17 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   // actually finishes — checking only that would let a donor fill out the whole form
   // (amount, SIRET for a company) and only discover payment isn't actually available
   // when they submit and hit the POST's own check below.
-  const paymentEnabled = !!assoc.stripeConnectId && await connectAccountChargesEnabled(assoc.stripeConnectId)
+  let paymentEnabled = false
+  if (assoc.stripeConnectId) {
+    try {
+      paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
+    } catch (err) {
+      // This is just informational (drives whether the form renders enabled) — a
+      // transient Stripe error here shouldn't 500 the whole donation page. The POST
+      // route re-checks for real before any money moves.
+      console.error(`[dons-checkout] failed to check payment availability for ${ctx.associationId}:`, err)
+    }
+  }
 
   return NextResponse.json({
     name:                assoc.name,

@@ -68,11 +68,17 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
   // conditional updateMany only matches rows still paid; if a concurrent call already
   // claimed one of these seats, the count comes up short and the whole transaction is
   // thrown away (nothing gets written) instead of risking two payouts.
+  //
+  // `rsvp` is deliberately left untouched here — checkout/route.ts counts a seat as
+  // occupied when `ticketPaidAt IS NOT NULL OR rsvp = 'CONFIRME'`, so clearing it this
+  // early would free the seat for someone else to book while the refund is still in
+  // flight. If the refund then failed, the rollback below would silently un-book them.
+  // The seat only actually becomes available once the refund has succeeded, below.
   try {
     await prisma.$transaction(async (tx) => {
       const { count } = await tx.participation.updateMany({
         where: { id: { in: targetIds }, ticketPaidAt: { not: null } },
-        data:  { ticketPaidAt: null, stripeSessionId: null, amount: null, rsvp: null },
+        data:  { ticketPaidAt: null, stripeSessionId: null, amount: null },
       })
       if (count !== targetIds.length) throw new TicketAlreadyClaimedError()
     })
@@ -97,11 +103,12 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
     })
   } catch (err) {
     // The claim above already committed — undo it so the seat doesn't sit "cancelled"
-    // in the DB when no money actually moved.
+    // in the DB when no money actually moved. rsvp was never touched by the claim, so
+    // there's nothing to restore for it here.
     await prisma.$transaction(
       targets.map(t => prisma.participation.update({
         where: { id: t.id },
-        data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount, rsvp: t.rsvp },
+        data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount },
       }))
     )
     console.error(`[cancel-ticket] Stripe refund failed for seats ${targetIds.join(",")}:`, err)
@@ -129,10 +136,17 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
 
   // The buyer's own seat was already reset (kept, not deleted) by the claim transaction
   // above, so they can re-reserve later without hitting the one-self-ticket-per-event
-  // constraint — only a cancelled companion still needs removing here.
+  // constraint — only a cancelled companion still needs removing here. `rsvp` is cleared
+  // only now, with the refund confirmed, so the seat doesn't count as free (see the claim
+  // step above) until the money has actually gone back.
+  const selfTargets      = targets.filter(t => t.membreId)
   const companionTargets = targets.filter(t => !t.membreId)
 
   await prisma.$transaction([
+    ...(selfTargets.length ? [prisma.participation.updateMany({
+      where: { id: { in: selfTargets.map(t => t.id) } },
+      data:  { rsvp: null },
+    })] : []),
     ...(companionTargets.length ? [prisma.participation.deleteMany({
       where: { id: { in: companionTargets.map(t => t.id) } },
     })] : []),
