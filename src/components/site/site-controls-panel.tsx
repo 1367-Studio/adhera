@@ -274,7 +274,7 @@ export function SiteControlsPanel({
                 <button
                   type="button"
                   onClick={() => update({ [key]: !active })}
-                  className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors ${active ? "bg-foreground" : "bg-muted"}`}
+                  className={`relative inline-flex h-5 w-9 shrink-0 rounded-full border-2 border-transparent transition-colors ${active ? "bg-primary" : "bg-muted"}`}
                 >
                   <span className={`pointer-events-none inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${active ? "translate-x-4" : "translate-x-0"}`} />
                 </button>
