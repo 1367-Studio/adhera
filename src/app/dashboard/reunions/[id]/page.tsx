@@ -167,7 +167,7 @@ export default function ReunionDetailPage() {
 
   if (inRoom && meeting) {
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-4">
         <h2 className="text-lg font-semibold">{meeting.title}</h2>
         <MeetingRoom
           meetingId={id}
@@ -186,7 +186,7 @@ export default function ReunionDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 p-6">
+      <div className="space-y-4">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <div className="h-40 bg-muted rounded animate-pulse" />
       </div>
@@ -194,7 +194,7 @@ export default function ReunionDetailPage() {
   }
 
   if (!meeting) {
-    return <div className="p-6 text-sm text-muted-foreground">Réunion introuvable.</div>
+    return <div className="text-sm text-muted-foreground">Réunion introuvable.</div>
   }
 
   const transcriptDirty  = transcript !== (meeting.transcript ?? "")
@@ -205,7 +205,7 @@ export default function ReunionDetailPage() {
   const canSummarize     = modules.reunions
 
   return (
-    <div className="flex flex-col gap-6 p-6 h-full">
+    <div className="flex flex-col gap-6 h-full">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/reunions")}>
