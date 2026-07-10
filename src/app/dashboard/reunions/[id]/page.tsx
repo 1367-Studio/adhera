@@ -233,9 +233,9 @@ export default function ReunionDetailPage() {
 
         {/* Left — Transcript (2/3) */}
         <div className="lg:col-span-2 space-y-3 flex flex-col">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <Label>Transcription</Label>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               {canTranscribe && hasRecording && (
                 <Button
                   size="sm"

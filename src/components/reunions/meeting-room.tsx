@@ -227,7 +227,7 @@ function Controls({
   }
 
   return (
-    <div className="flex items-center justify-center gap-3 px-6 py-4 border-t bg-card shrink-0">
+    <div className="flex flex-wrap items-center justify-center gap-3 px-3 py-4 sm:px-6 border-t bg-card shrink-0">
       {isAdmin && (
         <TooltipProvider>
           <Tooltip>
