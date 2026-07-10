@@ -10,6 +10,7 @@ import { membreCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
+import { assertMemberLimit, MemberLimitReachedError } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -65,6 +66,13 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
+  }
+
+  try {
+    await assertMemberLimit(associationId)
+  } catch (err) {
+    if (err instanceof MemberLimitReachedError) return NextResponse.json({ error: err.message, code: err.code }, { status: 422 })
+    throw err
   }
 
   const assoc = await prisma.association.findUnique({

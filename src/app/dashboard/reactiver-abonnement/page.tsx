@@ -14,12 +14,12 @@ export default async function ReactiverAbonnementPage() {
   // while not actually CANCELLED.
   const assoc = await prisma.association.findUnique({
     where:  { id: u.associationId },
-    select: { subscriptionStatus: true },
+    select: { subscriptionStatus: true, plan: true },
   })
   if (!assoc || assoc.subscriptionStatus !== "CANCELLED") redirect("/dashboard")
   if (u.role !== "ADMIN" && u.role !== "PRESIDENT") redirect("/dashboard/abonnement-suspendu")
 
   const pricing = await getPricingInfo()
 
-  return <ReactivateSubscriptionView pricing={pricing} />
+  return <ReactivateSubscriptionView pricing={pricing} initialTier={assoc.plan === "PRO" ? "pro" : "essential"} />
 }

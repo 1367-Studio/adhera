@@ -3,13 +3,16 @@ import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
+import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 
 const schema = z.object({
-  firstName: z.string().min(1).max(80),
-  lastName:  z.string().min(1).max(80),
-  email:     z.string().email().optional().or(z.literal("")),
-  phone:     z.string().max(30).optional().or(z.literal("")),
-  typeId:    z.string().optional(),
+  firstName:     z.string().min(1).max(80),
+  lastName:      z.string().min(1).max(80),
+  email:         z.string().email().optional().or(z.literal("")),
+  phone:         z.string().max(30).optional().or(z.literal("")),
+  typeId:        z.string().optional(),
+  acceptedTerms: z.literal(true),
 })
 
 export async function POST(
@@ -37,6 +40,7 @@ export async function POST(
   }
 
   const { firstName, lastName, email, phone, typeId } = parsed.data
+  const acceptedIp = consentIp(req)
 
   // Prevent duplicate by email
   if (email) {
@@ -67,15 +71,25 @@ export async function POST(
     }
   }
 
+  try {
+    await assertMemberLimit(assoc.id)
+  } catch (err) {
+    if (err instanceof MemberLimitReachedError) return NextResponse.json({ error: MEMBER_LIMIT_VISITOR_MESSAGE }, { status: 422 })
+    throw err
+  }
+
   await prisma.membre.create({
     data: {
       firstName,
       lastName,
-      email:         email || null,
-      phone:         phone || null,
-      status:        "PENDING",
-      associationId: assoc.id,
-      typeId:        typeId ?? null,
+      email:           email || null,
+      phone:           phone || null,
+      status:          "PENDING",
+      associationId:   assoc.id,
+      typeId:          typeId ?? null,
+      termsAcceptedAt: new Date(),
+      termsVersion:    CURRENT_TERMS_VERSION,
+      termsAcceptedIp: acceptedIp,
     },
   })
 

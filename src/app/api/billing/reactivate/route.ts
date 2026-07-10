@@ -1,15 +1,17 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, STRIPE_PRICE_MONTHLY, STRIPE_PRICE_YEARLY } from "@/lib/stripe"
+import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, priceIdFor, getPricingInfo } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
+import { memberLimitForPlan } from "@/lib/plan-limits"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 const schema = z.object({
   paymentMethodId: z.string(),
   plan:            z.enum(["monthly", "yearly"]),
+  tier:            z.enum(["essential", "pro"]),
 })
 
 // The standby screen's "Se réabonner" action, reached only once the subscription has
@@ -19,7 +21,7 @@ const schema = z.object({
 export const POST = withAdminAuth(async (req, ctx) => {
   const parsed = schema.safeParse(await req.json().catch(() => null))
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
-  const { paymentMethodId, plan } = parsed.data
+  const { paymentMethodId, plan, tier } = parsed.data
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -28,6 +30,23 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (!assoc?.stripeCustomerId) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
   if (assoc.subscriptionStatus !== "CANCELLED") {
     return NextResponse.json({ error: "Aucune réactivation nécessaire" }, { status: 400 })
+  }
+
+  // Block reactivating into a tier smaller than the association's current membership — a
+  // cancelled association can easily already have more members than Essentiel's cap (e.g.
+  // it was on Pro before cancelling). Existing members aren't deleted by picking a smaller
+  // tier, but silently letting the subscription go through would leave it stuck over its
+  // own new cap with no path to add more members until upgrading again, without ever being
+  // warned at the moment of choice.
+  const [pricing, activeCount] = await Promise.all([
+    getPricingInfo(),
+    prisma.membre.count({ where: { associationId: ctx.associationId, status: "ACTIF" } }),
+  ])
+  const limit = memberLimitForPlan(tier === "pro" ? "PRO" : "ESSENTIAL", pricing)
+  if (activeCount > limit) {
+    return NextResponse.json({
+      error: `Cette association compte ${activeCount} membres actifs, au-delà de la limite de ${limit} de la formule ${tier === "pro" ? "Pro" : "Essentiel"}. Choisissez une formule supérieure.`,
+    }, { status: 422 })
   }
 
   // Atomic claim, conditioned on the row still being CANCELLED: closes the race where a
@@ -43,7 +62,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Une réactivation est déjà en cours" }, { status: 409 })
   }
 
-  const priceId = plan === "yearly" ? STRIPE_PRICE_YEARLY : STRIPE_PRICE_MONTHLY
+  const priceId = priceIdFor(tier, plan === "yearly" ? "yearly" : "monthly")
 
   let subscription: Awaited<ReturnType<typeof stripe.subscriptions.create>>
   try {
@@ -76,6 +95,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     where: { id: ctx.associationId },
     data: {
       stripeSubscriptionId: subscription.id,
+      plan:                 tier === "pro" ? "PRO" : "ESSENTIAL",
       subscriptionStatus:   toSubscriptionStatus(subscription.status),
       suspendedAt:          null,
       cancelAtPeriodEnd:    false,

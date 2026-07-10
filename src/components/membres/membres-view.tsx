@@ -1,7 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { ApiError } from "@/lib/api-error"
+import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
@@ -148,6 +151,7 @@ function ChangeRoleModal({
 const PAGE_SIZE = 20
 
 export function MembresView() {
+  const router                          = useRouter()
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
   const [page, setPage]                 = useState(1)
@@ -200,6 +204,15 @@ export function MembresView() {
       toast.success("Membre ajouté avec succès")
       setCreateOpen(false)
     } catch (err) {
+      if (err instanceof ApiError && err.code === MEMBER_LIMIT_ERROR_CODE) {
+        toast.error(err.message, {
+          action: {
+            label:   "Voir l'abonnement",
+            onClick: () => router.push("/dashboard/parametres?tab=abonnement"),
+          },
+        })
+        return
+      }
       toast.error(err instanceof Error ? err.message : "Erreur")
     }
   }

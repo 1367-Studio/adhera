@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe, toSubscriptionStatus, subscriptionPeriodEnd } from "@/lib/stripe"
+import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, getPricingInfo } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
@@ -571,14 +571,24 @@ export async function POST(req: Request) {
       // drives the "suspended since" messaging on the standby screen and backoffice.
       const assoc = await prisma.association.findFirst({
         where:  { stripeSubscriptionId: sub.id },
-        select: { id: true, subscriptionStatus: true },
+        select: { id: true, subscriptionStatus: true, plan: true },
       })
       if (!assoc) break
+
+      // An admin switching Essentiel↔Pro from the Stripe Customer Portal lands here as a
+      // price change on the existing subscription item — this is what syncs Association.plan
+      // back so the member limit and IA gating (src/lib/plan-limits.ts, src/lib/modules.ts)
+      // reflect the new tier. Prices outside PLAN_PRICES (the legacy single-product price)
+      // resolve to null and leave `plan` untouched.
+      const priceId    = sub.items.data[0]?.price.id
+      const newTier    = priceId ? tierForPriceId(priceId) : null
+      const newPlan    = newTier ? (newTier === "pro" ? "PRO" as const : "ESSENTIAL" as const) : null
 
       await prisma.association.update({
         where: { id: assoc.id },
         data:  {
           subscriptionStatus: newStatus,
+          ...(newPlan ? { plan: newPlan } : {}),
           suspendedAt:
             newStatus === "SUSPENDED"
               ? (assoc.subscriptionStatus === "SUSPENDED" ? undefined : new Date())
@@ -587,6 +597,62 @@ export async function POST(req: Request) {
           currentPeriodEndsAt: subscriptionPeriodEnd(sub),
         },
       })
+
+      // Unlike /api/billing/reactivate, a Customer Portal downgrade can't be blocked ahead
+      // of time — Stripe has already committed the price change by the time this event
+      // arrives. Only option left is to catch it right after the fact: if it actually moved
+      // the association to a smaller tier (not just a routine renewal — newPlan differs from
+      // what it was) and that leaves them over the new cap, tell the admins immediately
+      // instead of letting them find out later from a failed member-creation attempt.
+      if (newPlan && newPlan !== assoc.plan) {
+        const [pricing, activeCount] = await Promise.all([
+          getPricingInfo(),
+          prisma.membre.count({ where: { associationId: assoc.id, status: "ACTIF" } }),
+        ])
+        const newLimit = newPlan === "PRO" ? pricing.plans.pro.memberLimit : pricing.plans.essential.memberLimit
+        if (activeCount > newLimit) {
+          // Stripe can redeliver this same event; skipDuplicates on the notification insert
+          // below wouldn't actually catch that (Notification has no unique constraint to
+          // collide on) — guard explicitly on this event's id instead, same pattern as
+          // invoice.payment_failed above.
+          const alreadyNotified = await prisma.activityLog.findFirst({
+            where: {
+              associationId: assoc.id,
+              action:        "SUBSCRIPTION_DOWNGRADE_OVER_LIMIT",
+              entityId:      assoc.id,
+              metadata:      { path: ["stripeEventId"], equals: event.id },
+            },
+            select: { id: true },
+          })
+
+          if (!alreadyNotified) {
+            const admins = await prisma.user.findMany({
+              where:  { associationId: assoc.id, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+              select: { id: true },
+            })
+            if (admins.length) {
+              const tierLabel = newPlan === "PRO" ? "Pro" : "Essentiel"
+              await prisma.notification.createMany({
+                data: admins.map(a => ({
+                  userId: a.id,
+                  title:  "Formule en dessous du nombre de membres",
+                  body:   `Votre formule ${tierLabel} limite à ${newLimit} membres actifs, mais votre association en compte ${activeCount}. Vous ne pourrez pas ajouter de nouveaux membres tant que vous n'aurez pas repris une formule supérieure.`,
+                  link:   "/dashboard/parametres?tab=abonnement",
+                })),
+              })
+              await pusherServer.trigger(`private-association-${assoc.id}`, "new-notification", {}).catch(() => {})
+            }
+
+            await writeActivityLog({
+              associationId: assoc.id,
+              action:        "SUBSCRIPTION_DOWNGRADE_OVER_LIMIT",
+              entity:        "Association",
+              entityId:      assoc.id,
+              metadata:      { newPlan, activeCount, newLimit, stripeEventId: event.id },
+            })
+          }
+        }
+      }
       break
     }
     case "customer.subscription.deleted": {

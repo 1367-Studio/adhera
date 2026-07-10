@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma/client"
-import { writeActivityLog } from "@/lib/activity-log"
 
 const credentialsSchema = z.object({
   email:    z.string().email(),
@@ -16,11 +15,6 @@ const credentialsSchema = z.object({
 // the signIn callback below this is a portal (member) sign-in scoped to one association,
 // as opposed to a dashboard (staff) sign-in with no association context at all.
 export const OAUTH_PORTAL_SLUG_COOKIE = "oauth-portal-slug"
-
-function generateRandomPassword(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
-  return Array.from({ length: 24 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
-}
 
 function splitName(fullName: string | null | undefined): { firstName: string; lastName: string } {
   const parts = (fullName ?? "").trim().split(/\s+/)
@@ -131,53 +125,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
         if (!association) return `/portal/${slug}/login?error=association`
 
-        let dbUser = await prisma.user.findFirst({
+        const dbUser = await prisma.user.findFirst({
           where: { email, associationId: association.id, deletedAt: null },
         })
 
+        // Never auto-create here, same reasoning as the dashboard branch below: creating an
+        // account is also the moment consent to the privacy policy is captured (see
+        // PortalRegisterForm/src/app/api/portal/register/route.ts), which needs an actual
+        // form + checkbox, not a silent callback. Route to that form instead, prefilled;
+        // nothing is written to the database until it's submitted.
         if (!dbUser) {
-          const passwordHash = await bcrypt.hash(generateRandomPassword(), 12)
-          let membreId: string | null = null
-
-          dbUser = await prisma.$transaction(async (tx) => {
-            const created = await tx.user.create({
-              data: {
-                email, name: `${firstName} ${lastName}`.trim() || email,
-                passwordHash, role: "MEMBRE", associationId: association.id,
-              },
-            })
-
-            // Link to an existing unlinked Membre by email if available, same as the
-            // portal self-registration route, to avoid creating a duplicate person.
-            const existingMembre = await tx.membre.findFirst({
-              where: { email, associationId: association.id, userId: null, deletedAt: null },
-              select: { id: true },
-            })
-            if (existingMembre) {
-              await tx.membre.update({
-                where: { id: existingMembre.id },
-                data:  { userId: created.id, firstName, lastName, status: "ACTIF" },
-              })
-              membreId = existingMembre.id
-            } else {
-              const membre = await tx.membre.create({
-                data: { firstName, lastName, email, associationId: association.id, userId: created.id, status: "ACTIF" },
-              })
-              membreId = membre.id
-            }
-            return created
-          })
-
-          if (membreId) {
-            await writeActivityLog({
-              associationId: association.id,
-              action:        "MEMBRE_PORTAL_REGISTERED",
-              entity:        "Membre",
-              entityId:      membreId,
-              label:         `${firstName} ${lastName}`.trim() || email,
-              metadata:      { via: "google" },
-            })
-          }
+          const params = new URLSearchParams({ g_name: `${firstName} ${lastName}`.trim(), g_email: email })
+          return `/portal/${slug}/register?${params.toString()}`
         }
 
         if (!dbUser.active) return `/portal/${slug}/login?error=inactive`

@@ -7,16 +7,18 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
-import type { PricingInfo } from "@/lib/stripe"
+import type { PricingInfo, PlanTier } from "@/lib/stripe"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { TERMS_URL, PRIVACY_URL } from "@/lib/consent"
 import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { APP_NAME } from "@/config/brand"
 import { signInWithGoogleDashboard } from "@/lib/auth/actions"
-import { stripePromise, stripeAppearance, euros, PlanSelector, type Plan } from "@/components/billing/stripe-elements-shared"
+import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
@@ -60,7 +62,7 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
 
 // ─── Step 1: info ─────────────────────────────────────────────────────────────
 
-type Info = { associationName: string; city: string; firstName: string; lastName: string; email: string; password: string }
+type Info = { associationName: string; city: string; firstName: string; lastName: string; email: string; password: string; acceptedTerms: true }
 
 function StepInfo({
   defaultValues,
@@ -100,7 +102,7 @@ function StepInfo({
       const json = await res.json()
       if (!res.ok) throw new Error(json.error ?? "Erreur")
       onNext(
-        { associationName: data.associationName, city: data.city ?? "", firstName: data.firstName, lastName: data.lastName, email: data.email, password: data.password },
+        { associationName: data.associationName, city: data.city ?? "", firstName: data.firstName, lastName: data.lastName, email: data.email, password: data.password, acceptedTerms: data.acceptedTerms },
         json.customerId,
         json.clientSecret,
       )
@@ -174,6 +176,24 @@ function StepInfo({
         )}
       </div>
 
+      <CheckboxField
+        id="accepted-terms"
+        label={
+          <>
+            J&apos;accepte les{" "}
+            <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+              Conditions Générales de Services
+            </a>{" "}
+            et la{" "}
+            <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+              politique de confidentialité
+            </a>
+          </>
+        }
+        error={errors.acceptedTerms?.message}
+        {...register("acceptedTerms")}
+      />
+
       {apiError && (
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{apiError}</p>
       )}
@@ -204,6 +224,7 @@ function PaymentForm({
   info,
   customerId,
   clientSecret,
+  tier,
   plan,
   pricing,
   onBack,
@@ -212,6 +233,7 @@ function PaymentForm({
   info:         Info
   customerId:   string
   clientSecret: string
+  tier:         PlanTier
   plan:         Plan
   pricing:      PricingInfo
   onBack:       () => void
@@ -263,9 +285,11 @@ function PaymentForm({
           lastName:        info.lastName,
           email:           info.email,
           password:        info.password,
+          acceptedTerms:   info.acceptedTerms,
           customerId,
           paymentMethodId,
           plan,
+          tier,
         }),
       })
       const data = await res.json()
@@ -279,10 +303,11 @@ function PaymentForm({
     }
   }
 
-  const monthlyPrice = euros(pricing.monthlyAmountCents)
-  const yearlyEquiv  = euros(Math.round(pricing.yearlyAmountCents / 12))
-  const yearlyTotal  = euros(pricing.yearlyAmountCents)
-  const discountPct  = Math.round((1 - (pricing.yearlyAmountCents / 12) / pricing.monthlyAmountCents) * 100)
+  const tierPricing  = pricing.plans[tier]
+  const monthlyPrice = euros(tierPricing.monthlyAmountCents)
+  const yearlyEquiv  = euros(Math.round(tierPricing.yearlyAmountCents / 12))
+  const yearlyTotal  = euros(tierPricing.yearlyAmountCents)
+  const discountPct  = Math.round((1 - (tierPricing.yearlyAmountCents / 12) / tierPricing.monthlyAmountCents) * 100)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -365,6 +390,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
+  const [tier,         setTier]         = useState<PlanTier>("essential")
   const [plan,         setPlan]         = useState<Plan>("monthly")
   const [info,         setInfo]         = useState<Info | null>(null)
   const [customerId,   setCustomerId]   = useState("")
@@ -465,7 +491,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
 
   return (
     <div className="space-y-6">
-      <PlanSelector plan={plan} onChange={setPlan} pricing={pricing} />
+      <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />
 
       <StepIndicator current={step as "info" | "payment"} />
 
@@ -494,6 +520,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
             info={info}
             customerId={customerId}
             clientSecret={clientSecret}
+            tier={tier}
             plan={plan}
             pricing={pricing}
             onBack={() => setStep("info")}

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import type { MembershipSection } from "@/types/site-config"
 import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PRIVACY_URL } from "@/lib/consent"
 type MembreType = { id: string; name: string; color: string }
 
 type Props = {
@@ -13,15 +14,16 @@ type Props = {
 }
 
 type FormState = {
-  firstName: string
-  lastName:  string
-  email:     string
-  phone:     string
-  typeId:    string
+  firstName:     string
+  lastName:      string
+  email:         string
+  phone:         string
+  typeId:        string
+  acceptedTerms: boolean
 }
 
 export function SiteMembershipSection({ section, slug, membreTypes, color }: Props) {
-  const [form, setForm]       = useState<FormState>({ firstName: "", lastName: "", email: "", phone: "", typeId: "" })
+  const [form, setForm]       = useState<FormState>({ firstName: "", lastName: "", email: "", phone: "", typeId: "", acceptedTerms: false })
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [done, setDone]       = useState(false)
@@ -37,6 +39,10 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
       setError("Le prénom et le nom sont obligatoires.")
       return
     }
+    if (!form.acceptedTerms) {
+      setError("Merci d'accepter la politique de confidentialité pour envoyer votre demande.")
+      return
+    }
     setLoading(true)
     setError(null)
     try {
@@ -44,11 +50,12 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
-          firstName: form.firstName.trim(),
-          lastName:  form.lastName.trim(),
-          email:     form.email.trim() || undefined,
-          phone:     form.phone.trim() || undefined,
-          typeId:    form.typeId || undefined,
+          firstName:     form.firstName.trim(),
+          lastName:      form.lastName.trim(),
+          email:         form.email.trim() || undefined,
+          phone:         form.phone.trim() || undefined,
+          typeId:        form.typeId || undefined,
+          acceptedTerms: form.acceptedTerms,
         }),
       })
       const json = await res.json()
@@ -76,7 +83,7 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
           </p>
           <button
             type="button"
-            onClick={() => { setDone(false); setForm({ firstName: "", lastName: "", email: "", phone: "", typeId: "" }) }}
+            onClick={() => { setDone(false); setForm({ firstName: "", lastName: "", email: "", phone: "", typeId: "", acceptedTerms: false }) }}
             className="text-sm underline underline-offset-2 text-gray-400 hover:text-gray-600 transition-colors"
           >
             Envoyer une autre demande
@@ -156,6 +163,30 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
               </select>
             </div>
           )}
+
+          <div className="flex items-start gap-2.5">
+            <input
+              type="checkbox"
+              id="membership-accepted-terms"
+              checked={form.acceptedTerms}
+              onChange={e => setForm(prev => ({ ...prev, acceptedTerms: e.target.checked }))}
+              required
+              className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border-gray-300"
+              style={{ accentColor: color } as React.CSSProperties}
+            />
+            <label htmlFor="membership-accepted-terms" className="text-xs text-gray-600 cursor-pointer">
+              J&apos;accepte que mes données soient traitées conformément à la{" "}
+              <a
+                href={PRIVACY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="underline underline-offset-2 hover:text-gray-900"
+              >
+                politique de confidentialité
+              </a>
+            </label>
+          </div>
 
           {error && (
             <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>

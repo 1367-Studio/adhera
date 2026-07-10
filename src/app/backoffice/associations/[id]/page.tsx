@@ -6,10 +6,15 @@ import { Badge }     from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AssociationNotes } from "@/components/backoffice/association-notes"
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
+import { CustomMemberLimitEditor } from "@/components/backoffice/custom-member-limit-editor"
 import { parseModules }     from "@/lib/modules"
+import { getPricingInfo }   from "@/lib/stripe"
+import { memberLimitForPlan } from "@/lib/plan-limits"
 import { CaretLeftIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
+
+const planLabel: Record<string, string> = { ESSENTIAL: "Essentiel", PRO: "Pro" }
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
@@ -29,6 +34,8 @@ async function getAssociation(id: string) {
       city:                 true,
       country:              true,
       subscriptionStatus:   true,
+      plan:                 true,
+      customMemberLimit:    true,
       trialEndsAt:          true,
       suspendedAt:          true,
       stripeCustomerId:     true,
@@ -74,9 +81,11 @@ export default async function AssociationDetailPage({ params }: { params: Promis
   const assoc  = await getAssociation(id)
   if (!assoc) notFound()
 
-  const sub     = subLabel[assoc.subscriptionStatus] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
-  const admin   = assoc.users[0]
-  const modules = parseModules(assoc.modules)
+  const sub           = subLabel[assoc.subscriptionStatus] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
+  const admin         = assoc.users[0]
+  const modules       = parseModules(assoc.modules)
+  const pricing       = await getPricingInfo()
+  const standardLimit = memberLimitForPlan(assoc.plan, pricing)
 
   return (
     <div className="space-y-6">
@@ -146,6 +155,7 @@ export default async function AssociationDetailPage({ params }: { params: Promis
               <Badge variant={sub.variant}>{sub.label}</Badge>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
+              <Row label="Formule" value={`${planLabel[assoc.plan] ?? assoc.plan}${assoc.customMemberLimit ? " (sur mesure)" : ""}`} />
               {assoc.trialEndsAt && (
                 <Row label="Essai jusqu'au" value={new Date(assoc.trialEndsAt).toLocaleDateString("fr-FR")} />
               )}
@@ -158,6 +168,20 @@ export default async function AssociationDetailPage({ params }: { params: Promis
           </Card>
         </div>
       </div>
+
+      {/* Limite de membres */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Limite de membres</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CustomMemberLimitEditor
+            associationId={assoc.id}
+            standardLimit={standardLimit}
+            initialLimit={assoc.customMemberLimit}
+          />
+        </CardContent>
+      </Card>
 
       {/* Module toggles */}
       <Card>

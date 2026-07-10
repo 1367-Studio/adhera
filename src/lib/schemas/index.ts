@@ -14,15 +14,17 @@ export const registerSchema = z.object({
   lastName:        z.string().min(1, "Nom requis"),
   email:           z.string().email("Email invalide"),
   password:        z.string().min(8, "Min. 8 caractères"),
+  acceptedTerms:   z.literal(true, { message: "Vous devez accepter les CGS et la politique de confidentialité" }),
 })
 
 export type RegisterInput = z.infer<typeof registerSchema>
 
 export const portalRegisterSchema = z.object({
-  firstName: z.string().min(1, "Prénom requis"),
-  lastName:  z.string().min(1, "Nom requis"),
-  email:     z.string().email("Email invalide"),
-  typeId:    z.string().optional(),
+  firstName:     z.string().min(1, "Prénom requis"),
+  lastName:      z.string().min(1, "Nom requis"),
+  email:         z.string().email("Email invalide"),
+  typeId:        z.string().optional(),
+  acceptedTerms: z.literal(true, { message: "Vous devez accepter la politique de confidentialité" }),
 })
 
 export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>

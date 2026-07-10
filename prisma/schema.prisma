@@ -45,6 +45,17 @@ enum SubscriptionStatus {
   SUSPENDED
 }
 
+// Drives the member limit and which modules default on (see src/lib/plan-limits.ts,
+// src/lib/modules.ts) — independent from which Stripe Price actually bills the
+// association. Associations created before the Essentiel/Pro split keep billing on the
+// original single-product Price (STRIPE_PRICE_MONTHLY/YEARLY) but still get tagged
+// ESSENTIAL/PRO here based on their member count (see scripts/migrate-existing-
+// associations-to-tier.ts) so limits/features behave consistently for everyone.
+enum AssociationPlan {
+  ESSENTIAL
+  PRO
+}
+
 enum MaterialStatus {
   DISPONIBLE
   EN_USE
@@ -221,6 +232,12 @@ model Association {
   stripeCustomerId     String?
   stripeSubscriptionId String?
   stripeConnectId      String?
+  plan                 AssociationPlan    @default(ESSENTIAL)
+  // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
+  // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
+  // the member cap enforced by assertMemberLimit() past what that tier normally allows.
+  // Null means "use the tier's standard limit", not "unlimited".
+  customMemberLimit    Int?
   subscriptionStatus   SubscriptionStatus @default(TRIAL)
   trialEndsAt          DateTime?
   suspendedAt          DateTime?
@@ -269,6 +286,15 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
+  // Set once, at signup, when the account is created via /register (see
+  // src/lib/consent.ts and src/app/api/register/route.ts) — null for accounts created
+  // any other way (admin-created members, portal self-registration) since those don't
+  // go through the paid-signup consent step. termsVersion lets us know exactly which
+  // revision of the CGS/politique de confidentialité was in effect when they agreed.
+  termsAcceptedAt DateTime?
+  termsVersion    String?
+  termsAcceptedIp String?
+
   association         Association?         @relation(fields: [associationId], references: [id])
   notifications       Notification[]
   membre              Membre?
@@ -309,6 +335,15 @@ model Membre {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   deletedAt     DateTime?
+
+  // Set on the public membership-request form (src/components/site/sections/site-
+  // membership-section.tsx), which creates a PENDING Membre with no User/password yet —
+  // there's no User row to stamp consent on at that point, unlike the other signup flows
+  // (see User.termsAcceptedAt). Left null for members created any other way (admin-added,
+  // portal self-registration — those stamp the User instead).
+  termsAcceptedAt DateTime?
+  termsVersion    String?
+  termsAcceptedIp String?
 
   association         Association          @relation(fields: [associationId], references: [id])
   user                User?                @relation(fields: [userId], references: [id])
