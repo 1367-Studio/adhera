@@ -144,7 +144,7 @@ export function ReportsView() {
       />
 
       {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { label: "Total recettes", value: totalIncomes,              color: "text-green-600 dark:text-green-400", prefix: "+" },
           { label: "Total dépenses", value: -totalExpenses,            color: "text-destructive",                   prefix: "" },
