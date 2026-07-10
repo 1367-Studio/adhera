@@ -49,7 +49,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
         {...register("title")}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField
           label="Date de début"
           type="datetime-local"

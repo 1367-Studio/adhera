@@ -214,7 +214,9 @@ export default function EditProduitPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 animate-pulse">
+      // py-4 matches the real header's spacing (line ~299) so the page doesn't jump
+      // down once the actual content replaces this skeleton.
+      <div className="space-y-4 py-4 animate-pulse">
         <div className="h-8 w-64 bg-muted rounded" />
         <div className="h-96 bg-muted rounded-xl" />
       </div>

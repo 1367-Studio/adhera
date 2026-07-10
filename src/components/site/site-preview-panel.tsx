@@ -47,7 +47,7 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
   return (
     <div className="min-h-full bg-white text-gray-900" style={{ colorScheme: "light" }}>
       {/* Navbar */}
-      <nav className="sticky top-0 z-10 backdrop-blur border-b border-black/5" style={{ background: headerBg }}>
+      <nav className="sticky top-0 z-20 backdrop-blur border-b border-black/5" style={{ background: headerBg }}>
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 font-semibold" style={{ color: headerDark ? "#fff" : "#111827" }}>
             {logoUrl ? (

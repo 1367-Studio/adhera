@@ -117,7 +117,7 @@ export function ReunionsView() {
 
   if (activeMeetingId) {
     return (
-      <div className="flex flex-col gap-4 p-6">
+      <div className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold">
           {meetings.find((m) => m.id === activeMeetingId)?.title ?? "Réunion"}
         </h2>
@@ -137,7 +137,7 @@ export function ReunionsView() {
   }
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Réunions"
         description="Organisez des réunions vidéo avec vos membres"

@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { UserMenu } from "@/components/layout/user-menu"
 import { NotificationBell } from "@/components/layout/notification-bell"
 import { HelpButton } from "@/components/layout/help-button"
+import { UserIcon, SquaresFourIcon } from "@phosphor-icons/react/dist/ssr"
 import { isManager } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
@@ -50,24 +51,28 @@ interface HeaderProps {
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const inPortal = pathname.includes("/portal/")
   return (
-    <div className="flex items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
+    <div className="flex shrink-0 items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
       <Link
         href={`/portal/${slug}/actualites`}
+        title="Mon espace"
         className={cn(
-          "rounded-full px-3 py-1 transition-colors",
+          "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
-        Mon espace
+        <UserIcon className="size-3.5 sm:hidden" />
+        <span className="hidden sm:inline">Mon espace</span>
       </Link>
       <Link
         href="/dashboard"
+        title="Gestion"
         className={cn(
-          "rounded-full px-3 py-1 transition-colors",
+          "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           !inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
-        Gestion
+        <SquaresFourIcon className="size-3.5 sm:hidden" />
+        <span className="hidden sm:inline">Gestion</span>
       </Link>
     </div>
   )
@@ -89,7 +94,7 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
         </>
       )}
 
-      <span className="truncate text-sm font-medium sm:hidden">{currentLabel}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium sm:hidden">{currentLabel}</span>
 
       <Breadcrumb className="hidden sm:block">
         <BreadcrumbList>

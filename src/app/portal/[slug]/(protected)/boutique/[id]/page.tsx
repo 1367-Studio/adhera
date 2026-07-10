@@ -39,7 +39,9 @@ export default function ProduitDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 animate-pulse">
+      // py-4 matches the real header's spacing (line ~89) so the page doesn't jump
+      // down once the actual content replaces this skeleton.
+      <div className="space-y-4 py-4 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded" />
         <div className="grid md:grid-cols-2 gap-6">
           <div className="aspect-square bg-muted rounded-xl" />

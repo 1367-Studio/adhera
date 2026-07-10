@@ -147,7 +147,7 @@ export default function DonsPage() {
       <PageHeader title="Dons" description="Suivi des dons reçus en ligne." />
 
       {/* KPI cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <div className="rounded-xl border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <TrendUpIcon className="size-3.5" />

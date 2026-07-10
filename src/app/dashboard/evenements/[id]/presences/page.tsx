@@ -418,7 +418,9 @@ export default function PresencesPage() {
 
   if (loadingEvent) {
     return (
-      <div className="space-y-4">
+      // mt-4 matches the real content's spacing (line ~442) so the page doesn't jump
+      // down once the actual content replaces this skeleton.
+      <div className="space-y-4 mt-4">
         <div className="h-8 w-64 rounded bg-muted animate-pulse" />
         <div className="h-24 rounded-xl bg-muted animate-pulse" />
       </div>
