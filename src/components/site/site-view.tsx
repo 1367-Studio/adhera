@@ -146,9 +146,9 @@ export function SiteView() {
   }
 
   return (
-    <div className="flex overflow-hidden -mx-4 -mb-4" style={{ height: "calc(100vh - 56px)" }}>
-      {/* Left — controls */}
-      <aside className="w-[360px] shrink-0 border-r flex flex-col overflow-hidden bg-background h-full">
+    <div className="flex flex-col overflow-hidden -mx-4 -mb-4 lg:flex-row" style={{ height: "calc(100vh - 56px)" }}>
+      {/* Left/top — controls */}
+      <aside className="h-1/2 w-full shrink-0 border-b flex flex-col overflow-hidden bg-background lg:h-full lg:w-[360px] lg:border-b-0 lg:border-r">
         <SiteControlsPanel
           config={config}
           published={published}
@@ -163,8 +163,8 @@ export function SiteView() {
         />
       </aside>
 
-      {/* Right — live preview, only this scrolls */}
-      <div className="flex-1 overflow-y-auto bg-gray-100 h-full">
+      {/* Right/bottom — live preview, only this scrolls */}
+      <div className="h-1/2 flex-1 overflow-y-auto bg-gray-100 lg:h-full">
         <SitePreviewPanel
           config={config}
           name={assoc?.name ?? "Mon association"}
