@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { MembreCreateInput, MembreUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
-import { apiErrorMessage } from "@/lib/api-error"
+import { apiErrorMessage, apiError } from "@/lib/api-error"
 
 const QK = ["membres"]
 
@@ -21,7 +21,7 @@ async function createMembre(data: MembreCreateInput) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la création"))
+  if (!res.ok) throw await apiError(res, "Erreur lors de la création")
   return res.json()
 }
 

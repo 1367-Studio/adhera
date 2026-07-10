@@ -6,6 +6,8 @@ import { sendEmail } from "@/lib/mail"
 import { portalWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
+import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
+import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 
 function generatePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
@@ -24,6 +26,7 @@ export async function POST(req: Request) {
   }
 
   const { firstName, lastName, email, typeId } = parsed.data
+  const acceptedIp = consentIp(req)
 
   const association = await prisma.association.findUnique({
     where:  { slug },
@@ -43,6 +46,13 @@ export async function POST(req: Request) {
     if (!validType) return NextResponse.json({ error: "Type de membre invalide." }, { status: 422 })
   }
 
+  try {
+    await assertMemberLimit(association.id)
+  } catch (err) {
+    if (err instanceof MemberLimitReachedError) return NextResponse.json({ error: MEMBER_LIMIT_VISITOR_MESSAGE }, { status: 422 })
+    throw err
+  }
+
   const password     = generatePassword()
   const passwordHash = await bcrypt.hash(password, 12)
 
@@ -51,11 +61,14 @@ export async function POST(req: Request) {
   await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
-        email:         email.toLowerCase(),
-        name:          `${firstName} ${lastName}`,
+        email:           email.toLowerCase(),
+        name:            `${firstName} ${lastName}`,
         passwordHash,
-        role:          "MEMBRE",
-        associationId: association.id,
+        role:            "MEMBRE",
+        associationId:   association.id,
+        termsAcceptedAt: new Date(),
+        termsVersion:    CURRENT_TERMS_VERSION,
+        termsAcceptedIp: acceptedIp,
       },
     })
 

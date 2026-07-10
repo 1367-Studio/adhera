@@ -4,14 +4,15 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import type { PricingInfo } from "@/lib/stripe"
-import { stripePromise, stripeAppearance, euros, PlanSelector, type Plan } from "@/components/billing/stripe-elements-shared"
+import type { PricingInfo, PlanTier } from "@/lib/stripe"
+import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CircleNotchIcon, LockIcon, ArrowLeftIcon, ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { apiErrorMessage } from "@/lib/api-error"
 
-function PaymentForm({ plan, pricing, clientSecret, onSuccess }: {
+function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
+  tier:         PlanTier
   plan:         Plan
   pricing:      PricingInfo
   clientSecret: string
@@ -56,7 +57,7 @@ function PaymentForm({ plan, pricing, clientSecret, onSuccess }: {
       const res = await fetch("/api/billing/reactivate", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ paymentMethodId, plan }),
+        body:    JSON.stringify({ paymentMethodId, plan, tier }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la réactivation"))
 
@@ -68,9 +69,10 @@ function PaymentForm({ plan, pricing, clientSecret, onSuccess }: {
     }
   }
 
-  const monthlyPrice = euros(pricing.monthlyAmountCents)
-  const yearlyEquiv  = euros(Math.round(pricing.yearlyAmountCents / 12))
-  const yearlyTotal  = euros(pricing.yearlyAmountCents)
+  const tierPricing  = pricing.plans[tier]
+  const monthlyPrice = euros(tierPricing.monthlyAmountCents)
+  const yearlyEquiv  = euros(Math.round(tierPricing.yearlyAmountCents / 12))
+  const yearlyTotal  = euros(tierPricing.yearlyAmountCents)
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -115,8 +117,9 @@ function PaymentForm({ plan, pricing, clientSecret, onSuccess }: {
   )
 }
 
-export function ReactivateSubscriptionView({ pricing }: { pricing: PricingInfo }) {
+export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: PricingInfo; initialTier: PlanTier }) {
   const router = useRouter()
+  const [tier, setTier] = useState<PlanTier>(initialTier)
   const [plan, setPlan] = useState<Plan>("monthly")
   const [clientSecret, setClientSecret] = useState("")
   const [loadingIntent, setLoadingIntent] = useState(true)
@@ -161,7 +164,7 @@ export function ReactivateSubscriptionView({ pricing }: { pricing: PricingInfo }
           </p>
         </div>
 
-        <PlanSelector plan={plan} onChange={setPlan} pricing={pricing} />
+        <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />
 
         {error && (
           <div className="flex items-center justify-between gap-3 rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">
@@ -182,7 +185,7 @@ export function ReactivateSubscriptionView({ pricing }: { pricing: PricingInfo }
 
         {clientSecret && !loadingIntent && (
           <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
-            <PaymentForm plan={plan} pricing={pricing} clientSecret={clientSecret} onSuccess={handleSuccess} />
+            <PaymentForm tier={tier} plan={plan} pricing={pricing} clientSecret={clientSecret} onSuccess={handleSuccess} />
           </Elements>
         )}
       </div>

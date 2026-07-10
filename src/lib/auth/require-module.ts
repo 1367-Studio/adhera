@@ -3,15 +3,16 @@ import { redirect }     from "next/navigation"
 import { NextResponse } from "next/server"
 import { auth }         from "@/lib/auth/config"
 import { prisma }       from "@/lib/prisma/client"
-import { parseModules, type AssocModules } from "@/lib/modules"
+import { parseModules, deriveModulesForPlan, type AssocModules } from "@/lib/modules"
 import type { SessionUser } from "@/lib/user-context"
 
 export const fetchModules = cache(async (associationId: string) => {
   const row = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { modules: true },
+    select: { modules: true, plan: true },
   })
-  return parseModules(row?.modules)
+  const modules = parseModules(row?.modules)
+  return row ? deriveModulesForPlan(row.plan, modules) : modules
 })
 
 /** Server Components / layouts: redirects if module is off */

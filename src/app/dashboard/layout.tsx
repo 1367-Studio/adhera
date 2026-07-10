@@ -7,7 +7,7 @@ import { PastDueBanner } from "@/components/layout/past-due-banner"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { TopLoader } from "@/components/top-loader"
 import { prisma } from "@/lib/prisma/client"
-import { parseModules } from "@/lib/modules"
+import { parseModules, deriveModulesForPlan } from "@/lib/modules"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -29,9 +29,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const assocRow = u.associationId
     ? await prisma.association.findUnique({
         where:  { id: u.associationId },
-        select: { modules: true, subscriptionStatus: true },
+        select: { modules: true, subscriptionStatus: true, plan: true },
       })
     : null
+
+  const modules = assocRow ? deriveModulesForPlan(assocRow.plan, parseModules(assocRow.modules)) : parseModules(null)
 
   // Suspended/cancelled accounts only ever render the dedicated standby screen (and,
   // for cancelled ones, the reactivation checkout page reached from it) — enforced by
@@ -40,7 +42,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // look like a bug that bounces you straight back to where you started.
   if (assocRow?.subscriptionStatus === "SUSPENDED" || assocRow?.subscriptionStatus === "CANCELLED") {
     return (
-      <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)}>
+      <UserProvider user={sessionUser} modules={modules}>
         <TopLoader />
         {children}
       </UserProvider>

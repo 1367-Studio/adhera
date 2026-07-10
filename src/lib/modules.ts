@@ -50,3 +50,13 @@ export function parseModules(raw: unknown): AssocModules {
   if (!raw || typeof raw !== "object") return { ...DEFAULT_MODULES }
   return { ...DEFAULT_MODULES, ...(raw as Partial<AssocModules>) }
 }
+
+// The Pro tier includes IA (see form-wise-app's Pricing.associations.plans.pro.features).
+// This only ever turns a module ON on top of what's stored — the backoffice's manual
+// per-association toggle (src/app/backoffice/associations/[id]/page.tsx) still works as
+// an override on Essentiel (e.g. a courtesy enable), it's just never able to turn Pro's
+// included modules back off.
+export function deriveModulesForPlan(plan: "ESSENTIAL" | "PRO", modules: AssocModules): AssocModules {
+  if (plan !== "PRO") return modules
+  return { ...modules, ia: true }
+}

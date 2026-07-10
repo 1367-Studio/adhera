@@ -3,11 +3,12 @@ import { randomUUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
-import { stripe, STRIPE_PRICE_MONTHLY, STRIPE_PRICE_YEARLY, TRIAL_DAYS } from "@/lib/stripe"
+import { stripe, priceIdFor, TRIAL_DAYS } from "@/lib/stripe"
 import { generateUniqueSlug } from "@/lib/slug"
 import { sendEmail } from "@/lib/mail"
 import { adminWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
+import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -16,9 +17,11 @@ const schema = z.object({
   lastName:        z.string().min(1),
   email:           z.string().email(),
   password:        z.string().min(8),
+  acceptedTerms:   z.literal(true),
   customerId:      z.string(),
   paymentMethodId: z.string(),
   plan:            z.enum(["monthly", "yearly"]),
+  tier:            z.enum(["essential", "pro"]),
 })
 
 export async function POST(req: Request) {
@@ -26,13 +29,14 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan } = parsed.data
+  const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan, tier } = parsed.data
+  const acceptedIp = consentIp(req)
 
   // Email is only unique per-association (@@unique([email, associationId])), same as
   // login/reset — an existing portal member (or admin of another association) must be
   // able to register their own new paid association with the same address. The new
   // association below always gets a fresh id, so there's nothing to collide with here.
-  const priceId = plan === "yearly" ? STRIPE_PRICE_YEARLY : STRIPE_PRICE_MONTHLY
+  const priceId = priceIdFor(tier, plan === "yearly" ? "yearly" : "monthly")
 
   let subscription: Awaited<ReturnType<typeof stripe.subscriptions.create>>
   try {
@@ -82,17 +86,21 @@ export async function POST(req: Request) {
           city:                city || null,
           stripeCustomerId:    customerId,
           stripeSubscriptionId: subscription.id,
+          plan:                tier === "pro" ? "PRO" : "ESSENTIAL",
           subscriptionStatus:  "TRIAL",
           trialEndsAt,
         },
       })
       const user = await tx.user.create({
         data: {
-          email:         email.toLowerCase(),
-          name:          `${firstName} ${lastName}`,
+          email:           email.toLowerCase(),
+          name:            `${firstName} ${lastName}`,
           passwordHash,
-          role:          "ADMIN",
-          associationId: association.id,
+          role:            "ADMIN",
+          associationId:   association.id,
+          termsAcceptedAt: new Date(),
+          termsVersion:    CURRENT_TERMS_VERSION,
+          termsAcceptedIp: acceptedIp,
         },
       })
       await tx.membre.create({

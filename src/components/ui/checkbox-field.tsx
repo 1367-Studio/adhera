@@ -1,10 +1,10 @@
 "use client"
 
-import { forwardRef } from "react"
+import { forwardRef, useId } from "react"
 import { cn } from "@/lib/utils"
 
 interface CheckboxFieldProps extends Omit<React.ComponentProps<"input">, "type"> {
-  label: string
+  label: React.ReactNode
   description?: string
   error?: string
   hint?: string
@@ -12,7 +12,12 @@ interface CheckboxFieldProps extends Omit<React.ComponentProps<"input">, "type">
 
 const CheckboxField = forwardRef<HTMLInputElement, CheckboxFieldProps>(
   ({ label, description, error, hint, className, id, required, ...props }, ref) => {
-    const fieldId = id ?? label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+    // Auto-derived, human-readable id for plain string labels (matches existing markup in
+    // snapshots/tests); a generated id (via useId, hydration-safe) backs richer labels
+    // (e.g. embedded links) instead of silently rendering without htmlFor/aria-describedby
+    // when a caller forgets to pass one explicitly.
+    const generatedId = useId()
+    const fieldId = id ?? (typeof label === "string" ? label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") : generatedId)
 
     return (
       <div className="space-y-1">

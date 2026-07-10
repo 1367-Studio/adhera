@@ -15,7 +15,12 @@ type BillingStatus = {
   cancelAtPeriodEnd:   boolean
   currentPeriodEndsAt: string | null
   hasBilling:          boolean
+  plan:                "essential" | "pro"
+  memberCount:         number
+  memberLimit:         number
 }
+
+const TIER_LABELS: Record<BillingStatus["plan"], string> = { essential: "Essentiel", pro: "Pro" }
 
 const statusConfig = {
   TRIAL:     { label: "Essai gratuit",       variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
@@ -71,6 +76,15 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
           </Badge>
         )}
       </div>
+
+      {!isLoading && !isError && data && (
+        <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2 text-xs">
+          <span className="font-medium">Formule {TIER_LABELS[data.plan]}</span>
+          <span className={data.memberCount >= data.memberLimit ? "font-medium text-destructive" : "text-muted-foreground"}>
+            {data.memberCount} / {data.memberLimit} membres
+          </span>
+        </div>
+      )}
 
       {!isLoading && isError && (
         <p className="text-xs text-destructive">
