@@ -87,7 +87,7 @@ export function ModuleToggles({ associationId, initialModules }: Props) {
                 </div>
                 <div className={cn(
                   "relative mt-0.5 inline-flex h-4 w-7 shrink-0 rounded-full border-2 border-transparent transition-colors",
-                  enabled ? "bg-foreground" : "bg-input",
+                  enabled ? "bg-primary" : "bg-input",
                 )}>
                   <span className={cn(
                     "pointer-events-none inline-block size-3 rounded-full bg-white shadow-sm transition-transform",
