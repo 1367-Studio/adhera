@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
+import { BASE_PATH } from "@/lib/env"
 
 type BillingStatus = { subscriptionStatus: string | null; suspendedAt: string | null }
 
@@ -79,7 +80,7 @@ export function SuspendedSubscriptionView({
       const res = await fetch("/api/billing/cancel", { method: "POST" })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
     },
-    onSuccess: () => { window.location.href = "/login?suspended=1" },
+    onSuccess: () => { window.location.href = `${BASE_PATH}/login?suspended=1` },
     onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
   })
 

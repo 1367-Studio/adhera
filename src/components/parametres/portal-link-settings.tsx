@@ -3,6 +3,7 @@
 import { useState, useRef } from "react"
 import { ClipboardIcon, CheckIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { BASE_PATH } from "@/lib/env"
 
 export function PortalLinkSettings({ slug }: { slug: string }) {
   const [copied, setCopied]       = useState(false)
@@ -11,8 +12,8 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
 
   const portalUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}/portal/${slug}`
-      : `/portal/${slug}`
+      ? `${window.location.origin}${BASE_PATH}/portal/${slug}`
+      : `${BASE_PATH}/portal/${slug}`
 
   async function handleCopy() {
     try {

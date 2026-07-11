@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CircleNotchIcon, LockIcon, ArrowLeftIcon, ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { apiErrorMessage } from "@/lib/api-error"
+import { BASE_PATH } from "@/lib/env"
 
 function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
   tier:         PlanTier
@@ -35,7 +36,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
       const { error: stripeErr, setupIntent } = await stripe.confirmSetup({
         elements,
         redirect:      "if_required",
-        confirmParams: { return_url: window.location.origin + "/dashboard/reactiver-abonnement" },
+        confirmParams: { return_url: window.location.origin + BASE_PATH + "/dashboard/reactiver-abonnement" },
       })
 
       if (stripeErr) {

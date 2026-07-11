@@ -17,6 +17,7 @@ import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
 import { signInWithGoogleDashboard } from "@/lib/auth/actions"
 import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
 
@@ -256,7 +257,7 @@ function PaymentForm({
       const { error: stripeErr, setupIntent } = await stripe.confirmSetup({
         elements,
         redirect:      "if_required",
-        confirmParams: { return_url: window.location.origin + "/register" },
+        confirmParams: { return_url: window.location.origin + BASE_PATH + "/register" },
       })
 
       if (stripeErr) {

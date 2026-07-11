@@ -12,6 +12,7 @@ import { SiteSectionSheet } from "./site-section-sheet"
 import type { SiteConfig, SiteSection, SectionType, FooterLink } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG, SECTION_LABELS } from "@/types/site-config"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 
 function newId() { return Math.random().toString(36).slice(2, 10) }
 
@@ -96,7 +97,7 @@ export function SiteControlsPanel({
 
   function copyLink() {
     if (!siteUrl) return
-    navigator.clipboard.writeText(window.location.origin + siteUrl)
+    navigator.clipboard.writeText(window.location.origin + BASE_PATH + siteUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -186,7 +187,7 @@ export function SiteControlsPanel({
                 {copied ? <CheckIcon className="size-3 text-green-600" /> : <CopyIcon className="size-3" />}
               </button>
               <a
-                href={siteUrl}
+                href={BASE_PATH + siteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted transition-colors"

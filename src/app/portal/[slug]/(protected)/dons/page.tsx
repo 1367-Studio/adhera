@@ -11,6 +11,7 @@ import { portalFetch } from "@/lib/portal-fetch"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { BASE_PATH } from "@/lib/env"
 
 type Don = {
   id:              string
@@ -86,7 +87,7 @@ function DonsPortalPageInner() {
         </div>
         <Button
           size="sm"
-          onClick={() => window.location.href = `/portal/${slug}/dons/nouveau`}
+          onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
           className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white shrink-0"
         >
           <HandshakeIcon className="size-3.5" />
@@ -110,7 +111,7 @@ function DonsPortalPageInner() {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => window.location.href = `/portal/${slug}/dons/nouveau`}
+            onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
           >
             Faire mon premier don
           </Button>
