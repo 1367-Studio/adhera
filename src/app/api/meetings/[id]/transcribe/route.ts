@@ -19,17 +19,36 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     prisma.meeting.findFirst({ where: { id, associationId } }),
     prisma.association.findUnique({
       where:  { id: associationId },
-      select: { aiApiKey: true },
+      select: { aiProvider: true, aiApiKey: true },
     }),
   ])
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
 
-  if (!assoc?.aiApiKey && !rateLimit(`ai-transcribe:${associationId}`, 10, 10 * 60_000)) {
-    return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+  // Transcription only ever runs against Groq's Whisper endpoint (see src/lib/ai/client.ts)
+  // — an association whose BYOK is OpenAI/Mistral doesn't have a matching key for this, so
+  // it falls back to the platform's Groq key here specifically, same as having no key at all.
+  const ownGroqKey = assoc?.aiApiKey && (assoc.aiProvider ?? "groq") === "groq" ? assoc.aiApiKey : null
+
+  // Groq's whole free tier for Whisper is 2,000 requests/day, shared across every
+  // association riding the platform key — a per-association limit alone doesn't protect
+  // that shared budget (one association sustaining even this tighter limit could still use
+  // 3*24=72/day, a small slice of it). The platform-wide bucket below is what actually
+  // keeps the account under Groq's cap; the per-association one just stops a single runaway
+  // caller from eating the whole platform budget alone.
+  if (!ownGroqKey) {
+    if (!(await rateLimit(`ai-transcribe:${associationId}`, 3, 60 * 60_000))) {
+      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+    }
+    if (!(await rateLimit("ai-transcribe:platform", 100, 24 * 60 * 60_000))) {
+      return NextResponse.json(
+        { error: "Le quota de transcription de la plateforme est atteint pour aujourd'hui. Réessayez demain, ou configurez votre propre clé Groq dans Paramètres → IA." },
+        { status: 429 },
+      )
+    }
   }
 
-  const client = assoc?.aiApiKey ? makeGroqClient(assoc.aiApiKey) : platformClient
+  const client = ownGroqKey ? makeGroqClient(ownGroqKey) : platformClient
   if (!client) {
     return NextResponse.json({ error: "Aucune clé API IA configurée." }, { status: 503 })
   }
