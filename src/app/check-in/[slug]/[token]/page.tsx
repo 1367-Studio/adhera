@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon, AsteriskIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
 
@@ -75,7 +75,7 @@ export default function CheckInPage() {
       <div className="w-full max-w-sm space-y-6 text-center">
 
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="size-6 rounded-md bg-foreground" />
+          <AsteriskIcon className="size-6" weight="bold" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 

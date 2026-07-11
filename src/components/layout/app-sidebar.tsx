@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import { AsteriskIcon, SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -68,13 +68,12 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none">
+            <div>
+              <div className="flex items-center gap-2 leading-none">
+                <AsteriskIcon className="size-5" weight="bold" />
                 <span className="font-semibold">{APP_NAME}</span>
-                <span className="text-xs text-muted-foreground">Associations</span>
               </div>
+              <span className="text-xs text-muted-foreground">Associations</span></div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

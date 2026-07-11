@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         <div className="relative space-y-10">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-sky-400">
+            <p className="text-xs font-semibold uppercase tracking-widest blue-600">
               Plateforme de gestion associative
             </p>
             <h2 className="text-3xl font-semibold text-white leading-snug">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { AsteriskIcon } from "@phosphor-icons/react/dist/ssr"
 import { PortalLoginForm } from "@/components/auth/portal-login-form"
 import { APP_NAME } from "@/config/brand"
 
@@ -18,7 +19,7 @@ export default async function PortalLoginPage({
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-md bg-foreground" />
+          <AsteriskIcon className="size-6" weight="bold" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 

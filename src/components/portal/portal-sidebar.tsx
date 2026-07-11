@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, AsteriskIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -41,13 +41,13 @@ export function PortalSidebar({ slug }: { slug: string }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href={navItems[0]?.href ?? `/portal/${slug}/profil`} />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
-              <div className="flex flex-col gap-0.5 leading-none">
+            <div>
+              <div className="flex items-center gap-2 leading-none">
+                <AsteriskIcon className="size-5" weight="bold" />
                 <span className="font-semibold">{APP_NAME}</span>
-                <span className="text-xs text-muted-foreground">Mon espace</span>
               </div>
+              <span className="text-xs text-muted-foreground">Mon espace</span>
+            </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

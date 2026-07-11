@@ -198,12 +198,12 @@ function StepInfo({
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{apiError}</p>
       )}
 
-      <Button type="submit" className="w-full h-11 text-sm font-medium mt-2" disabled={loading}>
-        {loading
+      <Button type="submit" className="w-full h-11 text-sm font-medium mt-2 bg-blue-600" disabled={loading}>
+        Continuer vers le paiement
+              {loading
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
         }
-        Continuer vers le paiement
       </Button>
 
       <div className="flex items-center justify-center gap-4 pt-1">

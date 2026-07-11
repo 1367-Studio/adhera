@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, AsteriskIcon } from "@phosphor-icons/react/dist/ssr";
 import { PortalRegisterForm } from "@/components/auth/portal-register-form"
 import { APP_NAME } from "@/config/brand"
 
@@ -17,7 +17,7 @@ export default async function PortalRegisterPage({
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-md bg-foreground" />
+          <AsteriskIcon className="size-6" weight="bold" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 
@@ -25,7 +25,7 @@ export default async function PortalRegisterPage({
           <div className="space-y-1.5">
             <h1 className="text-xl font-semibold tracking-tight">Créer un compte</h1>
             <p className="text-sm text-muted-foreground">
-              Rejoignez l'espace membre de votre association.
+              Rejoignez l&apos;espace membre de votre association.
             </p>
           </div>
 

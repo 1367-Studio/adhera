@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, AsteriskIcon } from "@phosphor-icons/react/dist/ssr";
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 import { APP_NAME } from "@/config/brand"
 
@@ -17,7 +17,7 @@ export default async function ForgotPasswordPage({
   return (
     <div className="w-full max-w-sm">
       <div className="lg:hidden flex items-center gap-2 mb-8">
-        <div className="size-6 rounded-md bg-foreground" />
+        <AsteriskIcon className="size-6" weight="bold" />
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
