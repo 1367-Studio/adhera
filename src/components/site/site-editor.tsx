@@ -12,6 +12,7 @@ import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import type { SiteConfig, SiteSection, SectionType } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG, SECTION_LABELS } from "@/types/site-config"
 import { SiteSectionSheet } from "./site-section-sheet"
+import { BASE_PATH } from "@/lib/env"
 
 function newId() { return Math.random().toString(36).slice(2, 10) }
 
@@ -151,7 +152,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
         <div className="flex items-center gap-2 flex-wrap">
           {siteUrl && published && (
             <a
-              href={siteUrl}
+              href={BASE_PATH + siteUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"

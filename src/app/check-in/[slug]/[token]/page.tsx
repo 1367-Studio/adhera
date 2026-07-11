@@ -7,6 +7,7 @@ import { fr } from "date-fns/locale"
 import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
 
 type EventInfo = {
   title:            string
@@ -34,7 +35,7 @@ export default function CheckInPage() {
         if (cancelled) return
         if (res.status === 401) {
           const callbackUrl = encodeURIComponent(window.location.pathname)
-          window.location.href = `/portal/${slug}/login?callbackUrl=${callbackUrl}`
+          window.location.href = `${BASE_PATH}/portal/${slug}/login?callbackUrl=${callbackUrl}`
           return
         }
         if (res.status === 404) { setState("invalid"); return }

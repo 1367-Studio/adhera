@@ -19,6 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
 import { Modal } from "@/components/ui/modal"
 import { cn } from "@/lib/utils"
 
@@ -111,7 +112,7 @@ export default function PresencesPage() {
   const activeExpired   = activeExpiresAt ? new Date(activeExpiresAt) < new Date() : false
   const activeQrValid   = !!(activeToken && !activeExpired)
   const checkInUrl      = activeToken && user.associationSlug
-    ? `${typeof window !== "undefined" ? window.location.origin : ""}/check-in/${user.associationSlug}/${activeToken}`
+    ? `${typeof window !== "undefined" ? window.location.origin : ""}${BASE_PATH}/check-in/${user.associationSlug}/${activeToken}`
     : ""
 
   // Real-time check-in updates via Pusher

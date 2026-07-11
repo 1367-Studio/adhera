@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useBankAccounts } from "@/hooks/use-bank-accounts"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 type Step = 1 | 2 | 3 | 4
 
 type ParsedRow = {
@@ -627,7 +628,7 @@ export function ImportWizard() {
           </div>
           <div className="flex justify-center gap-3 pt-2">
             <Button variant="outline" onClick={reset}>Importer un autre fichier</Button>
-            <Button onClick={() => window.location.href = "/dashboard/finances/conciliation"}>Aller à la conciliation</Button>
+            <Button onClick={() => window.location.href = `${BASE_PATH}/dashboard/finances/conciliation`}>Aller à la conciliation</Button>
           </div>
         </div>
       )}
