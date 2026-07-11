@@ -221,6 +221,10 @@ model Association {
   objet                String?
   organismeCategory    OrganismeCategory  @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail String?
+  // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
+  // means the association hasn't configured BYOK yet (falls back to the platform's Groq
+  // key, see platformClient in the same file).
+  aiProvider           String?
   aiApiKey             String?
   aiModel              String?
   smsAccountSid        String?

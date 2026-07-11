@@ -21,7 +21,7 @@ export async function POST(
 ) {
   const { slug } = await params
 
-  if (!rateLimit(`inscription:${requestIp(req)}`, 5, 10 * 60_000)) {
+  if (!(await rateLimit(`inscription:${requestIp(req)}`, 5, 10 * 60_000))) {
     return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
   }
 

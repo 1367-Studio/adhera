@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { makeGroqClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
+import { makeAiClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { rateLimit } from "@/lib/rate-limit"
@@ -36,7 +36,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     prisma.meeting.findFirst({ where: { id, associationId } }),
     prisma.association.findUnique({
       where:  { id: associationId },
-      select: { aiApiKey: true, aiModel: true },
+      select: { aiProvider: true, aiApiKey: true, aiModel: true },
     }),
   ])
 
@@ -45,19 +45,19 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     return NextResponse.json({ error: "Aucune transcription disponible." }, { status: 422 })
   }
 
-  if (!assoc?.aiApiKey && !rateLimit(`ai-summarize:${associationId}`, 20, 10 * 60_000)) {
+  if (!assoc?.aiApiKey && !(await rateLimit(`ai-summarize:${associationId}`, 20, 10 * 60_000))) {
     return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
   }
 
-  const client = assoc?.aiApiKey ? makeGroqClient(assoc.aiApiKey) : platformClient
+  const { client, model } = assoc?.aiApiKey
+    ? makeAiClient({ provider: assoc.aiProvider ?? "groq", apiKey: assoc.aiApiKey, model: assoc.aiModel })
+    : { client: platformClient, model: GROQ_MODEL }
   if (!client) {
     return NextResponse.json(
       { error: "Aucune clé API IA configurée." },
       { status: 503 },
     )
   }
-
-  const model = assoc?.aiModel || GROQ_MODEL
 
   try {
     const completion = await client.chat.completions.create({
