@@ -16,13 +16,17 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const devis = await prisma.devis.findFirst({
     where:   { id, associationId, deletedAt: null },
-    include: { items: { orderBy: { order: "asc" } }, facture: { select: { id: true } } },
+    include: { items: { orderBy: { order: "asc" } } },
   })
   if (!devis) return NextResponse.json({ error: "Devis introuvable" }, { status: 404 })
   if (devis.status !== "ACCEPTE") {
     return NextResponse.json({ error: "Seul un devis accepté peut être converti en facture" }, { status: 409 })
   }
-  if (devis.facture) {
+
+  // Facture is a to-one back-relation, so `include` can't filter it by deletedAt directly —
+  // query it separately so a soft-deleted Facture doesn't block a legitimate reconversion.
+  const activeFacture = await prisma.facture.findFirst({ where: { devisId: id, deletedAt: null }, select: { id: true } })
+  if (activeFacture) {
     return NextResponse.json({ error: "Ce devis a déjà été converti en facture" }, { status: 409 })
   }
 
@@ -62,7 +66,16 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
       return NextResponse.json(facture, { status: 201 })
     } catch (err) {
-      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") continue
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        // devisId is @unique on Facture — a concurrent request already converted this devis
+        // between our check above and this insert. Report the real conflict instead of
+        // burning retries re-generating a facture number that was never the problem.
+        const target = Array.isArray(err.meta?.target) ? err.meta.target : []
+        if (target.includes("devisId")) {
+          return NextResponse.json({ error: "Ce devis a déjà été converti en facture" }, { status: 409 })
+        }
+        continue
+      }
       throw err
     }
   }

@@ -17,8 +17,18 @@ export type FactureRecue = {
   fournisseur:   { id: string; companyName: string } | null
 }
 
+export type FacturesRecuesPage = { data: FactureRecue[]; total: number; page: number; limit: number; totalPages: number }
+
 async function fetchFacturesRecues(fournisseurId?: string): Promise<FactureRecue[]> {
   const params = new URLSearchParams()
+  if (fournisseurId) params.set("fournisseurId", fournisseurId)
+  const res = await fetch(`/api/factures-recues?${params}`)
+  if (!res.ok) throw new Error("Erreur lors du chargement des documents")
+  return res.json()
+}
+
+async function fetchFacturesRecuesPaginated(page: number, limit: number, fournisseurId?: string): Promise<FacturesRecuesPage> {
+  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (fournisseurId) params.set("fournisseurId", fournisseurId)
   const res = await fetch(`/api/factures-recues?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement des documents")
@@ -54,6 +64,14 @@ export function useFacturesRecues(fournisseurId?: string) {
   return useQuery({
     queryKey:  [...QK, fournisseurId ?? "all"],
     queryFn:   () => fetchFacturesRecues(fournisseurId),
+    staleTime: 0,
+  })
+}
+
+export function useFacturesRecuesPaginated(page: number, limit: number, fournisseurId?: string) {
+  return useQuery({
+    queryKey:  [...QK, "paginated", page, limit, fournisseurId ?? "all"],
+    queryFn:   () => fetchFacturesRecuesPaginated(page, limit, fournisseurId),
     staleTime: 0,
   })
 }

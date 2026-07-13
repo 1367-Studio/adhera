@@ -37,6 +37,10 @@ export function FacturePaymentModal({ factureId, remaining, open, onOpenChange }
       toast.error("Le montant doit être supérieur à 0")
       return
     }
+    if (amount > remaining + 0.01) {
+      toast.error(`Le montant dépasse le solde restant dû (${remaining.toFixed(2)} €)`)
+      return
+    }
     try {
       await mutation.mutateAsync({ amount, method, paidAt, note })
       toast.success("Paiement enregistré")
@@ -50,7 +54,10 @@ export function FacturePaymentModal({ factureId, remaining, open, onOpenChange }
   return (
     <Modal open={open} onOpenChange={onOpenChange} title="Enregistrer un paiement" size="sm">
       <div className="space-y-4">
-        <CurrencyField label="Montant" required value={amount} onChange={setAmount} />
+        <div className="space-y-1">
+          <CurrencyField label="Montant" required value={amount} onChange={setAmount} />
+          <p className="text-xs text-muted-foreground">Solde restant dû : {remaining.toFixed(2)} €</p>
+        </div>
         <SelectField label="Méthode" required options={methodOptions} value={method} onValueChange={setMethod} />
         <FormField label="Date du paiement" type="date" value={paidAt} onChange={e => setPaidAt(e.target.value)} />
         <FormField label="Note" placeholder="Référence, remarque…" value={note} onChange={e => setNote(e.target.value)} />

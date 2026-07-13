@@ -36,7 +36,9 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
 
-  if (existing.userId === userId && rest.status === "INACTIF") {
+  // Any status other than ACTIF flips User.active to false below (line ~81) — blocking only
+  // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
+  if (existing.userId === userId && rest.status !== undefined && rest.status !== "ACTIF") {
     return NextResponse.json({ error: "Vous ne pouvez pas désactiver votre propre compte" }, { status: 403 })
   }
 

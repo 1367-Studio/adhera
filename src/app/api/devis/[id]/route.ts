@@ -3,7 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { devisUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
-import { computeDocumentTotals, itemsUnchanged } from "@/lib/devis-calc"
+import { computeDocumentTotals, itemsUnchanged, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveDevisStatus, type DevisStatus } from "@/lib/devis-status"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -34,12 +34,16 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     include: {
       items:       { orderBy: { order: "asc" } },
       fournisseur: { select: { id: true, companyName: true, email: true } },
-      facture:     { select: { id: true, number: true } },
     },
   })
 
   if (!devis) return NextResponse.json({ error: "Devis introuvable" }, { status: 404 })
-  return NextResponse.json(withDerivedStatus(devis))
+
+  // Facture is a to-one back-relation, so `include` can't filter it by deletedAt directly —
+  // query it separately so a soft-deleted Facture doesn't keep showing as "already converted".
+  const facture = await prisma.facture.findFirst({ where: { devisId: id, deletedAt: null }, select: { id: true, number: true } })
+
+  return NextResponse.json(withDerivedStatus({ ...devis, facture }))
 }, { module: "devis" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -47,9 +51,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const existing = await prisma.devis.findFirst({
     where:   { id, associationId, deletedAt: null },
-    include: { items: { orderBy: { order: "asc" } }, facture: { select: { id: true, number: true } } },
+    include: { items: { orderBy: { order: "asc" } } },
   })
   if (!existing) return NextResponse.json({ error: "Devis introuvable" }, { status: 404 })
+
+  // Facture is a to-one back-relation, so `include` can't filter it by deletedAt directly —
+  // query it separately so a soft-deleted Facture doesn't keep the devis locked forever.
+  const activeFacture = await prisma.facture.findFirst({ where: { devisId: id, deletedAt: null }, select: { id: true, number: true } })
 
   const body   = await req.json()
   const parsed = devisUpdateSchema.safeParse(body)
@@ -65,16 +73,22 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // mere presence would reject every save on a converted devis — compare by value and
   // only block a real change.
   const itemsChanged = items !== undefined && !itemsUnchanged(existing.items, items)
-  if (itemsChanged && existing.facture) {
-    return NextResponse.json({ error: `Ce devis a été converti en facture ${existing.facture.number} — les articles ne peuvent plus être modifiés.` }, { status: 409 })
+  if (itemsChanged && activeFacture) {
+    return NextResponse.json({ error: `Ce devis a été converti en facture ${activeFacture.number} — les articles ne peuvent plus être modifiés.` }, { status: 409 })
   }
 
-  if (fournisseurId) {
+  // Only re-validate the fournisseur if it's actually changing — the edit form always
+  // resubmits the current fournisseurId, and an archived (soft-deleted) fournisseur would
+  // otherwise fail this check on every unrelated edit of a devis still linked to it.
+  if (fournisseurId && fournisseurId !== existing.fournisseurId) {
     const fournisseur = await prisma.fournisseur.findFirst({ where: { id: fournisseurId, associationId, deletedAt: null } })
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }
 
   const totals = itemsChanged ? computeDocumentTotals(items!) : null
+  if (totals && exceedsMaxTotal(totals)) {
+    return NextResponse.json({ error: `Le total du devis dépasse le maximum autorisé (${MAX_DOCUMENT_TOTAL.toLocaleString("fr-FR")} €)` }, { status: 422 })
+  }
 
   const devis = await prisma.$transaction(async (tx) => {
     if (itemsChanged) {
@@ -123,14 +137,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.devis.findFirst({
-    where:   { id, associationId, deletedAt: null },
-    include: { facture: { select: { id: true, number: true } } },
-  })
+  const existing = await prisma.devis.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Devis introuvable" }, { status: 404 })
 
-  if (existing.facture) {
-    return NextResponse.json({ error: `Ce devis a été converti en facture ${existing.facture.number} — supprimez la facture d'abord si nécessaire.` }, { status: 409 })
+  // Facture is a to-one back-relation, so `include` can't filter it by deletedAt directly —
+  // query it separately so a soft-deleted Facture doesn't keep the devis locked forever.
+  const activeFacture = await prisma.facture.findFirst({ where: { devisId: id, deletedAt: null }, select: { id: true, number: true } })
+  if (activeFacture) {
+    return NextResponse.json({ error: `Ce devis a été converti en facture ${activeFacture.number} — supprimez la facture d'abord si nécessaire.` }, { status: 409 })
   }
 
   let force = false

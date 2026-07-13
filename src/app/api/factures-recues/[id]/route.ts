@@ -36,7 +36,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const { fournisseurId, number, type, issueDate, amount, status, fileUrl, notes } = parsed.data
 
-  if (fournisseurId) {
+  // Only re-validate the fournisseur if it's actually changing — the edit form always
+  // resubmits the current fournisseurId, and an archived (soft-deleted) fournisseur would
+  // otherwise fail this check on every unrelated edit of a document still linked to it.
+  if (fournisseurId && fournisseurId !== existing.fournisseurId) {
     const fournisseur = await prisma.fournisseur.findFirst({ where: { id: fournisseurId, associationId, deletedAt: null } })
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }

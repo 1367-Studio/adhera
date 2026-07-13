@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { factureCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { computeDocumentTotals } from "@/lib/devis-calc"
+import { computeDocumentTotals, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveFactureStatus, factureStatusWhere, resolveManualStatus, type FactureStatus } from "@/lib/facture-status"
 import { nextFactureNumber } from "@/lib/document-numbering"
 
@@ -79,11 +79,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (devisId) {
     const devis = await prisma.devis.findFirst({ where: { id: devisId, associationId, deletedAt: null } })
     if (!devis) return NextResponse.json({ error: "Devis introuvable" }, { status: 404 })
-    const alreadyLinked = await prisma.facture.findFirst({ where: { devisId } })
+    const alreadyLinked = await prisma.facture.findFirst({ where: { devisId, deletedAt: null } })
     if (alreadyLinked) return NextResponse.json({ error: "Ce devis est déjà lié à une facture" }, { status: 409 })
   }
 
   const totals = computeDocumentTotals(items)
+  if (exceedsMaxTotal(totals)) {
+    return NextResponse.json({ error: `Le total de la facture dépasse le maximum autorisé (${MAX_DOCUMENT_TOTAL.toLocaleString("fr-FR")} €)` }, { status: 422 })
+  }
   // amountPaid is always 0 on creation — PAYEE/PARTIELLEMENT_PAYEE can't be true yet, so a
   // client-sent value of either always resolves down to EN_ATTENTE (see resolveManualStatus).
   const resolvedStatus = resolveManualStatus(status, 0, totals.total)

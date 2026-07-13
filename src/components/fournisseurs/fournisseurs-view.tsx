@@ -253,7 +253,6 @@ export function FournisseursView() {
           options={[
             { value: "ACTIF",   label: "Actifs"   },
             { value: "INACTIF", label: "Inactifs" },
-            { value: "ARCHIVE", label: "Archivés" },
           ]}
           placeholder="Tous les statuts"
         />

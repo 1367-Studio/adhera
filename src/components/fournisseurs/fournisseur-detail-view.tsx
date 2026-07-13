@@ -14,7 +14,7 @@ import {
 import { useFournisseur, useUpdateFournisseur, useDeleteFournisseur, useFournisseurPaiements } from "@/hooks/use-fournisseurs"
 import { useDevisPaginated, useCreateDevis } from "@/hooks/use-devis"
 import { useFacturesPaginated, useCreateFacture } from "@/hooks/use-factures"
-import { useFacturesRecues, useCreateFactureRecue, useDeleteFactureRecue } from "@/hooks/use-factures-recues"
+import { useFacturesRecuesPaginated, useCreateFactureRecue, useDeleteFactureRecue } from "@/hooks/use-factures-recues"
 import type { DevisInput, FactureInput, FactureRecueInput, FournisseurInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -78,7 +78,8 @@ export function FournisseurDetailView() {
   const TAB_PAGE_SIZE = 50
   const { data: devisResult }   = useDevisPaginated(1, TAB_PAGE_SIZE, undefined, undefined, id)
   const { data: facturesResult } = useFacturesPaginated(1, TAB_PAGE_SIZE, undefined, undefined, id)
-  const { data: documents = [] } = useFacturesRecues(id)
+  const { data: documentsResult } = useFacturesRecuesPaginated(1, TAB_PAGE_SIZE, id)
+  const documents = documentsResult?.data ?? []
   const { data: payments = [] } = useFournisseurPaiements(modules.factures ? id : "")
 
   // Aggregates FOURNISSEUR_* logs with everything logged against this fournisseur's own
@@ -406,6 +407,11 @@ export function FournisseurDetailView() {
                 </div>
               ))}
             </div>
+          )}
+          {(documentsResult?.total ?? 0) > TAB_PAGE_SIZE && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Affichage des {TAB_PAGE_SIZE} documents les plus récents sur {documentsResult?.total} au total.
+            </p>
           )}
         </TabsContent>
 

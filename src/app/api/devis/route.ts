@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { devisCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { computeDocumentTotals } from "@/lib/devis-calc"
+import { computeDocumentTotals, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { nextDevisNumber } from "@/lib/document-numbering"
 import { deriveDevisStatus, devisStatusWhere, type DevisStatus } from "@/lib/devis-status"
 
@@ -78,6 +78,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   const totals = computeDocumentTotals(items)
+  if (exceedsMaxTotal(totals)) {
+    return NextResponse.json({ error: `Le total du devis dépasse le maximum autorisé (${MAX_DOCUMENT_TOTAL.toLocaleString("fr-FR")} €)` }, { status: 422 })
+  }
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const number = await nextDevisNumber(associationId)

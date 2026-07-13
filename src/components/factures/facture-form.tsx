@@ -47,9 +47,14 @@ interface FactureFormProps {
 }
 
 export function FactureForm({ defaultValues, onSubmit, onCancel, loading, lockedFromDevis, amountPaid = 0 }: FactureFormProps) {
+  // Once a payment exists, PAYEE/PARTIELLEMENT_PAYEE are derived and shouldn't be
+  // hand-picked — but the backend still allows cancelling a partially/fully paid facture
+  // (ANNULEE passes through resolveManualStatus untouched), so the field must stay usable
+  // for that instead of locking the whole Select.
   const statusLocked = amountPaid > 0
+  const lockedStatus = defaultValues?.status
   const statusOptions = statusLocked
-    ? ALL_STATUS_OPTIONS
+    ? ALL_STATUS_OPTIONS.filter(o => o.value === lockedStatus || o.value === "ANNULEE")
     : ALL_STATUS_OPTIONS.filter(o => o.value !== "PAYEE" && o.value !== "PARTIELLEMENT_PAYEE")
 
   const modules = useModules()
@@ -117,12 +122,11 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
                 value={field.value}
                 onValueChange={field.onChange}
                 error={errors.status?.message}
-                disabled={statusLocked}
               />
             )}
           />
           {statusLocked && (
-            <p className="text-xs text-muted-foreground">Déterminé par les paiements enregistrés.</p>
+            <p className="text-xs text-muted-foreground">Déterminé par les paiements enregistrés — vous pouvez toutefois annuler la facture.</p>
           )}
         </div>
       </div>

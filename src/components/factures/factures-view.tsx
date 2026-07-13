@@ -425,7 +425,11 @@ export function FacturesView() {
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
         title={`Supprimer la facture ${deleteTarget?.number} ?`}
-        description="Cette action est irréversible."
+        description={
+          deleteTarget?.devis
+            ? `Cette facture provient du devis ${deleteTarget.devis.number} — le devis redeviendra disponible pour une nouvelle conversion après cette suppression.`
+            : "Cette action est irréversible."
+        }
         confirmLabel="Supprimer"
         loading={deleteMutation.isPending}
         onConfirm={() => handleDelete(false)}

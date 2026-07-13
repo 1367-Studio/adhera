@@ -3,7 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { factureUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
-import { computeDocumentTotals, itemsUnchanged } from "@/lib/devis-calc"
+import { computeDocumentTotals, itemsUnchanged, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveFactureStatus, resolveManualStatus, type FactureStatus } from "@/lib/facture-status"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -62,12 +62,18 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Les articles d'une facture issue d'un devis ne peuvent pas être modifiés." }, { status: 409 })
   }
 
-  if (fournisseurId) {
+  // Only re-validate the fournisseur if it's actually changing — the edit form always
+  // resubmits the current fournisseurId, and an archived (soft-deleted) fournisseur would
+  // otherwise fail this check on every unrelated edit of a facture still linked to it.
+  if (fournisseurId && fournisseurId !== existing.fournisseurId) {
     const fournisseur = await prisma.fournisseur.findFirst({ where: { id: fournisseurId, associationId, deletedAt: null } })
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }
 
   const totals = itemsChanged ? computeDocumentTotals(items!) : null
+  if (totals && exceedsMaxTotal(totals)) {
+    return NextResponse.json({ error: `Le total de la facture dépasse le maximum autorisé (${MAX_DOCUMENT_TOTAL.toLocaleString("fr-FR")} €)` }, { status: 422 })
+  }
 
   // Editing items recomputes the total — if that pushes it below what's already been
   // paid, the invariant the overpayment check enforces on the payment side (amountPaid

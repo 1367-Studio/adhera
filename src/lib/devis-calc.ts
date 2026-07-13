@@ -40,6 +40,17 @@ export function computeDocumentTotals(items: DevisItemInput[]): DocumentTotals {
   return { subtotal, vatAmount, discountAmount, total: round2(subtotal + vatAmount) }
 }
 
+// subtotal/vatAmount/discountAmount/total are all stored in Decimal(10,2) columns — a
+// document whose computed total overflows that precision would otherwise fail as a raw
+// Postgres 500 on insert instead of a clean validation error.
+export const MAX_DOCUMENT_TOTAL = 99_999_999.99
+
+export function exceedsMaxTotal(totals: DocumentTotals): boolean {
+  return totals.subtotal > MAX_DOCUMENT_TOTAL
+    || totals.vatAmount > MAX_DOCUMENT_TOTAL
+    || totals.total > MAX_DOCUMENT_TOTAL
+}
+
 interface StoredItem {
   description: string
   quantity:    unknown
