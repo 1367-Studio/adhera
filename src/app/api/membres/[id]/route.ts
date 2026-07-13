@@ -12,9 +12,13 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const membre = await prisma.membre.findFirst({
     where: { id, associationId, deletedAt: null },
     include: {
-      cotisations:    { orderBy: { year: "desc" } },
-      participations: { include: { evenement: true } },
+      cotisations:    { orderBy: { year: "desc" }, take: 50 },
+      participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
+      materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
       user:           { select: { role: true } },
+      // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
+      // a long-standing member can have far more rows than the take:50 caps above return.
+      _count: { select: { cotisations: true, participations: true, materialLoans: true } },
     },
   })
 

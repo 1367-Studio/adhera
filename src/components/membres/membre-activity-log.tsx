@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -49,6 +49,19 @@ const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; colo
   PROFIL_UPDATED:           { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
   MEMBRE_DELETED:           { label: "Membre archivé",         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscription portail",    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
+  COTISATION_CREATED:  { label: "Cotisation ajoutée",   icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+  COTISATION_UPDATED:  { label: "Cotisation modifiée",  icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  COTISATION_DELETED:  { label: "Cotisation supprimée", icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"                     },
+  COTISATION_PAID:     { label: "Cotisation payée",     icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+  COTISATION_REFUNDED: { label: "Cotisation remboursée", icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  LOAN_CREATED:   { label: "Prêt de matériel créé",    icon: <PackageIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"         },
+  LOAN_REQUESTED: { label: "Prêt demandé",             icon: <PackageIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
+  LOAN_CONFIRMED: { label: "Prêt confirmé",            icon: <PackageIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+  LOAN_REFUSED:   { label: "Prêt refusé",              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+  LOAN_RETURNED:  { label: "Matériel rendu",           icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+  LOAN_UPDATED:   { label: "Prêt modifié",             icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  LOAN_CANCELLED: { label: "Prêt annulé",              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+  LOAN_DELETED:   { label: "Prêt supprimé",            icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
 }
 
 function formatFieldValue(field: string, value: string | null): string {
