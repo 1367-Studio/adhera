@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LoginForm } from "@/components/layout/login-form";
 import { APP_NAME } from "@/config/brand";
+import { LogoMark } from "@/components/layout/logo-mark";
 
 export const metadata: Metadata = { title: "Connexion" };
 
@@ -16,7 +17,7 @@ export default async function LoginPage({
     <div className="w-full max-w-sm">
       {" "}
       <div className="lg:hidden flex items-center gap-2 mb-8">
-        <div className="size-6 rounded-md bg-foreground" />
+        <LogoMark className="size-6" />
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
       <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">

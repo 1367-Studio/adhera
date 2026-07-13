@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { PortalRegisterForm } from "@/components/auth/portal-register-form"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 export const metadata: Metadata = { title: "Créer un compte — Espace membre" }
 
@@ -17,7 +18,7 @@ export default async function PortalRegisterPage({
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-md bg-foreground" />
+          <LogoMark className="size-6" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 

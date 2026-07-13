@@ -6,6 +6,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { APP_NAME } from "@/config/brand";
+import { LogoMark } from "@/components/layout/logo-mark";
 export default function AuthLayout({
   children,
 }: {
@@ -29,19 +30,21 @@ export default function AuthLayout({
             (desk/chair in warm tones), hurting legibility regardless of text color. */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/75 to-black/95" />
 
-        <div className="flex items-center gap-2.5 relative">
-          <div className="size-8 rounded-lg bg-white flex items-center justify-center">
-            <span className="text-xs font-bold text-zinc-900">
-              {APP_NAME.charAt(0)}
-            </span>
-          </div>
+        <div
+          className="flex items-center gap-2.5 relative animate-in fade-in slide-in-from-left-4 duration-700"
+          style={{ animationFillMode: "both" }}
+        >
+          <LogoMark />
           <span className="text-lg font-semibold text-white tracking-tight">
             {APP_NAME}
           </span>
         </div>
 
         <div className="relative space-y-10">
-          <div className="space-y-3">
+          <div
+            className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-700"
+            style={{ animationDelay: "100ms", animationFillMode: "both" }}
+          >
             <p className="text-xs font-semibold uppercase tracking-widest text-zinc-200">
               Plateforme de gestion associative
             </p>
@@ -62,8 +65,12 @@ export default function AuthLayout({
               { Icon: CoinsIcon, label: "Suivi des cotisations" },
               { Icon: CalendarBlankIcon, label: "Événements & présences" },
               { Icon: BankIcon, label: "Trésorerie simplifiée" },
-            ].map(({ Icon, label }) => (
-              <li key={label} className="flex items-center gap-3">
+            ].map(({ Icon, label }, i) => (
+              <li
+                key={label}
+                className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-700"
+                style={{ animationDelay: `${200 + i * 60}ms`, animationFillMode: "both" }}
+              >
                 <span className="flex size-8 items-center justify-center rounded-lg bg-white/10">
                   <Icon className="size-4 text-zinc-200" />
                 </span>
@@ -73,7 +80,10 @@ export default function AuthLayout({
           </ul>
         </div>
 
-        <p className="relative text-xs text-zinc-400">
+        <p
+          className="relative text-xs text-zinc-400 animate-in fade-in slide-in-from-left-4 duration-700"
+          style={{ animationDelay: "500ms", animationFillMode: "both" }}
+        >
           © {new Date().getFullYear()} {APP_NAME} · Données hébergées en France
         </p>
       </div>

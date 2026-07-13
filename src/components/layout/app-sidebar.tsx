@@ -12,6 +12,7 @@ import {
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
@@ -71,9 +72,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
+              <LogoMark />
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Associations</span>
