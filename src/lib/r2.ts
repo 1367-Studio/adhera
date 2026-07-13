@@ -11,10 +11,11 @@ export const r2 = new S3Client({
 })
 
 const EXT_BY_CONTENT_TYPE: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png":  "png",
-  "image/webp": "webp",
-  "image/gif":  "gif",
+  "image/jpeg":     "jpg",
+  "image/png":      "png",
+  "image/webp":     "webp",
+  "image/gif":      "gif",
+  "application/pdf": "pdf",
 }
 
 // `buffer` and `contentType` should come from server-side content sniffing, not from the

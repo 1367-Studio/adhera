@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar"
 import { signOut } from "next-auth/react"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
 
 const navItems = [
   { name: "Vue d'ensemble", href: "/backoffice",              icon: SquaresFourIcon },
@@ -69,7 +70,7 @@ export function BackofficeSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: "/login" })}>
+            <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: `${BASE_PATH}/login` })}>
               <SignOutIcon />
               <span>Se déconnecter</span>
             </SidebarMenuButton>

@@ -1,0 +1,214 @@
+import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib"
+
+export interface DocumentPdfItem {
+  description: string
+  quantity:    number
+  unitPrice:   number
+  vatRate:     number
+  discount:    number
+}
+
+export interface DocumentPdfInput {
+  kind:           "DEVIS" | "FACTURE"
+  number:         string
+  issueDate:      Date
+  secondaryLabel: string
+  secondaryDate:  Date | null
+  association: {
+    name:    string
+    address: string | null
+    city:    string | null
+    siren:   string | null
+  }
+  fournisseur: {
+    companyName: string
+    address:     string | null
+    city:        string | null
+    postalCode:  string | null
+    siret:       string | null
+    vatNumber:   string | null
+  } | null
+  items:          DocumentPdfItem[]
+  subtotal:       number
+  vatAmount:      number
+  discountAmount: number
+  total:          number
+  amountPaid?:    number
+  notes:          string | null
+  paymentTerms:   string | null
+}
+
+const PAGE_WIDTH  = 595.28
+const PAGE_HEIGHT = 841.89
+const MARGIN      = 50
+const GRAY  = rgb(0.45, 0.45, 0.45)
+const BLACK = rgb(0.1, 0.1, 0.1)
+
+const COL = { desc: MARGIN, qty: 300, price: 375, vat: 425, discount: 480, total: PAGE_WIDTH - MARGIN }
+
+// toLocaleString("fr-FR") inserts a narrow no-break space between thousands that the
+// standard Helvetica (WinAnsi) encoding can't render — same issue already worked around
+// in recu-fiscal.ts. Format manually with a plain space instead.
+function fmtEUR(n: number): string {
+  const sign = n < 0 ? "-" : ""
+  const [intPart, decPart] = Math.abs(n).toFixed(2).split(".")
+  const withThousands = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, " ")
+  return `${sign}${withThousands},${decPart} €`
+}
+
+function fmtDate(d: Date): string {
+  return d.toLocaleDateString("fr-FR")
+}
+
+function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
+  const words = text.split(/\s+/).filter(Boolean)
+  const lines: string[] = []
+  let current = ""
+  for (const word of words) {
+    const candidate = current ? `${current} ${word}` : word
+    if (current && font.widthOfTextAtSize(candidate, size) > maxWidth) {
+      lines.push(current)
+      current = word
+    } else {
+      current = candidate
+    }
+  }
+  if (current) lines.push(current)
+  return lines.length > 0 ? lines : [""]
+}
+
+export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer> {
+  const doc     = await PDFDocument.create()
+  const font    = await doc.embedFont(StandardFonts.Helvetica)
+  const bold    = await doc.embedFont(StandardFonts.HelveticaBold)
+
+  let page: PDFPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
+  let y = PAGE_HEIGHT - MARGIN
+
+  function newPage() {
+    page = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
+    y = PAGE_HEIGHT - MARGIN
+  }
+
+  function text(str: string, x: number, size = 10, opts: { bold?: boolean; color?: ReturnType<typeof rgb> } = {}) {
+    page.drawText(str, { x, y, size, font: opts.bold ? bold : font, color: opts.color ?? BLACK })
+  }
+
+  function textRight(str: string, rightX: number, size = 10, opts: { bold?: boolean; color?: ReturnType<typeof rgb> } = {}) {
+    const f = opts.bold ? bold : font
+    text(str, rightX - f.widthOfTextAtSize(str, size), size, opts)
+  }
+
+  const title = input.kind === "DEVIS" ? "DEVIS" : "FACTURE"
+
+  // ── En-tête ──────────────────────────────────────────────────────────
+  // Title and association name are drawn on separate lines rather than sharing a row —
+  // an association name has no length limit and would run straight into a right-aligned
+  // title on the same baseline.
+  textRight(`${title} N° ${input.number}`, COL.total, 14, { bold: true })
+  y -= 22
+  text(input.association.name, MARGIN, 14, { bold: true })
+  y -= 20
+  if (input.association.address || input.association.city) {
+    text([input.association.address, input.association.city].filter(Boolean).join(", "), MARGIN, 9, { color: GRAY })
+    y -= 14
+  }
+  if (input.association.siren) {
+    text(`SIREN : ${input.association.siren}`, MARGIN, 9, { color: GRAY })
+    y -= 14
+  }
+
+  y -= 16
+  text(`Date d'émission : ${fmtDate(input.issueDate)}`, MARGIN, 10)
+  if (input.secondaryDate) {
+    textRight(`${input.secondaryLabel} : ${fmtDate(input.secondaryDate)}`, COL.total, 10)
+  }
+  y -= 24
+
+  // ── Destinataire ─────────────────────────────────────────────────────
+  text("Destinataire", MARGIN, 9, { bold: true, color: GRAY })
+  y -= 14
+  if (input.fournisseur) {
+    text(input.fournisseur.companyName, MARGIN, 10, { bold: true })
+    y -= 13
+    const addrLine = [input.fournisseur.address, [input.fournisseur.postalCode, input.fournisseur.city].filter(Boolean).join(" ")].filter(Boolean).join(", ")
+    if (addrLine) { text(addrLine, MARGIN, 9, { color: GRAY }); y -= 13 }
+    if (input.fournisseur.siret)     { text(`SIRET : ${input.fournisseur.siret}`, MARGIN, 9, { color: GRAY }); y -= 13 }
+    if (input.fournisseur.vatNumber) { text(`N° TVA : ${input.fournisseur.vatNumber}`, MARGIN, 9, { color: GRAY }); y -= 13 }
+  } else {
+    text("Client ponctuel", MARGIN, 10)
+    y -= 13
+  }
+  y -= 16
+
+  // ── Tableau des articles ─────────────────────────────────────────────
+  function drawTableHeader() {
+    text("Description", COL.desc, 9, { bold: true, color: GRAY })
+    textRight("Qté", COL.qty, 9, { bold: true, color: GRAY })
+    textRight("Prix U.", COL.price, 9, { bold: true, color: GRAY })
+    textRight("TVA %", COL.vat, 9, { bold: true, color: GRAY })
+    textRight("Remise", COL.discount, 9, { bold: true, color: GRAY })
+    textRight("Total", COL.total, 9, { bold: true, color: GRAY })
+    y -= 8
+    page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+    y -= 14
+  }
+  drawTableHeader()
+
+  for (const item of input.items) {
+    const lineTotal  = item.quantity * item.unitPrice - item.discount
+    const descLines  = wrapText(item.description, font, 9, COL.qty - COL.desc - 10)
+
+    if (y - descLines.length * 12 < 140) { newPage(); drawTableHeader() }
+
+    const rowTopY = y
+    for (const line of descLines) { text(line, COL.desc, 9); y -= 12 }
+    const afterDescY = y
+
+    y = rowTopY
+    textRight(String(item.quantity), COL.qty, 9)
+    textRight(fmtEUR(item.unitPrice), COL.price, 9)
+    textRight(`${item.vatRate}%`, COL.vat, 9)
+    textRight(item.discount > 0 ? `- ${fmtEUR(item.discount)}` : "—", COL.discount, 9)
+    textRight(fmtEUR(lineTotal), COL.total, 9)
+
+    y = afterDescY - 6
+  }
+
+  y -= 4
+  page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+  y -= 20
+
+  // ── Totaux ───────────────────────────────────────────────────────────
+  if (y < 160) newPage()
+  const totalsLabelX = COL.total - 150
+  text("Sous-total", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.subtotal), COL.total, 10); y -= 15
+  text("TVA", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.vatAmount), COL.total, 10); y -= 15
+  if (input.discountAmount > 0) {
+    text("Remise totale", totalsLabelX, 10, { color: GRAY }); textRight(`- ${fmtEUR(input.discountAmount)}`, COL.total, 10); y -= 15
+  }
+  y -= 4
+  page.drawLine({ start: { x: totalsLabelX, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+  y -= 16
+  text("Total", totalsLabelX, 12, { bold: true }); textRight(fmtEUR(input.total), COL.total, 12, { bold: true }); y -= 18
+  if (input.amountPaid !== undefined) {
+    text("Payé", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.amountPaid), COL.total, 10); y -= 15
+    text("Restant dû", totalsLabelX, 10, { bold: true }); textRight(fmtEUR(input.total - input.amountPaid), COL.total, 10, { bold: true }); y -= 15
+  }
+  y -= 20
+
+  // ── Conditions / notes ─────────────────────────────────────────────
+  if (input.paymentTerms) {
+    if (y < 100) newPage()
+    text("Conditions de paiement", MARGIN, 9, { bold: true, color: GRAY }); y -= 13
+    for (const line of wrapText(input.paymentTerms, font, 9, PAGE_WIDTH - 2 * MARGIN)) { text(line, MARGIN, 9); y -= 12 }
+    y -= 10
+  }
+  if (input.notes) {
+    if (y < 100) newPage()
+    text("Notes", MARGIN, 9, { bold: true, color: GRAY }); y -= 13
+    for (const line of wrapText(input.notes, font, 9, PAGE_WIDTH - 2 * MARGIN)) { text(line, MARGIN, 9); y -= 12 }
+  }
+
+  return Buffer.from(await doc.save())
+}

@@ -19,9 +19,10 @@ interface CurrencyInputProps {
   value:     number
   onChange:  (value: number) => void
   className?: string
+  disabled?: boolean
 }
 
-export function CurrencyInput({ value, onChange, className }: CurrencyInputProps) {
+export function CurrencyInput({ value, onChange, className, disabled }: CurrencyInputProps) {
   const [cents, setCents] = useState(() => Math.round((value ?? 0) * 100))
   const internal          = useRef(false)
   const savedRef          = useRef(cents)
@@ -78,6 +79,7 @@ export function CurrencyInput({ value, onChange, className }: CurrencyInputProps
       type="text"
       inputMode="numeric"
       value={fmtCents(cents)}
+      disabled={disabled}
       onFocus={handleFocus}
       onKeyDown={handleKeyDown}
       onChange={() => {}}
@@ -85,6 +87,7 @@ export function CurrencyInput({ value, onChange, className }: CurrencyInputProps
       className={cn(
         "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none cursor-text",
+        "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
     />

@@ -62,3 +62,16 @@ export function computeMemberDiff(
 ): Record<string, FieldDiff> {
   return computeDiff(before, after, MEMBRE_FIELDS)
 }
+
+const FOURNISSEUR_FIELDS = [
+  "companyName", "tradeName", "contactName", "contactRole", "siret", "siren",
+  "vatNumber", "address", "city", "postalCode", "country", "email",
+  "billingEmail", "phone", "website", "category", "status", "notes",
+] as const
+
+export function computeFournisseurDiff(
+  before: Record<string, unknown>,
+  after:  Record<string, unknown>,
+): Record<string, FieldDiff> {
+  return computeDiff(before, after, FOURNISSEUR_FIELDS)
+}
