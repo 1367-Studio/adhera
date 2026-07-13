@@ -172,7 +172,7 @@ export function SuspendedSubscriptionView({
               Annuler définitivement mon abonnement
             </Button>
           ) : <span />}
-          <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: "/login" })}>
+          <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: `${BASE_PATH}/login` })}>
             <SignOutIcon className="mr-2 size-4" />
             Se déconnecter
           </Button>
