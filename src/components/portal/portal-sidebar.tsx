@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon } from "@phosphor-icons/react/dist/ssr";
 import {
-  Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
+  Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarRail, useSidebar,
 } from "@/components/ui/sidebar"
@@ -12,6 +12,7 @@ import { useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 function isActive(href: string, pathname: string) {
   return pathname === href || pathname.startsWith(href + "/")
@@ -73,6 +74,10 @@ export function PortalSidebar({ slug }: { slug: string }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <LegalLinksMenuItem />
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

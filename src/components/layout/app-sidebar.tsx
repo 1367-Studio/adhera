@@ -13,6 +13,7 @@ import { useCurrentUser, useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
@@ -86,8 +87,12 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {visible.map(item => (
-                <SidebarMenuItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+              {visible.map((item, idx) => (
+                <SidebarMenuItem
+                  key={item.href}
+                  data-tour={`nav-${item.href.split("/").pop()}`}
+                  style={{ animationDelay: `${30 + idx * 40}ms`, animationFillMode: "both" }}
+                >
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
                     isActive={isActive(item.href, pathname)}
@@ -104,8 +109,9 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {["ADMIN", "PRESIDENT"].includes(userRole) && (
-        <SidebarFooter>
+      <SidebarFooter>
+        <LegalLinksMenuItem />
+        {["ADMIN", "PRESIDENT"].includes(userRole) && (
           <SidebarMenu>
             <SidebarMenuItem data-tour="nav-parametres">
               <SidebarMenuButton
@@ -119,8 +125,8 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
-        </SidebarFooter>
-      )}
+        )}
+      </SidebarFooter>
     </Sidebar>
   )
 }
