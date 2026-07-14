@@ -15,6 +15,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/lib/auth/actions"
+import { BASE_PATH } from "@/lib/env"
 import { ProfileEditModal }    from "./profile-edit-modal"
 import { ChangePasswordModal } from "./change-password-modal"
 
@@ -35,7 +36,7 @@ interface UserMenuProps {
 export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
   const [modal, setModal] = useState<"profile" | "password" | null>(null)
   const queryClient = useQueryClient()
-  const logoutAction = logout.bind(null, logoutRedirect ?? "/login")
+  const logoutAction = logout.bind(null, `${BASE_PATH}${logoutRedirect ?? "/login"}`)
 
   // Le QueryClient vit dans le layout racine et ne démonte jamais entre deux
   // sessions (navigation soft via Server Action) — sans ça, les données de

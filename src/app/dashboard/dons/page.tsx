@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 
 type Don = {
   id:            string
@@ -71,7 +72,7 @@ export default function DonsPage() {
   const dons = result?.data ?? []
 
   function downloadRecu(donId: string) {
-    window.open(`/api/dons/${donId}/recu`, "_blank")
+    window.open(`${BASE_PATH}/api/dons/${donId}/recu`, "_blank")
   }
 
   const columns: Column<Don>[] = [

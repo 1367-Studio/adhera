@@ -15,6 +15,20 @@ async function fetchMembresPaginated(page: number, limit: number, search?: strin
   return res.json() as Promise<PaginatedResult<unknown>>
 }
 
+async function fetchMembre(id: string) {
+  const res = await fetch(`/api/membres/${id}`)
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du chargement du membre"))
+  return res.json()
+}
+
+export function useMembre(id: string) {
+  return useQuery({
+    queryKey: [...QK, "detail", id],
+    queryFn:  () => fetchMembre(id),
+    enabled:  !!id,
+  })
+}
+
 async function createMembre(data: MembreCreateInput) {
   const res = await fetch("/api/membres", {
     method: "POST",

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth/config"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { BASE_PATH } from "@/lib/env"
 
 export async function proxy(request: NextRequest) {
   const session    = await auth()
@@ -33,7 +34,7 @@ export async function proxy(request: NextRequest) {
   if (portalMatch) {
     if (!isLoggedIn || isLocked) {
       const slug     = portalMatch[1]
-      const loginUrl = new URL(`/portal/${slug}/login`, request.url)
+      const loginUrl = new URL(`${BASE_PATH}/portal/${slug}/login`, request.url)
       if (!isLoggedIn) loginUrl.searchParams.set("callbackUrl", pathname)
       if (isLocked) loginUrl.searchParams.set("suspended", "1")
       return NextResponse.redirect(loginUrl)
@@ -43,17 +44,17 @@ export async function proxy(request: NextRequest) {
 
   // Dashboard — redirect to admin login
   if (isDashboard) {
-    if (!isLoggedIn) return NextResponse.redirect(new URL("/login", request.url))
+    if (!isLoggedIn) return NextResponse.redirect(new URL(`${BASE_PATH}/login`, request.url))
     // Locked admins (suspended or cancelled) stay logged in, but every dashboard page
     // except the standby screen itself redirects there until they reactivate.
     if (isLocked && !isStandbyPage) {
-      return NextResponse.redirect(new URL(standbyPath, request.url))
+      return NextResponse.redirect(new URL(`${BASE_PATH}${standbyPath}`, request.url))
     }
   }
 
   // Already logged in on admin login page → go to dashboard
   if (isAdminLogin && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", request.url))
+    return NextResponse.redirect(new URL(`${BASE_PATH}/dashboard`, request.url))
   }
 
   return NextResponse.next()

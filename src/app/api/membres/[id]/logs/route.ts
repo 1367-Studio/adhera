@@ -17,11 +17,14 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const page     = Math.max(1, Number(searchParams.get("page")     ?? 1)                    || 1)
   const pageSize = Math.min(100, Math.max(1, Number(searchParams.get("pageSize") ?? DEFAULT_PAGE_SIZE) || DEFAULT_PAGE_SIZE))
 
-  const participations = await prisma.participation.findMany({
-    where:  { membreId: id },
-    select: { id: true },
-  })
+  const [participations, cotisations, materialLoans] = await Promise.all([
+    prisma.participation.findMany({ where: { membreId: id }, select: { id: true } }),
+    prisma.cotisation.findMany({ where: { membreId: id }, select: { id: true } }),
+    prisma.materialLoan.findMany({ where: { membreId: id }, select: { id: true } }),
+  ])
   const participationIds = participations.map(p => p.id)
+  const cotisationIds     = cotisations.map(c => c.id)
+  const materialLoanIds   = materialLoans.map(l => l.id)
 
   const where = {
     associationId,
@@ -29,6 +32,12 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       { entity: "Membre",        entityId: id },
       ...(participationIds.length > 0
         ? [{ entity: "Participation", entityId: { in: participationIds } }]
+        : []),
+      ...(cotisationIds.length > 0
+        ? [{ entity: "Cotisation", entityId: { in: cotisationIds } }]
+        : []),
+      ...(materialLoanIds.length > 0
+        ? [{ entity: "MaterialLoan", entityId: { in: materialLoanIds } }]
         : []),
     ],
   }

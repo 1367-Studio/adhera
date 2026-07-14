@@ -75,7 +75,7 @@ function DonsPortalPageInner() {
   const canIssueReceipts = dons[0]?.association.canIssueTaxReceipts ?? false
 
   function downloadRecu(donId: string) {
-    window.open(`/api/portal/dons/${donId}/recu`, "_blank")
+    window.open(`${BASE_PATH}/api/portal/dons/${donId}/recu`, "_blank")
   }
 
   return (

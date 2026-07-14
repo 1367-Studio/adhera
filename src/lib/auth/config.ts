@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma/client"
+import { BASE_PATH } from "@/lib/env"
 
 const credentialsSchema = z.object({
   email:    z.string().email(),
@@ -98,8 +99,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login",
-    error:  "/login",
+    signIn: `${BASE_PATH}/login`,
+    error:  `${BASE_PATH}/login`,
   },
   session: { strategy: "jwt" },
   callbacks: {

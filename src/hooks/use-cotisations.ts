@@ -56,6 +56,9 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
     qc.invalidateQueries({ queryKey: ["portal-cotisation"] }),
     qc.invalidateQueries({ queryKey: ["dashboard"] }),
     qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    // The Membre detail view embeds a member's cotisations — without this, adding one
+    // there leaves that tab showing stale data until a full page reload.
+    qc.invalidateQueries({ queryKey: ["membres"] }),
   ])
 }
 

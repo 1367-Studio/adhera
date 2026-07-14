@@ -204,78 +204,81 @@ enum OrganismeCategory {
   ORGANISME_UE_SIMILAIRE
 }
 
-
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
-  id                   String             @id @default(cuid())
-  name                 String
-  slug                 String             @unique
-  city                 String?
-  country              String             @default("France")
-  address              String?
-  phone                String?
-  siren                String?
-  rna                  String?
-  canIssueTaxReceipts  Boolean            @default(false)
-  objet                String?
-  organismeCategory    OrganismeCategory  @default(ASSOCIATION_LOI_1901)
+  id                      String             @id @default(cuid())
+  name                    String
+  slug                    String             @unique
+  city                    String?
+  country                 String             @default("France")
+  address                 String?
+  phone                   String?
+  siren                   String?
+  rna                     String?
+  canIssueTaxReceipts     Boolean            @default(false)
+  objet                   String?
+  organismeCategory       OrganismeCategory  @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail String?
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
   // key, see platformClient in the same file).
-  aiProvider           String?
-  aiApiKey             String?
-  aiModel              String?
-  smsAccountSid        String?
-  smsAuthToken         String?
-  smsPhoneNumber       String?
-  livekitUrl           String?
-  livekitApiKey        String?
-  livekitApiSecret     String?
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  stripeConnectId      String?
-  plan                 AssociationPlan    @default(ESSENTIAL)
+  aiProvider              String?
+  aiApiKey                String?
+  aiModel                 String?
+  smsAccountSid           String?
+  smsAuthToken            String?
+  smsPhoneNumber          String?
+  livekitUrl              String?
+  livekitApiKey           String?
+  livekitApiSecret        String?
+  stripeCustomerId        String?
+  stripeSubscriptionId    String?
+  stripeConnectId         String?
+  plan                    AssociationPlan    @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
   // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
   // Null means "use the tier's standard limit", not "unlimited".
-  customMemberLimit    Int?
-  subscriptionStatus   SubscriptionStatus @default(TRIAL)
-  trialEndsAt          DateTime?
-  suspendedAt          DateTime?
-  cancelAtPeriodEnd    Boolean            @default(false)
-  currentPeriodEndsAt  DateTime?
-  sitePublished        Boolean            @default(false)
-  siteConfig           Json?
-  modules              Json?
-  internalNotes        String?
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  deletedAt            DateTime?
+  customMemberLimit       Int?
+  subscriptionStatus      SubscriptionStatus @default(TRIAL)
+  trialEndsAt             DateTime?
+  suspendedAt             DateTime?
+  cancelAtPeriodEnd       Boolean            @default(false)
+  currentPeriodEndsAt     DateTime?
+  sitePublished           Boolean            @default(false)
+  siteConfig              Json?
+  modules                 Json?
+  internalNotes           String?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+  deletedAt               DateTime?
 
-  users             User[]
-  membres           Membre[]
-  membreTypes       MembreType[]
-  evenements        Evenement[]
-  cotisations       Cotisation[]
-  actualites        Actualite[]
-  messageTemplates  MessageTemplate[]
-  automationRules   AutomationRule[]
-  materials         Material[]
-  activityLogs      ActivityLog[]
-  dons              Don[]
-  sondages          Sondage[]
-  boutiqueProduits  BoutiqueProduit[]
-  boutiqueCommandes BoutiqueCommande[]
-  meetings          Meeting[]
-  bankAccounts      BankAccount[]
-  bankTransactions  BankTransaction[]
-  financeCategories FinanceCategory[]
-  incomes           Income[]
-  expenses          Expense[]
+  users               User[]
+  membres             Membre[]
+  membreTypes         MembreType[]
+  evenements          Evenement[]
+  cotisations         Cotisation[]
+  actualites          Actualite[]
+  messageTemplates    MessageTemplate[]
+  automationRules     AutomationRule[]
+  materials           Material[]
+  activityLogs        ActivityLog[]
+  dons                Don[]
+  sondages            Sondage[]
+  boutiqueProduits    BoutiqueProduit[]
+  boutiqueCommandes   BoutiqueCommande[]
+  meetings            Meeting[]
+  bankAccounts        BankAccount[]
+  bankTransactions    BankTransaction[]
+  financeCategories   FinanceCategory[]
+  incomes             Income[]
+  expenses            Expense[]
   bankReconciliations BankReconciliation[]
+  fournisseurs        Fournisseur[]
+  devis               Devis[]
+  factures            Facture[]
+  facturesRecues      FactureRecue[]
 }
 
 model User {
@@ -349,20 +352,20 @@ model Membre {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association         Association          @relation(fields: [associationId], references: [id])
-  user                User?                @relation(fields: [userId], references: [id])
-  type                MembreType?          @relation(fields: [typeId], references: [id])
-  cotisations         Cotisation[]
-  participations      Participation[]
-  actualiteRecipients ActualiteRecipient[]
-  materialLoans       MaterialLoan[]
-  automationLogs      AutomationLog[]
-  dons                Don[]
-  sondageRecipients   SondageRecipient[]
-  sondageReponses     SondageReponse[]
-  boutiqueCommandes   BoutiqueCommande[]
+  association           Association          @relation(fields: [associationId], references: [id])
+  user                  User?                @relation(fields: [userId], references: [id])
+  type                  MembreType?          @relation(fields: [typeId], references: [id])
+  cotisations           Cotisation[]
+  participations        Participation[]
+  actualiteRecipients   ActualiteRecipient[]
+  materialLoans         MaterialLoan[]
+  automationLogs        AutomationLog[]
+  dons                  Don[]
+  sondageRecipients     SondageRecipient[]
+  sondageReponses       SondageReponse[]
+  boutiqueCommandes     BoutiqueCommande[]
   meetingsAsParticipant MeetingParticipant[]
-  incomes             Income[]
+  incomes               Income[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -385,7 +388,7 @@ model Evenement {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  association    Association    @relation(fields: [associationId], references: [id])
+  association    Association     @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
 
@@ -394,17 +397,17 @@ model Evenement {
 
 model Participation {
   id              String      @id @default(cuid())
-  membreId        String?                          // null = convive sans compte membre
+  membreId        String? // null = convive sans compte membre
   evenementId     String
-  firstName       String                            // capturé sur la ligne — pas de join Membre pour l'affichage
+  firstName       String // capturé sur la ligne — pas de join Membre pour l'affichage
   lastName        String
   email           String?
   present         Boolean     @default(false)
   rsvp            RsvpStatus?
   rsvpAt          DateTime?
   ticketPaidAt    DateTime?
-  amount          Decimal?    @db.Decimal(10, 2)     // montant payé pour CETTE place
-  orderId         String?                            // regroupe les places d'une même réservation/paiement
+  amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
+  orderId         String? // regroupe les places d'une même réservation/paiement
   stripeSessionId String?
   createdAt       DateTime    @default(now())
 
@@ -506,7 +509,7 @@ model ActualiteRecipient {
   membreId    String
 
   actualite Actualite @relation(fields: [actualiteId], references: [id], onDelete: Cascade)
-  membre    Membre    @relation(fields: [membreId],    references: [id])
+  membre    Membre    @relation(fields: [membreId], references: [id])
 
   @@id([actualiteId, membreId])
 }
@@ -562,12 +565,12 @@ model MessageTemplate {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
   rules       AutomationRule[]
 }
 
 model AutomationRule {
-  id            String      @id @default(cuid())
+  id            String         @id @default(cuid())
   associationId String
   name          String
   templateId    String
@@ -578,11 +581,11 @@ model AutomationRule {
   status        RuleStatus     @default(ACTIVE)
   lastRunAt     DateTime?
   nextRunAt     DateTime?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   association Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  template    MessageTemplate  @relation(fields: [templateId], references: [id])
+  template    MessageTemplate @relation(fields: [templateId], references: [id])
   logs        AutomationLog[]
 
   @@index([associationId, status])
@@ -593,7 +596,7 @@ model AutomationLog {
   id              String   @id @default(cuid())
   ruleId          String
   membreId        String?
-  participationId String?  // dedup key for EVENT_REMINDER targets that have no Membre (guests) — membreId alone can't identify them
+  participationId String? // dedup key for EVENT_REMINDER targets that have no Membre (guests) — membreId alone can't identify them
   eventId         String?
   subject         String?
   sentAt          DateTime @default(now())
@@ -635,7 +638,7 @@ model Sondage {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
   questions   SondageQuestion[]
   recipients  SondageRecipient[]
   reponses    SondageReponse[]
@@ -662,7 +665,7 @@ model SondageRecipient {
   membreId  String
 
   sondage Sondage @relation(fields: [sondageId], references: [id], onDelete: Cascade)
-  membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
+  membre  Membre  @relation(fields: [membreId], references: [id], onDelete: Cascade)
 
   @@id([sondageId, membreId])
 }
@@ -674,7 +677,7 @@ model SondageReponse {
   submittedAt DateTime @default(now())
 
   sondage Sondage              @relation(fields: [sondageId], references: [id], onDelete: Cascade)
-  membre  Membre?              @relation(fields: [membreId],  references: [id], onDelete: SetNull)
+  membre  Membre?              @relation(fields: [membreId], references: [id], onDelete: SetNull)
   items   SondageReponseItem[]
 
   @@unique([sondageId, membreId])
@@ -686,7 +689,7 @@ model SondageReponseItem {
   questionId String
   value      String?
 
-  reponse  SondageReponse  @relation(fields: [reponseId],  references: [id], onDelete: Cascade)
+  reponse  SondageReponse  @relation(fields: [reponseId], references: [id], onDelete: Cascade)
   question SondageQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
@@ -715,39 +718,39 @@ model BoutiqueProduit {
   createdAt     DateTime              @default(now())
   updatedAt     DateTime              @updatedAt
 
-  association Association             @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  variantes   BoutiqueVariante[]
+  association   Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  variantes     BoutiqueVariante[]
   commandeItems BoutiqueCommandeItem[]
 }
 
 model BoutiqueVariante {
-  id         String   @id @default(cuid())
-  produitId  String
-  label      String
-  price      Int
-  stock      Int      @default(0)
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  produitId String
+  label     String
+  price     Int
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
 
   produit       BoutiqueProduit        @relation(fields: [produitId], references: [id], onDelete: Cascade)
   commandeItems BoutiqueCommandeItem[]
 }
 
 model BoutiqueCommande {
-  id            String                 @id @default(cuid())
-  associationId String
-  membreId      String?
-  guestName     String?
-  guestEmail    String?
-  status        BoutiqueCommandeStatus @default(PENDING)
-  paymentMethod BoutiquePaymentMethod  @default(MANUAL)
+  id                    String                 @id @default(cuid())
+  associationId         String
+  membreId              String?
+  guestName             String?
+  guestEmail            String?
+  status                BoutiqueCommandeStatus @default(PENDING)
+  paymentMethod         BoutiquePaymentMethod  @default(MANUAL)
   stripePaymentIntentId String?
-  totalAmount   Int
-  note          String?
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
+  totalAmount           Int
+  note                  String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
   association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre      Membre?                @relation(fields: [membreId],      references: [id], onDelete: SetNull)
+  membre      Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
   items       BoutiqueCommandeItem[]
 
   @@index([associationId, status])
@@ -761,37 +764,37 @@ model BoutiqueCommandeItem {
   quantity   Int
   unitPrice  Int
 
-  commande  BoutiqueCommande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
-  produit   BoutiqueProduit  @relation(fields: [produitId],  references: [id], onDelete: Restrict)
-  variante  BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+  commande BoutiqueCommande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
+  produit  BoutiqueProduit  @relation(fields: [produitId], references: [id], onDelete: Restrict)
+  variante BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
 }
 
 // ─── Réunions ─────────────────────────────────────────────────────────────────
 
 model Meeting {
-  id            String        @id @default(cuid())
-  associationId String
-  title         String
-  description   String?
-  status        MeetingStatus @default(SCHEDULED)
-  scheduledAt   DateTime?
-  startedAt     DateTime?
-  endedAt       DateTime?
-  roomName      String        @unique
-  createdById   String
-  transcript    String?
-  summary       String?
-  egressId      String?
-  recordingKey  String?
+  id               String        @id @default(cuid())
+  associationId    String
+  title            String
+  description      String?
+  status           MeetingStatus @default(SCHEDULED)
+  scheduledAt      DateTime?
+  startedAt        DateTime?
+  endedAt          DateTime?
+  roomName         String        @unique
+  createdById      String
+  transcript       String?
+  summary          String?
+  egressId         String?
+  recordingKey     String?
   // Snapshot of whichever LiveKit account (platform or the association's own) actually
   // created this meeting's room, pinned on first use — later changes to the association's
   // LiveKit settings must not point an in-progress/already-created meeting at a different
   // account than the one its room actually lives on.
-  livekitUrl        String?
-  livekitApiKey     String?
-  livekitApiSecret  String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  livekitUrl       String?
+  livekitApiKey    String?
+  livekitApiSecret String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   participants MeetingParticipant[]
@@ -800,13 +803,13 @@ model Meeting {
 }
 
 model MeetingParticipant {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   meetingId String
   membreId  String
   joinedAt  DateTime?
 
   meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
-  membre  Membre  @relation(fields: [membreId],  references: [id], onDelete: Cascade)
+  membre  Membre  @relation(fields: [membreId], references: [id], onDelete: Cascade)
 
   @@unique([meetingId, membreId])
 }
@@ -874,25 +877,25 @@ model FinanceCategory {
 }
 
 model Income {
-  id            String       @id @default(cuid())
-  associationId String
-  memberId      String?
-  participationId String?    // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
-  amount        Decimal      @db.Decimal(10, 2)
-  categoryId    String?
-  paymentMethod String?
-  date          DateTime
-  description   String?
-  source        IncomeSource @default(MANUAL)
-  status        IncomeStatus @default(PENDING)
-  reference     String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id              String       @id @default(cuid())
+  associationId   String
+  memberId        String?
+  participationId String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
+  amount          Decimal      @db.Decimal(10, 2)
+  categoryId      String?
+  paymentMethod   String?
+  date            DateTime
+  description     String?
+  source          IncomeSource @default(MANUAL)
+  status          IncomeStatus @default(PENDING)
+  reference       String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre          Membre?            @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  participation   Participation?     @relation(fields: [participationId], references: [id], onDelete: SetNull)
-  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre          Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  participation   Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
   @@index([associationId, status])
@@ -913,8 +916,8 @@ model Expense {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  association     Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  category        FinanceCategory?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
   @@index([associationId, status])
@@ -942,3 +945,197 @@ model BankReconciliation {
   @@index([associationId])
 }
 
+enum FournisseurStatus {
+  ACTIF
+  INACTIF
+  ARCHIVE
+}
+
+model Fournisseur {
+  id            String            @id @default(cuid())
+  associationId String
+  companyName   String
+  tradeName     String?
+  contactName   String?
+  contactRole   String?
+  siret         String?
+  siren         String?
+  vatNumber     String?
+  address       String?
+  city          String?
+  postalCode    String?
+  country       String            @default("France")
+  email         String?
+  billingEmail  String?
+  phone         String?
+  website       String?
+  category      String?
+  status        FournisseurStatus @default(ACTIF)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  deletedAt     DateTime?
+
+  association    Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  devis          Devis[]
+  factures       Facture[]
+  facturesRecues FactureRecue[]
+
+  @@index([associationId, status])
+  @@index([associationId, deletedAt])
+}
+
+enum DevisStatus {
+  BROUILLON
+  ENVOYE
+  ACCEPTE
+  REFUSE
+  EXPIRE
+}
+
+model Devis {
+  id             String      @id @default(cuid())
+  associationId  String
+  fournisseurId  String?
+  number         String
+  status         DevisStatus @default(BROUILLON)
+  issueDate      DateTime    @default(now())
+  validUntil     DateTime?
+  subtotal       Decimal     @db.Decimal(10, 2)
+  vatAmount      Decimal     @default(0) @db.Decimal(10, 2)
+  discountAmount Decimal     @default(0) @db.Decimal(10, 2)
+  total          Decimal     @db.Decimal(10, 2)
+  notes          String?
+  paymentTerms   String?
+  pdfUrl         String?
+  sentAt         DateTime?
+  respondedAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  deletedAt      DateTime?
+
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur Fournisseur? @relation(fields: [fournisseurId], references: [id])
+  items       DevisItem[]
+  facture     Facture?
+
+  @@unique([associationId, number])
+  @@index([associationId, status])
+  @@index([associationId, deletedAt])
+}
+
+model DevisItem {
+  id          String  @id @default(cuid())
+  devisId     String
+  description String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  vatRate     Decimal @default(0) @db.Decimal(5, 2)
+  discount    Decimal @default(0) @db.Decimal(10, 2)
+  order       Int     @default(0)
+
+  devis Devis @relation(fields: [devisId], references: [id], onDelete: Cascade)
+
+  @@index([devisId])
+}
+
+enum FactureStatus {
+  BROUILLON
+  EN_ATTENTE
+  PARTIELLEMENT_PAYEE
+  PAYEE
+  EN_RETARD
+  ANNULEE
+}
+
+model Facture {
+  id             String        @id @default(cuid())
+  associationId  String
+  fournisseurId  String?
+  devisId        String?       @unique
+  number         String
+  status         FactureStatus @default(BROUILLON)
+  issueDate      DateTime      @default(now())
+  dueDate        DateTime?
+  subtotal       Decimal       @db.Decimal(10, 2)
+  vatAmount      Decimal       @default(0) @db.Decimal(10, 2)
+  discountAmount Decimal       @default(0) @db.Decimal(10, 2)
+  total          Decimal       @db.Decimal(10, 2)
+  amountPaid     Decimal       @default(0) @db.Decimal(10, 2)
+  notes          String?
+  paymentTerms   String?
+  pdfUrl         String?
+  sentAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  association Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur Fournisseur?     @relation(fields: [fournisseurId], references: [id])
+  devis       Devis?           @relation(fields: [devisId], references: [id])
+  items       FactureItem[]
+  payments    FacturePayment[]
+
+  @@unique([associationId, number])
+  @@index([associationId, status])
+  @@index([associationId, dueDate])
+  @@index([associationId, deletedAt])
+}
+
+model FactureItem {
+  id          String  @id @default(cuid())
+  factureId   String
+  description String
+  quantity    Decimal @db.Decimal(10, 2)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  vatRate     Decimal @default(0) @db.Decimal(5, 2)
+  discount    Decimal @default(0) @db.Decimal(10, 2)
+  order       Int     @default(0)
+
+  facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+
+  @@index([factureId])
+}
+
+model FacturePayment {
+  id        String   @id @default(cuid())
+  factureId String
+  amount    Decimal  @db.Decimal(10, 2)
+  method    String
+  paidAt    DateTime @default(now())
+  note      String?
+  createdAt DateTime @default(now())
+
+  facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+
+  @@index([factureId, paidAt])
+}
+
+enum FactureRecueStatus {
+  A_PAYER
+  PAYEE
+  EN_LITIGE
+  ANNULEE
+}
+
+model FactureRecue {
+  id            String             @id @default(cuid())
+  associationId String
+  fournisseurId String?
+  number        String?
+  type          String // facture | devis_recu | comprovante | contrat | autre
+  issueDate     DateTime
+  amount        Decimal            @db.Decimal(10, 2)
+  status        FactureRecueStatus @default(A_PAYER)
+  fileUrl       String
+  notes         String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  deletedAt     DateTime?
+
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur Fournisseur? @relation(fields: [fournisseurId], references: [id])
+
+  @@index([associationId, status])
+  @@index([associationId, deletedAt])
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { PortalLoginForm } from "@/components/auth/portal-login-form"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 export const metadata: Metadata = { title: "Connexion — Espace membre" }
 
@@ -18,7 +19,7 @@ export default async function PortalLoginPage({
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded-md bg-foreground" />
+          <LogoMark className="size-6" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 

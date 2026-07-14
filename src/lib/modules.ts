@@ -12,6 +12,9 @@ export type AssocModules = {
   reunions:    boolean
   sms:         boolean
   finances:    boolean
+  fournisseurs: boolean
+  devis:        boolean
+  factures:     boolean
 }
 
 export const DEFAULT_MODULES: AssocModules = {
@@ -28,6 +31,9 @@ export const DEFAULT_MODULES: AssocModules = {
   reunions:    false,
   sms:         false,
   finances:    true,
+  fournisseurs: false,
+  devis:        false,
+  factures:     false,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
@@ -44,6 +50,9 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   reunions:    "Réunions vidéo",
   sms:         "Notifications SMS",
   finances:    "Finances & Conciliation bancaire",
+  fournisseurs: "Fournisseurs",
+  devis:        "Devis",
+  factures:     "Factures",
 }
 
 export function parseModules(raw: unknown): AssocModules {

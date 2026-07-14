@@ -11,6 +11,7 @@ import {
 import { useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 function isActive(href: string, pathname: string) {
   return pathname === href || pathname.startsWith(href + "/")
@@ -41,9 +42,7 @@ export function PortalSidebar({ slug }: { slug: string }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href={navItems[0]?.href ?? `/portal/${slug}/profil`} />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
+              <LogoMark />
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Mon espace</span>

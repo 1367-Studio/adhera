@@ -8,6 +8,7 @@ import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "
 import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 type EventInfo = {
   title:            string
@@ -76,7 +77,7 @@ export default function CheckInPage() {
       <div className="w-full max-w-sm space-y-6 text-center">
 
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="size-6 rounded-md bg-foreground" />
+          <LogoMark className="size-6" />
           <span className="text-base font-semibold">{APP_NAME}</span>
         </div>
 

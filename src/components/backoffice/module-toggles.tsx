@@ -5,7 +5,7 @@ import { toast } from "sonner"
 import type { AssocModules } from "@/lib/modules"
 import { MODULE_LABELS } from "@/lib/modules"
 import { Button } from "@/components/ui/button"
-import { WarningIcon, CalendarBlankIcon, CreditCardIcon, NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparkleIcon, HeartIcon, ChartBarIcon, ShoppingBagIcon, VideoCameraIcon, ChatTextIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import { WarningIcon, CalendarBlankIcon, CreditCardIcon, NewspaperIcon, BellIcon, PackageIcon, GlobeIcon, SparkleIcon, HeartIcon, ChartBarIcon, ShoppingBagIcon, VideoCameraIcon, ChatTextIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import type { Icon as LucideIcon } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils"
 
@@ -23,6 +23,9 @@ const MODULE_META: Record<keyof AssocModules, { icon: LucideIcon; description: s
   reunions:    { icon: VideoCameraIcon,             description: "Réunions et assemblées générales" },
   sms:         { icon: ChatTextIcon, description: "Notifications SMS via Twilio" },
   finances:    { icon: MoneyIcon,          description: "Conciliation bancaire et comptabilité" },
+  fournisseurs: { icon: BuildingsIcon,     description: "Répertoire des fournisseurs" },
+  devis:        { icon: FileTextIcon,      description: "Devis et suivi des propositions" },
+  factures:     { icon: ReceiptIcon,       description: "Facturation et suivi des paiements" },
 }
 
 interface Props {

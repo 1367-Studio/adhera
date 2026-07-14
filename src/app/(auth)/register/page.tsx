@@ -3,6 +3,7 @@ import Link from "next/link"
 import { RegisterForm } from "@/components/auth/register-form"
 import { getPricingInfo } from "@/lib/stripe"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 export const metadata: Metadata = { title: "Créer un compte" }
 
@@ -12,7 +13,7 @@ export default async function RegisterPage() {
   return (
     <div className="w-full max-w-md">
       <div className="lg:hidden flex items-center gap-2 mb-8">
-        <div className="size-6 rounded-md bg-foreground" />
+        <LogoMark className="size-6" />
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 

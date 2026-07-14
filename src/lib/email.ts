@@ -1,5 +1,17 @@
 import { APP_NAME } from "@/config/brand"
 
+// Free-text user input (e.g. a custom message on a Devis/Facture send) interpolated into
+// an HTML email must be escaped — otherwise it's rendered as markup by the recipient's
+// mail client instead of shown as plain text.
+export function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
 // ─── Base layout ─────────────────────────────────────────────────────────────
 
 function layout(associationName: string, content: string): string {

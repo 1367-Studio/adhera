@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/sidebar"
 import { signOut } from "next-auth/react"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 const navItems = [
   { name: "Vue d'ensemble", href: "/backoffice",              icon: SquaresFourIcon },
@@ -32,9 +34,7 @@ export function BackofficeSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/backoffice" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
+              <LogoMark />
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Backoffice</span>
@@ -69,7 +69,7 @@ export function BackofficeSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: "/login" })}>
+            <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: `${BASE_PATH}/login` })}>
               <SignOutIcon />
               <span>Se déconnecter</span>
             </SidebarMenuButton>

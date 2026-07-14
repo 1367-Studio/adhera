@@ -17,7 +17,9 @@ const statusOptions = [
   { value: "SUSPENDU", label: "Suspendu"   },
 ]
 
-const selfStatusOptions = statusOptions.filter(o => o.value !== "INACTIF" && o.value !== "SUSPENDU")
+// Only ACTIF is safe to self-select — any other status flips User.active to false server-side,
+// which would lock the acting manager out of their own account.
+const selfStatusOptions = statusOptions.filter(o => o.value === "ACTIF")
 
 const allRoleOptions = [
   { value: "MEMBRE",     label: "Membre"     },

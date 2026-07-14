@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -12,6 +12,7 @@ import {
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
+import { LogoMark } from "@/components/layout/logo-mark"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
@@ -32,6 +33,9 @@ const navigationItems: NavItem[] = [
   { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarBlankIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
   { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
   { name: "Finances",        href: "/dashboard/finances",    icon: MoneyIcon,         roles: FINANCE,   moduleKey: "finances"    },
+  { name: "Devis",           href: "/dashboard/devis",       icon: FileTextIcon,      roles: FINANCE,   moduleKey: "devis"       },
+  { name: "Factures",        href: "/dashboard/factures",    icon: ReceiptIcon,       roles: FINANCE,   moduleKey: "factures"    },
+  { name: "Fournisseurs",    href: "/dashboard/fournisseurs", icon: BuildingsIcon,    roles: FINANCE,   moduleKey: "fournisseurs" },
   { name: "Dons",            href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
   { name: "Réunions",        href: "/dashboard/reunions",    icon: VideoCameraIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
   { name: "Sondages",        href: "/dashboard/sondages",    icon: ClipboardTextIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
@@ -68,9 +72,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-foreground text-background">
-                <span className="text-xs font-bold">{APP_NAME.charAt(0)}</span>
-              </div>
+              <LogoMark />
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Associations</span>

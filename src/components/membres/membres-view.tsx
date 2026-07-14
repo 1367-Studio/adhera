@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -98,7 +98,7 @@ function FilterSelect({
   )
 }
 
-function ChangeRoleModal({
+export function ChangeRoleModal({
   membre,
   onClose,
 }: {
@@ -286,6 +286,7 @@ export function MembresView() {
         const isSelf = m.userId === currentUser.id
         return (
           <RowActions actions={[
+            { label: "Voir la fiche", icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/membres/${m.id}`) },
             { label: "Modifier",   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
             { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
             ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
@@ -389,6 +390,7 @@ export function MembresView() {
         loading={isLoading}
         keyExtractor={(m) => m.id}
         empty={search ? `Aucun résultat pour « ${search} »` : "Aucun membre enregistré"}
+        onRowClick={(m) => router.push(`/dashboard/membres/${m.id}`)}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,
