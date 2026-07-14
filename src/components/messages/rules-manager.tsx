@@ -22,6 +22,7 @@ const TRIGGER_LABELS: Record<string, string> = {
   EVENT_REMINDER:        "Rappel d'événement",
   RSVP_CONFIRMED:        "RSVP confirmé",
   MEMBER_CREATED:        "Nouveau membre",
+  MEMBER_BIRTHDAY:       "Anniversaire",
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -67,6 +68,7 @@ function triggerSummary(rule: AutomationRule): string {
   }
   if (rule.triggerType === "RSVP_CONFIRMED") return "Déclenché à la confirmation RSVP"
   if (rule.triggerType === "MEMBER_CREATED")  return "Déclenché à la création du membre"
+  if (rule.triggerType === "MEMBER_BIRTHDAY") return "Le jour de l'anniversaire de chaque membre"
   return ""
 }
 
@@ -144,6 +146,14 @@ export function RulesManager() {
                   <span className="text-[10px] text-muted-foreground border rounded-full px-2 py-0.5">
                     {TRIGGER_LABELS[r.triggerType]}
                   </span>
+                  {r.status === "ACTIVE" && !r.template.active && (
+                    <span
+                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                      title="Le modèle associé est désactivé : cette règle n'envoie plus rien"
+                    >
+                      Modèle inactif
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">{triggerSummary(r)} · Modèle : {r.template.name}</p>
                 {r.nextRunAt && r.status === "ACTIVE" && (() => {

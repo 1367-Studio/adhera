@@ -32,6 +32,8 @@ type LogEntry = {
     present?:    boolean
     memberName?: string
     quantity?:   number
+    skippedNoContact?: number
+    birthdaysToday?:   number
   } | null
   createdAt: string
 }
@@ -184,10 +186,13 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   TEMPLATE_CREATED:         { label: "Modèle créé",         color: PUR    },
   TEMPLATE_UPDATED:         { label: "Modèle modifié",      color: PUR_L  },
   TEMPLATE_DELETED:         { label: "Modèle supprimé",     color: DEL    },
+  TEMPLATE_ACTIVATED:       { label: "Modèle activé",       color: PUR    },
+  TEMPLATE_DEACTIVATED:     { label: "Modèle désactivé",    color: SLA_L  },
   // Automatisations (indigo)
   RULE_CREATED:             { label: "Règle créée",         color: IND    },
   RULE_UPDATED:             { label: "Règle modifiée",      color: IND_L  },
   RULE_DELETED:             { label: "Règle supprimée",     color: DEL    },
+  AUTOMATION_SKIPPED_NO_CONTACT: { label: "Envoi(s) ignoré(s) — sans contact", color: AMB_L },
   // Types membres (slate)
   TYPE_CREATED:             { label: "Type créé",           color: SLA    },
   TYPE_UPDATED:             { label: "Type modifié",        color: SLA_L  },
@@ -364,6 +369,14 @@ function Details({ log }: { log: LogEntry }) {
   const genericLabels = GENERIC_FIELD_LABELS[log.action]
   if (genericLabels && m.changes) {
     return <GenericDiff changes={m.changes} fieldLabels={genericLabels} />
+  }
+
+  if (log.action === "AUTOMATION_SKIPPED_NO_CONTACT" && m.skippedNoContact != null) {
+    return (
+      <p className="text-xs text-muted-foreground">
+        {m.skippedNoContact} / {m.birthdaysToday} anniversaire{(m.birthdaysToday ?? 0) > 1 ? "s" : ""} du jour ignoré{m.skippedNoContact > 1 ? "s" : ""} — membre sans email/téléphone joignable.
+      </p>
+    )
   }
 
   if (m.status) {
