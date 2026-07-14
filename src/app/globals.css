@@ -285,16 +285,12 @@ header.sticky {
   to   { opacity: 1; transform: translateX(0); }
 }
 
+/* Delay is set inline per item (see AppSidebar) instead of nth-child rules here —
+   the visible nav list length varies per association (modules + role), so a fixed
+   CSS list silently stops covering new items instead of failing loudly. */
 [data-sidebar="menu-item"] {
   animation: sidebar-item-in 220ms ease both;
 }
-[data-sidebar="menu-item"]:nth-child(1) { animation-delay: 30ms;  }
-[data-sidebar="menu-item"]:nth-child(2) { animation-delay: 70ms;  }
-[data-sidebar="menu-item"]:nth-child(3) { animation-delay: 110ms; }
-[data-sidebar="menu-item"]:nth-child(4) { animation-delay: 150ms; }
-[data-sidebar="menu-item"]:nth-child(5) { animation-delay: 190ms; }
-[data-sidebar="menu-item"]:nth-child(6) { animation-delay: 230ms; }
-[data-sidebar="menu-item"]:nth-child(7) { animation-delay: 270ms; }
 
 [data-sidebar="header"],
 [data-sidebar="footer"] {
@@ -329,6 +325,26 @@ header.sticky {
 
 @media (prefers-reduced-motion: reduce) {
   .animate-bar-grow-in {
+    animation: none !important;
+  }
+}
+
+/* ── Theme toggle spin — a `transition` on rotate(0→360deg) never plays: both
+   ends resolve to the identity matrix, so the engine sees no change to animate.
+   A keyframe animation runs its full timeline on every trigger regardless, so
+   this is retriggered by remounting the span (key={spins}) instead. ────────── */
+
+@keyframes theme-toggle-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.animate-theme-toggle-spin {
+  animation: theme-toggle-spin 500ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-theme-toggle-spin {
     animation: none !important;
   }
 }
