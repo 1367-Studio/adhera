@@ -1,18 +1,21 @@
 "use client"
 
-import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { DotsSixIcon, ChatTextIcon } from "@phosphor-icons/react/dist/ssr";
+import { DotsSixIcon, ChatTextIcon, PaperPlaneTiltIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
+import { SelectField } from "@/components/ui/select-field"
 import { Button } from "@/components/ui/button"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { RichTextView } from "@/components/ui/rich-text-view"
 import { useModules } from "@/lib/user-context"
+import { substituteVars, buildVars, TEMPLATE_CATEGORIES, TEMPLATE_CATEGORY_LABELS } from "@/lib/automation"
 import {
-  useCreateTemplate, useUpdateTemplate,
+  useCreateTemplate, useUpdateTemplate, useTestSendTemplate,
   type MessageTemplate, type TemplateInput,
 } from "@/hooks/use-message-templates"
 
@@ -20,18 +23,35 @@ function hasText(html: string) {
   return html.replace(/<[^>]*>/g, "").trim().length > 0
 }
 
+const CATEGORY_OPTIONS = TEMPLATE_CATEGORIES.map(value => ({ value, label: TEMPLATE_CATEGORY_LABELS[value] }))
+
 const schema = z.object({
-  name:    z.string().min(1, "Requis"),
-  subject: z.string().min(1, "Requis"),
-  body:    z.string().refine(hasText, "Requis"),
-  smsBody: z.string().optional(),
+  name:     z.string().min(1, "Requis"),
+  category: z.enum(TEMPLATE_CATEGORIES),
+  subject:  z.string().min(1, "Requis"),
+  body:     z.string().refine(hasText, "Requis"),
+  smsBody:  z.string().optional(),
 })
 
 type FormValues = z.infer<typeof schema>
 
+const PREVIEW_VARS = buildVars({
+  prenom:            "Prénom",
+  nom:               "Nom",
+  email:             "prenom.nom@example.com",
+  association:       "Votre association",
+  slug:              "demo",
+  anneeCotisation:   new Date().getFullYear(),
+  montantCotisation: "50",
+  titreEvenement:    "Événement de test",
+  dateEvenement:     new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
+  lieuEvenement:     "Salle des fêtes",
+})
+
 const VARIABLES = [
   { token: "{{prenom}}",             label: "Prénom" },
   { token: "{{nom}}",                label: "Nom" },
+  { token: "{{nom_complet}}",        label: "Nom complet" },
   { token: "{{email}}",              label: "Email" },
   { token: "{{association}}",        label: "Association" },
   { token: "{{lien_portal}}",        label: "Lien portail" },
@@ -53,27 +73,30 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
   const { sms }   = useModules()
   const createMut = useCreateTemplate()
   const updateMut = useUpdateTemplate(template?.id ?? "")
+  const testMut   = useTestSendTemplate()
+  const [previewOpen, setPreviewOpen] = useState(false)
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, setValue, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver:      zodResolver(schema),
-    defaultValues: { name: "", subject: "", body: "", smsBody: "" },
+    defaultValues: { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" },
   })
 
   useEffect(() => {
     if (open) {
       reset(template
-        ? { name: template.name, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "" }
-        : { name: "", subject: "", body: "", smsBody: "" }
+        ? { name: template.name, category: template.category, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "" }
+        : { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" }
       )
     }
   }, [open, template, reset])
 
   async function onSubmit(data: FormValues) {
     const payload: TemplateInput = {
-      name:    data.name,
-      subject: data.subject,
-      body:    data.body,
-      smsBody: data.smsBody?.trim() || undefined,
+      name:     data.name,
+      category: data.category,
+      subject:  data.subject,
+      body:     data.body,
+      smsBody:  data.smsBody?.trim() || undefined,
     }
     try {
       if (isEditing) {
@@ -89,6 +112,17 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
     }
   }
 
+  async function handleTestSend() {
+    try {
+      const res = await testMut.mutateAsync(template!.id) as { sentTo: string }
+      toast.success(`Email de test envoyé à ${res.sentTo}`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  const subject    = watch("subject")
+  const bodyHtml   = watch("body")
   const smsBody    = watch("smsBody") ?? ""
   const isPending  = isSubmitting || createMut.isPending || updateMut.isPending
 
@@ -100,13 +134,27 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
       size="2xl"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          label="Nom interne"
-          required
-          placeholder="Rappel cotisation annuelle"
-          error={errors.name?.message}
-          {...register("name")}
-        />
+        <div className="grid grid-cols-2 gap-3">
+          <FormField
+            label="Nom interne"
+            required
+            placeholder="Rappel cotisation annuelle"
+            error={errors.name?.message}
+            {...register("name")}
+          />
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label="Catégorie"
+                options={CATEGORY_OPTIONS}
+                value={field.value}
+                onValueChange={field.onChange}
+              />
+            )}
+          />
+        </div>
         <FormField
           label="Objet de l'email"
           required
@@ -166,15 +214,52 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-            Annuler
-          </Button>
-          <Button type="submit" loading={isPending}>
-            {isEditing ? "Enregistrer" : "Créer"}
-          </Button>
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex gap-2">
+            <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewOpen(true)}>
+              <EyeIcon className="mr-1.5 size-3.5" /> Aperçu
+            </Button>
+            {isEditing && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                loading={testMut.isPending}
+                title="Envoie un email de test à votre adresse"
+                onClick={handleTestSend}
+              >
+                <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> Tester
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
+              Annuler
+            </Button>
+            <Button type="submit" loading={isPending}>
+              {isEditing ? "Enregistrer" : "Créer"}
+            </Button>
+          </div>
         </div>
       </form>
+
+      <Modal
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        title="Aperçu du message"
+        description="Rendu avec des données d'exemple"
+        size="lg"
+      >
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground mb-1">Objet</p>
+            <p className="text-sm font-medium">{substituteVars(subject || "", PREVIEW_VARS)}</p>
+          </div>
+          <div className="rounded-lg border p-4 bg-card">
+            <RichTextView content={substituteVars(bodyHtml || "", PREVIEW_VARS)} />
+          </div>
+        </div>
+      </Modal>
     </Modal>
   )
 }

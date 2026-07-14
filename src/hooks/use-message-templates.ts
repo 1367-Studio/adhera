@@ -1,17 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import type { TemplateCategory } from "@/lib/automation"
+
+export type { TemplateCategory }
 
 export type MessageTemplate = {
   id:        string
   name:      string
+  category:  TemplateCategory
   subject:   string
   body:      string
   smsBody:   string | null
+  active:    boolean
   createdAt: string
   updatedAt: string
   _count:    { rules: number }
+  activeRulesCount: number
 }
 
-export type TemplateInput = { name: string; subject: string; body: string; smsBody?: string }
+export type TemplateInput = { name: string; category?: TemplateCategory; subject: string; body: string; smsBody?: string }
 
 const KEY = ["message-templates"]
 
@@ -56,13 +62,33 @@ export function useCreateTemplate() {
 export function useUpdateTemplate(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Partial<TemplateInput>) =>
+    mutationFn: (data: Partial<TemplateInput & { active: boolean }>) =>
       fetchJson(`/api/message-templates/${id}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       }),
     onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useToggleTemplateStatus() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, active }: { id: string; active: boolean }) =>
+      fetchJson(`/api/message-templates/${id}`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ active }),
+      }),
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useTestSendTemplate() {
+  return useMutation({
+    mutationFn: (id: string) =>
+      fetchJson(`/api/message-templates/${id}/test`, { method: "POST" }),
   })
 }
 

@@ -3,15 +3,17 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { findUnknownVars } from "@/lib/automation"
+import { findUnknownVars, TEMPLATE_CATEGORIES } from "@/lib/automation"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
 const schema = z.object({
-  name:    z.string().min(1).max(100).optional(),
-  subject: z.string().min(1).max(200).optional(),
-  body:    z.string().min(1).optional(),
-  smsBody: z.string().optional(),
+  name:     z.string().min(1).max(100).optional(),
+  category: z.enum(TEMPLATE_CATEGORIES).optional(),
+  subject:  z.string().min(1).max(200).optional(),
+  body:     z.string().min(1).optional(),
+  smsBody:  z.string().optional(),
+  active:   z.boolean().optional(),
 })
 
 async function resolve(id: string, associationId: string) {
@@ -41,13 +43,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const updateData: Record<string, unknown> = {}
-  if (parsed.data.name    != null) updateData.name    = parsed.data.name
-  if (parsed.data.subject != null) updateData.subject = parsed.data.subject
-  if (parsed.data.body    != null) updateData.body    = parsed.data.body
-  if ("smsBody" in parsed.data)    updateData.smsBody = parsed.data.smsBody || null
+  if (parsed.data.name     != null) updateData.name     = parsed.data.name
+  if (parsed.data.category != null) updateData.category = parsed.data.category
+  if (parsed.data.subject  != null) updateData.subject  = parsed.data.subject
+  if (parsed.data.body     != null) updateData.body     = parsed.data.body
+  if ("smsBody" in parsed.data)     updateData.smsBody  = parsed.data.smsBody || null
+  if (parsed.data.active   != null) updateData.active   = parsed.data.active
 
   const updated = await prisma.messageTemplate.update({ where: { id }, data: updateData })
-  await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_UPDATED", entity: "MessageTemplate", entityId: id, label: updated.name })
+  const action  = parsed.data.active != null ? (parsed.data.active ? "TEMPLATE_ACTIVATED" : "TEMPLATE_DEACTIVATED") : "TEMPLATE_UPDATED"
+  await writeActivityLog({ associationId, actorId: userId, action, entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
 }, { roles: ALLOWED_ROLES })
 

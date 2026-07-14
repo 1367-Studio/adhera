@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export type RuleStatus     = "ACTIVE" | "PAUSED" | "DONE"
-export type TriggerType    = "SCHEDULED_ONCE" | "SCHEDULED_RECURRING" | "EVENT_COTISATION_DUE" | "EVENT_PAYMENT_OVERDUE" | "EVENT_REMINDER" | "RSVP_CONFIRMED" | "MEMBER_CREATED"
+export type TriggerType    = "SCHEDULED_ONCE" | "SCHEDULED_RECURRING" | "EVENT_COTISATION_DUE" | "EVENT_PAYMENT_OVERDUE" | "EVENT_REMINDER" | "RSVP_CONFIRMED" | "MEMBER_CREATED" | "MEMBER_BIRTHDAY"
 export type MessageChannel = "EMAIL" | "SMS" | "BOTH"
 
 export type AutomationRule = {
@@ -16,7 +16,7 @@ export type AutomationRule = {
   lastRunAt:     string | null
   nextRunAt:     string | null
   createdAt:     string
-  template:      { name: string }
+  template:      { name: string; active: boolean }
 }
 
 export type RuleInput = {
@@ -106,5 +106,13 @@ export function useTestSendRule() {
   return useMutation({
     mutationFn: (id: string) =>
       fetchJson(`/api/automation-rules/${id}/test`, { method: "POST" }),
+  })
+}
+
+export function useBirthdayCoverage(enabled: boolean, typeId?: string) {
+  return useQuery<{ total: number; withBirthDate: number }>({
+    queryKey: ["automation-rules", "birthday-coverage", typeId ?? "ALL"],
+    queryFn:  () => fetchJson(`/api/automation-rules/birthday-coverage${typeId ? `?typeId=${typeId}` : ""}`),
+    enabled,
   })
 }

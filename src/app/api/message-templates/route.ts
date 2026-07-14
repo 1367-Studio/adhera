@@ -3,15 +3,16 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { findUnknownVars } from "@/lib/automation"
+import { findUnknownVars, TEMPLATE_CATEGORIES } from "@/lib/automation"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
 const schema = z.object({
-  name:    z.string().min(1).max(100),
-  subject: z.string().min(1).max(200),
-  body:    z.string().min(1),
-  smsBody: z.string().optional(),
+  name:     z.string().min(1).max(100),
+  category: z.enum(TEMPLATE_CATEGORIES).default("GENERAL"),
+  subject:  z.string().min(1).max(200),
+  body:     z.string().min(1),
+  smsBody:  z.string().optional(),
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
@@ -20,10 +21,15 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const templates = await prisma.messageTemplate.findMany({
     where:   { associationId },
     orderBy: { createdAt: "desc" },
-    select:  { id: true, name: true, subject: true, body: true, smsBody: true, createdAt: true, updatedAt: true, _count: { select: { rules: true } } },
+    select:  {
+      id: true, name: true, category: true, subject: true, body: true, smsBody: true, active: true, createdAt: true, updatedAt: true,
+      _count: { select: { rules: true } },
+      rules:  { where: { status: "ACTIVE" }, select: { id: true } },
+    },
   })
 
-  return NextResponse.json(templates)
+  const payload = templates.map(({ rules, ...t }) => ({ ...t, activeRulesCount: rules.length }))
+  return NextResponse.json(payload)
 }, { roles: ALLOWED_ROLES })
 
 export const POST = withAdminAuth(async (req, ctx) => {
@@ -44,6 +50,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const template = await prisma.messageTemplate.create({
     data: {
       name:          parsed.data.name,
+      category:      parsed.data.category,
       subject:       parsed.data.subject,
       body:          parsed.data.body,
       smsBody:       parsed.data.smsBody || null,

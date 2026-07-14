@@ -26,7 +26,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
     orderBy: { createdAt: "asc" },
     include: { template: true },
   })
-  if (!rule) return false
+  if (!rule || !rule.template.active) return false
 
   const vars = buildVars({
     prenom:      membre.firstName,

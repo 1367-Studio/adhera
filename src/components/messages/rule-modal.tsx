@@ -10,7 +10,7 @@ import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { Button } from "@/components/ui/button"
-import { useCreateRule, useUpdateRule, useTestSendRule, type AutomationRule, type RuleInput, type TriggerType, type MessageChannel } from "@/hooks/use-automation-rules"
+import { useCreateRule, useUpdateRule, useTestSendRule, useBirthdayCoverage, type AutomationRule, type RuleInput, type TriggerType, type MessageChannel } from "@/hooks/use-automation-rules"
 import type { Resolver, SubmitHandler } from "react-hook-form"
 import { useMessageTemplates } from "@/hooks/use-message-templates"
 import { useMembreTypes } from "@/hooks/use-membre-types"
@@ -21,7 +21,7 @@ const EVENT_TRIGGERS: TriggerType[] = ["RSVP_CONFIRMED", "MEMBER_CREATED"]
 const schema = z.object({
   name:          z.string().min(1, "Requis"),
   templateId:    z.string().min(1, "Requis"),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED"]),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY"]),
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
   recipients:    z.string(),
   // SCHEDULED_ONCE
@@ -55,6 +55,7 @@ const TRIGGER_OPTIONS = [
   { value: "EVENT_REMINDER",        label: "Rappel d'événement" },
   { value: "RSVP_CONFIRMED",        label: "Confirmation de participation (RSVP)" },
   { value: "MEMBER_CREATED",        label: "Nouveau membre inscrit" },
+  { value: "MEMBER_BIRTHDAY",       label: "Anniversaire du membre" },
 ]
 
 const CHANNEL_OPTIONS = [
@@ -113,6 +114,10 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
   const channel     = watch("channel") as MessageChannel
   const frequency   = watch("frequency")
   const templateId  = watch("templateId")
+  const recipients  = watch("recipients")
+
+  const recipientTypeId = recipients?.startsWith("TYPE:") ? recipients.slice(5) : undefined
+  const { data: birthdayCoverage } = useBirthdayCoverage(open && triggerType === "MEMBER_BIRTHDAY", recipientTypeId)
 
   const isEventTrigger       = EVENT_TRIGGERS.includes(triggerType)
   const selectedTemplate     = templates.find(t => t.id === templateId)
@@ -189,7 +194,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
 
   const templateOptions = templates.map(t => ({
     value: t.id,
-    label: t.name + (sms && t.smsBody ? " ✦" : ""),
+    label: t.name + (sms && t.smsBody ? " ✦" : "") + (!t.active ? " (inactif)" : ""),
   }))
   const recipientOptions = [
     { value: "ALL", label: "Tous les membres actifs" },
@@ -299,6 +304,26 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
           </div>
         )}
 
+        {/* MEMBER_BIRTHDAY */}
+        {triggerType === "MEMBER_BIRTHDAY" && (
+          <div className="space-y-2">
+            <div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
+              Envoie un message automatiquement le jour de l&apos;anniversaire de chaque membre actif (jour et mois, indépendamment de l&apos;année de naissance). Un seul envoi par membre et par an.
+            </div>
+            {birthdayCoverage && birthdayCoverage.withBirthDate === 0 && birthdayCoverage.total > 0 && (
+              <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300">
+                <WarningIcon className="size-4 shrink-0 mt-0.5" />
+                <span>Aucun {recipientTypeId ? "des membres actifs de ce type" : "de vos membres actifs"} ({birthdayCoverage.total}) n&apos;a de date de naissance renseignée — cette règle ne va rien envoyer tant qu&apos;aucune date n&apos;est ajoutée sur leur fiche.</span>
+              </div>
+            )}
+            {birthdayCoverage && birthdayCoverage.withBirthDate > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {birthdayCoverage.withBirthDate} / {birthdayCoverage.total} membres actifs{recipientTypeId ? " de ce type" : ""} ont une date de naissance renseignée.
+              </p>
+            )}
+          </div>
+        )}
+
         {/* RSVP_CONFIRMED / MEMBER_CREATED */}
         {isEventTrigger && (
           <div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
@@ -344,6 +369,14 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               />
             )}
           />
+        )}
+
+        {/* Warning: selected template is deactivated — rule would silently never send */}
+        {selectedTemplate && !selectedTemplate.active && (
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+            <WarningIcon className="size-4 shrink-0 mt-0.5" />
+            <span>Ce modèle est désactivé. Tant qu'il le reste, cette règle n'enverra rien — activez-le dans l'onglet <strong>Modèles</strong>.</span>
+          </div>
         )}
 
         {/* Warning: SMS channel selected but template has no smsBody */}
