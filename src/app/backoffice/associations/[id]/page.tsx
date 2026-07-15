@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AssociationNotes } from "@/components/backoffice/association-notes"
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { CustomMemberLimitEditor } from "@/components/backoffice/custom-member-limit-editor"
+import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-editor"
 import { parseModules }     from "@/lib/modules"
 import { getPricingInfo }   from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
@@ -36,6 +37,7 @@ async function getAssociation(id: string) {
       subscriptionStatus:   true,
       plan:                 true,
       customMemberLimit:    true,
+      customBrandingEnabled: true,
       trialEndsAt:          true,
       suspendedAt:          true,
       stripeCustomerId:     true,
@@ -179,6 +181,20 @@ export default async function AssociationDetailPage({ params }: { params: Promis
             associationId={assoc.id}
             standardLimit={standardLimit}
             initialLimit={assoc.customMemberLimit}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Personnalisation de marque */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Personnalisation de marque</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CustomBrandingEditor
+            associationId={assoc.id}
+            plan={assoc.plan}
+            initialValue={assoc.customBrandingEnabled}
           />
         </CardContent>
       </Card>

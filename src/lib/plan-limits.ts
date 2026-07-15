@@ -43,6 +43,27 @@ export function effectiveMemberLimit(
   return association.customMemberLimit ?? memberLimitForPlan(association.plan, pricing)
 }
 
+// Custom branding (logo + colors on the dashboard, portal, devis/facture PDFs and the
+// feuille de présence) defaults to Pro. Same override pattern as customMemberLimit: a
+// null/false Association.customBrandingEnabled falls back to the plan default, true
+// force-enables it for a specific Essentiel association (see backoffice > association).
+export function canUseCustomBranding(association: { plan: AssociationPlan; customBrandingEnabled: boolean | null }): boolean {
+  return association.customBrandingEnabled ?? association.plan === "PRO"
+}
+
+// Shared by every PDF export (devis, facture, feuille de présence) so the Pro gate can't
+// be forgotten at a call site — associations without access just get the platform default
+// look (no logo, neutral gray) instead of an error.
+export function resolveDocumentBranding(
+  association: {
+    plan: AssociationPlan; customBrandingEnabled: boolean | null
+    logoUrl: string | null; primaryColor: string | null; secondaryColor?: string | null
+  },
+): { logoUrl: string | null; primaryColor: string | null; secondaryColor: string | null } {
+  if (!canUseCustomBranding(association)) return { logoUrl: null, primaryColor: null, secondaryColor: null }
+  return { logoUrl: association.logoUrl, primaryColor: association.primaryColor, secondaryColor: association.secondaryColor ?? null }
+}
+
 // Called from every member-creation path (admin-created, initial registration, public
 // self-registration, portal self-registration) right before the write. Throws
 // MemberLimitReachedError instead of returning a boolean so a forgotten call site fails

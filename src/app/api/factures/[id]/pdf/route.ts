@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -14,7 +15,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const association = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, address: true, city: true, siren: true },
+    select: { name: true, address: true, city: true, siren: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -24,7 +25,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     issueDate:      facture.issueDate,
     secondaryLabel: "Échéance",
     secondaryDate:  facture.dueDate,
-    association,
+    association: { ...association, ...resolveDocumentBranding(association) },
     fournisseur: facture.fournisseur ? {
       companyName: facture.fournisseur.companyName,
       address:     facture.fournisseur.address,

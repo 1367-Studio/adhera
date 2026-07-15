@@ -6,6 +6,7 @@ import { sendEmail } from "@/lib/mail"
 import { customEmail, escapeHtml } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -30,7 +31,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const association = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, address: true, city: true, siren: true },
+    select: { name: true, address: true, city: true, siren: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -40,7 +41,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     issueDate:      devis.issueDate,
     secondaryLabel: "Valide jusqu'au",
     secondaryDate:  devis.validUntil,
-    association,
+    association: { ...association, ...resolveDocumentBranding(association) },
     fournisseur: devis.fournisseur ? {
       companyName: devis.fournisseur.companyName,
       address:     devis.fournisseur.address,

@@ -4,6 +4,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { checkInReceiptEmail } from "@/lib/email"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
   const { associationId, membreId } = ctx
@@ -24,12 +25,18 @@ export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }
       }).then(p => p?.present))
     : false
 
+  const association = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+  })
+
   return NextResponse.json({
     title:            evenement.title,
     date:             evenement.date,
     expired,
     alreadyCheckedIn,
     totalPresent:     evenement._count.participations,
+    association: association ? { name: association.name, ...resolveDocumentBranding(association) } : null,
   })
 }, { requireMembre: false })
 

@@ -242,6 +242,17 @@ model Association {
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
   // Null means "use the tier's standard limit", not "unlimited".
   customMemberLimit       Int?
+  // Brand identity applied to the dashboard, portal, devis/facture PDFs and the feuille
+  // de présence PDF — separate from siteConfig's own logoUrl/primaryColor, which only
+  // exist once the association has set up its public site. logoUrl/primaryColor also
+  // seed the site builder's fields the first time it's opened.
+  logoUrl                 String?
+  primaryColor            String?            @default("#6366f1")
+  secondaryColor          String?
+  // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
+  // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
+  // the plan default, true force-enables it for an Essentiel association.
+  customBrandingEnabled   Boolean?
   subscriptionStatus      SubscriptionStatus @default(TRIAL)
   trialEndsAt             DateTime?
   suspendedAt             DateTime?

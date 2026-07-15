@@ -188,14 +188,14 @@ header.sticky {
 
 [data-sidebar="menu-button"][data-active="true"],
 [data-sidebar="menu-button"][data-active] {
-  background: var(--accent) !important;
-  color: var(--accent-foreground) !important;
+  background: var(--sidebar-accent) !important;
+  color: var(--sidebar-accent-foreground) !important;
   font-weight: 700 !important;
 }
 
 .dark [data-sidebar="menu-button"][data-active="true"],
 .dark [data-sidebar="menu-button"][data-active] {
-  background: rgba(250, 250, 250, 0.1) !important;
+  background: var(--sidebar-accent) !important;
   color: var(--sidebar-accent-foreground) !important;
 }
 
