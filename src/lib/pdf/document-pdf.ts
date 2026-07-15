@@ -19,6 +19,10 @@ export interface DocumentPdfInput {
     address: string | null
     city:    string | null
     siren:   string | null
+    // Resolved by resolveDocumentBranding() — already null when the association's plan
+    // doesn't include custom branding, so this file doesn't need to know about plans.
+    logoUrl:      string | null
+    primaryColor: string | null
   }
   fournisseur: {
     companyName: string
@@ -45,6 +49,13 @@ const GRAY  = rgb(0.45, 0.45, 0.45)
 const BLACK = rgb(0.1, 0.1, 0.1)
 
 const COL = { desc: MARGIN, qty: 300, price: 375, vat: 425, discount: 480, total: PAGE_WIDTH - MARGIN }
+
+function hexToRgb(hex: string): ReturnType<typeof rgb> | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return null
+  const n = parseInt(m[1], 16)
+  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
+}
 
 // toLocaleString("fr-FR") inserts a narrow no-break space between thousands that the
 // standard Helvetica (WinAnsi) encoding can't render — same issue already worked around
@@ -82,6 +93,25 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   const font    = await doc.embedFont(StandardFonts.Helvetica)
   const bold    = await doc.embedFont(StandardFonts.HelveticaBold)
 
+  // Falls back to the platform's neutral gray whenever the association has no custom
+  // color (or isn't entitled to one) — input.association.primaryColor is already null in
+  // that case, see resolveDocumentBranding().
+  const ACCENT = (input.association.primaryColor && hexToRgb(input.association.primaryColor)) || GRAY
+
+  let logoImage: Awaited<ReturnType<PDFDocument["embedPng"]>> | null = null
+  if (input.association.logoUrl) {
+    try {
+      const res = await fetch(input.association.logoUrl)
+      const bytes = new Uint8Array(await res.arrayBuffer())
+      const contentType = res.headers.get("content-type") ?? ""
+      logoImage = contentType.includes("png")
+        ? await doc.embedPng(bytes)
+        : await doc.embedJpg(bytes)
+    } catch {
+      logoImage = null // logo optional — never fail a devis/facture over a broken image
+    }
+  }
+
   let page: PDFPage = doc.addPage([PAGE_WIDTH, PAGE_HEIGHT])
   let y = PAGE_HEIGHT - MARGIN
 
@@ -102,13 +132,28 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   const title = input.kind === "DEVIS" ? "DEVIS" : "FACTURE"
 
   // ── En-tête ──────────────────────────────────────────────────────────
-  // Title and association name are drawn on separate lines rather than sharing a row —
-  // an association name has no length limit and would run straight into a right-aligned
-  // title on the same baseline.
-  textRight(`${title} N° ${input.number}`, COL.total, 14, { bold: true })
-  y -= 22
-  text(input.association.name, MARGIN, 14, { bold: true })
-  y -= 20
+  // Restrained on purpose — the accent color shows through the title, the rule below
+  // and the totals further down, not through a full-bleed banner (reads as a marketing
+  // flyer, not a financial document, on something this formal).
+  const titleStr = `${title} N° ${input.number}`
+  textRight(titleStr, COL.total, 16, { bold: true, color: ACCENT })
+  if (logoImage) {
+    const maxW = 180, maxH = 64
+    const scale = Math.min(maxW / logoImage.width, maxH / logoImage.height, 1)
+    const w = logoImage.width * scale
+    const h = logoImage.height * scale
+    page.drawImage(logoImage, { x: MARGIN, y: y - h + 2, width: w, height: h })
+    y -= h + 10
+  }
+  // Without a logo, the name shares the title's line (top-left vs. top-right) — cap its
+  // width so a long association name can't run into the title text instead of just
+  // overlapping the empty page like a normal wrapped line would.
+  const nameMaxWidth = logoImage
+    ? COL.total - MARGIN
+    : COL.total - MARGIN - bold.widthOfTextAtSize(titleStr, 16) - 20
+  const nameLines = wrapText(input.association.name, bold, 14, Math.max(nameMaxWidth, 100))
+  for (const line of nameLines) { text(line, MARGIN, 14, { bold: true }); y -= 16 }
+  y -= 4
   if (input.association.address || input.association.city) {
     text([input.association.address, input.association.city].filter(Boolean).join(", "), MARGIN, 9, { color: GRAY })
     y -= 14
@@ -117,6 +162,8 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
     text(`SIREN : ${input.association.siren}`, MARGIN, 9, { color: GRAY })
     y -= 14
   }
+  y -= 6
+  page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 1, color: ACCENT })
 
   y -= 16
   text(`Date d'émission : ${fmtDate(input.issueDate)}`, MARGIN, 10)
@@ -126,7 +173,7 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   y -= 24
 
   // ── Destinataire ─────────────────────────────────────────────────────
-  text("Destinataire", MARGIN, 9, { bold: true, color: GRAY })
+  text("Destinataire", MARGIN, 9, { bold: true, color: ACCENT })
   y -= 14
   if (input.fournisseur) {
     text(input.fournisseur.companyName, MARGIN, 10, { bold: true })
@@ -143,14 +190,14 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
 
   // ── Tableau des articles ─────────────────────────────────────────────
   function drawTableHeader() {
-    text("Description", COL.desc, 9, { bold: true, color: GRAY })
-    textRight("Qté", COL.qty, 9, { bold: true, color: GRAY })
-    textRight("Prix U.", COL.price, 9, { bold: true, color: GRAY })
-    textRight("TVA %", COL.vat, 9, { bold: true, color: GRAY })
-    textRight("Remise", COL.discount, 9, { bold: true, color: GRAY })
-    textRight("Total", COL.total, 9, { bold: true, color: GRAY })
+    text("Description", COL.desc, 9, { bold: true, color: ACCENT })
+    textRight("Qté", COL.qty, 9, { bold: true, color: ACCENT })
+    textRight("Prix U.", COL.price, 9, { bold: true, color: ACCENT })
+    textRight("TVA %", COL.vat, 9, { bold: true, color: ACCENT })
+    textRight("Remise", COL.discount, 9, { bold: true, color: ACCENT })
+    textRight("Total", COL.total, 9, { bold: true, color: ACCENT })
     y -= 8
-    page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+    page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: ACCENT })
     y -= 14
   }
   drawTableHeader()
@@ -176,7 +223,7 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   }
 
   y -= 4
-  page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+  page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 0.5, color: ACCENT })
   y -= 20
 
   // ── Totaux ───────────────────────────────────────────────────────────
@@ -188,9 +235,9 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
     text("Remise totale", totalsLabelX, 10, { color: GRAY }); textRight(`- ${fmtEUR(input.discountAmount)}`, COL.total, 10); y -= 15
   }
   y -= 4
-  page.drawLine({ start: { x: totalsLabelX, y }, end: { x: COL.total, y }, thickness: 0.5, color: GRAY })
+  page.drawLine({ start: { x: totalsLabelX, y }, end: { x: COL.total, y }, thickness: 0.5, color: ACCENT })
   y -= 16
-  text("Total", totalsLabelX, 12, { bold: true }); textRight(fmtEUR(input.total), COL.total, 12, { bold: true }); y -= 18
+  text("Total", totalsLabelX, 12, { bold: true, color: ACCENT }); textRight(fmtEUR(input.total), COL.total, 12, { bold: true, color: ACCENT }); y -= 18
   if (input.amountPaid !== undefined) {
     text("Payé", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.amountPaid), COL.total, 10); y -= 15
     text("Restant dû", totalsLabelX, 10, { bold: true }); textRight(fmtEUR(input.total - input.amountPaid), COL.total, 10, { bold: true }); y -= 15

@@ -22,12 +22,18 @@ import { LiveKitSettings } from "@/components/reunions/livekit-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
 import { BillingSettings } from "@/components/parametres/billing-settings"
+import { BrandingSettings } from "@/components/parametres/branding-settings"
 type Association = {
   id:      string
   name:    string
   slug:    string
   city:    string | null
   country: string
+  plan:    "ESSENTIAL" | "PRO"
+  customBrandingEnabled: boolean | null
+  logoUrl:        string | null
+  primaryColor:   string | null
+  secondaryColor: string | null
 }
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations"
@@ -154,6 +160,16 @@ function ParametresViewInner() {
               </form>
             )}
           </div>
+
+          {assoc && (
+            <div className="rounded-xl border bg-card p-6">
+              <BrandingSettings
+                canEdit={canEdit}
+                canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
+                data={{ logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor, secondaryColor: assoc.secondaryColor }}
+              />
+            </div>
+          )}
 
           <MembreTypesManager canEdit={canEdit} />
 

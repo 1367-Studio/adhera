@@ -8,7 +8,8 @@ import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "
 import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
-import { LogoMark } from "@/components/layout/logo-mark"
+import { BrandLogo } from "@/components/layout/brand-logo"
+import { isColorDark } from "@/lib/color"
 
 type EventInfo = {
   title:            string
@@ -16,6 +17,7 @@ type EventInfo = {
   expired:          boolean
   alreadyCheckedIn: boolean
   totalPresent:     number
+  association: { name: string; logoUrl: string | null; primaryColor: string | null } | null
 }
 
 type State = "loading" | "ready" | "checking-in" | "success" | "already" | "expired" | "invalid" | "error"
@@ -72,13 +74,23 @@ export default function CheckInPage() {
     setRetry(c => c + 1)
   }
 
+  const branding = info?.association
+  const brandStyle = branding?.primaryColor ? {
+    "--primary":            branding.primaryColor,
+    "--primary-foreground": isColorDark(branding.primaryColor) ? "#fff" : "#111827",
+  } as React.CSSProperties : undefined
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background" style={brandStyle}>
       <div className="w-full max-w-sm space-y-6 text-center">
 
-        <div className="flex items-center justify-center gap-2 mb-8">
-          <LogoMark className="size-6" />
-          <span className="text-base font-semibold">{APP_NAME}</span>
+        <div className="flex items-center justify-center gap-2 mb-8 min-w-0">
+          <BrandLogo
+            logoUrl={branding?.logoUrl}
+            imgClassName="size-6 rounded object-contain shrink-0"
+            fallbackClassName="size-6 shrink-0"
+          />
+          <span className="text-base font-semibold truncate">{branding?.name ?? APP_NAME}</span>
         </div>
 
         {state === "loading" && (

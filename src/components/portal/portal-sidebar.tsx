@@ -8,10 +8,10 @@ import {
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
   SidebarRail, useSidebar,
 } from "@/components/ui/sidebar"
-import { useModules } from "@/lib/user-context"
+import { useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
+import { BrandLogo } from "@/components/layout/brand-logo"
 import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 function isActive(href: string, pathname: string) {
@@ -21,7 +21,8 @@ function isActive(href: string, pathname: string) {
 export function PortalSidebar({ slug }: { slug: string }) {
   const pathname = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
-  const modules = useModules()
+  const modules  = useModules()
+  const branding = useBranding()
 
   const allNavItems: Array<{ href: string; label: string; icon: React.ElementType; moduleKey?: keyof AssocModules }> = [
     { href: `/portal/${slug}/actualites`, label: "Actualités",    icon: NewspaperIcon, moduleKey: "actualites"  },
@@ -42,10 +43,14 @@ export function PortalSidebar({ slug }: { slug: string }) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href={navItems[0]?.href ?? `/portal/${slug}/profil`} />}>
-              <LogoMark />
-              <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">{APP_NAME}</span>
+            <SidebarMenuButton
+              size="lg"
+              render={<Link href={navItems[0]?.href ?? `/portal/${slug}/profil`} />}
+              className="hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground"
+            >
+              <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
+              <div className="flex flex-col gap-0.5 leading-none min-w-0">
+                <span className="font-semibold truncate">{branding?.name ?? APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Mon espace</span>
               </div>
             </SidebarMenuButton>

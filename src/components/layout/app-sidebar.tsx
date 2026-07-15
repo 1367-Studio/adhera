@@ -9,10 +9,10 @@ import {
   SidebarMenuButton, SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
+import { BrandLogo } from "@/components/layout/brand-logo"
 import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
@@ -57,6 +57,7 @@ function isActive(href: string, pathname: string): boolean {
 export function AppSidebar() {
   const { role } = useCurrentUser()
   const modules   = useModules()
+  const branding  = useBranding()
   const pathname  = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
 
@@ -66,17 +67,25 @@ export function AppSidebar() {
     if (item.moduleKey && !modules[item.moduleKey]) return false
     return true
   })
+  // "Associations" only makes sense as a category label under the generic Adhera
+  // identity — once the association shows its own logo/color, the name above it is
+  // already unambiguous and the subtitle just reads as redundant.
+  const isBranded = !!(branding?.logoUrl || branding?.primaryColor)
 
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <LogoMark />
-              <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">{APP_NAME}</span>
-                <span className="text-xs text-muted-foreground">Associations</span>
+            <SidebarMenuButton
+              size="lg"
+              render={<Link href="/dashboard" />}
+              className="hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground"
+            >
+              <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
+              <div className="flex flex-col gap-0.5 leading-none min-w-0">
+                <span className="font-semibold truncate">{branding?.name ?? APP_NAME}</span>
+                {!isBranded && <span className="text-xs text-muted-foreground">Associations</span>}
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

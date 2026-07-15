@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { useQueryClient } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getPusherClient } from "@/lib/pusher-client"
 import { toast } from "sonner"
 import { format } from "date-fns"
@@ -71,6 +71,39 @@ function getCheckInWindow(ev: Evenement) {
   }
 }
 
+function hexToRgb255(hex: string): [number, number, number] | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return null
+  const n = parseInt(m[1], 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+
+// Fetches the association's logo and turns it into a data URL + intrinsic size, both of
+// which jsPDF's addImage() needs — never throws, a broken/unreachable logo just falls
+// back to the platform's default header text in handleExportPdf.
+async function loadLogoForPdf(url: string): Promise<{ dataUrl: string; format: "PNG" | "JPEG"; width: number; height: number } | null> {
+  try {
+    const res  = await fetch(url)
+    const blob = await res.blob()
+    const format: "PNG" | "JPEG" = blob.type.includes("png") ? "PNG" : "JPEG"
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload  = () => resolve(reader.result as string)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+    const { width, height } = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+      const img = new Image()
+      img.onload  = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+      img.onerror = reject
+      img.src = dataUrl
+    })
+    return { dataUrl, format, width, height }
+  } catch {
+    return null
+  }
+}
+
 const RSVP_LABELS: Record<string, { label: string; classes: string }> = {
   CONFIRME: { label: "J'y serai",    classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
   PROVAVEL: { label: "Si possible",  classes: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
@@ -105,6 +138,19 @@ export default function PresencesPage() {
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
+
+  // Logo/couleur pour le PDF de présences (handleExportPdf) — même règle Pro-only que
+  // les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
+  const { data: assoc } = useQuery<{
+    name: string
+    plan: "ESSENTIAL" | "PRO"
+    customBrandingEnabled: boolean | null
+    logoUrl: string | null
+    primaryColor: string | null
+  }>({
+    queryKey: ["association"],
+    queryFn:  () => fetch("/api/association").then(r => r.json()),
+  })
 
   // Merge local state with server state (local takes precedence after mutations)
   const activeToken     = qrToken     ?? ev?.qrToken     ?? null
@@ -274,19 +320,45 @@ export default function PresencesPage() {
     const title = ev?.title ?? ""
     const today = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
 
+    // Branding gated the same way as devis/facture PDFs — Pro by default, see
+    // canUseCustomBranding() in src/lib/plan-limits.ts.
+    const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
+    const headerRgb: [number, number, number] =
+      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
+
     // ── Header bar ─────────────────────────────────────────────────────────
-    doc.setFillColor(0, 0, 0)
-    doc.rect(0, 0, W, 20, "F")
+    const headerH = 30
+    doc.setFillColor(...headerRgb)
+    doc.rect(0, 0, W, headerH, "F")
     doc.setTextColor(255, 255, 255)
-    doc.setFontSize(10)
-    doc.setFont("helvetica", "bold")
-    doc.text(APP_NAME.toUpperCase(), M, 13)
+
+    // Measured before switching fonts for the name — "Liste de présences" is drawn at
+    // normal/9, and reserving its width up front keeps a long association name from
+    // running into it on the same line.
     doc.setFont("helvetica", "normal")
     doc.setFontSize(9)
-    doc.text("Liste de présences", W - M, 13, { align: "right" })
+    const rightLabelW = doc.getTextWidth("Liste de présences")
+
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "bold")
+    if (logo) {
+      const logoH = 20
+      const logoW = logo.width * (logoH / logo.height)
+      doc.addImage(logo.dataUrl, logo.format, M, (headerH - logoH) / 2, logoW, logoH)
+    } else {
+      const availW = (W - M) - M - rightLabelW - 6
+      const fullName = (canBrand ? assoc!.name : APP_NAME).toUpperCase()
+      let name = fullName
+      while (name.length > 1 && doc.getTextWidth(`${name}…`) > availW) name = name.slice(0, -1)
+      doc.text(name.length < fullName.length ? `${name}…` : name, M, headerH / 2 + 3)
+    }
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9)
+    doc.text("Liste de présences", W - M, headerH / 2 + 3, { align: "right" })
 
     // ── Event title + meta ──────────────────────────────────────────────────
-    let y = 32
+    let y = headerH + 12
     doc.setTextColor(...BLACK)
     doc.setFontSize(16)
     doc.setFont("helvetica", "bold")
@@ -338,7 +410,7 @@ export default function PresencesPage() {
     // ── Table ───────────────────────────────────────────────────────────────
     const commonTableOpts = {
       margin:             { left: M, right: M },
-      headStyles:         { fillColor: BLACK, textColor: [255, 255, 255] as [number, number, number], fontStyle: "bold" as const, fontSize: 8 },
+      headStyles:         { fillColor: headerRgb, textColor: [255, 255, 255] as [number, number, number], fontStyle: "bold" as const, fontSize: 8 },
       bodyStyles:         { fontSize: 8.5, textColor: BLACK },
       alternateRowStyles: { fillColor: [250, 250, 250] as [number, number, number] },
       styles:             { cellPadding: 3, lineColor: [228, 228, 231] as [number, number, number], lineWidth: 0.1 },

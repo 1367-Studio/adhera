@@ -8,6 +8,10 @@ const patchSchema = z.object({
   // Staff override for a negotiated "sur mesure" member cap — null explicitly clears it
   // (falls back to the association's tier default), omitted leaves it untouched.
   customMemberLimit: z.number().int().positive().nullable().optional(),
+  // Staff override to force custom branding (logo/colors) on for a specific Essentiel
+  // association — see canUseCustomBranding() in src/lib/plan-limits.ts. null falls back
+  // to the plan default (Pro), omitted leaves it untouched.
+  customBrandingEnabled: z.boolean().nullable().optional(),
   modules: z.object({
     evenements:  z.boolean(),
     cotisations: z.boolean(),
@@ -37,9 +41,10 @@ export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, _ctx, { id }
 
   const data = parsed.data
   const update: Record<string, unknown> = {}
-  if (data.internalNotes     !== undefined) update.internalNotes     = data.internalNotes
-  if (data.customMemberLimit !== undefined) update.customMemberLimit = data.customMemberLimit
-  if (data.modules           !== undefined) update.modules           = data.modules
+  if (data.internalNotes         !== undefined) update.internalNotes         = data.internalNotes
+  if (data.customMemberLimit     !== undefined) update.customMemberLimit     = data.customMemberLimit
+  if (data.customBrandingEnabled !== undefined) update.customBrandingEnabled = data.customBrandingEnabled
+  if (data.modules               !== undefined) update.modules               = data.modules
 
   if (Object.keys(update).length === 0) {
     return NextResponse.json({ error: "Rien à mettre à jour" }, { status: 400 })

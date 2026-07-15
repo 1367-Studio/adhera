@@ -87,7 +87,7 @@ export function ImageUpload({
             alt=""
             className="absolute inset-0 w-full h-full object-contain z-10"
           />
-          <div className="absolute inset-0 z-20 rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+          <div className="absolute inset-0 z-20 rounded-lg bg-black/0 group-hover:bg-black/30 transition-colors flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -116,7 +116,7 @@ export function ImageUpload({
           onDrop={onDrop}
           disabled={uploading}
           className={cn(
-            "absolute inset-0 w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-colors",
+            "absolute inset-0 w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 p-2 text-center transition-colors",
             dragging
               ? "border-primary bg-primary/5 text-primary"
               : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/30",
