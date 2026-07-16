@@ -1,13 +1,27 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import DOMPurify from "isomorphic-dompurify"
 import { EnvelopeSimpleIcon, CircleNotchIcon, WarningCircleIcon, ArrowsClockwiseIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+
+// Strips navigation/interactivity from the stored email HTML before it's rendered in the
+// preview iframe — a CSS-only mitigation (pointer-events) can be beaten by an inline
+// `style="pointer-events:auto!important"` in the stored HTML, or silently never applied if
+// malformed markup (e.g. an unclosed <textarea>) swallows an appended <style> tag as text.
+// Sandbox="" on the iframe is defense in depth on top of this, not a substitute for it.
+function sanitizeEmailPreviewHtml(html: string): string {
+  return DOMPurify.sanitize(html, {
+    WHOLE_DOCUMENT: true,
+    FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "input", "button", "textarea", "base"],
+    FORBID_ATTR: ["href", "target", "action", "formaction", "http-equiv"],
+  })
+}
 
 type EmailStatus = "QUEUED" | "SENT" | "DELIVERED" | "OPENED" | "CLICKED" | "BOUNCED" | "COMPLAINED" | "DELAYED" | "FAILED"
 
@@ -92,6 +106,11 @@ function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
     staleTime: Infinity,
   })
 
+  const sanitizedHtml = useMemo(
+    () => (content?.html ? sanitizeEmailPreviewHtml(content.html) : null),
+    [content?.html],
+  )
+
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
       <button
@@ -153,15 +172,14 @@ function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
               </div>
             )}
             {!contentLoading && !contentError && (
-              content?.html ? (
+              sanitizedHtml ? (
                 <>
                   <iframe
-                    // Navigation/interactivity is already stripped server-side (see
-                    // sanitizeEmailPreviewHtml in [emailId]/route.ts) — sandbox is defense
-                    // in depth, not the primary mitigation. no-referrer keeps this admin's
+                    // sandbox="" is defense in depth on top of sanitizeEmailPreviewHtml
+                    // above, not the primary mitigation. no-referrer keeps this admin's
                     // session/URL out of the Referer header on any image the email loads
                     // (e.g. a third-party pixel pasted into a bulk message body).
-                    srcDoc={content.html}
+                    srcDoc={sanitizedHtml}
                     sandbox=""
                     referrerPolicy="no-referrer"
                     title={`Contenu de l'email : ${e.subject}`}
