@@ -23,8 +23,8 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       skip:    (page - 1) * pageSize,
       take:    pageSize,
       select: {
-        id: true, subject: true, source: true, status: true, errorMessage: true,
-        sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, createdAt: true,
+        id: true, subject: true, source: true, status: true, errorMessage: true, to: true,
+        sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, complainedAt: true, createdAt: true,
       },
     }),
     prisma.emailMessage.count({ where }),
