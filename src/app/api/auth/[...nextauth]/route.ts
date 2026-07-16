@@ -14,7 +14,12 @@ function withBasePath(req: NextRequest): NextRequest {
   const url = new URL(req.url)
   if (url.pathname.startsWith(BASE_PATH)) return req
   url.pathname = `${BASE_PATH}${url.pathname}`
-  return new NextRequest(url, req)
+  // A string, not the URL object itself — matches what next-auth's own reqWithEnvURL()
+  // passes as the first argument. Passing the URL instance worked locally but produced a
+  // bare 400 "Bad request" from Next.js's own NextRequest constructor once deployed to
+  // Vercel, most likely an `instanceof URL` check failing across a realm/bundling boundary
+  // that only shows up in the production build.
+  return new NextRequest(url.toString(), req)
 }
 
 export const GET  = (req: NextRequest) => handlers.GET(withBasePath(req))
