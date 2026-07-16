@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ArrowLeftIcon, CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockwiseIcon, ClipboardTextIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon, ListIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockwiseIcon, ClipboardTextIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon, ListIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SondageFormBuilder } from "@/components/sondages/sondage-form-builder"
 import { SondageResultats } from "@/components/sondages/sondage-resultats"
 import { SondageRepondesIndividuelles } from "@/components/sondages/sondage-reponses-individuelles"
+import { SondageEmailStats } from "@/components/sondages/sondage-email-stats"
 import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
@@ -38,6 +39,23 @@ type Sondage = {
   }[]
   recipients:   { membreId: string }[]
   _count:       { reponses: number }
+}
+
+type InviteResult = { emailsSent: number; emailsFailed: number; skippedNoEmail: number; skippedNoAccess: number }
+
+function notifyInviteResult(result: InviteResult) {
+  if (result.emailsSent > 0) {
+    toast.info(`${result.emailsSent} invitation${result.emailsSent > 1 ? "s" : ""} envoyée${result.emailsSent > 1 ? "s" : ""} par e-mail`)
+  }
+  if (result.emailsFailed > 0) {
+    toast.warning(`${result.emailsFailed} invitation${result.emailsFailed > 1 ? "s" : ""} n'${result.emailsFailed > 1 ? "ont" : "a"} pas pu être envoyée${result.emailsFailed > 1 ? "s" : ""} — voir l'onglet Envois`)
+  }
+  if (result.skippedNoEmail > 0) {
+    toast.warning(`${result.skippedNoEmail} membre${result.skippedNoEmail > 1 ? "s" : ""} sans adresse e-mail n'${result.skippedNoEmail > 1 ? "ont" : "a"} reçu aucune invitation`)
+  }
+  if (result.skippedNoAccess > 0) {
+    toast.warning(`${result.skippedNoAccess} membre${result.skippedNoAccess > 1 ? "s" : ""} sans accès au portail n'${result.skippedNoAccess > 1 ? "ont" : "a"} reçu aucune invitation`)
+  }
 }
 
 const STATUS_LABEL = { BROUILLON: "Brouillon", ACTIF: "Actif", FERME: "Fermé" }
@@ -82,6 +100,13 @@ export default function SondageDetailPage() {
     queryKey:  ["sondage-reponses", id],
     queryFn:   () => fetch(`/api/sondages/${id}/reponses`).then(r => r.json()),
     enabled:   activeTab === "reponses",
+    staleTime: 0,
+  })
+
+  const { data: emailStats, isLoading: emailStatsLoading, refetch: refetchEmailStats } = useQuery({
+    queryKey:  ["sondage-email-stats", id],
+    queryFn:   () => fetch(`/api/sondages/${id}/email-stats`).then(r => r.json()),
+    enabled:   activeTab === "envois",
     staleTime: 0,
   })
 
@@ -166,23 +191,33 @@ export default function SondageDetailPage() {
       }
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (data: { invitations: InviteResult | null }) => {
       qc.invalidateQueries({ queryKey: ["sondage", id] })
       qc.invalidateQueries({ queryKey: ["sondages"] })
       toast.success("Modifications enregistrées")
+      // Editing an ACTIF sondage's audience (e.g. adding a recipient, or switching between
+      // "tous" and "sélection") can invite newly-in-scope members right away — surface it
+      // the same way activation does, so it isn't a silent side effect of hitting Save.
+      if (data.invitations) {
+        qc.invalidateQueries({ queryKey: ["sondage-email-stats", id] })
+        notifyInviteResult(data.invitations)
+      }
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
 
   const activateMutation = useMutation({
-    mutationFn: () => fetch(`/api/sondages/${id}/activate`, { method: "POST" }).then(r => {
-      if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
-      return r.json()
-    }),
-    onSuccess: () => {
+    mutationFn: (): Promise<InviteResult> =>
+      fetch(`/api/sondages/${id}/activate`, { method: "POST" }).then(r => {
+        if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
+        return r.json()
+      }),
+    onSuccess: (result) => {
       qc.invalidateQueries({ queryKey: ["sondage", id] })
       qc.invalidateQueries({ queryKey: ["sondages"] })
+      qc.invalidateQueries({ queryKey: ["sondage-email-stats", id] })
       toast.success("Sondage activé — les membres peuvent maintenant répondre")
+      notifyInviteResult(result)
     },
     onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
   })
@@ -286,6 +321,10 @@ export default function SondageDetailPage() {
           <TabsTrigger value="reponses">
             <ListIcon className="size-3.5" />
             Réponses
+          </TabsTrigger>
+          <TabsTrigger value="envois">
+            <EnvelopeSimpleIcon className="size-3.5" />
+            Envois
           </TabsTrigger>
         </TabsList>
 
@@ -533,6 +572,30 @@ export default function SondageDetailPage() {
               </div>
             ) : reponses ? (
               <SondageRepondesIndividuelles data={reponses} />
+            ) : null}
+          </div>
+        </TabsContent>
+
+        {/* Envois (email delivery stats) tab */}
+        <TabsContent value="envois">
+          <div className="pt-4 space-y-4">
+            <div className="flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => refetchEmailStats()} disabled={emailStatsLoading}>
+                <ArrowsClockwiseIcon className={`mr-1.5 size-3.5 ${emailStatsLoading ? "animate-spin" : ""}`} />
+                Actualiser
+              </Button>
+            </div>
+            {emailStatsLoading ? (
+              <div className="space-y-3">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="rounded-xl border p-5 animate-pulse space-y-3">
+                    <div className="h-4 w-40 bg-muted rounded" />
+                    <div className="h-24 bg-muted rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : emailStats ? (
+              <SondageEmailStats data={emailStats} />
             ) : null}
           </div>
         </TabsContent>

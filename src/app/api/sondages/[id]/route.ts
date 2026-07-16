@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { sendSondageInvitations, type SondageInviteResult } from "@/lib/sondage-invitations"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -55,7 +56,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
-    select: { id: true, status: true, title: true, _count: { select: { reponses: true } } },
+    select: {
+      id: true, status: true, title: true, recipientMode: true,
+      recipients: { select: { membreId: true } },
+      _count: { select: { reponses: true } },
+    },
   })
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
   if (sondage.status === "FERME")
@@ -146,7 +151,41 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     where:   { id },
     include: { questions: { orderBy: { order: "asc" } }, recipients: { select: { membreId: true } }, _count: { select: { reponses: true, questions: true } } },
   })
-  return NextResponse.json(updated)
+
+  // A sondage stays editable while ACTIF (only questions lock once it has responses). Diff
+  // the *current, just-persisted* audience against whoever already has an EmailMessage
+  // logged for this sondage — not a pre-update recipient snapshot — so this works correctly
+  // across a mode switch too: ALL→SELECTED never re-invites someone already emailed under
+  // ALL, and SELECTED→ALL (or a member added to a SELECTED list) still reaches whoever's
+  // newly in scope. A snapshot-based diff gets this wrong in both directions whenever the
+  // mode itself changes.
+  let invitations: SondageInviteResult | null = null
+  if (updated && sondage.status === "ACTIF" && (recipientMode !== undefined || recipientIds !== undefined)) {
+    let audienceIds: string[]
+    if (updated.recipientMode === "ALL") {
+      const membres = await prisma.membre.findMany({
+        where:  { associationId: ctx.associationId, deletedAt: null, status: "ACTIF" },
+        select: { id: true },
+      })
+      audienceIds = membres.map(m => m.id)
+    } else {
+      audienceIds = updated.recipients.map(r => r.membreId)
+    }
+
+    if (audienceIds.length) {
+      const alreadyEmailed = await prisma.emailMessage.findMany({
+        where:  { source: "SONDAGE", sourceId: id, membreId: { in: audienceIds } },
+        select: { membreId: true },
+      })
+      const emailedIds = new Set(alreadyEmailed.map(e => e.membreId))
+      const newIds      = audienceIds.filter(mid => !emailedIds.has(mid))
+      if (newIds.length) {
+        invitations = await sendSondageInvitations({ sondageId: id, associationId: ctx.associationId, membreIds: newIds })
+      }
+    }
+  }
+
+  return NextResponse.json({ ...updated, invitations })
 })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {

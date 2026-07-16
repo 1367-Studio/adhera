@@ -349,7 +349,12 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       if (data.sent === 0) {
         toast.error(`Aucun email envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
       } else {
-        toast.success(`Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
+        // "Envoyé" here only means Resend accepted the request — it doesn't guarantee
+        // the message was actually delivered (bounces/erreurs surface later, async, via
+        // webhook). The real per-recipient outcome is visible in each member's Emails tab.
+        toast.success(
+          `Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""} — le statut de livraison de chacun apparaîtra dans son historique`,
+        )
         if (data.failed > 0) {
           const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
           const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? ` et ${names.length - 5} autre(s)` : "")

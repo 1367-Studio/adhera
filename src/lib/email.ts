@@ -169,6 +169,40 @@ export function rsvpConfirmationEmail(p: {
   }
 }
 
+export function sondageInvitationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  sondageTitle:    string
+  deadline:        Date | null
+  portalUrl:       string
+}) {
+  const deadlineStr = p.deadline
+    ? p.deadline.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau sondage</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à répondre au sondage suivant.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:${deadlineStr ? "10px" : "0"};">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Sondage</span>
+        <span style="font-size:15px;font-weight:600;">${p.sondageTitle}</span>
+      </td></tr>
+      ${deadlineStr ? `<tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date limite</span>
+        <span style="font-size:14px;">${deadlineStr}</span>
+      </td></tr>` : ""}
+    </table>
+    ${btn("Répondre au sondage", p.portalUrl)}`
+  return {
+    to:      p.email,
+    subject: `Sondage — ${p.sondageTitle}`,
+    html:    layout(p.associationName, content),
+  }
+}
+
 export function checkInReceiptEmail(p: {
   firstName:       string
   email:           string

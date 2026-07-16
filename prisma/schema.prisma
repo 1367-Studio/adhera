@@ -291,6 +291,7 @@ model Association {
   devis               Devis[]
   factures            Facture[]
   facturesRecues      FactureRecue[]
+  emailMessages       EmailMessage[]
 }
 
 model User {
@@ -378,6 +379,7 @@ model Membre {
   boutiqueCommandes     BoutiqueCommande[]
   meetingsAsParticipant MeetingParticipant[]
   incomes               Income[]
+  emailMessages         EmailMessage[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -705,6 +707,47 @@ model SondageReponseItem {
 
   reponse  SondageReponse  @relation(fields: [reponseId], references: [id], onDelete: Cascade)
   question SondageQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+enum EmailStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  DELAYED
+  FAILED
+}
+
+model EmailMessage {
+  id            String      @id @default(cuid())
+  associationId String
+  membreId      String?
+  resendId      String?     @unique
+  to            String
+  subject       String
+  // "SONDAGE" | "AUTOMATION" | "BULK_MESSAGE" | "MEMBER_INVITE" | "MEETING_INVITE" |
+  // "TRANSACTION" | "DOCUMENT" | "TEST" — kept as a String (not enum) so new sources
+  // don't need a migration, matching the MessageTemplate.category convention.
+  source        String
+  sourceId      String?
+  status        EmailStatus @default(QUEUED)
+  errorMessage  String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  openedAt      DateTime?
+  clickedAt     DateTime?
+  bouncedAt     DateTime?
+  complainedAt  DateTime?
+  createdAt     DateTime    @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre?      @relation(fields: [membreId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, membreId, createdAt(sort: Desc)])
+  @@index([source, sourceId])
 }
 
 model PasswordResetToken {

@@ -56,7 +56,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     associationName: assoc.name,
     role:            "MEMBRE",
     loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
-  })).catch(() => {})
+  }), { associationId, membreId: id, source: "MEMBER_INVITE" }).catch(() => {})
 
   await writeActivityLog({
     associationId,

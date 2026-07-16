@@ -87,7 +87,7 @@ export async function POST(req: Request) {
                 unitPrice: i.unitPrice,
               })),
               portalUrl,
-            })).catch(() => {})
+            }), { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id }).catch(() => {})
           }
 
           // Push notification to association admins
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
             amount:          chargedAmount,
             period:          String(cotisation.year),
             paidAt,
-          })).catch(() => {})
+          }), { associationId: cotisation.associationId, membreId: cotisation.membreId, source: "TRANSACTION", sourceId: cotisationId }).catch(() => {})
         }
 
         await writeActivityLog({
@@ -251,7 +251,7 @@ export async function POST(req: Request) {
               quantity,
               paidAt,
               portalUrl,
-            })).catch(() => {})
+            }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
           }
         }
       } else if (donId) {
@@ -343,7 +343,7 @@ export async function POST(req: Request) {
               donorType:           don.donorType,
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
-          }).catch(() => {})
+          }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: donId }).catch(() => {})
         }
 
         await writeActivityLog({

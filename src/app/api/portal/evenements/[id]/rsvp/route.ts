@@ -155,7 +155,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventDate:       evenement.date,
             eventLocation:   evenement.location,
             portalUrl,
-          })).catch(() => {})
+          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
         }
       }).catch(() => {
         if (membre.email) {
@@ -167,7 +167,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventDate:       evenement.date,
             eventLocation:   evenement.location,
             portalUrl,
-          })).catch(() => {})
+          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
         }
       })
     }

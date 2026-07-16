@@ -76,7 +76,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   await sendEmail({
     ...customEmail({ associationName: association.name, subject, bodyHtml, recipientEmail: to }),
     attachments: [{ filename: `${devis.number}.pdf`, content: pdf }],
-  })
+  }, { associationId, source: "DOCUMENT", sourceId: id })
 
   // Sending the email out IS the act of "sending" the devis — no need to make the user
   // separately flip the status afterward if it was still sitting in Brouillon.
