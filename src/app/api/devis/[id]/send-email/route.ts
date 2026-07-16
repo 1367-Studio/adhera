@@ -34,6 +34,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     select: { name: true, address: true, city: true, siren: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+  const branding = resolveDocumentBranding(association)
 
   const pdf = await buildDocumentPdf({
     kind:           "DEVIS",
@@ -41,7 +42,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     issueDate:      devis.issueDate,
     secondaryLabel: "Valide jusqu'au",
     secondaryDate:  devis.validUntil,
-    association: { ...association, ...resolveDocumentBranding(association) },
+    association: { ...association, ...branding },
     fournisseur: devis.fournisseur ? {
       companyName: devis.fournisseur.companyName,
       address:     devis.fournisseur.address,
@@ -74,7 +75,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   `
 
   await sendEmail({
-    ...customEmail({ associationName: association.name, subject, bodyHtml, recipientEmail: to }),
+    ...customEmail({ associationName: association.name, subject, bodyHtml, recipientEmail: to, branding }),
     attachments: [{ filename: `${devis.number}.pdf`, content: pdf }],
   }, { associationId, source: "DOCUMENT", sourceId: id })
 

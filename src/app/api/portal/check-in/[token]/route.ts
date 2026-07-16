@@ -112,10 +112,14 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
     const eventDate      = evenement.date
     const associationIdForEmail = evenement.associationId
     Promise.resolve().then(async () => {
-      const assoc = await prisma.association.findUnique({ where: { id: associationIdForEmail }, select: { name: true } })
+      const assoc = await prisma.association.findUnique({
+        where:  { id: associationIdForEmail },
+        select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+      })
       if (assoc) await sendEmail(checkInReceiptEmail({
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
+        branding: resolveDocumentBranding(assoc),
       }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id })
     }).catch(() => {})
   }

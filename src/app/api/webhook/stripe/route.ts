@@ -6,6 +6,7 @@ import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEma
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 import type Stripe from "stripe"
 
 export const dynamic = "force-dynamic"
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
           where:   { id: commandeId },
           include: {
             membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
-            association: { select: { id: true, name: true, slug: true } },
+            association: { select: { id: true, name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
             items:       {
               include: {
                 produit:  { select: { name: true } },
@@ -87,6 +88,7 @@ export async function POST(req: Request) {
                 unitPrice: i.unitPrice,
               })),
               portalUrl,
+              branding: resolveDocumentBranding(commande.association),
             }), { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id }).catch(() => {})
           }
 
@@ -124,7 +126,7 @@ export async function POST(req: Request) {
           where:   { id: cotisationId },
           include: {
             membre:      { select: { firstName: true, lastName: true, email: true } },
-            association: { select: { name: true } },
+            association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
           },
         })
         if (!cotisation) break
@@ -159,6 +161,7 @@ export async function POST(req: Request) {
             amount:          chargedAmount,
             period:          String(cotisation.year),
             paidAt,
+            branding:        resolveDocumentBranding(cotisation.association),
           }), { associationId: cotisation.associationId, membreId: cotisation.membreId, source: "TRANSACTION", sourceId: cotisationId }).catch(() => {})
         }
 
@@ -191,7 +194,7 @@ export async function POST(req: Request) {
                 date:         true,
                 location:     true,
                 associationId: true,
-                association:  { select: { name: true, slug: true } },
+                association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
               },
             },
           },
@@ -251,6 +254,7 @@ export async function POST(req: Request) {
               quantity,
               paidAt,
               portalUrl,
+              branding:        resolveDocumentBranding(assoc),
             }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
           }
         }
@@ -268,7 +272,7 @@ export async function POST(req: Request) {
 
         const don = await prisma.don.findUnique({
           where:   { id: donId },
-          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true } } },
+          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } } },
         })
         if (!don) break
 
@@ -341,6 +345,7 @@ export async function POST(req: Request) {
               canIssueTaxReceipts: assoc.canIssueTaxReceipts,
               receiptNumber:       refreshed?.receiptNumber ?? undefined,
               donorType:           don.donorType,
+              branding:            resolveDocumentBranding(assoc),
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
           }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: donId }).catch(() => {})

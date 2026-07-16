@@ -247,7 +247,12 @@ model Association {
   // exist once the association has set up its public site. logoUrl/primaryColor also
   // seed the site builder's fields the first time it's opened.
   logoUrl                 String?
-  primaryColor            String?            @default("#6366f1")
+  // No DB default on purpose — a bare column default made every Pro association look
+  // branded in this color (dashboard/portal theme, PDFs, emails) before the admin ever
+  // opened the branding settings. null means "use the platform's own default theme";
+  // the site builder and branding-settings UI supply #6366f1 as their own form default
+  // instead, only persisted once the admin actually saves.
+  primaryColor            String?
   secondaryColor          String?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses

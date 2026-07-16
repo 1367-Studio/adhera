@@ -10,7 +10,7 @@ import { membreCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
-import { assertMemberLimit, MemberLimitReachedError } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -77,7 +77,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, slug: true, modules: true },
+    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
 
   const membreData = {
@@ -124,13 +124,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
       associationName: assoc.name,
       role,
       loginUrl,
+      branding:        resolveDocumentBranding(assoc),
     }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(() => {})
 
     if (role === "MEMBRE") {
       fireEventRule({
         triggerType:   "MEMBER_CREATED",
         associationId,
-        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules },
+        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
       }).catch(() => {})
     }

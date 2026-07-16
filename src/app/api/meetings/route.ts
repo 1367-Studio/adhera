@@ -5,6 +5,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -59,13 +60,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if ((participantIds ?? []).length > 0) {
     const association = await prisma.association.findUnique({
       where: { id: associationId },
-      select: { name: true, slug: true },
+      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
     })
     const membres = await prisma.membre.findMany({
       where: { id: { in: participantIds }, userId: { not: null } },
       include: { user: { select: { name: true, email: true } } },
     })
     const portalBase = `${process.env.NEXTAUTH_URL ?? ""}/portal/${association?.slug}/reunions`
+    const branding = association ? resolveDocumentBranding(association) : null
     for (const m of membres) {
       if (!m.user?.email) continue
       void sendEmail(meetingInviteEmail({
@@ -76,6 +78,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         scheduledAt:     scheduledAt ? new Date(scheduledAt) : null,
         instant:         !!instant,
         portalUrl:       portalBase,
+        branding,
       }), { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: meeting.id })
     }
 

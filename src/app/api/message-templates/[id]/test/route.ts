@@ -2,9 +2,11 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
+import { customEmail } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -13,7 +15,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const template = await prisma.messageTemplate.findFirst({
     where:   { id, associationId },
-    include: { association: { select: { name: true, slug: true } } },
+    include: { association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } } },
   })
   if (!template) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -36,10 +38,16 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     lieuEvenement:     "Salle des fêtes",
   })
 
-  const subject = `[TEST] ${substituteVars(template.subject, vars)}`
-  const html    = substituteVars(template.body, vars)
+  const subject  = `[TEST] ${substituteVars(template.subject, vars)}`
+  const bodyHtml = substituteVars(template.body, vars)
 
-  await sendEmail({ to: adminEmail, subject, html }, { associationId, source: "TEST", sourceId: id })
+  await sendEmail(customEmail({
+    associationName: template.association.name,
+    subject,
+    bodyHtml,
+    recipientEmail:  adminEmail,
+    branding:        resolveDocumentBranding(template.association),
+  }), { associationId, source: "TEST", sourceId: id })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
 }, { roles: ALLOWED_ROLES, module: "messages" })

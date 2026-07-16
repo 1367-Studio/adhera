@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -71,7 +72,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   if (becomingPaid && cotisation.membre.email) {
-    const assoc = await prisma.association.findUnique({ where: { id: associationId }, select: { name: true } })
+    const assoc = await prisma.association.findUnique({
+      where:  { id: associationId },
+      select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    })
     if (assoc) {
       sendEmail(paymentConfirmationEmail({
         firstName:       cotisation.membre.firstName,
@@ -80,6 +84,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amount:          cotisation.amount ? Number(cotisation.amount) : null,
         period:          String(cotisation.year),
         paidAt:          cotisation.paidAt ?? new Date(),
+        branding:        resolveDocumentBranding(assoc),
       })).catch(() => {})
     }
   }

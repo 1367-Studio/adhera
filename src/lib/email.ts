@@ -14,7 +14,31 @@ export function escapeHtml(str: string): string {
 
 // ─── Base layout ─────────────────────────────────────────────────────────────
 
-function layout(associationName: string, content: string): string {
+// Resolved via resolveDocumentBranding() (src/lib/plan-limits.ts) at each call site —
+// already null when the association's plan doesn't include custom branding, so this
+// file doesn't need to know about plans.
+export type EmailBranding = { logoUrl: string | null; primaryColor: string | null } | null | undefined
+
+// White CTA text is unreadable on a light admin-picked color (pastel yellow, etc.) —
+// switch to dark text above this perceived-brightness threshold instead of assuming
+// every brand color is dark enough for white to work.
+function isLightColor(hex: string): boolean {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return false
+  const n = parseInt(m[1], 16)
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255
+  return (r * 299 + g * 587 + b * 114) / 1000 > 160
+}
+
+// Accent color shows through the header's top bar and the button, not as a full-bleed
+// banner behind white text — same restraint as the devis/facture PDF (document-pdf.ts),
+// which avoids readability issues with arbitrary admin-picked colors and keeps a
+// transparent-background logo visible against a plain white header.
+function layout(associationName: string, content: string, branding?: EmailBranding): string {
+  const accent = branding?.primaryColor || "#000"
+  const headerInner = branding?.logoUrl
+    ? `<img src="${branding.logoUrl}" alt="${escapeHtml(associationName)}" height="32" style="display:block;max-height:32px;max-width:180px;width:auto;">`
+    : `<span style="color:#18181b;font-size:17px;font-weight:700;letter-spacing:-0.3px;">${associationName}</span>`
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -26,8 +50,11 @@ function layout(associationName: string, content: string): string {
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
         <tr>
-          <td style="background:#000;padding:24px 40px;">
-            <span style="color:#fff;font-size:17px;font-weight:700;letter-spacing:-0.3px;">${associationName}</span>
+          <td style="background:${accent};padding:4px;font-size:0;line-height:0;">&nbsp;</td>
+        </tr>
+        <tr>
+          <td style="background:#fff;padding:24px 40px;border-bottom:1px solid #e4e4e7;">
+            ${headerInner}
           </td>
         </tr>
         <tr>
@@ -50,10 +77,11 @@ function layout(associationName: string, content: string): string {
 </html>`
 }
 
-function btn(label: string, url: string): string {
+function btn(label: string, url: string, accent = "#000"): string {
+  const textColor = isLightColor(accent) ? "#18181b" : "#fff"
   return `<table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-    <tr><td style="border-radius:6px;background:#000;">
-      <a href="${url}" style="display:inline-block;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
+    <tr><td style="border-radius:6px;background:${accent};">
+      <a href="${url}" style="display:inline-block;padding:12px 28px;color:${textColor};font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
     </td></tr>
   </table>`
 }
@@ -66,6 +94,7 @@ export function welcomeEmail(p: {
   associationName: string
   hasPortalAccess: boolean
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
@@ -75,14 +104,14 @@ export function welcomeEmail(p: {
         ? "Vous pouvez accéder à votre espace membre pour consulter les événements, actualités et gérer votre adhésion."
         : "N'hésitez pas à contacter votre association pour toute question."}
     </p>
-    ${p.hasPortalAccess ? btn("Accéder à mon espace", p.portalUrl) : ""}
+    ${p.hasPortalAccess ? btn("Accéder à mon espace", p.portalUrl, p.branding?.primaryColor || undefined) : ""}
     ${p.hasPortalAccess
       ? `<p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec l'adresse <strong>${p.email}</strong>.</p>`
       : ""}`
   return {
     to:      p.email,
     subject: `Bienvenue dans ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -93,6 +122,7 @@ export function invitationEmail(p: {
   associationName: string
   role:            string
   loginUrl:        string
+  branding?:       EmailBranding
 }) {
   const isStaff   = p.role !== "MEMBRE"
   const roleLabel: Record<string, string> = {
@@ -110,7 +140,7 @@ export function invitationEmail(p: {
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
-    ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl)}
+    ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl, p.branding?.primaryColor || undefined)}
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f4f4f5;border-radius:8px;padding:16px 20px;width:100%;">
       <tr>
         <td style="font-size:13px;color:#71717a;padding-bottom:6px;">Vos identifiants de connexion</td>
@@ -127,7 +157,7 @@ export function invitationEmail(p: {
   return {
     to:      p.email,
     subject: `Invitation — ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -139,6 +169,7 @@ export function rsvpConfirmationEmail(p: {
   eventDate:       Date
   eventLocation:   string | null
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
@@ -161,11 +192,11 @@ export function rsvpConfirmationEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir l'événement", p.portalUrl)}`
+    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}`
   return {
     to:      p.email,
     subject: `Confirmation — ${p.eventTitle}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -176,6 +207,7 @@ export function sondageInvitationEmail(p: {
   sondageTitle:    string
   deadline:        Date | null
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const deadlineStr = p.deadline
     ? p.deadline.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -195,11 +227,11 @@ export function sondageInvitationEmail(p: {
         <span style="font-size:14px;">${deadlineStr}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Répondre au sondage", p.portalUrl)}`
+    ${btn("Répondre au sondage", p.portalUrl, p.branding?.primaryColor || undefined)}`
   return {
     to:      p.email,
     subject: `Sondage — ${p.sondageTitle}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -209,6 +241,7 @@ export function checkInReceiptEmail(p: {
   associationName: string
   eventTitle:      string
   eventDate:       Date
+  branding?:       EmailBranding
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const content = `
@@ -222,7 +255,7 @@ export function checkInReceiptEmail(p: {
   return {
     to:      p.email,
     subject: `Présence confirmée — ${p.eventTitle}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -233,6 +266,7 @@ export function paymentConfirmationEmail(p: {
   amount:          number | null
   period:          string | null
   paidAt:          Date
+  branding?:       EmailBranding
 }) {
   const amountStr = p.amount != null
     ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
@@ -261,7 +295,7 @@ export function paymentConfirmationEmail(p: {
   return {
     to:      p.email,
     subject: `Confirmation de cotisation — ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -274,6 +308,7 @@ export function eventReminderEmail(p: {
   eventLocation:   string | null
   portalUrl:       string
   daysBefore?:     number
+  branding?:       EmailBranding
 }) {
   const days = p.daysBefore ?? 1
   const whenLabel = days === 0
@@ -302,11 +337,11 @@ export function eventReminderEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir les détails", p.portalUrl)}`
+    ${btn("Voir les détails", p.portalUrl, p.branding?.primaryColor || undefined)}`
   return {
     to:      p.email,
     subject: `Rappel — ${p.eventTitle} (${whenLabel})`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -397,6 +432,7 @@ export function portalWelcomeEmail(p: {
   password:        string
   associationName: string
   loginUrl:        string
+  branding?:       EmailBranding
 }) {
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
@@ -414,14 +450,14 @@ export function portalWelcomeEmail(p: {
         <span style="font-size:18px;font-weight:700;letter-spacing:2px;font-family:monospace;">${p.password}</span>
       </td></tr>
     </table>
-    ${btn("Accéder à mon espace membre", p.loginUrl)}
+    ${btn("Accéder à mon espace membre", p.loginUrl, p.branding?.primaryColor || undefined)}
     <p style="margin:0;font-size:13px;color:#71717a;">
       Nous vous recommandons de modifier votre mot de passe après la première connexion.
     </p>`
   return {
     to:      p.email,
     subject: `Vos identifiants — Espace membre ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -430,11 +466,12 @@ export function customEmail(p: {
   subject:         string
   bodyHtml:        string
   recipientEmail:  string
+  branding?:       EmailBranding
 }) {
   return {
     to:      p.recipientEmail,
     subject: p.subject,
-    html:    layout(p.associationName, p.bodyHtml),
+    html:    layout(p.associationName, p.bodyHtml, p.branding),
   }
 }
 
@@ -449,6 +486,7 @@ export function ticketPurchaseEmail(p: {
   quantity:        number
   paidAt:          Date
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const timeStr   = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
@@ -482,11 +520,11 @@ export function ticketPurchaseEmail(p: {
       </td></tr>
     </table>
     <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
-    ${btn("Voir mes événements", p.portalUrl)}`
+    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}`
   return {
     to:      p.email,
     subject: `Billet confirmé — ${p.eventTitle}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -498,6 +536,7 @@ export function meetingInviteEmail(p: {
   scheduledAt:     Date | null
   instant:         boolean
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const whenStr = p.instant
     ? "maintenant"
@@ -522,11 +561,11 @@ export function meetingInviteEmail(p: {
         <span style="font-size:14px;">${whenStr}</span>
       </td></tr>
     </table>
-    ${btn("Rejoindre la réunion", p.portalUrl)}`
+    ${btn("Rejoindre la réunion", p.portalUrl, p.branding?.primaryColor || undefined)}`
   return {
     to:      p.email,
     subject: `Invitation — ${p.meetingTitle}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -539,6 +578,7 @@ export function donConfirmationEmail(p: {
   canIssueTaxReceipts: boolean
   receiptNumber?:      string
   donorType?:          "INDIVIDUAL" | "COMPANY"
+  branding?:           EmailBranding
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
@@ -576,7 +616,7 @@ export function donConfirmationEmail(p: {
   return {
     to:      p.email,
     subject: `Confirmation de don — ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }
 
@@ -588,6 +628,7 @@ export function boutiqueConfirmationEmail(p: {
   paidAt:          Date
   items:           { name: string; quantity: number; unitPrice: number }[]
   portalUrl:       string
+  branding?:       EmailBranding
 }) {
   const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr  = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
@@ -623,11 +664,11 @@ export function boutiqueConfirmationEmail(p: {
       </tfoot>
     </table>
     <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Payé le ${dateStr}. Conservez cet email comme confirmation.</p>
-    ${btn("Voir mes commandes", p.portalUrl)}`
+    ${btn("Voir mes commandes", p.portalUrl, p.branding?.primaryColor || undefined)}`
 
   return {
     to:      p.email,
     subject: `Confirmation de commande — ${p.associationName}`,
-    html:    layout(p.associationName, content),
+    html:    layout(p.associationName, content, p.branding),
   }
 }

@@ -8,6 +8,7 @@ import { rsvpConfirmationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 type Params = { id: string }
 
@@ -135,14 +136,15 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   if (rsvp === "CONFIRME" && !wasAlreadyConfirme) {
     const assoc = await prisma.association.findUnique({
       where:  { id: ctx.associationId },
-      select: { name: true, slug: true, modules: true },
+      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
     })
     if (assoc) {
       const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
+      const branding   = resolveDocumentBranding(assoc)
       void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",
         associationId: ctx.associationId,
-        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules },
+        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
         evenement:     { id: evenementId, title: evenement.title, date: evenement.date, location: evenement.location },
       }).then(dispatched => {
@@ -155,6 +157,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventDate:       evenement.date,
             eventLocation:   evenement.location,
             portalUrl,
+            branding,
           }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
         }
       }).catch(() => {
@@ -167,6 +170,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventDate:       evenement.date,
             eventLocation:   evenement.location,
             portalUrl,
+            branding,
           }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
         }
       })

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmailBulk } from "@/lib/mail"
 import { sondageInvitationEmail } from "@/lib/email"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 export type SondageInviteResult = {
   notified:        number
@@ -26,7 +27,7 @@ export async function sendSondageInvitations(params: {
 
   const [sondage, association, allTargets] = await Promise.all([
     prisma.sondage.findUnique({ where: { id: sondageId }, select: { title: true, deadline: true } }),
-    prisma.association.findUnique({ where: { id: associationId }, select: { name: true, slug: true } }),
+    prisma.association.findUnique({ where: { id: associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } }),
     prisma.membre.findMany({
       where:  { id: { in: membreIds } },
       select: { id: true, userId: true, firstName: true, email: true },
@@ -60,6 +61,7 @@ export async function sendSondageInvitations(params: {
   let emailsSent = 0
   let emailsFailed = 0
   if (recipients.length) {
+    const branding = resolveDocumentBranding(association)
     const { sent, failed } = await sendEmailBulk(recipients.map(m => {
       const mail = sondageInvitationEmail({
         firstName:       m.firstName,
@@ -68,6 +70,7 @@ export async function sendSondageInvitations(params: {
         sondageTitle:    sondage.title,
         deadline:        sondage.deadline,
         portalUrl,
+        branding,
       })
       return {
         ...mail,
