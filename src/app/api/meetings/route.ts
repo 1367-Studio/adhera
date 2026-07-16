@@ -76,7 +76,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         scheduledAt:     scheduledAt ? new Date(scheduledAt) : null,
         instant:         !!instant,
         portalUrl:       portalBase,
-      }))
+      }), { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: meeting.id })
     }
 
     const notifTitle = instant

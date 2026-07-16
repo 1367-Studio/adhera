@@ -46,11 +46,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.email)
-  const payloads = recipients.map(m => customEmail({
-    associationName: assoc.name,
-    subject,
-    bodyHtml,
-    recipientEmail:  m.email!,
+  const payloads = recipients.map(m => ({
+    ...customEmail({
+      associationName: assoc.name,
+      subject,
+      bodyHtml,
+      recipientEmail:  m.email!,
+    }),
+    context: { associationId: ctx.associationId, membreId: m.id, source: "BULK_MESSAGE" },
   }))
 
   const { sent, failed, failedRecipients } = await sendEmailBulk(payloads)

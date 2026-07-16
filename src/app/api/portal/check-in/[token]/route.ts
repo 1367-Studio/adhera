@@ -116,7 +116,7 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
       if (assoc) await sendEmail(checkInReceiptEmail({
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
-      }))
+      }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id })
     }).catch(() => {})
   }
 

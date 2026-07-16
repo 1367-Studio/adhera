@@ -39,7 +39,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const subject = `[TEST] ${substituteVars(template.subject, vars)}`
   const html    = substituteVars(template.body, vars)
 
-  await sendEmail({ to: adminEmail, subject, html })
+  await sendEmail({ to: adminEmail, subject, html }, { associationId, source: "TEST", sourceId: id })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
 }, { roles: ALLOWED_ROLES, module: "messages" })

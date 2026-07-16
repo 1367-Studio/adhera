@@ -19,6 +19,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { MembreForm } from "@/components/membres/membre-form"
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
+import { MembreEmailLog } from "@/components/membres/membre-email-log"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -250,6 +251,7 @@ export function MembreDetailView() {
           {modules.evenements && <TabsTrigger value="evenements">Événements</TabsTrigger>}
           {modules.materiel && <TabsTrigger value="materiel">Matériel</TabsTrigger>}
           <TabsTrigger value="historique">Historique</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
         </TabsList>
 
         {modules.cotisations && (
@@ -349,6 +351,10 @@ export function MembreDetailView() {
 
         <TabsContent value="historique" className="pt-3">
           <MembreActivityLog membreId={id} />
+        </TabsContent>
+
+        <TabsContent value="emails" className="pt-3">
+          <MembreEmailLog membreId={id} />
         </TabsContent>
       </Tabs>
 

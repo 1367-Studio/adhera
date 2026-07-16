@@ -49,7 +49,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
       to:      membre.email,
       subject: substituteVars(rule.template.subject, vars),
       html:    substituteVars(rule.template.body, vars),
-    }).catch(() => {})
+    }, { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
     dispatched = true
   }
 

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
+import { sendSondageInvitations } from "@/lib/sondage-invitations"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -12,10 +12,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const sondage = await prisma.sondage.findFirst({
     where:   { id, associationId: ctx.associationId },
-    include: {
-      recipients:  { select: { membreId: true } },
-      association: { select: { slug: true } },
-    },
+    include: { recipients: { select: { membreId: true } } },
   })
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
   if (sondage.status !== "BROUILLON")
@@ -25,9 +22,6 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (sondage.deadline && new Date(sondage.deadline) < new Date())
     return NextResponse.json({ error: "La date limite est déjà passée — modifiez-la avant d'activer" }, { status: 400 })
 
-  await prisma.sondage.update({ where: { id }, data: { status: "ACTIF" } })
-
-  // Determine recipients
   let membreIds: string[]
   if (sondage.recipientMode === "ALL") {
     const membres = await prisma.membre.findMany({
@@ -39,27 +33,13 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     membreIds = sondage.recipients.map(r => r.membreId)
   }
 
-  // Get userIds for those membres
-  const membres = await prisma.membre.findMany({
-    where:  { id: { in: membreIds }, userId: { not: null } },
-    select: { userId: true },
-  })
+  // Send invitations *before* flipping the status. If this throws (DB hiccup, function
+  // timeout on a large association) the sondage stays BROUILLON and "Activer" can simply
+  // be retried — flipping to ACTIF first would strand it there with partial/no invitations
+  // sent and no way to trigger a full resend (activate only accepts BROUILLON).
+  const result = await sendSondageInvitations({ sondageId: id, associationId: ctx.associationId, membreIds })
 
-  if (membres.length) {
-    await prisma.notification.createMany({
-      data: membres
-        .filter(m => m.userId)
-        .map(m => ({
-          userId: m.userId!,
-          title:  `Nouveau sondage : ${sondage.title}`,
-          body:   "Votre association vous invite à répondre à un sondage.",
-          link:   `/portal/${sondage.association.slug}/sondages/${id}`,
-        })),
-      skipDuplicates: true,
-    })
-
-    await pusherServer.trigger(`private-association-${ctx.associationId}`, "new-notification", {}).catch(() => {})
-  }
+  await prisma.sondage.update({ where: { id }, data: { status: "ACTIF" } })
 
   await writeActivityLog({
     associationId: ctx.associationId,
@@ -68,7 +48,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     entity:        "Sondage",
     entityId:      id,
     label:         sondage.title,
+    metadata:      { emailsSent: result.emailsSent, emailsFailed: result.emailsFailed, skippedNoEmail: result.skippedNoEmail, skippedNoAccess: result.skippedNoAccess },
   })
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, ...result })
 })

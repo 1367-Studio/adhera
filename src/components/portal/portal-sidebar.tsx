@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -33,6 +33,7 @@ export function PortalSidebar({ slug }: { slug: string }) {
     { href: `/portal/${slug}/sondages`,  label: "Sondages",      icon: ClipboardTextIcon,   moduleKey: "sondages"  },
     { href: `/portal/${slug}/boutique`,  label: "Boutique",      icon: ShoppingBagIcon,     moduleKey: "boutique"  },
     { href: `/portal/${slug}/reunions`,  label: "Réunions",      icon: VideoCameraIcon,           moduleKey: "reunions"  },
+    { href: `/portal/${slug}/communications`, label: "Mes communications", icon: EnvelopeSimpleIcon },
     { href: `/portal/${slug}/profil`,    label: "Mon profil",    icon: UserIcon },
   ]
 

@@ -124,7 +124,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       associationName: assoc.name,
       role,
       loginUrl,
-    })).catch(() => {})
+    }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(() => {})
 
     if (role === "MEMBRE") {
       fireEventRule({

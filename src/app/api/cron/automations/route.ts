@@ -172,17 +172,19 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
           to:      j.membre.email!,
           subject: substituteVars(rule.template.subject, j.vars),
           html:    substituteVars(rule.template.body, j.vars),
+          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
         },
       }))
 
     for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
-      const chunk = emailJobs.slice(i, i + BATCH_SIZE)
-      const ok    = await sendEmailBatch(chunk.map(j => j.payload))
-      if (ok) {
+      const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
+      const results   = await sendEmailBatch(chunk.map(j => j.payload))
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
+      if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
-          data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
         })
-        sent += chunk.length
+        sent += succeeded.length
       }
     }
   }
@@ -291,17 +293,19 @@ async function processBirthday(
           to:      j.membre.email!,
           subject: substituteVars(rule.template.subject, j.vars),
           html:    substituteVars(rule.template.body, j.vars),
+          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
         },
       }))
 
     for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
-      const chunk = emailJobs.slice(i, i + BATCH_SIZE)
-      const ok    = await sendEmailBatch(chunk.map(j => j.payload))
-      if (ok) {
+      const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
+      const results   = await sendEmailBatch(chunk.map(j => j.payload))
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
+      if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
-          data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
         })
-        sent += chunk.length
+        sent += succeeded.length
       }
     }
   }
@@ -394,17 +398,25 @@ async function processEventReminder(
             portalUrl,
             daysBefore,
           })
-          return { membreId: p.membreId, participationId: p.id, payload: { to: p.email!, subject, html } }
+          return {
+            membreId:        p.membreId,
+            participationId: p.id,
+            payload: {
+              to: p.email!, subject, html,
+              context: { associationId: rule.associationId, membreId: p.membreId ?? undefined, source: "AUTOMATION", sourceId: rule.id },
+            },
+          }
         })
 
       for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
-        const chunk = emailJobs.slice(i, i + BATCH_SIZE)
-        const ok    = await sendEmailBatch(chunk.map(j => j.payload))
-        if (ok) {
+        const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
+        const results   = await sendEmailBatch(chunk.map(j => j.payload))
+        const succeeded = chunk.filter((_, idx) => results[idx].ok)
+        if (succeeded.length > 0) {
           await prisma.automationLog.createMany({
-            data: chunk.map(j => ({ ruleId: rule.id, membreId: j.membreId, participationId: j.participationId, eventId: event.id, subject: j.payload.subject })),
+            data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, participationId: j.participationId, eventId: event.id, subject: j.payload.subject })),
           })
-          sent += chunk.length
+          sent += succeeded.length
         }
       }
     }
