@@ -25,7 +25,7 @@ const questionSchema = z.object({
 
 const createSchema = z.object({
   title:         z.string().trim().min(1).max(200),
-  description:   z.string().trim().max(2000).optional(),
+  description:   z.string().trim().max(2000).nullable().optional(),
   recipientMode: z.enum(["ALL", "SELECTED"]).default("ALL"),
   anonymous:     z.boolean().default(false),
   deadline:      z.string().datetime().optional().nullable(),

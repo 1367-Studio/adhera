@@ -51,7 +51,12 @@ export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBu
   }
 
   function deleteQuestion(index: number) {
-    update(questions.filter((_, i) => i !== index))
+    const deletedKey = questions[index]._key
+    update(
+      questions
+        .filter((_, i) => i !== index)
+        .map(q => (q.condition?.questionId === deletedKey ? { ...q, condition: null } : q)),
+    )
   }
 
   function moveUp(index: number) {

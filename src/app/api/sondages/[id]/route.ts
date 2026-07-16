@@ -126,6 +126,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           data: recipientIds.map(membreId => ({ sondageId: id, membreId })),
         })
       }
+    } else if (recipientMode === "ALL") {
+      // Clear stale selections so switching back to "SELECTED" later doesn't
+      // silently resurrect members picked before this switch to "ALL".
+      await tx.sondageRecipient.deleteMany({ where: { sondageId: id } })
     }
   })
 
