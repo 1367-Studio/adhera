@@ -274,10 +274,17 @@ export default function SondageFormPage() {
 
   const submitMutation = useMutation({
     mutationFn: async () => {
+      // Only send answers for questions still visible under the current conditional
+      // path — a hidden question's stale answer (from before a branching answer changed)
+      // must not be persisted as if the member actually saw and answered it.
+      const visibleIds = new Set(visibleQuestions.map((q) => q.id));
+      const filteredAnswers = Object.fromEntries(
+        Object.entries(answers).filter(([qId]) => visibleIds.has(qId)),
+      );
       const res = await fetch(`/api/portal/sondages/${id}/repondre`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify({ answers: filteredAnswers }),
       });
       if (!res.ok) {
         const d = await res.json();
