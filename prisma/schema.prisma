@@ -247,7 +247,12 @@ model Association {
   // exist once the association has set up its public site. logoUrl/primaryColor also
   // seed the site builder's fields the first time it's opened.
   logoUrl                 String?
-  primaryColor            String?            @default("#6366f1")
+  // No DB default on purpose — a bare column default made every Pro association look
+  // branded in this color (dashboard/portal theme, PDFs, emails) before the admin ever
+  // opened the branding settings. null means "use the platform's own default theme";
+  // the site builder and branding-settings UI supply #6366f1 as their own form default
+  // instead, only persisted once the admin actually saves.
+  primaryColor            String?
   secondaryColor          String?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
@@ -728,6 +733,12 @@ model EmailMessage {
   resendId      String?     @unique
   to            String
   subject       String
+  // Full rendered HTML, kept so the admin email log can show what was actually sent —
+  // not reconstructible after the fact since templates are re-rendered with live data.
+  html          String?     @db.Text
+  // Attachments (e.g. Devis/Facture PDFs) aren't part of `html` and so never show up in
+  // the admin preview — this flags that gap instead of letting the preview look complete.
+  hasAttachments Boolean    @default(false)
   // "SONDAGE" | "AUTOMATION" | "BULK_MESSAGE" | "MEMBER_INVITE" | "MEETING_INVITE" |
   // "TRANSACTION" | "DOCUMENT" | "TEST" — kept as a String (not enum) so new sources
   // don't need a migration, matching the MessageTemplate.category convention.

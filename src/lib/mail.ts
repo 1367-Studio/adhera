@@ -25,7 +25,7 @@ type Attachment = { filename: string; content: Buffer }
 type EmailPayload = { to: string; subject: string; html: string; attachments?: Attachment[] }
 
 async function logEmailMessage(
-  payload: { to: string; subject: string },
+  payload: { to: string; subject: string; html: string; attachments?: Attachment[] },
   context: EmailContext,
   resendId: string | null,
   error: { message: string } | null,
@@ -39,6 +39,8 @@ async function logEmailMessage(
         sourceId:      context.sourceId,
         to:            payload.to,
         subject:       payload.subject,
+        html:          payload.html,
+        hasAttachments: !!payload.attachments?.length,
         resendId:      resendId ?? undefined,
         status:        error ? "FAILED" : "SENT",
         errorMessage:  error?.message,
@@ -112,6 +114,7 @@ export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchIte
         sourceId:      p.context!.sourceId,
         to:            p.to,
         subject:       p.subject,
+        html:          p.html,
         resendId:      id,
         // Judged per-item on whether Resend actually returned an id for it, not on the
         // aggregate `error` — a batch can come back with `error` set while still carrying

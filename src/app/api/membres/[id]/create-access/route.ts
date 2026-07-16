@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -28,7 +29,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, slug: true },
+    select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -56,6 +57,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     associationName: assoc.name,
     role:            "MEMBRE",
     loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
+    branding:        resolveDocumentBranding(assoc),
   }), { associationId, membreId: id, source: "MEMBER_INVITE" }).catch(() => {})
 
   await writeActivityLog({

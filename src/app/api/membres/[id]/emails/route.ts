@@ -22,9 +22,12 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       orderBy: { createdAt: "desc" },
       skip:    (page - 1) * pageSize,
       take:    pageSize,
+      // html excluded here on purpose — it can run several KB per row and most rows in a
+      // page are never expanded; fetched on demand by [emailId]/route.ts when a row opens.
       select: {
-        id: true, subject: true, source: true, status: true, errorMessage: true,
-        sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, createdAt: true,
+        id: true, subject: true, source: true, status: true, errorMessage: true, to: true,
+        sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, complainedAt: true, createdAt: true,
+        hasAttachments: true,
       },
     }),
     prisma.emailMessage.count({ where }),

@@ -2,9 +2,11 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
+import { customEmail } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -15,7 +17,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     where:   { id, associationId },
     include: {
       template:    true,
-      association: { select: { name: true, slug: true } },
+      association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
     },
   })
   if (!rule) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
@@ -40,9 +42,15 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   const subject = `[TEST] ${substituteVars(rule.template.subject, vars)}`
-  const html    = substituteVars(rule.template.body, vars)
+  const bodyHtml = substituteVars(rule.template.body, vars)
 
-  await sendEmail({ to: adminEmail, subject, html })
+  await sendEmail(customEmail({
+    associationName: rule.association.name,
+    subject,
+    bodyHtml,
+    recipientEmail:  adminEmail,
+    branding:        resolveDocumentBranding(rule.association),
+  }))
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
 }, { roles: ALLOWED_ROLES, module: "messages" })

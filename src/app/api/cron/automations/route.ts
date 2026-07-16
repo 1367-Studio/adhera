@@ -2,10 +2,11 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmailBatch } from "@/lib/mail"
 import { sendSmsBatch } from "@/lib/sms"
-import { eventReminderEmail } from "@/lib/email"
+import { eventReminderEmail, customEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt, isBirthdayToday } from "@/lib/automation"
 import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 import type { TriggerType, MessageChannel } from "@prisma/client"
 
 const BATCH_SIZE = 100
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
     },
     include: {
       template:    true,
-      association: { select: { id: true, name: true, slug: true, modules: true } },
+      association: { select: { id: true, name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
     },
   })
 
@@ -58,7 +59,7 @@ export async function POST(req: Request) {
 }
 
 type RuleWithRelations = Awaited<ReturnType<typeof prisma.automationRule.findMany<{
-  include: { template: true; association: { select: { id: true; name: true; slug: true; modules: true } } }
+  include: { template: true; association: { select: { id: true; name: true; slug: true; modules: true; plan: true; customBrandingEnabled: true; logoUrl: true; primaryColor: true } } }
 }>>>[number]
 
 async function processRule(rule: RuleWithRelations, now: Date): Promise<number> {
@@ -164,14 +165,19 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
 
   // Email dispatch
   if (emailEnabled) {
+    const branding  = resolveDocumentBranding(rule.association)
     const emailJobs = jobs
       .filter(j => j.membre.email)
       .map(j => ({
         membreId: j.membreId,
         payload: {
-          to:      j.membre.email!,
-          subject: substituteVars(rule.template.subject, j.vars),
-          html:    substituteVars(rule.template.body, j.vars),
+          ...customEmail({
+            associationName: rule.association.name,
+            subject:         substituteVars(rule.template.subject, j.vars),
+            bodyHtml:        substituteVars(rule.template.body, j.vars),
+            recipientEmail:  j.membre.email!,
+            branding,
+          }),
           context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
         },
       }))
@@ -285,14 +291,19 @@ async function processBirthday(
   let sent = 0
 
   if (opts.emailEnabled) {
+    const branding  = resolveDocumentBranding(rule.association)
     const emailJobs = jobs
       .filter(j => j.membre.email)
       .map(j => ({
         membreId: j.membreId,
         payload: {
-          to:      j.membre.email!,
-          subject: substituteVars(rule.template.subject, j.vars),
-          html:    substituteVars(rule.template.body, j.vars),
+          ...customEmail({
+            associationName: rule.association.name,
+            subject:         substituteVars(rule.template.subject, j.vars),
+            bodyHtml:        substituteVars(rule.template.body, j.vars),
+            recipientEmail:  j.membre.email!,
+            branding,
+          }),
           context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
         },
       }))
@@ -397,6 +408,7 @@ async function processEventReminder(
             eventLocation:   event.location,
             portalUrl,
             daysBefore,
+            branding:        resolveDocumentBranding(rule.association),
           })
           return {
             membreId:        p.membreId,

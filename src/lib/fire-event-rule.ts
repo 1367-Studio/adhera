@@ -1,16 +1,22 @@
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { sendSms } from "@/lib/sms"
+import { customEmail } from "@/lib/email"
 import { parseModules } from "@/lib/modules"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { substituteVars, buildVars } from "@/lib/automation"
-import type { MessageChannel, TriggerType } from "@prisma/client"
+import type { AssociationPlan, MessageChannel, TriggerType } from "@prisma/client"
 
 type EventTrigger = Extract<TriggerType, "RSVP_CONFIRMED" | "MEMBER_CREATED">
 
 interface FireParams {
   triggerType:   EventTrigger
   associationId: string
-  association:   { name: string; slug: string; modules: unknown }
+  association:   {
+    name: string; slug: string; modules: unknown
+    plan: AssociationPlan; customBrandingEnabled: boolean | null
+    logoUrl: string | null; primaryColor: string | null
+  }
   membre:        { id: string; firstName: string; lastName: string; email: string | null; phone: string | null }
   evenement?:    { id: string; title: string; date: Date; location: string | null }
 }
@@ -45,11 +51,13 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
   let dispatched = false
 
   if ((channel === "EMAIL" || channel === "BOTH") && membre.email) {
-    sendEmail({
-      to:      membre.email,
-      subject: substituteVars(rule.template.subject, vars),
-      html:    substituteVars(rule.template.body, vars),
-    }, { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
+    sendEmail(customEmail({
+      associationName: association.name,
+      subject:         substituteVars(rule.template.subject, vars),
+      bodyHtml:        substituteVars(rule.template.body, vars),
+      recipientEmail:  membre.email,
+      branding:        resolveDocumentBranding(association),
+    }), { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
     dispatched = true
   }
 

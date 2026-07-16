@@ -6,7 +6,7 @@ import { sendEmail } from "@/lib/mail"
 import { portalWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
-import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveDocumentBranding } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 
 function generatePassword(): string {
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
   const association = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true },
+    select: { id: true, name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -116,6 +116,7 @@ export async function POST(req: Request) {
     password,
     associationName: association.name,
     loginUrl,
+    branding: resolveDocumentBranding(association),
   })).catch(() => {})
 
   return NextResponse.json({ ok: true }, { status: 201 })

@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmailBulk } from "@/lib/mail"
 import { customEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -28,7 +29,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { name: true },
+    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -46,12 +47,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.email)
+  const branding = resolveDocumentBranding(assoc)
   const payloads = recipients.map(m => ({
     ...customEmail({
       associationName: assoc.name,
       subject,
       bodyHtml,
       recipientEmail:  m.email!,
+      branding,
     }),
     context: { associationId: ctx.associationId, membreId: m.id, source: "BULK_MESSAGE" },
   }))

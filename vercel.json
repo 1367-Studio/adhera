@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/automations",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/purge-email-html",
+      "schedule": "0 4 * * *"
     }
   ]
 }
