@@ -21,6 +21,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SelectField } from "@/components/ui/select-field"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 
 const MANUAL_PAYMENT_TYPE_OPTIONS = [
   { value: "ESPECES",  label: "Espèces" },
@@ -337,7 +338,7 @@ export default function EditProduitPage() {
       ) : c.status === "PAID" ? (
         <RowActions
           actions={[
-            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`/api/boutique/commandes/${c.id}/pdf`, "_blank") },
+            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
             ...(c.paymentMethod === "MANUAL" ? [
               { label: "Modifier le moyen de paiement", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),

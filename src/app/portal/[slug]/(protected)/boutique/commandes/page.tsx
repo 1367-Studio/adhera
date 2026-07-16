@@ -13,6 +13,7 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 
 type CommandeItem = {
   id:        string
@@ -195,7 +196,7 @@ function MesCommandesPageInner() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => window.open(`/api/portal/boutique/commandes/${c.id}/pdf`, "_blank")}
+                    onClick={() => window.open(`${BASE_PATH}/api/portal/boutique/commandes/${c.id}/pdf`, "_blank")}
                   >
                     <FileArrowDownIcon className="mr-1.5 size-3.5" />
                     Télécharger le reçu
