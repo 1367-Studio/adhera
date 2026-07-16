@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { EnvelopeSimpleIcon, CircleNotchIcon, WarningCircleIcon, ArrowsClockwiseIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
@@ -25,6 +25,7 @@ type EmailLogRow = {
   bouncedAt:    string | null
   complainedAt: string | null
   createdAt:    string
+  hasAttachments: boolean
 }
 
 type PageResult = {
@@ -69,7 +70,7 @@ const TIMELINE_STEPS: { key: TimelineKey; label: string; tone: "default" | "erro
   { key: "complainedAt", label: "Spam",   tone: "error"   },
 ]
 
-function EmailLogItem({ e }: { e: EmailLogRow }) {
+function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
   const [open, setOpen] = useState(false)
   // Sorted by actual timestamp, not array position — webhook events (Resend) can land
   // out of the "expected" order (e.g. a delayed bounce recorded after delivery).
@@ -77,6 +78,19 @@ function EmailLogItem({ e }: { e: EmailLogRow }) {
     .map(step => ({ label: step.label, tone: step.tone, at: e[step.key] }))
     .filter((step): step is { label: string; tone: "default" | "error"; at: string } => !!step.at)
     .sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime())
+
+  // Fetched only once the row is expanded — the list endpoint deliberately omits html
+  // (can run several KB per row) since most rows in a page are never opened.
+  const { data: content, isLoading: contentLoading, isError: contentError, refetch: refetchContent, isRefetching: contentRefetching } = useQuery<{ html: string | null }>({
+    queryKey: ["membre-email-content", membreId, e.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/membres/${membreId}/emails/${e.id}`)
+      if (!res.ok) throw new Error()
+      return res.json()
+    },
+    enabled:   open,
+    staleTime: Infinity,
+  })
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
@@ -121,6 +135,47 @@ function EmailLogItem({ e }: { e: EmailLogRow }) {
                 </li>
               ))}
             </ol>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Contenu</p>
+            {contentLoading && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground py-4">
+                <CircleNotchIcon className="size-4 animate-spin" />
+                Chargement…
+              </div>
+            )}
+            {contentError && (
+              <div className="flex items-center gap-2 text-sm text-destructive py-1">
+                <span>Impossible de charger le contenu.</span>
+                <Button size="sm" variant="outline" onClick={() => refetchContent()} disabled={contentRefetching} className="h-6 text-xs">
+                  {contentRefetching ? <CircleNotchIcon className="size-3 animate-spin" /> : "Réessayer"}
+                </Button>
+              </div>
+            )}
+            {!contentLoading && !contentError && (
+              content?.html ? (
+                <>
+                  <iframe
+                    // Navigation/interactivity is already stripped server-side (see
+                    // sanitizeEmailPreviewHtml in [emailId]/route.ts) — sandbox is defense
+                    // in depth, not the primary mitigation. no-referrer keeps this admin's
+                    // session/URL out of the Referer header on any image the email loads
+                    // (e.g. a third-party pixel pasted into a bulk message body).
+                    srcDoc={content.html}
+                    sandbox=""
+                    referrerPolicy="no-referrer"
+                    title={`Contenu de l'email : ${e.subject}`}
+                    className="w-full h-96 rounded-md border bg-white"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Aperçu — les liens sont désactivés.
+                    {e.hasAttachments && " Les pièces jointes ne sont pas affichées ici."}
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Contenu non disponible pour cet envoi.</p>
+              )
+            )}
           </div>
         </div>
       )}
@@ -195,7 +250,7 @@ export function MembreEmailLog({ membreId }: { membreId: string }) {
     <div className="space-y-3">
       {refreshButton}
       <div className="space-y-2">
-        {emails.map((e) => <EmailLogItem key={e.id} e={e} />)}
+        {emails.map((e) => <EmailLogItem key={e.id} e={e} membreId={membreId} />)}
       </div>
 
       {(hasNextPage || emails.length < total) && (

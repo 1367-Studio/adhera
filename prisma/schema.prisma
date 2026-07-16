@@ -733,6 +733,12 @@ model EmailMessage {
   resendId      String?     @unique
   to            String
   subject       String
+  // Full rendered HTML, kept so the admin email log can show what was actually sent —
+  // not reconstructible after the fact since templates are re-rendered with live data.
+  html          String?     @db.Text
+  // Attachments (e.g. Devis/Facture PDFs) aren't part of `html` and so never show up in
+  // the admin preview — this flags that gap instead of letting the preview look complete.
+  hasAttachments Boolean    @default(false)
   // "SONDAGE" | "AUTOMATION" | "BULK_MESSAGE" | "MEMBER_INVITE" | "MEETING_INVITE" |
   // "TRANSACTION" | "DOCUMENT" | "TEST" — kept as a String (not enum) so new sources
   // don't need a migration, matching the MessageTemplate.category convention.
