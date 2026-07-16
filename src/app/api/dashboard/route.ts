@@ -18,6 +18,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalIncomes,
     totalExpenses,
     prochainEvenement,
+    ventesRecentes,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
@@ -39,6 +40,22 @@ export const GET = withAdminAuth(async (req, ctx) => {
       orderBy: { date: "asc" },
       select: { id: true, title: true, date: true, location: true },
     }),
+    prisma.boutiqueCommande.findMany({
+      where:   { associationId, status: "PAID" },
+      // `paidAt` (not `updatedAt`) — a later payment-type correction on an old sale
+      // updates the row without changing when it was actually paid, and ordering by
+      // `updatedAt` would resurface that old sale at the top of "Ventes récentes".
+      orderBy: { paidAt: "desc" },
+      take:    5,
+      select: {
+        id:          true,
+        totalAmount: true,
+        paidAt:      true,
+        updatedAt:   true,
+        guestName:   true,
+        membre:      { select: { firstName: true, lastName: true } },
+      },
+    }),
   ])
 
   const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
@@ -51,5 +68,6 @@ export const GET = withAdminAuth(async (req, ctx) => {
     cotisationsEncaissees,
     solde,
     prochainEvenement,
+    ventesRecentes,
   })
 })

@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,15 @@ import { RowActions } from "@/components/ui/row-actions"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Modal } from "@/components/ui/modal"
 import { DataTable, type Column } from "@/components/ui/data-table"
+import { SelectField } from "@/components/ui/select-field"
 import { cn } from "@/lib/utils"
+
+const MANUAL_PAYMENT_TYPE_OPTIONS = [
+  { value: "ESPECES",  label: "Espèces" },
+  { value: "CHEQUE",   label: "Chèque" },
+  { value: "CB",       label: "Carte bancaire" },
+  { value: "VIREMENT", label: "Virement" },
+]
 
 type Variante = { id: string; label: string; price: number; stock: number }
 type Produit = {
@@ -37,10 +45,11 @@ type CommandeItem = {
 }
 
 type Commande = {
-  id:            string
-  status:        "PENDING" | "PAID" | "CANCELLED"
-  paymentMethod: "STRIPE" | "MANUAL"
-  totalAmount:   number
+  id:                string
+  status:            "PENDING" | "PAID" | "CANCELLED"
+  paymentMethod:     "STRIPE" | "MANUAL"
+  manualPaymentType: "ESPECES" | "CHEQUE" | "CB" | "VIREMENT" | null
+  totalAmount:       number
   note:          string | null
   createdAt:     string
   membre:        { firstName: string; lastName: string; email: string } | null
@@ -65,15 +74,28 @@ const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "default" | "outline
 type Tab = "produits" | "commandes"
 
 export default function BoutiquePage() {
-  const router   = useRouter()
-  const qc       = useQueryClient()
-  const [tab, setTab]               = useState<Tab>("produits")
+  return (
+    <Suspense fallback={null}>
+      <BoutiquePageInner />
+    </Suspense>
+  )
+}
+
+function BoutiquePageInner() {
+  const router       = useRouter()
+  const qc           = useQueryClient()
+  const searchParams = useSearchParams()
+  const highlightId  = searchParams.get("commandeId")
+  const [tab, setTab]               = useState<Tab>(searchParams.get("tab") === "commandes" ? "commandes" : "produits")
   const [deleteTarget, setDeleteTarget] = useState<Produit | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>("ALL")
   const [payTarget, setPayTarget]         = useState<Commande | null>(null)
   const [editItems, setEditItems]         = useState<EditableItem[]>([])
+  const [manualPaymentType, setManualPaymentType] = useState("")
   const [cancelTarget, setCancelTarget]   = useState<Commande | null>(null)
   const [stripePayTarget, setStripePayTarget] = useState<Commande | null>(null)
+  const [correctTarget, setCorrectTarget] = useState<Commande | null>(null)
+  const [correctedType, setCorrectedType] = useState("")
 
   const { data: produits = [], isLoading: loadingProduits } = useQuery<Produit[]>({
     queryKey:  ["boutique-produits"],
@@ -89,6 +111,18 @@ export default function BoutiquePage() {
     staleTime: 0,
   })
 
+  // Deep-link from the dashboard's "Ventes récentes" card: land on the right tab and
+  // briefly highlight the row so the admin doesn't have to hunt for it in the list.
+  useEffect(() => {
+    if (!highlightId || tab !== "commandes" || loadingCommandes) return
+    const el = document.querySelector(`[data-row-id="${highlightId}"]`)
+    if (!el) return
+    el.scrollIntoView({ behavior: "smooth", block: "center" })
+    el.classList.add("ring-2", "ring-primary")
+    const t = setTimeout(() => el.classList.remove("ring-2", "ring-primary"), 2500)
+    return () => clearTimeout(t)
+  }, [highlightId, tab, loadingCommandes, commandeResult])
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => fetch(`/api/boutique/produits/${id}`, { method: "DELETE" }).then(async r => {
       if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
@@ -99,11 +133,11 @@ export default function BoutiquePage() {
   })
 
   const updateCommandeStatus = useMutation({
-    mutationFn: ({ id, status, items }: { id: string; status: string; items?: { id: string; quantity: number }[] }) =>
+    mutationFn: ({ id, status, items, manualPaymentType }: { id: string; status: string; items?: { id: string; quantity: number }[]; manualPaymentType?: string }) =>
       fetch(`/api/boutique/commandes/${id}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ status, ...(items ? { items } : {}) }),
+        body:    JSON.stringify({ status, ...(items ? { items } : {}), ...(manualPaymentType ? { manualPaymentType } : {}) }),
       }).then(async r => {
         if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
         return r.json()
@@ -125,6 +159,7 @@ export default function BoutiquePage() {
       produitName:   i.produit.name,
       varianteLabel: i.variante.label,
     })))
+    setManualPaymentType("")
     setPayTarget(c)
   }
 
@@ -137,14 +172,34 @@ export default function BoutiquePage() {
   }
 
   async function handleEncaisser() {
-    if (!payTarget) return
+    if (!payTarget || !manualPaymentType) return
     try {
       await updateCommandeStatus.mutateAsync({
         id:     payTarget.id,
         status: "PAID",
         items:  editItems.map(i => ({ id: i.id, quantity: i.qty })),
+        manualPaymentType,
       })
       setPayTarget(null)
+    } catch {
+      // onError already shows toast; keep modal open so user can retry
+    }
+  }
+
+  function openCorrectModal(c: Commande) {
+    setCorrectedType(c.manualPaymentType ?? "")
+    setCorrectTarget(c)
+  }
+
+  async function handleCorrectPaymentType() {
+    if (!correctTarget || !correctedType) return
+    try {
+      await updateCommandeStatus.mutateAsync({
+        id:     correctTarget.id,
+        status: "PAID",
+        manualPaymentType: correctedType,
+      })
+      setCorrectTarget(null)
     } catch {
       // onError already shows toast; keep modal open so user can retry
     }
@@ -266,7 +321,11 @@ export default function BoutiquePage() {
       header: "Paiement",
       className: "w-24",
       cell: (c) => (
-        <span className="text-xs text-muted-foreground">{c.paymentMethod === "STRIPE" ? "Stripe" : "Manuel"}</span>
+        <span className="text-xs text-muted-foreground">
+          {c.paymentMethod === "STRIPE"
+            ? "Stripe"
+            : MANUAL_PAYMENT_TYPE_OPTIONS.find(o => o.value === c.manualPaymentType)?.label ?? "Manuel"}
+        </span>
       ),
     },
     {
@@ -294,6 +353,15 @@ export default function BoutiquePage() {
           actions={[
             { label: "Marquer payée", icon: <EyeIcon className="size-3.5" />,    onClick: () => openPayModal(c) },
             { label: "Annuler",       icon: <ArchiveIcon className="size-3.5" />, onClick: () => setCancelTarget(c), destructive: true, separator: true },
+          ]}
+        />
+      ) : c.status === "PAID" ? (
+        <RowActions
+          actions={[
+            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`/api/boutique/commandes/${c.id}/pdf`, "_blank") },
+            ...(c.paymentMethod === "MANUAL" ? [
+              { label: "Modifier le moyen de paiement", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
+            ] : []),
           ]}
         />
       ) : null,
@@ -395,7 +463,7 @@ export default function BoutiquePage() {
                 <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
                 <Button
                   loading={updateCommandeStatus.isPending}
-                  disabled={adjustedTotal === 0}
+                  disabled={adjustedTotal === 0 || !manualPaymentType}
                   onClick={handleEncaisser}
                 >
                   <MoneyIcon className="mr-1.5 size-4" />
@@ -414,6 +482,13 @@ export default function BoutiquePage() {
                     </span>
                   </p>
                 )}
+                <SelectField
+                  label="Moyen de paiement"
+                  required
+                  options={MANUAL_PAYMENT_TYPE_OPTIONS}
+                  value={manualPaymentType}
+                  onValueChange={setManualPaymentType}
+                />
                 <div className="space-y-3">
                   {editItems.map(item => {
                     const notCollected = item.qty === 0
@@ -512,6 +587,39 @@ export default function BoutiquePage() {
           setDeleteTarget(null)
         }}
       />
+
+      {/* Correct manual payment type on an already-PAID order */}
+      <Modal
+        open={!!correctTarget}
+        onOpenChange={o => { if (!o) setCorrectTarget(null) }}
+        title="Modifier le moyen de paiement"
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setCorrectTarget(null)}>Annuler</Button>
+            <Button
+              loading={updateCommandeStatus.isPending}
+              disabled={!correctedType || correctedType === correctTarget?.manualPaymentType}
+              onClick={handleCorrectPaymentType}
+            >
+              Enregistrer
+            </Button>
+          </>
+        }
+      >
+        <div className="py-1">
+          <SelectField
+            label="Moyen de paiement"
+            required
+            options={MANUAL_PAYMENT_TYPE_OPTIONS}
+            value={correctedType}
+            onValueChange={setCorrectedType}
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Cela ne modifie pas le montant déjà comptabilisé dans Finances — corrigez-le là-bas si besoin.
+          </p>
+        </div>
+      </Modal>
     </div>
   )
 }

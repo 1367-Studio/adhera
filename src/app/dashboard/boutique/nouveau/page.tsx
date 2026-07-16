@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
+import { SelectField } from "@/components/ui/select-field"
+import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import { cn } from "@/lib/utils"
 
 type VarianteRow = { _key: string; label: string; price: number; stock: string }
@@ -25,7 +27,14 @@ export default function NouveauProduitPage() {
   const [description, setDescription] = useState("")
   const [imageUrl, setImageUrl]       = useState("")
   const [status, setStatus]           = useState<"DRAFT" | "ACTIVE">("DRAFT")
+  const [categoryId, setCategoryId]   = useState("")
   const [variantes, setVariantes]     = useState<VarianteRow[]>([newVariante()])
+
+  const { data: categories = [] } = useFinanceCategories("INCOME")
+  const categoryOptions = [
+    { value: "", label: "Aucune catégorie" },
+    ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
 
   function addVariante() { setVariantes(prev => [...prev, newVariante()]) }
   function removeVariante(key: string) { setVariantes(prev => prev.filter(v => v._key !== key)) }
@@ -48,6 +57,7 @@ export default function NouveauProduitPage() {
           description: description.trim() || null,
           imageUrl:    imageUrl.trim()    || null,
           status,
+          categoryId:  categoryId || null,
           variantes:   parsed,
         }),
       })
@@ -154,6 +164,14 @@ export default function NouveauProduitPage() {
                 ))}
               </div>
             </div>
+
+            <SelectField
+              label="Catégorie comptable"
+              options={categoryOptions}
+              value={categoryId}
+              onValueChange={setCategoryId}
+              placeholder="Aucune catégorie"
+            />
           </div>
 
           {/* Right — variantes */}

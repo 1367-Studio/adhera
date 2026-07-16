@@ -15,19 +15,25 @@ import { prisma } from "@/lib/prisma/client"
 // offset into a literal pattern to search for — verified live against dev/stage, where
 // dropping the cast made "...-9999" (no literal "10" inside it) resolve to NULL and
 // "...-10000" (which contains "10") resolve to 10 instead of 10000.
-async function nextNumber(prefix: string, table: "Devis" | "Facture", associationId: string): Promise<string> {
+async function nextNumber(
+  prefix: string,
+  table: "Devis" | "Facture" | "BoutiqueCommande",
+  column: "number" | "receiptNumber",
+  associationId: string,
+): Promise<string> {
   const year       = new Date().getFullYear()
   const yearPrefix = `${prefix}-${year}-`
+  const col        = Prisma.raw(`"${column}"`)
 
-  const rows = await prisma.$queryRaw<{ number: string }[]>(Prisma.sql`
-    SELECT number FROM ${Prisma.raw(`"${table}"`)}
-    WHERE "associationId" = ${associationId} AND number LIKE ${`${yearPrefix}%`}
-    ORDER BY (substring(number FROM ${yearPrefix.length + 1}::int))::int DESC
+  const rows = await prisma.$queryRaw<{ value: string }[]>(Prisma.sql`
+    SELECT ${col} AS value FROM ${Prisma.raw(`"${table}"`)}
+    WHERE "associationId" = ${associationId} AND ${col} LIKE ${`${yearPrefix}%`}
+    ORDER BY (substring(${col} FROM ${yearPrefix.length + 1}::int))::int DESC
     LIMIT 1
   `)
 
   let seq = 1
-  const last = rows[0]?.number
+  const last = rows[0]?.value
   if (last) {
     const num = parseInt(last.slice(yearPrefix.length), 10)
     seq = num + 1
@@ -36,9 +42,13 @@ async function nextNumber(prefix: string, table: "Devis" | "Facture", associatio
 }
 
 export function nextDevisNumber(associationId: string): Promise<string> {
-  return nextNumber("DEV", "Devis", associationId)
+  return nextNumber("DEV", "Devis", "number", associationId)
 }
 
 export function nextFactureNumber(associationId: string): Promise<string> {
-  return nextNumber("FAC", "Facture", associationId)
+  return nextNumber("FAC", "Facture", "number", associationId)
+}
+
+export function nextBoutiqueReceiptNumber(associationId: string): Promise<string> {
+  return nextNumber("REC", "BoutiqueCommande", "receiptNumber", associationId)
 }

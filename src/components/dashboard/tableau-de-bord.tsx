@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon, ShoppingBagIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useModules } from "@/lib/user-context"
 import { usePalette, hexToRgba } from "@/lib/finance-palette"
@@ -17,6 +17,14 @@ type DashboardData = {
   cotisationsEncaissees: number
   solde:                 number
   prochainEvenement:     { id: string; title: string; date: string; location: string | null } | null
+  ventesRecentes:        {
+    id:          string
+    totalAmount: number
+    paidAt:      string | null
+    updatedAt:   string
+    guestName:   string | null
+    membre:      { firstName: string; lastName: string } | null
+  }[]
 }
 
 function fmt(n: number) {
@@ -139,8 +147,15 @@ export function TableauDeBord() {
       </div>
 
       {/* Bottom row */}
-      {(modules.evenements || modules.cotisations) && (
-        <div className="grid gap-4 sm:grid-cols-2">
+      {(modules.evenements || modules.cotisations || modules.boutique) && (
+        <div
+          className={cn(
+            "grid gap-4",
+            [modules.evenements, modules.cotisations, modules.boutique].filter(Boolean).length >= 3
+              ? "sm:grid-cols-2 lg:grid-cols-3"
+              : "sm:grid-cols-2",
+          )}
+        >
           {/* Prochain événement */}
           {modules.evenements && (
             <div
@@ -200,6 +215,48 @@ export function TableauDeBord() {
                     </Link>
                   )}
                 </div>
+              )}
+            </div>
+          )}
+
+          {/* Ventes récentes */}
+          {modules.boutique && (
+            <div
+              className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              style={{ animationDelay: "330ms", animationFillMode: "both" }}
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingBagIcon className="size-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Ventes récentes</span>
+              </div>
+              {isLoading ? (
+                <div className="h-12 rounded-lg bg-muted animate-pulse" />
+              ) : data?.ventesRecentes.length ? (
+                <div className="space-y-2">
+                  {data.ventesRecentes.map(v => (
+                    <Link
+                      key={v.id}
+                      href={`/dashboard/boutique?tab=commandes&commandeId=${v.id}`}
+                      className="flex items-center justify-between group -mx-1 px-1 py-0.5 rounded hover:bg-accent transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                          {v.membre ? `${v.membre.firstName} ${v.membre.lastName}` : (v.guestName ?? "Invité")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(v.paidAt ?? v.updatedAt), "d MMM 'à' HH:mm", { locale: fr })}
+                        </p>
+                      </div>
+                      <span className="text-sm font-semibold tabular-nums shrink-0 ml-2">{fmt(v.totalAmount / 100)}</span>
+                    </Link>
+                  ))}
+                  <Link href="/dashboard/boutique?tab=commandes" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
+                    Voir toutes les commandes
+                    <ArrowRightIcon className="size-3" />
+                  </Link>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Aucune vente pour le moment.</p>
               )}
             </div>
           )}

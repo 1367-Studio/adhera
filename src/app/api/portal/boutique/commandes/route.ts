@@ -3,6 +3,9 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { sendEmail } from "@/lib/mail"
+import { boutiqueNewOrderAdminEmail } from "@/lib/email"
+import { pusherServer } from "@/lib/pusher-server"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -43,12 +46,12 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   const commande = await prisma.$transaction(async tx => {
     let totalAmount = 0
-    const lineItems: Array<{ produitId: string; varianteId: string; quantity: number; unitPrice: number }> = []
+    const lineItems: Array<{ produitId: string; varianteId: string; quantity: number; unitPrice: number; categoryId: string | null }> = []
 
     for (const item of items) {
       const variante = await tx.boutiqueVariante.findFirst({
         where:   { id: item.varianteId, produitId: item.produitId },
-        include: { produit: { select: { associationId: true, status: true } } },
+        include: { produit: { select: { associationId: true, status: true, categoryId: true } } },
       })
 
       if (!variante || variante.produit.associationId !== ctx.associationId)
@@ -69,6 +72,9 @@ export const POST = withPortalAuth(async (req, ctx) => {
         varianteId: item.varianteId,
         quantity:   item.quantity,
         unitPrice:  variante.price,
+        // Snapshot the product's category as of the order — recategorizing the product
+        // later shouldn't retroactively change how this order books to Finances.
+        categoryId: variante.produit.categoryId,
       })
     }
 
@@ -83,6 +89,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
         items: { create: lineItems },
       },
       include: {
+        membre:      { select: { firstName: true, lastName: true } },
+        association: { select: { name: true } },
         items: {
           include: {
             produit:  { select: { name: true, imageUrl: true } },
@@ -101,6 +109,44 @@ export const POST = withPortalAuth(async (req, ctx) => {
     entityId:      commande.id,
     label:         `${(commande.totalAmount / 100).toFixed(2)} €`,
   })
+
+  // A manual order commits the member to picking it up/paying in person, so admins
+  // should know about it as soon as it's placed — not just once it's encaissé.
+  if (paymentMethod === "MANUAL") {
+    const admins = await prisma.user.findMany({
+      where:  { associationId: ctx.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"] }, active: true },
+      select: { id: true, email: true },
+    })
+    if (admins.length) {
+      const buyerLabel = commande.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : "Un membre"
+      await prisma.notification.createMany({
+        data: admins.map(a => ({
+          userId: a.id,
+          title:  "Nouvelle commande boutique",
+          body:   `${buyerLabel} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
+          link:   `/dashboard/boutique`,
+        })),
+        skipDuplicates: true,
+      })
+      await pusherServer.trigger(`private-association-${ctx.associationId}`, "new-notification", {}).catch(() => {})
+
+      const dashboardUrl = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/boutique`
+      for (const admin of admins) {
+        if (!admin.email) continue
+        // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
+        // .catch swallow — the whole point of this email is "the admin finds out", so a
+        // silent Resend failure here must stay diagnosable, not disappear.
+        sendEmail(boutiqueNewOrderAdminEmail({
+          email:           admin.email,
+          associationName: commande.association.name,
+          buyerLabel,
+          totalAmount:     commande.totalAmount,
+          dashboardUrl,
+        }), { associationId: ctx.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
+          .catch(err => console.error(`[boutique-admin-alert] failed to email admin ${admin.email} for commande ${commande.id}:`, err))
+      }
+    }
+  }
 
   return NextResponse.json(commande, { status: 201 })
 }, { module: "boutique" })

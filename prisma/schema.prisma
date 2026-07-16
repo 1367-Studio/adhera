@@ -114,6 +114,10 @@ enum BoutiqueCommandeStatus {
 enum BoutiquePaymentMethod {
   STRIPE
   MANUAL
+  ESPECES
+  CHEQUE
+  CB
+  VIREMENT
 }
 
 enum MeetingStatus {
@@ -727,35 +731,35 @@ enum EmailStatus {
 }
 
 model EmailMessage {
-  id            String      @id @default(cuid())
-  associationId String
-  membreId      String?
-  resendId      String?     @unique
-  to            String
-  subject       String
+  id             String      @id @default(cuid())
+  associationId  String
+  membreId       String?
+  resendId       String?     @unique
+  to             String
+  subject        String
   // Full rendered HTML, kept so the admin email log can show what was actually sent —
   // not reconstructible after the fact since templates are re-rendered with live data.
-  html          String?     @db.Text
+  html           String?     @db.Text
   // Attachments (e.g. Devis/Facture PDFs) aren't part of `html` and so never show up in
   // the admin preview — this flags that gap instead of letting the preview look complete.
-  hasAttachments Boolean    @default(false)
+  hasAttachments Boolean     @default(false)
   // "SONDAGE" | "AUTOMATION" | "BULK_MESSAGE" | "MEMBER_INVITE" | "MEETING_INVITE" |
   // "TRANSACTION" | "DOCUMENT" | "TEST" — kept as a String (not enum) so new sources
   // don't need a migration, matching the MessageTemplate.category convention.
-  source        String
-  sourceId      String?
-  status        EmailStatus @default(QUEUED)
-  errorMessage  String?
-  sentAt        DateTime?
-  deliveredAt   DateTime?
-  openedAt      DateTime?
-  clickedAt     DateTime?
-  bouncedAt     DateTime?
-  complainedAt  DateTime?
-  createdAt     DateTime    @default(now())
+  source         String
+  sourceId       String?
+  status         EmailStatus @default(QUEUED)
+  errorMessage   String?
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  openedAt       DateTime?
+  clickedAt      DateTime?
+  bouncedAt      DateTime?
+  complainedAt   DateTime?
+  createdAt      DateTime    @default(now())
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre      Membre?      @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)
 
   @@index([associationId, membreId, createdAt(sort: Desc)])
   @@index([source, sourceId])
@@ -779,6 +783,7 @@ model PasswordResetToken {
 model BoutiqueProduit {
   id            String                @id @default(cuid())
   associationId String
+  categoryId    String?
   name          String
   description   String?
   imageUrl      String?
@@ -787,6 +792,7 @@ model BoutiqueProduit {
   updatedAt     DateTime              @updatedAt
 
   association   Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  category      FinanceCategory?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   variantes     BoutiqueVariante[]
   commandeItems BoutiqueCommandeItem[]
 }
@@ -811,6 +817,14 @@ model BoutiqueCommande {
   guestEmail            String?
   status                BoutiqueCommandeStatus @default(PENDING)
   paymentMethod         BoutiquePaymentMethod  @default(MANUAL)
+  manualPaymentType     BoutiquePaymentMethod?
+  // Assigned once, the moment the commande first becomes PAID — never reassigned by the
+  // manualPaymentType correction flow, so a reçu already handed to a buyer keeps its number.
+  receiptNumber         String?
+  // Set once, the same moment as receiptNumber — kept separate from `updatedAt` because the
+  // manualPaymentType correction flow updates the row after payment and must not make an
+  // old sale look like it happened today (receipt PDF date, "Ventes récentes" ordering).
+  paidAt                DateTime?
   stripePaymentIntentId String?
   totalAmount           Int
   note                  String?
@@ -821,20 +835,26 @@ model BoutiqueCommande {
   membre      Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
   items       BoutiqueCommandeItem[]
 
+  @@unique([associationId, receiptNumber])
   @@index([associationId, status])
 }
 
 model BoutiqueCommandeItem {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   commandeId String
   produitId  String
   varianteId String
+  // Snapshot of BoutiqueProduit.categoryId taken when the item was ordered — recategorizing
+  // a product later must not retroactively change how an already-placed order gets booked
+  // to Finances once it's encaissé.
+  categoryId String?
   quantity   Int
   unitPrice  Int
 
   commande BoutiqueCommande @relation(fields: [commandeId], references: [id], onDelete: Cascade)
   produit  BoutiqueProduit  @relation(fields: [produitId], references: [id], onDelete: Restrict)
   variante BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Restrict)
+  category FinanceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 }
 
 // ─── Réunions ─────────────────────────────────────────────────────────────────
@@ -937,9 +957,11 @@ model FinanceCategory {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  incomes     Income[]
-  expenses    Expense[]
+  association           Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes               Income[]
+  expenses              Expense[]
+  boutiqueProduits      BoutiqueProduit[]
+  boutiqueCommandeItems BoutiqueCommandeItem[]
 
   @@index([associationId, type])
 }

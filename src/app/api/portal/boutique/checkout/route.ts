@@ -39,13 +39,13 @@ export const POST = withPortalAuth(async (req, ctx) => {
   const commande = await prisma.$transaction(async tx => {
     let totalAmount = 0
     const lineItems: Array<{
-      produitId: string; varianteId: string; quantity: number; unitPrice: number
+      produitId: string; varianteId: string; quantity: number; unitPrice: number; categoryId: string | null
     }> = []
 
     for (const item of items) {
       const variante = await tx.boutiqueVariante.findFirst({
         where:   { id: item.varianteId, produitId: item.produitId },
-        include: { produit: { select: { associationId: true, status: true } } },
+        include: { produit: { select: { associationId: true, status: true, categoryId: true } } },
       })
 
       if (!variante || variante.produit.associationId !== ctx.associationId)
@@ -61,7 +61,9 @@ export const POST = withPortalAuth(async (req, ctx) => {
       })
 
       totalAmount += variante.price * item.quantity
-      lineItems.push({ produitId: item.produitId, varianteId: item.varianteId, quantity: item.quantity, unitPrice: variante.price })
+      // Snapshot the product's category as of the order — recategorizing the product
+      // later shouldn't retroactively change how this order books to Finances.
+      lineItems.push({ produitId: item.produitId, varianteId: item.varianteId, quantity: item.quantity, unitPrice: variante.price, categoryId: variante.produit.categoryId })
     }
 
     return tx.boutiqueCommande.create({

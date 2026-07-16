@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { assertIncomeCategory } from "@/lib/validate-finance-category"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -19,6 +20,7 @@ const updateSchema = z.object({
   description: z.string().trim().max(2000).optional().nullable(),
   imageUrl:    z.string().url().optional().nullable(),
   status:      z.enum(["DRAFT", "ACTIVE", "ARCHIVED"]).optional(),
+  categoryId:  z.string().optional().nullable(),
   variantes:   z.array(varianteSchema).min(1).max(20).optional(),
 })
 
@@ -57,7 +59,12 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { name, description, imageUrl, status, variantes } = parsed.data
+  const { name, description, imageUrl, status, categoryId, variantes } = parsed.data
+
+  if (categoryId) {
+    const error = await assertIncomeCategory(ctx.associationId, categoryId)
+    if (error) return NextResponse.json({ error }, { status: 422 })
+  }
 
   const updated = await prisma.$transaction(async tx => {
     await tx.boutiqueProduit.update({
@@ -67,6 +74,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(description !== undefined ? { description: description ?? null } : {}),
         ...(imageUrl    !== undefined ? { imageUrl:    imageUrl    ?? null } : {}),
         ...(status      !== undefined ? { status }                         : {}),
+        ...(categoryId  !== undefined ? { categoryId:  categoryId ?? null } : {}),
       },
     })
 

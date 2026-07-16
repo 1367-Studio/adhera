@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon, PencilSimpleIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, MoneyIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon, PencilSimpleIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, MoneyIcon, FileArrowDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
@@ -18,22 +18,32 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { RowActions } from "@/components/ui/row-actions"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { SelectField } from "@/components/ui/select-field"
+import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import { cn } from "@/lib/utils"
+
+const MANUAL_PAYMENT_TYPE_OPTIONS = [
+  { value: "ESPECES",  label: "Espèces" },
+  { value: "CHEQUE",   label: "Chèque" },
+  { value: "CB",       label: "Carte bancaire" },
+  { value: "VIREMENT", label: "Virement" },
+]
 
 type VarianteRow = { _key: string; id?: string; label: string; price: number; stock: string }
 type Variante    = { id: string; label: string; price: number; stock: number }
 type Produit     = {
   id: string; name: string; description: string | null; imageUrl: string | null
-  status: "DRAFT" | "ACTIVE" | "ARCHIVED"; variantes: Variante[]
+  status: "DRAFT" | "ACTIVE" | "ARCHIVED"; categoryId: string | null; variantes: Variante[]
 }
 
 type CommandeItem = { id: string; quantity: number; unitPrice: number; produit: { id: string; name: string }; variante: { label: string } }
 type EditItem     = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
 type Commande = {
-  id:            string
-  status:        "PENDING" | "PAID" | "CANCELLED"
-  paymentMethod: "STRIPE" | "MANUAL"
-  totalAmount:   number
+  id:                string
+  status:            "PENDING" | "PAID" | "CANCELLED"
+  paymentMethod:     "STRIPE" | "MANUAL"
+  manualPaymentType: "ESPECES" | "CHEQUE" | "CB" | "VIREMENT" | null
+  totalAmount:       number
   createdAt:     string
   membre:        { firstName: string; lastName: string; email: string } | null
   items:         CommandeItem[]
@@ -64,11 +74,21 @@ export default function EditProduitPage() {
   const [payTarget, setPayTarget]       = useState<Commande | null>(null)
   const [stripePayTarget, setStripePayTarget] = useState<Commande | null>(null)
   const [editItems, setEditItems]       = useState<EditItem[]>([])
+  const [manualPaymentType, setManualPaymentType] = useState("")
+  const [correctTarget, setCorrectTarget] = useState<Commande | null>(null)
+  const [correctedType, setCorrectedType] = useState("")
   const [name, setName]             = useState("")
   const [description, setDescription] = useState("")
   const [imageUrl, setImageUrl]     = useState("")
   const [status, setStatus]         = useState<"DRAFT" | "ACTIVE" | "ARCHIVED">("DRAFT")
+  const [categoryId, setCategoryId] = useState("")
   const [variantes, setVariantes]   = useState<VarianteRow[]>([])
+
+  const { data: categories = [] } = useFinanceCategories("INCOME")
+  const categoryOptions = [
+    { value: "", label: "Aucune catégorie" },
+    ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
 
   const { data: produit, isLoading } = useQuery<Produit>({
     queryKey:  ["boutique-produit", id],
@@ -97,6 +117,7 @@ export default function EditProduitPage() {
     setDescription(produit.description ?? "")
     setImageUrl(produit.imageUrl ?? "")
     setStatus(produit.status)
+    setCategoryId(produit.categoryId ?? "")
     setVariantes(produit.variantes.map(toRow))
   }, [produit])
 
@@ -119,7 +140,8 @@ export default function EditProduitPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
           name: name.trim(), description: description.trim() || null,
-          imageUrl: imageUrl.trim() || null, status, variantes: parsedVariantes,
+          imageUrl: imageUrl.trim() || null, status, categoryId: categoryId || null,
+          variantes: parsedVariantes,
         }),
       })
       if (!res.ok) {
@@ -155,11 +177,11 @@ export default function EditProduitPage() {
   })
 
   const updateCommandeStatus = useMutation({
-    mutationFn: ({ commandeId, status, items }: { commandeId: string; status: string; items?: { id: string; quantity: number }[] }) =>
+    mutationFn: ({ commandeId, status, items, manualPaymentType }: { commandeId: string; status: string; items?: { id: string; quantity: number }[]; manualPaymentType?: string }) =>
       fetch(`/api/boutique/commandes/${commandeId}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ status, ...(items ? { items } : {}) }),
+        body:    JSON.stringify({ status, ...(items ? { items } : {}), ...(manualPaymentType ? { manualPaymentType } : {}) }),
       }).then(async r => {
         if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
         return r.json()
@@ -181,7 +203,27 @@ export default function EditProduitPage() {
       produitName:   i.produit.name,
       varianteLabel: i.variante.label,
     })))
+    setManualPaymentType("")
     setPayTarget(c)
+  }
+
+  function openCorrectModal(c: Commande) {
+    setCorrectedType(c.manualPaymentType ?? "")
+    setCorrectTarget(c)
+  }
+
+  async function handleCorrectPaymentType() {
+    if (!correctTarget || !correctedType) return
+    try {
+      await updateCommandeStatus.mutateAsync({
+        commandeId: correctTarget.id,
+        status:     "PAID",
+        manualPaymentType: correctedType,
+      })
+      setCorrectTarget(null)
+    } catch {
+      // onError already shows toast; keep modal open so user can retry
+    }
   }
 
   function adjustQty(itemId: string, delta: number) {
@@ -191,12 +233,13 @@ export default function EditProduitPage() {
   }
 
   async function handleEncaisser() {
-    if (!payTarget) return
+    if (!payTarget || !manualPaymentType) return
     try {
       await updateCommandeStatus.mutateAsync({
         commandeId: payTarget.id,
         status:     "PAID",
         items:      editItems.map(i => ({ id: i.id, quantity: i.qty })),
+        manualPaymentType,
       })
       setPayTarget(null)
     } catch { /* onError shows toast */ }
@@ -289,6 +332,15 @@ export default function EditProduitPage() {
         <RowActions
           actions={[
             { label: "Marquer payée", icon: <MoneyIcon className="size-3.5" />, onClick: () => openPayModal(c) },
+          ]}
+        />
+      ) : c.status === "PAID" ? (
+        <RowActions
+          actions={[
+            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`/api/boutique/commandes/${c.id}/pdf`, "_blank") },
+            ...(c.paymentMethod === "MANUAL" ? [
+              { label: "Modifier le moyen de paiement", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
+            ] : []),
           ]}
         />
       ) : null,
@@ -425,6 +477,14 @@ export default function EditProduitPage() {
                       ))}
                     </div>
                   </div>
+
+                  <SelectField
+                    label="Catégorie comptable"
+                    options={categoryOptions}
+                    value={categoryId}
+                    onValueChange={setCategoryId}
+                    placeholder="Aucune catégorie"
+                  />
                 </div>
 
                 {/* Right — variantes */}
@@ -515,7 +575,7 @@ export default function EditProduitPage() {
             footer={
               <>
                 <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
-                <Button loading={updateCommandeStatus.isPending} disabled={adjustedTotal === 0} onClick={handleEncaisser}>
+                <Button loading={updateCommandeStatus.isPending} disabled={adjustedTotal === 0 || !manualPaymentType} onClick={handleEncaisser}>
                   <MoneyIcon className="mr-1.5 size-4" />
                   Encaisser {fmt(adjustedTotal)}
                 </Button>
@@ -529,6 +589,13 @@ export default function EditProduitPage() {
                     Commande de <span className="font-medium text-foreground">{payTarget.membre.firstName} {payTarget.membre.lastName}</span>
                   </p>
                 )}
+                <SelectField
+                  label="Moyen de paiement"
+                  required
+                  options={MANUAL_PAYMENT_TYPE_OPTIONS}
+                  value={manualPaymentType}
+                  onValueChange={setManualPaymentType}
+                />
                 <div className="space-y-3">
                   {editItems.map(item => {
                     const notCollected = item.qty === 0
@@ -580,6 +647,39 @@ export default function EditProduitPage() {
           setStripePayTarget(null)
         }}
       />
+
+      {/* Correct manual payment type on an already-PAID order */}
+      <Modal
+        open={!!correctTarget}
+        onOpenChange={o => { if (!o) setCorrectTarget(null) }}
+        title="Modifier le moyen de paiement"
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setCorrectTarget(null)}>Annuler</Button>
+            <Button
+              loading={updateCommandeStatus.isPending}
+              disabled={!correctedType || correctedType === correctTarget?.manualPaymentType}
+              onClick={handleCorrectPaymentType}
+            >
+              Enregistrer
+            </Button>
+          </>
+        }
+      >
+        <div className="py-1">
+          <SelectField
+            label="Moyen de paiement"
+            required
+            options={MANUAL_PAYMENT_TYPE_OPTIONS}
+            value={correctedType}
+            onValueChange={setCorrectedType}
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Cela ne modifie pas le montant déjà comptabilisé dans Finances — corrigez-le là-bas si besoin.
+          </p>
+        </div>
+      </Modal>
     </div>
   )
 }
