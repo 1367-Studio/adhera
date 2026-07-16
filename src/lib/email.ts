@@ -36,9 +36,13 @@ function isLightColor(hex: string): boolean {
 // transparent-background logo visible against a plain white header.
 function layout(associationName: string, content: string, branding?: EmailBranding): string {
   const accent = branding?.primaryColor || "#000"
+  const nameEsc = escapeHtml(associationName)
   const headerInner = branding?.logoUrl
-    ? `<img src="${branding.logoUrl}" alt="${escapeHtml(associationName)}" height="32" style="display:block;max-height:32px;max-width:180px;width:auto;">`
-    : `<span style="color:#18181b;font-size:17px;font-weight:700;letter-spacing:-0.3px;">${associationName}</span>`
+    ? `<table cellpadding="0" cellspacing="0"><tr>
+        <td style="vertical-align:middle;"><img src="${branding.logoUrl}" alt="${nameEsc}" height="32" style="display:block;max-height:32px;max-width:180px;width:auto;"></td>
+        <td style="vertical-align:middle;padding-left:12px;"><span style="color:#3f3f46;font-size:14px;font-weight:600;">${nameEsc}</span></td>
+      </tr></table>`
+    : `<span style="color:#18181b;font-size:17px;font-weight:700;letter-spacing:-0.3px;">${nameEsc}</span>`
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
