@@ -11,8 +11,9 @@ import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-ed
 import { parseModules }     from "@/lib/modules"
 import { getPricingInfo }   from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
-import { CaretLeftIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
+import { BackLink } from "@/components/ui/back-link"
 import { APP_NAME } from "@/config/brand"
 
 const planLabel: Record<string, string> = { ESSENTIAL: "Essentiel", PRO: "Pro" }
@@ -90,16 +91,10 @@ export default async function AssociationDetailPage({ params }: { params: Promis
   const standardLimit = memberLimitForPlan(assoc.plan, pricing)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       <div>
-        <Link
-          href="/backoffice/associations"
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3"
-        >
-          <CaretLeftIcon className="size-3.5" />
-          Toutes les associations
-        </Link>
-        <div className="flex items-center justify-between gap-3 flex-wrap">
+        <BackLink href="/backoffice/associations">Toutes les associations</BackLink>
+        <div className="flex items-center justify-between gap-3 flex-wrap mt-2">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-semibold tracking-tight">{assoc.name}</h2>
             <Badge variant={sub.variant}>{sub.label}</Badge>

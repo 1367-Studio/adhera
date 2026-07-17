@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { ArrowLeftIcon, CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockwiseIcon, ClipboardTextIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon, ListIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockwiseIcon, ClipboardTextIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon, ListIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,6 +17,9 @@ import { SondageResultats } from "@/components/sondages/sondage-resultats"
 import { SondageRepondesIndividuelles } from "@/components/sondages/sondage-reponses-individuelles"
 import { SondageEmailStats } from "@/components/sondages/sondage-email-stats"
 import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
 
@@ -78,7 +81,6 @@ function toBuilderQuestions(qs: Sondage["questions"]): BuilderQuestion[] {
 
 export default function SondageDetailPage() {
   const { id }  = useParams<{ id: string }>()
-  const router  = useRouter()
   const qc      = useQueryClient()
 
   const [activeTab, setActiveTab] = useState("edit")
@@ -236,18 +238,17 @@ export default function SondageDetailPage() {
   })
 
   if (isLoading) {
-    return (
-      // py-4 matches the real header's spacing (line ~233) so the page doesn't jump
-      // down once the actual content replaces this skeleton.
-      <div className="space-y-4 py-4 animate-pulse">
-        <div className="h-8 w-64 bg-muted rounded" />
-        <div className="h-48 bg-muted rounded-xl" />
-      </div>
-    )
+    return <DetailLoadingSkeleton />
   }
 
   if (!sondage) {
-    return <p className="text-muted-foreground text-sm">Sondage introuvable.</p>
+    return (
+      <DetailNotFound
+        message="Ce sondage est introuvable ou a été supprimé."
+        backHref="/dashboard/sondages"
+        backLabel="Retour à la liste"
+      />
+    )
   }
 
   const editable         = sondage.status !== "FERME"
@@ -268,9 +269,7 @@ export default function SondageDetailPage() {
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 py-4">
-        <Button type="button" variant="ghost" size="icon" onClick={() => router.push("/dashboard/sondages")}>
-          <ArrowLeftIcon className="size-4" />
-        </Button>
+        <BackLink href="/dashboard/sondages" iconOnly>Sondages</BackLink>
         <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ClipboardTextIcon className="size-6 text-primary" />
         </div>

@@ -1,9 +1,8 @@
 import { notFound }    from "next/navigation"
-import Link            from "next/link"
 import type { Metadata } from "next"
 import { prisma }      from "@/lib/prisma/client"
 import { MembersTable } from "@/components/backoffice/members-table"
-import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { BackLink } from "@/components/ui/back-link"
 import { APP_NAME } from "@/config/brand"
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -37,16 +36,10 @@ export default async function AssociationMembersPage({ params }: { params: Promi
   })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-4">
       <div>
-        <Link
-          href={`/backoffice/associations/${id}`}
-          className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mb-3"
-        >
-          <CaretLeftIcon className="size-3.5" />
-          {assoc.name}
-        </Link>
-        <h2 className="text-xl font-semibold tracking-tight">Membres</h2>
+        <BackLink href={`/backoffice/associations/${id}`}>{assoc.name}</BackLink>
+        <h2 className="text-xl font-semibold tracking-tight mt-2">Membres</h2>
         <p className="text-sm text-muted-foreground">
           {membres.length} membre{membres.length !== 1 ? "s" : ""} · {membres.filter((m) => m.userId).length} avec compte
         </p>

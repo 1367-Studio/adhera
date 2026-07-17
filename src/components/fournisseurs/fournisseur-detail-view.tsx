@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
-  ArrowLeftIcon, PencilSimpleIcon, ArchiveIcon, FileTextIcon, ReceiptIcon,
+  PencilSimpleIcon, ArchiveIcon, FileTextIcon, ReceiptIcon,
   PaperclipIcon, EnvelopeSimpleIcon, PhoneIcon, MapPinIcon,
   GlobeIcon, TrashIcon, ArrowSquareOutIcon,
 } from "@phosphor-icons/react/dist/ssr";
@@ -27,6 +27,9 @@ import { FactureForm } from "@/components/factures/facture-form"
 import { FactureRecueForm } from "@/components/fournisseurs/facture-recue-form"
 import { RowActions } from "@/components/ui/row-actions"
 import { ActivityLogList, type ActivityLogEntry } from "@/components/ui/activity-log-list"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useModules } from "@/lib/user-context"
 
 const fournisseurStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
@@ -170,30 +173,25 @@ export function FournisseurDetailView() {
   }
 
   if (isLoading) {
-    return <p className="py-12 text-center text-sm text-muted-foreground">Chargement…</p>
+    return <DetailLoadingSkeleton />
   }
 
   if (isError || !fournisseur) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <p className="text-sm text-muted-foreground">Ce fournisseur est introuvable ou a été supprimé.</p>
-        <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/fournisseurs")}>
-          <ArrowLeftIcon className="mr-1.5 size-4" />
-          Retour à la liste
-        </Button>
-      </div>
+      <DetailNotFound
+        message="Ce fournisseur est introuvable ou a été supprimé."
+        backHref="/dashboard/fournisseurs"
+        backLabel="Retour à la liste"
+      />
     )
   }
 
   const statusInfo = fournisseurStatusBadge[fournisseur.status]
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-4">
       <div className="space-y-3">
-        <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard/fournisseurs")}>
-          <ArrowLeftIcon className="mr-1.5 size-4" />
-          Fournisseurs
-        </Button>
+        <BackLink href="/dashboard/fournisseurs">Fournisseurs</BackLink>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">

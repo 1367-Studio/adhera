@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon, PencilSimpleIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, MoneyIcon, FileArrowDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, TrashIcon, ShoppingBagIcon, PencilSimpleIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, MoneyIcon, FileArrowDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
@@ -20,6 +20,9 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SelectField } from "@/components/ui/select-field"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
@@ -68,7 +71,6 @@ function newRow(): VarianteRow {
 
 export default function EditProduitPage() {
   const { id }  = useParams<{ id: string }>()
-  const router  = useRouter()
   const qc      = useQueryClient()
 
   const [activeTab, setActiveTab]       = useState("edit")
@@ -257,24 +259,16 @@ export default function EditProduitPage() {
   }
 
   if (isLoading) {
-    return (
-      // py-4 matches the real header's spacing (line ~299) so the page doesn't jump
-      // down once the actual content replaces this skeleton.
-      <div className="space-y-4 py-4 animate-pulse">
-        <div className="h-8 w-64 bg-muted rounded" />
-        <div className="h-96 bg-muted rounded-xl" />
-      </div>
-    )
+    return <DetailLoadingSkeleton />
   }
 
   if (!produit) {
     return (
-      <div className="space-y-3">
-        <p className="text-muted-foreground text-sm">Produit introuvable.</p>
-        <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/boutique")}>
-          <ArrowLeftIcon className="mr-1.5 size-4" />Retour
-        </Button>
-      </div>
+      <DetailNotFound
+        message="Ce produit est introuvable ou a été supprimé."
+        backHref="/dashboard/boutique"
+        backLabel="Retour à la liste"
+      />
     )
   }
 
@@ -352,9 +346,7 @@ export default function EditProduitPage() {
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 py-4">
-        <Button type="button" variant="ghost" size="icon" onClick={() => router.push("/dashboard/boutique")}>
-          <ArrowLeftIcon className="size-4" />
-        </Button>
+        <BackLink href="/dashboard/boutique" iconOnly>Boutique</BackLink>
         <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
