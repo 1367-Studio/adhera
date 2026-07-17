@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, getPricingInfo } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
+import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
+import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
+import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
@@ -35,20 +38,12 @@ export async function POST(req: Request) {
 
       if (commandeId) {
         const paidAt = new Date()
-        // Atomic conditional update: only the first of any concurrent/duplicate webhook
-        // deliveries for this commande will match and flip the status, preventing a
-        // duplicate Income row from a race between two "PAID" transitions.
-        const { count: commandeClaimed } = await prisma.boutiqueCommande.updateMany({
-          where: { id: commandeId, status: "PENDING" },
-          data:  { status: "PAID" },
-        })
-        if (commandeClaimed === 0) break
 
         const commande = await prisma.boutiqueCommande.findUnique({
           where:   { id: commandeId },
           include: {
             membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
-            association: { select: { id: true, name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+            association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
             items:       {
               include: {
                 produit:  { select: { name: true } },
@@ -57,45 +52,136 @@ export async function POST(req: Request) {
             },
           },
         })
-        if (commande) {
-          await prisma.income.create({
-            data: {
-              associationId: commande.associationId,
-              memberId:      commande.membreId ?? undefined,
-              amount:        commande.totalAmount / 100,
-              description:   commande.membre ? `Vente boutique — ${commande.membre.firstName} ${commande.membre.lastName}` : "Vente boutique",
-              paymentMethod: "STRIPE",
-              source:        "STRIPE",
-              status:        "PAID",
-              date:          paidAt,
-              reference:     paymentIntentId,
-            },
-          })
 
-          // Email confirmation to member
+        let claimed = false
+        let receiptNumber = ""
+        const buyerLabel = commande?.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
+
+        if (commande && commande.status === "PENDING") {
+          // One Income row per accounting category — a mixed-category order posts
+          // several partial rows instead of forcing one row into a single category. Grouped
+          // by the category snapshot taken when the item was ordered, not the product's
+          // current category, so recategorizing a product doesn't retroactively change how
+          // an already-placed order books once it's encaissé.
+          const byCategory = new Map<string | null, { amount: number; names: Set<string> }>()
+          for (const item of commande.items) {
+            const key   = item.categoryId
+            const group = byCategory.get(key) ?? { amount: 0, names: new Set<string>() }
+            group.amount += item.unitPrice * item.quantity
+            group.names.add(item.produit.name)
+            byCategory.set(key, group)
+          }
+
+          // Claim (PENDING → PAID), receipt numbering, and Income booking all happen inside
+          // one interactive transaction so a receiptNumber collision — or any other failure —
+          // rolls the status flip back too. Without this, a failure after an unprotected
+          // claim left the commande stuck as PAID with no Income row, no receiptNumber, and
+          // no way to recover on webhook redelivery (the claim would just see status !=
+          // PENDING and skip everything again). Retried up to 5x on unique-constraint
+          // collision, same pattern as the Devis/Facture numbering call sites.
+          for (let attempt = 0; attempt < 5; attempt++) {
+            const candidateNumber = await nextBoutiqueReceiptNumber(commande.associationId)
+            try {
+              claimed = await prisma.$transaction(async tx => {
+                // Atomic conditional update: only the first of any concurrent/duplicate
+                // webhook deliveries for this commande will match and flip the status,
+                // preventing a duplicate Income row from a race between two "PAID" transitions.
+                const { count } = await tx.boutiqueCommande.updateMany({
+                  where: { id: commandeId, status: "PENDING" },
+                  data:  { status: "PAID", receiptNumber: candidateNumber, paidAt },
+                })
+                if (count === 0) return false
+
+                for (const [categoryId, group] of byCategory) {
+                  const itemsLabel = [...group.names].join(", ")
+                  await tx.income.create({
+                    data: {
+                      associationId: commande.associationId,
+                      memberId:      commande.membreId ?? undefined,
+                      amount:        group.amount / 100,
+                      categoryId:    categoryId ?? undefined,
+                      description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,
+                      paymentMethod: "STRIPE",
+                      source:        "STRIPE",
+                      status:        "PAID",
+                      date:          paidAt,
+                      reference:     paymentIntentId,
+                    },
+                  })
+                }
+                return true
+              })
+              receiptNumber = candidateNumber
+              break
+            } catch (err) {
+              if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002" && attempt < 4) continue
+              throw err
+            }
+          }
+        }
+
+        if (commande && claimed) {
+          // Email confirmation to member, with the receipt PDF attached when it builds cleanly
           const memberEmail = commande.membre?.user?.email
           if (memberEmail && commande.membre) {
             const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${commande.association.slug}/boutique/commandes`
-            sendEmail(boutiqueConfirmationEmail({
-              firstName:       commande.membre.firstName,
-              email:           memberEmail,
-              associationName: commande.association.name,
-              totalAmount:     commande.totalAmount,
-              paidAt,
-              items: commande.items.map(i => ({
-                name:      `${i.produit.name} – ${i.variante.label}`,
-                quantity:  i.quantity,
-                unitPrice: i.unitPrice,
-              })),
-              portalUrl,
-              branding: resolveDocumentBranding(commande.association),
-            }), { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id }).catch(() => {})
+
+            let pdfAttachment: { filename: string; content: Buffer } | undefined
+            try {
+              const pdf = await buildDocumentPdf({
+                kind:           "BOUTIQUE",
+                number:         receiptNumber,
+                issueDate:      commande.createdAt,
+                secondaryLabel: "Payé le",
+                secondaryDate:  paidAt,
+                association: { ...commande.association, ...resolveDocumentBranding(commande.association) },
+                fournisseur: {
+                  companyName: buyerLabel ?? `${commande.membre.firstName} ${commande.membre.lastName}`,
+                  address: null, city: null, postalCode: null, siret: null, vatNumber: null,
+                },
+                items: commande.items.map(i => ({
+                  description: `${i.produit.name} – ${i.variante.label}`,
+                  quantity:    i.quantity,
+                  unitPrice:   i.unitPrice / 100,
+                  vatRate:     0,
+                  discount:    0,
+                })),
+                subtotal:       commande.totalAmount / 100,
+                vatAmount:      0,
+                discountAmount: 0,
+                total:          commande.totalAmount / 100,
+                amountPaid:     commande.totalAmount / 100,
+                notes:          commande.note,
+                paymentTerms:   "Payé par carte bancaire (en ligne).",
+              })
+              pdfAttachment = { filename: `recu-${receiptNumber}.pdf`, content: pdf }
+            } catch (err) {
+              console.error(`[boutique-pdf] failed to generate for commande ${commande.id}:`, err)
+            }
+
+            sendEmail({
+              ...boutiqueConfirmationEmail({
+                firstName:       commande.membre.firstName,
+                email:           memberEmail,
+                associationName: commande.association.name,
+                totalAmount:     commande.totalAmount,
+                paidAt,
+                items: commande.items.map(i => ({
+                  name:      `${i.produit.name} – ${i.variante.label}`,
+                  quantity:  i.quantity,
+                  unitPrice: i.unitPrice,
+                })),
+                portalUrl,
+                branding: resolveDocumentBranding(commande.association),
+              }),
+              attachments: pdfAttachment ? [pdfAttachment] : undefined,
+            }, { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id }).catch(() => {})
           }
 
-          // Push notification to association admins
+          // Push notification + email to association admins
           const admins = await prisma.user.findMany({
             where:  { associationId: commande.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"] }, active: true },
-            select: { id: true },
+            select: { id: true, email: true },
           })
           if (admins.length) {
             const memberName = commande.membre?.firstName ?? "Un membre"
@@ -109,6 +195,22 @@ export async function POST(req: Request) {
               skipDuplicates: true,
             })
             await pusherServer.trigger(`private-association-${commande.associationId}`, "new-notification", {}).catch(() => {})
+
+            const dashboardUrl = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/boutique`
+            for (const admin of admins) {
+              if (!admin.email) continue
+              // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
+              // .catch swallow — the whole point of this email is "the admin finds out", so
+              // a silent Resend failure here must stay diagnosable, not disappear.
+              sendEmail(boutiqueNewOrderAdminEmail({
+                email:           admin.email,
+                associationName: commande.association.name,
+                buyerLabel:      commande.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : "Un invité",
+                totalAmount:     commande.totalAmount,
+                dashboardUrl,
+              }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
+                .catch(err => console.error(`[boutique-admin-alert] failed to email admin ${admin.email} for commande ${commande.id}:`, err))
+            }
           }
         }
       } else if (cotisationId) {

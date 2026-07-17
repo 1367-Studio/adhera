@@ -6,13 +6,14 @@ import { useEffect, useState, Suspense } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ArrowLeftIcon, ShoppingBagIcon, PackageIcon, PencilSimpleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, ShoppingBagIcon, PackageIcon, PencilSimpleIcon, XIcon, FileArrowDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
 
 type CommandeItem = {
   id:        string
@@ -188,6 +189,19 @@ function MesCommandesPageInner() {
 
               {c.note && (
                 <p className="text-xs text-muted-foreground italic border-t pt-2">Note : {c.note}</p>
+              )}
+
+              {c.status === "PAID" && (
+                <div className="border-t pt-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => window.open(`${BASE_PATH}/api/portal/boutique/commandes/${c.id}/pdf`, "_blank")}
+                  >
+                    <FileArrowDownIcon className="mr-1.5 size-3.5" />
+                    Télécharger le reçu
+                  </Button>
+                </div>
               )}
 
               {c.status === "PENDING" && (

@@ -94,6 +94,7 @@ function CardList<T>({
       {data.map((row) => (
         <div
           key={keyExtractor(row)}
+          data-row-id={keyExtractor(row)}
           className={cn(
             "rounded-lg border bg-card p-4 space-y-3",
             isClickable && "cursor-pointer active:bg-accent/60 transition-colors"
@@ -225,6 +226,7 @@ export function DataTable<T>({
             {data.map((row) => (
               <TableRow
                 key={keyExtractor(row)}
+                data-row-id={keyExtractor(row)}
                 className={cn(onRowClick && "cursor-pointer")}
                 onClick={() => onRowClick?.(row)}
               >

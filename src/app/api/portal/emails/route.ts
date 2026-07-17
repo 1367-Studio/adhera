@@ -20,8 +20,14 @@ export const GET = withPortalAuth(async (req, ctx) => {
       skip:    (page - 1) * pageSize,
       take:    pageSize,
       // errorMessage is internal debugging detail (bounce/SMTP diagnostics) — not shown
-      // to the member, just enough to know whether something went wrong.
-      select: { id: true, subject: true, source: true, status: true, sentAt: true, openedAt: true, createdAt: true },
+      // to the member, just enough to know whether something went wrong. html excluded
+      // here on purpose too — fetched on demand by emails/[emailId]/route.ts when a row
+      // opens, same reasoning as the admin's membre-email-log.
+      select: {
+        id: true, subject: true, source: true, status: true,
+        sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, complainedAt: true, createdAt: true,
+        hasAttachments: true,
+      },
     }),
     prisma.emailMessage.count({ where }),
   ])

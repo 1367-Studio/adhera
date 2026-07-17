@@ -4,24 +4,11 @@ import { useMemo, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import DOMPurify from "isomorphic-dompurify"
 import { EnvelopeSimpleIcon, CircleNotchIcon, WarningCircleIcon, ArrowsClockwiseIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-// Strips navigation/interactivity from the stored email HTML before it's rendered in the
-// preview iframe — a CSS-only mitigation (pointer-events) can be beaten by an inline
-// `style="pointer-events:auto!important"` in the stored HTML, or silently never applied if
-// malformed markup (e.g. an unclosed <textarea>) swallows an appended <style> tag as text.
-// Sandbox="" on the iframe is defense in depth on top of this, not a substitute for it.
-function sanitizeEmailPreviewHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    WHOLE_DOCUMENT: true,
-    FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "input", "button", "textarea", "base"],
-    FORBID_ATTR: ["href", "target", "action", "formaction", "http-equiv"],
-  })
-}
+import { sanitizeEmailPreviewHtml } from "@/lib/sanitize-email-preview"
 
 type EmailStatus = "QUEUED" | "SENT" | "DELIVERED" | "OPENED" | "CLICKED" | "BOUNCED" | "COMPLAINED" | "DELAYED" | "FAILED"
 
@@ -108,7 +95,7 @@ function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
 
   const sanitizedHtml = useMemo(
     () => (content?.html ? sanitizeEmailPreviewHtml(content.html) : null),
-    [content?.html],
+    [content],
   )
 
   return (

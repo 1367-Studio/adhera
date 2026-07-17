@@ -676,3 +676,25 @@ export function boutiqueConfirmationEmail(p: {
     html:    layout(p.associationName, content, p.branding),
   }
 }
+
+export function boutiqueNewOrderAdminEmail(p: {
+  email:           string
+  associationName: string
+  buyerLabel:      string
+  totalAmount:     number
+  dashboardUrl:    string
+}) {
+  const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle vente boutique</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      <strong>${p.buyerLabel}</strong> vient de passer une commande de <strong>${totalStr}</strong>
+      sur la boutique de <strong>${p.associationName}</strong>.
+    </p>
+    ${btn("Voir la commande", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `Nouvelle vente boutique — ${totalStr}`,
+    html:    layout(APP_NAME, content),
+  }
+}
