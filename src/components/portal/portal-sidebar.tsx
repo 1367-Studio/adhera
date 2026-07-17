@@ -50,7 +50,7 @@ export function PortalSidebar({ slug }: { slug: string }) {
               className="hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground"
             >
               <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
-              <div className="flex flex-col gap-0.5 leading-none min-w-0">
+              <div className="flex flex-col gap-0.5 leading-none min-w-0 ml-1">
                 <span className="font-semibold truncate">{branding?.name ?? APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">Mon espace</span>
               </div>
