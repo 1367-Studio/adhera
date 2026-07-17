@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
 
@@ -43,6 +44,20 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     },
     select: { smsAccountSid: true, smsAuthToken: true, smsPhoneNumber: true },
   })
+
+  // Field names only, never the values — smsAuthToken/smsAccountSid are credentials and
+  // must never land in a log any manager on the association can read.
+  const fieldsChanged = [
+    smsAccountSid  !== undefined && "smsAccountSid",
+    smsAuthToken   !== undefined && "smsAuthToken",
+    smsPhoneNumber !== undefined && "smsPhoneNumber",
+  ].filter(Boolean)
+  if (fieldsChanged.length > 0) {
+    await writeActivityLog({
+      associationId: ctx.associationId, actorId: ctx.userId, action: "SMS_SETTINGS_UPDATED",
+      entity: "Association", entityId: ctx.associationId, metadata: { fieldsChanged },
+    })
+  }
 
   return NextResponse.json({
     ok:            true,

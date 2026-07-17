@@ -5,6 +5,7 @@ import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const schema = z.object({
   firstName:     z.string().min(1).max(80),
@@ -78,7 +79,7 @@ export async function POST(
     throw err
   }
 
-  await prisma.membre.create({
+  const membre = await prisma.membre.create({
     data: {
       firstName,
       lastName,
@@ -91,6 +92,11 @@ export async function POST(
       termsVersion:    CURRENT_TERMS_VERSION,
       termsAcceptedIp: acceptedIp,
     },
+  })
+
+  await writeActivityLog({
+    associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED",
+    entity: "Membre", entityId: membre.id, label: `${firstName} ${lastName}`,
   })
 
   return NextResponse.json({ ok: true }, { status: 201 })

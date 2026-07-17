@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, makeAiClient } from "@/lib/ai/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
 
@@ -81,6 +82,20 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
       ...(aiApiKey !== undefined ? { aiApiKey: aiApiKey ?? null } : {}),
     },
   })
+
+  // aiModel/aiProvider aren't secret, so their new values are logged directly — aiApiKey
+  // is, so only whether it was touched is recorded, never the key itself.
+  const aiChanges = {
+    ...(aiProvider !== undefined ? { aiProvider } : {}),
+    ...(aiModel    !== undefined ? { aiModel }    : {}),
+    ...(aiApiKey   !== undefined ? { aiApiKeyChanged: true } : {}),
+  }
+  if (Object.keys(aiChanges).length > 0) {
+    await writeActivityLog({
+      associationId: ctx.associationId, actorId: ctx.userId, action: "AI_CONFIG_UPDATED",
+      entity: "Association", entityId: ctx.associationId, metadata: aiChanges,
+    })
+  }
 
   return NextResponse.json({ ok: true })
 })

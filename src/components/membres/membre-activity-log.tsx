@@ -3,7 +3,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -28,12 +28,14 @@ type PageResult = {
 const FIELD_LABELS: Record<string, string> = {
   firstName: "Prénom",
   lastName:  "Nom",
+  name:      "Nom",
   email:     "Email",
   phone:     "Téléphone",
   address:   "Adresse",
   birthDate: "Date de naissance",
   status:    "Statut",
   typeId:    "Type",
+  role:      "Rôle",
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -43,12 +45,22 @@ const STATUS_LABELS: Record<string, string> = {
   SUSPENDU: "Suspendu",
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "Admin", PRESIDENT: "Président", TRESORIER: "Trésorier",
+  SECRETAIRE: "Secrétaire", MEMBRE: "Membre",
+}
+
 const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
   MEMBRE_CREATED:           { label: "Membre ajouté",          icon: <UserPlusIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
   MEMBRE_UPDATED:           { label: "Informations modifiées", icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
   PROFIL_UPDATED:           { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  PROFILE_UPDATED:          { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+  MEMBRE_ROLE_CHANGED:      { label: "Rôle modifié",           icon: <ShieldIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"                },
+  PASSWORD_CHANGED:         { label: "Mot de passe modifié",   icon: <LockIcon     className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
+  PASSWORD_RESET:           { label: "Mot de passe réinitialisé", icon: <LockIcon  className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
   MEMBRE_DELETED:           { label: "Membre archivé",         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscription portail",    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
+  MEMBRE_INSCRIPTION_REQUESTED: { label: "Demande d'adhésion (site)", icon: <GlobeIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
   COTISATION_CREATED:  { label: "Cotisation ajoutée",   icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
   COTISATION_UPDATED:  { label: "Cotisation modifiée",  icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
   COTISATION_DELETED:  { label: "Cotisation supprimée", icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"                     },
@@ -67,6 +79,7 @@ const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; colo
 function formatFieldValue(field: string, value: string | null): string {
   if (value === null || value === "") return "—"
   if (field === "status") return STATUS_LABELS[value] ?? value
+  if (field === "role")   return ROLE_LABELS[value] ?? value
   return value
 }
 
@@ -168,7 +181,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
                     <p className="text-xs text-muted-foreground mt-0.5">par {log.actorName}</p>
                   )}
 
-                  {(log.action === "MEMBRE_UPDATED" || log.action === "PROFIL_UPDATED") && log.metadata?.changes && (
+                  {["MEMBRE_UPDATED", "PROFIL_UPDATED", "PROFILE_UPDATED", "MEMBRE_ROLE_CHANGED"].includes(log.action) && log.metadata?.changes && (
                     <ChangeDiff changes={log.metadata.changes} />
                   )}
                 </div>

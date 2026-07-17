@@ -9,6 +9,7 @@ import { sendEmail } from "@/lib/mail"
 import { adminWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -78,7 +79,7 @@ export async function POST(req: Request) {
     const passwordHash = await bcrypt.hash(password, 12)
     const trialEndsAt  = new Date(Date.now() + TRIAL_DAYS * 86_400_000)
 
-    await prisma.$transaction(async (tx) => {
+    const { association, user } = await prisma.$transaction(async (tx) => {
       const association = await tx.association.create({
         data: {
           name:                associationName,
@@ -113,6 +114,13 @@ export async function POST(req: Request) {
           userId:        user.id,
         },
       })
+      return { association, user }
+    })
+
+    await writeActivityLog({
+      associationId: association.id, actorId: user.id, action: "ASSOCIATION_REGISTERED",
+      entity: "Association", entityId: association.id, label: associationName,
+      metadata: { tier, billingInterval: plan },
     })
 
     const loginUrl = `${APP_URL}/login`

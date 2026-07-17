@@ -2,6 +2,7 @@ import { NextResponse }  from "next/server"
 import { prisma }        from "@/lib/prisma/client"
 import { z }             from "zod"
 import { withSuperAdminAuth } from "@/lib/api-wrapper"
+import { writeActivityLog, computeAssociationDiff } from "@/lib/activity-log"
 
 const patchSchema = z.object({
   internalNotes: z.string().optional(),
@@ -32,7 +33,7 @@ const patchSchema = z.object({
   }).optional(),
 })
 
-export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, _ctx, { id }) => {
+export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const body   = await req.json()
   const parsed = patchSchema.safeParse(body)
   if (!parsed.success) {
@@ -53,12 +54,24 @@ export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, _ctx, { id }
   try {
     const existing = await prisma.association.findUnique({
       where:  { id },
-      select: { deletedAt: true },
+      select: { name: true, deletedAt: true, internalNotes: true, customMemberLimit: true, customBrandingEnabled: true, modules: true },
     })
     if (!existing || existing.deletedAt !== null) {
       return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
     }
-    await prisma.association.update({ where: { id }, data: update })
+    const updated = await prisma.association.update({ where: { id }, data: update })
+
+    const changes = computeAssociationDiff(
+      existing as unknown as Record<string, unknown>,
+      updated  as unknown as Record<string, unknown>,
+    )
+    if (Object.keys(changes).length > 0) {
+      await writeActivityLog({
+        associationId: id, actorId: ctx.userId, action: "ASSOCIATION_UPDATED",
+        entity: "Association", entityId: id, label: existing.name, metadata: { changes },
+      })
+    }
+
     return NextResponse.json({ ok: true })
   } catch {
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 })

@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/mail"
 import { checkInReceiptEmail } from "@/lib/email"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { writeActivityLog } from "@/lib/activity-log"
 
 export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
   const { associationId, membreId } = ctx
@@ -102,6 +103,17 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
   }
 
   await prisma.participation.updateMany({ where: groupWhere, data: { present: true } })
+
+  if (!wasAlreadyPresent) {
+    // Mirrors the admin manual toggle's PRESENCE_MARKED (evenements/[id]/participations/
+    // route.ts) — self check-in via QR is the other path that flips `present`, and it was
+    // the one path with no trace of who checked in or when.
+    await writeActivityLog({
+      associationId, actorId: ctx.userId, action: "PRESENCE_MARKED",
+      entity: "Participation", entityId: existing.id, label: evenement.title,
+      metadata: { present: true, memberName: membre.firstName, via: "qr_self_checkin" },
+    })
+  }
 
   pusherServer.trigger(`event-${evenement.id}`, "check-in", { membreId: membre.id }).catch(() => {})
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
@@ -34,6 +35,13 @@ export async function POST(req: Request) {
     prisma.user.update({ where: { id: user.id }, data: { passwordHash } }),
     prisma.passwordResetToken.delete({ where: { token } }),
   ])
+
+  if (user.associationId) {
+    await writeActivityLog({
+      associationId: user.associationId, actorId: user.id, action: "PASSWORD_RESET",
+      entity: "User", entityId: user.id, label: user.name ?? user.email,
+    })
+  }
 
   return NextResponse.json({ ok: true })
 }

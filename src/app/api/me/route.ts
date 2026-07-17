@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
+import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -51,6 +52,8 @@ export async function PATCH(req: Request) {
       }
     }
 
+    const before = await prisma.user.findUnique({ where: { id: u.id! }, select: { name: true, email: true } })
+
     const user = await prisma.$transaction(async (tx) => {
       const updated = await tx.user.update({
         where: { id: u.id! },
@@ -66,6 +69,20 @@ export async function PATCH(req: Request) {
 
       return updated
     })
+
+    // Self-service edit — the only path where User.name/email can drift from the linked
+    // Membre's own firstName/lastName/email without an admin-side MEMBRE_UPDATED log, so
+    // this is the one place that trail would otherwise be invisible.
+    if (u.associationId && before) {
+      const changes = computeDiff(before, user, ["name", "email"])
+      if (Object.keys(changes).length > 0) {
+        await writeActivityLog({
+          associationId: u.associationId, actorId: u.id!, action: "PROFILE_UPDATED",
+          entity: "User", entityId: u.id!, label: user.name ?? user.email, metadata: { changes },
+        })
+      }
+    }
+
     return NextResponse.json(user)
   }
 
@@ -88,6 +105,14 @@ export async function PATCH(req: Request) {
 
     const hash = await bcrypt.hash(newPassword, 12)
     await prisma.user.update({ where: { id: u.id! }, data: { passwordHash: hash } })
+
+    if (u.associationId) {
+      await writeActivityLog({
+        associationId: u.associationId, actorId: u.id!, action: "PASSWORD_CHANGED",
+        entity: "User", entityId: u.id!, label: user.name ?? user.email,
+      })
+    }
+
     return NextResponse.json({ ok: true })
   }
 

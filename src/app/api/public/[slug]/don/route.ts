@@ -6,6 +6,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
+import { writeActivityLog } from "@/lib/activity-log"
 
 export async function GET(
   _req: Request,
@@ -118,6 +119,11 @@ export async function POST(
       message:   message || null,
       anonymous,
     },
+  })
+
+  await writeActivityLog({
+    associationId: assoc.id, action: "DON_CREATED", entity: "Don", entityId: don.id,
+    label: `${firstName} ${lastName} — ${amount}€`,
   })
 
   const amountCents    = Math.round(amount * 100)

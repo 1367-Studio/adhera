@@ -4,6 +4,7 @@ import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { writeActivityLog } from "@/lib/activity-log"
 
 export const GET = withPortalAuth(async (_req, ctx) => {
   const [assoc, membre] = await Promise.all([
@@ -90,6 +91,11 @@ export const POST = withPortalAuth(async (req, ctx) => {
       message:       message || null,
       anonymous,
     },
+  })
+
+  await writeActivityLog({
+    associationId: assoc.id, actorId: ctx.userId, action: "DON_CREATED", entity: "Don", entityId: don.id,
+    label: `${membre.firstName} ${membre.lastName} — ${amount}€`,
   })
 
   const amountCents    = Math.round(amount * 100)

@@ -48,9 +48,14 @@ type LogsResponse = {
 // ─── Config ─────────────────────────────────────────────────────────────────
 
 const FIELD_LABELS: Record<string, string> = {
-  firstName: "Prénom", lastName: "Nom", email: "Email",
+  firstName: "Prénom", lastName: "Nom", name: "Nom", email: "Email",
   phone: "Téléphone", address: "Adresse", birthDate: "Date de naissance",
-  status: "Statut", typeId: "Type",
+  status: "Statut", typeId: "Type", role: "Rôle",
+}
+
+const ROLE_LABELS: Record<string, string> = {
+  ADMIN: "Admin", PRESIDENT: "Président", TRESORIER: "Trésorier",
+  SECRETAIRE: "Secrétaire", MEMBRE: "Membre",
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -122,9 +127,13 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   MEMBRE_UPDATED:           { label: "Membre modifié",      color: BLUE_L },
   MEMBRE_DELETED:           { label: "Membre archivé",      color: DEL    },
   MEMBRE_PORTAL_REGISTERED: { label: "Inscrit (portail)",   color: SKY    },
+  MEMBRE_INSCRIPTION_REQUESTED: { label: "Demande d'adhésion (site)", color: SKY },
   MEMBRE_ROLE_CHANGED:      { label: "Rôle modifié",        color: BLUE   },
   MEMBRE_ACCESS_CREATED:    { label: "Accès créé",          color: BLUE_L },
   PROFIL_UPDATED:           { label: "Profil modifié",      color: BLUE_L },
+  PROFILE_UPDATED:          { label: "Profil modifié",      color: BLUE_L },
+  PASSWORD_CHANGED:         { label: "Mot de passe modifié", color: SLA   },
+  PASSWORD_RESET:           { label: "Mot de passe réinitialisé", color: SLA },
   EMAIL_SENT_BULK:          { label: "E-mail envoyé",       color: AMB_L  },
   SMS_SENT_BULK:            { label: "SMS envoyé",          color: AMB_L  },
   // Actualités (amber)
@@ -143,6 +152,8 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   TICKET_PAID:              { label: "Ticket payé",         color: EME    },
   TICKET_PAYMENT_CANCELLED: { label: "Paiement annulé",     color: DEL    },
   TICKET_REFUNDED:          { label: "Ticket remboursé",    color: DEL    },
+  EVENEMENT_QR_GENERATED:   { label: "QR check-in généré",  color: VIO    },
+  EVENEMENT_QR_REVOKED:     { label: "QR check-in révoqué", color: SLA_L  },
   // Cotisations (emerald)
   COTISATION_CREATED:       { label: "Cotisation créée",    color: EME    },
   COTISATION_UPDATED:       { label: "Cotisation modifiée", color: EME_L  },
@@ -221,22 +232,27 @@ const ACTION_CONFIG: Record<string, { label: string; color: string }> = {
   BOUTIQUE_COMMANDE_UPDATED: { label: "Commande mise à jour",   color: PINK_L },
   COMMANDE_REFUNDED:         { label: "Commande remboursée",    color: DEL    },
   // Dons (teal)
+  DON_CREATED:               { label: "Don créé",            color: AMB_L  },
   DON_PAID:                 { label: "Don reçu",             color: TEAL   },
   DON_REFUNDED:              { label: "Don remboursé",       color: DEL    },
   // Cotisation Stripe
   COTISATION_PAID:          { label: "Cotisation payée (Stripe)", color: EME },
   // Association / Site (rose)
+  ASSOCIATION_REGISTERED:   { label: "Association créée",    color: ROSE   },
   ASSOCIATION_UPDATED:      { label: "Paramètres modifiés",  color: ROSE   },
   SITE_UPDATED:             { label: "Site web modifié",     color: ROSE   },
   SITE_PUBLISHED:           { label: "Site web publié",      color: EME    },
   SITE_UNPUBLISHED:         { label: "Site web dépublié",    color: SLA    },
   SMS_SETTINGS_UPDATED:     { label: "SMS — paramètres",     color: ROSE   },
+  AI_CONFIG_UPDATED:        { label: "IA — paramètres",      color: ROSE   },
+  LIVEKIT_CONFIG_UPDATED:   { label: "Visio — paramètres",   color: ROSE   },
   // Tickets expirés
   TICKET_CHECKOUT_EXPIRED:  { label: "Paiement expiré",      color: DEL    },
 }
 
 const ENTITY_LABELS: Record<string, string> = {
   Membre:          "Membres",
+  User:            "Comptes",
   Actualite:       "Actualités",
   Evenement:       "Événements",
   Participation:   "Présences / RSVP",
@@ -272,6 +288,7 @@ const GENERIC_FIELD_LABELS: Record<string, Record<string, string>> = {
 
 const ENTITY_OPTIONS = [
   { value: "Membre",          label: "Membres"          },
+  { value: "User",            label: "Comptes"          },
   { value: "Actualite",       label: "Actualités"       },
   { value: "Evenement",       label: "Événements"       },
   { value: "Participation",   label: "Présences / RSVP" },
@@ -310,6 +327,7 @@ function formatDiffValue(field: string, value: string | null): string {
   if (value === null) return "—"
   if (field === "status") return STATUS_LABELS[value] ?? value
   if (field === "type")   return value === "ENTREE" ? "Entrée" : "Sortie"
+  if (field === "role")   return ROLE_LABELS[value] ?? value
   return value
 }
 
@@ -362,7 +380,7 @@ function Details({ log }: { log: LogEntry }) {
     )
   }
 
-  if ((log.action === "MEMBRE_UPDATED" || log.action === "PROFIL_UPDATED") && m.changes) {
+  if (["MEMBRE_UPDATED", "PROFIL_UPDATED", "PROFILE_UPDATED", "MEMBRE_ROLE_CHANGED"].includes(log.action) && m.changes) {
     return <GenericDiff changes={m.changes} fieldLabels={FIELD_LABELS} />
   }
 
