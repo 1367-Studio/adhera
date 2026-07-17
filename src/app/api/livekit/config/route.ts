@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
+import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
 
@@ -47,6 +48,20 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     },
     select: { livekitUrl: true, livekitApiKey: true, livekitApiSecret: true },
   })
+
+  // livekitUrl isn't secret, so its new value is logged directly — the api key/secret are,
+  // so only whether each was touched is recorded, never the values themselves.
+  const fieldsChanged = [
+    livekitApiKey    !== undefined && "livekitApiKey",
+    livekitApiSecret !== undefined && "livekitApiSecret",
+  ].filter(Boolean)
+  if (livekitUrl !== undefined || fieldsChanged.length > 0) {
+    await writeActivityLog({
+      associationId: ctx.associationId, actorId: ctx.userId, action: "LIVEKIT_CONFIG_UPDATED",
+      entity: "Association", entityId: ctx.associationId,
+      metadata: { ...(livekitUrl !== undefined ? { livekitUrl } : {}), fieldsChanged },
+    })
+  }
 
   return NextResponse.json({
     ok:                true,

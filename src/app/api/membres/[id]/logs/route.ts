@@ -9,7 +9,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const membre = await prisma.membre.findFirst({
     where:  { id, associationId },
-    select: { id: true },
+    select: { id: true, userId: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
@@ -30,6 +30,13 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     associationId,
     OR: [
       { entity: "Membre",        entityId: id },
+      // The linked User's own account actions (name/email/password changes, role changes
+      // made from the backoffice) never touch the Membre row itself, so without this they'd
+      // be logged but invisible here — the one screen an admin actually checks when a
+      // member's displayed name looks wrong.
+      ...(membre.userId
+        ? [{ entity: "User", entityId: membre.userId }]
+        : []),
       ...(participationIds.length > 0
         ? [{ entity: "Participation", entityId: { in: participationIds } }]
         : []),

@@ -1,19 +1,22 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useModules } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { ArrowLeftIcon, UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
 import { useMeetingEndedListener } from "@/hooks/use-meetings"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 
 type MeetingParticipant = {
   id:     string
@@ -47,7 +50,6 @@ const AUDIO_ACCEPT = ".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac"
 
 export default function ReunionDetailPage() {
   const { id }  = useParams<{ id: string }>()
-  const router  = useRouter()
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
@@ -185,16 +187,17 @@ export default function ReunionDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="h-8 w-48 bg-muted rounded animate-pulse" />
-        <div className="h-40 bg-muted rounded animate-pulse" />
-      </div>
-    )
+    return <DetailLoadingSkeleton />
   }
 
   if (!meeting) {
-    return <div className="text-sm text-muted-foreground">Réunion introuvable.</div>
+    return (
+      <DetailNotFound
+        message="Cette réunion est introuvable ou a été supprimée."
+        backHref="/dashboard/reunions"
+        backLabel="Retour à la liste"
+      />
+    )
   }
 
   const transcriptDirty  = transcript !== (meeting.transcript ?? "")
@@ -205,12 +208,10 @@ export default function ReunionDetailPage() {
   const canSummarize     = modules.reunions
 
   return (
-    <div className="flex flex-col gap-6 h-full">
+    <div className="flex flex-col gap-6 h-full mt-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/reunions")}>
-          <ArrowLeftIcon className="size-4" />
-        </Button>
+        <BackLink href="/dashboard/reunions" iconOnly>Réunions</BackLink>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold truncate">{meeting.title}</h1>

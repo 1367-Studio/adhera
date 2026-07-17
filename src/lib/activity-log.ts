@@ -37,6 +37,9 @@ function normalizeForDiff(v: unknown): string | null {
   if (typeof v === "object" && typeof (v as { toNumber?: unknown }).toNumber === "function") {
     return String((v as { toNumber(): number }).toNumber())
   }
+  // Plain objects (e.g. the `modules` JSON blob) — stringify so the diff shows the actual
+  // shape instead of the useless "[object Object]" String(v) would otherwise produce.
+  if (typeof v === "object") return JSON.stringify(v)
   return String(v)
 }
 
@@ -74,4 +77,13 @@ export function computeFournisseurDiff(
   after:  Record<string, unknown>,
 ): Record<string, FieldDiff> {
   return computeDiff(before, after, FOURNISSEUR_FIELDS)
+}
+
+const ASSOCIATION_FIELDS = ["internalNotes", "customMemberLimit", "customBrandingEnabled", "modules"] as const
+
+export function computeAssociationDiff(
+  before: Record<string, unknown>,
+  after:  Record<string, unknown>,
+): Record<string, FieldDiff> {
+  return computeDiff(before, after, ASSOCIATION_FIELDS)
 }

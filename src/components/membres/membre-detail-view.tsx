@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
-  ArrowLeftIcon, PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
+  PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
@@ -24,6 +24,9 @@ import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { ChangeRoleModal } from "@/components/membres/membres-view"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 
 const ROLE_LABELS: Record<string, string> = {
@@ -115,18 +118,16 @@ export function MembreDetailView() {
   }
 
   if (isLoading) {
-    return <p className="py-12 text-center text-sm text-muted-foreground">Chargement…</p>
+    return <DetailLoadingSkeleton />
   }
 
   if (isError || !membre) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <p className="text-sm text-muted-foreground">Ce membre est introuvable ou a été supprimé.</p>
-        <Button variant="outline" size="sm" onClick={() => router.push("/dashboard/membres")}>
-          <ArrowLeftIcon className="mr-1.5 size-4" />
-          Retour à la liste
-        </Button>
-      </div>
+      <DetailNotFound
+        message="Ce membre est introuvable ou a été supprimé."
+        backHref="/dashboard/membres"
+        backLabel="Retour à la liste"
+      />
     )
   }
 
@@ -140,12 +141,9 @@ export function MembreDetailView() {
   const TAB_PAGE_SIZE = 50
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mt-4">
       <div className="space-y-3">
-        <Button variant="ghost" size="sm" onClick={() => router.push("/dashboard/membres")}>
-          <ArrowLeftIcon className="mr-1.5 size-4" />
-          Membres
-        </Button>
+        <BackLink href="/dashboard/membres">Membres</BackLink>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">

@@ -1,14 +1,14 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getPusherClient } from "@/lib/pusher-client"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import { ArrowLeftIcon, MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
@@ -21,6 +21,9 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { Modal } from "@/components/ui/modal"
+import { BackLink } from "@/components/ui/back-link"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
 
 type PresenceRow = {
@@ -113,7 +116,6 @@ const RSVP_LABELS: Record<string, { label: string; classes: string }> = {
 
 export default function PresencesPage() {
   const { id }  = useParams<{ id: string }>()
-  const router  = useRouter()
   const qc      = useQueryClient()
   const user    = useCurrentUser()
 
@@ -490,17 +492,18 @@ export default function PresencesPage() {
   }
 
   if (loadingEvent) {
-    return (
-      // mt-4 matches the real content's spacing (line ~442) so the page doesn't jump
-      // down once the actual content replaces this skeleton.
-      <div className="space-y-4 mt-4">
-        <div className="h-8 w-64 rounded bg-muted animate-pulse" />
-        <div className="h-24 rounded-xl bg-muted animate-pulse" />
-      </div>
-    )
+    return <DetailLoadingSkeleton />
   }
 
-  if (!ev) return null
+  if (!ev) {
+    return (
+      <DetailNotFound
+        message="Cet événement est introuvable ou a été supprimé."
+        backHref="/dashboard/evenements"
+        backLabel="Retour à la liste"
+      />
+    )
+  }
 
   const capacity = ev.capacity
   const pct      = capacity ? Math.min(100, Math.round((presentsCount / capacity) * 100)) : null
@@ -517,14 +520,7 @@ export default function PresencesPage() {
     <div className="space-y-5 mt-4">
       {/* Back + export */}
       <div className="flex items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard/evenements")}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeftIcon className="size-4" />
-          Événements
-        </button>
+        <BackLink href="/dashboard/evenements">Événements</BackLink>
 
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
