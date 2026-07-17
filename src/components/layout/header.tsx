@@ -111,7 +111,7 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
                   {isLast ? (
                     <BreadcrumbPage>{label}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={href}>{label}</BreadcrumbLink>
+                    <BreadcrumbLink render={<Link href={href} />}>{label}</BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               </span>
