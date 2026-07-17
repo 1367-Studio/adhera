@@ -43,7 +43,7 @@ export async function POST(req: Request) {
           where:   { id: commandeId },
           include: {
             membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
-            association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+            association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
             items:       {
               include: {
                 produit:  { select: { name: true } },
