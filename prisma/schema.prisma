@@ -219,6 +219,12 @@ model Association {
   country                 String             @default("France")
   address                 String?
   phone                   String?
+  website                 String?
+  // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
+  // where to wire payment — distinct from BankAccount, which is for reconciliation import
+  // and only ever stores a last-4, never a full IBAN.
+  iban                    String?
+  bic                     String?
   siren                   String?
   rna                     String?
   canIssueTaxReceipts     Boolean            @default(false)

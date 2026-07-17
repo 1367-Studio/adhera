@@ -23,12 +23,16 @@ import { StripeConnectSettings } from "@/components/parametres/stripe-connect-se
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
 import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
+import { BankSettings } from "@/components/parametres/bank-settings"
 type Association = {
   id:      string
   name:    string
   slug:    string
   city:    string | null
   country: string
+  website: string | null
+  iban:    string | null
+  bic:     string | null
   plan:    "ESSENTIAL" | "PRO"
   customBrandingEnabled: boolean | null
   logoUrl:        string | null
@@ -45,7 +49,8 @@ const ALL_TABS = [
   { value: "integrations" as Tab, label: "Intégrations", icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
 ] as const
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
+const ADMINS  = ["ADMIN", "PRESIDENT"]
+const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export function ParametresView() {
   return (
@@ -61,6 +66,7 @@ function ParametresViewInner() {
   const { role } = useCurrentUser()
   const modules  = useModules()
   const canEdit  = ADMINS.includes(role)
+  const canEditFinance = FINANCE.includes(role)
   const qc       = useQueryClient()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => {
@@ -167,6 +173,15 @@ function ParametresViewInner() {
                 canEdit={canEdit}
                 canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
                 data={{ logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor, secondaryColor: assoc.secondaryColor }}
+              />
+            </div>
+          )}
+
+          {assoc && (
+            <div className="rounded-xl border bg-card p-6">
+              <BankSettings
+                canEdit={canEditFinance}
+                data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic }}
               />
             </div>
           )}

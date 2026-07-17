@@ -19,6 +19,11 @@ export interface DocumentPdfInput {
     address: string | null
     city:    string | null
     siren:   string | null
+    website: string | null
+    // Only ever printed on DEVIS/FACTURE (see buildDocumentPdf) — a BOUTIQUE receipt is
+    // always for an already-settled sale, so a RIB has nothing useful to tell the buyer.
+    iban: string | null
+    bic:  string | null
     // Resolved by resolveDocumentBranding() — already null when the association's plan
     // doesn't include custom branding, so this file doesn't need to know about plans.
     logoUrl:      string | null
@@ -69,6 +74,20 @@ function fmtEUR(n: number): string {
 
 function fmtDate(d: Date): string {
   return d.toLocaleDateString("fr-FR")
+}
+
+// The "Adresse" field is free text, so it sometimes already ends with the city (typed
+// that way, or picked from an autocomplete) while "Ville" is also filled in separately —
+// without this, the two get concatenated and the city shows up twice on the document.
+function stripTrailingCity(address: string | null, city: string | null): string | null {
+  if (!address || !city) return address
+  const trimmedAddress = address.trim()
+  const trimmedCity    = city.trim()
+  if (trimmedAddress.toLowerCase().endsWith(trimmedCity.toLowerCase())) {
+    const withoutCity = trimmedAddress.slice(0, trimmedAddress.length - trimmedCity.length).replace(/[,\s]+$/, "")
+    return withoutCity || null
+  }
+  return address
 }
 
 function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
@@ -155,12 +174,21 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   for (const line of nameLines) { text(line, MARGIN, 14, { bold: true }); y -= 16 }
   y -= 4
   if (input.association.address || input.association.city) {
-    text([input.association.address, input.association.city].filter(Boolean).join(", "), MARGIN, 9, { color: GRAY })
+    const associationAddress = stripTrailingCity(input.association.address, input.association.city)
+    text([associationAddress, input.association.city].filter(Boolean).join(", "), MARGIN, 9, { color: GRAY })
     y -= 14
   }
   if (input.association.siren) {
     text(`SIREN : ${input.association.siren}`, MARGIN, 9, { color: GRAY })
     y -= 14
+  }
+  if (input.association.website) {
+    // wrapText, not a single text() call — a long custom domain otherwise runs off the
+    // right edge of the page instead of dropping to a second line like the name above it.
+    for (const line of wrapText(input.association.website, font, 9, COL.total - MARGIN)) {
+      text(line, MARGIN, 9, { color: GRAY })
+      y -= 14
+    }
   }
   y -= 6
   page.drawLine({ start: { x: MARGIN, y }, end: { x: COL.total, y }, thickness: 1, color: ACCENT })
@@ -178,7 +206,8 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   if (input.fournisseur) {
     text(input.fournisseur.companyName, MARGIN, 10, { bold: true })
     y -= 13
-    const addrLine = [input.fournisseur.address, [input.fournisseur.postalCode, input.fournisseur.city].filter(Boolean).join(" ")].filter(Boolean).join(", ")
+    const fournisseurAddress = stripTrailingCity(input.fournisseur.address, input.fournisseur.city)
+    const addrLine = [fournisseurAddress, [input.fournisseur.postalCode, input.fournisseur.city].filter(Boolean).join(" ")].filter(Boolean).join(", ")
     if (addrLine) { text(addrLine, MARGIN, 9, { color: GRAY }); y -= 13 }
     if (input.fournisseur.siret)     { text(`SIRET : ${input.fournisseur.siret}`, MARGIN, 9, { color: GRAY }); y -= 13 }
     if (input.fournisseur.vatNumber) { text(`N° TVA : ${input.fournisseur.vatNumber}`, MARGIN, 9, { color: GRAY }); y -= 13 }
@@ -243,6 +272,18 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
     text("Restant dû", totalsLabelX, 10, { bold: true }); textRight(fmtEUR(input.total - input.amountPaid), COL.total, 10, { bold: true }); y -= 15
   }
   y -= 20
+
+  // ── Coordonnées bancaires ────────────────────────────────────────────
+  // FACTURE only: a BOUTIQUE receipt is for an already-settled sale (nothing left to pay),
+  // and a DEVIS is just an estimate the client hasn't accepted yet — printing a RIB on it
+  // reads as asking for payment before there's anything to actually pay.
+  if (input.kind === "FACTURE" && (input.association.iban || input.association.bic)) {
+    if (y < 100) newPage()
+    text("Coordonnées bancaires", MARGIN, 9, { bold: true, color: GRAY }); y -= 13
+    if (input.association.iban) { text(`IBAN : ${input.association.iban}`, MARGIN, 9); y -= 12 }
+    if (input.association.bic)  { text(`BIC : ${input.association.bic}`, MARGIN, 9); y -= 12 }
+    y -= 10
+  }
 
   // ── Conditions / notes ─────────────────────────────────────────────
   if (input.paymentTerms) {
