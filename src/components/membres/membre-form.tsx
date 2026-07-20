@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { FormField } from "@/components/ui/form-field"
+import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Button } from "@/components/ui/button"
@@ -184,9 +185,10 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       </div>
 
-      <FormField
+      <TextareaField
         label="Allergies connues"
         placeholder="Arachides, pollen…"
+        rows={2}
         error={errors.allergies?.message}
         {...register("allergies")}
       />
