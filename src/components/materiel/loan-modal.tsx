@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -20,6 +20,7 @@ const schema = z.object({
   quantity:         z.number().int().min(1),
   borrowedAt:       z.string().optional(),
   expectedReturnAt: z.string().optional(),
+  feeAmount:        z.string().optional(),
   notes:            z.string().max(500).optional(),
 }).superRefine((v, ctx) => {
   if (v.borrowerType === "membre" && !v.membreId) {
@@ -57,9 +58,30 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
 
   const borrowerType = watch("borrowerType")
   const borrowedAt   = watch("borrowedAt")
+  const quantity     = watch("quantity") || 1
+  const feeAmount    = watch("feeAmount")
+  const feeTotal     = feeAmount ? parseFloat(feeAmount) * quantity : NaN
+
+  // availableQty only reflects today's stock (loans that have already started, see the
+  // materiel API) — it says nothing about a future-dated reservation, which the backend's
+  // own capacity check evaluates against that later date instead.
+  const todayStr      = new Date().toISOString().slice(0, 10)
+  const isFutureDate  = !!borrowedAt && borrowedAt > todayStr
+  const noCapacityNow = material.availableQty === 0 && !isFutureDate
+
+  // Read via a ref instead of a dependency so a background refetch of `material` while the
+  // modal is already open (e.g. window refocus, another admin editing the rate) can't
+  // re-trigger this reset and wipe out whatever the user has already typed.
+  const rentalRateRef = useRef(material.rentalRate)
+  rentalRateRef.current = material.rentalRate
 
   useEffect(() => {
-    if (open) reset({ borrowerType: "membre", quantity: 1, borrowedAt: new Date().toISOString().slice(0, 10) })
+    if (open) reset({
+      borrowerType: "membre",
+      quantity:     1,
+      borrowedAt:   new Date().toISOString().slice(0, 10),
+      feeAmount:    rentalRateRef.current ? String(rentalRateRef.current) : "",
+    })
   }, [open, reset])
 
   async function onSubmit(values: FormValues) {
@@ -70,6 +92,7 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
         quantity:         values.quantity,
         borrowedAt:       values.borrowedAt,
         expectedReturnAt: values.expectedReturnAt || null,
+        feeAmount:        values.feeAmount ? parseFloat(values.feeAmount) : null,
         notes:            values.notes || null,
       })
       toast.success("Prêt enregistré")
@@ -142,27 +165,44 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label="Date de sortie" type="date" max={new Date().toISOString().slice(0, 10)} {...register("borrowedAt")} />
+          <FormField label="Date de sortie" type="date" {...register("borrowedAt")} />
           <FormField label="Retour prévu" type="date" min={borrowedAt} error={errors.expectedReturnAt?.message} {...register("expectedReturnAt")} />
         </div>
+        {isFutureDate && (
+          <p className="text-xs text-muted-foreground -mt-2">
+            Date future : l'article sera enregistré comme réservé jusqu'à cette date.
+          </p>
+        )}
 
-        {material.quantity > 1 && (
+        <div className="grid grid-cols-2 gap-3">
+          {material.quantity > 1 && (
+            <FormField
+              label="Quantité empruntée"
+              type="number"
+              min={1}
+              max={isFutureDate ? material.quantity : material.availableQty}
+              error={errors.quantity?.message}
+              {...register("quantity", { valueAsNumber: true })}
+            />
+          )}
           <FormField
-            label="Quantité empruntée"
-            type="number"
-            min={1}
-            max={material.availableQty}
-            error={errors.quantity?.message}
-            {...register("quantity", { valueAsNumber: true })}
+            label={material.quantity > 1 ? "Tarif du prêt (€ / unité)" : "Montant du prêt (€)"}
+            type="number" step="0.01" min={0} placeholder="0.00"
+            {...register("feeAmount")}
           />
+        </div>
+        {material.quantity > 1 && quantity > 1 && !isNaN(feeTotal) && feeTotal > 0 && (
+          <p className="text-xs text-muted-foreground -mt-2">
+            Montant facturé : {quantity} × {parseFloat(feeAmount!).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} = {feeTotal.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+          </p>
         )}
 
         <FormField label="Notes" placeholder="Usage prévu, état au départ…" {...register("notes")} />
 
         <div className="flex justify-end gap-2 pt-1">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>Annuler</Button>
-          <Button type="submit" loading={isPending} disabled={material.availableQty === 0}>
-            {material.availableQty === 0 ? "Aucune unité disponible" : "Enregistrer"}
+          <Button type="submit" loading={isPending} disabled={noCapacityNow}>
+            {noCapacityNow ? "Aucune unité disponible" : "Enregistrer"}
           </Button>
         </div>
       </form>

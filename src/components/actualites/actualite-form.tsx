@@ -3,7 +3,8 @@
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 import { MagnifyingGlassIcon, CheckIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { actualiteSchema, type ActualiteInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
@@ -42,6 +43,17 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
   const recipientIds  = watch("recipientIds") ?? []
 
   const [memberSearch, setMemberSearch] = useState("")
+
+  // Same lazy-upload pattern as branding-settings.tsx / the site builder: picking a file
+  // only creates a local blob: preview, the real /api/upload only happens on submit — so
+  // cancelling out of this form never leaves an orphaned file in R2.
+  const [pendingFile, setPendingFile] = useState<{ blobUrl: string; file: File } | null>(null)
+  const [uploading,   setUploading]   = useState(false)
+
+  useEffect(() => {
+    if (!pendingFile) return
+    return () => URL.revokeObjectURL(pendingFile.blobUrl)
+  }, [pendingFile])
 
   const { data: evenementsRaw = [] } = useQuery<Evenement[]>({
     queryKey: ["evenements", "all"],
@@ -84,8 +96,28 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
     ...evenementsRaw.map(e => ({ value: e.id, label: e.title })),
   ]
 
+  async function handleFormSubmit(data: ActualiteInput) {
+    if (!pendingFile) {
+      await onSubmit(data)
+      return
+    }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", pendingFile.file)
+      fd.append("prefix", "adhera/actualites")
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (!res.ok) { toast.error("Erreur lors de l'upload de l'image"); return }
+      const { url } = (await res.json()) as { url: string }
+      await onSubmit({ ...data, imageUrl: url })
+      setPendingFile(null)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
       {/* Image — full-width at top for a social post feel */}
       <Controller
         name="imageUrl"
@@ -95,9 +127,11 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
             <Label>Image de couverture</Label>
             <ImageUpload
               value={field.value ?? ""}
-              onChange={field.onChange}
+              onChange={url => { if (url === "") setPendingFile(null); field.onChange(url) }}
               prefix="adhera/actualites"
               aspectRatio="video"
+              lazy
+              onFilePending={(blobUrl, file) => setPendingFile({ blobUrl, file })}
             />
           </div>
         )}
@@ -247,10 +281,10 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
       </div>
 
       <div className="flex justify-end gap-2 pt-1">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading || uploading}>
           Annuler
         </Button>
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={loading || uploading}>
           Enregistrer
         </Button>
       </div>

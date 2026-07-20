@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
 import { MaterialModal } from "@/components/materiel/material-modal"
 import { MaterialDetailSheet } from "@/components/materiel/material-detail-sheet"
+import { MaterielStatsCharts } from "@/components/materiel/materiel-stats-charts"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -22,6 +23,7 @@ const FILTER_OPTIONS = [
   { value: "ALL",           label: "Tous" },
   { value: "DISPONIBLE",    label: "Disponibles" },
   { value: "EN_USE",        label: "En utilisation" },
+  { value: "RESERVE",       label: "Réservés" },
   { value: "EN_MAINTENANCE",label: "Maintenance" },
   { value: "HORS_SERVICE",  label: "Hors service" },
   { value: "PERDU",         label: "Perdus" },
@@ -75,10 +77,14 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
 }
 
 function MaterialCard({ material, onClick }: { material: Material; onClick: () => void }) {
-  const allLoaned = material.loanedQty > 0 && material.availableQty === 0
-  const cfg = (material.status === "DISPONIBLE" && allLoaned)
-    ? STATUS_CONFIG.EN_USE
-    : STATUS_CONFIG[material.status]
+  // availableQty already excludes future-dated reservations, so it hitting 0 means the item
+  // is genuinely unavailable today — a reservation alone can't trigger this branch, it only
+  // ever shows up via the "reservedQty réservé" badge below.
+  const cfg = material.status !== "DISPONIBLE"
+    ? STATUS_CONFIG[material.status]
+    : material.availableQty === 0
+      ? STATUS_CONFIG.EN_USE
+      : STATUS_CONFIG.DISPONIBLE
 
   return (
     <button
@@ -87,9 +93,18 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
       className="w-full text-left rounded-xl border bg-card hover:bg-muted/30 transition-colors p-4 space-y-3"
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="font-medium text-sm truncate">{material.name}</p>
-          {material.category && <p className="text-xs text-muted-foreground truncate">{material.category}</p>}
+        <div className="flex items-start gap-2.5 min-w-0">
+          {material.imageUrl ? (
+            <img src={material.imageUrl} alt="" className="size-9 rounded-lg object-cover shrink-0 border" />
+          ) : (
+            <div className="size-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <PackageIcon className="size-4 text-muted-foreground/50" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-medium text-sm truncate">{material.name}</p>
+            {material.category && <p className="text-xs text-muted-foreground truncate">{material.category}</p>}
+          </div>
         </div>
         <span className={cn("shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full", cfg.pill)}>
           {cfg.label}
@@ -119,6 +134,11 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
               <ClockIcon className="size-2.5" />
               {material.pendingDemandesCount}
+            </span>
+          )}
+          {material.reservedQty > 0 && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+              {material.reservedQty} réservé{material.reservedQty > 1 ? "s" : ""}
             </span>
           )}
           <span className={cn(
@@ -151,7 +171,8 @@ export function MaterielView() {
   const filtered = useMemo(() => {
     return materials.filter(m => {
       if (statusFilter === "ALL")         return true
-      if (statusFilter === "EN_USE")      return m.status === "EN_USE" || m.loanedQty > 0
+      if (statusFilter === "EN_USE")      return m.status === "EN_USE" || m.loanedQty > m.reservedQty
+      if (statusFilter === "RESERVE")     return m.reservedQty > 0
       if (statusFilter === "DISPONIBLE")  return m.status === "DISPONIBLE" && m.availableQty > 0
       return m.status === statusFilter
     })
@@ -160,7 +181,8 @@ export function MaterielView() {
   const stats = useMemo(() => ({
     total:       materials.length,
     disponible:  materials.filter(m => m.status === "DISPONIBLE").length,
-    enPret:      materials.filter(m => m.loanedQty > 0).length,
+    enPret:      materials.filter(m => m.loanedQty > m.reservedQty).length,
+    reserve:     materials.filter(m => m.reservedQty > 0).length,
     maintenance: materials.filter(m => m.status === "EN_MAINTENANCE").length,
   }), [materials])
 
@@ -183,11 +205,12 @@ export function MaterielView() {
 
       {/* Stats */}
       {!isLoading && materials.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
             { label: "Articles",    value: stats.total,       color: "text-foreground" },
             { label: "Disponibles", value: stats.disponible,  color: "text-green-600"  },
             { label: "En prêt",     value: stats.enPret,      color: "text-blue-600"   },
+            { label: "Réservés",    value: stats.reserve,     color: "text-indigo-600" },
             { label: "Maintenance", value: stats.maintenance, color: "text-amber-600"  },
           ].map(s => (
             <div key={s.label} className="rounded-xl border bg-card px-4 py-3">
@@ -197,6 +220,8 @@ export function MaterielView() {
           ))}
         </div>
       )}
+
+      {!isLoading && materials.length > 0 && <MaterielStatsCharts />}
 
       {/* Pending demandes */}
       {(() => {

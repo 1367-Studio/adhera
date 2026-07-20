@@ -4,16 +4,22 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format, formatDistanceStrict } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, CheckIcon, TrashIcon, PencilSimpleIcon, MapPinIcon, HashIcon, PackageIcon, WarningCircleIcon, XIcon, ClockIcon, ArrowElbowDownLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link"
+import { PlusIcon, CheckIcon, TrashIcon, PencilSimpleIcon, MapPinIcon, HashIcon, PackageIcon, WarningCircleIcon, XIcon, ClockIcon, ArrowElbowDownLeftIcon, FilePdfIcon, EnvelopeSimpleIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { useMaterialDetail, useReturnLoan, useConfirmLoan, useRefuseLoan, useDeleteLoan, useDeleteMaterial, type Material, type MaterialLoan } from "@/hooks/use-materiel"
+import { SendEmailModal } from "@/components/ui/send-email-modal"
+import { useMaterialDetail, useReturnLoan, useConfirmLoan, useRefuseLoan, useDeleteLoan, useDeleteMaterial, useSendLoanEmail, useGenerateLoanFacture, type Material, type MaterialLoan } from "@/hooks/use-materiel"
 import { LoanModal } from "@/components/materiel/loan-modal"
 import { MaterialModal } from "@/components/materiel/material-modal"
 import { cn } from "@/lib/utils"
+import { BASE_PATH } from "@/lib/env"
+import { useCurrentUser } from "@/lib/user-context"
+
+const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 const STATUS_CONFIG = {
   DISPONIBLE:     { label: "Disponible",      classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
@@ -32,6 +38,55 @@ function isOverdue(loan: MaterialLoan): boolean {
   return !!loan.expectedReturnAt && !loan.returnedAt && new Date(loan.expectedReturnAt) < new Date()
 }
 
+function isReserved(loan: MaterialLoan): boolean {
+  return !loan.returnedAt && new Date(loan.borrowedAt) > new Date()
+}
+
+const fmtEUR = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+// feeAmount is a per-unit rate — the amount actually billed (see the facture route) is
+// feeAmount × quantity, so any display of it must multiply too or it misleads the reader.
+function loanFeeLabel(loan: MaterialLoan): string | null {
+  const unit = Number(loan.feeAmount ?? 0)
+  if (unit <= 0) return null
+  if (loan.quantity <= 1) return fmtEUR(unit)
+  return `${loan.quantity} × ${fmtEUR(unit)} = ${fmtEUR(unit * loan.quantity)}`
+}
+
+const FACTURE_STATUS_LABEL: Record<string, string> = {
+  BROUILLON: "Brouillon", EN_ATTENTE: "En attente", PARTIELLEMENT_PAYEE: "Part. payée",
+  PAYEE: "Payée", EN_RETARD: "En retard", ANNULEE: "Annulée",
+}
+
+function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: MaterialLoan; onGenerate: () => void; pending: boolean; canGenerate: boolean }) {
+  if (loan.facture) {
+    return (
+      <Link
+        href={`${BASE_PATH}/dashboard/factures?search=${encodeURIComponent(loan.facture.number)}`}
+        className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/70 transition-colors"
+        title={`Voir la facture ${loan.facture.number}`}
+      >
+        <ReceiptIcon className="size-3" /> {loan.facture.number} · {FACTURE_STATUS_LABEL[loan.facture.status] ?? loan.facture.status}
+      </Link>
+    )
+  }
+  // Facture generation is finance-only server-side (POST .../facture) — hide the trigger for
+  // other roles instead of letting them hit a dead-end "Unauthorized" toast.
+  if (!canGenerate) return null
+  if (Number(loan.feeAmount ?? 0) <= 0) return null
+  return (
+    <button
+      type="button"
+      onClick={onGenerate}
+      disabled={pending}
+      className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40"
+      title="Générer une facture pour ce prêt"
+    >
+      <ReceiptIcon className="size-3" /> Générer facture
+    </button>
+  )
+}
+
 interface Props {
   material:     Material | null
   open:         boolean
@@ -40,17 +95,22 @@ interface Props {
 }
 
 export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }: Props) {
+  const { role } = useCurrentUser()
+  const canGenerateFacture = FINANCE_ROLES.includes(role)
   const { data: detail, isLoading } = useMaterialDetail(material?.id ?? null)
   const returnLoan  = useReturnLoan(material?.id  ?? "")
   const confirmLoan = useConfirmLoan(material?.id ?? "")
   const refuseLoan  = useRefuseLoan(material?.id  ?? "")
   const deleteLoan  = useDeleteLoan(material?.id  ?? "")
   const deleteMat   = useDeleteMaterial()
+  const sendLoanEmail = useSendLoanEmail(material?.id ?? "")
+  const generateFacture = useGenerateLoanFacture(material?.id ?? "")
 
   const [loanModalOpen,   setLoanModalOpen]   = useState(false)
   const [editModalOpen,   setEditModalOpen]   = useState(false)
   const [deletingLoan,    setDeletingLoan]    = useState<MaterialLoan | null>(null)
   const [confirmDelete,   setConfirmDelete]   = useState(false)
+  const [emailTarget,     setEmailTarget]     = useState<MaterialLoan | null>(null)
 
   const pendingLoans = detail?.loans.filter(l => !l.returnedAt && l.status === "DEMANDE") ?? []
   const activeLoans  = detail?.loans.filter(l => !l.returnedAt && l.status === "CONFIRME") ?? []
@@ -61,6 +121,26 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
     try {
       await returnLoan.mutateAsync(loan.id)
       toast.success("Retour enregistré")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  async function handleSendLoanEmail(to: string, message: string) {
+    if (!emailTarget) return
+    try {
+      await sendLoanEmail.mutateAsync({ loanId: emailTarget.id, to, message })
+      toast.success("Bon de prêt envoyé par e-mail")
+      setEmailTarget(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    }
+  }
+
+  async function handleGenerateFacture(loan: MaterialLoan) {
+    try {
+      await generateFacture.mutateAsync(loan.id)
+      toast.success("Facture générée")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur")
     }
@@ -127,6 +207,12 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
               </div>
             ) : detail ? (
               <div className="divide-y">
+                {detail.imageUrl && (
+                  <div className="relative aspect-video overflow-hidden">
+                    <img src={detail.imageUrl} aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60" />
+                    <img src={detail.imageUrl} alt="" className="absolute inset-0 w-full h-full object-contain z-10" />
+                  </div>
+                )}
                 {/* Info grid */}
                 <div className="px-5 py-4 grid grid-cols-2 gap-3 text-sm">
                   <div className="flex items-center gap-2">
@@ -154,6 +240,16 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                     <div className="text-muted-foreground col-span-2 text-xs">
                       Acquis le {format(new Date(detail.purchaseDate), "d MMM yyyy", { locale: fr })}
                       {detail.purchasePrice && ` · ${Number(detail.purchasePrice).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`}
+                    </div>
+                  )}
+                  {detail.rentalRate && (
+                    <div className="text-muted-foreground col-span-2 text-xs">
+                      Tarif de prêt par défaut : {Number(detail.rentalRate).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+                    </div>
+                  )}
+                  {detail.financeCategory && (
+                    <div className="text-muted-foreground col-span-2 text-xs">
+                      Catégorie comptable : {detail.financeCategory.name}
                     </div>
                   )}
                   {detail.description && (
@@ -221,10 +317,13 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                 <div className="px-5 py-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold">
-                      Prêts en cours
+                      Prêts &amp; réservations
                       {activeLoans.length > 0 && <span className="ml-1.5 text-muted-foreground font-normal">({activeLoans.length})</span>}
                     </h3>
-                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setLoanModalOpen(true)} disabled={detail.availableQty === 0}>
+                    {/* Not gated on availableQty === 0 — that reflects only today's stock, but
+                        the modal still lets you register a future-dated reservation for an
+                        item that's fully out today and free again by then. */}
+                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setLoanModalOpen(true)}>
                       <PlusIcon className="size-3 mr-1" /> Prêter
                     </Button>
                   </div>
@@ -233,35 +332,58 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                     <p className="text-xs text-muted-foreground py-2">Aucun prêt en cours.</p>
                   ) : (
                     <div className="space-y-2">
-                      {activeLoans.map(loan => (
+                      {activeLoans.map(loan => {
+                        const reserved = isReserved(loan)
+                        return (
                         <div key={loan.id} className={cn(
                           "rounded-lg border px-3 py-2.5 space-y-1",
+                          reserved && "border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/20",
                           isOverdue(loan) && "border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20",
                         )}>
                           <div className="flex items-center justify-between gap-2">
-                            <p className="text-sm font-medium">{borrowerLabel(loan)}{loan.quantity > 1 && <span className="text-muted-foreground ml-1">×{loan.quantity}</span>}</p>
+                            <p className="text-sm font-medium flex items-center gap-1.5">
+                              {borrowerLabel(loan)}{loan.quantity > 1 && <span className="text-muted-foreground ml-1">×{loan.quantity}</span>}
+                              {reserved && (
+                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                  Réservé
+                                </span>
+                              )}
+                            </p>
                             <div className="flex items-center gap-1">
                               {isOverdue(loan) && <WarningCircleIcon className="size-3.5 text-red-500" />}
-                              <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending} className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title="Marquer comme rendu">
+                              <button type="button" onClick={() => window.open(`${BASE_PATH}/api/materiel/${material?.id}/loans/${loan.id}/pdf`, "_blank")} className="text-muted-foreground hover:text-foreground transition-colors" title="Bon de prêt (PDF)">
+                                <FilePdfIcon className="size-3.5" />
+                              </button>
+                              <button type="button" onClick={() => setEmailTarget(loan)} className="text-muted-foreground hover:text-foreground transition-colors" title="Envoyer par e-mail">
+                                <EnvelopeSimpleIcon className="size-3.5" />
+                              </button>
+                              <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending || reserved} className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title={reserved ? "Pas encore sorti" : "Marquer comme rendu"}>
                                 <ArrowElbowDownLeftIcon className="size-3" /> Rendu
                               </button>
-                              <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
-                                <TrashIcon className="size-3.5" />
-                              </button>
+                              {/* Deleting a loan with a facture is rejected server-side (it would
+                                  orphan the invoice) — hide the trigger instead of a dead-end error. */}
+                              {!loan.facture && (
+                                <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
+                                  <TrashIcon className="size-3.5" />
+                                </button>
+                              )}
                             </div>
                           </div>
                           <p className="text-[11px] text-muted-foreground">
-                            Sorti le {format(new Date(loan.borrowedAt), "d MMM yyyy", { locale: fr })}
+                            {reserved ? "Réservé pour le " : "Sorti le "}{format(new Date(loan.borrowedAt), "d MMM yyyy", { locale: fr })}
                             {loan.expectedReturnAt && (
                               <span className={cn(isOverdue(loan) && "text-red-600 font-medium")}>
                                 {" · Retour prévu "}{format(new Date(loan.expectedReturnAt), "d MMM yyyy", { locale: fr })}
                                 {isOverdue(loan) && " (en retard)"}
                               </span>
                             )}
+                            {loanFeeLabel(loan) && ` · ${loanFeeLabel(loan)}`}
                           </p>
                           {loan.notes && <p className="text-[11px] text-muted-foreground italic">{loan.notes}</p>}
+                          <FactureAction loan={loan} onGenerate={() => handleGenerateFacture(loan)} pending={generateFacture.isPending} canGenerate={canGenerateFacture} />
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
                 </div>
@@ -298,11 +420,17 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               {format(new Date(loan.returnedAt!), "d MMM yy", { locale: fr })}
                               {" · "}
                               {formatDistanceStrict(new Date(loan.returnedAt!), new Date(loan.borrowedAt), { locale: fr })}
+                              {loanFeeLabel(loan) && ` · ${loanFeeLabel(loan)}`}
                             </span>
+                            <div className="mt-1">
+                              <FactureAction loan={loan} onGenerate={() => handleGenerateFacture(loan)} pending={generateFacture.isPending} canGenerate={canGenerateFacture} />
+                            </div>
                           </div>
-                          <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
-                            <TrashIcon className="size-3" />
-                          </button>
+                          {!loan.facture && (
+                            <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
+                              <TrashIcon className="size-3" />
+                            </button>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -346,18 +474,33 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
         open={confirmDelete}
         onOpenChange={setConfirmDelete}
         title={`Supprimer « ${detail?.name ?? material?.name} » ?`}
-        description={`L'article et tout son historique de prêts seront supprimés définitivement.${
-          (activeLoans.length + pendingLoans.length) > 0
-            ? ` Attention : ${[
-                activeLoans.length  > 0 && `${activeLoans.length} prêt(s) en cours`,
-                pendingLoans.length > 0 && `${pendingLoans.length} demande(s) en attente`,
-              ].filter(Boolean).join(" et ")} seront perdus.`
-            : ""
-        }`}
+        description={
+          // The API refuses to delete a material with active loans (409) — say so up front
+          // instead of promising a deletion that will actually fail.
+          activeLoans.length > 0
+            ? `Impossible : ${activeLoans.length} prêt(s) en cours pour cet article. Enregistrez leur retour avant de supprimer.`
+            : `L'article et tout son historique de prêts seront supprimés définitivement.${
+                pendingLoans.length > 0
+                  ? ` Attention : ${pendingLoans.length} demande(s) en attente seront perdues.`
+                  : ""
+              }`
+        }
         confirmLabel="Supprimer"
+        confirmDisabled={activeLoans.length > 0}
         loading={deleteMat.isPending}
         onConfirm={handleDeleteMaterial}
       />
+
+      {emailTarget && (
+        <SendEmailModal
+          documentLabel="le bon de prêt"
+          defaultTo={emailTarget.membre?.email ?? ""}
+          open={!!emailTarget}
+          onOpenChange={open => !open && setEmailTarget(null)}
+          onSend={handleSendLoanEmail}
+          loading={sendLoanEmail.isPending}
+        />
+      )}
     </>
   )
 }

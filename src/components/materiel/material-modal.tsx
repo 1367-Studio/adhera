@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -10,10 +10,15 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { Button } from "@/components/ui/button"
 import { useCreateMaterial, useUpdateMaterial, type Material, type MaterialInput, type MaterialStatus } from "@/hooks/use-materiel"
+import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { Label } from "@/components/ui/label"
 
 const schema = z.object({
   name:          z.string().min(1, "Requis").max(150),
   category:      z.string().max(80).optional(),
+  categoryId:    z.string().optional(),
+  imageUrl:      z.string().optional(),
   description:   z.string().max(1000).optional(),
   serialNumber:  z.string().max(100).optional(),
   quantity:      z.number().int().min(1, "Min. 1"),
@@ -21,6 +26,7 @@ const schema = z.object({
   location:      z.string().max(150).optional(),
   purchaseDate:  z.string().optional(),
   purchasePrice: z.string().optional(),
+  rentalRate:    z.string().optional(),
   notes:         z.string().max(1000).optional(),
 })
 
@@ -72,17 +78,35 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
   const isEditing = !!material
   const createMut = useCreateMaterial()
   const updateMut = useUpdateMaterial(material?.id ?? "")
+  const { data: financeCategories = [] } = useFinanceCategories("INCOME")
+  const financeCategoryOptions = [
+    { value: "", label: "— Aucune —" },
+    ...financeCategories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
 
   const { register, handleSubmit, reset, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver:      zodResolver(schema),
     defaultValues: { name: "", quantity: 1, status: "DISPONIBLE" },
   })
 
+  // Same lazy-upload pattern as branding-settings.tsx / the site builder: picking a file
+  // only creates a local blob: preview, the real /api/upload only happens on submit — so
+  // clicking "Annuler" (or just closing the modal) never leaves an orphaned file in R2.
+  const [pendingFile, setPendingFile] = useState<{ blobUrl: string; file: File } | null>(null)
+
+  useEffect(() => {
+    if (!pendingFile) return
+    return () => URL.revokeObjectURL(pendingFile.blobUrl)
+  }, [pendingFile])
+
   useEffect(() => {
     if (!open) return
+    setPendingFile(null)
     reset(material ? {
       name:          material.name,
       category:      material.category ?? "",
+      categoryId:    material.categoryId ?? "",
+      imageUrl:      material.imageUrl ?? "",
       description:   material.description ?? "",
       serialNumber:  material.serialNumber ?? "",
       quantity:      material.quantity,
@@ -90,14 +114,27 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
       location:      material.location ?? "",
       purchaseDate:  material.purchaseDate ? material.purchaseDate.slice(0, 10) : "",
       purchasePrice: material.purchasePrice ? String(material.purchasePrice) : "",
+      rentalRate:    material.rentalRate ? String(material.rentalRate) : "",
       notes:         material.notes ?? "",
-    } : { name: "", quantity: 1, status: "DISPONIBLE", category: "", description: "", serialNumber: "", location: "", purchaseDate: "", purchasePrice: "", notes: "" })
+    } : { name: "", quantity: 1, status: "DISPONIBLE", category: "", categoryId: "", imageUrl: "", description: "", serialNumber: "", location: "", purchaseDate: "", purchasePrice: "", rentalRate: "", notes: "" })
   }, [open, material, reset])
 
   async function onSubmit(values: FormValues) {
+    let imageUrl = values.imageUrl || null
+    if (pendingFile) {
+      const fd = new FormData()
+      fd.append("file", pendingFile.file)
+      fd.append("prefix", "materiel")
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: fd })
+      if (!uploadRes.ok) { toast.error("Erreur lors de l'upload de la photo"); return }
+      imageUrl = ((await uploadRes.json()) as { url: string }).url
+    }
+
     const payload: MaterialInput = {
       name:          values.name,
       category:      values.category || null,
+      categoryId:    values.categoryId || null,
+      imageUrl,
       description:   values.description || null,
       serialNumber:  values.serialNumber || null,
       quantity:      values.quantity,
@@ -105,6 +142,7 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
       location:      values.location || null,
       purchaseDate:  values.purchaseDate || null,
       purchasePrice: values.purchasePrice ? parseFloat(values.purchasePrice) : null,
+      rentalRate:    values.rentalRate ? parseFloat(values.rentalRate) : null,
       notes:         values.notes || null,
     }
     try {
@@ -126,6 +164,25 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
   return (
     <Modal open={open} onOpenChange={onOpenChange} title={isEditing ? "Modifier l'article" : "Nouvel article"} size="lg">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Controller
+          name="imageUrl"
+          control={control}
+          render={({ field }) => (
+            <div className="space-y-1.5">
+              <Label>Photo</Label>
+              <ImageUpload
+                value={field.value ?? ""}
+                onChange={url => { if (url === "") setPendingFile(null); field.onChange(url) }}
+                prefix="materiel"
+                aspectRatio="video"
+                className="max-w-xs"
+                lazy
+                onFilePending={(blobUrl, file) => setPendingFile({ blobUrl, file })}
+              />
+            </div>
+          )}
+        />
+
         <FormField label="Nom" required placeholder="MacBook Pro 2023" error={errors.name?.message} {...register("name")} />
 
         <div className="grid grid-cols-2 gap-3">
@@ -164,6 +221,28 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
         <div className="grid grid-cols-2 gap-3">
           <FormField label="Date d'achat" type="date" {...register("purchaseDate")} />
           <FormField label="Prix d'achat (€)" type="number" step="0.01" min={0} placeholder="0.00" {...register("purchasePrice")} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <FormField
+            label="Tarif de prêt par défaut (€ / unité)"
+            type="number" step="0.01" min={0} placeholder="0.00"
+            hint="Pré-remplit le tarif à chaque nouveau prêt — facturé × la quantité empruntée"
+            {...register("rentalRate")}
+          />
+          <Controller
+            name="categoryId"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label="Catégorie comptable"
+                options={financeCategoryOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                placeholder="— Aucune —"
+              />
+            )}
+          />
         </div>
 
         <FormField label="Notes" placeholder="Remarques internes…" {...register("notes")} />
