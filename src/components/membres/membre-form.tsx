@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { FormField } from "@/components/ui/form-field"
+import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,25 @@ const allRoleOptions = [
   { value: "TRESORIER",  label: "Trésorier"  },
   { value: "PRESIDENT",  label: "Président"  },
   { value: "ADMIN",      label: "Admin"      },
+]
+
+const civiliteOptions = [
+  { value: "",     label: "Non renseigné" },
+  { value: "MME",  label: "Mme"           },
+  { value: "MLLE", label: "Mlle"          },
+  { value: "M",    label: "M."            },
+]
+
+const groupeSanguinOptions = [
+  { value: "",           label: "Non renseigné" },
+  { value: "A_POSITIF",  label: "A+"  },
+  { value: "A_NEGATIF",  label: "A-"  },
+  { value: "B_POSITIF",  label: "B+"  },
+  { value: "B_NEGATIF",  label: "B-"  },
+  { value: "AB_POSITIF", label: "AB+" },
+  { value: "AB_NEGATIF", label: "AB-" },
+  { value: "O_POSITIF",  label: "O+"  },
+  { value: "O_NEGATIF",  label: "O-"  },
 ]
 
 interface MembreFormProps {
@@ -136,6 +156,42 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="civilite"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Civilité"
+              options={civiliteOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.civilite?.message}
+            />
+          )}
+        />
+        <Controller
+          name="groupeSanguin"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Groupe sanguin"
+              options={groupeSanguinOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.groupeSanguin?.message}
+            />
+          )}
+        />
+      </div>
+
+      <TextareaField
+        label="Allergies connues"
+        placeholder="Arachides, pollen…"
+        rows={2}
+        error={errors.allergies?.message}
+        {...register("allergies")}
+      />
 
       {/* Type de membre */}
       {types.length > 0 && (
