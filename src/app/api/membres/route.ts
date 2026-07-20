@@ -62,7 +62,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, role = "MEMBRE", ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, groupeSanguin, role = "MEMBRE", ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -83,10 +83,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const membreData = {
     ...rest,
     associationId,
-    email:     email     || null,
-    phone:     phone     || null,
-    address:   address   || null,
-    typeId:    typeId    || null,
+    email:         email         || null,
+    phone:         phone         || null,
+    address:       address       || null,
+    typeId:        typeId        || null,
+    civilite:      civilite      || null,
+    groupeSanguin: groupeSanguin || null,
     birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null,
   }
 

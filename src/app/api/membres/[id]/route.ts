@@ -38,7 +38,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, groupeSanguin, ...rest } = parsed.data
 
   // Any status other than ACTIF flips User.active to false below (line ~81) — blocking only
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
@@ -73,11 +73,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       where: { id },
       data: {
         ...rest,
-        ...(email     !== undefined ? { email:     email     || null }                                      : {}),
-        ...(phone     !== undefined ? { phone:     phone     || null }                                      : {}),
-        ...(address   !== undefined ? { address:   address   || null }                                      : {}),
-        ...(typeId    !== undefined ? { typeId:    typeId    || null }                                      : {}),
-        ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
+        ...(email         !== undefined ? { email:         email         || null } : {}),
+        ...(phone         !== undefined ? { phone:         phone         || null } : {}),
+        ...(address       !== undefined ? { address:       address       || null } : {}),
+        ...(typeId        !== undefined ? { typeId:        typeId        || null } : {}),
+        ...(civilite      !== undefined ? { civilite:      civilite      || null } : {}),
+        ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),
+        ...(birthDate     !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
       },
     })
 
