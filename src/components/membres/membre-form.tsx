@@ -29,6 +29,25 @@ const allRoleOptions = [
   { value: "ADMIN",      label: "Admin"      },
 ]
 
+const civiliteOptions = [
+  { value: "",     label: "Non renseigné" },
+  { value: "MME",  label: "Mme"           },
+  { value: "MLLE", label: "Mlle"          },
+  { value: "M",    label: "M."            },
+]
+
+const groupeSanguinOptions = [
+  { value: "",           label: "Non renseigné" },
+  { value: "A_POSITIF",  label: "A+"  },
+  { value: "A_NEGATIF",  label: "A-"  },
+  { value: "B_POSITIF",  label: "B+"  },
+  { value: "B_NEGATIF",  label: "B-"  },
+  { value: "AB_POSITIF", label: "AB+" },
+  { value: "AB_NEGATIF", label: "AB-" },
+  { value: "O_POSITIF",  label: "O+"  },
+  { value: "O_NEGATIF",  label: "O-"  },
+]
+
 interface MembreFormProps {
   defaultValues?: Partial<MembreInput>
   onSubmit: (data: MembreCreateInput) => Promise<void>
@@ -136,6 +155,41 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       </div>
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="civilite"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Civilité"
+              options={civiliteOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.civilite?.message}
+            />
+          )}
+        />
+        <Controller
+          name="groupeSanguin"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Groupe sanguin"
+              options={groupeSanguinOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.groupeSanguin?.message}
+            />
+          )}
+        />
+      </div>
+
+      <FormField
+        label="Allergies connues"
+        placeholder="Arachides, pollen…"
+        error={errors.allergies?.message}
+        {...register("allergies")}
+      />
 
       {/* Type de membre */}
       {types.length > 0 && (

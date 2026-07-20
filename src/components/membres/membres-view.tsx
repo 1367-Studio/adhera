@@ -31,19 +31,22 @@ type MembreTypeRef = { id: string; name: string; color: string }
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
 type Membre = {
-  id:        string
-  firstName: string
-  lastName:  string
-  email:     string | null
-  phone:     string | null
-  address:   string | null
-  birthDate: string | null
-  status:    "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
-  typeId:    string | null
-  type:      MembreTypeRef | null
-  joinedAt:  string
-  userId:    string | null
-  user:      { role: UserRole } | null
+  id:            string
+  firstName:     string
+  lastName:      string
+  email:         string | null
+  phone:         string | null
+  address:       string | null
+  birthDate:     string | null
+  civilite:      "MME" | "MLLE" | "M" | null
+  groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
+  allergies:     string | null
+  status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
+  typeId:        string | null
+  type:          MembreTypeRef | null
+  joinedAt:      string
+  userId:        string | null
+  user:          { role: UserRole } | null
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -432,6 +435,9 @@ export function MembresView() {
             birthDate: editTarget.birthDate ? editTarget.birthDate.split("T")[0] : "",
             status:    editTarget.status,
             typeId:    editTarget.typeId    ?? "",
+            civilite:      editTarget.civilite      ?? "",
+            groupeSanguin: editTarget.groupeSanguin ?? "",
+            allergies:     editTarget.allergies     ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

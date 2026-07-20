@@ -366,6 +366,9 @@ export function MembreDetailView() {
             birthDate: membre.birthDate ? membre.birthDate.split("T")[0] : "",
             status:    membre.status,
             typeId:    membre.typeId ?? "",
+            civilite:      membre.civilite      ?? "",
+            groupeSanguin: membre.groupeSanguin ?? "",
+            allergies:     membre.allergies     ?? "",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}
