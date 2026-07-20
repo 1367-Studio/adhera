@@ -17,7 +17,7 @@ import { LoanModal } from "@/components/materiel/loan-modal"
 import { MaterialModal } from "@/components/materiel/material-modal"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
 
 const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -59,6 +59,10 @@ const FACTURE_STATUS_LABEL: Record<string, string> = {
 }
 
 function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: MaterialLoan; onGenerate: () => void; pending: boolean; canGenerate: boolean }) {
+  // Factures being disabled for the association hides this entirely, existing invoice or
+  // not — same convention as the Devis/Fournisseur module gating (see modules.factures there).
+  const modules = useModules()
+  if (!modules.factures) return null
   if (loan.facture) {
     return (
       <Link

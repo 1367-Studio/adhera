@@ -5,11 +5,18 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { computeDocumentTotals } from "@/lib/devis-calc"
 import { nextFactureNumber } from "@/lib/document-numbering"
+import { guardModule } from "@/lib/auth/require-module"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const POST = withAdminAuth<{ id: string; loanId: string }>(async (_req, ctx, { id, loanId }) => {
   const { associationId, userId } = ctx
+
+  // withAdminAuth's `module` option only takes one key, but a generated facture is unusable
+  // without the Factures module — its only payment path (paiements/route.ts) hard-requires
+  // it — so this second gate here avoids creating an invoice nobody can ever collect on.
+  const facturesGuard = await guardModule(associationId, "factures")
+  if (facturesGuard) return facturesGuard
 
   const loan = await prisma.materialLoan.findFirst({
     where:   { id: loanId, materialId: id, material: { associationId } },

@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
+import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { useCreateLoan, type Material } from "@/hooks/use-materiel"
 import { useQuery } from "@tanstack/react-query"
@@ -20,7 +21,7 @@ const schema = z.object({
   quantity:         z.number().int().min(1),
   borrowedAt:       z.string().optional(),
   expectedReturnAt: z.string().optional(),
-  feeAmount:        z.string().optional(),
+  feeAmount:        z.number().optional(),
   notes:            z.string().max(500).optional(),
 }).superRefine((v, ctx) => {
   if (v.borrowerType === "membre" && !v.membreId) {
@@ -60,7 +61,7 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
   const borrowedAt   = watch("borrowedAt")
   const quantity     = watch("quantity") || 1
   const feeAmount    = watch("feeAmount")
-  const feeTotal     = feeAmount ? parseFloat(feeAmount) * quantity : NaN
+  const feeTotal     = feeAmount ? feeAmount * quantity : NaN
 
   // availableQty only reflects today's stock (loans that have already started, see the
   // materiel API) — it says nothing about a future-dated reservation, which the backend's
@@ -80,7 +81,7 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
       borrowerType: "membre",
       quantity:     1,
       borrowedAt:   new Date().toISOString().slice(0, 10),
-      feeAmount:    rentalRateRef.current ? String(rentalRateRef.current) : "",
+      feeAmount:    rentalRateRef.current ? Number(rentalRateRef.current) : 0,
     })
   }, [open, reset])
 
@@ -92,7 +93,7 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
         quantity:         values.quantity,
         borrowedAt:       values.borrowedAt,
         expectedReturnAt: values.expectedReturnAt || null,
-        feeAmount:        values.feeAmount ? parseFloat(values.feeAmount) : null,
+        feeAmount:        values.feeAmount || null,
         notes:            values.notes || null,
       })
       toast.success("Prêt enregistré")
@@ -185,15 +186,23 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
               {...register("quantity", { valueAsNumber: true })}
             />
           )}
-          <FormField
-            label={material.quantity > 1 ? "Tarif du prêt (€ / unité)" : "Montant du prêt (€)"}
-            type="number" step="0.01" min={0} placeholder="0.00"
-            {...register("feeAmount")}
+          <Controller
+            name="feeAmount"
+            control={control}
+            render={({ field }) => (
+              <CurrencyField
+                label={material.quantity > 1 ? "Tarif du prêt (€ / unité)" : "Montant du prêt (€)"}
+                value={field.value ?? 0}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={errors.feeAmount?.message}
+              />
+            )}
           />
         </div>
         {material.quantity > 1 && quantity > 1 && !isNaN(feeTotal) && feeTotal > 0 && (
           <p className="text-xs text-muted-foreground -mt-2">
-            Montant facturé : {quantity} × {parseFloat(feeAmount!).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} = {feeTotal.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+            Montant facturé : {quantity} × {feeAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} = {feeTotal.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
           </p>
         )}
 
