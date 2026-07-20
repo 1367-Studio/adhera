@@ -55,11 +55,14 @@ export const PATCH = withAdminAuth<{ id: string; loanId: string }>(async (req, c
     let updated
     try {
       updated = await prisma.$transaction(async tx => {
-        const current = await tx.materialLoan.findUniqueOrThrow({ where: { id: loanId }, select: { status: true, quantity: true } })
+        const current = await tx.materialLoan.findUniqueOrThrow({ where: { id: loanId }, select: { status: true, quantity: true, borrowedAt: true } })
         if (current.status !== "DEMANDE") throw new Error("Ce prêt n'est pas en attente")
 
+        // Same rule as the creation endpoint: only loans that will have already started by
+        // this loan's own borrowedAt compete for its capacity, otherwise an unrelated future
+        // reservation could wrongly block confirming a request that starts earlier.
         const activeLoans = await tx.materialLoan.aggregate({
-          where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+          where: { materialId: id, returnedAt: null, status: "CONFIRME", borrowedAt: { lte: current.borrowedAt } },
           _sum:  { quantity: true },
         })
         const loaned    = activeLoans._sum.quantity ?? 0
@@ -106,9 +109,13 @@ export const DELETE = withAdminAuth<{ id: string; loanId: string }>(async (_req,
     include: {
       material: { select: { name: true } },
       membre:   { select: { firstName: true, lastName: true } },
+      facture:  { select: { id: true } },
     },
   })
   if (!loan) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
+  if (loan.facture) {
+    return NextResponse.json({ error: "Ce prêt a une facture associée, impossible de le supprimer" }, { status: 409 })
+  }
 
   await prisma.materialLoan.delete({ where: { id: loanId } })
 

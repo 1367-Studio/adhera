@@ -568,6 +568,7 @@ model Material {
   associationId String
   name          String
   category      String?
+  categoryId    String?
   description   String?
   serialNumber  String?
   quantity      Int            @default(1)
@@ -575,12 +576,15 @@ model Material {
   location      String?
   purchaseDate  DateTime?
   purchasePrice Decimal?       @db.Decimal(10, 2)
+  rentalRate    Decimal?       @db.Decimal(10, 2)
+  imageUrl      String?
   notes         String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  loans       MaterialLoan[]
+  association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  financeCategory FinanceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  loans           MaterialLoan[]
 
   @@index([associationId, status])
 }
@@ -595,11 +599,13 @@ model MaterialLoan {
   borrowedAt       DateTime   @default(now())
   expectedReturnAt DateTime?
   returnedAt       DateTime?
+  feeAmount        Decimal?   @db.Decimal(10, 2)
   notes            String?
   createdAt        DateTime   @default(now())
 
   material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
   membre   Membre?  @relation(fields: [membreId], references: [id])
+  facture  Facture?
 
   @@index([materialId, returnedAt])
 }
@@ -988,6 +994,7 @@ model FinanceCategory {
   expenses              Expense[]
   boutiqueProduits      BoutiqueProduit[]
   boutiqueCommandeItems BoutiqueCommandeItem[]
+  materials             Material[]
 
   @@index([associationId, type])
 }
@@ -1169,6 +1176,7 @@ model Facture {
   associationId  String
   fournisseurId  String?
   devisId        String?       @unique
+  materialLoanId String?       @unique
   number         String
   status         FactureStatus @default(BROUILLON)
   issueDate      DateTime      @default(now())
@@ -1186,11 +1194,12 @@ model Facture {
   updatedAt      DateTime      @updatedAt
   deletedAt      DateTime?
 
-  association Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  fournisseur Fournisseur?     @relation(fields: [fournisseurId], references: [id])
-  devis       Devis?           @relation(fields: [devisId], references: [id])
-  items       FactureItem[]
-  payments    FacturePayment[]
+  association  Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur  Fournisseur?     @relation(fields: [fournisseurId], references: [id])
+  devis        Devis?           @relation(fields: [devisId], references: [id])
+  materialLoan MaterialLoan?    @relation(fields: [materialLoanId], references: [id], onDelete: SetNull)
+  items        FactureItem[]
+  payments     FacturePayment[]
 
   @@unique([associationId, number])
   @@index([associationId, status])

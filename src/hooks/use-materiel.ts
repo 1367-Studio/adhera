@@ -14,8 +14,10 @@ export type MaterialLoan = {
   borrowedAt:       string
   expectedReturnAt: string | null
   returnedAt:       string | null
+  feeAmount:        string | null
   notes:            string | null
-  membre:           { firstName: string; lastName: string } | null
+  membre:           { firstName: string; lastName: string; email: string | null } | null
+  facture:          { id: string; number: string; status: string } | null
 }
 
 export type PendingDemande = {
@@ -34,6 +36,7 @@ export type Material = {
   id:                   string
   name:                 string
   category:             string | null
+  categoryId:           string | null
   description:          string | null
   serialNumber:         string | null
   quantity:             number
@@ -41,9 +44,12 @@ export type Material = {
   location:             string | null
   purchaseDate:         string | null
   purchasePrice:        string | null
+  rentalRate:           string | null
+  imageUrl:             string | null
   notes:                string | null
   createdAt:            string
   loanedQty:            number
+  reservedQty:          number
   availableQty:         number
   pendingDemandesCount: number
   pendingDemandes:      PendingDemande[]
@@ -51,11 +57,12 @@ export type Material = {
   _count:               { loans: number }
 }
 
-export type MaterialDetail = Material & { loans: MaterialLoan[] }
+export type MaterialDetail = Material & { loans: MaterialLoan[]; financeCategory: { id: string; name: string } | null }
 
 export type MaterialInput = {
   name:          string
   category?:     string | null
+  categoryId?:   string | null
   description?:  string | null
   serialNumber?: string | null
   quantity:      number
@@ -63,6 +70,8 @@ export type MaterialInput = {
   location?:     string | null
   purchaseDate?: string | null
   purchasePrice?: number | null
+  rentalRate?:   number | null
+  imageUrl?:     string | null
   notes?:        string | null
 }
 
@@ -72,6 +81,7 @@ export type LoanInput = {
   quantity:         number
   borrowedAt?:      string
   expectedReturnAt?: string | null
+  feeAmount?:       number | null
   notes?:           string | null
 }
 
@@ -107,6 +117,20 @@ export function useMateriel(search?: string) {
       return fetchJson(qs ? `/api/materiel?${qs}` : "/api/materiel")
     },
     staleTime: 0,
+  })
+}
+
+export type MaterielStats = {
+  totalRevenue:      number
+  topLoaned:         { name: string; count: number }[]
+  revenueByMaterial: { name: string; amount: number }[]
+}
+
+export function useMaterielStats() {
+  return useQuery<MaterielStats>({
+    queryKey:  ["materiel", "stats"],
+    queryFn:   () => fetchJson("/api/materiel/stats"),
+    staleTime: 60_000,
   })
 }
 
@@ -183,6 +207,23 @@ export function useRefuseLoan(materialId: string) {
     mutationFn: (loanId: string) => fetchJson(`/api/materiel/${materialId}/loans/${loanId}`, {
       method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "refuse" }),
     }),
+    onSuccess: () => invalidateAll(qc, materialId),
+  })
+}
+
+export function useSendLoanEmail(materialId: string) {
+  return useMutation({
+    mutationFn: ({ loanId, to, message }: { loanId: string; to: string; message?: string }) =>
+      fetchJson(`/api/materiel/${materialId}/loans/${loanId}/send-email`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ to, message }),
+      }),
+  })
+}
+
+export function useGenerateLoanFacture(materialId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (loanId: string) => fetchJson(`/api/materiel/${materialId}/loans/${loanId}/facture`, { method: "POST" }),
     onSuccess: () => invalidateAll(qc, materialId),
   })
 }

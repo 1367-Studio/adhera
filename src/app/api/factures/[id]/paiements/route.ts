@@ -17,7 +17,10 @@ class OverpaymentError extends Error {
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.facture.findFirst({ where: { id, associationId, deletedAt: null } })
+  const existing = await prisma.facture.findFirst({
+    where:   { id, associationId, deletedAt: null },
+    include: { materialLoan: { include: { material: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Facture introuvable" }, { status: 404 })
   if (existing.status === "ANNULEE") {
     return NextResponse.json({ error: "Cette facture est annulée" }, { status: 409 })
@@ -64,6 +67,26 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         throw new OverpaymentError(Math.max(0, total - (amountPaid - amount)))
       }
       const newStatus = amountPaid >= total - EPSILON ? "PAYEE" : amountPaid > 0 ? "PARTIELLEMENT_PAYEE" : updated.status
+
+      // A facture generated from a matériel loan (Fase F) has no bridge to Income otherwise —
+      // recording its payment here is the only place that happens, so lettrage comptable can
+      // pick it up like any other recette via BankReconciliation.
+      if (existing.materialLoan) {
+        await tx.income.create({
+          data: {
+            associationId,
+            memberId:    existing.materialLoan.membreId,
+            amount,
+            categoryId:  existing.materialLoan.material.categoryId,
+            paymentMethod: method,
+            date:        paidAt ? new Date(paidAt) : new Date(),
+            description: `Prêt matériel — ${existing.materialLoan.material.name} (Facture ${existing.number})`,
+            source:      "MANUAL",
+            status:      "PAID",
+            reference:   existing.number,
+          },
+        })
+      }
 
       return tx.facture.update({
         where: { id },

@@ -12,6 +12,7 @@ const schema = z.object({
   quantity:         z.number().int().min(1).default(1),
   borrowedAt:       z.string().optional(),
   expectedReturnAt: z.string().optional().nullable(),
+  feeAmount:        z.number().nonnegative().optional().nullable(),
   notes:            z.string().max(500).optional().nullable(),
 }).refine(d => d.membreId || d.borrowerName, { message: "Emprunteur requis" })
 
@@ -25,11 +26,17 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 422 })
 
+  const borrowedAt = parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date()
+
   let loan
   try {
     loan = await prisma.$transaction(async tx => {
+      // Only loans that will have already started by this new loan's borrowedAt compete for
+      // its capacity — a same-day request shouldn't be blocked by someone else's reservation
+      // for next month, but a reservation still has to stack correctly against loans (current
+      // or already-reserved) that start on or before it.
       const activeLoans = await tx.materialLoan.aggregate({
-        where: { materialId: id, returnedAt: null, status: "CONFIRME" },
+        where: { materialId: id, returnedAt: null, status: "CONFIRME", borrowedAt: { lte: borrowedAt } },
         _sum:  { quantity: true },
       })
       const loaned    = activeLoans._sum.quantity ?? 0
@@ -44,8 +51,9 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           membreId:         parsed.data.membreId ?? null,
           borrowerName:     parsed.data.borrowerName ?? null,
           quantity:         parsed.data.quantity,
-          borrowedAt:       parsed.data.borrowedAt ? new Date(parsed.data.borrowedAt) : new Date(),
+          borrowedAt,
           expectedReturnAt: parsed.data.expectedReturnAt ? new Date(parsed.data.expectedReturnAt) : null,
+          feeAmount:        parsed.data.feeAmount ?? null,
           notes:            parsed.data.notes ?? null,
         },
         include: { membre: { select: { firstName: true, lastName: true } } },

@@ -9,7 +9,7 @@ export interface DocumentPdfItem {
 }
 
 export interface DocumentPdfInput {
-  kind:           "DEVIS" | "FACTURE" | "BOUTIQUE"
+  kind:           "DEVIS" | "FACTURE" | "BOUTIQUE" | "MATERIEL_LOAN"
   number:         string
   issueDate:      Date
   secondaryLabel: string
@@ -148,7 +148,10 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
     text(str, rightX - f.widthOfTextAtSize(str, size), size, opts)
   }
 
-  const title = input.kind === "DEVIS" ? "DEVIS" : input.kind === "FACTURE" ? "FACTURE" : "REÇU"
+  const title = input.kind === "DEVIS" ? "DEVIS"
+    : input.kind === "FACTURE"       ? "FACTURE"
+    : input.kind === "MATERIEL_LOAN" ? "BON DE PRÊT"
+    : "REÇU"
 
   // ── En-tête ──────────────────────────────────────────────────────────
   // Restrained on purpose — the accent color shows through the title, the rule below
