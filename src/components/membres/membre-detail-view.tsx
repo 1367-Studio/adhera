@@ -7,7 +7,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
-  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon,
+  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
 import { useCreateCotisation } from "@/hooks/use-cotisations"
@@ -35,6 +35,23 @@ const ROLE_LABELS: Record<string, string> = {
   TRESORIER:  "Trésorier",
   SECRETAIRE: "Secrétaire",
   MEMBRE:     "Membre",
+}
+
+const CIVILITE_LABELS: Record<string, string> = {
+  MME:  "Mme",
+  MLLE: "Mlle",
+  M:    "M.",
+}
+
+const GROUPE_SANGUIN_LABELS: Record<string, string> = {
+  A_POSITIF:  "A+",
+  A_NEGATIF:  "A-",
+  B_POSITIF:  "B+",
+  B_NEGATIF:  "B-",
+  AB_POSITIF: "AB+",
+  AB_NEGATIF: "AB-",
+  O_POSITIF:  "O+",
+  O_NEGATIF:  "O-",
 }
 
 const statusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -199,7 +216,7 @@ export function MembreDetailView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contact</p>
           {membre.email && (
@@ -222,10 +239,29 @@ export function MembreDetailView() {
             <CalendarIcon className="size-3.5" />
             Adhésion : {format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr })}
           </p>
+          {membre.type && <p className="text-muted-foreground">Type : {membre.type.name}</p>}
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Informations personnelles</p>
+          {membre.civilite && (
+            <p className="text-muted-foreground">Civilité : {CIVILITE_LABELS[membre.civilite] ?? membre.civilite}</p>
+          )}
           {membre.birthDate && (
             <p className="text-muted-foreground">Naissance : {format(new Date(membre.birthDate), "dd/MM/yyyy", { locale: fr })}</p>
           )}
-          {membre.type && <p className="text-muted-foreground">Type : {membre.type.name}</p>}
+          {membre.groupeSanguin && (
+            <p className="text-muted-foreground">Groupe sanguin : {GROUPE_SANGUIN_LABELS[membre.groupeSanguin] ?? membre.groupeSanguin}</p>
+          )}
+          {membre.allergies && (
+            <p className="flex items-start gap-1.5 text-muted-foreground">
+              <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
+              <span>Allergies : {membre.allergies}</span>
+            </p>
+          )}
+          {!membre.civilite && !membre.birthDate && !membre.groupeSanguin && !membre.allergies && (
+            <p className="text-muted-foreground">Aucune information renseignée</p>
+          )}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
