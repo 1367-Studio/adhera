@@ -209,6 +209,23 @@ enum OrganismeCategory {
   ORGANISME_UE_SIMILAIRE
 }
 
+enum Civilite {
+  MME
+  MLLE
+  M
+}
+
+enum GroupeSanguin {
+  A_POSITIF
+  A_NEGATIF
+  B_POSITIF
+  B_NEGATIF
+  AB_POSITIF
+  AB_NEGATIF
+  O_POSITIF
+  O_NEGATIF
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
@@ -362,6 +379,9 @@ model Membre {
   phone         String?
   birthDate     DateTime?
   address       String?
+  civilite      Civilite?
+  groupeSanguin GroupeSanguin?
+  allergies     String?
   status        MembreStatus @default(ACTIF)
   typeId        String?
   associationId String
