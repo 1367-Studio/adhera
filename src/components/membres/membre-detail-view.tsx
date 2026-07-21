@@ -405,6 +405,7 @@ export function MembreDetailView() {
             civilite:      membre.civilite      ?? "",
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
+            photoUrl:      membre.photoUrl      ?? "",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}

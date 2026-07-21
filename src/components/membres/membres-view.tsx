@@ -32,6 +32,7 @@ type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
 type Membre = {
   id:            string
+  photoUrl:      string | null
   firstName:     string
   lastName:      string
   email:         string | null
@@ -438,6 +439,7 @@ export function MembresView() {
             civilite:      editTarget.civilite      ?? "",
             groupeSanguin: editTarget.groupeSanguin ?? "",
             allergies:     editTarget.allergies     ?? "",
+            photoUrl:      editTarget.photoUrl      ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

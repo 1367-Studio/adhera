@@ -10,6 +10,7 @@ import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Button } from "@/components/ui/button"
+import { ImageUpload } from "../ui/image-upload"
 
 const statusOptions = [
   { value: "PENDING",  label: "En attente" },
@@ -79,6 +80,21 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+      <Controller
+        name="photoUrl"
+        control={control}
+        render={({ field }) => (
+          <div className="flex justify-center">
+            <ImageUpload
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              prefix="membres"
+              aspectRatio="square"
+              className="w-32"
+            />
+          </div>
+        )}
+      />
       <div className="grid grid-cols-2 gap-4">
         <FormField
           label="Prénom"
