@@ -382,6 +382,7 @@ model Membre {
   civilite      Civilite?
   groupeSanguin GroupeSanguin?
   allergies     String?
+  photoUrl      String?
   status        MembreStatus @default(ACTIF)
   typeId        String?
   associationId String
