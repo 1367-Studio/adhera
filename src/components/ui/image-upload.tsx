@@ -15,6 +15,10 @@ interface ImageUploadProps {
    *  and onFilePending is called with the File so the consumer can upload at save time. */
   lazy?: boolean
   onFilePending?: (blobUrl: string, file: File, prefix: string) => void
+  /** Upload endpoint — defaults to the admin route. Pass "/api/portal/upload" for
+   *  member-facing forms so the request goes through withPortalAuth instead of
+   *  withAdminAuth. */
+  uploadUrl?: string
 }
 
 const RATIOS = {
@@ -31,6 +35,7 @@ export function ImageUpload({
   className,
   lazy = false,
   onFilePending,
+  uploadUrl = "/api/upload",
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [dragging,  setDragging]  = useState(false)
@@ -52,7 +57,7 @@ export function ImageUpload({
       const fd = new FormData()
       fd.append("file", file)
       fd.append("prefix", prefix)
-      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      const res = await fetch(uploadUrl, { method: "POST", body: fd })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
         toast.error(body.error ?? "Erreur lors de l'upload")
