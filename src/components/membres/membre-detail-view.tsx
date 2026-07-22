@@ -148,14 +148,16 @@ export function MembreDetailView() {
     )
   }
 
-  const statusInfo     = statusBadge[membre.status]
-  const cotisations    = membre.cotisations ?? []
-  const participations = membre.participations ?? []
-  const materialLoans  = membre.materialLoans ?? []
-  const cotisationsTotal    = membre._count?.cotisations    ?? cotisations.length
-  const participationsTotal = membre._count?.participations ?? participations.length
-  const materialLoansTotal  = membre._count?.materialLoans  ?? materialLoans.length
-  const TAB_PAGE_SIZE = 50
+  const statusInfo            = statusBadge[membre.status]
+  const cotisations           = membre.cotisations ?? []
+  const participations        = membre.participations ?? []
+  const meetingsAsParticipant = membre.meetingsAsParticipant ?? []
+  const materialLoans         = membre.materialLoans ?? []
+  const cotisationsTotal      = membre._count?.cotisations    ?? cotisations.length
+  const participationsTotal   = membre._count?.participations ?? participations.length
+  const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
+  const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
+  const TAB_PAGE_SIZE         = 50
 
   return (
     <div className="space-y-4 mt-4">
@@ -291,10 +293,11 @@ export function MembreDetailView() {
         </div>
       </div>
 
-      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.materiel ? "materiel" : "historique"}>
+      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : "historique"}>
         <TabsList>
           {modules.cotisations && <TabsTrigger value="cotisations">Cotisations</TabsTrigger>}
           {modules.evenements && <TabsTrigger value="evenements">Événements</TabsTrigger>}
+          {modules.reunions && <TabsTrigger value="reunions">Réunions</TabsTrigger>}
           {modules.materiel && <TabsTrigger value="materiel">Matériel</TabsTrigger>}
           <TabsTrigger value="historique">Historique</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
@@ -359,6 +362,39 @@ export function MembreDetailView() {
           {participationsTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
               Affichage des {TAB_PAGE_SIZE} participations les plus récentes sur {participationsTotal} au total.
+            </p>
+          )}
+        </TabsContent>
+        )}
+
+        {modules.reunions && (
+        <TabsContent value="reunions" className="pt-3">
+          {meetingsAsParticipant.length === 0 ? (
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune réunion enregistrée</p>
+          ) : (
+            <div className="space-y-2">
+              {meetingsAsParticipant.map((mp) => (
+                <div key={mp.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
+                  <div>
+                    <p className="font-medium">{mp.meeting.title}</p>
+                    {mp.meeting.scheduledAt && (
+                      <p className="text-xs text-muted-foreground">{format(new Date(mp.meeting.scheduledAt), "dd/MM/yyyy", { locale: fr })}</p>
+                    )}
+                  </div>
+                  {mp.meeting.status === "ENDED" ? (
+                    mp.joinedAt
+                      ? <Badge variant="default">A participé</Badge>
+                      : <Badge variant="secondary">N&apos;a pas participé</Badge>
+                  ) : (
+                    <Badge variant="outline">Convoqué</Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {meetingsTotal > TAB_PAGE_SIZE && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Affichage des {TAB_PAGE_SIZE} réunions les plus récentes sur {meetingsTotal} au total.
             </p>
           )}
         </TabsContent>
