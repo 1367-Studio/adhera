@@ -43,7 +43,7 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { phone, address, birthDate, civilite, groupeSanguin, ...rest } = parsed.data
+  const { phone, address, birthDate, civilite, groupeSanguin, allergies, photoUrl, ...rest } = parsed.data
   const updated = await prisma.membre.update({
     where: { id: membre.id },
     data: {
@@ -53,6 +53,8 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
       ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
       ...(civilite      !== undefined ? { civilite:      civilite      || null } : {}),
       ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),
+      ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
+      ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
     },
   })
 

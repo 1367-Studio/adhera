@@ -91,6 +91,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               prefix="membres"
               aspectRatio="square"
               className="w-32"
+              compact
             />
           </div>
         )}

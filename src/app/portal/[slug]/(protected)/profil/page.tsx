@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,9 +9,11 @@ import { toast } from "sonner"
 import { UserIcon, PhoneIcon, MapPinIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { portalFetch } from "@/lib/portal-fetch"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -86,6 +89,7 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
 
 export default function ProfilPage() {
   const qc = useQueryClient()
+  const [removePhotoOpen, setRemovePhotoOpen] = useState(false)
 
   const { data: membre, isLoading } = useQuery<Membre>({
     queryKey: ["portal-profil"],
@@ -93,7 +97,7 @@ export default function ProfilPage() {
     staleTime: 0,
   })
 
-  const { register, control, handleSubmit, getValues, formState: { errors, isDirty } } = useForm<FormValues>({
+  const { register, control, handleSubmit, setValue, formState: { errors, isDirty } } = useForm<FormValues>({
     resolver:      zodResolver(schema),
     values: membre ? {
       phone:     membre.phone     ?? "",
@@ -119,6 +123,38 @@ export default function ProfilPage() {
     },
     onError: () => toast.error("Erreur lors de la mise à jour"),
   })
+
+  // Kept separate from `mutation`: the photo saves itself the moment it's picked, so it
+  // must never carry along whatever the member happens to be mid-typing (and hasn't
+  // validated/submitted yet) in the rest of the form.
+  const photoMutation = useMutation({
+    mutationFn: async (photoUrl: string) => {
+      const r = await fetch("/api/portal/profil", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photoUrl }) })
+      if (!r.ok) throw new Error(await r.text())
+      return r.json()
+    },
+    onSuccess: () => {
+      toast.success("Photo mise à jour")
+      qc.invalidateQueries({ queryKey: ["portal-profil"] })
+      qc.invalidateQueries({ queryKey: ["membres"] })
+    },
+    onError: () => toast.error("Erreur lors de la mise à jour de la photo"),
+  })
+
+  function handlePhotoChange(url: string) {
+    if (!url) {
+      setRemovePhotoOpen(true)
+      return
+    }
+    setValue("photoUrl", url)
+    photoMutation.mutate(url)
+  }
+
+  async function confirmRemovePhoto() {
+    await photoMutation.mutateAsync("")
+    setValue("photoUrl", "")
+    setRemovePhotoOpen(false)
+  }
 
   if (isLoading) {
     return (
@@ -188,14 +224,12 @@ export default function ProfilPage() {
               render={({ field }) => (
                 <ImageUpload
                   value={field.value ?? ""}
-                  onChange={(url) => {
-                    field.onChange(url)
-                    mutation.mutate({ ...getValues(), photoUrl: url })
-                  }}
+                  onChange={handlePhotoChange}
                   prefix="membres"
                   aspectRatio="square"
                   className="w-24"
                   uploadUrl="/api/portal/upload"
+                  compact
                 />
               )}
             />
@@ -308,7 +342,7 @@ export default function ProfilPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="allergies">Allergies connues</Label>
-              <Input id="allergies" placeholder="Arachides, pollen…" {...register("allergies")} />
+              <Textarea id="allergies" rows={2} placeholder="Arachides, pollen…" {...register("allergies")} />
               {errors.allergies && <p className="text-destructive text-xs">{errors.allergies.message}</p>}
             </div>
 
@@ -319,6 +353,16 @@ export default function ProfilPage() {
         </CardContent>
       </Card>
       </div>
+
+      <ConfirmDialog
+        open={removePhotoOpen}
+        onOpenChange={setRemovePhotoOpen}
+        title="Retirer la photo de profil ?"
+        description="Vous pourrez en ajouter une nouvelle à tout moment."
+        confirmLabel="Retirer"
+        loading={photoMutation.isPending}
+        onConfirm={confirmRemovePhoto}
+      />
     </div>
   )
 }
