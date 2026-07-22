@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from "@/hooks/use-incomes"
@@ -28,6 +28,7 @@ type Income = {
   source:      string
   reference:   string | null
   paymentMethod: string | null
+  facturePaymentId: string | null
   category:    { name: string } | null
   membre:      { firstName: string; lastName: string } | null
   reconciliations: { id: string }[]
@@ -123,6 +124,11 @@ export function IncomesView() {
             {i.category && <span className="text-xs text-muted-foreground">{i.category.name}</span>}
             {i.paymentMethod && <span className="text-xs text-muted-foreground">· {i.paymentMethod}</span>}
             {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
+            {i.facturePaymentId && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title="Générée automatiquement depuis le paiement d'une facture — modifiable uniquement depuis Factures">
+                <ReceiptIcon className="size-3" /> Depuis une facture
+              </span>
+            )}
           </div>
         </div>
       ),
@@ -149,7 +155,12 @@ export function IncomesView() {
       cell: (i) => (
         <RowActions actions={[
           { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(i) },
+          {
+            label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            onClick: () => i.facturePaymentId
+              ? toast.error("Cette recette vient d'une facture — supprimez plutôt le paiement depuis Factures.")
+              : setDeleteTarget(i),
+          },
         ]} />
       ),
     },
@@ -236,6 +247,7 @@ export function IncomesView() {
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          locked={!!editTarget?.facturePaymentId}
         />
       </Modal>
 

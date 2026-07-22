@@ -14,12 +14,18 @@ class OverpaymentError extends Error {
   constructor(public remaining: number) { super("overpayment") }
 }
 
+function incomeDescription(existing: { number: string; materialLoan: { material: { name: string } } | null; fournisseur: { companyName: string } | null }): string {
+  if (existing.materialLoan) return `Prêt matériel — ${existing.materialLoan.material.name} (Facture ${existing.number})`
+  if (existing.fournisseur)  return `Facture ${existing.number} — ${existing.fournisseur.companyName}`
+  return `Facture ${existing.number}`
+}
+
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
   const existing = await prisma.facture.findFirst({
     where:   { id, associationId, deletedAt: null },
-    include: { materialLoan: { include: { material: true } } },
+    include: { materialLoan: { include: { material: true } }, fournisseur: { select: { companyName: true } } },
   })
   if (!existing) return NextResponse.json({ error: "Facture introuvable" }, { status: 404 })
   if (existing.status === "ANNULEE") {
@@ -46,12 +52,14 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // two concurrent payments would together exceed the total, since Postgres serializes the
     // two increments and whichever one pushes amountPaid past the total gets rolled back here.
     const facture = await prisma.$transaction(async (tx) => {
-      await tx.facturePayment.create({
+      const paymentDate = paidAt ? new Date(paidAt) : new Date()
+
+      const payment = await tx.facturePayment.create({
         data: {
           factureId: id,
           amount,
           method,
-          paidAt: paidAt ? new Date(paidAt) : new Date(),
+          paidAt: paymentDate,
           note:   note || null,
         },
       })
@@ -68,25 +76,24 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       }
       const newStatus = amountPaid >= total - EPSILON ? "PAYEE" : amountPaid > 0 ? "PARTIELLEMENT_PAYEE" : updated.status
 
-      // A facture generated from a matériel loan (Fase F) has no bridge to Income otherwise —
-      // recording its payment here is the only place that happens, so lettrage comptable can
-      // pick it up like any other recette via BankReconciliation.
-      if (existing.materialLoan) {
-        await tx.income.create({
-          data: {
-            associationId,
-            memberId:    existing.materialLoan.membreId,
-            amount,
-            categoryId:  existing.materialLoan.material.categoryId,
-            paymentMethod: method,
-            date:        paidAt ? new Date(paidAt) : new Date(),
-            description: `Prêt matériel — ${existing.materialLoan.material.name} (Facture ${existing.number})`,
-            source:      "MANUAL",
-            status:      "PAID",
-            reference:   existing.number,
-          },
-        })
-      }
+      // Every Facture payment (devis-billed, fournisseur-billed, or material-loan-billed)
+      // feeds Income the same way. facturePaymentId is the reversible link that DELETE
+      // .../paiements/[paymentId] uses to remove this row again if the payment is deleted.
+      await tx.income.create({
+        data: {
+          associationId,
+          memberId:         existing.materialLoan?.membreId ?? null,
+          facturePaymentId: payment.id,
+          amount,
+          categoryId:    existing.materialLoan?.material.categoryId ?? null,
+          paymentMethod: method,
+          date:          paymentDate,
+          description:   incomeDescription(existing),
+          source:        "MANUAL",
+          status:        "PAID",
+          reference:     existing.number,
+        },
+      })
 
       return tx.facture.update({
         where: { id },

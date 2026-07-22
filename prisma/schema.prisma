@@ -1000,24 +1000,26 @@ model FinanceCategory {
 }
 
 model Income {
-  id              String       @id @default(cuid())
-  associationId   String
-  memberId        String?
-  participationId String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
-  amount          Decimal      @db.Decimal(10, 2)
-  categoryId      String?
-  paymentMethod   String?
-  date            DateTime
-  description     String?
-  source          IncomeSource @default(MANUAL)
-  status          IncomeStatus @default(PENDING)
-  reference       String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id                String       @id @default(cuid())
+  associationId     String
+  memberId          String?
+  participationId   String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
+  facturePaymentId  String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
+  amount            Decimal      @db.Decimal(10, 2)
+  categoryId        String?
+  paymentMethod     String?
+  date              DateTime
+  description       String?
+  source            IncomeSource @default(MANUAL)
+  status            IncomeStatus @default(PENDING)
+  reference         String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre          Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
   participation   Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  facturePayment  FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
@@ -1026,20 +1028,22 @@ model Income {
 }
 
 model Expense {
-  id            String        @id @default(cuid())
-  associationId String
-  amount        Decimal       @db.Decimal(10, 2)
-  categoryId    String?
-  date          DateTime
-  vendor        String?
-  description   String?
-  receiptUrl    String?
-  internalNote  String?
-  status        ExpenseStatus @default(DRAFT)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  associationId  String
+  factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
+  amount         Decimal       @db.Decimal(10, 2)
+  categoryId     String?
+  date           DateTime
+  vendor         String?
+  description    String?
+  receiptUrl     String?
+  internalNote   String?
+  status         ExpenseStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
@@ -1232,6 +1236,7 @@ model FacturePayment {
   createdAt DateTime @default(now())
 
   facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  income  Income?
 
   @@index([factureId, paidAt])
 }
@@ -1260,6 +1265,7 @@ model FactureRecue {
 
   association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
   fournisseur Fournisseur? @relation(fields: [fournisseurId], references: [id])
+  expense     Expense?
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])

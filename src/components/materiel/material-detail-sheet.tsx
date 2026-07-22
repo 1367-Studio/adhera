@@ -5,13 +5,14 @@ import { toast } from "sonner"
 import { format, formatDistanceStrict } from "date-fns"
 import { fr } from "date-fns/locale"
 import Link from "next/link"
-import { PlusIcon, CheckIcon, TrashIcon, PencilSimpleIcon, MapPinIcon, HashIcon, PackageIcon, WarningCircleIcon, XIcon, ClockIcon, ArrowElbowDownLeftIcon, FilePdfIcon, EnvelopeSimpleIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, CheckIcon, TrashIcon, PencilSimpleIcon, MapPinIcon, HashIcon, PackageIcon, WarningCircleIcon, XIcon, ClockIcon, ArrowElbowDownLeftIcon, FilePdfIcon, EnvelopeSimpleIcon, ReceiptIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMaterialDetail, useReturnLoan, useConfirmLoan, useRefuseLoan, useDeleteLoan, useDeleteMaterial, useSendLoanEmail, useGenerateLoanFacture, type Material, type MaterialLoan } from "@/hooks/use-materiel"
 import { LoanModal } from "@/components/materiel/loan-modal"
 import { MaterialModal } from "@/components/materiel/material-modal"
@@ -27,6 +28,24 @@ const STATUS_CONFIG = {
   EN_MAINTENANCE: { label: "En maintenance",  classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
   HORS_SERVICE:   { label: "Hors service",    classes: "bg-muted text-muted-foreground" },
   PERDU:          { label: "Perdu",           classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+}
+
+// The PDF/e-mail/facture icons on each loan row look interchangeable at a glance but do very
+// different things (a throwaway receipt vs. a real, payable invoice) — this spells that out
+// once instead of leaving people to guess from a bare icon `title` tooltip.
+function LoanActionsHelp() {
+  return (
+    <Tooltip>
+      <TooltipTrigger className="text-muted-foreground hover:text-foreground" aria-label="Que font ces icônes ?">
+        <InfoIcon className="size-3.5" />
+      </TooltipTrigger>
+      <TooltipContent side="right" className="flex-col items-start gap-1.5 max-w-64 text-left whitespace-normal">
+        <p className="flex items-start gap-1.5"><FilePdfIcon className="size-3 shrink-0 mt-0.5" /><span><strong>PDF</strong> — le bon de prêt, à consulter ou imprimer tout de suite.</span></p>
+        <p className="flex items-start gap-1.5"><EnvelopeSimpleIcon className="size-3 shrink-0 mt-0.5" /><span><strong>E-mail</strong> — envoie ce même bon de prêt à l'emprunteur.</span></p>
+        <p className="flex items-start gap-1.5"><ReceiptIcon className="size-3 shrink-0 mt-0.5" /><span><strong>Facture</strong> — crée une vraie facture payable dans Factures (différent du bon de prêt).</span></p>
+      </TooltipContent>
+    </Tooltip>
+  )
 }
 
 function borrowerLabel(loan: MaterialLoan): string {
@@ -66,7 +85,7 @@ function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: Mater
   if (loan.facture) {
     return (
       <Link
-        href={`${BASE_PATH}/dashboard/factures?search=${encodeURIComponent(loan.facture.number)}`}
+        href={`/dashboard/factures?search=${encodeURIComponent(loan.facture.number)}`}
         className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/70 transition-colors"
         title={`Voir la facture ${loan.facture.number}`}
       >
@@ -320,9 +339,10 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                 {/* Active loans */}
                 <div className="px-5 py-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">
+                    <h3 className="text-sm font-semibold flex items-center gap-1.5">
                       Prêts &amp; réservations
                       {activeLoans.length > 0 && <span className="ml-1.5 text-muted-foreground font-normal">({activeLoans.length})</span>}
+                      <LoanActionsHelp />
                     </h3>
                     {/* Not gated on availableQty === 0 — that reflects only today's stock, but
                         the modal still lets you register a future-dated reservation for an

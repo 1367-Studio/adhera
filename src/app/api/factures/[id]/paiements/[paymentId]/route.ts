@@ -18,6 +18,20 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
 
   try {
     const updated = await prisma.$transaction(async (tx) => {
+      // Mirrors the event-ticket cancel-payment/cancel-ticket pattern: drop any bank
+      // reconciliation pointing at the linked Income (and reset that bank transaction to
+      // UNMATCHED) before deleting the Income itself, so nothing is left reconciled
+      // against a row that no longer exists.
+      const linkedIncome = await tx.income.findUnique({ where: { facturePaymentId: paymentId }, select: { id: true } })
+      if (linkedIncome) {
+        const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: linkedIncome.id }, select: { bankTransactionId: true } })
+        await tx.bankReconciliation.deleteMany({ where: { incomeId: linkedIncome.id } })
+        if (reconciliations.length > 0) {
+          await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+        }
+        await tx.income.delete({ where: { id: linkedIncome.id } })
+      }
+
       await tx.facturePayment.delete({ where: { id: paymentId } })
 
       const result = await tx.facture.update({
