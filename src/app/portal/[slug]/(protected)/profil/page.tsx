@@ -200,12 +200,16 @@ export default function ProfilPage() {
               )}
             />
           </div>
-          <div>
+          <div className="grid col-span-2">
             <p className="text-muted-foreground text-xs mb-0.5">Email</p>
             <p className="flex items-center gap-1.5">
               <EnvelopeSimpleIcon className="size-3 text-muted-foreground shrink-0" />
               {membre.email ?? <span className="text-muted-foreground italic">Non renseigné</span>}
             </p>
+          </div>
+          <div className="flex justify-center gap-1.5">
+            <p className="text-muted-foreground text-xs mb-0.5">Statut</p>
+            <Badge variant={statusVariant[membre.status]}>{statusLabel[membre.status]}</Badge>
           </div>
           <div>
             <p className="text-muted-foreground text-xs mb-0.5">Date de naissance</p>
@@ -216,10 +220,6 @@ export default function ProfilPage() {
                 : <span className="text-muted-foreground italic">Non renseignée</span>
               }
             </p>
-          </div>
-          <div>
-            <p className="text-muted-foreground text-xs mb-0.5">Statut</p>
-            <Badge variant={statusVariant[membre.status]}>{statusLabel[membre.status]}</Badge>
           </div>
         </CardContent>
       </Card>

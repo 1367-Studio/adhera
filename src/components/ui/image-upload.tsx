@@ -132,8 +132,8 @@ export function ImageUpload({
           ) : (
             <>
               <ImageIcon className="size-5" />
-              <span className="text-xs font-medium">Glisser ou cliquer pour ajouter une image</span>
-              <span className="text-[11px] opacity-60">JPG, PNG, WebP · max 5 Mo</span>
+              <span className="text-xs font-medium">Glisser/cliquer pour ajouter image <small className="text-xs opacity-60">JPG, PNG, WebP · max 5 Mo</small></span>
+
             </>
           )}
         </button>
