@@ -32,6 +32,7 @@ type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
 type Membre = {
   id:            string
+  photoUrl:      string | null
   firstName:     string
   lastName:      string
   email:         string | null
@@ -246,18 +247,32 @@ export function MembresView() {
       key: "name",
       header: "Membre",
       cell: (m) => (
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-medium">{m.lastName} {m.firstName}</p>
-            {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
-            {m.user && m.user.role !== "MEMBRE" && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
-                <ShieldIcon className="size-2.5" />
-                {ROLE_LABELS[m.user.role]}
-              </span>
-            )}
+        <div className="flex items-center gap-2.5">
+          {m.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={m.photoUrl}
+              alt=""
+              className="size-8 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="size-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground shrink-0">
+              {m.firstName[0]}{m.lastName[0]}
+            </div>
+          )}
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="font-medium">{m.lastName} {m.firstName}</p>
+              {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
+              {m.user && m.user.role !== "MEMBRE" && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
+                  <ShieldIcon className="size-2.5" />
+                  {ROLE_LABELS[m.user.role]}
+                </span>
+              )}
+            </div>
+            {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
           </div>
-          {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
         </div>
       ),
     },
@@ -438,6 +453,7 @@ export function MembresView() {
             civilite:      editTarget.civilite      ?? "",
             groupeSanguin: editTarget.groupeSanguin ?? "",
             allergies:     editTarget.allergies     ?? "",
+            photoUrl:      editTarget.photoUrl      ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

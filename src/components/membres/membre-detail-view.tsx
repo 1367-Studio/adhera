@@ -165,6 +165,18 @@ export function MembreDetailView() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
+              {membre.photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={membre.photoUrl}
+                  alt=""
+                  className="size-14 rounded-full object-cover shrink-0"
+                />
+              ) : (
+                <div className="size-14 rounded-full bg-muted flex items-center justify-center text-base font-medium text-muted-foreground shrink-0">
+                  {membre.firstName[0]}{membre.lastName[0]}
+                </div>
+              )}
               <h1 className="text-xl font-semibold">{membre.firstName} {membre.lastName}</h1>
               <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
               {membre.type && <MembreTypeBadge name={membre.type.name} color={membre.type.color} />}
@@ -405,6 +417,7 @@ export function MembreDetailView() {
             civilite:      membre.civilite      ?? "",
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
+            photoUrl:      membre.photoUrl      ?? "",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}

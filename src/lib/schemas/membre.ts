@@ -23,6 +23,7 @@ export const membreSchema = z.object({
     "O_POSITIF", "O_NEGATIF",
   ]).optional().or(z.literal("")),
   allergies:     z.string().trim().optional().or(z.literal("")),
+  photoUrl:     z.string().trim().optional().or(z.literal("")),
   status:    z.enum(["PENDING", "ACTIF", "INACTIF", "SUSPENDU"]),
   typeId:    z.string().optional().or(z.literal("")),
 })
