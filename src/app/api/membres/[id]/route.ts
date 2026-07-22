@@ -14,12 +14,13 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     include: {
       cotisations:    { orderBy: { year: "desc" }, take: 50 },
       participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
+      meetingsAsParticipant: { include: {  meeting: {select: { id: true, title: true, status: true, scheduledAt: true }}}, orderBy: { meeting: { scheduledAt: "desc" } }, take: 50 },
       materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
       type:           { select: { id: true, name: true, color: true } },
       user:           { select: { role: true } },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
-      _count: { select: { cotisations: true, participations: true, materialLoans: true } },
+      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true } },
     },
   })
 
