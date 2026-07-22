@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
+import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { useCreateMaterial, useUpdateMaterial, type Material, type MaterialInput, type MaterialStatus } from "@/hooks/use-materiel"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
@@ -25,8 +26,8 @@ const schema = z.object({
   status:        z.enum(["DISPONIBLE", "EN_USE", "EN_MAINTENANCE", "HORS_SERVICE", "PERDU"]),
   location:      z.string().max(150).optional(),
   purchaseDate:  z.string().optional(),
-  purchasePrice: z.string().optional(),
-  rentalRate:    z.string().optional(),
+  purchasePrice: z.number().optional(),
+  rentalRate:    z.number().optional(),
   notes:         z.string().max(1000).optional(),
 })
 
@@ -113,10 +114,10 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
       status:        material.status,
       location:      material.location ?? "",
       purchaseDate:  material.purchaseDate ? material.purchaseDate.slice(0, 10) : "",
-      purchasePrice: material.purchasePrice ? String(material.purchasePrice) : "",
-      rentalRate:    material.rentalRate ? String(material.rentalRate) : "",
+      purchasePrice: material.purchasePrice ? Number(material.purchasePrice) : 0,
+      rentalRate:    material.rentalRate ? Number(material.rentalRate) : 0,
       notes:         material.notes ?? "",
-    } : { name: "", quantity: 1, status: "DISPONIBLE", category: "", categoryId: "", imageUrl: "", description: "", serialNumber: "", location: "", purchaseDate: "", purchasePrice: "", rentalRate: "", notes: "" })
+    } : { name: "", quantity: 1, status: "DISPONIBLE", category: "", categoryId: "", imageUrl: "", description: "", serialNumber: "", location: "", purchaseDate: "", purchasePrice: 0, rentalRate: 0, notes: "" })
   }, [open, material, reset])
 
   async function onSubmit(values: FormValues) {
@@ -141,8 +142,8 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
       status:        values.status as MaterialStatus,
       location:      values.location || null,
       purchaseDate:  values.purchaseDate || null,
-      purchasePrice: values.purchasePrice ? parseFloat(values.purchasePrice) : null,
-      rentalRate:    values.rentalRate ? parseFloat(values.rentalRate) : null,
+      purchasePrice: values.purchasePrice || null,
+      rentalRate:    values.rentalRate || null,
       notes:         values.notes || null,
     }
     try {
@@ -175,7 +176,7 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
                 onChange={url => { if (url === "") setPendingFile(null); field.onChange(url) }}
                 prefix="materiel"
                 aspectRatio="video"
-                className="max-w-xs"
+                className="w-full"
                 lazy
                 onFilePending={(blobUrl, file) => setPendingFile({ blobUrl, file })}
               />
@@ -220,15 +221,29 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
 
         <div className="grid grid-cols-2 gap-3">
           <FormField label="Date d'achat" type="date" {...register("purchaseDate")} />
-          <FormField label="Prix d'achat (€)" type="number" step="0.01" min={0} placeholder="0.00" {...register("purchasePrice")} />
+          <Controller
+            name="purchasePrice"
+            control={control}
+            render={({ field }) => (
+              <CurrencyField label="Prix d'achat" value={field.value ?? 0} onChange={field.onChange} onBlur={field.onBlur} error={errors.purchasePrice?.message} />
+            )}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField
-            label="Tarif de prêt par défaut (€ / unité)"
-            type="number" step="0.01" min={0} placeholder="0.00"
-            hint="Pré-remplit le tarif à chaque nouveau prêt — facturé × la quantité empruntée"
-            {...register("rentalRate")}
+          <Controller
+            name="rentalRate"
+            control={control}
+            render={({ field }) => (
+              <CurrencyField
+                label="Tarif de prêt par défaut (€ / unité)"
+                hint="Pré-remplit le tarif à chaque nouveau prêt — facturé × la quantité empruntée"
+                value={field.value ?? 0}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                error={errors.rentalRate?.message}
+              />
+            )}
           />
           <Controller
             name="categoryId"

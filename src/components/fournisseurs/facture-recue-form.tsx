@@ -57,7 +57,8 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
     })
   }, [defaultValues, reset])
 
-  const fileUrl = watch("fileUrl")
+  const fileUrl       = watch("fileUrl")
+  const watchedStatus = watch("status")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -122,6 +123,16 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
           <SelectField label="Statut" required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
         )}
       />
+      {defaultValues?.status === "PAYEE" && watchedStatus !== "PAYEE" && (
+        <p className="text-xs text-destructive rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
+          Ce document est actuellement payée — retirer ce statut supprimera la dépense qu&apos;il a générée dans Finances, ainsi que sa réconciliation bancaire éventuelle.
+        </p>
+      )}
+      {defaultValues?.status !== "PAYEE" && watchedStatus === "PAYEE" && (
+        <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
+          Marquer ce document comme payée créera automatiquement une dépense correspondante dans Finances.
+        </p>
+      )}
 
       <div>
         <label className="text-sm font-medium">Document</label>

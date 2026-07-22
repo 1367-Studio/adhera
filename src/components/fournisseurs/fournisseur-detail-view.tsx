@@ -75,7 +75,7 @@ export function FournisseurDetailView() {
   const [createDevisOpen, setCreateDevisOpen]     = useState(false)
   const [createFactureOpen, setCreateFactureOpen] = useState(false)
   const [createDocOpen, setCreateDocOpen] = useState(false)
-  const [deleteDocTarget, setDeleteDocTarget] = useState<{ id: string; label: string } | null>(null)
+  const [deleteDocTarget, setDeleteDocTarget] = useState<{ id: string; label: string; payee: boolean } | null>(null)
 
   const { data: fournisseur, isLoading, isError } = useFournisseur(id)
   const TAB_PAGE_SIZE = 50
@@ -391,7 +391,17 @@ export function FournisseurDetailView() {
               {documents.map(doc => (
                 <div key={doc.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                   <div>
-                    <p className="font-medium">{documentTypeLabel[doc.type] ?? doc.type}{doc.number && <span className="text-muted-foreground font-normal"> · {doc.number}</span>}</p>
+                    <p className="font-medium flex items-center gap-1.5">
+                      {documentTypeLabel[doc.type] ?? doc.type}{doc.number && <span className="text-muted-foreground font-normal"> · {doc.number}</span>}
+                      {doc.status === "PAYEE" && (
+                        <span
+                          className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                          title="Payée — génère une dépense dans Finances ; la supprimer ou changer son statut supprime aussi cette dépense"
+                        >
+                          <ReceiptIcon className="size-3" /> Dans Finances
+                        </span>
+                      )}
+                    </p>
                     <p className="text-xs text-muted-foreground">{format(new Date(doc.issueDate), "dd/MM/yyyy", { locale: fr })} · {fmt(doc.amount)}</p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -399,7 +409,7 @@ export function FournisseurDetailView() {
                       <ArrowSquareOutIcon className="size-4" />
                     </a>
                     <RowActions actions={[
-                      { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type }) },
+                      { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
                     ]} />
                   </div>
                 </div>
@@ -496,7 +506,11 @@ export function FournisseurDetailView() {
         open={!!deleteDocTarget}
         onOpenChange={(open) => !open && setDeleteDocTarget(null)}
         title={`Supprimer ce document ?`}
-        description="Cette action est irréversible."
+        description={
+          deleteDocTarget?.payee
+            ? "Cette action est irréversible. Ce document est marqué payée : la dépense qu'il a générée dans Finances (et sa réconciliation bancaire éventuelle) sera supprimée avec lui."
+            : "Cette action est irréversible."
+        }
         confirmLabel="Supprimer"
         loading={deleteDocMutation.isPending}
         onConfirm={handleDeleteDoc}

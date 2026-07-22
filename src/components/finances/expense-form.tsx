@@ -23,9 +23,13 @@ interface ExpenseFormProps {
   onSubmit:  (data: ExpenseInput) => Promise<void>
   onCancel:  () => void
   loading?:  boolean
+  // True when this row was auto-created from a FactureRecue marked payée — amount/date/
+  // status/vendor mirror that document, so they're locked here; category/notes stay
+  // editable since they're association-side annotations.
+  locked?: boolean
 }
 
-export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading }: ExpenseFormProps) {
+export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked }: ExpenseFormProps) {
   const { data: categories = [] } = useFinanceCategories("EXPENSE")
   const categoryOptions = [
     { value: "", label: "Aucune catégorie" },
@@ -82,15 +86,21 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading }: Expe
 
   return (
     <form onSubmit={handleSubmit(submit)} className="space-y-4" noValidate>
+      {locked && (
+        <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
+          Montant, date, statut et fournisseur viennent de la facture reçue d&apos;origine — modifiez-les depuis Fournisseurs. Catégorie et notes restent modifiables ici.
+        </p>
+      )}
+
       <div className="grid grid-cols-2 gap-4">
         <Controller
           name="amount"
           control={control}
           render={({ field }) => (
-            <CurrencyField label="Montant" required value={field.value ?? 0} onChange={field.onChange} onBlur={field.onBlur} error={errors.amount?.message} />
+            <CurrencyField label="Montant" required disabled={locked} value={field.value ?? 0} onChange={field.onChange} onBlur={field.onBlur} error={errors.amount?.message} />
           )}
         />
-        <FormField label="Date" type="date" required error={errors.date?.message} {...register("date")} />
+        <FormField label="Date" type="date" required disabled={locked} error={errors.date?.message} {...register("date")} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -101,7 +111,7 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading }: Expe
             <SelectField label="Catégorie" options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} />
           )}
         />
-        <FormField label="Fournisseur" placeholder="Ex: Décathlon" error={errors.vendor?.message} {...register("vendor")} />
+        <FormField label="Fournisseur" placeholder="Ex: Décathlon" disabled={locked} error={errors.vendor?.message} {...register("vendor")} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -109,7 +119,7 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading }: Expe
           name="status"
           control={control}
           render={({ field }) => (
-            <SelectField label="Statut" options={statusOptions} value={field.value ?? "DRAFT"} onValueChange={field.onChange} />
+            <SelectField label="Statut" options={statusOptions} disabled={locked} value={field.value ?? "DRAFT"} onValueChange={field.onChange} />
           )}
         />
         <div />

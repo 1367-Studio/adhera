@@ -20,6 +20,19 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const { date, categoryId, memberId, paymentMethod, description, reference, ...rest } = parsed.data
 
+  // Auto-created from a Facture payment — amount/date/status/reference mirror that
+  // payment and can only change by editing it from Factures. categoryId/memberId/
+  // paymentMethod/description are association-side annotations and stay editable here.
+  if (existing.facturePaymentId) {
+    const changesAmount    = rest.amount !== undefined && Number(rest.amount) !== Number(existing.amount)
+    const changesStatus    = rest.status !== undefined && rest.status !== existing.status
+    const changesDate      = date        !== undefined && new Date(date).getTime() !== existing.date.getTime()
+    const changesReference = reference   !== undefined && (reference || null) !== existing.reference
+    if (changesAmount || changesStatus || changesDate || changesReference) {
+      return NextResponse.json({ error: "Le montant, la date, le statut et la référence de cette recette viennent d'une facture — modifiez-les depuis Factures." }, { status: 409 })
+    }
+  }
+
   // If status moves away from PAID, any bank reconciliation for this income is no longer
   // valid — unlink it and reset the transaction, mirroring what DELETE already does.
   const leavesPaid = rest.status !== undefined && rest.status !== "PAID" && existing.status === "PAID"
@@ -56,6 +69,9 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   const existing = await prisma.income.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
+  if (existing.facturePaymentId) {
+    return NextResponse.json({ error: "Cette recette vient d'une facture — supprimez plutôt le paiement depuis Factures." }, { status: 409 })
+  }
 
   // Find linked bank transactions before deleting the reconciliation link
   const reconciliations = await prisma.bankReconciliation.findMany({

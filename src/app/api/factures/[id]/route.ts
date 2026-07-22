@@ -145,11 +145,34 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
     // No body sent — force stays false
   }
 
-  if (existing.status === "PAYEE" && !force) {
-    return NextResponse.json({ error: "Cette facture a été payée — confirmez la suppression.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
+  // PARTIELLEMENT_PAYEE needs the same confirmation as PAYEE — it also carries payments,
+  // each with a linked Income (+ possibly a bank reconciliation) that the delete below wipes.
+  if ((existing.status === "PAYEE" || existing.status === "PARTIELLEMENT_PAYEE") && !force) {
+    return NextResponse.json({ error: "Cette facture a des paiements enregistrés — les supprimer aussi ? Confirmez la suppression.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
   }
 
-  await prisma.facture.update({ where: { id }, data: { deletedAt: new Date() } })
+  await prisma.$transaction(async (tx) => {
+    await tx.facture.update({ where: { id }, data: { deletedAt: new Date() } })
+
+    // Soft-deleting the facture doesn't touch its FacturePayment rows (they're a real
+    // paper trail), but each one may have an auto-created, linked Income — those must be
+    // reversed here or they'd be left orphaned and, being linked, protected from ever
+    // being edited/deleted directly from Finanças. Covers PARTIELLEMENT_PAYEE too, not
+    // just PAYEE — a partial payment already created an Income the same way.
+    const linkedIncomes = await tx.income.findMany({
+      where:  { facturePayment: { factureId: id } },
+      select: { id: true },
+    })
+    if (linkedIncomes.length > 0) {
+      const incomeIds = linkedIncomes.map(i => i.id)
+      const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: { in: incomeIds } }, select: { bankTransactionId: true } })
+      await tx.bankReconciliation.deleteMany({ where: { incomeId: { in: incomeIds } } })
+      if (reconciliations.length > 0) {
+        await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+      }
+      await tx.income.deleteMany({ where: { id: { in: incomeIds } } })
+    }
+  })
 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_DELETED", entity: "Facture", entityId: id, label: existing.number })
 

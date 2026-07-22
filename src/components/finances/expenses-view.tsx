@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
@@ -26,6 +26,7 @@ type Expense = {
   status:      "DRAFT" | "VALIDATED" | "CANCELLED"
   receiptUrl:  string | null
   internalNote: string | null
+  factureRecueId: string | null
   category:    { name: string } | null
   reconciliations: { id: string }[]
 }
@@ -110,6 +111,11 @@ export function ExpensesView() {
             {e.vendor && e.description && <span className="text-xs text-muted-foreground">{e.vendor}</span>}
             {e.category && <span className="text-xs text-muted-foreground">{e.category.name}</span>}
             {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
+            {e.factureRecueId && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title="Générée automatiquement depuis une facture reçue marquée payée — modifiable uniquement depuis Fournisseurs">
+                <ReceiptIcon className="size-3" /> Depuis une facture reçue
+              </span>
+            )}
           </div>
         </div>
       ),
@@ -144,7 +150,12 @@ export function ExpensesView() {
       cell: (e) => (
         <RowActions actions={[
           { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
+          {
+            label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            onClick: () => e.factureRecueId
+              ? toast.error("Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer.")
+              : setDeleteTarget(e),
+          },
         ]} />
       ),
     },
@@ -211,6 +222,7 @@ export function ExpensesView() {
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          locked={!!editTarget?.factureRecueId}
         />
       </Modal>
 
