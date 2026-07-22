@@ -44,7 +44,6 @@ export type MembreDetail = {
       title:       string
       description: string | null
       date:        string
-      // ... demais campos de Evenement, se forem usados na tela
     }
   }[]
 
@@ -68,6 +67,7 @@ export type MembreDetail = {
       title:       string
       status:      "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED"
       scheduledAt: string | null
+      createdAt:   string
     }
   }[]
 

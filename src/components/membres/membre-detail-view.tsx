@@ -73,6 +73,17 @@ const loanStatusBadge: Record<string, { label: string; variant: "default" | "sec
   REFUSE:   { label: "Refusé",             variant: "destructive" },
 }
 
+// Same labels/variants as reunions-view.tsx's STATUS_LABELS/STATUS_VARIANTS — kept in
+// sync manually since that map isn't exported, but must stay identical: a cancelled
+// meeting showing up here as "Convoqué" (as if still upcoming) would flatly contradict
+// what the meeting's own page says about it.
+const meetingStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+  SCHEDULED: { label: "Planifiée", variant: "secondary"   },
+  LIVE:      { label: "En cours",  variant: "default"     },
+  ENDED:     { label: "Terminée",  variant: "outline"     },
+  CANCELLED: { label: "Annulée",   variant: "destructive" },
+}
+
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
 export function MembreDetailView() {
@@ -373,23 +384,32 @@ export function MembreDetailView() {
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune réunion enregistrée</p>
           ) : (
             <div className="space-y-2">
-              {meetingsAsParticipant.map((mp) => (
-                <div key={mp.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
-                  <div>
-                    <p className="font-medium">{mp.meeting.title}</p>
-                    {mp.meeting.scheduledAt && (
-                      <p className="text-xs text-muted-foreground">{format(new Date(mp.meeting.scheduledAt), "dd/MM/yyyy", { locale: fr })}</p>
+              {meetingsAsParticipant.map((mp) => {
+                // scheduledAt is null for "start now" instant meetings — fall back to
+                // createdAt (always set) rather than showing no date at all, same anchor
+                // reunions-view.tsx uses for its own date label.
+                const anchor = mp.meeting.scheduledAt ?? mp.meeting.createdAt
+                return (
+                  <button
+                    key={mp.id}
+                    type="button"
+                    onClick={() => router.push(`/dashboard/reunions/${mp.meeting.id}`)}
+                    className="flex w-full items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-left text-sm hover:bg-muted/40 transition-colors"
+                  >
+                    <div>
+                      <p className="font-medium">{mp.meeting.title}</p>
+                      <p className="text-xs text-muted-foreground">{format(new Date(anchor), "dd/MM/yyyy", { locale: fr })}</p>
+                    </div>
+                    {mp.meeting.status === "ENDED" ? (
+                      mp.joinedAt
+                        ? <Badge variant="default">A participé</Badge>
+                        : <Badge variant="secondary">N&apos;a pas participé</Badge>
+                    ) : (
+                      <Badge variant={meetingStatusBadge[mp.meeting.status].variant}>{meetingStatusBadge[mp.meeting.status].label}</Badge>
                     )}
-                  </div>
-                  {mp.meeting.status === "ENDED" ? (
-                    mp.joinedAt
-                      ? <Badge variant="default">A participé</Badge>
-                      : <Badge variant="secondary">N&apos;a pas participé</Badge>
-                  ) : (
-                    <Badge variant="outline">Convoqué</Badge>
-                  )}
-                </div>
-              ))}
+                  </button>
+                )
+              })}
             </div>
           )}
           {meetingsTotal > TAB_PAGE_SIZE && (

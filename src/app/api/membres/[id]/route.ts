@@ -14,7 +14,15 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     include: {
       cotisations:    { orderBy: { year: "desc" }, take: 50 },
       participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
-      meetingsAsParticipant: { include: {  meeting: {select: { id: true, title: true, status: true, scheduledAt: true }}}, orderBy: { meeting: { scheduledAt: "desc" } }, take: 50 },
+      // Ordered by the meeting's createdAt (always set), not scheduledAt (null for
+      // "start now" instant meetings) — same reasoning as /api/meetings's own ordering:
+      // sorting by a nullable column puts every instant meeting first regardless of how
+      // old it is, since Postgres sorts NULL first on DESC.
+      meetingsAsParticipant: {
+        include: { meeting: { select: { id: true, title: true, status: true, scheduledAt: true, createdAt: true } } },
+        orderBy: { meeting: { createdAt: "desc" } },
+        take:    50,
+      },
       materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
       type:           { select: { id: true, name: true, color: true } },
       user:           { select: { role: true } },
