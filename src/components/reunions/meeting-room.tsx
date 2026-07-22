@@ -414,6 +414,13 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
   const { data, isLoading, error } = useMeetingToken(meetingId, tokenEndpoint)
   const [kickedOut, setKickedOut] = useState(false)
 
+  // The inline error text below sits inside the pane that just replaced the whole list —
+  // easy to miss if attention isn't already there. A toast makes a real join failure (e.g.
+  // "LiveKit non configuré.") impossible to mistake for the button silently doing nothing.
+  useEffect(() => {
+    if (error) toast.error(error.message)
+  }, [error])
+
   const handleDisconnected = useCallback(() => {
     // Reason unknown at this layer (could be the meeting truly ending elsewhere, or just a
     // network blip) — treat it as a potential status change so callers refresh rather than
@@ -437,7 +444,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
   if (error || !data) {
     return (
       <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
-        <p className="text-sm text-destructive">Impossible de rejoindre la réunion.</p>
+        <p className="text-sm text-destructive">{error?.message ?? "Impossible de rejoindre la réunion."}</p>
       </div>
     )
   }

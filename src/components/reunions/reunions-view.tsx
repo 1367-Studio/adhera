@@ -4,20 +4,20 @@ import { useState, useMemo, useEffect } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
+import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, PencilSimpleIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useMeetings, useCreateMeeting, useDeleteMeeting, useMeetingEndedListener, useMeetingCreatedListener, MEETINGS_QK, type Meeting } from "@/hooks/use-meetings"
+import { useMeetings, useCreateMeeting, useUpdateMeeting, useDeleteMeeting, useMeetingEndedListener, useMeetingCreatedListener, MeetingUpdateError, MEETINGS_QK, type Meeting } from "@/hooks/use-meetings"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
-import { MeetingForm } from "@/components/reunions/meeting-form"
+import { MeetingForm, type MeetingFormValues } from "@/components/reunions/meeting-form"
 import { Badge } from "@/components/ui/badge"
 import { useCurrentUser } from "@/lib/user-context"
 
-type Membre = { id: string; firstName: string; lastName: string }
+type Membre = { id: string; firstName: string; lastName: string; status: string; typeId: string | null }
 
 const STATUS_LABELS: Record<Meeting["status"], string> = {
   SCHEDULED: "Planifiée",
@@ -33,14 +33,22 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
   CANCELLED: "destructive",
 }
 
+const TYPE_LABELS: Record<Meeting["type"], string> = {
+  AG:       "Assemblée générale",
+  BUREAU:   "Réunion de bureau",
+  GENERALE: "Réunion générale",
+}
+
 export function ReunionsView() {
   const qc = useQueryClient()
   const { id: currentUserId } = useCurrentUser()
   const { data: meetings = [], isLoading, isFetching, isError } = useMeetings()
   const createMeeting = useCreateMeeting()
+  const updateMeeting = useUpdateMeeting()
   const deleteMeeting = useDeleteMeeting()
 
   const [formOpen, setFormOpen] = useState(false)
+  const [editTarget, setEditTarget] = useState<Meeting | null>(null)
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null)
   const [refreshingId, setRefreshingId] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -87,13 +95,7 @@ export function ReunionsView() {
     },
   })
 
-  async function handleCreate(data: {
-    title: string
-    description?: string
-    scheduledAt?: string
-    participantIds?: string[]
-    instant?: boolean
-  }) {
+  async function handleCreate(data: MeetingFormValues) {
     try {
       const meeting = await createMeeting.mutateAsync(data)
       toast.success(data.instant ? "Réunion démarrée" : "Réunion planifiée")
@@ -101,6 +103,24 @@ export function ReunionsView() {
       if (data.instant) setActiveMeetingId(meeting.id)
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Erreur")
+    }
+  }
+
+  async function handleUpdate(data: MeetingFormValues) {
+    if (!editTarget) return
+    try {
+      await updateMeeting.mutateAsync({ id: editTarget.id, data })
+      toast.success("Réunion modifiée")
+      setEditTarget(null)
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erreur")
+      // 409 means the meeting stopped being editable under us (someone started/ended it
+      // while the modal was open) — retrying would just hit the same conflict forever, so
+      // close the modal and refresh instead of leaving the form stuck against stale data.
+      if (e instanceof MeetingUpdateError && e.status === 409) {
+        await qc.invalidateQueries({ queryKey: MEETINGS_QK })
+        setEditTarget(null)
+      }
     }
   }
 
@@ -118,9 +138,14 @@ export function ReunionsView() {
   if (activeMeetingId) {
     return (
       <div className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">
-          {meetings.find((m) => m.id === activeMeetingId)?.title ?? "Réunion"}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {meetings.find((m) => m.id === activeMeetingId)?.title ?? "Réunion"}
+          </h2>
+          <Button variant="outline" size="sm" onClick={() => setActiveMeetingId(null)}>
+            Quitter
+          </Button>
+        </div>
         <MeetingRoom
           meetingId={activeMeetingId}
           onLeave={(opts) => {
@@ -168,6 +193,7 @@ export function ReunionsView() {
               meeting={meeting}
               refreshing={meeting.id === refreshingId}
               onJoin={() => setActiveMeetingId(meeting.id)}
+              onEdit={() => setEditTarget(meeting)}
               onDelete={() => setDeleteId(meeting.id)}
             />
           ))}
@@ -181,6 +207,25 @@ export function ReunionsView() {
           onSubmit={handleCreate}
           onCancel={() => setFormOpen(false)}
         />
+      </Modal>
+
+      <Modal open={!!editTarget} onOpenChange={(o) => { if (!o) setEditTarget(null) }} title="Modifier la réunion">
+        {editTarget && (
+          <MeetingForm
+            membres={membres}
+            loading={updateMeeting.isPending}
+            onSubmit={handleUpdate}
+            onCancel={() => setEditTarget(null)}
+            isEdit
+            defaultValues={{
+              title:          editTarget.title,
+              description:    editTarget.description ?? undefined,
+              type:           editTarget.type,
+              scheduledAt:    editTarget.scheduledAt ? editTarget.scheduledAt.slice(0, 16) : undefined,
+              participantIds: editTarget.participants.map((p) => p.membreId),
+            }}
+          />
+        )}
       </Modal>
 
       <ConfirmDialog
@@ -199,11 +244,13 @@ function MeetingCard({
   meeting,
   refreshing,
   onJoin,
+  onEdit,
   onDelete,
 }: {
   meeting: Meeting
   refreshing: boolean
   onJoin: () => void
+  onEdit: () => void
   onDelete: () => void
 }) {
   const router     = useRouter()
@@ -239,7 +286,10 @@ function MeetingCard({
             <p className="text-xs text-muted-foreground line-clamp-2">{meeting.description}</p>
           )}
         </div>
-        <Badge variant={STATUS_VARIANTS[meeting.status]}>{STATUS_LABELS[meeting.status]}</Badge>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <Badge variant={STATUS_VARIANTS[meeting.status]}>{STATUS_LABELS[meeting.status]}</Badge>
+          <Badge variant="outline">{TYPE_LABELS[meeting.type]}</Badge>
+        </div>
       </div>
 
       <div className="flex flex-col gap-1 text-xs text-muted-foreground">
@@ -270,6 +320,11 @@ function MeetingCard({
           <Button size="sm" variant="outline" className="flex-1" onClick={() => router.push(`/dashboard/reunions/${meeting.id}`)}>
             <FileTextIcon className="mr-1 h-3 w-3" />
             Transcription
+          </Button>
+        )}
+        {meeting.status === "SCHEDULED" && (
+          <Button size="sm" variant="ghost" onClick={onEdit}>
+            <PencilSimpleIcon className="h-4 w-4" />
           </Button>
         )}
         <Button size="sm" variant="ghost" onClick={onDelete} className="text-destructive hover:text-destructive">

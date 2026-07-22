@@ -127,6 +127,12 @@ enum MeetingStatus {
   CANCELLED
 }
 
+enum MeetingType {
+  AG
+  BUREAU
+  GENERALE
+}
+
 enum QuestionType {
   TEXT_SHORT
   TEXT_LONG
@@ -898,6 +904,7 @@ model Meeting {
   title            String
   description      String?
   status           MeetingStatus @default(SCHEDULED)
+  type             MeetingType   @default(GENERALE)
   scheduledAt      DateTime?
   startedAt        DateTime?
   endedAt          DateTime?
