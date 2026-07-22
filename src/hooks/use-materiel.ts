@@ -93,6 +93,7 @@ function invalidateAll(qc: ReturnType<typeof useQueryClient>, id?: string) {
     qc.invalidateQueries({ queryKey: KEY }),
     qc.invalidateQueries({ queryKey: ["portal-materiel"] }),
     qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    qc.invalidateQueries({ queryKey: ["dashboard"] }),
   ]
   if (id) ops.push(qc.invalidateQueries({ queryKey: detailKey(id) }))
   return Promise.all(ops)

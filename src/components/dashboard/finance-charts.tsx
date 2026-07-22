@@ -248,42 +248,62 @@ export function FinanceCharts() {
         </div>
       )}
 
-      {/* Recettes par catégorie — magnitude ranking → single-hue sequential bar */}
-      {data.hasFinances && data.incomeByCategory.length > 0 && (
-        <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30 lg:col-span-3">
-          <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes par catégorie — {data.year}</p>
-          <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
-            <BarChart
-              data={data.incomeByCategory}
-              layout="vertical"
-              barSize={20}
-              margin={{ top: 0, right: 100, bottom: 0, left: 8 }}
-            >
-              <XAxis type="number" hide />
-              <YAxis
-                type="category"
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }}
-                width={140}
-              />
-              <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
-              <Bar
-                dataKey="amount"
-                shape={(props: { x?: number; y?: number; width?: number; height?: number }) => (
-                  <LollipopBar {...props} color={pal.sequential} />
-                )}
-                animationDuration={500} animationEasing="ease-out"
-              >
-                {/* Default offset assumes a flush bar end — the ring marker extends past
-                    that point, so push the label out further to clear it. */}
-                <LabelList dataKey="amount" position="right" offset={16} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+    </div>
+  )
+}
+
+// Split out from the grid above so the dashboard's left column (Prochain événement +
+// Cotisations) can place it right below Cotisations instead of leaving that column
+// visibly shorter than the right one — same underlying query (shared cache entry via
+// the identical queryKey, so this doesn't cost a second request).
+export function IncomeByCategoryChart() {
+  const pal = usePalette()
+  const { data, isLoading } = useQuery<FinanceChartsData>({
+    queryKey: ["dashboard", "finance-charts"],
+    queryFn:  async () => {
+      const res = await fetch("/api/dashboard/finance-charts")
+      if (!res.ok) throw new Error("Erreur")
+      return res.json()
+    },
+    staleTime: 5 * 60_000,
+  })
+
+  if (isLoading) return <div className="h-48 rounded-xl border bg-card animate-pulse" />
+  if (!data || !data.hasFinances || data.incomeByCategory.length === 0) return null
+
+  return (
+    <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30">
+      <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes par catégorie — {data.year}</p>
+      <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
+        <BarChart
+          data={data.incomeByCategory}
+          layout="vertical"
+          barSize={20}
+          margin={{ top: 0, right: 100, bottom: 0, left: 8 }}
+        >
+          <XAxis type="number" hide />
+          <YAxis
+            type="category"
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }}
+            width={140}
+          />
+          <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
+          <Bar
+            dataKey="amount"
+            shape={(props: { x?: number; y?: number; width?: number; height?: number }) => (
+              <LollipopBar {...props} color={pal.sequential} />
+            )}
+            animationDuration={500} animationEasing="ease-out"
+          >
+            {/* Default offset assumes a flush bar end — the ring marker extends past
+                that point, so push the label out further to clear it. */}
+            <LabelList dataKey="amount" position="right" offset={16} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   )
 }

@@ -16,10 +16,12 @@ type Meeting = {
   title:       string
   description: string | null
   status:      "SCHEDULED" | "LIVE" | "ENDED"
+  type:        "AG" | "BUREAU" | "GENERALE"
   scheduledAt: string | null
   startedAt:   string | null
   endedAt:     string | null
   roomName:    string
+  summary:     string | null
 }
 
 const STATUS_LABELS = { SCHEDULED: "Planifiée", LIVE: "En cours", ENDED: "Terminée" }
@@ -170,6 +172,11 @@ export default function ReunionsPortalPage() {
                       <ClockIcon className="size-3" />
                       Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
                     </p>
+                  )}
+                  {meeting.summary && (
+                    <div className="mt-3 rounded-lg border bg-muted/30 p-3 text-sm whitespace-pre-wrap leading-relaxed">
+                      {meeting.summary}
+                    </div>
                   )}
                 </div>
               ))}
