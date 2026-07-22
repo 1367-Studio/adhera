@@ -3,6 +3,92 @@ import type { MembreCreateInput, MembreUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage, apiError } from "@/lib/api-error"
 
+export type MembreDetail = {
+  id:            string
+  firstName:     string
+  lastName:      string
+  email:         string | null
+  phone:         string | null
+  birthDate:     string | null
+  address:       string | null
+  civilite:      "MME" | "MLLE" | "M" | null
+  groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
+  allergies:     string | null
+  photoUrl:      string | null
+  status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
+  typeId:        string | null
+  associationId: string | null
+  userId:        string | null
+  joinedAt:      string
+  createdAt:     string
+  updatedAt:     string | null
+  deletedAt:     string | null
+  termsAcceptedAt: string | null
+  termsVersion:    string | null
+  termsAcceptedIp: string | null
+  cotisations: {
+    id:     string
+    year:   number
+    amount: string
+    status: "EN_ATTENTE" | "PAYE" | "EXONERE"
+    paidAt: string | null
+  }[]
+
+  participations: {
+    id:          string
+    evenementId: string
+    present:     boolean
+    rsvp:        "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT" | null
+    evenement: {
+      id:          string
+      title:       string
+      description: string | null
+      date:        string
+      // ... demais campos de Evenement, se forem usados na tela
+    }
+  }[]
+
+  materialLoans: {
+    id:           string
+    status:       "DEMANDE" | "CONFIRME" | "REFUSE"
+    quantity:     number
+    borrowedAt:   string
+    returnedAt:   string | null
+    material: {
+      id:   string
+      name: string
+    }
+  }[]
+
+  meetingsAsParticipant: {
+    id:       string
+    joinedAt: string | null
+    meeting: {
+      id:          string
+      title:       string
+      status:      "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED"
+      scheduledAt: string | null
+    }
+  }[]
+
+  type: {
+    id:    string
+    name:  string
+    color: string
+  } | null
+
+  user: {
+    role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
+  } | null
+
+  _count: {
+    cotisations:    number
+    participations: number
+    materialLoans:  number
+    meetingsAsParticipant: number
+  }
+}
+
 const QK = ["membres"]
 
 async function fetchMembresPaginated(page: number, limit: number, search?: string, status?: string, typeId?: string) {
@@ -22,7 +108,7 @@ async function fetchMembre(id: string) {
 }
 
 export function useMembre(id: string) {
-  return useQuery({
+  return useQuery<MembreDetail>({
     queryKey: [...QK, "detail", id],
     queryFn:  () => fetchMembre(id),
     enabled:  !!id,
