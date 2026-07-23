@@ -1,4 +1,4 @@
-import jsPDF from "jspdf"
+import { jsPDF } from "jspdf"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 
