@@ -16,6 +16,7 @@ export const membreSchema = z.object({
   ),
   address:   z.string().trim().optional().or(z.literal("")),
   civilite:      z.enum(["MME", "MLLE", "M"]).optional().or(z.literal("")),
+  sexe:          z.enum(["HOMME", "FEMME"]).optional().or(z.literal("")),
   groupeSanguin: z.enum([
     "A_POSITIF", "A_NEGATIF",
     "B_POSITIF", "B_NEGATIF",

@@ -232,6 +232,11 @@ enum GroupeSanguin {
   O_NEGATIF
 }
 
+enum Sexe {
+  HOMME
+  FEMME
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
@@ -387,6 +392,7 @@ model Membre {
   address       String?
   civilite      Civilite?
   groupeSanguin GroupeSanguin?
+  sexe          Sexe?
   allergies     String?
   photoUrl      String?
   status        MembreStatus @default(ACTIF)

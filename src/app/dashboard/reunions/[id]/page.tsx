@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useModules } from "@/lib/user-context"
+import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -17,10 +17,14 @@ import { useMeetingEndedListener } from "@/hooks/use-meetings"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
+import { APP_NAME } from "@/config/brand"
+import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type MeetingParticipant = {
   id:     string
-  membre: { id: string; firstName: string; lastName: string }
+  // status is redacted to null by the API for non-managers (see redactParticipantStatus in
+  // src/lib/meetings/select.ts) — only managers can see it or export the attendance PDF.
+  membre: { id: string; firstName: string; lastName: string; status: "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU" | null }
 }
 
 type Meeting = {
@@ -53,6 +57,7 @@ export default function ReunionDetailPage() {
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
+  const canManage = isManager(useCurrentUser().role)
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
@@ -62,6 +67,20 @@ export default function ReunionDetailPage() {
     queryKey:  ["meeting", id],
     queryFn:   () => fetch(`/api/meetings/${id}`).then(r => r.json()),
     staleTime: 0,
+  })
+
+  // Logo/couleur pour le PDF de feuille de présence (handleExportPdf) — même règle
+  // Pro-only que les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
+  const { data: assoc } = useQuery<{
+    name: string
+    plan: "ESSENTIAL" | "PRO"
+    customBrandingEnabled: boolean | null
+    logoUrl: string | null
+    primaryColor: string | null
+  }>({
+    queryKey: ["association"],
+    queryFn:  () => fetch("/api/association").then(r => r.json()),
+    enabled:  canManage,
   })
 
   // Cross-tab: this meeting being auto-closed by the LiveKit webhook (or ended from another
@@ -167,6 +186,133 @@ export default function ReunionDetailPage() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur IA"),
   })
 
+  async function handleExportPdf() {
+    if (!meeting) return
+    if (meeting.participants.length === 0) {
+      toast.error("Aucun participant à exporter")
+      return
+    }
+    const { default: jsPDF }     = await import("jspdf")
+    const { default: autoTable } = await import("jspdf-autotable")
+
+    const doc   = new jsPDF({ unit: "mm", format: "a4" })
+    const W     = 210
+    const M     = 14
+    const ZINC  = [113, 113, 122] as [number, number, number]
+    const BLACK = [24,  24,  27 ] as [number, number, number]
+    const title = meeting.title
+    const today = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+
+    const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
+    const headerRgb: [number, number, number] =
+      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
+
+    // Custom brand colors are freely picked (plain <input type="color">), so a light/pale
+    // one would make the fixed white header text unreadable — pick dark text on light fills.
+    const [hr, hg, hb] = headerRgb
+    const headerLuminance = (hr * 299 + hg * 587 + hb * 114) / 1000
+    const headerTextRgb: [number, number, number] = headerLuminance > 150 ? BLACK : [255, 255, 255]
+
+    // ── Header bar ─────────────────────────────────────────────────────────
+    const headerH = 30
+    doc.setFillColor(...headerRgb)
+    doc.rect(0, 0, W, headerH, "F")
+    doc.setTextColor(...headerTextRgb)
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9)
+    const rightLabelW = doc.getTextWidth("Feuille de présence")
+    // Space left of the right-aligned "Feuille de présence" label — caps both the logo and
+    // the fallback name so neither overlaps it (see document-pdf.ts for the same maxW pattern).
+    const availW = (W - M) - M - rightLabelW - 6
+
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "bold")
+    if (logo) {
+      const maxLogoH = 20
+      const logoH = Math.min(maxLogoH, availW * (logo.height / logo.width))
+      const logoW = logo.width * (logoH / logo.height)
+      doc.addImage(logo.dataUrl, logo.format, M, (headerH - logoH) / 2, logoW, logoH)
+    } else {
+      const fullName = (canBrand ? assoc!.name : APP_NAME).toUpperCase()
+      let name = fullName
+      while (name.length > 1 && doc.getTextWidth(`${name}…`) > availW) name = name.slice(0, -1)
+      doc.text(name.length < fullName.length ? `${name}…` : name, M, headerH / 2 + 3)
+    }
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9)
+    doc.text("Feuille de présence", W - M, headerH / 2 + 3, { align: "right" })
+
+    // ── Meeting title + meta ─────────────────────────────────────────────────
+    let y = headerH + 12
+    doc.setTextColor(...BLACK)
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "bold")
+    doc.text(title, M, y)
+    y += 7
+
+    doc.setFontSize(8.5)
+    doc.setFont("helvetica", "normal")
+    doc.setTextColor(...ZINC)
+    const meetingDate = meeting.scheduledAt ?? meeting.startedAt
+    doc.text(
+      meetingDate ? format(new Date(meetingDate), "EEEE dd MMMM yyyy · HH'h'mm", { locale: fr }) : "Date non définie",
+      M, y,
+    )
+    doc.text(`Généré le ${today}`, W - M, y, { align: "right" })
+    y += 10
+
+    // ── Separator ───────────────────────────────────────────────────────────
+    doc.setDrawColor(228, 228, 231)
+    doc.line(M, y, W - M, y)
+    y += 5
+
+    // ── Table ───────────────────────────────────────────────────────────────
+    autoTable(doc, {
+      margin:             { left: M, right: M },
+      startY:             y,
+      head:               [["#", "Nom", "Prénom", "Adhérent actif", "Signature"]],
+      body:               meeting.participants.map((p, i) => [
+        i + 1,
+        p.membre.lastName,
+        p.membre.firstName,
+        p.membre.status === "ACTIF" ? "Oui" : "Non",
+        "",
+      ]),
+      headStyles:         { fillColor: headerRgb, textColor: headerTextRgb, fontStyle: "bold" as const, fontSize: 8 },
+      bodyStyles:         { fontSize: 8.5, textColor: BLACK, minCellHeight: 12 },
+      alternateRowStyles: { fillColor: [250, 250, 250] as [number, number, number] },
+      styles:             { cellPadding: 3, lineColor: [228, 228, 231] as [number, number, number], lineWidth: 0.1 },
+      columnStyles: {
+        0: { cellWidth: 10, halign: "center" },
+        3: { cellWidth: 30, halign: "center" },
+        4: { cellWidth: 50 },
+      },
+      didParseCell: (data) => {
+        if (data.section !== "body") return
+        if (data.column.index === 3) {
+          data.cell.styles.textColor = data.cell.raw === "Oui" ? [22, 163, 74] : ZINC
+        }
+      },
+    })
+
+    // ── Per-page footer ─────────────────────────────────────────────────────
+    const pageCount = doc.getNumberOfPages()
+    for (let p = 1; p <= pageCount; p++) {
+      doc.setPage(p)
+      doc.setDrawColor(228, 228, 231)
+      doc.line(M, 287, W - M, 287)
+      doc.setFontSize(7.5)
+      doc.setFont("helvetica", "normal")
+      doc.setTextColor(...ZINC)
+      doc.text(`Page ${p} / ${pageCount}`, M, 292)
+      doc.text(`Généré par ${APP_NAME}`, W - M, 292, { align: "right" })
+    }
+
+    doc.save(`feuille_presence_${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`)
+  }
+
   if (inRoom && meeting) {
     return (
       <div className="space-y-4">
@@ -210,7 +356,7 @@ export default function ReunionDetailPage() {
   return (
     <div className="flex flex-col gap-6 h-full mt-4">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <BackLink href="/dashboard/reunions" iconOnly>Réunions</BackLink>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -221,6 +367,12 @@ export default function ReunionDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{meeting.description}</p>
           )}
         </div>
+        {canManage && (
+          <Button size="sm" variant="outline" onClick={handleExportPdf}>
+            <DownloadSimpleIcon className="size-4 mr-1.5" />
+            <span className="hidden sm:inline">Feuille de </span>présence
+          </Button>
+        )}
         {canJoin && (
           <Button size="sm" onClick={() => setInRoom(true)} loading={awaitingRefresh} disabled={awaitingRefresh}>
             <PlayIcon className="size-4 mr-1.5" />

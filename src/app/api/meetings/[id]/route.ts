@@ -7,7 +7,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
-import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
+import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 
 // Editing what a meeting *is* (title/description/scheduledAt/type/participants) only makes
 // sense before it happens — once it's LIVE or ENDED, rewriting those fields would silently
@@ -26,7 +26,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
-  return NextResponse.json(meeting)
+  return NextResponse.json(redactParticipantStatus(meeting, ctx.role, MANAGERS))
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {

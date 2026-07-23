@@ -43,6 +43,11 @@ const CIVILITE_LABELS: Record<string, string> = {
   M:    "M.",
 }
 
+const SEXE_LABELS: Record<string, string> = {
+  HOMME: "Homme",
+  FEMME: "Femme",
+}
+
 const GROUPE_SANGUIN_LABELS: Record<string, string> = {
   A_POSITIF:  "A+",
   A_NEGATIF:  "A-",
@@ -272,6 +277,9 @@ export function MembreDetailView() {
           {membre.civilite && (
             <p className="text-muted-foreground">Civilité : {CIVILITE_LABELS[membre.civilite] ?? membre.civilite}</p>
           )}
+          {membre.sexe && (
+            <p className="text-muted-foreground">Sexe : {SEXE_LABELS[membre.sexe] ?? membre.sexe}</p>
+          )}
           {membre.birthDate && (
             <p className="text-muted-foreground">Naissance : {format(new Date(membre.birthDate), "dd/MM/yyyy", { locale: fr })}</p>
           )}
@@ -284,7 +292,7 @@ export function MembreDetailView() {
               <span>Allergies : {membre.allergies}</span>
             </p>
           )}
-          {!membre.civilite && !membre.birthDate && !membre.groupeSanguin && !membre.allergies && (
+          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies && (
             <p className="text-muted-foreground">Aucune information renseignée</p>
           )}
         </div>
@@ -471,6 +479,7 @@ export function MembreDetailView() {
             status:    membre.status,
             typeId:    membre.typeId ?? "",
             civilite:      membre.civilite      ?? "",
+            sexe:          membre.sexe          ?? "",
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
             photoUrl:      membre.photoUrl      ?? "",
