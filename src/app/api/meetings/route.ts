@@ -7,7 +7,7 @@ import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { meetingCreateSchema } from "@/lib/schemas"
-import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
+import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -20,7 +20,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     orderBy: { createdAt: "desc" },
   })
 
-  return NextResponse.json(meetings)
+  return NextResponse.json(meetings.map(m => redactParticipantStatus(m, ctx.role, MANAGERS)))
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {

@@ -12,6 +12,7 @@ export type MembreDetail = {
   birthDate:     string | null
   address:       string | null
   civilite:      "MME" | "MLLE" | "M" | null
+  sexe:          "HOMME" | "FEMME" | null
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   photoUrl:      string | null

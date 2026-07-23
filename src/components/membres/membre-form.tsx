@@ -38,6 +38,12 @@ const civiliteOptions = [
   { value: "M",    label: "M."            },
 ]
 
+const sexeOptions = [
+  { value: "",      label: "Non renseigné" },
+  { value: "HOMME", label: "Homme"         },
+  { value: "FEMME", label: "Femme"         },
+]
+
 const groupeSanguinOptions = [
   { value: "",           label: "Non renseigné" },
   { value: "A_POSITIF",  label: "A+"  },
@@ -173,7 +179,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Controller
           name="civilite"
           control={control}
@@ -184,6 +190,19 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               value={field.value ?? ""}
               onValueChange={field.onChange}
               error={errors.civilite?.message}
+            />
+          )}
+        />
+        <Controller
+          name="sexe"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Sexe"
+              options={sexeOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.sexe?.message}
             />
           )}
         />

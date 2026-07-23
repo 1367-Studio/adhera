@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon, GenderMaleIcon, GenderFemaleIcon, BabyIcon, UserIcon, QuestionIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -25,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCurrentUser, useModules } from "@/lib/user-context"
+import { BASE_PATH } from "@/lib/env"
 
 type MembreTypeRef = { id: string; name: string; color: string }
 
@@ -40,6 +42,7 @@ type Membre = {
   address:       string | null
   birthDate:     string | null
   civilite:      "MME" | "MLLE" | "M" | null
+  sexe:          "HOMME" | "FEMME" | null
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
@@ -71,6 +74,29 @@ const statusBadge: Record<Membre["status"], { label: string; variant: "default" 
   ACTIF:    { label: "Actif",      variant: "default"     },
   INACTIF:  { label: "Inactif",    variant: "secondary"   },
   SUSPENDU: { label: "Suspendu",   variant: "destructive" },
+}
+
+type MembresStats = {
+  hommes:           number
+  femmes:           number
+  sexeNonRenseigne: number
+  adultes:          number
+  enfants:          number
+  ageNonRenseigne:  number
+}
+
+function StatTile({ label, value, icon: Icon }: { label: string; value: number; icon: React.ElementType }) {
+  return (
+    <div className="rounded-xl border bg-card p-3 flex items-center gap-2.5">
+      <div className="flex size-8 items-center justify-center rounded-lg bg-muted shrink-0">
+        <Icon className="size-4 text-muted-foreground" />
+      </div>
+      <div>
+        <p className="text-lg font-bold tabular-nums leading-none">{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
+      </div>
+    </div>
+  )
 }
 
 function FilterSelect({
@@ -182,6 +208,10 @@ export function MembresView() {
 
   const { data: types = [] } = useMembreTypes()
   const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, search || undefined, statusFilter || undefined, typeFilter || undefined)
+  const { data: stats } = useQuery<MembresStats>({
+    queryKey: ["membres", "stats"],
+    queryFn:  () => fetch("/api/membres/stats").then(r => r.json()),
+  })
   const membres = (result?.data ?? []) as Membre[]
 
   useEffect(() => {
@@ -333,6 +363,10 @@ export function MembresView() {
         description={descriptionText}
         action={
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
+              <DownloadSimpleIcon className="mr-1.5 size-4" />
+              Fiche vierge (PDF)
+            </Button>
             <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
               <EnvelopeSimpleIcon className="mr-1.5 size-4" />
               Envoyer un email
@@ -350,6 +384,22 @@ export function MembresView() {
           </div>
         }
       />
+
+      {stats && (
+        <div className="space-y-1.5">
+          <p className="text-xs text-muted-foreground">
+            Statistiques globales
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+            <StatTile label="Hommes" value={stats.hommes} icon={GenderMaleIcon} />
+            <StatTile label="Femmes" value={stats.femmes} icon={GenderFemaleIcon} />
+            <StatTile label="Sexe non renseigné" value={stats.sexeNonRenseigne} icon={QuestionIcon} />
+            <StatTile label="Adultes" value={stats.adultes} icon={UserIcon} />
+            <StatTile label="Enfants" value={stats.enfants} icon={BabyIcon} />
+            <StatTile label="Âge non renseigné" value={stats.ageNonRenseigne} icon={QuestionIcon} />
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2">
         {/* Search */}
@@ -451,6 +501,7 @@ export function MembresView() {
             status:    editTarget.status,
             typeId:    editTarget.typeId    ?? "",
             civilite:      editTarget.civilite      ?? "",
+            sexe:          editTarget.sexe          ?? "",
             groupeSanguin: editTarget.groupeSanguin ?? "",
             allergies:     editTarget.allergies     ?? "",
             photoUrl:      editTarget.photoUrl      ?? "",

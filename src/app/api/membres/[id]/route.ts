@@ -48,7 +48,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, civilite, groupeSanguin, allergies, photoUrl, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, ...rest } = parsed.data
 
   // Any status other than ACTIF flips User.active to false below (line ~81) — blocking only
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
@@ -88,6 +88,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(address       !== undefined ? { address:       address       || null } : {}),
         ...(typeId        !== undefined ? { typeId:        typeId        || null } : {}),
         ...(civilite      !== undefined ? { civilite:      civilite      || null } : {}),
+        ...(sexe          !== undefined ? { sexe:          sexe          || null } : {}),
         ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),
         ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
         ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
