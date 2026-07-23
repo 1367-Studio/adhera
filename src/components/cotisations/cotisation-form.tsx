@@ -28,7 +28,7 @@ interface CotisationFormProps {
 }
 
 export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loading, editMode }: CotisationFormProps) {
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<CotisationInput>({
+  const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<CotisationInput>({
     resolver: zodResolver(cotisationSchema),
     defaultValues: { status: "EN_ATTENTE", year: new Date().getFullYear(), ...defaultValues },
     mode: "onSubmit",
@@ -95,7 +95,10 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
               required
               options={statusOptions}
               value={field.value}
-              onValueChange={field.onChange}
+              onValueChange={(v) => {
+                field.onChange(v)
+                if (v !== "PAYE") setValue("paidAt", "")
+              }}
               error={errors.status?.message}
             />
           )}

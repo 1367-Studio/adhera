@@ -484,23 +484,26 @@ model Participation {
 }
 
 model Cotisation {
-  id              String           @id @default(cuid())
-  membreId        String
-  associationId   String
-  amount          Decimal          @db.Decimal(10, 2)
-  year            Int
-  paidAt          DateTime?
-  status          CotisationStatus @default(EN_ATTENTE)
-  note            String?
-  stripeSessionId String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                  String           @id @default(cuid())
+  membreId            String
+  associationId       String
+  amount              Decimal          @db.Decimal(10, 2)
+  year                Int
+  paidAt              DateTime?
+  status              CotisationStatus @default(EN_ATTENTE)
+  note                String?
+  stripeSessionId     String?
+  declarationNumber   String?
+  declarationIssuedAt DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   membre      Membre      @relation(fields: [membreId], references: [id])
   association Association @relation(fields: [associationId], references: [id])
 
   @@unique([membreId, year])
   @@index([associationId, status])
+  @@unique([associationId, declarationNumber])
 }
 
 model Don {

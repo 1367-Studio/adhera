@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { BASE_PATH } from "@/lib/env";
 
 type Cotisation = {
   id:     string
@@ -167,12 +168,18 @@ export function CotisationsView() {
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (c) => (
-        <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
+      cell: (c) => {
+        const actions = [
+          { label: "Modifier", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
+          ...(c.status === "PAYE" ? [{
+            label:   "Déclaration",
+            icon:    <DownloadSimpleIcon className="size-3.5" />,
+            onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),
+          }] : []),
           { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
-        ]} />
-      ),
+        ]
+        return <RowActions actions={actions} />
+      },
     },
   ]
 

@@ -6,12 +6,13 @@ import { useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { CheckCircleIcon, ClockIcon, GiftIcon, CreditCardIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, ClockIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
 import { portalFetch } from "@/lib/portal-fetch"
+import { BASE_PATH } from "@/lib/env"
 
 type Cotisation = {
   id:      string
@@ -166,10 +167,21 @@ function CotisationPortalPageInner() {
                   <p className="text-xs text-muted-foreground mt-0.5 italic">{thisYear.note}</p>
                 )}
               </div>
+              <div className="flex items-center gap-2">
               <Badge variant={statusVariant[thisYear.status]} className="gap-1.5">
                 {statusIcon[thisYear.status]}
                 {statusLabel[thisYear.status]}
               </Badge>
+              {thisYear.status === "PAYE" && (
+                <Button
+                size="sm"
+                variant="outline"
+                onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${thisYear.id}/declaration`)}
+                >
+                  <DownloadSimpleIcon className="size-3.5" />
+                </Button>
+              )}
+              </div>
             </div>
 
             {thisYear.status === "EN_ATTENTE" && paymentEnabled && (
@@ -215,6 +227,15 @@ function CotisationPortalPageInner() {
                     {statusIcon[c.status]}
                     {statusLabel[c.status]}
                   </Badge>
+                  {c.status === "PAYE" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${c.id}/declaration`)}
+                    >
+                      <DownloadSimpleIcon className="size-3.5" />
+                    </Button>
+                  )}
                   {c.status === "EN_ATTENTE" && paymentEnabled && (
                     <Button
                       size="sm"

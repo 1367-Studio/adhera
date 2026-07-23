@@ -17,7 +17,10 @@ export const cotisationSchema = cotisationBase.refine(
   { message: "Date de paiement requise quand le statut est Payée", path: ["paidAt"] },
 )
 
-export const cotisationUpdateSchema = cotisationBase.omit({ membreId: true, year: true }).partial()
+export const cotisationUpdateSchema = cotisationBase.omit({ membreId: true, year: true }).partial().refine(
+  (d) => d.status !== "PAYE" || (!!d.paidAt && d.paidAt !== ""),
+  { message: "Date de paiement requise quand le statut est Payée", path: ["paidAt"] },
+)
 
 export type CotisationInput       = z.infer<typeof cotisationSchema>
 export type CotisationUpdateInput = z.infer<typeof cotisationUpdateSchema>
