@@ -1,0 +1,47 @@
+import type { Prisma } from "@prisma/client"
+
+// Excludes aiApiKey, smsAccountSid/smsAuthToken, livekitApiKey/livekitApiSecret,
+// stripeCustomerId/stripeSubscriptionId/stripeConnectId and internalNotes — those are
+// internal credentials/IDs or staff-only notes, each already exposed deliberately (as
+// booleans/derived values, never raw) via their own dedicated endpoints (/api/ai/config,
+// /api/sms/config, /api/livekit/config, /api/billing/*) and must never reach this
+// general-purpose association endpoint's response.
+export const ASSOCIATION_SAFE_SELECT = {
+  id: true,
+  name: true,
+  slug: true,
+  city: true,
+  country: true,
+  address: true,
+  phone: true,
+  website: true,
+  iban: true,
+  bic: true,
+  siren: true,
+  rna: true,
+  canIssueTaxReceipts: true,
+  objet: true,
+  organismeCategory: true,
+  organismeCategoryDetail: true,
+  aiProvider: true,
+  aiModel: true,
+  smsPhoneNumber: true,
+  livekitUrl: true,
+  plan: true,
+  customMemberLimit: true,
+  logoUrl: true,
+  primaryColor: true,
+  secondaryColor: true,
+  customBrandingEnabled: true,
+  subscriptionStatus: true,
+  trialEndsAt: true,
+  suspendedAt: true,
+  cancelAtPeriodEnd: true,
+  currentPeriodEndsAt: true,
+  sitePublished: true,
+  siteConfig: true,
+  modules: true,
+  createdAt: true,
+  updatedAt: true,
+  deletedAt: true,
+} satisfies Prisma.AssociationSelect

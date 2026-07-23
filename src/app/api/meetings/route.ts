@@ -7,6 +7,7 @@ import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { meetingCreateSchema } from "@/lib/schemas"
+import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -15,11 +16,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const meetings = await prisma.meeting.findMany({
     where: { associationId },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
     orderBy: { createdAt: "desc" },
   })
 
@@ -62,11 +59,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         create: (participantIds ?? []).map((membreId: string) => ({ membreId })),
       },
     },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
   })
 
   // Send email invites and in-app notifications to participants that have a user account
