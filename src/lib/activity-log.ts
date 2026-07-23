@@ -57,7 +57,7 @@ export function computeDiff(
   return changes
 }
 
-const MEMBRE_FIELDS = ["firstName", "lastName", "email", "phone", "address", "birthDate", "status", "typeId"] as const
+const MEMBRE_FIELDS = ["firstName", "lastName", "email", "phone", "address", "birthDate", "status", "typeId", "responsableId"] as const
 
 export function computeMemberDiff(
   before: Record<string, unknown>,

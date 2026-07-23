@@ -31,6 +31,8 @@ type Membre = {
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   photoUrl:      string | null
+  possedeTshirt: boolean | null
+  tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
 }
 
 const GROUPE_SANGUIN_LABELS: Record<string, string> = {
@@ -71,6 +73,8 @@ const schema = z.object({
   ]).optional().or(z.literal("")),
   allergies: z.string().trim().optional().or(z.literal("")),
   photoUrl:  z.string().trim().optional().or(z.literal("")),
+  possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
+  tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -107,6 +111,8 @@ export default function ProfilPage() {
       groupeSanguin: membre.groupeSanguin ?? "",
       allergies:     membre.allergies     ?? "",
       photoUrl:      membre.photoUrl      ?? "",
+      possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
+      tailleTshirt:  membre.tailleTshirt  ?? "",
     } : undefined,
   })
 
@@ -333,6 +339,66 @@ export default function ProfilPage() {
                         <SelectItem value="AB_NEGATIF">AB-</SelectItem>
                         <SelectItem value="O_POSITIF">O+</SelectItem>
                         <SelectItem value="O_NEGATIF">O-</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="possedeTshirt"
+                control={control}
+                render={({ field }) => (
+                  <div className="space-y-1.5">
+                    <Label>Possède un tee-shirt</Label>
+                    <Select
+                      value={field.value || "__none__"}
+                      onValueChange={v => {
+                        const next = v === "__none__" ? "" : v
+                        field.onChange(next)
+                        // A size doesn't make sense once "does not have a t-shirt" is
+                        // selected — clear it so the two fields can't contradict each other.
+                        if (next === "false") setValue("tailleTshirt", "", { shouldDirty: true })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Non renseigné">
+                          {field.value === "true" ? "Oui" : field.value === "false" ? "Non" : "Non renseigné"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Non renseigné</SelectItem>
+                        <SelectItem value="true">Oui</SelectItem>
+                        <SelectItem value="false">Non</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              />
+
+              <Controller
+                name="tailleTshirt"
+                control={control}
+                render={({ field }) => (
+                  <div className="space-y-1.5">
+                    <Label>Taille du tee-shirt</Label>
+                    <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Non renseigné">
+                          {field.value || "Non renseigné"}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__none__">Non renseigné</SelectItem>
+                        <SelectItem value="XS">XS</SelectItem>
+                        <SelectItem value="S">S</SelectItem>
+                        <SelectItem value="M">M</SelectItem>
+                        <SelectItem value="L">L</SelectItem>
+                        <SelectItem value="XL">XL</SelectItem>
+                        <SelectItem value="XXL">XXL</SelectItem>
+                        <SelectItem value="XXXL">XXXL</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

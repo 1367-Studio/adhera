@@ -25,8 +25,11 @@ export const membreSchema = z.object({
   ]).optional().or(z.literal("")),
   allergies:     z.string().trim().optional().or(z.literal("")),
   photoUrl:     z.string().trim().optional().or(z.literal("")),
+  possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
+  tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
   status:    z.enum(["PENDING", "ACTIF", "INACTIF", "SUSPENDU"]),
   typeId:    z.string().optional().or(z.literal("")),
+  responsableId: z.string().optional().or(z.literal("")),
 })
 
 export const membreCreateSchema = membreSchema.extend({

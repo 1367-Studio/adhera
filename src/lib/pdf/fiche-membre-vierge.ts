@@ -121,6 +121,16 @@ export async function buildFicheMembreViergePdf(input: FicheMembreViergeInput): 
   checkboxGroup("", ["AB+", "AB-", "O+", "O-"], rightX, y)
   y -= 34
 
+  checkboxGroup("Possède un tee-shirt", ["Oui", "Non"], MARGIN, y)
+  y -= 34
+
+  checkboxGroup("Taille du tee-shirt", ["XS", "S", "M", "L"], MARGIN, y)
+  checkboxGroup("", ["XL", "XXL", "XXXL"], rightX, y)
+  y -= 34
+
+  line("Nom du responsable légal (si mineur)", MARGIN, CONTENT_W, y)
+  y -= 40
+
   text("Allergies connues", MARGIN, 8, { color: GRAY })
   y -= 12
   for (let i = 0; i < 2; i++) {

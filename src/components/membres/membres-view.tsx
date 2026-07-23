@@ -45,9 +45,12 @@ type Membre = {
   sexe:          "HOMME" | "FEMME" | null
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
+  possedeTshirt: boolean | null
+  tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
   typeId:        string | null
   type:          MembreTypeRef | null
+  responsableId: string | null
   joinedAt:      string
   userId:        string | null
   user:          { role: UserRole } | null
@@ -264,8 +267,10 @@ export function MembresView() {
   async function handleDelete() {
     if (!deleteTarget) return
     try {
-      await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Membre supprimé")
+      const { unlinkedDependants } = await deleteMutation.mutateAsync(deleteTarget.id)
+      toast.success(unlinkedDependants > 0
+        ? `Membre supprimé — retiré comme responsable légal de ${unlinkedDependants} membre(s)`
+        : "Membre supprimé")
       setDeleteTarget(null)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur")
@@ -505,11 +510,15 @@ export function MembresView() {
             groupeSanguin: editTarget.groupeSanguin ?? "",
             allergies:     editTarget.allergies     ?? "",
             photoUrl:      editTarget.photoUrl      ?? "",
+            possedeTshirt: editTarget.possedeTshirt === null ? "" : String(editTarget.possedeTshirt) as "true" | "false",
+            tailleTshirt:  editTarget.tailleTshirt  ?? "",
+            responsableId: editTarget.responsableId ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
           isSelf={editTarget?.userId === currentUser.id}
+          membreId={editTarget?.id}
         />
       </Modal>
 
