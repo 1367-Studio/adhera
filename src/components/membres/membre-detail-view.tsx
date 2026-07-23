@@ -61,6 +61,10 @@ const GROUPE_SANGUIN_LABELS: Record<string, string> = {
   O_NEGATIF:  "O-",
 }
 
+const TAILLE_TSHIRT_LABELS: Record<string, string> = {
+  XS: "XS", S: "S", M: "M", L: "L", XL: "XL", XXL: "XXL", XXXL: "XXXL",
+}
+
 const statusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   PENDING:  { label: "En attente", variant: "outline"     },
   ACTIF:    { label: "Actif",      variant: "default"     },
@@ -125,8 +129,10 @@ export function MembreDetailView() {
 
   async function handleDelete() {
     try {
-      await deleteMutation.mutateAsync(id)
-      toast.success("Membre supprimé")
+      const { unlinkedDependants } = await deleteMutation.mutateAsync(id)
+      toast.success(unlinkedDependants > 0
+        ? `Membre supprimé — retiré comme responsable légal de ${unlinkedDependants} membre(s)`
+        : "Membre supprimé")
       router.push("/dashboard/membres")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur")
@@ -288,13 +294,32 @@ export function MembreDetailView() {
           {membre.groupeSanguin && (
             <p className="text-muted-foreground">Groupe sanguin : {GROUPE_SANGUIN_LABELS[membre.groupeSanguin] ?? membre.groupeSanguin}</p>
           )}
+          {membre.possedeTshirt !== null && (
+            <p className="text-muted-foreground">Possède un tee-shirt : {membre.possedeTshirt ? "Oui" : "Non"}</p>
+          )}
+          {membre.tailleTshirt && (
+            <p className="text-muted-foreground">Taille du tee-shirt : {TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt}</p>
+          )}
           {membre.allergies && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
               <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
               <span>Allergies : {membre.allergies}</span>
             </p>
           )}
-          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies && (
+          {membre.responsable && (
+            <p className="text-muted-foreground">
+              Responsable légal :{" "}
+              <button
+                type="button"
+                onClick={() => router.push(`/dashboard/membres/${membre.responsable!.id}`)}
+                className="text-foreground underline-offset-2 hover:underline"
+              >
+                {membre.responsable.firstName} {membre.responsable.lastName}
+              </button>
+            </p>
+          )}
+          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
+            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && (
             <p className="text-muted-foreground">Aucune information renseignée</p>
           )}
         </div>
@@ -310,6 +335,24 @@ export function MembreDetailView() {
             <p className="text-muted-foreground">
               Aucun compte utilisateur{membre.email ? " — un accès peut être créé" : " — email requis pour créer un accès"}
             </p>
+          )}
+          {membre.dependants.length > 0 && (
+            <div className="pt-1">
+              <p className="text-muted-foreground">Membres sous sa responsabilité :</p>
+              <ul className="mt-1 space-y-1">
+                {membre.dependants.map(d => (
+                  <li key={d.id}>
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/dashboard/membres/${d.id}`)}
+                      className="text-foreground underline-offset-2 hover:underline"
+                    >
+                      {d.firstName} {d.lastName}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </div>
@@ -494,11 +537,15 @@ export function MembreDetailView() {
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
             photoUrl:      membre.photoUrl      ?? "",
+            possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
+            tailleTshirt:  membre.tailleTshirt  ?? "",
+            responsableId: membre.responsableId ?? "",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}
           loading={updateMutation.isPending}
           isSelf={isSelf}
+          membreId={membre.id}
         />
       </Modal>
 
@@ -506,7 +553,9 @@ export function MembreDetailView() {
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
         title={`Supprimer ${membre.firstName} ${membre.lastName} ?`}
-        description="Ce membre sera archivé et ne pourra plus accéder à l'association."
+        description={membre.dependants.length > 0
+          ? `Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de ${membre.dependants.length} membre(s) : ${membre.dependants.map(d => `${d.firstName} ${d.lastName}`).join(", ")}.`
+          : "Ce membre sera archivé et ne pourra plus accéder à l'association."}
         confirmLabel="Supprimer"
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}

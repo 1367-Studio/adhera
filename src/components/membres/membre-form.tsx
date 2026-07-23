@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm, Controller, type Resolver } from "react-hook-form"
+import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useResponsableOptions } from "@/hooks/use-membres"
 import { FormField } from "@/components/ui/form-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -56,6 +57,32 @@ const groupeSanguinOptions = [
   { value: "O_NEGATIF",  label: "O-"  },
 ]
 
+const possedeTshirtOptions = [
+  { value: "",      label: "Non renseigné" },
+  { value: "true",  label: "Oui"           },
+  { value: "false", label: "Non"           },
+]
+
+const tailleTshirtOptions = [
+  { value: "",     label: "Non renseigné" },
+  { value: "XS",   label: "XS"  },
+  { value: "S",    label: "S"   },
+  { value: "M",    label: "M"   },
+  { value: "L",    label: "L"   },
+  { value: "XL",   label: "XL"  },
+  { value: "XXL",  label: "XXL" },
+  { value: "XXXL", label: "XXXL" },
+]
+
+// Même seuil que /api/membres/stats/route.ts et /api/membres/route.ts (adultsOnly).
+const ADULT_AGE_YEARS = 18
+
+function isConfirmedAdult(birthDateStr: string): boolean {
+  const cutoff = new Date()
+  cutoff.setFullYear(cutoff.getFullYear() - ADULT_AGE_YEARS)
+  return new Date(birthDateStr + "T12:00:00") <= cutoff
+}
+
 interface MembreFormProps {
   defaultValues?: Partial<MembreInput>
   onSubmit: (data: MembreCreateInput) => Promise<void>
@@ -64,12 +91,14 @@ interface MembreFormProps {
   isCreate?: boolean
   actorRole?: string
   isSelf?: boolean
+  membreId?: string
 }
 
-export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf }: MembreFormProps) {
+export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId }: MembreFormProps) {
   const { data: types = [] } = useMembreTypes()
+  const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
 
-  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<MembreCreateInput>({
+  const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
     resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
     defaultValues: { status: "ACTIF", role: "MEMBRE", ...defaultValues },
     mode: "onSubmit",
@@ -77,12 +106,26 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues }) }, [defaultValues, reset])
 
+  const birthDateValue     = useWatch({ control, name: "birthDate" })
+  const responsableIdValue = useWatch({ control, name: "responsableId" })
+  // Hides the field once age is confirmed 18+, to avoid cluttering every adult's fiche —
+  // but never hides it if a responsable is already set (e.g. someone who aged out since),
+  // or when birthDate is unknown (can't rule out a minor).
+  const showResponsableField = !birthDateValue || !isConfirmedAdult(birthDateValue) || !!responsableIdValue
+
   const roleOptions = actorRole === "ADMIN" ? allRoleOptions : allRoleOptions.filter(o => o.value !== "ADMIN")
 
   const typeOptions = [
     { value: "", label: "Aucun type" },
     ...types.map(t => ({ value: t.id, label: t.name })),
   ]
+
+  const responsableOptions = responsableCandidates.length > 0
+    ? [
+        { value: "", label: "Aucun" },
+        ...responsableCandidates.map(m => ({ value: m.id, label: `${m.firstName} ${m.lastName}` })),
+      ]
+    : [{ value: "", label: "Aucun membre majeur disponible" }]
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -220,6 +263,56 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="possedeTshirt"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Possède un tee-shirt"
+              options={possedeTshirtOptions}
+              value={field.value ?? ""}
+              onValueChange={(v) => {
+                field.onChange(v)
+                // A size doesn't make sense once "does not have a t-shirt" is selected —
+                // clear it so the two fields can't contradict each other.
+                if (v === "false") setValue("tailleTshirt", "")
+              }}
+              error={errors.possedeTshirt?.message}
+            />
+          )}
+        />
+        <Controller
+          name="tailleTshirt"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Taille du tee-shirt"
+              options={tailleTshirtOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.tailleTshirt?.message}
+            />
+          )}
+        />
+      </div>
+
+      {showResponsableField && (
+        <Controller
+          name="responsableId"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label="Responsable légal (si mineur)"
+              options={responsableOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.responsableId?.message}
+            />
+          )}
+        />
+      )}
 
       <TextareaField
         label="Allergies connues"

@@ -237,6 +237,16 @@ enum Sexe {
   FEMME
 }
 
+enum TailleTshirt {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  XXXL
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
@@ -395,8 +405,11 @@ model Membre {
   sexe          Sexe?
   allergies     String?
   photoUrl      String?
+  possedeTshirt Boolean?
+  tailleTshirt  TailleTshirt?
   status        MembreStatus @default(ACTIF)
   typeId        String?
+  responsableId String?
   associationId String
   userId        String?      @unique
   joinedAt      DateTime     @default(now())
@@ -416,6 +429,8 @@ model Membre {
   association           Association          @relation(fields: [associationId], references: [id])
   user                  User?                @relation(fields: [userId], references: [id])
   type                  MembreType?          @relation(fields: [typeId], references: [id])
+  responsable           Membre?              @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  dependants            Membre[]             @relation("MembreResponsable")
   cotisations           Cotisation[]
   participations        Participation[]
   actualiteRecipients   ActualiteRecipient[]

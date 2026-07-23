@@ -16,8 +16,11 @@ export type MembreDetail = {
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   photoUrl:      string | null
+  possedeTshirt: boolean | null
+  tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
   typeId:        string | null
+  responsableId: string | null
   associationId: string | null
   userId:        string | null
   joinedAt:      string
@@ -77,6 +80,18 @@ export type MembreDetail = {
     name:  string
     color: string
   } | null
+
+  responsable: {
+    id:        string
+    firstName: string
+    lastName:  string
+  } | null
+
+  dependants: {
+    id:        string
+    firstName: string
+    lastName:  string
+  }[]
 
   user: {
     role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
@@ -139,6 +154,27 @@ async function updateMembre(id: string, data: MembreUpdateInput) {
 async function deleteMembre(id: string) {
   const res = await fetch(`/api/membres/${id}`, { method: "DELETE" })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression"))
+  return res.json() as Promise<{ deletedId: string; unlinkedDependants: number }>
+}
+
+type ResponsableOption = { id: string; firstName: string; lastName: string }
+
+async function fetchResponsableOptions(excludeId?: string) {
+  // No `status` filter on purpose — a guardian link is informational, not a permission
+  // grant, so a not-yet-activated (PENDING) or inactive parent must still be pickable
+  // (e.g. onboarding a parent and child the same day, parent not activated yet).
+  const params = new URLSearchParams({ adultsOnly: "true", limit: "500" })
+  if (excludeId) params.set("excludeId", excludeId)
+  const res = await fetch(`/api/membres?${params}`)
+  if (!res.ok) throw new Error("Erreur lors du chargement des membres")
+  return res.json() as Promise<ResponsableOption[]>
+}
+
+export function useResponsableOptions(excludeId?: string) {
+  return useQuery({
+    queryKey: ["membres-active", "adults", excludeId],
+    queryFn:  () => fetchResponsableOptions(excludeId),
+  })
 }
 
 export function useMembresPaginated(page: number, limit = 20, search?: string, status?: string, typeId?: string) {

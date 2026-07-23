@@ -14,17 +14,28 @@ import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } f
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
+// Même seuil que /api/membres/stats/route.ts pour bucketer "adulte" à partir de birthDate.
+const ADULT_AGE_YEARS = 18
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
-  const search = searchParams.get("search")?.trim()
-  const status = searchParams.get("status") ?? undefined
-  const typeId = searchParams.get("typeId") ?? undefined
+  const search      = searchParams.get("search")?.trim()
+  const status      = searchParams.get("status") ?? undefined
+  const typeId      = searchParams.get("typeId") ?? undefined
+  const adultsOnly  = searchParams.get("adultsOnly") === "true"
+  const excludeId   = searchParams.get("excludeId") ?? undefined
 
   const where: Record<string, unknown> = { associationId, deletedAt: null }
   if (status) where.status = status
   if (typeId) where.typeId = typeId
+  if (excludeId) where.id = { not: excludeId }
+  if (adultsOnly) {
+    const adultCutoff = new Date()
+    adultCutoff.setFullYear(adultCutoff.getFullYear() - ADULT_AGE_YEARS)
+    where.birthDate = { not: null, lte: adultCutoff }
+  }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
@@ -62,10 +73,22 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, role = "MEMBRE", ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
+  }
+
+  if (responsableId) {
+    // Guards against a stale client and cross-tenant ids — same reasoning as the PATCH
+    // route's check (see src/app/api/membres/[id]/route.ts).
+    const responsableExists = await prisma.membre.findFirst({
+      where:  { id: responsableId, associationId, deletedAt: null },
+      select: { id: true },
+    })
+    if (!responsableExists) {
+      return NextResponse.json({ error: "Membre responsable introuvable" }, { status: 422 })
+    }
   }
 
   try {
@@ -91,6 +114,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
     sexe:          sexe          || null,
     groupeSanguin: groupeSanguin || null,
     allergies:     allergies     || null,
+    // Never persist "does not have a t-shirt" alongside a size (see membre-form.tsx's
+    // matching reactive clear on the client — this is the server-side backstop).
+    possedeTshirt: possedeTshirt === undefined || possedeTshirt === "" ? null : possedeTshirt === "true",
+    tailleTshirt:  possedeTshirt === "false" ? null : (tailleTshirt || null),
+    responsableId: responsableId || null,
     birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null,
   }
 
