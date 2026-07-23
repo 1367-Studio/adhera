@@ -7,6 +7,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
 
 // Editing what a meeting *is* (title/description/scheduledAt/type/participants) only makes
 // sense before it happens — once it's LIVE or ENDED, rewriting those fields would silently
@@ -21,11 +22,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const meeting = await prisma.meeting.findFirst({
     where: { id, associationId },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
   })
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
@@ -134,11 +131,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(type        !== undefined ? { type }                      : {}),
       ...(scheduledAt !== undefined ? { scheduledAt: scheduledAt ? new Date(scheduledAt) : null } : {}),
     },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
   })
 
   await writeActivityLog({
