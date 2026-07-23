@@ -13,6 +13,8 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
     where: { id: cotisationId, membreId: id, associationId: ctx.associationId, status: "PAYE" },
   })
   if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable ou non payée" }, { status: 404 })
+  const { paidAt } = cotisation
+  if (!paidAt) return NextResponse.json({ error: "Cotisation payée sans date de paiement enregistrée" }, { status: 422 })
 
   const membre = await prisma.membre.findUnique({
     where:  { id },
@@ -26,8 +28,8 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
-  const pdf  = await generateDeclarationCotisation(cotisation, membre, assoc)
-  const name = `declaration-cotisation-${cotisation.declarationNumber ?? cotisation.id}.pdf`
+  const { pdf, declarationNumber } = await generateDeclarationCotisation({ ...cotisation, paidAt }, membre, assoc)
+  const name = `declaration-cotisation-${declarationNumber}.pdf`
 
   return new NextResponse(new Uint8Array(pdf), {
     headers: {

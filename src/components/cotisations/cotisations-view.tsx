@@ -171,7 +171,7 @@ export function CotisationsView() {
       cell: (c) => {
         const actions = [
           { label: "Modifier", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
-          ...(c.paidAt ? [{
+          ...(c.status === "PAYE" ? [{
             label:   "Déclaration",
             icon:    <DownloadSimpleIcon className="size-3.5" />,
             onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),

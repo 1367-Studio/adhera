@@ -1,12 +1,13 @@
 import { jsPDF } from "jspdf"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
+import { nextCotisationDeclarationNumber } from "@/lib/document-numbering"
 
 type CotisationForDeclaration = {
   id:                  string
   year:                number
   amount:              { toString(): string }
-  paidAt:              Date | null
+  paidAt:              Date
   declarationNumber:   string | null
   declarationIssuedAt: Date | null
 }
@@ -25,33 +26,25 @@ type AssociationForDeclaration = {
 }
 
 async function assignDeclarationNumber(cotisationId: string, associationId: string): Promise<string> {
-  const year   = new Date().getFullYear()
-  const prefix = `${year}-`
-
   for (let attempt = 0; attempt < 5; attempt++) {
-    const last = await prisma.cotisation.findFirst({
-      where: {
-        associationId,
-        declarationNumber: { startsWith: prefix },
-      },
-      orderBy: { declarationNumber: "desc" },
-      select: { declarationNumber: true },
-    })
-
-    let seq = 1
-    if (last?.declarationNumber) {
-      const num = parseInt(last.declarationNumber.split("-")[1] ?? "0", 10)
-      seq = num + 1
-    }
-
-    const declarationNumber = `${prefix}${String(seq).padStart(4, "0")}`
+    const declarationNumber = await nextCotisationDeclarationNumber(associationId)
 
     try {
-      await prisma.cotisation.update({
-        where: { id: cotisationId },
+      // Guard on `declarationNumber: null` so two concurrent requests for the *same*
+      // cotisation (e.g. a double-click) can't both "win" and burn two numbers on one
+      // payment — the loser matches zero rows here and falls through to reuse whatever
+      // number the winner assigned, instead of retrying with a fresh one.
+      const result = await prisma.cotisation.updateMany({
+        where: { id: cotisationId, declarationNumber: null },
         data:  { declarationNumber, declarationIssuedAt: new Date() },
       })
-      return declarationNumber
+      if (result.count === 1) return declarationNumber
+
+      const current = await prisma.cotisation.findUniqueOrThrow({
+        where:  { id: cotisationId },
+        select: { declarationNumber: true },
+      })
+      return current.declarationNumber!
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") continue
       throw err
@@ -65,13 +58,12 @@ export async function generateDeclarationCotisation(
   cotisation:  CotisationForDeclaration,
   membre:      MembreForDeclaration,
   association: AssociationForDeclaration,
-): Promise<Buffer> {
+): Promise<{ pdf: Buffer; declarationNumber: string }> {
   const declarationNumber = cotisation.declarationNumber
     ?? await assignDeclarationNumber(cotisation.id, association.id)
 
   const amount  = parseFloat(cotisation.amount.toString())
-  const paidAt  = cotisation.paidAt ?? new Date()
-  const dateStr = paidAt.toLocaleDateString("fr-FR")
+  const dateStr = cotisation.paidAt.toLocaleDateString("fr-FR")
 
   const doc = new jsPDF()
 
@@ -109,5 +101,5 @@ export async function generateDeclarationCotisation(
     20, 130,
   )
 
-  return Buffer.from(doc.output("arraybuffer"))
+  return { pdf: Buffer.from(doc.output("arraybuffer")), declarationNumber }
 }
