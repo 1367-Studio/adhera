@@ -7,7 +7,8 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
-  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon
+  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
+  DownloadSimpleIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
 import { useCreateCotisation } from "@/hooks/use-cotisations"
@@ -28,6 +29,7 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useCurrentUser, useModules } from "@/lib/user-context"
+import { BASE_PATH } from "@/lib/env"
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN:      "Admin",
@@ -331,6 +333,15 @@ export function MembreDetailView() {
                     <div className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(c.amount)}</span>
                       <Badge variant={s.variant}>{s.label}</Badge>
+                      {c.status === "PAYE" && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => window.open(`${BASE_PATH}/api/membres/${id}/cotisations/${c.id}/declaration`)}
+                        >
+                          <DownloadSimpleIcon className="size-3.5" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )
