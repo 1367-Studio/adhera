@@ -19,6 +19,8 @@ export type MembreDetail = {
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
+  adherentOverride: boolean | null
+  isAdherent:       boolean
   typeId:        string | null
   responsableId: string | null
   associationId: string | null
@@ -85,6 +87,8 @@ export type MembreDetail = {
     id:        string
     firstName: string
     lastName:  string
+    adherentOverride: boolean | null
+    cotisations: { year: number; status: "EN_ATTENTE" | "PAYE" | "EXONERE" }[]
   } | null
 
   dependants: {
@@ -107,11 +111,12 @@ export type MembreDetail = {
 
 const QK = ["membres"]
 
-async function fetchMembresPaginated(page: number, limit: number, search?: string, status?: string, typeId?: string) {
+async function fetchMembresPaginated(page: number, limit: number, search?: string, status?: string, typeId?: string, adherent?: string) {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (search) params.set("search", search)
   if (status) params.set("status", status)
   if (typeId) params.set("typeId", typeId)
+  if (adherent) params.set("adherent", adherent)
   const res = await fetch(`/api/membres?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement des membres")
   return res.json() as Promise<PaginatedResult<unknown>>
@@ -177,10 +182,10 @@ export function useResponsableOptions(excludeId?: string) {
   })
 }
 
-export function useMembresPaginated(page: number, limit = 20, search?: string, status?: string, typeId?: string) {
+export function useMembresPaginated(page: number, limit = 20, search?: string, status?: string, typeId?: string, adherent?: string) {
   return useQuery({
-    queryKey:  [...QK, "paginated", page, limit, search, status, typeId],
-    queryFn:   () => fetchMembresPaginated(page, limit, search, status, typeId),
+    queryKey:  [...QK, "paginated", page, limit, search, status, typeId, adherent],
+    queryFn:   () => fetchMembresPaginated(page, limit, search, status, typeId, adherent),
     staleTime: 0,
   })
 }

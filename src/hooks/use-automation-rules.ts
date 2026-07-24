@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 
 export type RuleStatus     = "ACTIVE" | "PAUSED" | "DONE"
-export type TriggerType    = "SCHEDULED_ONCE" | "SCHEDULED_RECURRING" | "EVENT_COTISATION_DUE" | "EVENT_PAYMENT_OVERDUE" | "EVENT_REMINDER" | "RSVP_CONFIRMED" | "MEMBER_CREATED" | "MEMBER_BIRTHDAY"
+export type TriggerType    = "SCHEDULED_ONCE" | "SCHEDULED_RECURRING" | "EVENT_COTISATION_DUE" | "EVENT_PAYMENT_OVERDUE" | "EVENT_REMINDER" | "RSVP_CONFIRMED" | "MEMBER_CREATED" | "MEMBER_BIRTHDAY" | "EVENT_ADHERENT_LAPSED"
 export type MessageChannel = "EMAIL" | "SMS" | "BOTH"
 
 export type AutomationRule = {

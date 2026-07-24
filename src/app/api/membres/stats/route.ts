@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
+import { isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -8,36 +9,41 @@ const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // age, so members with a known birthDate are fetched and bucketed here instead.
 const ADULT_AGE_YEARS = 18
 
+function emptyBucket() {
+  return { count: 0, hommes: 0, femmes: 0, sexeNonRenseigne: 0, adultes: 0, enfants: 0, ageNonRenseigne: 0 }
+}
+
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
 
-  const [sexeGroups, birthDates] = await Promise.all([
-    prisma.membre.groupBy({
-      by:     ["sexe"],
-      where:  { associationId, deletedAt: null },
-      _count: true,
-    }),
-    prisma.membre.findMany({
-      where:  { associationId, deletedAt: null },
-      select: { birthDate: true },
-    }),
-  ])
-
-  const hommes           = sexeGroups.find(g => g.sexe === "HOMME")?._count ?? 0
-  const femmes           = sexeGroups.find(g => g.sexe === "FEMME")?._count ?? 0
-  const sexeNonRenseigne = sexeGroups.find(g => g.sexe === null)?._count ?? 0
+  const membres = await prisma.membre.findMany({
+    where:  { associationId, deletedAt: null },
+    select: {
+      sexe: true, birthDate: true, adherentOverride: true,
+      cotisations: membreAdherentCotisationSelect(),
+      responsable: membreAdherentResponsableSelect(),
+    },
+  })
 
   const adultCutoff = new Date()
   adultCutoff.setFullYear(adultCutoff.getFullYear() - ADULT_AGE_YEARS)
 
-  let adultes = 0
-  let enfants = 0
-  let ageNonRenseigne = 0
-  for (const { birthDate } of birthDates) {
-    if (!birthDate) { ageNonRenseigne++; continue }
-    if (birthDate <= adultCutoff) adultes++
-    else enfants++
+  const total = emptyBucket()
+  const adherents = emptyBucket()
+  const benevoles = emptyBucket()
+
+  for (const m of membres) {
+    const bucket = isMembreAdherent(m) ? adherents : benevoles
+    for (const b of [total, bucket]) {
+      b.count++
+      if (m.sexe === "HOMME") b.hommes++
+      else if (m.sexe === "FEMME") b.femmes++
+      else b.sexeNonRenseigne++
+      if (!m.birthDate) b.ageNonRenseigne++
+      else if (m.birthDate <= adultCutoff) b.adultes++
+      else b.enfants++
+    }
   }
 
-  return NextResponse.json({ hommes, femmes, sexeNonRenseigne, adultes, enfants, ageNonRenseigne })
+  return NextResponse.json({ ...total, adherents, benevoles })
 }, { roles: MANAGERS })

@@ -20,6 +20,7 @@ export const ASSOCIATION_SAFE_SELECT = {
   siren: true,
   rna: true,
   canIssueTaxReceipts: true,
+  cotisationDefaultAmount: true,
   objet: true,
   organismeCategory: true,
   organismeCategoryDetail: true,

@@ -24,6 +24,7 @@ import { IdentityDonsSettings } from "@/components/parametres/identity-dons-sett
 import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
+import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
 type Association = {
   id:      string
   name:    string
@@ -38,6 +39,7 @@ type Association = {
   logoUrl:        string | null
   primaryColor:   string | null
   secondaryColor: string | null
+  cotisationDefaultAmount: string | number | null
 }
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations"
@@ -182,6 +184,15 @@ function ParametresViewInner() {
               <BankSettings
                 canEdit={canEditFinance}
                 data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic }}
+              />
+            </div>
+          )}
+
+          {assoc && modules.cotisations && (
+            <div className="rounded-xl border bg-card p-6">
+              <CotisationDefaultsSettings
+                canEdit={canEditFinance}
+                cotisationDefaultAmount={assoc.cotisationDefaultAmount}
               />
             </div>
           )}

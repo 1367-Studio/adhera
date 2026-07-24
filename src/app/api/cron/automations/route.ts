@@ -7,6 +7,7 @@ import { substituteVars, buildVars, parseRecipients, computeNextRunAt, isBirthda
 import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { currentCotisationYear, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 import type { TriggerType, MessageChannel } from "@prisma/client"
 
 const BATCH_SIZE = 100
@@ -92,6 +93,12 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
 
   if (triggerType === "MEMBER_BIRTHDAY") {
     const sent = await processBirthday(rule, now, { emailEnabled, smsEnabled })
+    await updateRuleNextRun(rule.id, triggerType, config, now)
+    return sent
+  }
+
+  if (triggerType === "EVENT_ADHERENT_LAPSED") {
+    const sent = await processAdherentLapsed(rule, config, now, { emailEnabled, smsEnabled })
     await updateRuleNextRun(rule.id, triggerType, config, now)
     return sent
   }
@@ -287,6 +294,134 @@ async function processBirthday(
       metadata:      { skippedNoContact, birthdaysToday: targets.length },
     })
   }
+
+  let sent = 0
+
+  if (opts.emailEnabled) {
+    const branding  = resolveDocumentBranding(rule.association)
+    const emailJobs = jobs
+      .filter(j => j.membre.email)
+      .map(j => ({
+        membreId: j.membreId,
+        payload: {
+          ...customEmail({
+            associationName: rule.association.name,
+            subject:         substituteVars(rule.template.subject, j.vars),
+            bodyHtml:        substituteVars(rule.template.body, j.vars),
+            recipientEmail:  j.membre.email!,
+            branding,
+          }),
+          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
+        },
+      }))
+
+    for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
+      const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
+      const results   = await sendEmailBatch(chunk.map(j => j.payload))
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
+      if (succeeded.length > 0) {
+        await prisma.automationLog.createMany({
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, subject: j.payload.subject })),
+        })
+        sent += succeeded.length
+      }
+    }
+  }
+
+  if (opts.smsEnabled && rule.template.smsBody) {
+    const smsJobs = jobs
+      .filter(j => j.membre.phone)
+      .map(j => ({
+        membreId: j.membreId,
+        to:       j.membre.phone!,
+        body:     substituteVars(rule.template.smsBody!, j.vars),
+      }))
+
+    for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
+      const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
+      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
+      const succeeded = chunk.filter((_, idx) => results[idx])
+      if (succeeded.length > 0) {
+        await prisma.automationLog.createMany({
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId })),
+        })
+        sent += succeeded.length
+      }
+    }
+  }
+
+  return sent
+}
+
+// ── EVENT_ADHERENT_LAPSED processor ──────────────────────────────────────────
+
+// Members who were adhérent last year (own cotisation PAYE/EXONERE) but have no
+// qualifying cotisation for the current year yet. adherentOverride: null excludes anyone
+// an admin has manually forced either way — their status isn't tied to renewal, so
+// nagging them about it would be noise. Dependents usually never match here since they
+// never have their own cotisation history to begin with — nothing to "lapse" — but a
+// member who *used to* have their own cotisation and was only later attached to a
+// responsable is still filtered out below if that responsable currently makes them
+// adhérent again, so this never nags someone isMembreAdherent() reports as current.
+// Staff (linked User.role other than MEMBRE) are excluded too — same reasoning as the
+// registration-time cotisation nudge in src/app/api/membres/route.ts: they were invited to
+// help run the association, not as dues-paying members, so a lapsed-renewal nag would be as
+// much of a non-sequitur here as the welcome-time one would've been. A Membre with no linked
+// User at all isn't "staff" and stays eligible.
+async function processAdherentLapsed(
+  rule: RuleWithRelations,
+  config: Record<string, unknown>,
+  now: Date,
+  opts: { emailEnabled: boolean; smsEnabled: boolean },
+): Promise<number> {
+  const { mode, typeId } = parseRecipients(rule.recipients)
+  const year     = currentCotisationYear(now)
+  const lastYear = year - 1
+
+  const candidates = await prisma.membre.findMany({
+    where: {
+      associationId:    rule.associationId,
+      status:           "ACTIF",
+      deletedAt:        null,
+      adherentOverride: null,
+      OR: [{ userId: null }, { user: { role: "MEMBRE" } }],
+      cotisations: {
+        some: { year: lastYear, status: { in: ["PAYE", "EXONERE"] } },
+        none: { year, status: { in: ["PAYE", "EXONERE"] } },
+      },
+      ...(mode === "TYPE" && typeId ? { typeId } : {}),
+    },
+    include: { responsable: membreAdherentResponsableSelect(now) },
+  })
+
+  // The where clause above already guarantees each candidate has no qualifying cotisation
+  // of their own for the current year and no override, so their own status is always
+  // undetermined here — isMembreAdherent() only has the responsable fallback left to check.
+  const membres = candidates.filter(m => !isMembreAdherent({ ...m, cotisations: [] }, now))
+
+  if (membres.length === 0) return 0
+
+  const cooldownDays   = (config.cooldownDays as number | undefined) ?? 30
+  const cooldownCutoff = new Date(now.getTime() - cooldownDays * 86_400_000)
+  const recentLogs = await prisma.automationLog.findMany({
+    where:  { ruleId: rule.id, sentAt: { gte: cooldownCutoff }, membreId: { in: membres.map(m => m.id) } },
+    select: { membreId: true },
+  })
+  const notifiedIds = new Set(recentLogs.map(l => l.membreId))
+  const targets = membres.filter(m => !notifiedIds.has(m.id))
+
+  const jobs = targets.map(membre => ({
+    membreId: membre.id,
+    membre,
+    vars: buildVars({
+      prenom:          membre.firstName,
+      nom:             membre.lastName,
+      email:           membre.email ?? "",
+      association:     rule.association.name,
+      slug:            rule.association.slug,
+      anneeCotisation: year,
+    }),
+  }))
 
   let sent = 0
 

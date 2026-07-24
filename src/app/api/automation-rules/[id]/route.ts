@@ -11,7 +11,7 @@ const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const schema = z.object({
   name:          z.string().min(1).max(100).optional(),
   templateId:    z.string().min(1).optional(),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY"]).optional(),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]).optional(),
   triggerConfig: z.record(z.string(), z.unknown()).optional(),
   recipients:    z.string().optional(),
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).optional(),

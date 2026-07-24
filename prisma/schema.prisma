@@ -79,6 +79,7 @@ enum TriggerType {
   RSVP_CONFIRMED
   MEMBER_CREATED
   MEMBER_BIRTHDAY
+  EVENT_ADHERENT_LAPSED
 }
 
 enum MessageChannel {
@@ -266,6 +267,11 @@ model Association {
   siren                   String?
   rna                     String?
   canIssueTaxReceipts     Boolean            @default(false)
+  // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
+  // (EN_ATTENTE, current year) is created automatically for every new Membre — see
+  // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
+  // away instead of waiting on an admin to create one.
+  cotisationDefaultAmount Decimal?           @db.Decimal(10, 2)
   objet                   String?
   organismeCategory       OrganismeCategory  @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail String?
@@ -408,6 +414,10 @@ model Membre {
   possedeTshirt Boolean?
   tailleTshirt  TailleTshirt?
   status        MembreStatus @default(ACTIF)
+  // Tri-state manual override of "adhérent" status: null = automatic (computed from the
+  // current-year Cotisation, see src/lib/membre-adherent.ts), true = force adhérent, false =
+  // force bénévole. Defaults to null so a new member is not automatically an adhérent.
+  adherentOverride Boolean?
   typeId        String?
   responsableId String?
   associationId String

@@ -48,6 +48,8 @@ type Membre = {
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
+  adherentOverride: boolean | null
+  isAdherent:       boolean
   typeId:        string | null
   type:          MembreTypeRef | null
   responsableId: string | null
@@ -79,13 +81,19 @@ const statusBadge: Record<Membre["status"], { label: string; variant: "default" 
   SUSPENDU: { label: "Suspendu",   variant: "destructive" },
 }
 
-type MembresStats = {
+type MembresStatsBucket = {
+  count:            number
   hommes:           number
   femmes:           number
   sexeNonRenseigne: number
   adultes:          number
   enfants:          number
   ageNonRenseigne:  number
+}
+
+type MembresStats = MembresStatsBucket & {
+  adherents: MembresStatsBucket
+  benevoles: MembresStatsBucket
 }
 
 function StatTile({ label, value, icon: Icon }: { label: string; value: number; icon: React.ElementType }) {
@@ -192,6 +200,7 @@ export function MembresView() {
   const [search, setSearch]             = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [typeFilter, setTypeFilter]     = useState<string>("")
+  const [adherentFilter, setAdherentFilter] = useState<string>("")
   const [createOpen, setCreateOpen]       = useState(false)
   const [editTarget, setEditTarget]       = useState<Membre | null>(null)
   const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
@@ -210,7 +219,7 @@ export function MembresView() {
   }
 
   const { data: types = [] } = useMembreTypes()
-  const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, search || undefined, statusFilter || undefined, typeFilter || undefined)
+  const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, search || undefined, statusFilter || undefined, typeFilter || undefined, adherentFilter || undefined)
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
     queryFn:  () => fetch("/api/membres/stats").then(r => r.json()),
@@ -319,7 +328,7 @@ export function MembresView() {
     },
     {
       key: "joinedAt",
-      header: "Adhésion",
+      header: "Membre depuis",
       cell: (m) => format(new Date(m.joinedAt), "MMM yyyy", { locale: fr }),
       hideInCard: true,
     },
@@ -331,6 +340,15 @@ export function MembresView() {
         return <Badge variant={s.variant}>{s.label}</Badge>
       },
     },
+    ...(modules.cotisations ? [{
+      key: "adherent",
+      header: "Adhésion",
+      cell: (m: Membre) => (
+        <Badge variant={m.isAdherent ? "secondary" : "outline"}>
+          {m.isAdherent ? "Adhérent" : "Bénévole"}
+        </Badge>
+      ),
+    }] : []),
     {
       key: "actions",
       header: "",
@@ -391,17 +409,26 @@ export function MembresView() {
       />
 
       {stats && (
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">
-            Statistiques globales
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-            <StatTile label="Hommes" value={stats.hommes} icon={GenderMaleIcon} />
-            <StatTile label="Femmes" value={stats.femmes} icon={GenderFemaleIcon} />
-            <StatTile label="Sexe non renseigné" value={stats.sexeNonRenseigne} icon={QuestionIcon} />
-            <StatTile label="Adultes" value={stats.adultes} icon={UserIcon} />
-            <StatTile label="Enfants" value={stats.enfants} icon={BabyIcon} />
-            <StatTile label="Âge non renseigné" value={stats.ageNonRenseigne} icon={QuestionIcon} />
+        <div className="space-y-3">
+          {modules.cotisations && (
+            <div className="space-y-1.5">
+              <p className="text-xs text-muted-foreground">Adhésion</p>
+              <div className="grid grid-cols-2 gap-2">
+                <StatTile label="Adhérents" value={stats.adherents.count} icon={UserIcon} />
+                <StatTile label="Bénévoles" value={stats.benevoles.count} icon={UserIcon} />
+              </div>
+            </div>
+          )}
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Démographie</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              <StatTile label="Hommes" value={stats.hommes} icon={GenderMaleIcon} />
+              <StatTile label="Femmes" value={stats.femmes} icon={GenderFemaleIcon} />
+              <StatTile label="Sexe non renseigné" value={stats.sexeNonRenseigne} icon={QuestionIcon} />
+              <StatTile label="Adultes" value={stats.adultes} icon={UserIcon} />
+              <StatTile label="Enfants" value={stats.enfants} icon={BabyIcon} />
+              <StatTile label="Âge non renseigné" value={stats.ageNonRenseigne} icon={QuestionIcon} />
+            </div>
           </div>
         </div>
       )}
@@ -453,6 +480,19 @@ export function MembresView() {
             onChange={v => { setTypeFilter(v); setPage(1) }}
             options={types.map(t => ({ value: t.id, label: t.name }))}
             placeholder="Tous les types"
+          />
+        )}
+
+        {/* Adherent filter */}
+        {modules.cotisations && (
+          <FilterSelect
+            value={adherentFilter}
+            onChange={v => { setAdherentFilter(v); setPage(1) }}
+            options={[
+              { value: "ADHERENT", label: "Adhérents" },
+              { value: "BENEVOLE", label: "Bénévoles"  },
+            ]}
+            placeholder="Adhérents et bénévoles"
           />
         )}
       </div>
@@ -513,10 +553,12 @@ export function MembresView() {
             possedeTshirt: editTarget.possedeTshirt === null ? "" : String(editTarget.possedeTshirt) as "true" | "false",
             tailleTshirt:  editTarget.tailleTshirt  ?? "",
             responsableId: editTarget.responsableId ?? "",
+            adherentOverride: editTarget.adherentOverride === null ? "" : String(editTarget.adherentOverride) as "true" | "false",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          actorRole={currentUser.role}
           isSelf={editTarget?.userId === currentUser.id}
           membreId={editTarget?.id}
         />

@@ -21,7 +21,7 @@ const EVENT_TRIGGERS: TriggerType[] = ["RSVP_CONFIRMED", "MEMBER_CREATED"]
 const schema = z.object({
   name:          z.string().min(1, "Requis"),
   templateId:    z.string().min(1, "Requis"),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY"]),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]),
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
   recipients:    z.string(),
   // SCHEDULED_ONCE
@@ -56,7 +56,17 @@ const TRIGGER_OPTIONS = [
   { value: "RSVP_CONFIRMED",        label: "Confirmation de participation (RSVP)" },
   { value: "MEMBER_CREATED",        label: "Nouveau membre inscrit" },
   { value: "MEMBER_BIRTHDAY",       label: "Anniversaire du membre" },
+  { value: "EVENT_ADHERENT_LAPSED", label: "Adhésion non renouvelée" },
 ]
+
+// Default cooldownDays per trigger type — kept in sync with each processor's own
+// `config.cooldownDays ?? N` fallback in src/app/api/cron/automations/route.ts, so a rule
+// created without touching the field behaves the same as what its placeholder implies.
+const COOLDOWN_DEFAULTS: Partial<Record<TriggerType, string>> = {
+  EVENT_COTISATION_DUE:  "7",
+  EVENT_PAYMENT_OVERDUE: "7",
+  EVENT_ADHERENT_LAPSED: "30",
+}
 
 const CHANNEL_OPTIONS = [
   { value: "EMAIL", label: "Email uniquement" },
@@ -105,7 +115,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     cooldownDays: "7",
   }
 
-  const { register, handleSubmit, reset, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, watch, control, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver:      zodResolver(schema) as Resolver<FormValues>,
     defaultValues,
   })
@@ -166,6 +176,9 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     if (values.triggerType === "EVENT_REMINDER") {
       return { daysBefore: Number(values.daysBefore) }
     }
+    if (values.triggerType === "EVENT_ADHERENT_LAPSED") {
+      return { cooldownDays: Number(values.cooldownDays) }
+    }
     return {}
   }
 
@@ -222,7 +235,14 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               required
               options={TRIGGER_OPTIONS}
               value={field.value}
-              onValueChange={field.onChange}
+              onValueChange={(v) => {
+                field.onChange(v)
+                // Only for a brand-new rule — editing an existing one already loaded its
+                // real saved cooldownDays via the reset() in the effect above, and switching
+                // trigger type while editing shouldn't clobber that.
+                const fallback = COOLDOWN_DEFAULTS[v as TriggerType]
+                if (!isEditing && fallback) setValue("cooldownDays", fallback)
+              }}
             />
           )}
         />
@@ -301,6 +321,19 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               hint="Ex: 1 = la veille, 3 = 3 jours avant"
               {...register("daysBefore")}
             />
+          </div>
+        )}
+
+        {/* EVENT_ADHERENT_LAPSED */}
+        {triggerType === "EVENT_ADHERENT_LAPSED" && (
+          <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+            <p className="text-xs text-muted-foreground">
+              Envoie un message aux membres actifs qui étaient adhérents l&apos;année dernière
+              (cotisation payée/exonérée) mais n&apos;ont pas encore de cotisation en règle pour
+              l&apos;année en cours. Un membre dont le statut d&apos;adhésion a été forcé
+              manuellement n&apos;est jamais concerné.
+            </p>
+            <FormField label="Cooldown (jours)" type="number" min={1} placeholder="30" hint="Délai min. entre 2 envois au même membre" {...register("cooldownDays")} />
           </div>
         )}
 

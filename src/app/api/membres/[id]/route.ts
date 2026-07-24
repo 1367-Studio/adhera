@@ -3,8 +3,21 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
+import { isMembreAdherent, membreAdherentCotisationSelect } from "@/lib/membre-adherent"
+
+const RESPONSABLE_SELECT = {
+  select: {
+    id: true, firstName: true, lastName: true,
+    adherentOverride: true,
+    cotisations: membreAdherentCotisationSelect(),
+  },
+} as const
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Forcing a member's adhérent status is a financial call equivalent to marking a cotisation
+// paid — same role set as /api/association/cotisation-defaults, narrower than MANAGERS so
+// SECRETAIRE can still manage every other membre field but not this one.
+const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -26,7 +39,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
       type:           { select: { id: true, name: true, color: true } },
       user:           { select: { role: true } },
-      responsable:    { select: { id: true, firstName: true, lastName: true } },
+      responsable:    RESPONSABLE_SELECT,
       dependants:     { select: { id: true, firstName: true, lastName: true } },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
@@ -35,11 +48,11 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-  return NextResponse.json(membre)
+  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  const { associationId, userId } = ctx
+  const { associationId, userId, role: actorRole } = ctx
 
   const existing = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -50,7 +63,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, possedeTshirt, tailleTshirt, responsableId, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+
+  if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
+    return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
+  }
 
   // Any status other than ACTIF flips User.active to false below (line ~81) — blocking only
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
@@ -78,6 +95,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // "does not have a t-shirt" alongside a size, regardless of what the request body says.
   const possedeTshirtValue = possedeTshirt === undefined ? undefined : (possedeTshirt === "" ? null : possedeTshirt === "true")
   const tailleTshirtValue  = possedeTshirtValue === false ? null : (tailleTshirt === undefined ? undefined : (tailleTshirt || null))
+  const adherentOverrideValue = adherentOverride === undefined ? undefined : (adherentOverride === "" ? null : adherentOverride === "true")
 
   const emailChanged = email !== undefined && email !== existing.email
 
@@ -119,7 +137,9 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(tailleTshirtValue  !== undefined ? { tailleTshirt:  tailleTshirtValue  } : {}),
         ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),
         ...(birthDate     !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
+        ...(adherentOverrideValue !== undefined ? { adherentOverride: adherentOverrideValue } : {}),
       },
+      include: { cotisations: membreAdherentCotisationSelect(), responsable: RESPONSABLE_SELECT },
     })
 
     if (existing.userId) {
@@ -142,7 +162,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_UPDATED", entity: "Membre", entityId: id, label: `${membre.firstName} ${membre.lastName}`, metadata: { changes } })
   }
 
-  return NextResponse.json(membre)
+  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
 }, { roles: MANAGERS })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
