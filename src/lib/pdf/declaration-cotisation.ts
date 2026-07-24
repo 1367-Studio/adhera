@@ -1,13 +1,13 @@
-import { jsPDF } from "jspdf"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { nextCotisationDeclarationNumber } from "@/lib/document-numbering"
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 
 type CotisationForDeclaration = {
   id:                  string
   year:                number
   amount:              { toString(): string }
-  paidAt:              Date
+  paidAt:              Date | null
   declarationNumber:   string | null
   declarationIssuedAt: Date | null
 }
@@ -23,6 +23,8 @@ type AssociationForDeclaration = {
   name:    string
   address: string | null
   city:    string | null
+  logoUrl: string | null
+  primaryColor: string | null
 }
 
 async function assignDeclarationNumber(cotisationId: string, associationId: string): Promise<string> {
@@ -54,52 +56,100 @@ async function assignDeclarationNumber(cotisationId: string, associationId: stri
   throw new Error("Impossible d'attribuer un numéro de déclaration unique")
 }
 
+function hexToRgb(hex: string) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
+  if (!m) return null
+  const n = parseInt(m[1], 16)
+  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
+}
+
 export async function generateDeclarationCotisation(
   cotisation:  CotisationForDeclaration,
   membre:      MembreForDeclaration,
   association: AssociationForDeclaration,
-): Promise<{ pdf: Buffer; declarationNumber: string }> {
+): Promise<Buffer> {
   const declarationNumber = cotisation.declarationNumber
     ?? await assignDeclarationNumber(cotisation.id, association.id)
 
   const amount  = parseFloat(cotisation.amount.toString())
-  const dateStr = cotisation.paidAt.toLocaleDateString("fr-FR")
+  const paidAt  = cotisation.paidAt ?? new Date()
+  const dateStr = paidAt.toLocaleDateString("fr-FR")
 
-  const doc = new jsPDF()
+  const doc  = await PDFDocument.create()
+  const font = await doc.embedFont(StandardFonts.Helvetica)
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold)
+  const ACCENT = (association.primaryColor && hexToRgb(association.primaryColor)) || rgb(0.45, 0.45, 0.45)
 
-  doc.setFontSize(16)
-  doc.text("Déclaration de cotisation", 20, 25)
+  let logoImage = null
+  if (association.logoUrl) {
+    try {
+      const res   = await fetch(association.logoUrl)
+      const bytes = new Uint8Array(await res.arrayBuffer())
+      const contentType = res.headers.get("content-type") ?? ""
+      logoImage = contentType.includes("png") ? await doc.embedPng(bytes) : await doc.embedJpg(bytes)
+    } catch {
+      logoImage = null // logo optional — never fail the export over a broken image
+    }
+  }
 
-  doc.setFontSize(10)
-  doc.text(`N° ${declarationNumber}`, 20, 33)
+  const page = doc.addPage([595.28, 841.89])
+let y = 841.89 - 50
 
-  doc.setFontSize(11)
-  doc.text(association.name, 20, 50)
+function text(str: string, x: number, size = 10, opts: { bold?: boolean; color?: ReturnType<typeof rgb> } = {}) {
+  page.drawText(str, { x, y, size, font: opts.bold ? bold : font, color: opts.color ?? rgb(0.1, 0.1, 0.1) })
+}
+
+function textRight(str: string, rightX: number, size = 10, opts: { bold?: boolean; color?: ReturnType<typeof rgb> } = {}) {
+  const f = opts.bold ? bold : font
+  text(str, rightX - f.widthOfTextAtSize(str, size), size, opts)
+}
+
+// ── Header ─────────────────────────────────────────────────────────────
+textRight("DÉCLARATION DE COTISATION", 545, 16, { bold: true, color: ACCENT })
+
+if (logoImage) {
+  const maxW = 140, maxH = 50
+  const scale = Math.min(maxW / logoImage.width, maxH / logoImage.height, 1)
+  page.drawImage(logoImage, { x: 20, y: y - logoImage.height * scale + 2, width: logoImage.width * scale, height: logoImage.height * scale })
+  y -= logoImage.height * scale + 14
+}
+
+text(association.name, 20, 14, { bold: true })
+y -= 18
+page.drawLine({ start: { x: 20, y }, end: { x: 575, y }, thickness: 1, color: ACCENT })
+y -= 22
+
+text(`N° ${declarationNumber}`, 20, 10)
+y -= 22
+
   if (association.address || association.city) {
-    doc.text([association.address, association.city].filter(Boolean).join(", "), 20, 57)
+    text([association.address, association.city].filter(Boolean).join(", "), 20, 10)
+    y -= 20
   }
 
-  doc.text("Membre :", 20, 75)
-  doc.text(`${membre.firstName} ${membre.lastName}`, 60, 75)
+  text("Membre :", 20, 10)
+  text(`${membre.firstName} ${membre.lastName}`, 90, 10)
+  y -= 14
   if (membre.address) {
-    doc.text("Adresse :", 20, 82)
-    doc.text(membre.address, 60, 82)
+    text("Adresse :", 20, 10)
+    text(membre.address, 90, 10)
+    y -= 14
   }
 
-  doc.text("Année de cotisation :", 20, 95)
-  doc.text(String(cotisation.year), 90, 95)
+  y -= 8
+  text("Année de cotisation :", 20, 10)
+  text(String(cotisation.year), 130, 10)
+  y -= 18
 
-  doc.text("Montant :", 20, 102)
-  doc.text(`${amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, 90, 102)
+  text("Montant :", 20, 10)
+  text(`${amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`, 130, 10)
+  y -= 18
 
-  doc.text("Date de paiement :", 20, 109)
-  doc.text(dateStr, 90, 109)
+  text("Date de paiement :", 20, 10)
+  text(dateStr, 130, 10)
+  y -= 32
 
-  doc.setFontSize(9)
-  doc.text(
-    "Cette déclaration atteste du paiement de la cotisation annuelle mentionnée ci-dessus.",
-    20, 130,
-  )
+  text("Cette déclaration atteste du paiement de la cotisation annuelle mentionnée ci-dessus.", 20, 9, { color: rgb(0.45, 0.45, 0.45) })
 
-  return { pdf: Buffer.from(doc.output("arraybuffer")), declarationNumber }
+  return Buffer.from(await doc.save())
 }
