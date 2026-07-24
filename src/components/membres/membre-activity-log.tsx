@@ -36,6 +36,7 @@ const FIELD_LABELS: Record<string, string> = {
   status:    "Statut",
   typeId:    "Type",
   role:      "Rôle",
+  adherentOverride: "Statut d'adhésion",
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -43,6 +44,11 @@ const STATUS_LABELS: Record<string, string> = {
   INACTIF:  "Inactif",
   PENDING:  "En attente",
   SUSPENDU: "Suspendu",
+}
+
+const ADHERENT_OVERRIDE_LABELS: Record<string, string> = {
+  true:  "Forcé Adhérent",
+  false: "Forcé Bénévole",
 }
 
 const ROLE_LABELS: Record<string, string> = {
@@ -80,6 +86,7 @@ function formatFieldValue(field: string, value: string | null): string {
   if (value === null || value === "") return "—"
   if (field === "status") return STATUS_LABELS[value] ?? value
   if (field === "role")   return ROLE_LABELS[value] ?? value
+  if (field === "adherentOverride") return ADHERENT_OVERRIDE_LABELS[value] ?? value
   return value
 }
 

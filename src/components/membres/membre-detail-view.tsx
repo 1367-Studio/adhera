@@ -30,6 +30,7 @@ import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
+import { isMembreAdherentViaResponsable } from "@/lib/membre-adherent"
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN:      "Admin",
@@ -205,6 +206,15 @@ export function MembreDetailView() {
               )}
               <h1 className="text-xl font-semibold">{membre.firstName} {membre.lastName}</h1>
               <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+              {modules.cotisations && (
+                <Badge
+                  variant={membre.isAdherent ? "secondary" : "outline"}
+                  title={isMembreAdherentViaResponsable(membre) ? "Statut hérité de son responsable — ce membre n'a pas de cotisation à son nom" : undefined}
+                >
+                  {membre.isAdherent ? "Adhérent" : "Bénévole"}
+                  {isMembreAdherentViaResponsable(membre) && " (via responsable)"}
+                </Badge>
+              )}
               {membre.type && <MembreTypeBadge name={membre.type.name} color={membre.type.color} />}
               {membre.user && membre.user.role !== "MEMBRE" && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
@@ -272,10 +282,10 @@ export function MembreDetailView() {
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Adhésion</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Statut</p>
           <p className="flex items-center gap-1.5 text-muted-foreground">
             <CalendarIcon className="size-3.5" />
-            Adhésion : {format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr })}
+            Membre depuis : {format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr })}
           </p>
           {membre.type && <p className="text-muted-foreground">Type : {membre.type.name}</p>}
         </div>
@@ -540,10 +550,12 @@ export function MembreDetailView() {
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",
+            adherentOverride: membre.adherentOverride === null ? "" : String(membre.adherentOverride) as "true" | "false",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}
           loading={updateMutation.isPending}
+          actorRole={currentUser.role}
           isSelf={isSelf}
           membreId={membre.id}
         />

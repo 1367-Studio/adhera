@@ -8,6 +8,8 @@ import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveDocumentBranding } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { maybeCreateDefaultCotisation, findPendingCotisation } from "@/lib/cotisation-defaults"
+import { pusherServer } from "@/lib/pusher-server"
 
 function generatePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
@@ -30,7 +32,7 @@ export async function POST(req: Request) {
 
   const association = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { id: true, name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true, modules: true, cotisationDefaultAmount: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -56,9 +58,7 @@ export async function POST(req: Request) {
   const password     = generatePassword()
   const passwordHash = await bcrypt.hash(password, 12)
 
-  let membreId: string | null = null
-
-  await prisma.$transaction(async (tx) => {
+  const { membreId, userId, cotisation } = await prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
       data: {
         email:           email.toLowerCase(),
@@ -83,6 +83,7 @@ export async function POST(req: Request) {
       select: { id: true },
     })
 
+    let membreId: string
     if (existingMembre) {
       await tx.membre.update({
         where: { id: existingMembre.id },
@@ -103,10 +104,34 @@ export async function POST(req: Request) {
       })
       membreId = membre.id
     }
+
+    await maybeCreateDefaultCotisation(tx, membreId, association.id, association)
+    // Whatever's pending now — just auto-created above, or already sitting there from an
+    // admin manually creating one before this person ever registered (e.g. a pre-existing
+    // Membre placeholder being linked to their new account here).
+    const cotisation = await findPendingCotisation(tx, membreId)
+    return { membreId, userId: user.id, cotisation }
   })
 
   if (membreId) {
     await writeActivityLog({ associationId: association.id, action: "MEMBRE_PORTAL_REGISTERED", entity: "Membre", entityId: membreId, label: `${firstName} ${lastName}` })
+  }
+
+  // Surface the auto-created cotisation beyond the silent DB row — same in-app notification
+  // pattern as new events/actualités/sondages (src/app/api/evenements/route.ts etc.), plus a
+  // mention in the welcome email below, since the member otherwise only finds out by
+  // stumbling onto the Cotisation tab themselves.
+  if (cotisation && userId) {
+    prisma.notification.create({
+      data: {
+        userId,
+        title: "Cotisation à régler",
+        body:  `Votre cotisation ${cotisation.year} de ${Number(cotisation.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} est en attente de paiement.`,
+        link:  `/portal/${slug}/cotisation`,
+      },
+    })
+      .then(() => pusherServer.trigger(`private-association-${association.id}`, "new-notification", {}))
+      .catch(() => {})
   }
 
   const loginUrl = `${APP_URL}/portal/${slug}/login`
@@ -117,6 +142,7 @@ export async function POST(req: Request) {
     associationName: association.name,
     loginUrl,
     branding: resolveDocumentBranding(association),
+    cotisation: cotisation ? { amount: Number(cotisation.amount), year: cotisation.year } : undefined,
   })).catch(() => {})
 
   return NextResponse.json({ ok: true }, { status: 201 })

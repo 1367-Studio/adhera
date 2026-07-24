@@ -127,6 +127,9 @@ export function invitationEmail(p: {
   role:            string
   loginUrl:        string
   branding?:       EmailBranding
+  // Set when a default cotisation was auto-created for this member — same reasoning as
+  // portalWelcomeEmail's cotisation note.
+  cotisation?: { amount: number; year: number }
 }) {
   const isStaff   = p.role !== "MEMBRE"
   const roleLabel: Record<string, string> = {
@@ -141,9 +144,15 @@ export function invitationEmail(p: {
     ? `Vous avez été invité(e) en tant que <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à l'espace de gestion de l'association.`
     : `Vous avez été invité(e) comme <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à votre espace membre pour consulter les événements, actualités et gérer votre adhésion.`
 
+  const cotisationNote = p.cotisation ? `
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
+      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
+    </p>` : ""
+
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
+    ${cotisationNote}
     ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl, p.branding?.primaryColor || undefined)}
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f4f4f5;border-radius:8px;padding:16px 20px;width:100%;">
       <tr>
@@ -437,7 +446,14 @@ export function portalWelcomeEmail(p: {
   associationName: string
   loginUrl:        string
   branding?:       EmailBranding
+  // Set when a default cotisation was auto-created for this member — surfaces it here
+  // since it otherwise sits silently on their Cotisation tab until they think to check it.
+  cotisation?: { amount: number; year: number }
 }) {
+  const cotisationNote = p.cotisation ? `
+    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3f3f46;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
+      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
+    </p>` : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -454,6 +470,7 @@ export function portalWelcomeEmail(p: {
         <span style="font-size:18px;font-weight:700;letter-spacing:2px;font-family:monospace;">${p.password}</span>
       </td></tr>
     </table>
+    ${cotisationNote}
     ${btn("Accéder à mon espace membre", p.loginUrl, p.branding?.primaryColor || undefined)}
     <p style="margin:0;font-size:13px;color:#71717a;">
       Nous vous recommandons de modifier votre mot de passe après la première connexion.

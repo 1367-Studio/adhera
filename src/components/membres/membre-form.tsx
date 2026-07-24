@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useResponsableOptions } from "@/hooks/use-membres"
+import { useModules } from "@/lib/user-context"
 import { FormField } from "@/components/ui/form-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -23,6 +24,12 @@ const statusOptions = [
 // Only ACTIF is safe to self-select — any other status flips User.active to false server-side,
 // which would lock the acting manager out of their own account.
 const selfStatusOptions = statusOptions.filter(o => o.value === "ACTIF")
+
+// Same role set as the PATCH /api/membres/[id] server-side check and cotisation-defaults'
+// FINANCE roles — forcing a member's adhérent status is a financial call equivalent to
+// marking a cotisation paid, so it's scoped the same way, narrower than general membre
+// management (which SECRETAIRE also has).
+const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 const allRoleOptions = [
   { value: "MEMBRE",     label: "Membre"     },
@@ -55,6 +62,12 @@ const groupeSanguinOptions = [
   { value: "AB_NEGATIF", label: "AB-" },
   { value: "O_POSITIF",  label: "O+"  },
   { value: "O_NEGATIF",  label: "O-"  },
+]
+
+const adherentOverrideOptions = [
+  { value: "",      label: "Automatique (selon cotisation)" },
+  { value: "true",  label: "Forcer Adhérent" },
+  { value: "false", label: "Forcer Bénévole" },
 ]
 
 const possedeTshirtOptions = [
@@ -97,6 +110,7 @@ interface MembreFormProps {
 export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId }: MembreFormProps) {
   const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
+  const modules = useModules()
 
   const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
     resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
@@ -222,6 +236,28 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       </div>
+      {!isCreate && modules.cotisations && actorRole && FINANCE_ROLES.includes(actorRole) && (
+        <Controller
+          name="adherentOverride"
+          control={control}
+          render={({ field }) => (
+            <div className="space-y-1.5 rounded-lg border bg-muted/20 p-3">
+              <SelectField
+                label="Adhésion (cotisation)"
+                options={adherentOverrideOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.adherentOverride?.message}
+              />
+              <p className="text-xs text-muted-foreground">
+                {responsableIdValue
+                  ? "Calculé automatiquement : sa propre cotisation de l'année en cours si elle existe, sinon celle de son responsable — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte)."
+                  : "Calculé automatiquement selon la cotisation de l'année en cours — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte)."}
+              </p>
+            </div>
+          )}
+        />
+      )}
       <div className="grid grid-cols-3 gap-4">
         <Controller
           name="civilite"

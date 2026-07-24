@@ -30,6 +30,7 @@ export const membreSchema = z.object({
   status:    z.enum(["PENDING", "ACTIF", "INACTIF", "SUSPENDU"]),
   typeId:    z.string().optional().or(z.literal("")),
   responsableId: z.string().optional().or(z.literal("")),
+  adherentOverride: z.enum(["true", "false"]).optional().or(z.literal("")),
 })
 
 export const membreCreateSchema = membreSchema.extend({
