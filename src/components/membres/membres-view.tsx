@@ -6,7 +6,8 @@ import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon, GenderMaleIcon, GenderFemaleIcon, BabyIcon, UserIcon, QuestionIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon, GenderMaleIcon, GenderFemaleIcon, BabyIcon, UserIcon, QuestionIcon, DownloadSimpleIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -23,10 +24,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
+
 
 type MembreTypeRef = { id: string; name: string; color: string }
 
@@ -202,6 +205,20 @@ export function MembresView() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
+
+  function buildExportParams(){
+    const params = new URLSearchParams()
+    if (search)       params.set("search", search)
+    if (statusFilter) params.set("status", statusFilter)
+    if (typeFilter)   params.set("typeId", typeFilter)
+    return params
+  }
+
+  function handleExportXlsx() {
+    const params = buildExportParams()
+    params.set("format", "xlsx")
+    window.location.href = `${BASE_PATH}/api/membres/export?${params}`
+  }
 
   function handleSearch(val: string) {
     setSearchInput(val)
@@ -382,6 +399,21 @@ export function MembresView() {
                 Envoyer un SMS
               </Button>
             )}
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                Exporter
+                <CaretDownIcon className="ml-1 size-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportXlsx}>
+                  Excel (.xlsx)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => exportMembresPdf(buildExportParams())}>
+                  PDF (.pdf)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button size="sm" onClick={() => setCreateOpen(true)}>
               <PlusIcon className="mr-1.5 size-4" />
               Ajouter
