@@ -215,6 +215,10 @@ export function MembresView() {
   }
 
   function handleExportXlsx() {
+    if (!result?.total) {
+      toast.error("Aucun membre à exporter")
+      return
+    }
     const params = buildExportParams()
     params.set("format", "xlsx")
     window.location.href = `${BASE_PATH}/api/membres/export?${params}`

@@ -67,7 +67,7 @@ export async function generateDeclarationCotisation(
   cotisation:  CotisationForDeclaration,
   membre:      MembreForDeclaration,
   association: AssociationForDeclaration,
-): Promise<Buffer> {
+): Promise<{ pdf: Buffer; declarationNumber: string }> {
   const declarationNumber = cotisation.declarationNumber
     ?? await assignDeclarationNumber(cotisation.id, association.id)
 
@@ -151,5 +151,5 @@ y -= 22
 
   text("Cette déclaration atteste du paiement de la cotisation annuelle mentionnée ci-dessus.", 20, 9, { color: rgb(0.45, 0.45, 0.45) })
 
-  return Buffer.from(await doc.save())
+  return { pdf: Buffer.from(await doc.save()), declarationNumber }
 }

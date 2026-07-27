@@ -1,5 +1,6 @@
 // src/lib/pdf/membres-export-client.ts
 import { toast } from "sonner"
+import { format } from "date-fns"
 import { BASE_PATH } from "@/lib/env"
 import { loadLogoForPdf, hexToRgb255 } from "@/lib/pdf/branded-header-client"
 
@@ -103,6 +104,5 @@ y += 8
     doc.text(`Page ${p} / ${pageCount}`, W - M, 205, { align: "right" })
   }
 
-  const blobUrl = doc.output("bloburl")
-  window.open(blobUrl as unknown as string, "_blank")
+  doc.save(`membres_${format(new Date(), "yyyy-MM-dd")}.pdf`)
 }

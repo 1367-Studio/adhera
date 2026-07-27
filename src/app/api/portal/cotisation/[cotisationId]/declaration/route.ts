@@ -30,12 +30,12 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { cotisationId }) =>
 if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
 const branding = resolveDocumentBranding(assoc)
-const pdf = await generateDeclarationCotisation(cotisation, membre, { ...assoc, logoUrl: branding.logoUrl, primaryColor: branding.primaryColor })
+const { pdf, declarationNumber } = await generateDeclarationCotisation(cotisation, membre, { ...assoc, logoUrl: branding.logoUrl, primaryColor: branding.primaryColor })
 
   return new NextResponse(new Uint8Array(pdf), {
     headers: {
       "Content-Type":        "application/pdf",
-      "Content-Disposition": `inline; filename="declaration"`,
+      "Content-Disposition": `inline; filename="declaration-cotisation-${declarationNumber}.pdf"`,
     },
   })
 })
