@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ArrowRightIcon, WarningIcon, CopyIcon, ClockCounterClockwiseIcon, DownloadSimpleIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ArrowRightIcon, WarningIcon, CopyIcon, ClockCounterClockwiseIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useDevisPaginated, useDevisDetail, useCreateDevis, useUpdateDevis, useDeleteDevis, useConvertDevis, useDuplicateDevis, useSendDevisEmail } from "@/hooks/use-devis"
 import { ApiError } from "@/lib/api-error"
 import type { DevisInput } from "@/lib/schemas"
@@ -15,6 +15,7 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DocumentHistoryModal } from "@/components/ui/document-history-modal"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
+import { PdfPreviewModal } from "@/components/ui/pdf-preview-modal"
 import { DevisForm } from "@/components/devis/devis-form"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -114,6 +115,7 @@ export function DevisView() {
   const [deleteTarget, setDeleteTarget] = useState<Devis | null>(null)
   const [historyTarget, setHistoryTarget] = useState<Devis | null>(null)
   const [emailTarget, setEmailTarget] = useState<Devis | null>(null)
+  const [previewTarget, setPreviewTarget] = useState<Devis | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -258,6 +260,7 @@ export function DevisView() {
           ] : []),
           { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(d), separator: true },
           { label: "Dupliquer", icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(d) },
+          { label: "Prévisualiser", icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(d) },
           { label: "Télécharger le PDF", icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/devis/${d.id}/pdf`, "_blank") },
           { label: "Envoyer par e-mail", icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(d) },
           { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(d) },
@@ -347,6 +350,7 @@ export function DevisView() {
         data={devisList}
         loading={isLoading}
         keyExtractor={(d) => d.id}
+        onRowClick={(d) => setPreviewTarget(d)}
         empty={search ? `Aucun résultat pour « ${search} »` : "Aucun devis enregistré"}
         pagination={result ? {
           page:         result.page,
@@ -409,6 +413,15 @@ export function DevisView() {
           onOpenChange={(open) => !open && setEmailTarget(null)}
           onSend={handleSendEmail}
           loading={sendEmailMutation.isPending}
+        />
+      )}
+
+      {previewTarget && (
+        <PdfPreviewModal
+          open={!!previewTarget}
+          onOpenChange={(open) => !open && setPreviewTarget(null)}
+          pdfUrl={`${BASE_PATH}/api/devis/${previewTarget.id}/pdf`}
+          title={`Devis ${previewTarget.number}`}
         />
       )}
 

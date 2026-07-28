@@ -40,6 +40,26 @@ function isActionsCol<T>(col: Column<T>) {
   return col.key === "actions" || col.header === "" || col.header.toLowerCase() === "actions"
 }
 
+// A click that ends a text-selection drag (e.g. selecting a cell's value to copy it) still
+// fires a click event — without this guard it would also trigger onRowClick.
+function hasTextSelection() {
+  const selection = typeof window !== "undefined" ? window.getSelection() : null
+  return !!selection && selection.toString().length > 0
+}
+
+// Only responds when the row/card itself is focused (e.target === e.currentTarget), not a
+// descendant like the row-actions trigger — that button already handles its own Enter/Space,
+// and letting it bubble here would double-fire onRowClick on top of opening the menu.
+function handleActivateKeyDown<T>(e: React.KeyboardEvent, row: T, onRowClick?: (row: T) => void) {
+  if (!onRowClick || e.target !== e.currentTarget) return
+  if (e.key === "Enter" || e.key === " ") {
+    e.preventDefault()
+    onRowClick(row)
+  }
+}
+
+const clickableRowFocusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-inset"
+
 function CardSkeleton<T>({ columns }: { columns: Column<T>[] }) {
   const detailCount = columns.filter((c) => !isActionsCol(c)).length - 1
   return (
@@ -97,9 +117,12 @@ function CardList<T>({
           data-row-id={keyExtractor(row)}
           className={cn(
             "rounded-lg border bg-card p-4 space-y-3",
-            isClickable && "cursor-pointer active:bg-accent/60 transition-colors"
+            isClickable && cn("cursor-pointer active:bg-accent/60 transition-colors", clickableRowFocusRing)
           )}
-          onClick={() => onRowClick?.(row)}
+          tabIndex={isClickable ? 0 : undefined}
+          role={isClickable ? "button" : undefined}
+          onClick={() => { if (!hasTextSelection()) onRowClick?.(row) }}
+          onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -227,8 +250,10 @@ export function DataTable<T>({
               <TableRow
                 key={keyExtractor(row)}
                 data-row-id={keyExtractor(row)}
-                className={cn(onRowClick && "cursor-pointer")}
-                onClick={() => onRowClick?.(row)}
+                className={cn(onRowClick && cn("cursor-pointer", clickableRowFocusRing))}
+                tabIndex={onRowClick ? 0 : undefined}
+                onClick={() => { if (!hasTextSelection()) onRowClick?.(row) }}
+                onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
               >
                 {columns.map((col) => (
                   <TableCell key={col.key} className={col.className}>
