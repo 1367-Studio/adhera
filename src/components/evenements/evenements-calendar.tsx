@@ -170,7 +170,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                       {visible.map((ev, idx) => (
                         <button
                           key={ev.id}
-                          onClick={(e) => { e.stopPropagation(); setSelected(day) }}
+                          onClick={(e) => { e.stopPropagation(); onEditClick(ev) }}
                           className={cn(
                             "w-full text-left truncate rounded px-1.5 py-0.5 text-[11px] font-medium leading-snug",
                             "animate-in fade-in-0 slide-in-from-bottom-1 duration-200 hover:opacity-80 transition-opacity",
@@ -219,7 +219,8 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
               {selectedEvents.map((ev, idx) => (
                 <div
                   key={ev.id}
-                  className="rounded-lg border p-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
+                  onClick={() => onEditClick(ev)}
+                  className="rounded-lg border p-3 cursor-pointer hover:bg-muted/30 transition-colors animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
                   style={{ animationDelay: `${idx * 50}ms`, animationFillMode: "both" }}
                 >
                   <div className="flex items-start justify-between gap-2">

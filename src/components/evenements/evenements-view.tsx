@@ -281,6 +281,7 @@ export function EvenementsView() {
             data={evenements}
             loading={isLoading}
             keyExtractor={(e) => e.id}
+            onRowClick={(e) => setEditTarget(e)}
             empty={search ? `Aucun résultat pour « ${search} »` : "Aucun événement créé"}
             pagination={result ? {
               page:         result.page,
