@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFacturesPaginated, useFactureDetail, useCreateFacture, useUpdateFacture, useDeleteFacture, useDuplicateFacture, useSendFactureEmail } from "@/hooks/use-factures"
 import { ApiError } from "@/lib/api-error"
 import type { FactureInput } from "@/lib/schemas"
@@ -15,6 +15,7 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DocumentHistoryModal } from "@/components/ui/document-history-modal"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
+import { PdfPreviewModal } from "@/components/ui/pdf-preview-modal"
 import { FactureForm } from "@/components/factures/facture-form"
 import { FacturePaymentModal } from "@/components/factures/facture-payment-modal"
 import { FacturePaymentsModal } from "@/components/factures/facture-payments-modal"
@@ -40,6 +41,7 @@ type Facture = {
   fournisseur:   { id: string; companyName: string; email: string | null; billingEmail: string | null } | null
   devis?:        { id: string; number: string } | null
   items?: { id: string; description: string; quantity: string; unitPrice: string; vatRate: string; discount: string }[]
+  payments:      { method: string }[]
 }
 
 const statusBadge: Record<FactureStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -121,6 +123,7 @@ export function FacturesView() {
   const [paymentsHistoryTarget, setPaymentsHistoryTarget] = useState<Facture | null>(null)
   const [historyTarget, setHistoryTarget] = useState<Facture | null>(null)
   const [emailTarget, setEmailTarget] = useState<Facture | null>(null)
+  const [previewTarget, setPreviewTarget] = useState<Facture | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -245,6 +248,18 @@ export function FacturesView() {
       },
     },
     {
+      key: "paymentMethods",
+      header: "Méthode de paiement",
+      className: "max-w-40",
+      cell: (f) => {
+        const methods = [...new Set(f.payments.map(p => p.method))]
+        const label = methods.join(" + ")
+        return methods.length
+          ? <span className="block truncate text-sm" title={label}>{label}</span>
+          : <span className="text-muted-foreground text-xs">—</span>
+      },
+    },
+    {
       key: "status",
       header: "Statut",
       cell: (f) => {
@@ -266,6 +281,7 @@ export function FacturesView() {
           ] : []),
           { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f), separator: true },
           { label: "Dupliquer", icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(f) },
+          { label: "Prévisualiser", icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(f) },
           { label: "Télécharger le PDF", icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/factures/${f.id}/pdf`, "_blank") },
           { label: "Envoyer par e-mail", icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(f) },
           { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(f) },
@@ -349,6 +365,7 @@ export function FacturesView() {
         data={facturesList}
         loading={isLoading}
         keyExtractor={(f) => f.id}
+        onRowClick={(f) => setPreviewTarget(f)}
         empty={search ? `Aucun résultat pour « ${search} »` : "Aucune facture enregistrée"}
         pagination={result ? {
           page:         result.page,
@@ -418,6 +435,15 @@ export function FacturesView() {
           onOpenChange={(open) => !open && setEmailTarget(null)}
           onSend={handleSendEmail}
           loading={sendEmailMutation.isPending}
+        />
+      )}
+
+      {previewTarget && (
+        <PdfPreviewModal
+          open={!!previewTarget}
+          onOpenChange={(open) => !open && setPreviewTarget(null)}
+          pdfUrl={`${BASE_PATH}/api/factures/${previewTarget.id}/pdf`}
+          title={`Facture ${previewTarget.number}`}
         />
       )}
 
