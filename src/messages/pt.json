@@ -785,6 +785,9 @@
       "columns": {
         "date": "Data",
         "description": "Descrição",
+        "compte": "Conta",
+        "category": "Categoria",
+        "paymentMethod": "Forma de pagamento",
         "amount": "Valor",
         "status": "Status"
       },
@@ -798,6 +801,7 @@
       "deleteFromInvoiceError": "Esta receita vem de uma fatura — remova o pagamento em Faturas.",
       "searchPlaceholder": "Pesquisar…",
       "allYears": "Todos os anos",
+      "exercise": "Exercício {year}",
       "allStatuses": "Todos os status",
       "noIncome": "Nenhuma receita registrada",
       "newTitle": "Nova receita",
@@ -830,6 +834,7 @@
       },
       "deleteFromInvoiceError": "Esta despesa vem de uma fatura recebida — altere seu status em Fornecedores para removê-la.",
       "allYears": "Todos os anos",
+      "exercise": "Exercício {year}",
       "allStatuses": "Todos os status",
       "noExpense": "Nenhuma despesa registrada",
       "newTitle": "Nova despesa",
@@ -844,6 +849,7 @@
     "dashboard": {
       "title": "Visão geral",
       "description": "Resumo financeiro da associação.",
+      "exercise": "Exercício {year}",
       "incomeCard": "Receitas {year}",
       "expensesCard": "Despesas {year}",
       "resultCard": "Resultado {year}",
@@ -3291,7 +3297,7 @@
       "membres": "Membros",
       "evenements": "Eventos",
       "cotisations": "Mensalidades",
-      "finances": "Finanças",
+      "finances": "Acompanhamento financeiro",
       "devis": "Orçamentos",
       "factures": "Faturas",
       "fournisseurs": "Fornecedores",
@@ -3303,7 +3309,13 @@
       "messages": "Mensagens",
       "materiel": "Material",
       "site": "Site",
-      "activite": "Histórico"
+      "activite": "Histórico",
+      "categories": {
+        "adherents": "Associados",
+        "communication": "Comunicação",
+        "finances": "Finanças",
+        "outils": "Ferramentas"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",

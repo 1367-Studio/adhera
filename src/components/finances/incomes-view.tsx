@@ -32,7 +32,7 @@ type Income = {
   facturePaymentId: string | null
   category:    { name: string } | null
   membre:      { firstName: string; lastName: string } | null
-  reconciliations: { id: string }[]
+  reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
@@ -127,18 +127,36 @@ export function IncomesView() {
       cell: (i) => (
         <div>
           <p className="font-medium">{i.description || (i.membre ? `${i.membre.firstName} ${i.membre.lastName}` : "—")}</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            {i.category && <span className="text-xs text-muted-foreground">{i.category.name}</span>}
-            {i.paymentMethod && <span className="text-xs text-muted-foreground">· {i.paymentMethod}</span>}
-            {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· {t("finances.incomesView.reconciled")}</span>}
-            {i.facturePaymentId && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
-                <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
-              </span>
-            )}
-          </div>
+          {(i.reconciliations.length > 0 || i.facturePaymentId) && (
+            <div className="flex items-center gap-2 mt-0.5">
+              {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">{t("finances.incomesView.reconciled")}</span>}
+              {i.facturePaymentId && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
+                  <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       ),
+    },
+    {
+      key: "compte",
+      header: t("finances.incomesView.columns.compte"),
+      className: "w-36",
+      cell: (i) => i.reconciliations[0]?.bankTransaction.bankAccount.accountName ?? "—",
+    },
+    {
+      key: "category",
+      header: t("finances.incomesView.columns.category"),
+      className: "w-36",
+      cell: (i) => i.category?.name ?? "—",
+    },
+    {
+      key: "paymentMethod",
+      header: t("finances.incomesView.columns.paymentMethod"),
+      className: "w-36",
+      cell: (i) => i.paymentMethod ?? "—",
     },
     {
       key: "amount",
@@ -210,9 +228,9 @@ export function IncomesView() {
         <FilterSelect
           value={yearFilter}
           onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
+          options={yearOptions.map(y => ({ value: String(y), label: t("finances.incomesView.exercise", { year: y }) }))}
           placeholder={t("finances.incomesView.allYears")}
-          width="w-32"
+          width="w-36"
         />
 
         <FilterSelect

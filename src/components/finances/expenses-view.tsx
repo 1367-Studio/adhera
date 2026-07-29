@@ -185,9 +185,9 @@ export function ExpensesView() {
         <FilterSelect
           value={yearFilter}
           onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
+          options={yearOptions.map(y => ({ value: String(y), label: t("finances.expensesView.exercise", { year: y }) }))}
           placeholder={t("finances.expensesView.allYears")}
-          width="w-32"
+          width="w-36"
         />
 
         <FilterSelect

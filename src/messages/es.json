@@ -785,6 +785,9 @@
       "columns": {
         "date": "Fecha",
         "description": "Descripción",
+        "compte": "Cuenta",
+        "category": "Categoría",
+        "paymentMethod": "Método de pago",
         "amount": "Importe",
         "status": "Estado"
       },
@@ -798,6 +801,7 @@
       "deleteFromInvoiceError": "Este ingreso proviene de una factura — elimine el pago desde Facturas.",
       "searchPlaceholder": "Buscar…",
       "allYears": "Todos los años",
+      "exercise": "Ejercicio {year}",
       "allStatuses": "Todos los estados",
       "noIncome": "Ningún ingreso registrado",
       "newTitle": "Nuevo ingreso",
@@ -830,6 +834,7 @@
       },
       "deleteFromInvoiceError": "Este gasto proviene de una factura recibida — cambie su estado desde Proveedores para eliminarlo.",
       "allYears": "Todos los años",
+      "exercise": "Ejercicio {year}",
       "allStatuses": "Todos los estados",
       "noExpense": "Ningún gasto registrado",
       "newTitle": "Nuevo gasto",
@@ -844,6 +849,7 @@
     "dashboard": {
       "title": "Resumen",
       "description": "Resumen financiero de la asociación.",
+      "exercise": "Ejercicio {year}",
       "incomeCard": "Ingresos {year}",
       "expensesCard": "Gastos {year}",
       "resultCard": "Resultado {year}",
@@ -3291,7 +3297,7 @@
       "membres": "Miembros",
       "evenements": "Eventos",
       "cotisations": "Cuotas",
-      "finances": "Finanzas",
+      "finances": "Seguimiento financiero",
       "devis": "Presupuestos",
       "factures": "Facturas",
       "fournisseurs": "Proveedores",
@@ -3300,10 +3306,16 @@
       "sondages": "Encuestas",
       "boutique": "Tienda",
       "actualites": "Noticias",
-      "messages": "Mensajes",
+      "messages": "Mensajería",
       "materiel": "Material",
       "site": "Sitio web",
-      "activite": "Historial"
+      "activite": "Historial",
+      "categories": {
+        "adherents": "Afiliación",
+        "communication": "Comunicación",
+        "finances": "Finanzas",
+        "outils": "Herramientas"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",

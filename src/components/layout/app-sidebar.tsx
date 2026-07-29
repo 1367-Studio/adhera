@@ -1,15 +1,23 @@
 "use client"
 
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
+  EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
+  ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
+  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
-  SidebarMenuButton, SidebarMenuItem,
+  SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
@@ -17,42 +25,70 @@ import { BrandLogo } from "@/components/layout/brand-logo"
 import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
+type CategoryKey = "adherents" | "communication" | "finances" | "outils"
 
 interface NavItem {
-  key:       string
-  href:      string
-  icon:      React.ElementType
-  roles:     UserRole[]
-  moduleKey?: keyof AssocModules
+  key:          string
+  href:         string
+  icon:         React.ElementType
+  roles:        UserRole[]
+  moduleKey?:   keyof AssocModules
+  categoryKey?: CategoryKey
 }
 
 const MANAGERS: UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-const navigationItems: NavItem[] = [
-  { key: "dashboard",     href: "/dashboard",             icon: SquaresFourIcon, roles: MANAGERS },
-  { key: "membres",       href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
-  { key: "evenements",    href: "/dashboard/evenements",  icon: CalendarBlankIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
-  { key: "cotisations",   href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
-  { key: "finances",      href: "/dashboard/finances",    icon: MoneyIcon,         roles: FINANCE,   moduleKey: "finances"    },
-  { key: "devis",         href: "/dashboard/devis",       icon: FileTextIcon,      roles: FINANCE,   moduleKey: "devis"       },
-  { key: "factures",      href: "/dashboard/factures",    icon: ReceiptIcon,       roles: FINANCE,   moduleKey: "factures"    },
-  { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,    roles: FINANCE,   moduleKey: "fournisseurs" },
-  { key: "dons",          href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
-  { key: "reunions",      href: "/dashboard/reunions",    icon: VideoCameraIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
-  { key: "sondages",      href: "/dashboard/sondages",    icon: ClipboardTextIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
-  { key: "boutique",      href: "/dashboard/boutique",    icon: ShoppingBagIcon,      roles: MANAGERS,  moduleKey: "boutique"    },
-  { key: "actualites",    href: "/dashboard/actualites",  icon: NewspaperIcon,        roles: MANAGERS,  moduleKey: "actualites"  },
-  { key: "messages",      href: "/dashboard/messages",    icon: EnvelopeSimpleIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
-  { key: "materiel",      href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },
-  { key: "site",          href: "/dashboard/site",        icon: GlobeIcon,            roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site" },
-  { key: "activite",      href: "/dashboard/activite",    icon: PulseIcon,         roles: MANAGERS },
+const CATEGORIES: { key: CategoryKey; icon: React.ElementType }[] = [
+  { key: "adherents",      icon: UsersThreeIcon },
+  { key: "communication",  icon: ChatsCircleIcon },
+  { key: "finances",       icon: MoneyIcon },
+  { key: "outils",         icon: WrenchIcon },
+]
 
+// "Tableau de bord" and "Historique" have no categoryKey — Paramètres and Documents
+// légaux stay exactly as they were (footer, not part of this restructure at all), which
+// only left "Historique" alone in what would've been a single-item "Administration"
+// category, so it stays ungrouped instead, alongside "Tableau de bord".
+const navigationItems: NavItem[] = [
+  { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon,   roles: MANAGERS },
+
+  { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
+  { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  categoryKey: "adherents" },
+
+  { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", categoryKey: "communication" },
+  { key: "reunions",      href: "/dashboard/reunions",     icon: VideoCameraIcon,   roles: MANAGERS, moduleKey: "reunions",   categoryKey: "communication" },
+  { key: "sondages",      href: "/dashboard/sondages",     icon: ClipboardTextIcon, roles: MANAGERS, moduleKey: "sondages",   categoryKey: "communication" },
+  { key: "actualites",    href: "/dashboard/actualites",   icon: NewspaperIcon,     roles: MANAGERS, moduleKey: "actualites", categoryKey: "communication" },
+
+  { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon,      roles: FINANCE, moduleKey: "finances",     categoryKey: "finances" },
+  { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
+  { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon,    roles: FINANCE, moduleKey: "factures",     categoryKey: "finances" },
+  { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,  roles: FINANCE, moduleKey: "fournisseurs", categoryKey: "finances" },
+  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,      roles: FINANCE, moduleKey: "dons",         categoryKey: "finances" },
+
+  { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon,     roles: MANAGERS, moduleKey: "materiel", categoryKey: "outils" },
+  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", categoryKey: "outils" },
+  { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, roles: MANAGERS, moduleKey: "boutique", categoryKey: "outils" },
+
+  { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
 ]
 
 function isActive(href: string, pathname: string): boolean {
   if (href === "/dashboard") return pathname === href
   return pathname === href || pathname.startsWith(href + "/")
+}
+
+function groupByCategory(items: NavItem[]): Map<CategoryKey, NavItem[]> {
+  const map = new Map<CategoryKey, NavItem[]>()
+  for (const item of items) {
+    if (!item.categoryKey) continue
+    const list = map.get(item.categoryKey)
+    if (list) list.push(item)
+    else map.set(item.categoryKey, [item])
+  }
+  return map
 }
 
 export function AppSidebar() {
@@ -61,7 +97,7 @@ export function AppSidebar() {
   const modules   = useModules()
   const branding  = useBranding()
   const pathname  = usePathname()
-  const { isMobile, setOpenMobile } = useSidebar()
+  const { isMobile, setOpenMobile, setOpen, state } = useSidebar()
 
   const userRole = role as UserRole
   const visible  = navigationItems.filter(item => {
@@ -69,10 +105,77 @@ export function AppSidebar() {
     if (item.moduleKey && !modules[item.moduleKey]) return false
     return true
   })
+
+  // "Tableau de bord" leads the list (above the categories); "Historique" trails it
+  // (below the categories, in its original position right before the footer) — not
+  // grouped together, so they're split rather than rendered as one "topLevel" block.
+  const leadingItems  = visible.filter(item => item.key === "dashboard")
+  const trailingItems = visible.filter(item => item.key === "activite")
+  const grouped       = groupByCategory(visible)
+
+  const activeCategory = CATEGORIES.find(cat =>
+    (grouped.get(cat.key) ?? []).some(item => isActive(item.href, pathname))
+  )?.key ?? null
+
+  const [openCategories, setOpenCategories] = useState<Set<CategoryKey>>(new Set())
+  // Tracks which category (if any) is currently open *because* it's the active route, as
+  // opposed to the user having clicked it open themselves — only that one gets
+  // auto-closed when the active route moves on, so browsing across every section in a
+  // session doesn't leave every category permanently open (the whole point of grouping
+  // them). Cleared the moment the user manually touches a category, so a deliberate
+  // manual open/close is never overridden by this auto-behavior again.
+  const autoOpenedRef = useRef<CategoryKey | null>(null)
+
+  // Auto-expand the category containing the current page, so the active item is never
+  // hidden inside a closed group.
+  useEffect(() => {
+    setOpenCategories(prev => {
+      const next = new Set(prev)
+      if (autoOpenedRef.current && autoOpenedRef.current !== activeCategory) {
+        next.delete(autoOpenedRef.current)
+      }
+      if (activeCategory) next.add(activeCategory)
+      return next
+    })
+    autoOpenedRef.current = activeCategory
+  }, [activeCategory])
+
+  // The onboarding tour targets nav items by [data-tour="nav-*"] selector — a target
+  // living inside a still-closed category, or inside a category's icon-collapsed flyout
+  // (only mounted while that dropdown is actually open), wouldn't be in the DOM for
+  // driver.js to find. useTour() dispatches this before starting: forcing the sidebar out
+  // of icon-collapsed mode guarantees the inline-accordion structure (not the flyout) is
+  // what's rendered, and opening every category guarantees every item within it exists.
+  useEffect(() => {
+    function expandAll() {
+      setOpen(true)
+      setOpenCategories(new Set(CATEGORIES.map(cat => cat.key)))
+    }
+    window.addEventListener("adhera:expand-all-nav", expandAll)
+    return () => window.removeEventListener("adhera:expand-all-nav", expandAll)
+  }, [setOpen])
+
+  function toggleCategory(key: CategoryKey) {
+    // Once the user manually opens/closes a category, it's no longer "auto-managed" —
+    // stop auto-closing it when the active route later moves elsewhere.
+    if (autoOpenedRef.current === key) autoOpenedRef.current = null
+    setOpenCategories(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  function closeMobile() {
+    if (isMobile) setOpenMobile(false)
+  }
+
   // "Associations" only makes sense as a category label under the generic Adhera
   // identity — once the association shows its own logo/color, the name above it is
   // already unambiguous and the subtitle just reads as redundant.
   const isBranded = !!(branding?.logoUrl || branding?.primaryColor)
+  const isFlyout  = state === "collapsed" && !isMobile
 
   return (
     <Sidebar collapsible="icon" variant="inset">
@@ -98,7 +201,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {visible.map((item, idx) => (
+              {leadingItems.map((item, idx) => (
                 <SidebarMenuItem
                   key={item.href}
                   data-tour={`nav-${item.href.split("/").pop()}`}
@@ -108,7 +211,85 @@ export function AppSidebar() {
                     render={<Link href={item.href} />}
                     isActive={isActive(item.href, pathname)}
                     tooltip={t(item.key)}
-                    onClick={() => { if (isMobile) setOpenMobile(false) }}
+                    onClick={closeMobile}
+                  >
+                    <item.icon />
+                    <span>{t(item.key)}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+
+              {CATEGORIES.map((cat, idx) => {
+                const items = grouped.get(cat.key)
+                if (!items?.length) return null
+                const isOpen      = openCategories.has(cat.key)
+                const isCatActive = activeCategory === cat.key
+
+                return (
+                  <SidebarMenuItem
+                    key={cat.key}
+                    data-tour={`nav-category-${cat.key}`}
+                    style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
+                  >
+                    {isFlyout ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger render={<SidebarMenuButton isActive={isCatActive} tooltip={t(`categories.${cat.key}`)} />}>
+                          <cat.icon />
+                          <span>{t(`categories.${cat.key}`)}</span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent side="right" align="start">
+                          {items.map(item => (
+                            <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                              <item.icon />
+                              {t(item.key)}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <>
+                        <SidebarMenuButton
+                          isActive={isCatActive && !isOpen}
+                          aria-expanded={isOpen}
+                          onClick={() => toggleCategory(cat.key)}
+                        >
+                          <cat.icon />
+                          <span>{t(`categories.${cat.key}`)}</span>
+                          <CaretRightIcon className={cn("ml-auto size-3.5 transition-transform", isOpen && "rotate-90")} />
+                        </SidebarMenuButton>
+                        {isOpen && (
+                          <SidebarMenuSub>
+                            {items.map(item => (
+                              <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+                                <SidebarMenuSubButton
+                                  render={<Link href={item.href} />}
+                                  isActive={isActive(item.href, pathname)}
+                                  onClick={closeMobile}
+                                >
+                                  <item.icon />
+                                  <span>{t(item.key)}</span>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        )}
+                      </>
+                    )}
+                  </SidebarMenuItem>
+                )
+              })}
+
+              {trailingItems.map((item, idx) => (
+                <SidebarMenuItem
+                  key={item.href}
+                  data-tour={`nav-${item.href.split("/").pop()}`}
+                  style={{ animationDelay: `${30 + (leadingItems.length + CATEGORIES.length + idx) * 40}ms`, animationFillMode: "both" }}
+                >
+                  <SidebarMenuButton
+                    render={<Link href={item.href} />}
+                    isActive={isActive(item.href, pathname)}
+                    tooltip={t(item.key)}
+                    onClick={closeMobile}
                   >
                     <item.icon />
                     <span>{t(item.key)}</span>
@@ -129,7 +310,7 @@ export function AppSidebar() {
                 render={<Link href="/dashboard/parametres" />}
                 isActive={isActive("/dashboard/parametres", pathname)}
                 tooltip={t("parametres")}
-                onClick={() => { if (isMobile) setOpenMobile(false) }}
+                onClick={closeMobile}
               >
                 <GearIcon />
                 <span>{t("parametres")}</span>
