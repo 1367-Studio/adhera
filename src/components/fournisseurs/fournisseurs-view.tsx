@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
 import { PlusIcon, PencilSimpleIcon, ArchiveIcon, MagnifyingGlassIcon, XIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFournisseursPaginated, useFournisseur, useCreateFournisseur, useUpdateFournisseur, useDeleteFournisseur } from "@/hooks/use-fournisseurs"
 import type { FournisseurInput } from "@/lib/schemas"
@@ -29,10 +31,14 @@ type Fournisseur = {
   status:       "ACTIF" | "INACTIF" | "ARCHIVE"
 }
 
-const statusBadge: Record<Fournisseur["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  ACTIF:   { label: "Actif",   variant: "default"   },
-  INACTIF: { label: "Inactif", variant: "secondary" },
-  ARCHIVE: { label: "Archivé", variant: "outline"   },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusBadge(t: Translator): Record<Fournisseur["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    ACTIF:   { label: t("fournisseurs.form.status.actif"),   variant: "default"   },
+    INACTIF: { label: t("fournisseurs.form.status.inactif"), variant: "secondary" },
+    ARCHIVE: { label: t("fournisseurs.view.status.archive"), variant: "outline"   },
+  }
 }
 
 function FilterSelect({
@@ -50,7 +56,7 @@ function FilterSelect({
   return (
     <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
       <SelectTrigger className="w-40">
-        <span className={selected ? "text-sm" : "text-sm text-muted-foreground"}>
+        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
       </SelectTrigger>
@@ -67,6 +73,7 @@ function FilterSelect({
 const PAGE_SIZE = 20
 
 export function FournisseursView() {
+  const t                               = useTranslations()
   const router                          = useRouter()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
@@ -119,20 +126,20 @@ export function FournisseursView() {
   async function handleCreate(data: FournisseurInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Fournisseur ajouté avec succès")
+      toast.success(t("fournisseurs.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: FournisseurInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Fournisseur mis à jour")
+      toast.success(t("fournisseurs.view.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -140,17 +147,19 @@ export function FournisseursView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Fournisseur archivé")
+      toast.success(t("fournisseurs.view.toasts.archived"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
+
+  const statusBadge = getStatusBadge(t)
 
   const columns: Column<Fournisseur>[] = [
     {
       key: "name",
-      header: "Fournisseur",
+      header: t("fournisseurs.view.columns.name"),
       cell: (f) => (
         <div className="space-y-0.5">
           <p className="font-medium">{f.companyName}</p>
@@ -160,7 +169,7 @@ export function FournisseursView() {
     },
     {
       key: "contact",
-      header: "Contact",
+      header: t("fournisseurs.view.columns.contact"),
       cell: (f) => (
         <div className="space-y-0.5 text-xs text-muted-foreground">
           {f.email && <p>{f.email}</p>}
@@ -172,19 +181,19 @@ export function FournisseursView() {
     },
     {
       key: "city",
-      header: "Ville",
+      header: t("fournisseurs.view.columns.city"),
       cell: (f) => f.city ?? <span className="text-muted-foreground text-xs">—</span>,
       hideInCard: true,
     },
     {
       key: "category",
-      header: "Catégorie",
+      header: t("fournisseurs.view.columns.category"),
       cell: (f) => f.category ?? <span className="text-muted-foreground text-xs">—</span>,
       hideInCard: true,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("fournisseurs.view.columns.status"),
       cell: (f) => {
         const s = statusBadge[f.status]
         return <Badge variant={s.variant}>{s.label}</Badge>
@@ -196,27 +205,27 @@ export function FournisseursView() {
       className: "w-10",
       cell: (f) => (
         <RowActions actions={[
-          { label: "Voir la fiche", icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/fournisseurs/${f.id}`) },
-          { label: "Modifier",      icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f) },
-          { label: "Archiver",     icon: <ArchiveIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          { label: t("fournisseurs.view.actions.view"), icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/fournisseurs/${f.id}`) },
+          { label: t("fournisseurs.view.actions.edit"),      icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f) },
+          { label: t("fournisseurs.view.actions.archive"),     icon: <ArchiveIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
         ]} />
       ),
     },
   ]
 
   const descriptionText = search
-    ? `${result?.total ?? 0} résultat${(result?.total ?? 0) !== 1 ? "s" : ""}`
-    : `${result?.total ?? 0} fournisseur${(result?.total ?? 0) !== 1 ? "s" : ""}`
+    ? t("fournisseurs.view.count", { count: result?.total ?? 0 })
+    : t("fournisseurs.view.countTotal", { count: result?.total ?? 0 })
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Fournisseurs"
+        title={t("fournisseurs.view.title")}
         description={descriptionText}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
@@ -226,7 +235,7 @@ export function FournisseursView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher un fournisseur…"
+            placeholder={t("fournisseurs.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -251,10 +260,10 @@ export function FournisseursView() {
           value={statusFilter}
           onChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "ACTIF",   label: "Actifs"   },
-            { value: "INACTIF", label: "Inactifs" },
+            { value: "ACTIF",   label: t("fournisseurs.view.statusFilter.actifs")   },
+            { value: "INACTIF", label: t("fournisseurs.view.statusFilter.inactifs") },
           ]}
-          placeholder="Tous les statuts"
+          placeholder={t("fournisseurs.view.allStatuses")}
         />
       </div>
 
@@ -263,7 +272,7 @@ export function FournisseursView() {
         data={fournisseurs}
         loading={isLoading}
         keyExtractor={(f) => f.id}
-        empty={search ? `Aucun résultat pour « ${search} »` : "Aucun fournisseur enregistré"}
+        empty={search ? t("fournisseurs.view.noResultsFor", { search }) : t("fournisseurs.view.noFournisseur")}
         onRowClick={(f) => router.push(`/dashboard/fournisseurs/${f.id}`)}
         pagination={result ? {
           page:         result.page,
@@ -277,7 +286,7 @@ export function FournisseursView() {
       <Modal
         open={createOpen}
         onOpenChange={setCreateOpen}
-        title="Ajouter un fournisseur"
+        title={t("fournisseurs.view.addTitle")}
         size="lg"
         dismissable={false}
       >
@@ -291,12 +300,12 @@ export function FournisseursView() {
       <Modal
         open={!!editTarget}
         onOpenChange={(open) => !open && setEditTarget(null)}
-        title="Modifier le fournisseur"
+        title={t("fournisseurs.view.editTitle")}
         size="lg"
         dismissable={false}
       >
         {editDetailLoading || !editDetail ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Chargement…</p>
+          <p className="py-8 text-center text-sm text-muted-foreground">{t("fournisseurs.view.loadingDetail")}</p>
         ) : (
           <FournisseurForm
             key={editDetail.id}
@@ -330,13 +339,13 @@ export function FournisseursView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`Archiver ${deleteTarget?.companyName} ?`}
+        title={t("fournisseurs.view.archiveConfirmTitle", { name: deleteTarget?.companyName ?? "" })}
         description={
           dependencyCounts && dependencyCounts.devis + dependencyCounts.factures > 0
-            ? `Ce fournisseur n'apparaîtra plus dans les listes. Il reste lié à ${dependencyCounts.devis} devis et ${dependencyCounts.factures} facture(s) — ils resteront consultables, mais ce fournisseur n'apparaîtra plus dans les formulaires de création (sauf sur ces documents existants).`
-            : "Ce fournisseur n'apparaîtra plus dans les listes."
+            ? t("fournisseurs.view.archiveConfirmWithDependencies", { devis: dependencyCounts.devis, factures: dependencyCounts.factures })
+            : t("fournisseurs.view.archiveConfirmSimple")
         }
-        confirmLabel="Archiver"
+        confirmLabel={t("fournisseurs.view.actions.archive")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

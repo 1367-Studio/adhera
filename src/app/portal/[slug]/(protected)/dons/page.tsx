@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useSearchParams, useParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
@@ -34,6 +35,7 @@ export default function DonsPortalPage() {
 }
 
 function DonsPortalPageInner() {
+  const t              = useTranslations("portalMembre.dons")
   const { slug }       = useParams<{ slug: string }>()
   const searchParams   = useSearchParams()
 
@@ -52,18 +54,18 @@ function DonsPortalPageInner() {
   useEffect(() => {
     const p = searchParams.get("payment")
     if (p === "success") {
-      toast.success("Merci pour votre don ! Un e-mail de confirmation vous a été envoyé.")
+      toast.success(t("toasts.thanked"))
       setPolling(true)
       refetch()
     } else if (p === "cancelled") {
-      toast.info("Don annulé.")
+      toast.info(t("toasts.cancelled"))
     }
-  }, [searchParams, refetch])
+  }, [searchParams, refetch, t])
 
   useEffect(() => {
     if (!polling) return
-    const t = setTimeout(() => setPolling(false), 20_000)
-    return () => clearTimeout(t)
+    const timeoutId = setTimeout(() => setPolling(false), 20_000)
+    return () => clearTimeout(timeoutId)
   }, [polling])
 
   // Stop as soon as the webhook actually lands instead of always riding out the full
@@ -82,8 +84,8 @@ function DonsPortalPageInner() {
     <div className="w-full space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Mes dons</h1>
-          <p className="text-muted-foreground text-sm mt-1">Historique de vos contributions.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
         </div>
         <Button
           size="sm"
@@ -91,7 +93,7 @@ function DonsPortalPageInner() {
           className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white shrink-0"
         >
           <HandshakeIcon className="size-3.5" />
-          Faire un don
+          {t("makeDonation")}
         </Button>
       </div>
 
@@ -107,13 +109,13 @@ function DonsPortalPageInner() {
       ) : dons.length === 0 ? (
         <div className="rounded-xl border border-dashed p-10 text-center space-y-3">
           <HandshakeIcon className="size-8 text-muted-foreground mx-auto" />
-          <p className="text-sm text-muted-foreground">Vous n'avez pas encore effectué de don.</p>
+          <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
           <Button
             size="sm"
             variant="outline"
             onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
           >
-            Faire mon premier don
+            {t("makeFirstDonation")}
           </Button>
         </div>
       ) : (
@@ -130,8 +132,8 @@ function DonsPortalPageInner() {
                       <span className="font-semibold text-base">{amount}</span>
                       <Badge variant={paid ? "default" : "secondary"} className="gap-1">
                         {paid
-                          ? <><CheckCircleIcon className="size-3" />Reçu</>
-                          : <><ClockIcon className="size-3" />En attente</>}
+                          ? <><CheckCircleIcon className="size-3" />{t("received")}</>
+                          : <><ClockIcon className="size-3" />{t("pending")}</>}
                       </Badge>
                     </div>
                     {don.paidAt && (
@@ -141,7 +143,7 @@ function DonsPortalPageInner() {
                     )}
                     {don.message && (
                       <p className="text-xs text-muted-foreground italic mt-0.5 truncate max-w-xs">
-                        « {don.message} »
+                        {t("messageQuote", { message: don.message })}
                       </p>
                     )}
                   </div>
@@ -154,7 +156,7 @@ function DonsPortalPageInner() {
                       className="gap-1.5 shrink-0"
                     >
                       <DownloadSimpleIcon className="size-3.5" />
-                      Reçu fiscal
+                      {t("taxReceipt")}
                     </Button>
                   )}
                 </CardContent>
@@ -166,7 +168,7 @@ function DonsPortalPageInner() {
 
       {canIssueReceipts && dons.some(d => d.paidAt) && (
         <p className="text-xs text-muted-foreground text-center">
-          Vos reçus fiscaux vous permettent de bénéficier d'une réduction d'impôt (Art. 200 CGI).
+          {t("taxReceiptHint")}
         </p>
       )}
     </div>

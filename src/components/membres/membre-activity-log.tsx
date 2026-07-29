@@ -3,9 +3,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+
+type Translator = ReturnType<typeof useTranslations>
 
 type FieldDiff = { old: string | null; new: string | null }
 
@@ -25,83 +28,97 @@ type PageResult = {
   totalPages: number
 }
 
-const FIELD_LABELS: Record<string, string> = {
-  firstName: "Prénom",
-  lastName:  "Nom",
-  name:      "Nom",
-  email:     "Email",
-  phone:     "Téléphone",
-  address:   "Adresse",
-  birthDate: "Date de naissance",
-  status:    "Statut",
-  typeId:    "Type",
-  role:      "Rôle",
-  adherentOverride: "Statut d'adhésion",
+function getFieldLabels(t: Translator): Record<string, string> {
+  return {
+    firstName: t("membres.activityLog.fields.firstName"),
+    lastName:  t("membres.activityLog.fields.lastName"),
+    name:      t("membres.activityLog.fields.name"),
+    email:     t("membres.activityLog.fields.email"),
+    phone:     t("membres.activityLog.fields.phone"),
+    address:   t("membres.activityLog.fields.address"),
+    birthDate: t("membres.activityLog.fields.birthDate"),
+    status:    t("membres.activityLog.fields.status"),
+    typeId:    t("membres.activityLog.fields.typeId"),
+    role:      t("membres.activityLog.fields.role"),
+    adherentOverride: t("membres.activityLog.fields.adherentOverride"),
+  }
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  ACTIF:    "Actif",
-  INACTIF:  "Inactif",
-  PENDING:  "En attente",
-  SUSPENDU: "Suspendu",
+function getStatusLabels(t: Translator): Record<string, string> {
+  return {
+    ACTIF:    t("membres.form.status.actif"),
+    INACTIF:  t("membres.form.status.inactif"),
+    PENDING:  t("membres.form.status.pending"),
+    SUSPENDU: t("membres.form.status.suspendu"),
+  }
 }
 
-const ADHERENT_OVERRIDE_LABELS: Record<string, string> = {
-  true:  "Forcé Adhérent",
-  false: "Forcé Bénévole",
+function getAdherentOverrideLabels(t: Translator): Record<string, string> {
+  return {
+    true:  t("membres.activityLog.adherentOverrideValues.forcedAdherent"),
+    false: t("membres.activityLog.adherentOverrideValues.forcedBenevole"),
+  }
 }
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN: "Admin", PRESIDENT: "Président", TRESORIER: "Trésorier",
-  SECRETAIRE: "Secrétaire", MEMBRE: "Membre",
+function getRoleLabels(t: Translator): Record<string, string> {
+  return {
+    ADMIN: t("membres.form.role.admin"), PRESIDENT: t("membres.form.role.president"), TRESORIER: t("membres.form.role.tresorier"),
+    SECRETAIRE: t("membres.form.role.secretaire"), MEMBRE: t("membres.form.role.membre"),
+  }
 }
 
-const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string }> = {
-  MEMBRE_CREATED:           { label: "Membre ajouté",          icon: <UserPlusIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  MEMBRE_UPDATED:           { label: "Informations modifiées", icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  PROFIL_UPDATED:           { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  PROFILE_UPDATED:          { label: "Profil modifié",         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  MEMBRE_ROLE_CHANGED:      { label: "Rôle modifié",           icon: <ShieldIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"                },
-  PASSWORD_CHANGED:         { label: "Mot de passe modifié",   icon: <LockIcon     className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
-  PASSWORD_RESET:           { label: "Mot de passe réinitialisé", icon: <LockIcon  className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
-  MEMBRE_DELETED:           { label: "Membre archivé",         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
-  MEMBRE_PORTAL_REGISTERED: { label: "Inscription portail",    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
-  MEMBRE_INSCRIPTION_REQUESTED: { label: "Demande d'adhésion (site)", icon: <GlobeIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
-  COTISATION_CREATED:  { label: "Cotisation ajoutée",   icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  COTISATION_UPDATED:  { label: "Cotisation modifiée",  icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  COTISATION_DELETED:  { label: "Cotisation supprimée", icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"                     },
-  COTISATION_PAID:     { label: "Cotisation payée",     icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  COTISATION_REFUNDED: { label: "Cotisation remboursée", icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  LOAN_CREATED:   { label: "Prêt de matériel créé",    icon: <PackageIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"         },
-  LOAN_REQUESTED: { label: "Prêt demandé",             icon: <PackageIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
-  LOAN_CONFIRMED: { label: "Prêt confirmé",            icon: <PackageIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  LOAN_REFUSED:   { label: "Prêt refusé",              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
-  LOAN_RETURNED:  { label: "Matériel rendu",           icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
-  LOAN_UPDATED:   { label: "Prêt modifié",             icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
-  LOAN_CANCELLED: { label: "Prêt annulé",              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
-  LOAN_DELETED:   { label: "Prêt supprimé",            icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+function getActionConfig(t: Translator): Record<string, { label: string; icon: React.ReactNode; color: string }> {
+  return {
+    MEMBRE_CREATED:           { label: t("membres.activityLog.actions.membreCreated"),          icon: <UserPlusIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    MEMBRE_UPDATED:           { label: t("membres.activityLog.actions.membreUpdated"), icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+    PROFIL_UPDATED:           { label: t("membres.activityLog.actions.profilUpdated"),         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+    PROFILE_UPDATED:          { label: t("membres.activityLog.actions.profileUpdated"),         icon: <PencilSimpleIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+    MEMBRE_ROLE_CHANGED:      { label: t("membres.activityLog.actions.membreRoleChanged"),           icon: <ShieldIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"                },
+    PASSWORD_CHANGED:         { label: t("membres.activityLog.actions.passwordChanged"),   icon: <LockIcon     className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
+    PASSWORD_RESET:           { label: t("membres.activityLog.actions.passwordReset"), icon: <LockIcon  className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
+    MEMBRE_DELETED:           { label: t("membres.activityLog.actions.membreDeleted"),         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
+    MEMBRE_PORTAL_REGISTERED: { label: t("membres.activityLog.actions.membrePortalRegistered"),    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
+    MEMBRE_INSCRIPTION_REQUESTED: { label: t("membres.activityLog.actions.membreInscriptionRequested"), icon: <GlobeIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
+    COTISATION_CREATED:  { label: t("membres.activityLog.actions.cotisationCreated"),   icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    COTISATION_UPDATED:  { label: t("membres.activityLog.actions.cotisationUpdated"),  icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+    COTISATION_DELETED:  { label: t("membres.activityLog.actions.cotisationDeleted"), icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"                     },
+    COTISATION_PAID:     { label: t("membres.activityLog.actions.cotisationPaid"),     icon: <MoneyIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    COTISATION_REFUNDED: { label: t("membres.activityLog.actions.cotisationRefunded"), icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+    LOAN_CREATED:   { label: t("membres.activityLog.actions.loanCreated"),    icon: <PackageIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"         },
+    LOAN_REQUESTED: { label: t("membres.activityLog.actions.loanRequested"),             icon: <PackageIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },
+    LOAN_CONFIRMED: { label: t("membres.activityLog.actions.loanConfirmed"),            icon: <PackageIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    LOAN_REFUSED:   { label: t("membres.activityLog.actions.loanRefused"),              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+    LOAN_RETURNED:  { label: t("membres.activityLog.actions.loanReturned"),           icon: <ArrowElbowDownLeftIcon className="size-3.5" />, color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" },
+    LOAN_UPDATED:   { label: t("membres.activityLog.actions.loanUpdated"),             icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
+    LOAN_CANCELLED: { label: t("membres.activityLog.actions.loanCancelled"),              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+    LOAN_DELETED:   { label: t("membres.activityLog.actions.loanDeleted"),            icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+  }
 }
 
-function formatFieldValue(field: string, value: string | null): string {
+function formatFieldValue(value: string | null, statusLabels: Record<string, string>, roleLabels: Record<string, string>, adherentOverrideLabels: Record<string, string>, field: string): string {
   if (value === null || value === "") return "—"
-  if (field === "status") return STATUS_LABELS[value] ?? value
-  if (field === "role")   return ROLE_LABELS[value] ?? value
-  if (field === "adherentOverride") return ADHERENT_OVERRIDE_LABELS[value] ?? value
+  if (field === "status") return statusLabels[value] ?? value
+  if (field === "role")   return roleLabels[value] ?? value
+  if (field === "adherentOverride") return adherentOverrideLabels[value] ?? value
   return value
 }
 
-function ChangeDiff({ changes }: { changes: Record<string, FieldDiff> }) {
+function ChangeDiff({ changes, t }: { changes: Record<string, FieldDiff>; t: Translator }) {
   const entries = Object.entries(changes)
   if (entries.length === 0) return null
+  const fieldLabels = getFieldLabels(t)
+  const statusLabels = getStatusLabels(t)
+  const roleLabels = getRoleLabels(t)
+  const adherentOverrideLabels = getAdherentOverrideLabels(t)
   return (
     <div className="mt-1.5 space-y-0.5">
       {entries.map(([field, diff]) => (
         <p key={field} className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">{FIELD_LABELS[field] ?? field}</span>
+          <span className="font-medium text-foreground">{fieldLabels[field] ?? field}</span>
           {" : "}
-          <span className="line-through opacity-60">{formatFieldValue(field, diff.old)}</span>
+          <span className="line-through opacity-60">{formatFieldValue(diff.old, statusLabels, roleLabels, adherentOverrideLabels, field)}</span>
           {" → "}
-          <span>{formatFieldValue(field, diff.new)}</span>
+          <span>{formatFieldValue(diff.new, statusLabels, roleLabels, adherentOverrideLabels, field)}</span>
         </p>
       ))}
     </div>
@@ -109,6 +126,7 @@ function ChangeDiff({ changes }: { changes: Record<string, FieldDiff> }) {
 }
 
 export function MembreActivityLog({ membreId }: { membreId: string }) {
+  const t = useTranslations()
   const {
     data,
     isLoading,
@@ -135,7 +153,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
     return (
       <div className="flex items-center justify-center py-10 text-muted-foreground">
         <CircleNotchIcon className="size-4 animate-spin mr-2" />
-        <span className="text-sm">Chargement…</span>
+        <span className="text-sm">{t("common.loading")}</span>
       </div>
     )
   }
@@ -144,7 +162,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
         <WarningCircleIcon className="size-4 shrink-0" />
-        Impossible de charger l'historique.
+        {t("membres.activityLog.loadError")}
       </div>
     )
   }
@@ -152,10 +170,12 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
   if (logs.length === 0) {
     return (
       <p className="text-sm text-muted-foreground text-center py-8">
-        Aucune activité enregistrée pour ce membre.
+        {t("membres.activityLog.empty")}
       </p>
     )
   }
+
+  const actionConfig = getActionConfig(t)
 
   return (
     <div className="space-y-4">
@@ -164,7 +184,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
 
         <div className="space-y-4">
           {logs.map((log) => {
-            const cfg = ACTION_CONFIG[log.action] ?? {
+            const cfg = actionConfig[log.action] ?? {
               label: log.action,
               icon:  <PencilSimpleIcon className="size-3.5" />,
               color: "bg-gray-100 text-gray-700",
@@ -185,11 +205,11 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
                   </div>
 
                   {log.actorName && (
-                    <p className="text-xs text-muted-foreground mt-0.5">par {log.actorName}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{t("membres.activityLog.actorPrefix", { name: log.actorName })}</p>
                   )}
 
                   {["MEMBRE_UPDATED", "PROFIL_UPDATED", "PROFILE_UPDATED", "MEMBRE_ROLE_CHANGED"].includes(log.action) && log.metadata?.changes && (
-                    <ChangeDiff changes={log.metadata.changes} />
+                    <ChangeDiff changes={log.metadata.changes} t={t} />
                   )}
                 </div>
               </div>
@@ -200,7 +220,7 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
 
       {(hasNextPage || logs.length < total) && (
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
-          <span>{logs.length} de {total} action{total !== 1 ? "s" : ""}</span>
+          <span>{t("membres.activityLog.shownOfTotal", { shown: logs.length, total })}</span>
           {hasNextPage && (
             <Button
               size="sm"
@@ -210,9 +230,9 @@ export function MembreActivityLog({ membreId }: { membreId: string }) {
               className="h-7 text-xs"
             >
               {isFetchingNextPage ? (
-                <><CircleNotchIcon className="size-3 animate-spin mr-1.5" />Chargement…</>
+                <><CircleNotchIcon className="size-3 animate-spin mr-1.5" />{t("common.loading")}</>
               ) : (
-                "Voir plus"
+                t("membres.activityLog.loadMore")
               )}
             </Button>
           )}

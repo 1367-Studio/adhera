@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PaperPlaneTiltIcon, WarningIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
@@ -78,6 +79,7 @@ function MemberPickList({
   selectedIds: string[]
   onToggle:    (id: string) => void
 }) {
+  const t = useTranslations()
   const [search, setSearch] = useState("")
 
   const filtered = search.trim()
@@ -104,22 +106,22 @@ function MemberPickList({
           <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher…"
+            placeholder={t("membres.email.searchPlaceholder")}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
           />
         </div>
         <div className="flex items-center justify-between px-0.5">
-          <span className="text-xs text-muted-foreground">{filtered.length} membre{filtered.length > 1 ? "s" : ""}</span>
+          <span className="text-xs text-muted-foreground">{t("membres.email.membersCount", { count: filtered.length })}</span>
           <button type="button" onClick={toggleFiltered} className="text-xs text-primary hover:underline">
-            {allFilteredSelected ? "Désélectionner tout" : "Sélectionner tout"}
+            {allFilteredSelected ? t("membres.email.deselectAll") : t("membres.email.selectAll")}
           </button>
         </div>
       </div>
       <div className="max-h-48 overflow-y-auto divide-y">
         {filtered.length === 0 ? (
-          <p className="text-center text-xs text-muted-foreground py-6">Aucun membre trouvé</p>
+          <p className="text-center text-xs text-muted-foreground py-6">{t("membres.email.noMemberFound")}</p>
         ) : (
           filtered.map(m => {
             const isSelected = selectedIds.includes(m.id)
@@ -155,8 +157,8 @@ function MemberPickList({
       </div>
       <div className="px-3 py-2 border-t bg-muted/30 text-xs text-muted-foreground">
         {selectedIds.length > 0
-          ? `${selectedIds.length} membre${selectedIds.length > 1 ? "s" : ""} sélectionné${selectedIds.length > 1 ? "s" : ""}`
-          : "Aucun membre sélectionné"}
+          ? t("membres.email.selectedCount", { count: selectedIds.length })
+          : t("membres.email.noMemberSelected")}
       </div>
     </div>
   )
@@ -170,6 +172,7 @@ interface SendEmailModalProps {
 }
 
 export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
+  const t = useTranslations()
   const [step,              setStep]              = useState<"compose" | "confirm">("compose")
   const [recipientMode,     setRecipientMode]     = useState<RecipientMode>("all")
   const [selectedTypeId,    setSelectedTypeId]    = useState<string>("")
@@ -273,11 +276,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       const saved = await createTemplate.mutateAsync({ name, subject, body: bodyHtml })
       setSelectedTemplate(saved)
       setAppliedBodyBaseline(bodyHtml)
-      toast.success(`Modèle « ${name} » enregistré`)
+      toast.success(t("membres.email.toasts.templateSaved", { name }))
       setSaveTemplateOpen(false)
       setSaveTemplateName("")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -289,19 +292,19 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
   async function handleContinue() {
     if (recipientMode === "type" && !selectedTypeId) {
-      toast.error("Sélectionnez un type de membre")
+      toast.error(t("membres.email.toasts.selectType"))
       return
     }
     if (recipientMode === "manual" && selectedMemberIds.length === 0) {
-      toast.error("Sélectionnez au moins un membre")
+      toast.error(t("membres.email.toasts.selectMember"))
       return
     }
     if (!subject.trim()) {
-      toast.error("Renseignez l'objet du message")
+      toast.error(t("membres.email.toasts.subjectRequired"))
       return
     }
     if (!hasHtmlContent(bodyHtml)) {
-      toast.error("Rédigez le contenu du message")
+      toast.error(t("membres.email.toasts.bodyRequired"))
       return
     }
 
@@ -319,14 +322,14 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       const count = d.count ?? 0
 
       if (count === 0) {
-        toast.error("Aucun destinataire avec une adresse email dans cette sélection")
+        toast.error(t("membres.email.toasts.noRecipientWithEmail"))
         return
       }
 
       setRecipientCount(count)
       setStep("confirm")
     } catch {
-      toast.error("Impossible de vérifier le nombre de destinataires")
+      toast.error(t("membres.email.toasts.cannotVerifyCount"))
     } finally {
       setCountLoading(false)
     }
@@ -345,27 +348,27 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         body:    JSON.stringify(body),
       })
       const data = await res.json()
-      if (!res.ok) { toast.error(data.error ?? "Erreur"); return }
+      if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
       if (data.sent === 0) {
-        toast.error(`Aucun email envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
+        toast.error(data.failed > 0
+          ? t("membres.email.toasts.noEmailSentWithFailures", { count: data.failed })
+          : t("membres.email.toasts.noEmailSent"))
       } else {
         // "Envoyé" here only means Resend accepted the request — it doesn't guarantee
         // the message was actually delivered (bounces/erreurs surface later, async, via
         // webhook). The real per-recipient outcome is visible in each member's Emails tab.
-        toast.success(
-          `Email envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""} — le statut de livraison de chacun apparaîtra dans son historique`,
-        )
+        toast.success(t("membres.email.toasts.emailSent", { count: data.sent }))
         if (data.failed > 0) {
           const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
-          const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? ` et ${names.length - 5} autre(s)` : "")
+          const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? t("membres.email.toasts.andOthers", { count: names.length - 5 }) : "")
           toast.warning(
-            `${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}${preview ? ` : ${preview}` : ""}`,
+            t("membres.email.toasts.sendFailures", { count: data.failed, preview: preview ? ` : ${preview}` : "" }),
           )
         }
       }
       onOpenChange(false)
     } catch {
-      toast.error("Erreur réseau")
+      toast.error(t("common.networkError"))
     } finally {
       setSending(false)
     }
@@ -382,17 +385,17 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
   const recipientSummary =
     recipientMode === "manual"
-      ? `${selectedMemberIds.length} membre${selectedMemberIds.length > 1 ? "s" : ""} sélectionné${selectedMemberIds.length > 1 ? "s" : ""}`
+      ? t("membres.email.selectedCount", { count: selectedMemberIds.length })
       : recipientMode === "type" && selectedTypeName
-        ? `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} de type « ${selectedTypeName} »`
-        : `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} actif${(recipientCount ?? 0) > 1 ? "s" : ""}`
+        ? t("membres.email.recipientsOfType", { count: recipientCount ?? 0, type: selectedTypeName })
+        : t("membres.email.recipientsActive", { count: recipientCount ?? 0 })
 
   return (
     <>
       <Modal
         open={open}
         onOpenChange={handleClose}
-        title="Envoyer un email"
+        title={t("membres.email.title")}
         size="lg"
         dismissable={!sending}
       >
@@ -401,12 +404,12 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
             {/* ── Recipients ── */}
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Destinataires</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.email.recipients")}</p>
               <div className="grid grid-cols-3 gap-2">
                 {([
-                  { mode: "all",    icon: UsersIcon,     label: "Tous les membres" },
-                  { mode: "type",   icon: TagIcon,       label: "Par type" },
-                  { mode: "manual", icon: UserCheckIcon, label: "Sélection manuelle" },
+                  { mode: "all",    icon: UsersIcon,     label: t("membres.email.modeAll") },
+                  { mode: "type",   icon: TagIcon,       label: t("membres.email.modeType") },
+                  { mode: "manual", icon: UserCheckIcon, label: t("membres.email.modeManual") },
                 ] as const).map(({ mode, icon: Icon, label }) => (
                   <button
                     key={mode}
@@ -427,32 +430,32 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
               {recipientMode === "all" && (
                 <p className="text-xs text-muted-foreground">
-                  L'email sera envoyé à tous les <strong>membres actifs ayant une adresse email</strong>.
+                  {t("membres.email.allModeNotice")}
                 </p>
               )}
 
               {recipientMode === "type" && (
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground">Type de membre <span className="text-red-500">*</span></p>
+                  <p className="text-xs text-muted-foreground">{t("membres.email.typeLabel")} <span className="text-red-500">*</span></p>
                   {types.length === 0 ? (
-                    <p className="text-sm text-muted-foreground italic">Aucun type configuré</p>
+                    <p className="text-sm text-muted-foreground italic">{t("membres.email.noTypeConfigured")}</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {types.map(t => (
+                      {types.map(type => (
                         <button
-                          key={t.id}
+                          key={type.id}
                           type="button"
-                          onClick={() => setSelectedTypeId(t.id === selectedTypeId ? "" : t.id)}
+                          onClick={() => setSelectedTypeId(type.id === selectedTypeId ? "" : type.id)}
                           className={cn(
                             "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all",
-                            selectedTypeId === t.id
+                            selectedTypeId === type.id
                               ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
                               : "border-border text-muted-foreground hover:border-muted-foreground/40",
                           )}
                         >
-                          <span className="size-2 rounded-full shrink-0" style={{ background: t.color }} />
-                          {t.name}
-                          {selectedTypeId === t.id && <CheckIcon className="size-3 ml-0.5" />}
+                          <span className="size-2 rounded-full shrink-0" style={{ background: type.color }} />
+                          {type.name}
+                          {selectedTypeId === type.id && <CheckIcon className="size-3 ml-0.5" />}
                         </button>
                       ))}
                     </div>
@@ -465,7 +468,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   <div className="h-40 rounded-lg bg-muted animate-pulse" />
                 ) : membresWithEmail.length === 0 ? (
                   <p className="text-sm text-muted-foreground italic text-center py-4">
-                    Aucun membre actif avec une adresse email
+                    {t("membres.email.noActiveMemberWithEmail")}
                   </p>
                 ) : (
                   <MemberPickList
@@ -482,14 +485,14 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             {/* ── Templates ── */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Modèle</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.email.templateSectionLabel")}</p>
                 {selectedTemplate && (
                   <button
                     type="button"
                     onClick={clearTemplate}
                     className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Désélectionner
+                    {t("membres.email.deselectTemplate")}
                   </button>
                 )}
               </div>
@@ -502,11 +505,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 <div className="flex items-center gap-3 rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
                   <FileTextIcon className="size-5 shrink-0 text-muted-foreground/40" />
                   <span>
-                    Aucun modèle créé.{" "}
+                    {t("membres.email.noTemplateCreated")}{" "}
                     <Link href="/dashboard/messages" className="text-primary hover:underline" onClick={() => onOpenChange(false)}>
-                      Créer un modèle
+                      {t("membres.email.createTemplateLink")}
                     </Link>
-                    {" "}dans la section Messages.
+                    {t("membres.email.inMessagesSection")}
                   </span>
                 </div>
               ) : (
@@ -528,7 +531,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             {/* ── Message ── */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.email.messageSectionLabel")}</p>
                 {subject.trim().length > 0 && hasHtmlContent(bodyHtml) && !contentMatchesTemplate && (
                   <button
                     type="button"
@@ -536,35 +539,35 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <BookmarkIcon className="size-3.5" />
-                    Enregistrer comme modèle
+                    {t("membres.email.saveAsTemplate")}
                   </button>
                 )}
               </div>
               <FormField
-                label="Objet"
+                label={t("membres.email.subjectLabel")}
                 required
-                placeholder="Objet de l'email…"
+                placeholder={t("membres.email.subjectPlaceholder")}
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
               />
               <RichTextEditor
-                label="Corps du message"
+                label={t("membres.email.bodyLabel")}
                 required
                 value={bodyHtml}
                 onChange={handleBodyChange}
-                placeholder="Rédigez votre message…"
+                placeholder={t("membres.email.bodyPlaceholder")}
                 minHeight="180px"
               />
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="outline" onClick={handleClose}>Annuler</Button>
+              <Button variant="outline" onClick={handleClose}>{t("common.cancel")}</Button>
               <Button onClick={handleContinue} disabled={countLoading}>
                 {countLoading
                   ? <CircleNotchIcon className="mr-1.5 size-4 animate-spin" />
                   : <CaretRightIcon className="mr-1.5 size-4" />
                 }
-                Continuer
+                {t("membres.email.continue")}
               </Button>
             </div>
           </div>
@@ -573,20 +576,20 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
               <WarningIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
               <div className="space-y-1">
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Confirmation d'envoi</p>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">{t("membres.email.confirmSendTitle")}</p>
                 <p className="text-sm text-amber-700 dark:text-amber-400">
-                  Cet email sera envoyé à <strong>{recipientSummary}</strong>. Cette action est irréversible.
+                  {t("membres.email.confirmSendDescription", { recipients: recipientSummary })}
                 </p>
               </div>
             </div>
 
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
               <div className="space-y-0.5">
-                <p className="text-xs text-muted-foreground">Objet</p>
+                <p className="text-xs text-muted-foreground">{t("membres.email.subjectLabel")}</p>
                 <p className="text-sm font-medium">{subject}</p>
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs text-muted-foreground">Destinataires</p>
+                <p className="text-xs text-muted-foreground">{t("membres.email.recipients")}</p>
                 <p className="text-sm font-medium">{recipientSummary}</p>
               </div>
             </div>
@@ -594,11 +597,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setStep("compose")} disabled={sending}>
                 <PencilSimpleIcon className="mr-1.5 size-3.5" />
-                Modifier
+                {t("common.edit")}
               </Button>
               <Button onClick={handleSend} loading={sending}>
                 <PaperPlaneTiltIcon className="mr-1.5 size-4" />
-                Envoyer maintenant
+                {t("membres.email.sendNow")}
               </Button>
             </div>
           </div>
@@ -607,9 +610,9 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         <ConfirmDialog
           open={!!pendingTemplate}
           onOpenChange={open => { if (!open) setPendingTemplate(null) }}
-          title="Remplacer le contenu ?"
-          description="Appliquer ce modèle remplacera l'objet et le corps du message déjà rédigés."
-          confirmLabel="Remplacer"
+          title={t("membres.email.replaceContentTitle")}
+          description={t("membres.email.replaceContentDescription")}
+          confirmLabel={t("membres.email.replace")}
           onConfirm={() => { if (pendingTemplate) doApplyTemplate(pendingTemplate) }}
         />
       </Modal>
@@ -617,23 +620,23 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       <ConfirmDialog
         open={closeWarningOpen}
         onOpenChange={setCloseWarningOpen}
-        title="Abandonner le message ?"
-        description="Le contenu rédigé sera perdu si vous fermez maintenant."
-        confirmLabel="Abandonner"
+        title={t("membres.email.discardTitle")}
+        description={t("membres.email.discardDescription")}
+        confirmLabel={t("membres.email.discard")}
         onConfirm={() => { setCloseWarningOpen(false); onOpenChange(false) }}
       />
 
       <Modal
         open={saveTemplateOpen}
         onOpenChange={open => { if (!open) setSaveTemplateOpen(false) }}
-        title="Enregistrer comme modèle"
+        title={t("membres.email.saveAsTemplate")}
         size="sm"
       >
         <div className="space-y-4">
           <FormField
-            label="Nom du modèle"
+            label={t("membres.email.templateNameLabel")}
             required
-            placeholder="ex. Rappel cotisation annuel…"
+            placeholder={t("membres.email.templateNamePlaceholder")}
             value={saveTemplateName}
             onChange={e => setSaveTemplateName(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") handleSaveAsTemplate() }}
@@ -641,14 +644,14 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
           />
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setSaveTemplateOpen(false)} disabled={createTemplate.isPending}>
-              Annuler
+              {t("common.cancel")}
             </Button>
             <Button
               onClick={handleSaveAsTemplate}
               loading={createTemplate.isPending}
               disabled={!saveTemplateName.trim()}
             >
-              Enregistrer
+              {t("common.save")}
             </Button>
           </div>
         </div>

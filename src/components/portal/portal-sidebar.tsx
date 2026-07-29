@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -19,22 +20,23 @@ function isActive(href: string, pathname: string) {
 }
 
 export function PortalSidebar({ slug }: { slug: string }) {
+  const t        = useTranslations("portal.sidebar")
   const pathname = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
   const modules  = useModules()
   const branding = useBranding()
 
   const allNavItems: Array<{ href: string; label: string; icon: React.ElementType; moduleKey?: keyof AssocModules }> = [
-    { href: `/portal/${slug}/actualites`, label: "Actualités",    icon: NewspaperIcon, moduleKey: "actualites"  },
-    { href: `/portal/${slug}/evenements`, label: "Événements",    icon: CalendarBlankIcon,  moduleKey: "evenements"  },
-    { href: `/portal/${slug}/materiel`,   label: "Matériel",      icon: PackageIcon,   moduleKey: "materiel"    },
-    { href: `/portal/${slug}/cotisation`, label: "Ma cotisation", icon: CoinsIcon,          moduleKey: "cotisations" },
-    { href: `/portal/${slug}/dons`,       label: "Mes dons",      icon: HandshakeIcon,  moduleKey: "dons"      },
-    { href: `/portal/${slug}/sondages`,  label: "Sondages",      icon: ClipboardTextIcon,   moduleKey: "sondages"  },
-    { href: `/portal/${slug}/boutique`,  label: "Boutique",      icon: ShoppingBagIcon,     moduleKey: "boutique"  },
-    { href: `/portal/${slug}/reunions`,  label: "Réunions",      icon: VideoCameraIcon,           moduleKey: "reunions"  },
-    { href: `/portal/${slug}/communications`, label: "Mes communications", icon: EnvelopeSimpleIcon },
-    { href: `/portal/${slug}/profil`,    label: "Mon profil",    icon: UserIcon },
+    { href: `/portal/${slug}/actualites`, label: t("actualites"),    icon: NewspaperIcon, moduleKey: "actualites"  },
+    { href: `/portal/${slug}/evenements`, label: t("evenements"),    icon: CalendarBlankIcon,  moduleKey: "evenements"  },
+    { href: `/portal/${slug}/materiel`,   label: t("materiel"),      icon: PackageIcon,   moduleKey: "materiel"    },
+    { href: `/portal/${slug}/cotisation`, label: t("cotisation"), icon: CoinsIcon,          moduleKey: "cotisations" },
+    { href: `/portal/${slug}/dons`,       label: t("dons"),      icon: HandshakeIcon,  moduleKey: "dons"      },
+    { href: `/portal/${slug}/sondages`,  label: t("sondages"),      icon: ClipboardTextIcon,   moduleKey: "sondages"  },
+    { href: `/portal/${slug}/boutique`,  label: t("boutique"),      icon: ShoppingBagIcon,     moduleKey: "boutique"  },
+    { href: `/portal/${slug}/reunions`,  label: t("reunions"),      icon: VideoCameraIcon,           moduleKey: "reunions"  },
+    { href: `/portal/${slug}/communications`, label: t("communications"), icon: EnvelopeSimpleIcon },
+    { href: `/portal/${slug}/profil`,    label: t("profil"),    icon: UserIcon },
   ]
 
   const navItems = allNavItems.filter(item => !item.moduleKey || modules[item.moduleKey])
@@ -52,7 +54,7 @@ export function PortalSidebar({ slug }: { slug: string }) {
               <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
               <div className="flex flex-col gap-0.5 leading-none min-w-0 ml-1">
                 <span className="font-semibold truncate">{branding?.name ?? APP_NAME}</span>
-                <span className="text-xs text-muted-foreground">Mon espace</span>
+                <span className="text-xs text-muted-foreground">{t("mySpace")}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>

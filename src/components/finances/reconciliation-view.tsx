@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { LinkIcon, MinusIcon, TrendUpIcon, TrendDownIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
@@ -35,25 +36,32 @@ type BankTx = {
   }>
 }
 
-const STATUS_FILTERS = [
-  { value: "all",       label: "Tous" },
-  { value: "UNMATCHED", label: "Non conciliés" },
-  { value: "MATCHED",   label: "Conciliés" },
-  { value: "IGNORED",   label: "Ignorés" },
-  { value: "DUPLICATE", label: "Doublons" },
-]
-
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  UNMATCHED: { label: "Non concilié", variant: "secondary" },
-  MATCHED:   { label: "Concilié",     variant: "default"   },
-  PENDING:   { label: "En attente",   variant: "outline"   },
-  IGNORED:   { label: "Ignoré",       variant: "outline"   },
-  DUPLICATE: { label: "Doublon",      variant: "destructive" },
-}
-
 const PAGE_SIZE = 50
 
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusFilters(t: Translator) {
+  return [
+    { value: "all",       label: t("finances.reconciliationView.statusFilters.all") },
+    { value: "UNMATCHED", label: t("finances.reconciliationView.statusFilters.unmatched") },
+    { value: "MATCHED",   label: t("finances.reconciliationView.statusFilters.matched") },
+    { value: "IGNORED",   label: t("finances.reconciliationView.statusFilters.ignored") },
+    { value: "DUPLICATE", label: t("finances.reconciliationView.statusFilters.duplicate") },
+  ]
+}
+
+function getStatusConfig(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    UNMATCHED: { label: t("finances.reconciliationView.status.unmatched"), variant: "secondary" },
+    MATCHED:   { label: t("finances.reconciliationView.status.matched"),   variant: "default"   },
+    PENDING:   { label: t("finances.reconciliationView.status.pending"),   variant: "outline"   },
+    IGNORED:   { label: t("finances.reconciliationView.status.ignored"),   variant: "outline"   },
+    DUPLICATE: { label: t("finances.reconciliationView.status.duplicate"), variant: "destructive" },
+  }
+}
+
 export function ReconciliationView() {
+  const t = useTranslations()
   const [page, setPage]               = useState(1)
   const [statusFilter, setStatusFilter] = useState("UNMATCHED")
   const [accountFilter, setAccountFilter] = useState("")
@@ -79,36 +87,36 @@ export function ReconciliationView() {
   async function handleIgnore(tx: BankTx) {
     try {
       await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "IGNORE" })
-      toast.success("Transaction ignorée")
+      toast.success(t("finances.reconciliationView.toasts.ignored"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleDuplicate(tx: BankTx) {
     try {
       await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "DUPLICATE" })
-      toast.success("Marqué comme doublon")
+      toast.success(t("finances.reconciliationView.toasts.markedDuplicate"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleReactivate(tx: BankTx) {
     try {
       await reactivateMutation.mutateAsync(tx.id)
-      toast.success("Transaction remise en file d'attente")
+      toast.success(t("finances.reconciliationView.toasts.reactivated"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUnmatch(tx: BankTx) {
     try {
       await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "UNMATCH" })
-      toast.success("Conciliation annulée")
+      toast.success(t("finances.reconciliationView.toasts.unmatched"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -116,10 +124,10 @@ export function ReconciliationView() {
     try {
       const income = await createIncomeMutation.mutateAsync(data)
       await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "MATCH", incomeId: income.id })
-      toast.success("Recette créée et conciliée")
+      toast.success(t("finances.reconciliationView.toasts.incomeCreated"))
       setIncomeModal(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -127,32 +135,34 @@ export function ReconciliationView() {
     try {
       const expense = await createExpenseMutation.mutateAsync(data)
       await reconcileMutation.mutateAsync({ bankTransactionId: tx.id, action: "MATCH", expenseId: expense.id })
-      toast.success("Dépense créée et conciliée")
+      toast.success(t("finances.reconciliationView.toasts.expenseCreated"))
       setExpenseModal(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const fmt = (n: string | number) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusFilters = getStatusFilters(t)
+  const statusConfig  = getStatusConfig(t)
 
   const columns: Column<BankTx>[] = [
     {
       key: "date",
-      header: "Date",
+      header: t("finances.reconciliationView.columns.date"),
       className: "w-28",
       cell: (tx) => format(new Date(tx.transactionDate), "dd/MM/yyyy", { locale: fr }),
     },
     {
       key: "label",
-      header: "Libellé bancaire",
+      header: t("finances.reconciliationView.columns.label"),
       cell: (tx) => (
         <div>
           <p className="font-medium text-sm">{tx.label}</p>
           <p className="text-xs text-muted-foreground">{tx.bankAccount.accountName}</p>
           {tx.reconciliations[0] && (
             <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
-              → {tx.reconciliations[0].income?.description || tx.reconciliations[0].income?.membre?.lastName || tx.reconciliations[0].expense?.description || tx.reconciliations[0].expense?.vendor || "Concilié"}
+              → {tx.reconciliations[0].income?.description || tx.reconciliations[0].income?.membre?.lastName || tx.reconciliations[0].expense?.description || tx.reconciliations[0].expense?.vendor || t("finances.reconciliationView.reconciledFallback")}
             </p>
           )}
         </div>
@@ -160,7 +170,7 @@ export function ReconciliationView() {
     },
     {
       key: "amount",
-      header: "Montant",
+      header: t("finances.reconciliationView.columns.amount"),
       className: "w-32 text-right",
       cell: (tx) => (
         <span className={cn("font-semibold tabular-nums flex items-center justify-end gap-1", tx.type === "CREDIT" ? "text-green-600 dark:text-green-400" : "text-destructive")}>
@@ -171,7 +181,7 @@ export function ReconciliationView() {
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("finances.reconciliationView.columns.status"),
       className: "w-28",
       cell: (tx) => {
         const cfg = statusConfig[tx.status] ?? { label: tx.status, variant: "secondary" as const }
@@ -180,7 +190,7 @@ export function ReconciliationView() {
     },
     {
       key: "actions",
-      header: "Actions",
+      header: t("finances.reconciliationView.columns.actions"),
       className: "w-52",
       hideInCard: true,
       cell: (tx) => {
@@ -190,9 +200,9 @@ export function ReconciliationView() {
               size="sm" variant="ghost"
               className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
               onClick={() => handleUnmatch(tx)}
-              title="Annuler la conciliation"
+              title={t("finances.reconciliationView.actions.unmatchTitle")}
             >
-              <ArrowCounterClockwiseIcon className="size-3 mr-1" />Déconcilier
+              <ArrowCounterClockwiseIcon className="size-3 mr-1" />{t("finances.reconciliationView.actions.unmatch")}
             </Button>
           )
         }
@@ -202,27 +212,27 @@ export function ReconciliationView() {
               size="sm" variant="ghost"
               className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
               onClick={() => handleReactivate(tx)}
-              title="Remettre en non-concilié"
+              title={t("finances.reconciliationView.actions.reactivateTitle")}
             >
-              <ArrowCounterClockwiseIcon className="size-3 mr-1" />Réactiver
+              <ArrowCounterClockwiseIcon className="size-3 mr-1" />{t("finances.reconciliationView.actions.reactivate")}
             </Button>
           )
         }
         return (
           <div className="flex items-center gap-1 flex-wrap">
             <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={() => setMatchModal(tx)}>
-              <LinkIcon className="size-3 mr-1" />Associer
+              <LinkIcon className="size-3 mr-1" />{t("finances.reconciliationView.actions.match")}
             </Button>
             {tx.type === "CREDIT" ? (
               <Button size="sm" variant="outline" className="h-7 text-xs px-2 text-green-700" onClick={() => setIncomeModal(tx)}>
-                + Recette
+                + {t("finances.reconciliationView.actions.addIncome")}
               </Button>
             ) : (
               <Button size="sm" variant="outline" className="h-7 text-xs px-2 text-red-700" onClick={() => setExpenseModal(tx)}>
-                + Dépense
+                + {t("finances.reconciliationView.actions.addExpense")}
               </Button>
             )}
-            <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-foreground" onClick={() => handleIgnore(tx)} title="Ignorer">
+            <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-foreground" onClick={() => handleIgnore(tx)} title={t("finances.reconciliationView.actions.ignore")}>
               <MinusIcon className="size-3.5" />
             </Button>
           </div>
@@ -234,13 +244,13 @@ export function ReconciliationView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Conciliation bancaire"
-        description="Associez les transactions bancaires importées à vos recettes et dépenses."
+        title={t("finances.reconciliationView.title")}
+        description={t("finances.reconciliationView.description")}
       />
 
       <div className="flex flex-wrap gap-2">
         <div className="flex rounded-lg border overflow-hidden">
-          {STATUS_FILTERS.map(f => (
+          {statusFilters.map(f => (
             <button
               key={f.value}
               onClick={() => { setStatusFilter(f.value); setPage(1) }}
@@ -261,7 +271,7 @@ export function ReconciliationView() {
             value={accountFilter}
             onValueChange={v => { setAccountFilter(v); setPage(1) }}
             options={(accounts as { id: string; accountName: string }[]).map(a => ({ value: a.id, label: a.accountName }))}
-            placeholder="Tous les comptes"
+            placeholder={t("finances.reconciliationView.allAccounts")}
             width="w-48"
           />
         )}
@@ -272,7 +282,7 @@ export function ReconciliationView() {
         data={transactions}
         loading={isLoading}
         keyExtractor={(tx) => tx.id}
-        empty="Aucune transaction à afficher"
+        empty={t("finances.reconciliationView.noTransactions")}
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
@@ -284,7 +294,7 @@ export function ReconciliationView() {
           onOpenChange={(o) => !o && setMatchModal(null)}
           onMatch={async ({ incomeId, expenseId }) => {
             await reconcileMutation.mutateAsync({ bankTransactionId: matchModal.id, action: "MATCH", incomeId, expenseId })
-            toast.success("Conciliation validée")
+            toast.success(t("finances.reconciliationView.toasts.matched"))
             setMatchModal(null)
           }}
         />
@@ -292,8 +302,8 @@ export function ReconciliationView() {
 
       {/* Create income from transaction */}
       {incomeModal && (
-        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title="Créer une recette" size="md" dismissable={false}>
-          <p className="text-sm text-muted-foreground mb-4">Transaction : <strong>{incomeModal.label}</strong> · +{fmt(incomeModal.amount)}</p>
+        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title={t("finances.reconciliationView.createIncomeTitle")} size="md" dismissable={false}>
+          <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{incomeModal.label}</strong> · +{fmt(incomeModal.amount)}</p>
           <IncomeForm
             defaultValues={{
               amount: parseFloat(incomeModal.amount),
@@ -310,8 +320,8 @@ export function ReconciliationView() {
 
       {/* Create expense from transaction */}
       {expenseModal && (
-        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title="Créer une dépense" size="md" dismissable={false}>
-          <p className="text-sm text-muted-foreground mb-4">Transaction : <strong>{expenseModal.label}</strong> · −{fmt(expenseModal.amount)}</p>
+        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title={t("finances.reconciliationView.createExpenseTitle")} size="md" dismissable={false}>
+          <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{expenseModal.label}</strong> · −{fmt(expenseModal.amount)}</p>
           <ExpenseForm
             defaultValues={{
               amount: parseFloat(expenseModal.amount),

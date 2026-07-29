@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import type { PricingInfo, PlanTier } from "@/lib/stripe"
 import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
@@ -19,6 +20,8 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
   clientSecret: string
   onSuccess:    () => void
 }) {
+  const t        = useTranslations("parametres.reactivateSubscription")
+  const tCommon  = useTranslations("common")
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -51,7 +54,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
           throw new Error(stripeErr.message)
         }
       } else {
-        if (!setupIntent?.payment_method) throw new Error("Erreur de paiement")
+        if (!setupIntent?.payment_method) throw new Error(t("paymentError"))
         paymentMethodId = setupIntent.payment_method as string
       }
 
@@ -60,11 +63,11 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ paymentMethodId, plan, tier }),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la réactivation"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, t("reactivateError")))
 
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur")
+      setError(err instanceof Error ? err.message : tCommon("error"))
     } finally {
       setLoading(false)
     }
@@ -79,15 +82,15 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-xl border bg-card p-4 space-y-1.5 text-sm">
         <div className="flex justify-between text-muted-foreground">
-          <span>Nouvel abonnement</span>
+          <span>{t("newSubscription")}</span>
           <span className="font-medium text-foreground">
-            {plan === "yearly" ? `${yearlyEquiv}/mois` : `${monthlyPrice}/mois`}
+            {t("perMonth", { amount: plan === "yearly" ? yearlyEquiv : monthlyPrice })}
           </span>
         </div>
         {plan === "yearly" && (
           <div className="flex justify-between text-xs text-amber-600 dark:text-amber-400">
-            <span>Facturé en une fois</span>
-            <span>{yearlyTotal}/an</span>
+            <span>{t("billedOnce")}</span>
+            <span>{t("perYear", { amount: yearlyTotal })}</span>
           </div>
         )}
       </div>
@@ -107,18 +110,20 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
 
       <Button type="submit" className="w-full h-11 text-sm font-medium" disabled={loading || !stripe}>
         {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Confirmer et réabonner
+        {t("confirmButton")}
       </Button>
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <LockIcon className="size-3" />
-        <span>Paiement sécurisé par Stripe</span>
+        <span>{t("securePayment")}</span>
       </div>
     </form>
   )
 }
 
 export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: PricingInfo; initialTier: PlanTier }) {
+  const t       = useTranslations("parametres.reactivateSubscription")
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const [tier, setTier] = useState<PlanTier>(initialTier)
   const [plan, setPlan] = useState<Plan>("monthly")
@@ -131,18 +136,18 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
     setError("")
     fetch("/api/billing/reactivate/setup-intent", { method: "POST" })
       .then(async res => {
-        if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+        if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
         return res.json() as Promise<{ clientSecret: string }>
       })
       .then(data => setClientSecret(data.clientSecret))
-      .catch(err => setError(err instanceof Error ? err.message : "Erreur"))
+      .catch(err => setError(err instanceof Error ? err.message : tCommon("error")))
       .finally(() => setLoadingIntent(false))
   }
 
   useEffect(() => { loadSetupIntent() }, [])
 
   function handleSuccess() {
-    toast.success("Abonnement réactivé !")
+    toast.success(t("toasts.reactivated"))
     router.replace("/dashboard")
   }
 
@@ -157,11 +162,11 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
             onClick={() => router.push("/dashboard/abonnement-suspendu")}
           >
             <ArrowLeftIcon className="mr-1.5 size-3.5" />
-            Retour
+            {t("back")}
           </Button>
-          <h1 className="text-xl font-semibold tracking-tight">Se réabonner</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Votre précédent abonnement a été résilié. Choisissez une formule et renseignez un moyen de paiement pour retrouver l&apos;accès.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -172,7 +177,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
             <span>{error}</span>
             <Button type="button" variant="outline" size="sm" onClick={loadSetupIntent}>
               <ArrowClockwiseIcon className="mr-1.5 size-3.5" />
-              Réessayer
+              {t("retry")}
             </Button>
           </div>
         )}

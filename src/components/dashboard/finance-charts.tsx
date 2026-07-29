@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import {
   BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Legend,
   Tooltip, LabelList, ResponsiveContainer,
@@ -31,6 +32,7 @@ function MonthlyTip({ active, payload, label, pal }: {
   payload?: { value: number; dataKey: string }[]
   pal: ReturnType<typeof usePalette>
 }) {
+  const t = useTranslations("dashboard.charts")
   if (!active || !payload?.length) return null
   const recettes = payload.find(p => p.dataKey === "recettes")?.value ?? 0
   const depenses = payload.find(p => p.dataKey === "depenses")?.value ?? 0
@@ -39,12 +41,12 @@ function MonthlyTip({ active, payload, label, pal }: {
       <p className="font-medium">{label}</p>
       <p className="flex items-center gap-1.5">
         <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: pal.recettes }} />
-        <span className="text-muted-foreground">Recettes</span>
+        <span className="text-muted-foreground">{t("income")}</span>
         <span className="font-semibold ml-auto">{fmt(recettes)}</span>
       </p>
       <p className="flex items-center gap-1.5">
         <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: pal.depenses }} />
-        <span className="text-muted-foreground">Dépenses</span>
+        <span className="text-muted-foreground">{t("expense")}</span>
         <span className="font-semibold ml-auto">{fmt(depenses)}</span>
       </p>
     </div>
@@ -88,6 +90,7 @@ function LollipopBar({ x, y, width, height, color }: {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function FinanceCharts() {
+  const t       = useTranslations()
   const modules = useModules()
   const pal     = usePalette()
 
@@ -95,7 +98,7 @@ export function FinanceCharts() {
     queryKey: ["dashboard", "finance-charts"],
     queryFn:  async () => {
       const res = await fetch("/api/dashboard/finance-charts")
-      if (!res.ok) throw new Error("Erreur")
+      if (!res.ok) throw new Error(t("common.error"))
       return res.json()
     },
     enabled:   modules.cotisations || modules.finances,
@@ -119,7 +122,7 @@ export function FinanceCharts() {
     return (
       <div className="rounded-xl border border-dashed bg-card/50 p-6 text-center">
         <p className="text-sm text-muted-foreground">
-          Les graphiques apparaîtront ici dès que des cotisations ou des mouvements financiers seront enregistrés.
+          {t("dashboard.charts.emptyState")}
         </p>
       </div>
     )
@@ -153,11 +156,11 @@ export function FinanceCharts() {
             className="pointer-events-none absolute -left-10 -top-16 size-40 rounded-full opacity-20 blur-3xl"
             style={{ background: pal.recettes }}
           />
-          <p className="relative mb-1 text-xs font-medium text-muted-foreground">Cotisations {data.year}</p>
+          <p className="relative mb-1 text-xs font-medium text-muted-foreground">{t("dashboard.cotisations.title", { year: data.year })}</p>
           {/* Hero figure: % already collected — the one number a progress bar exists to
               answer, and distinct from the raw totals already listed below/elsewhere. */}
           <p className="relative mb-4 text-3xl font-semibold">
-            {paidPct}<span className="text-lg text-muted-foreground"> % encaissé</span>
+            {paidPct}<span className="text-lg text-muted-foreground">{t("dashboard.charts.collectedPercent")}</span>
           </p>
 
           <div className="relative flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
@@ -197,7 +200,7 @@ export function FinanceCharts() {
           categories, not a continuous monthly progression). */}
       {data.hasFinances && (
         <div className={`rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
-          <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes vs dépenses — 6 derniers mois</p>
+          <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.trendTitle")}</p>
           {/* debounce: avoids a known Recharts+ResizeObserver race where the container's
               first reported size is stale/zero — without it the chart can settle into its
               final layout before the mount animation gets a correct size to animate from,
@@ -225,7 +228,7 @@ export function FinanceCharts() {
               <Legend
                 iconType="plainline"
                 wrapperStyle={{ fontSize: 12, color: pal.axis }}
-                formatter={(value) => (value === "recettes" ? "Recettes" : "Dépenses")}
+                formatter={(value) => (value === "recettes" ? t("dashboard.charts.income") : t("dashboard.charts.expense"))}
               />
               <Area
                 type="monotone" dataKey="recettes" name="recettes"
@@ -257,12 +260,13 @@ export function FinanceCharts() {
 // visibly shorter than the right one — same underlying query (shared cache entry via
 // the identical queryKey, so this doesn't cost a second request).
 export function IncomeByCategoryChart() {
+  const t   = useTranslations()
   const pal = usePalette()
   const { data, isLoading } = useQuery<FinanceChartsData>({
     queryKey: ["dashboard", "finance-charts"],
     queryFn:  async () => {
       const res = await fetch("/api/dashboard/finance-charts")
-      if (!res.ok) throw new Error("Erreur")
+      if (!res.ok) throw new Error(t("common.error"))
       return res.json()
     },
     staleTime: 5 * 60_000,
@@ -273,7 +277,7 @@ export function IncomeByCategoryChart() {
 
   return (
     <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30">
-      <p className="mb-4 text-xs font-medium text-muted-foreground">Recettes par catégorie — {data.year}</p>
+      <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.categoryTitle", { year: data.year })}</p>
       <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
         <BarChart
           data={data.incomeByCategory}

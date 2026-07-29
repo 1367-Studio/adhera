@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
@@ -24,10 +25,11 @@ type Meeting = {
   summary:     string | null
 }
 
-const STATUS_LABELS = { SCHEDULED: "Planifiée", LIVE: "En cours", ENDED: "Terminée" }
 const STATUS_VARIANTS = { SCHEDULED: "secondary", LIVE: "default", ENDED: "outline" } as const
 
 export default function ReunionsPortalPage() {
+  const t  = useTranslations("portalMembre.reunions")
+  const statusLabels = { SCHEDULED: t("status.scheduled"), LIVE: t("status.live"), ENDED: t("status.ended") }
   const qc = useQueryClient()
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null)
   const [refreshingId, setRefreshingId] = useState<string | null>(null)
@@ -52,7 +54,7 @@ export default function ReunionsPortalPage() {
     if (data.status !== "LIVE") return
     const list = qc.getQueryData<Meeting[]>(["portal-meetings"]) ?? []
     if (list.some(m => m.id === data.meetingId)) {
-      toast.info(`${data.title} — réunion en cours`, { description: "Rejoignez maintenant." })
+      toast.info(t("liveNotification", { title: data.title }), { description: t("liveNotificationDescription") })
     }
   })
 
@@ -61,16 +63,16 @@ export default function ReunionsPortalPage() {
   // invalidated query settles, instead of flashing a stale "Rejoindre".
   useEffect(() => {
     if (refreshingId && !isFetching) {
-      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      if (isError) toast.error(t("refreshError"))
       setRefreshingId(null)
     }
-  }, [isFetching, isError, refreshingId])
+  }, [isFetching, isError, refreshingId, t])
 
   // Failsafe: never leave the join button stuck disabled if the refetch never settles.
   useEffect(() => {
     if (!refreshingId) return
-    const t = setTimeout(() => setRefreshingId(null), 8000)
-    return () => clearTimeout(t)
+    const timeoutId = setTimeout(() => setRefreshingId(null), 8000)
+    return () => clearTimeout(timeoutId)
   }, [refreshingId])
 
   function handleLeave(opts?: { ended?: boolean }) {
@@ -86,9 +88,9 @@ export default function ReunionsPortalPage() {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">{meeting?.title ?? "Réunion"}</h2>
+          <h2 className="text-lg font-semibold">{meeting?.title ?? t("defaultTitle")}</h2>
           <Button variant="outline" size="sm" onClick={() => handleLeave()}>
-            Quitter
+            {t("leave")}
           </Button>
         </div>
         <MeetingRoom meetingId={activeMeetingId} onLeave={handleLeave} tokenEndpoint="/api/portal/meetings/token" />
@@ -102,8 +104,8 @@ export default function ReunionsPortalPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Réunions</h1>
-        <p className="text-muted-foreground text-sm mt-1">Vos réunions en cours et à venir.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
       </div>
 
       {isLoading ? (
@@ -118,7 +120,7 @@ export default function ReunionsPortalPage() {
       ) : active.length === 0 && ended.length === 0 ? (
         <div className="rounded-2xl border border-dashed p-12 text-center space-y-3">
           <VideoCameraIcon className="size-10 text-muted-foreground/50 mx-auto" />
-          <p className="text-sm text-muted-foreground">Aucune réunion planifiée pour le moment.</p>
+          <p className="text-sm text-muted-foreground">{t("noMeetings")}</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -129,7 +131,7 @@ export default function ReunionsPortalPage() {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-sm">{meeting.title}</span>
-                      <Badge variant={STATUS_VARIANTS[meeting.status]}>{STATUS_LABELS[meeting.status]}</Badge>
+                      <Badge variant={STATUS_VARIANTS[meeting.status]}>{statusLabels[meeting.status]}</Badge>
                     </div>
                     {meeting.description && (
                       <p className="text-xs text-muted-foreground line-clamp-2">{meeting.description}</p>
@@ -148,7 +150,7 @@ export default function ReunionsPortalPage() {
                     disabled={meeting.id === refreshingId}
                   >
                     <PlayIcon className="size-4 mr-1.5" />
-                    {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
+                    {meeting.status === "LIVE" ? t("join") : t("start")}
                   </Button>
                 </div>
               ))}
@@ -157,12 +159,12 @@ export default function ReunionsPortalPage() {
 
           {ended.length > 0 && (
             <div className="space-y-3">
-              <p className="text-sm font-medium text-muted-foreground">Historique</p>
+              <p className="text-sm font-medium text-muted-foreground">{t("history")}</p>
               {ended.map(meeting => (
                 <div key={meeting.id} className="rounded-2xl border bg-card p-5">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-sm">{meeting.title}</span>
-                    <Badge variant="outline">Terminée</Badge>
+                    <Badge variant="outline">{t("status.ended")}</Badge>
                   </div>
                   {meeting.description && (
                     <p className="text-xs text-muted-foreground line-clamp-2 mb-1">{meeting.description}</p>
@@ -170,7 +172,7 @@ export default function ReunionsPortalPage() {
                   {meeting.endedAt && (
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <ClockIcon className="size-3" />
-                      Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                      {t("endedOn", { date: format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
                     </p>
                   )}
                   {meeting.summary && (

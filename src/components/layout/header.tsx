@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,6 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { UserMenu } from "@/components/layout/user-menu"
 import { NotificationBell } from "@/components/layout/notification-bell"
 import { HelpButton } from "@/components/layout/help-button"
@@ -20,20 +22,22 @@ import { UserIcon, SquaresFourIcon } from "@phosphor-icons/react/dist/ssr"
 import { isManager } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
-const routeLabels: Record<string, string> = {
-  dashboard:    "Dashboard",
-  membres:      "Membres",
-  evenements:   "Événements",
-  cotisations:  "Cotisations",
-  actualites:   "Actualités",
-  messages:     "Messages",
-  materiel:     "Matériel",
-  site:         "Site web",
-  parametres:   "Paramètres",
-  portal:       "Mon espace",
-  profil:       "Mon profil",
-  backoffice:   "Backoffice",
-  associations: "Associations",
+function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
+  return {
+    dashboard:    t("layout.appSidebar.dashboard"),
+    membres:      t("layout.appSidebar.membres"),
+    evenements:   t("layout.appSidebar.evenements"),
+    cotisations:  t("layout.appSidebar.cotisations"),
+    actualites:   t("layout.appSidebar.actualites"),
+    messages:     t("layout.appSidebar.messages"),
+    materiel:     t("layout.appSidebar.materiel"),
+    site:         t("layout.appSidebar.site"),
+    parametres:   t("layout.appSidebar.parametres"),
+    portal:       t("layout.header.myPortal"),
+    profil:       t("layout.header.myProfile"),
+    backoffice:   t("layout.backofficeSidebar.backoffice"),
+    associations: t("layout.appSidebar.associations"),
+  }
 }
 
 interface HeaderProps {
@@ -49,36 +53,39 @@ interface HeaderProps {
 }
 
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
+  const t = useTranslations("layout.header")
   const inPortal = pathname.includes("/portal/")
   return (
     <div className="flex shrink-0 items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
       <Link
         href={`/portal/${slug}/actualites`}
-        title="Mon espace"
+        title={t("myPortal")}
         className={cn(
           "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <UserIcon className="size-3.5 sm:hidden" />
-        <span className="hidden sm:inline">Mon espace</span>
+        <span className="hidden sm:inline">{t("myPortal")}</span>
       </Link>
       <Link
         href="/dashboard"
-        title="Gestion"
+        title={t("management")}
         className={cn(
           "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           !inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <SquaresFourIcon className="size-3.5 sm:hidden" />
-        <span className="hidden sm:inline">Gestion</span>
+        <span className="hidden sm:inline">{t("management")}</span>
       </Link>
     </div>
   )
 }
 
 export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug }: HeaderProps) {
+  const t = useTranslations()
+  const routeLabels = getRouteLabels(t)
   const pathname = usePathname()
   const looksLikeId = (s: string) => /^[a-z0-9]{20,}$/i.test(s) || /^[0-9a-f-]{36}$/i.test(s)
   const segments = pathname.split("/").filter(Boolean)
@@ -132,6 +139,9 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
         </span>
         <span data-tour="theme-toggle" className="flex items-center">
           <ThemeToggle />
+        </span>
+        <span className="flex items-center">
+          <LocaleSwitcher />
         </span>
         <span data-tour="user-menu" className="flex items-center">
           <UserMenu user={user} logoutRedirect={logoutRedirect} />

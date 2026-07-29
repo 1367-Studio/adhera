@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 import { VideoCameraIcon, PlusIcon, PlayIcon, TrashIcon, PencilSimpleIcon, UsersIcon, CalendarBlankIcon, FileTextIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -19,11 +20,15 @@ import { useCurrentUser } from "@/lib/user-context"
 
 type Membre = { id: string; firstName: string; lastName: string; status: string; typeId: string | null }
 
-const STATUS_LABELS: Record<Meeting["status"], string> = {
-  SCHEDULED: "Planifiée",
-  LIVE: "En cours",
-  ENDED: "Terminée",
-  CANCELLED: "Annulée",
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusLabels(t: Translator): Record<Meeting["status"], string> {
+  return {
+    SCHEDULED: t("membres.detail.meetingStatus.scheduled"),
+    LIVE:      t("membres.detail.meetingStatus.live"),
+    ENDED:     t("membres.detail.meetingStatus.ended"),
+    CANCELLED: t("membres.detail.meetingStatus.cancelled"),
+  }
 }
 
 const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "destructive" | "outline"> = {
@@ -33,13 +38,16 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
   CANCELLED: "destructive",
 }
 
-const TYPE_LABELS: Record<Meeting["type"], string> = {
-  AG:       "Assemblée générale",
-  BUREAU:   "Réunion de bureau",
-  GENERALE: "Réunion générale",
+function getTypeLabels(t: Translator): Record<Meeting["type"], string> {
+  return {
+    AG:       t("reunions.form.type.ag"),
+    BUREAU:   t("reunions.form.type.bureau"),
+    GENERALE: t("reunions.form.type.generale"),
+  }
 }
 
 export function ReunionsView() {
+  const t = useTranslations()
   const qc = useQueryClient()
   const { id: currentUserId } = useCurrentUser()
   const { data: meetings = [], isLoading, isFetching, isError } = useMeetings()
@@ -65,7 +73,7 @@ export function ReunionsView() {
     if (data.createdById === currentUserId) return
     qc.invalidateQueries({ queryKey: MEETINGS_QK })
     if (data.status === "LIVE") {
-      toast.info(`${data.title} — réunion en cours`, { description: "Une réunion vient de démarrer." })
+      toast.info(t("reunions.view.toasts.liveNotification", { title: data.title }), { description: t("reunions.view.toasts.liveNotificationDescription") })
     }
   })
 
@@ -74,7 +82,7 @@ export function ReunionsView() {
   // invalidated query settles, instead of flashing a stale "Rejoindre".
   useEffect(() => {
     if (refreshingId && !isFetching) {
-      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      if (isError) toast.error(t("reunions.view.toasts.refreshError"))
       setRefreshingId(null)
     }
   }, [isFetching, isError, refreshingId])
@@ -82,8 +90,8 @@ export function ReunionsView() {
   // Failsafe: never leave the join button stuck disabled if the refetch never settles.
   useEffect(() => {
     if (!refreshingId) return
-    const t = setTimeout(() => setRefreshingId(null), 8000)
-    return () => clearTimeout(t)
+    const timeoutId = setTimeout(() => setRefreshingId(null), 8000)
+    return () => clearTimeout(timeoutId)
   }, [refreshingId])
 
   const { data: membres = [] } = useQuery<Membre[]>({
@@ -98,11 +106,11 @@ export function ReunionsView() {
   async function handleCreate(data: MeetingFormValues) {
     try {
       const meeting = await createMeeting.mutateAsync(data)
-      toast.success(data.instant ? "Réunion démarrée" : "Réunion planifiée")
+      toast.success(data.instant ? t("reunions.view.toasts.meetingStarted") : t("reunions.view.toasts.meetingScheduled"))
       setFormOpen(false)
       if (data.instant) setActiveMeetingId(meeting.id)
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Erreur")
+      toast.error(e instanceof Error ? e.message : t("common.error"))
     }
   }
 
@@ -110,10 +118,10 @@ export function ReunionsView() {
     if (!editTarget) return
     try {
       await updateMeeting.mutateAsync({ id: editTarget.id, data })
-      toast.success("Réunion modifiée")
+      toast.success(t("reunions.view.toasts.meetingUpdated"))
       setEditTarget(null)
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Erreur")
+      toast.error(e instanceof Error ? e.message : t("common.error"))
       // 409 means the meeting stopped being editable under us (someone started/ended it
       // while the modal was open) — retrying would just hit the same conflict forever, so
       // close the modal and refresh instead of leaving the form stuck against stale data.
@@ -128,10 +136,10 @@ export function ReunionsView() {
     if (!deleteId) return
     try {
       await deleteMeeting.mutateAsync(deleteId)
-      toast.success("Réunion supprimée")
+      toast.success(t("reunions.view.toasts.meetingDeleted"))
       setDeleteId(null)
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Erreur")
+      toast.error(e instanceof Error ? e.message : t("common.error"))
     }
   }
 
@@ -140,10 +148,10 @@ export function ReunionsView() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">
-            {meetings.find((m) => m.id === activeMeetingId)?.title ?? "Réunion"}
+            {meetings.find((m) => m.id === activeMeetingId)?.title ?? t("reunions.view.defaultTitle")}
           </h2>
           <Button variant="outline" size="sm" onClick={() => setActiveMeetingId(null)}>
-            Quitter
+            {t("reunions.view.leave")}
           </Button>
         </div>
         <MeetingRoom
@@ -164,25 +172,25 @@ export function ReunionsView() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
-        title="Réunions"
-        description="Organisez des réunions vidéo avec vos membres"
+        title={t("reunions.view.title")}
+        description={t("reunions.view.description")}
         action={
           <Button onClick={() => setFormOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
-            Nouvelle réunion
+            {t("reunions.view.newMeeting")}
           </Button>
         }
       />
 
       {isLoading ? (
-        <div className="text-sm text-muted-foreground">Chargement…</div>
+        <div className="text-sm text-muted-foreground">{t("reunions.view.loading")}</div>
       ) : meetings.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
           <VideoCameraIcon className="h-10 w-10 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Aucune réunion pour le moment</p>
+          <p className="text-sm text-muted-foreground">{t("reunions.view.noMeeting")}</p>
           <Button variant="outline" onClick={() => setFormOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
-            Créer une réunion
+            {t("reunions.view.createMeeting")}
           </Button>
         </div>
       ) : (
@@ -200,7 +208,7 @@ export function ReunionsView() {
         </div>
       )}
 
-      <Modal open={formOpen} onOpenChange={setFormOpen} title="Nouvelle réunion">
+      <Modal open={formOpen} onOpenChange={setFormOpen} title={t("reunions.view.createTitle")}>
         <MeetingForm
           membres={membres}
           loading={createMeeting.isPending}
@@ -209,7 +217,7 @@ export function ReunionsView() {
         />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => { if (!o) setEditTarget(null) }} title="Modifier la réunion">
+      <Modal open={!!editTarget} onOpenChange={(o) => { if (!o) setEditTarget(null) }} title={t("reunions.view.editTitle")}>
         {editTarget && (
           <MeetingForm
             membres={membres}
@@ -232,8 +240,8 @@ export function ReunionsView() {
         open={!!deleteId}
         onOpenChange={(o) => { if (!o) setDeleteId(null) }}
         onConfirm={handleDelete}
-        title="Supprimer la réunion ?"
-        description="Cette action est irréversible."
+        title={t("reunions.view.deleteConfirmTitle")}
+        description={t("reunions.view.deleteConfirmDescription")}
         loading={deleteMeeting.isPending}
       />
     </div>
@@ -253,6 +261,9 @@ function MeetingCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const t = useTranslations()
+  const statusLabels = getStatusLabels(t)
+  const typeLabels = getTypeLabels(t)
   const router     = useRouter()
   const [now]      = useState(Date.now)
   const canJoin    = meeting.status === "SCHEDULED" || meeting.status === "LIVE"
@@ -268,14 +279,14 @@ function MeetingCard({
   const durationLabel = useMemo(() => {
     if (meeting.startedAt && meeting.endedAt) {
       const mins = Math.round((new Date(meeting.endedAt).getTime() - new Date(meeting.startedAt).getTime()) / 60000)
-      return mins < 1 ? "< 1 min" : `${mins} min`
+      return mins < 1 ? t("reunions.view.durationLessThanMin") : t("reunions.view.durationMin", { mins })
     }
     if (meeting.status === "LIVE" && meeting.startedAt) {
       const mins = Math.round((now - new Date(meeting.startedAt).getTime()) / 60000)
-      return `En cours depuis ${mins < 1 ? "< 1" : mins} min`
+      return t("reunions.view.liveSince", { mins: mins < 1 ? "< 1" : mins })
     }
     return null
-  }, [meeting.startedAt, meeting.endedAt, meeting.status, now])
+  }, [meeting.startedAt, meeting.endedAt, meeting.status, now, t])
 
   return (
     <div className="rounded-lg border bg-card p-4 flex flex-col gap-3">
@@ -287,8 +298,8 @@ function MeetingCard({
           )}
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <Badge variant={STATUS_VARIANTS[meeting.status]}>{STATUS_LABELS[meeting.status]}</Badge>
-          <Badge variant="outline">{TYPE_LABELS[meeting.type]}</Badge>
+          <Badge variant={STATUS_VARIANTS[meeting.status]}>{statusLabels[meeting.status]}</Badge>
+          <Badge variant="outline">{typeLabels[meeting.type]}</Badge>
         </div>
       </div>
 
@@ -305,7 +316,7 @@ function MeetingCard({
         )}
         <span className="flex items-center gap-1">
           <UsersIcon className="h-3 w-3" />
-          {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""}
+          {t("reunions.view.participantsCount", { count: meeting.participants.length })}
         </span>
       </div>
 
@@ -313,13 +324,13 @@ function MeetingCard({
         {canJoin && (
           <Button size="sm" onClick={onJoin} className="flex-1" loading={refreshing} disabled={refreshing}>
             <PlayIcon className="mr-1 h-3 w-3" />
-            {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
+            {meeting.status === "LIVE" ? t("reunions.view.join") : t("reunions.view.start")}
           </Button>
         )}
         {meeting.status === "ENDED" && (
           <Button size="sm" variant="outline" className="flex-1" onClick={() => router.push(`/dashboard/reunions/${meeting.id}`)}>
             <FileTextIcon className="mr-1 h-3 w-3" />
-            Transcription
+            {t("reunions.view.transcription")}
           </Button>
         )}
         {meeting.status === "SCHEDULED" && (

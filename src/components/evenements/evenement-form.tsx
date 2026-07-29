@@ -2,6 +2,7 @@
 
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { evenementSchema, type EvenementInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
@@ -28,6 +29,8 @@ interface EvenementFormProps {
 }
 
 export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: EvenementFormProps) {
+  const t = useTranslations("evenements.form")
+  const tCommon = useTranslations("common")
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<EvenementInput>({
     resolver: zodResolver(evenementSchema),
     defaultValues: { date: defaultDate(), ...defaultValues },
@@ -42,23 +45,23 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <FormField
-        label="Titre"
+        label={t("title")}
         required
-        placeholder="Assemblée générale 2025"
+        placeholder={t("titlePlaceholder")}
         error={errors.title?.message}
         {...register("title")}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField
-          label="Date de début"
+          label={t("startDate")}
           type="datetime-local"
           required
           error={errors.date?.message}
           {...register("date")}
         />
         <FormField
-          label="Date de fin"
+          label={t("endDate")}
           type="datetime-local"
           error={errors.endDate?.message}
           {...register("endDate")}
@@ -66,7 +69,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
       </div>
 
       <LocationPicker
-        label="Lieu"
+        label={t("location")}
         address={locationValue}
         lat={lat}
         lng={lng}
@@ -85,8 +88,8 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
           control={control}
           render={({ field }) => (
             <CurrencyField
-              label="Tarif"
-              hint="Laisser à 0 pour un événement gratuit"
+              label={t("price")}
+              hint={t("priceHint")}
               value={field.value ?? 0}
               onChange={v => field.onChange(v === 0 ? undefined : v)}
               onBlur={field.onBlur}
@@ -97,7 +100,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
 
         <div className="space-y-1.5">
           <label className="block text-sm font-medium text-foreground">
-            Capacité <span className="text-muted-foreground font-normal">(vide = illimitée)</span>
+            {t("capacity")} <span className="text-muted-foreground font-normal">{t("capacityHint")}</span>
           </label>
           <input
             type="number"
@@ -111,7 +114,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
             )}
           />
           {capacityValue != null && capacityValue > 0 && (
-            <p className="text-xs text-muted-foreground">{capacityValue} place{capacityValue > 1 ? "s" : ""}</p>
+            <p className="text-xs text-muted-foreground">{t("capacityUnit", { count: capacityValue })}</p>
           )}
           {errors.capacity && <p className="text-xs text-destructive">{errors.capacity.message}</p>}
         </div>
@@ -122,10 +125,10 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
         control={control}
         render={({ field }) => (
           <RichTextEditor
-            label="Description"
+            label={t("description")}
             value={field.value ?? ""}
             onChange={field.onChange}
-            placeholder="Détails de l'événement…"
+            placeholder={t("descriptionPlaceholder")}
             minHeight="120px"
             error={errors.description?.message}
           />
@@ -134,10 +137,10 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Annuler
+          {tCommon("cancel")}
         </Button>
         <Button type="submit" loading={loading}>
-          Enregistrer
+          {tCommon("save")}
         </Button>
       </div>
     </form>

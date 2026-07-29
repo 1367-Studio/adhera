@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { useTranslations } from "next-intl"
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTour } from "@/lib/tour/use-tour"
 import { useSidebar } from "@/components/ui/sidebar"
@@ -9,6 +10,7 @@ import { useSidebar } from "@/components/ui/sidebar"
 const SEEN_KEY = "adhera-tour-seen-v1"
 
 export function HelpButton() {
+  const t = useTranslations("tour")
   const { start } = useTour()
   const { isMobile, setOpenMobile } = useSidebar()
 
@@ -44,8 +46,8 @@ export function HelpButton() {
       onClick={launch}
       data-tour="help"
       className="flex items-center justify-center rounded-md h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-      aria-label="Aide et visite guidée"
-      title="Visite guidée"
+      aria-label={t("helpButtonLabel")}
+      title={t("helpButtonTooltip")}
     >
       <QuestionIcon className="size-4" />
     </button>

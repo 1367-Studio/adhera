@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { ShoppingBagIcon, ShoppingCartIcon, PackageIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +18,7 @@ type Produit  = {
 }
 
 export default function BoutiquePortalPage() {
+  const t        = useTranslations("portalMembre.boutique")
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
   const { count } = useCart(slug)
@@ -47,18 +49,18 @@ export default function BoutiquePortalPage() {
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight">Boutique</h1>
-          <p className="text-sm text-muted-foreground">Commandez vos articles en ligne.</p>
+          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={() => router.push(`/portal/${slug}/boutique/commandes`)}>
             <PackageIcon className="mr-1.5 size-4" />
-            Mes commandes
+            {t("myOrders")}
           </Button>
           {count > 0 && (
             <Button variant="outline" onClick={() => router.push(`/portal/${slug}/boutique/panier`)}>
               <ShoppingCartIcon className="mr-1.5 size-4" />
-              Panier ({count})
+              {t("cart", { count })}
             </Button>
           )}
         </div>
@@ -73,7 +75,7 @@ export default function BoutiquePortalPage() {
       ) : produits.length === 0 ? (
         <div className="rounded-xl border bg-card p-12 text-center space-y-2">
           <ShoppingBagIcon className="size-8 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-sm">Aucun article disponible pour le moment.</p>
+          <p className="text-muted-foreground text-sm">{t("noProducts")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -101,7 +103,7 @@ export default function BoutiquePortalPage() {
                     {min === max ? fmt(min) : `${fmt(min)} – ${fmt(max)}`}
                   </p>
                   {stock === 0 && (
-                    <Badge variant="secondary" className="text-xs">Épuisé</Badge>
+                    <Badge variant="secondary" className="text-xs">{t("outOfStock")}</Badge>
                   )}
                 </div>
               </button>

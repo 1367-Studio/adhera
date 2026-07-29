@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +30,7 @@ function ScoreBadge({ score }: { score: number }) {
 }
 
 export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMatch }: Props) {
+  const t = useTranslations()
   const [selected, setSelected] = useState<string | null>(null)
   const [loading, setLoading]   = useState(false)
 
@@ -57,22 +59,22 @@ export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMa
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Associer à une recette / dépense" size="md">
+    <Modal open={open} onOpenChange={onOpenChange} title={t("finances.reconciliationMatchModal.title")} size="md">
       <div className="space-y-4">
         <div className="rounded-lg bg-muted/30 p-3 text-sm">
           <p className="font-medium">{transaction.label}</p>
           <p className="text-muted-foreground">{transaction.type === "CREDIT" ? "+" : "−"}{fmt(transaction.amount)}</p>
         </div>
 
-        {isLoading && <p className="text-sm text-muted-foreground text-center py-4">Recherche de correspondances…</p>}
+        {isLoading && <p className="text-sm text-muted-foreground text-center py-4">{t("finances.reconciliationMatchModal.searching")}</p>}
 
         {!isLoading && suggestions.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-4">Aucune correspondance trouvée à ±7 jours.</p>
+          <p className="text-sm text-muted-foreground text-center py-4">{t("finances.reconciliationMatchModal.noMatches")}</p>
         )}
 
         {!isLoading && suggestions.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-medium text-muted-foreground">Correspondances suggérées</p>
+            <p className="text-xs font-medium text-muted-foreground">{t("finances.reconciliationMatchModal.suggestedMatches")}</p>
             {suggestions.map(s => (
               <button
                 key={s.entity.id}
@@ -85,7 +87,7 @@ export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMa
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
                     <Badge variant={s.type === "income" ? "default" : "secondary"} className="text-xs">
-                      {s.type === "income" ? "Recette" : "Dépense"}
+                      {s.type === "income" ? t("finances.reconciliationMatchModal.typeIncome") : t("finances.reconciliationMatchModal.typeExpense")}
                     </Badge>
                     <ScoreBadge score={s.score} />
                   </div>
@@ -99,8 +101,8 @@ export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMa
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Annuler</Button>
-          <Button onClick={handleConfirm} disabled={!selected} loading={loading}>Valider la conciliation</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.cancel")}</Button>
+          <Button onClick={handleConfirm} disabled={!selected} loading={loading}>{t("finances.reconciliationMatchModal.confirm")}</Button>
         </div>
       </div>
     </Modal>

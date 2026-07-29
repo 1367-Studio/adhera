@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -18,12 +19,16 @@ import { SelectField } from "@/components/ui/select-field"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
-const MANUAL_PAYMENT_TYPE_OPTIONS = [
-  { value: "ESPECES",  label: "Espèces" },
-  { value: "CHEQUE",   label: "Chèque" },
-  { value: "CB",       label: "Carte bancaire" },
-  { value: "VIREMENT", label: "Virement" },
-]
+type Translator = ReturnType<typeof useTranslations>
+
+function getManualPaymentTypeOptions(t: Translator) {
+  return [
+    { value: "ESPECES",  label: t("paymentType.especes") },
+    { value: "CHEQUE",   label: t("paymentType.cheque") },
+    { value: "CB",       label: t("paymentType.cb") },
+    { value: "VIREMENT", label: t("paymentType.virement") },
+  ]
+}
 
 type Variante = { id: string; label: string; price: number; stock: number }
 type Produit = {
@@ -59,13 +64,17 @@ type Commande = {
 
 type EditableItem = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
 
-const STATUS_PRODUIT_LABEL  = { DRAFT: "Brouillon", ACTIVE: "En ligne", ARCHIVED: "Archivé" }
+function getProduitStatusLabel(t: Translator) {
+  return { DRAFT: t("produitStatus.draft"), ACTIVE: t("produitStatus.active"), ARCHIVED: t("produitStatus.archived") }
+}
 const STATUS_PRODUIT_VARIANT: Record<string, "secondary" | "default" | "outline"> = {
   DRAFT:    "secondary",
   ACTIVE:   "default",
   ARCHIVED: "outline",
 }
-const STATUS_COMMANDE_LABEL   = { PENDING: "En attente", PAID: "Payée", CANCELLED: "Annulée" }
+function getCommandeStatusLabel(t: Translator) {
+  return { PENDING: t("commandeStatus.pending"), PAID: t("commandeStatus.paid"), CANCELLED: t("commandeStatus.cancelled") }
+}
 const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "default" | "outline" | "destructive"> = {
   PENDING:   "secondary",
   PAID:      "default",
@@ -87,6 +96,12 @@ function BoutiquePageInner() {
   const qc           = useQueryClient()
   const searchParams = useSearchParams()
   const highlightId  = searchParams.get("commandeId")
+  const t            = useTranslations("boutique")
+  const tCommon      = useTranslations("common")
+
+  const MANUAL_PAYMENT_TYPE_OPTIONS = getManualPaymentTypeOptions(t)
+  const STATUS_PRODUIT_LABEL        = getProduitStatusLabel(t)
+  const STATUS_COMMANDE_LABEL       = getCommandeStatusLabel(t)
   const [tab, setTab]               = useState<Tab>(searchParams.get("tab") === "commandes" ? "commandes" : "produits")
   const [deleteTarget, setDeleteTarget] = useState<Produit | null>(null)
   const [statusFilter, setStatusFilter] = useState<string>("ALL")
@@ -126,11 +141,11 @@ function BoutiquePageInner() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => fetch(`/api/boutique/produits/${id}`, { method: "DELETE" }).then(async r => {
-      if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+      if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
       return r.json()
     }),
-    onSuccess:  () => { qc.invalidateQueries({ queryKey: ["boutique-produits"] }); toast.success("Produit supprimé") },
-    onError:    (err) => toast.error(err instanceof Error ? err.message : "Erreur lors de la suppression"),
+    onSuccess:  () => { qc.invalidateQueries({ queryKey: ["boutique-produits"] }); toast.success(t("view.toasts.productDeleted")) },
+    onError:    (err) => toast.error(err instanceof Error ? err.message : t("view.toasts.deleteError")),
   })
 
   const updateCommandeStatus = useMutation({
@@ -140,11 +155,11 @@ function BoutiquePageInner() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ status, ...(items ? { items } : {}), ...(manualPaymentType ? { manualPaymentType } : {}) }),
       }).then(async r => {
-        if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+        if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
         return r.json()
       }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success("Commande mise à jour") },
-    onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success(t("view.toasts.orderUpdated")) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   function openPayModal(c: Commande) {
@@ -209,7 +224,7 @@ function BoutiquePageInner() {
   const produitColumns: Column<Produit>[] = [
     {
       key:    "produit",
-      header: "Produit",
+      header: t("view.produitColumns.produit"),
       cell: (p) => (
         <div className="flex items-center gap-3">
           {p.imageUrl
@@ -220,14 +235,14 @@ function BoutiquePageInner() {
           }
           <div>
             <p className="font-medium">{p.name}</p>
-            <p className="text-xs text-muted-foreground">{p.variantes.length} variante{p.variantes.length !== 1 ? "s" : ""}</p>
+            <p className="text-xs text-muted-foreground">{t("view.variantsCount", { count: p.variantes.length })}</p>
           </div>
         </div>
       ),
     },
     {
       key:    "status",
-      header: "Statut",
+      header: t("view.produitColumns.status"),
       cell: (p) => (
         <Badge variant={STATUS_PRODUIT_VARIANT[p.status]}>
           {STATUS_PRODUIT_LABEL[p.status]}
@@ -236,7 +251,7 @@ function BoutiquePageInner() {
     },
     {
       key:    "stock",
-      header: "Stock",
+      header: t("view.produitColumns.stock"),
       cell: (p) => {
         const total = p.variantes.reduce((s, v) => s + v.stock, 0)
         return <span className={cn("text-sm tabular-nums", total === 0 ? "text-destructive" : "")}>{total}</span>
@@ -244,7 +259,7 @@ function BoutiquePageInner() {
     },
     {
       key:    "prix",
-      header: "Prix",
+      header: t("view.produitColumns.prix"),
       cell: (p) => {
         const prices = p.variantes.map(v => v.price)
         const min    = Math.min(...prices)
@@ -259,7 +274,7 @@ function BoutiquePageInner() {
     },
     {
       key:    "ventes",
-      header: "Ventes",
+      header: t("view.produitColumns.ventes"),
       className: "text-right",
       cell: (p) => <span className="text-sm tabular-nums">{p._count.commandeItems}</span>,
     },
@@ -270,9 +285,9 @@ function BoutiquePageInner() {
       cell: (p) => (
         <RowActions
           actions={[
-            { label: "Modifier",   icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
+            { label: t("view.actions.edit"),   icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
             {
-              label:       p._count.commandeItems > 0 ? "Supprimer (déjà commandé)" : "Supprimer",
+              label:       p._count.commandeItems > 0 ? t("view.actions.deleteAlreadyOrdered") : t("view.actions.delete"),
               icon:        <ArchiveIcon className="size-3.5" />,
               onClick:     () => setDeleteTarget(p),
               destructive: true,
@@ -288,14 +303,14 @@ function BoutiquePageInner() {
   const commandeColumns: Column<Commande>[] = [
     {
       key:    "membre",
-      header: "Membre",
+      header: t("view.commandeColumns.membre"),
       cell: (c) => c.membre
         ? <div><p className="font-medium">{c.membre.firstName} {c.membre.lastName}</p><p className="text-xs text-muted-foreground">{c.membre.email}</p></div>
-        : <span className="text-muted-foreground italic">Invité</span>,
+        : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
     },
     {
       key:    "items",
-      header: "Articles",
+      header: t("view.commandeColumns.items"),
       cell: (c) => (
         <div className="text-sm space-y-0.5">
           {c.items.slice(0, 2).map((item, i) => (
@@ -303,13 +318,13 @@ function BoutiquePageInner() {
               {item.quantity}× {item.produit.name} – {item.variante.label}
             </p>
           ))}
-          {c.items.length > 2 && <p className="text-muted-foreground">+{c.items.length - 2} autre{c.items.length - 2 > 1 ? "s" : ""}</p>}
+          {c.items.length > 2 && <p className="text-muted-foreground">{t("view.othersCount", { count: c.items.length - 2 })}</p>}
         </div>
       ),
     },
     {
       key:    "total",
-      header: "Total",
+      header: t("view.commandeColumns.total"),
       className: "w-24",
       cell: (c) => (
         <span className="font-semibold tabular-nums">
@@ -319,19 +334,19 @@ function BoutiquePageInner() {
     },
     {
       key:    "paiement",
-      header: "Paiement",
+      header: t("view.commandeColumns.paiement"),
       className: "w-24",
       cell: (c) => (
         <span className="text-xs text-muted-foreground">
           {c.paymentMethod === "STRIPE"
-            ? "Stripe"
-            : MANUAL_PAYMENT_TYPE_OPTIONS.find(o => o.value === c.manualPaymentType)?.label ?? "Manuel"}
+            ? t("paymentType.stripe")
+            : MANUAL_PAYMENT_TYPE_OPTIONS.find(o => o.value === c.manualPaymentType)?.label ?? t("paymentType.manualFallback")}
         </span>
       ),
     },
     {
       key:    "status",
-      header: "Statut",
+      header: t("view.commandeColumns.status"),
       className: "w-32",
       cell: (c) => (
         <Badge variant={STATUS_COMMANDE_VARIANT[c.status] as "secondary" | "default" | "outline" | "destructive"}>
@@ -341,7 +356,7 @@ function BoutiquePageInner() {
     },
     {
       key:    "date",
-      header: "Date",
+      header: t("view.commandeColumns.date"),
       className: "w-28",
       cell: (c) => format(new Date(c.createdAt), "dd/MM/yyyy", { locale: fr }),
     },
@@ -352,16 +367,16 @@ function BoutiquePageInner() {
       cell: (c) => c.status === "PENDING" ? (
         <RowActions
           actions={[
-            { label: "Marquer payée", icon: <EyeIcon className="size-3.5" />,    onClick: () => openPayModal(c) },
-            { label: "Annuler",       icon: <ArchiveIcon className="size-3.5" />, onClick: () => setCancelTarget(c), destructive: true, separator: true },
+            { label: t("view.actions.markPaid"), icon: <EyeIcon className="size-3.5" />,    onClick: () => openPayModal(c) },
+            { label: t("view.actions.cancelOrder"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => setCancelTarget(c), destructive: true, separator: true },
           ]}
         />
       ) : c.status === "PAID" ? (
         <RowActions
           actions={[
-            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
+            { label: t("view.actions.downloadReceipt"), icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
             ...(c.paymentMethod === "MANUAL" ? [
-              { label: "Modifier le moyen de paiement", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
+              { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
           ]}
         />
@@ -374,12 +389,12 @@ function BoutiquePageInner() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Boutique"
-        description="Gérez vos produits et commandes."
+        title={t("view.title")}
+        description={t("view.description")}
         action={tab === "produits" ? (
           <Button onClick={() => router.push("/dashboard/boutique/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
-            Nouveau produit
+            {t("view.newProduct")}
           </Button>
         ) : undefined}
       />
@@ -387,22 +402,22 @@ function BoutiquePageInner() {
       {/* Tabs */}
       <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5">
         {([
-          { key: "produits",  label: "Produits",   icon: PackageIcon     },
-          { key: "commandes", label: "Commandes",  icon: ShoppingCartIcon },
-        ] as const).map(t => (
+          { key: "produits",  label: t("view.tabs.produits"),  icon: PackageIcon     },
+          { key: "commandes", label: t("view.tabs.commandes"), icon: ShoppingCartIcon },
+        ] as const).map(tabOption => (
           <button
-            key={t.key}
+            key={tabOption.key}
             type="button"
-            onClick={() => setTab(t.key)}
+            onClick={() => setTab(tabOption.key)}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-all",
-              tab === t.key
+              tab === tabOption.key
                 ? "bg-background shadow-sm text-foreground"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
-            <t.icon className="size-3.5" />
-            {t.label}
+            <tabOption.icon className="size-3.5" />
+            {tabOption.label}
           </button>
         ))}
       </div>
@@ -413,7 +428,7 @@ function BoutiquePageInner() {
           data={produits}
           loading={loadingProduits}
           keyExtractor={(p) => p.id}
-          empty="Aucun produit"
+          empty={t("view.noProduct")}
         />
       )}
 
@@ -432,7 +447,7 @@ function BoutiquePageInner() {
                     : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
                 )}
               >
-                {s === "ALL" ? "Toutes" : STATUS_COMMANDE_LABEL[s]}
+                {s === "ALL" ? t("view.statusFilterAll") : STATUS_COMMANDE_LABEL[s]}
               </button>
             ))}
           </div>
@@ -441,7 +456,7 @@ function BoutiquePageInner() {
             data={commandes}
             loading={loadingCommandes}
             keyExtractor={(c) => c.id}
-            empty="Aucune commande"
+            empty={t("view.noOrder")}
           />
         </>
       )}
@@ -457,18 +472,18 @@ function BoutiquePageInner() {
           <Modal
             open={!!payTarget}
             onOpenChange={o => { if (!o) setPayTarget(null) }}
-            title="Encaisser la commande"
+            title={t("payModal.title")}
             size="sm"
             footer={
               <>
-                <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
+                <Button variant="outline" onClick={() => setPayTarget(null)}>{tCommon("cancel")}</Button>
                 <Button
                   loading={updateCommandeStatus.isPending}
                   disabled={adjustedTotal === 0 || !manualPaymentType}
                   onClick={handleEncaisser}
                 >
                   <MoneyIcon className="mr-1.5 size-4" />
-                  Encaisser {fmt(adjustedTotal)}
+                  {t("payModal.confirmWithAmount", { amount: fmt(adjustedTotal) })}
                 </Button>
               </>
             }
@@ -477,14 +492,14 @@ function BoutiquePageInner() {
               <div className="space-y-4 py-1">
                 {payTarget.membre && (
                   <p className="text-sm text-muted-foreground">
-                    Commande de{" "}
+                    {t("payModal.orderOf")}{" "}
                     <span className="font-medium text-foreground">
                       {payTarget.membre.firstName} {payTarget.membre.lastName}
                     </span>
                   </p>
                 )}
                 <SelectField
-                  label="Moyen de paiement"
+                  label={t("paymentMethodLabel")}
                   required
                   options={MANUAL_PAYMENT_TYPE_OPTIONS}
                   value={manualPaymentType}
@@ -529,13 +544,13 @@ function BoutiquePageInner() {
                   <div className="border-t pt-3 space-y-1.5">
                     {hasAdjustment && (
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Total commandé</span>
+                        <span>{t("payModal.orderedTotal")}</span>
                         <span className="line-through">{fmt(originalTotal)}</span>
                       </div>
                     )}
                     {hasZeroItems && (
                       <p className="text-xs text-muted-foreground">
-                        Le stock des articles non retiré{editItems.filter(i => i.qty === 0).length > 1 ? "s" : ""} sera restauré.
+                        {t("payModal.restockNoticePlural", { count: editItems.filter(i => i.qty === 0).length })}
                       </p>
                     )}
                   </div>
@@ -549,13 +564,13 @@ function BoutiquePageInner() {
       <ConfirmDialog
         open={!!cancelTarget}
         onOpenChange={o => { if (!o) setCancelTarget(null) }}
-        title="Annuler la commande ?"
+        title={t("view.cancelOrderTitle")}
         description={
           cancelTarget?.membre
-            ? `Annuler la commande de ${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName} ? Le stock des articles sera restauré. Cette action est irréversible.`
-            : "Annuler cette commande ? Le stock des articles sera restauré. Cette action est irréversible."
+            ? t("view.cancelOrderDescriptionWithName", { name: `${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName}` })
+            : t("view.cancelOrderDescription")
         }
-        confirmLabel="Annuler la commande"
+        confirmLabel={t("view.cancelOrderConfirm")}
         loading={updateCommandeStatus.isPending}
         onConfirm={() => {
           if (cancelTarget) updateCommandeStatus.mutate({ id: cancelTarget.id, status: "CANCELLED" })
@@ -566,9 +581,9 @@ function BoutiquePageInner() {
       <ConfirmDialog
         open={!!stripePayTarget}
         onOpenChange={o => { if (!o) setStripePayTarget(null) }}
-        title="Marquer comme payée ?"
-        description={`Cette commande Stripe (${stripePayTarget ? (stripePayTarget.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : ""}) sera marquée comme payée manuellement. À utiliser uniquement si le paiement Stripe a bien été reçu mais le webhook n'a pas déclenché.`}
-        confirmLabel="Confirmer le paiement"
+        title={t("stripeConfirm.title")}
+        description={t("stripeConfirm.descriptionWithHint", { amount: stripePayTarget ? (stripePayTarget.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : "" })}
+        confirmLabel={t("stripeConfirm.confirmLabel")}
         loading={updateCommandeStatus.isPending}
         onConfirm={() => {
           if (stripePayTarget) updateCommandeStatus.mutate({ id: stripePayTarget.id, status: "PAID" })
@@ -579,9 +594,9 @@ function BoutiquePageInner() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => { if (!o) setDeleteTarget(null) }}
-        title="Supprimer le produit"
-        description={`Supprimer "${deleteTarget?.name}" ? Cette action est irréversible.`}
-        confirmLabel="Supprimer"
+        title={t("view.deleteProduitTitle")}
+        description={t("view.deleteProduitDescription", { name: deleteTarget?.name ?? "" })}
+        confirmLabel={tCommon("delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => {
           if (deleteTarget) deleteMutation.mutate(deleteTarget.id)
@@ -593,31 +608,31 @@ function BoutiquePageInner() {
       <Modal
         open={!!correctTarget}
         onOpenChange={o => { if (!o) setCorrectTarget(null) }}
-        title="Modifier le moyen de paiement"
+        title={t("correctPaymentModal.title")}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setCorrectTarget(null)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setCorrectTarget(null)}>{tCommon("cancel")}</Button>
             <Button
               loading={updateCommandeStatus.isPending}
               disabled={!correctedType || correctedType === correctTarget?.manualPaymentType}
               onClick={handleCorrectPaymentType}
             >
-              Enregistrer
+              {tCommon("save")}
             </Button>
           </>
         }
       >
         <div className="py-1">
           <SelectField
-            label="Moyen de paiement"
+            label={t("paymentMethodLabel")}
             required
             options={MANUAL_PAYMENT_TYPE_OPTIONS}
             value={correctedType}
             onValueChange={setCorrectedType}
           />
           <p className="text-xs text-muted-foreground mt-2">
-            Cela ne modifie pas le montant déjà comptabilisé dans Finances — corrigez-le là-bas si besoin.
+            {t("correctPaymentModal.hint")}
           </p>
         </div>
       </Modal>

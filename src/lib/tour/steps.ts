@@ -3,6 +3,7 @@
 // the DOM (feature disabled or hidden by role/module) are skipped at runtime,
 // so the same list works for every role and module configuration.
 
+import type { useTranslations } from "next-intl"
 import { APP_NAME } from "@/config/brand"
 
 export interface TourStepDef {
@@ -15,170 +16,152 @@ export interface TourStepDef {
 }
 
 /** Main dashboard walkthrough — explains each feature and how to get started. */
-export const dashboardTour: TourStepDef[] = [
-  {
-    selector: "",
-    title: `Bienvenue sur ${APP_NAME} 👋`,
-    description:
-      "Faisons un tour rapide de votre espace de gestion. Vous découvrirez à quoi sert chaque section et comment démarrer. Vous pourrez relancer cette visite à tout moment avec le bouton d'aide en haut à droite.",
-  },
-  {
-    selector: '[data-tour="nav-dashboard"]',
-    title: "Tableau de bord",
-    description:
-      "Votre point de départ : chiffres clés, prochains événements et activité récente de l'association en un coup d'œil.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-membres"]',
-    title: "Membres",
-    description:
-      "Le cœur de votre association. Ajoutez un membre avec le bouton « Ajouter » en haut de la page, importez une liste, filtrez par statut ou type, et envoyez des SMS en nombre.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-evenements"]',
-    title: "Événements",
-    description:
-      "Créez un événement (assemblée, sortie, atelier…) avec « Nouvel événement ». Gérez les inscriptions (RSVP), le lieu sur la carte, et vendez des billets payants via Stripe.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-cotisations"]',
-    title: "Cotisations",
-    description:
-      "Suivez les cotisations annuelles de chaque membre : qui a payé, qui reste à relancer. Définissez le montant et exportez le suivi quand vous le souhaitez.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-tresorerie"]',
-    title: "Trésorerie",
-    description:
-      "Enregistrez recettes et dépenses par catégorie pour suivre le solde de l'association. Ajoutez une opération avec le bouton dédié en haut de la page.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-dons"]',
-    title: "Dons",
-    description:
-      "Collectez et suivez les dons faits à votre association, avec le détail par donateur.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-reunions"]',
-    title: "Réunions",
-    description:
-      `Organisez des réunions en visioconférence directement dans ${APP_NAME}. Créez une réunion et partagez le lien avec les participants.`,
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-sondages"]',
-    title: "Sondages",
-    description:
-      "Consultez vos membres : créez un sondage, ajoutez vos questions et suivez les réponses en temps réel.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-boutique"]',
-    title: "Boutique",
-    description:
-      "Vendez des produits ou goodies à vos membres. Ajoutez un article, fixez son prix et gérez les commandes.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-actualites"]',
-    title: "Actualités",
-    description:
-      "Publiez des articles avec texte enrichi et images. Choisissez les destinataires : une notification en temps réel les prévient automatiquement.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-messages"]',
-    title: "Messages",
-    description:
-      "Échangez avec vos membres depuis un espace de messagerie centralisé.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-materiel"]',
-    title: "Matériel",
-    description:
-      "Inventoriez le matériel de l'association et suivez les prêts et emprunts.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-site"]',
-    title: "Site web",
-    description:
-      "Personnalisez la page publique de votre association : bannière, événements, actualités, formulaire d'adhésion et contact. Chaque section est modulable.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-activite"]',
-    title: "Historique",
-    description:
-      "Retrouvez le journal des actions réalisées dans l'espace de gestion pour garder une trace de ce qui a changé.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="nav-parametres"]',
-    title: "Paramètres",
-    description:
-      "Configurez votre association et activez ou désactivez chaque module. Un module désactivé disparaît du menu, mais vos données sont conservées.",
-    side: "right",
-    align: "start",
-  },
-  {
-    selector: '[data-tour="view-switcher"]',
-    title: "Basculer d'espace",
-    description:
-      "Passez de l'espace de gestion à « Mon espace », la vue membre du portail, pour voir ce que vos adhérents voient.",
-    side: "bottom",
-    align: "end",
-  },
-  {
-    selector: '[data-tour="notifications"]',
-    title: "Notifications",
-    description:
-      "Vos alertes en temps réel apparaissent ici : nouvelles inscriptions, réponses, paiements…",
-    side: "bottom",
-    align: "end",
-  },
-  {
-    selector: '[data-tour="theme-toggle"]',
-    title: "Thème clair / sombre",
-    description: "Basculez entre le mode clair et le mode sombre selon votre préférence.",
-    side: "bottom",
-    align: "end",
-  },
-  {
-    selector: '[data-tour="user-menu"]',
-    title: "Votre profil",
-    description:
-      "Modifiez votre profil, changez votre mot de passe et déconnectez-vous depuis ce menu.",
-    side: "bottom",
-    align: "end",
-  },
-  {
-    selector: '[data-tour="help"]',
-    title: "Besoin d'aide ?",
-    description:
-      "C'est fini ! Un oubli ou une question plus tard ? Cliquez sur ce bouton pour relancer la visite quand vous voulez.",
-    side: "bottom",
-    align: "end",
-  },
-]
+export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourStepDef[] {
+  return [
+    {
+      selector: "",
+      title: t("welcome.title", { appName: APP_NAME }),
+      description: t("welcome.description"),
+    },
+    {
+      selector: '[data-tour="nav-dashboard"]',
+      title: t("dashboard.title"),
+      description: t("dashboard.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-membres"]',
+      title: t("membres.title"),
+      description: t("membres.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-evenements"]',
+      title: t("evenements.title"),
+      description: t("evenements.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-cotisations"]',
+      title: t("cotisations.title"),
+      description: t("cotisations.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-tresorerie"]',
+      title: t("tresorerie.title"),
+      description: t("tresorerie.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-dons"]',
+      title: t("dons.title"),
+      description: t("dons.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-reunions"]',
+      title: t("reunions.title"),
+      description: t("reunions.description", { appName: APP_NAME }),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-sondages"]',
+      title: t("sondages.title"),
+      description: t("sondages.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-boutique"]',
+      title: t("boutique.title"),
+      description: t("boutique.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-actualites"]',
+      title: t("actualites.title"),
+      description: t("actualites.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-messages"]',
+      title: t("messages.title"),
+      description: t("messages.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-materiel"]',
+      title: t("materiel.title"),
+      description: t("materiel.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-site"]',
+      title: t("site.title"),
+      description: t("site.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-activite"]',
+      title: t("activite.title"),
+      description: t("activite.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-parametres"]',
+      title: t("parametres.title"),
+      description: t("parametres.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="view-switcher"]',
+      title: t("viewSwitcher.title"),
+      description: t("viewSwitcher.description"),
+      side: "bottom",
+      align: "end",
+    },
+    {
+      selector: '[data-tour="notifications"]',
+      title: t("notifications.title"),
+      description: t("notifications.description"),
+      side: "bottom",
+      align: "end",
+    },
+    {
+      selector: '[data-tour="theme-toggle"]',
+      title: t("themeToggle.title"),
+      description: t("themeToggle.description"),
+      side: "bottom",
+      align: "end",
+    },
+    {
+      selector: '[data-tour="user-menu"]',
+      title: t("userMenu.title"),
+      description: t("userMenu.description"),
+      side: "bottom",
+      align: "end",
+    },
+    {
+      selector: '[data-tour="help"]',
+      title: t("help.title"),
+      description: t("help.description"),
+      side: "bottom",
+      align: "end",
+    },
+  ]
+}

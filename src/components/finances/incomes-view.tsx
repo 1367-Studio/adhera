@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -38,13 +39,18 @@ const PAGE_SIZE   = 25
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
-const statusConfig = {
-  PENDING:   { label: "En attente", variant: "secondary" as const, icon: ClockIcon },
-  PAID:      { label: "Payé",       variant: "default" as const,   icon: CheckCircleIcon },
-  CANCELLED: { label: "Annulé",     variant: "destructive" as const, icon: XIcon },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusConfig(t: Translator) {
+  return {
+    PENDING:   { label: t("finances.incomeForm.status.pending"),   variant: "secondary" as const, icon: ClockIcon },
+    PAID:      { label: t("finances.incomeForm.status.paid"),      variant: "default" as const,   icon: CheckCircleIcon },
+    CANCELLED: { label: t("finances.incomeForm.status.cancelled"), variant: "destructive" as const, icon: XIcon },
+  }
 }
 
 export function IncomesView() {
+  const t = useTranslations()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -77,20 +83,20 @@ export function IncomesView() {
   async function handleCreate(data: IncomeInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Recette enregistrée")
+      toast.success(t("finances.incomesView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: IncomeInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Recette mise à jour")
+      toast.success(t("finances.incomesView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -98,35 +104,36 @@ export function IncomesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Recette supprimée")
+      toast.success(t("finances.incomesView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const fmt = (n: string | number) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusConfig = getStatusConfig(t)
 
   const columns: Column<Income>[] = [
     {
       key: "date",
-      header: "Date",
+      header: t("finances.incomesView.columns.date"),
       className: "w-28",
       cell: (i) => format(new Date(i.date), "dd/MM/yyyy", { locale: fr }),
     },
     {
       key: "description",
-      header: "Description",
+      header: t("finances.incomesView.columns.description"),
       cell: (i) => (
         <div>
           <p className="font-medium">{i.description || (i.membre ? `${i.membre.firstName} ${i.membre.lastName}` : "—")}</p>
           <div className="flex items-center gap-2 mt-0.5">
             {i.category && <span className="text-xs text-muted-foreground">{i.category.name}</span>}
             {i.paymentMethod && <span className="text-xs text-muted-foreground">· {i.paymentMethod}</span>}
-            {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
+            {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· {t("finances.incomesView.reconciled")}</span>}
             {i.facturePaymentId && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title="Générée automatiquement depuis le paiement d'une facture — modifiable uniquement depuis Factures">
-                <ReceiptIcon className="size-3" /> Depuis une facture
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
+                <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
               </span>
             )}
           </div>
@@ -135,13 +142,13 @@ export function IncomesView() {
     },
     {
       key: "amount",
-      header: "Montant",
+      header: t("finances.incomesView.columns.amount"),
       className: "w-28 text-right",
       cell: (i) => <span className="font-semibold tabular-nums text-green-600 dark:text-green-400">+{fmt(i.amount)}</span>,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("finances.incomesView.columns.status"),
       className: "w-28",
       cell: (i) => {
         const cfg = statusConfig[i.status]
@@ -154,11 +161,11 @@ export function IncomesView() {
       className: "w-10",
       cell: (i) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
+          { label: t("finances.incomesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
           {
-            label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            label: t("finances.incomesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
             onClick: () => i.facturePaymentId
-              ? toast.error("Cette recette vient d'une facture — supprimez plutôt le paiement depuis Factures.")
+              ? toast.error(t("finances.incomesView.deleteFromInvoiceError"))
               : setDeleteTarget(i),
           },
         ]} />
@@ -169,12 +176,12 @@ export function IncomesView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Recettes"
-        description="Toutes les entrées d'argent de l'association."
+        title={t("finances.incomesView.title")}
+        description={t("finances.incomesView.description")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
@@ -184,7 +191,7 @@ export function IncomesView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher…"
+            placeholder={t("finances.incomesView.searchPlaceholder")}
             value={searchInput}
             onChange={e => {
               setSearchInput(e.target.value)
@@ -204,7 +211,7 @@ export function IncomesView() {
           value={yearFilter}
           onValueChange={v => { setYearFilter(v); setPage(1) }}
           options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
-          placeholder="Toutes années"
+          placeholder={t("finances.incomesView.allYears")}
           width="w-32"
         />
 
@@ -212,11 +219,11 @@ export function IncomesView() {
           value={statusFilter}
           onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "PENDING",   label: "En attente" },
-            { value: "PAID",      label: "Payé" },
-            { value: "CANCELLED", label: "Annulé" },
+            { value: "PENDING",   label: t("finances.incomeForm.status.pending")   },
+            { value: "PAID",      label: t("finances.incomeForm.status.paid")      },
+            { value: "CANCELLED", label: t("finances.incomeForm.status.cancelled") },
           ]}
-          placeholder="Tous statuts"
+          placeholder={t("finances.incomesView.allStatuses")}
         />
       </div>
 
@@ -225,15 +232,15 @@ export function IncomesView() {
         data={incomes}
         loading={isLoading}
         keyExtractor={(i) => i.id}
-        empty="Aucune recette enregistrée"
+        empty={t("finances.incomesView.noIncome")}
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle recette" size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.incomesView.newTitle")} size="md" dismissable={false}>
         <IncomeForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier la recette" size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.incomesView.editTitle")} size="md" dismissable={false}>
         <IncomeForm
           defaultValues={editTarget ? {
             amount:        parseFloat(editTarget.amount),
@@ -254,9 +261,9 @@ export function IncomesView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer cette recette ?"
-        description={deleteTarget?.description ?? `Recette de ${deleteTarget ? fmt(deleteTarget.amount) : ""}`}
-        confirmLabel="Supprimer"
+        title={t("finances.incomesView.deleteConfirmTitle")}
+        description={deleteTarget?.description ?? t("finances.incomesView.deleteConfirmFallback", { amount: deleteTarget ? fmt(deleteTarget.amount) : "" })}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

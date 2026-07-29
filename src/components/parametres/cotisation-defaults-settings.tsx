@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
@@ -16,6 +17,8 @@ interface CotisationDefaultsSettingsProps {
 // purchasePrice: CurrencyField has no empty state, so 0 is shown for null, and 0 is sent
 // back as null on save (a 0€ default wouldn't survive online payment anyway).
 export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount }: CotisationDefaultsSettingsProps) {
+  const t = useTranslations("parametres.cotisationDefaultsSettings")
+  const tCommon = useTranslations("common")
   const qc = useQueryClient()
 
   const [amount, setAmount] = useState(cotisationDefaultAmount != null ? Number(cotisationDefaultAmount) : 0)
@@ -37,43 +40,40 @@ export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount }:
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ cotisationDefaultAmount: amount > 0 ? amount : null }),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<{ cotisationDefaultAmount: string | null }>
     },
     onSuccess: (saved) => {
       setAmount(saved.cotisationDefaultAmount != null ? Number(saved.cotisationDefaultAmount) : 0)
       qc.invalidateQueries({ queryKey: ["association"] })
-      toast.success("Montant par défaut mis à jour")
+      toast.success(t("toasts.updated"))
       setDirty(false)
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-sm font-semibold">Cotisation</h3>
+        <h3 className="text-sm font-semibold">{t("title")}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Quand un montant est renseigné, une cotisation en attente pour l&apos;année en cours
-          est créée automatiquement à chaque nouveau membre — il peut ensuite la payer lui-même
-          depuis le portail, sans attendre qu&apos;un admin la crée. Laissez vide pour ne rien
-          créer automatiquement.
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="max-w-xs">
         <CurrencyField
-          label="Montant de cotisation par défaut"
+          label={t("defaultAmount")}
           disabled={!canEdit}
           value={amount}
           onChange={v => { setAmount(v); setDirty(true) }}
-          hint="0,00 € = aucune cotisation n'est créée automatiquement."
+          hint={t("defaultAmountHint")}
         />
       </div>
 
       {canEdit && (
         <Button size="sm" disabled={!dirty} loading={mutation.isPending} onClick={() => mutation.mutate()}>
-          Enregistrer
+          {tCommon("save")}
         </Button>
       )}
     </div>

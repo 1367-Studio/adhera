@@ -3,12 +3,15 @@
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon, CreditCardIcon, HandCoinsIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/hooks/use-cart"
 
 export default function PanierPage() {
+  const t        = useTranslations("portalMembre.boutique")
+  const tCommon  = useTranslations("common")
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
   const { items, total, updateQuantity, removeItem, clearCart } = useCart(slug)
@@ -32,7 +35,7 @@ export default function PanierPage() {
           body:    JSON.stringify(payload),
         })
         const d = await res.json()
-        if (!res.ok) throw new Error(typeof d.error === "string" ? d.error : "Erreur lors du paiement")
+        if (!res.ok) throw new Error(typeof d.error === "string" ? d.error : t("toasts.paymentError"))
         return { stripeUrl: d.url as string }
       }
 
@@ -43,7 +46,7 @@ export default function PanierPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(typeof d.error === "string" ? d.error : "Erreur lors de la commande")
+        throw new Error(typeof d.error === "string" ? d.error : t("toasts.orderError"))
       }
       return { stripeUrl: null }
     },
@@ -55,7 +58,7 @@ export default function PanierPage() {
         setOrdered(true)
       }
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   if (ordered) {
@@ -66,17 +69,17 @@ export default function PanierPage() {
             <CheckCircleIcon className="size-7 text-green-600 dark:text-green-400" />
           </div>
           <div>
-            <h2 className="text-lg font-bold">Commande enregistrée !</h2>
+            <h2 className="text-lg font-bold">{t("orderPlacedTitle")}</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Votre commande est en attente de paiement. L'administration vous contactera pour finaliser.
+              {t("orderPlacedDescription")}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <Button variant="outline" onClick={() => router.push(`/portal/${slug}/boutique/commandes`)}>
-              Mes commandes
+              {t("myOrdersButton")}
             </Button>
             <Button onClick={() => router.push(`/portal/${slug}/boutique`)}>
-              Continuer les achats
+              {t("continueShopping")}
             </Button>
           </div>
         </div>
@@ -94,13 +97,13 @@ export default function PanierPage() {
           <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
             <ShoppingCartIcon className="size-6 text-primary" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight">Mon panier</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("myCart")}</h1>
         </div>
         <div className="rounded-xl border bg-card p-12 text-center space-y-3">
           <ShoppingCartIcon className="size-8 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-sm">Votre panier est vide.</p>
+          <p className="text-muted-foreground text-sm">{t("cartEmpty")}</p>
           <Button variant="outline" onClick={() => router.push(`/portal/${slug}/boutique`)}>
-            Voir la boutique
+            {t("viewShop")}
           </Button>
         </div>
       </div>
@@ -116,7 +119,7 @@ export default function PanierPage() {
         <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ShoppingCartIcon className="size-6 text-primary" />
         </div>
-        <h1 className="text-xl font-semibold tracking-tight">Mon panier</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("myCart")}</h1>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
@@ -164,7 +167,7 @@ export default function PanierPage() {
                   </button>
                 </div>
                 {item.quantity >= item.stock && (
-                  <p className="text-[10px] text-muted-foreground">Stock max atteint</p>
+                  <p className="text-[10px] text-muted-foreground">{t("maxStockReached")}</p>
                 )}
               </div>
             </div>
@@ -173,7 +176,7 @@ export default function PanierPage() {
 
         {/* Summary */}
         <div className="rounded-xl border bg-card p-5 space-y-4 h-fit">
-          <h2 className="font-semibold">Récapitulatif</h2>
+          <h2 className="font-semibold">{t("summary")}</h2>
 
           <div className="space-y-2 text-sm">
             {items.map(item => (
@@ -185,16 +188,16 @@ export default function PanierPage() {
           </div>
 
           <div className="border-t pt-3 flex justify-between font-semibold">
-            <span>Total</span>
+            <span>{t("total")}</span>
             <span className="tabular-nums text-primary">{fmt(total)}</span>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Mode de paiement</label>
+            <label className="text-xs font-medium text-muted-foreground">{t("paymentMethod")}</label>
             <div className="grid grid-cols-2 gap-2">
               {([
-                { v: "MANUAL", label: "Au retrait",   icon: HandCoinsIcon  },
-                { v: "STRIPE", label: "En ligne",     icon: CreditCardIcon },
+                { v: "MANUAL", label: t("paymentManual"),   icon: HandCoinsIcon  },
+                { v: "STRIPE", label: t("paymentStripe"),     icon: CreditCardIcon },
               ] as const).map(opt => (
                 <button
                   key={opt.v}
@@ -212,20 +215,20 @@ export default function PanierPage() {
               ))}
             </div>
             {paymentMethod === "MANUAL" && (
-              <p className="text-xs text-muted-foreground">Le paiement s'effectue au retrait. L'administration vous contactera.</p>
+              <p className="text-xs text-muted-foreground">{t("paymentManualHint")}</p>
             )}
             {paymentMethod === "STRIPE" && (
-              <p className="text-xs text-muted-foreground">Vous recevrez un lien de paiement sécurisé après confirmation de la commande.</p>
+              <p className="text-xs text-muted-foreground">{t("paymentStripeHint")}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Note <span className="font-normal">(optionnel)</span></label>
+            <label className="text-xs font-medium text-muted-foreground">{t("note")} <span className="font-normal">{t("optional")}</span></label>
             <textarea
               rows={2}
               value={note}
               onChange={e => setNote(e.target.value)}
-              placeholder="Ex. À récupérer le samedi…"
+              placeholder={t("notePlaceholder")}
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
             />
           </div>
@@ -236,7 +239,7 @@ export default function PanierPage() {
             loading={mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            Commander
+            {t("order")}
           </Button>
         </div>
       </div>

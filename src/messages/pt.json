@@ -1,0 +1,3366 @@
+{
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "add": "Adicionar",
+    "edit": "Editar",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "back": "Voltar",
+    "loading": "Carregando...",
+    "search": "Pesquisar",
+    "yes": "Sim",
+    "no": "Não",
+    "success": "Sucesso",
+    "error": "Erro",
+    "genericError": "Ocorreu um erro",
+    "networkError": "Erro de rede",
+    "saved": "Salvo",
+    "deleted": "Excluído",
+    "created": "Criado",
+    "updated": "Atualizado",
+    "irreversibleAction": "Esta ação não pode ser desfeita."
+  },
+  "auth": {
+    "register": {
+      "pageTitle": "Criar uma conta",
+      "heading": "Criar uma conta",
+      "subtitle": "{trialDays} dias de teste grátis · Sem compromisso · Cancelamento fácil",
+      "alreadyAccount": "Já tem uma conta?",
+      "signIn": "Entrar",
+      "steps": {
+        "info": "Sua conta",
+        "payment": "Pagamento"
+      },
+      "form": {
+        "associationNameLabel": "Nome da associação",
+        "associationNamePlaceholder": "Associação Esportiva de Paris",
+        "cityLabel": "Cidade",
+        "cityPlaceholder": "Paris",
+        "firstNameLabel": "Nome",
+        "firstNamePlaceholder": "João",
+        "lastNameLabel": "Sobrenome",
+        "lastNamePlaceholder": "Silva",
+        "emailLabel": "Endereço de e-mail",
+        "emailPlaceholder": "contato@associacao.com",
+        "passwordLabel": "Senha",
+        "passwordPlaceholder": "Mín. 8 caracteres",
+        "passwordGoogleHint": "Para esta primeira criação de conta, escolha uma senha. Depois você poderá entrar com o Google.",
+        "acceptTermsPrefix": "Eu aceito os",
+        "termsOfService": "Termos de Serviço",
+        "acceptTermsAnd": "e a",
+        "privacyPolicy": "política de privacidade",
+        "continueToPayment": "Continuar para o pagamento",
+        "perkTrialDays": "{days} dias grátis",
+        "perkNoCommitment": "Sem compromisso",
+        "perkEasyCancel": "Cancelamento fácil",
+        "genericError": "Erro"
+      },
+      "payment": {
+        "trialBadge": "Teste grátis",
+        "freeToday": "0 € hoje",
+        "trialOffered": "{days} dias oferecidos",
+        "afterTrial": "Após o período de teste",
+        "perMonth": "{price}/mês",
+        "billedOnce": "Cobrado uma vez · {total}/ano",
+        "discount": "−{pct} %",
+        "paymentError": "Erro de pagamento",
+        "createAccountError": "Erro ao criar a conta",
+        "genericError": "Erro",
+        "startTrial": "Iniciar meu teste grátis",
+        "securePayment": "Pagamento seguro pela Stripe · Cancele antes de {days} dias para não pagar nada"
+      },
+      "done": {
+        "title": "Conta criada com sucesso!",
+        "withGoogle": "Entre com o Google para acessar seu painel.",
+        "withPassword": "Entre com o e-mail e a senha que você acabou de definir.",
+        "continueWithGoogle": "Continuar com o Google",
+        "googleSignInFailed": "O login com o Google falhou. Tente novamente ou entre com sua senha.",
+        "orSignInWithPassword": "Ou entre com seu e-mail e senha",
+        "signIn": "Entrar"
+      }
+    }
+  },
+  "portal": {
+    "login": {
+      "pageTitle": "Entrar — Área do membro",
+      "title": "Área do membro",
+      "subtitle": "Entre para acessar sua área.",
+      "suspendedNotice": "A assinatura desta associação está suspensa. Contate o administrador para regularizar a situação.",
+      "emailLabel": "Endereço de email",
+      "emailPlaceholder": "contato@associacao.org",
+      "passwordLabel": "Senha",
+      "signIn": "Entrar",
+      "forgotPassword": "Esqueceu a senha?",
+      "or": "ou",
+      "continueWithGoogle": "Continuar com o Google",
+      "noAccount": "Ainda não tem conta? Cadastre-se"
+    },
+    "register": {
+      "pageTitle": "Criar conta — Área do membro",
+      "title": "Criar conta",
+      "subtitle": "Junte-se à área de membros da sua associação.",
+      "alreadyAccount": "Já tem uma conta? Entrar",
+      "viaGoogleNotice": "Você está continuando com o Google. Confirme seus dados para concluir a criação da conta.",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "emailLabel": "Endereço de email",
+      "typeLabel": "Tipo de membro",
+      "typePlaceholder": "Escolha um tipo…",
+      "acceptTerms": "Concordo que meus dados sejam tratados de acordo com a",
+      "privacyPolicy": "política de privacidade",
+      "submit": "Criar minha conta",
+      "toasts": {
+        "createError": "Erro ao criar a conta",
+        "accountCreated": "Conta criada!",
+        "accountCreatedCheckEmail": "Conta criada! Verifique seu email para receber seus dados de acesso."
+      }
+    },
+    "checkin": {
+      "label": "Check-in",
+      "confirmPresence": "Confirmar minha presença",
+      "peopleCheckedIn": "{count, plural, one {# pessoa já registrada} other {# pessoas já registradas}}",
+      "successTitle": "Presença registrada!",
+      "successDescription": "Sua presença em {title} foi confirmada.",
+      "alreadyTitle": "Já registrado",
+      "alreadyDescription": "Sua presença em {title} já foi confirmada.",
+      "expiredTitle": "QR Code expirado",
+      "expiredDescription": "Este QR Code não é mais válido. Contate o organizador.",
+      "invalidTitle": "QR Code inválido",
+      "invalidDescription": "Este link não corresponde a nenhum evento.",
+      "errorTitle": "Erro",
+      "genericError": "Ocorreu um erro.",
+      "retry": "Tentar novamente"
+    },
+    "sidebar": {
+      "actualites": "Notícias",
+      "evenements": "Eventos",
+      "materiel": "Material",
+      "cotisation": "Minha mensalidade",
+      "dons": "Minhas doações",
+      "sondages": "Enquetes",
+      "boutique": "Loja",
+      "reunions": "Reuniões",
+      "communications": "Minhas comunicações",
+      "profil": "Meu perfil",
+      "mySpace": "Meu espaço"
+    },
+    "rsvp": {
+      "confirme": "Estarei lá!",
+      "provavel": "Se possível",
+      "incerto": "Talvez",
+      "absent": "Não vou"
+    }
+  },
+  "documents": {
+    "fournisseur": "Fornecedor",
+    "fournisseurModuleDisabled": "Módulo de Fornecedores desativado",
+    "issueDate": "Data de emissão",
+    "items": "Itens",
+    "itemDescription": "Descrição",
+    "quantity": "Qtd.",
+    "unitPrice": "Preço unitário",
+    "vatRate": "IVA %",
+    "discount": "Desconto",
+    "addItem": "Adicionar item",
+    "subtotal": "Subtotal",
+    "vat": "IVA",
+    "totalDiscount": "Desconto total",
+    "total": "Total",
+    "paymentTerms": "Condições de pagamento",
+    "paymentTermsPlaceholder": "ex: Pagamento em 30 dias",
+    "notes": "Observações",
+    "sendByEmailTitle": "Enviar {label} por email",
+    "recipient": "Destinatário",
+    "messageOptional": "Mensagem (opcional)",
+    "messagePlaceholder": "Uma mensagem para acompanhar o envio…",
+    "send": "Enviar",
+    "previewLoadError": "Não foi possível carregar a pré-visualização.",
+    "retry": "Tentar novamente",
+    "loading": "Carregando…",
+    "download": "Baixar",
+    "historyTitle": "Histórico",
+    "historyTitleWithNumber": "Histórico — {number}",
+    "activityLog": {
+      "devisCreated": "Orçamento criado",
+      "devisUpdated": "Orçamento modificado",
+      "devisSent": "Orçamento enviado",
+      "devisAccepted": "Orçamento aceito",
+      "devisRefused": "Orçamento recusado",
+      "devisExpired": "Orçamento expirado",
+      "devisDuplicated": "Orçamento duplicado",
+      "devisConverted": "Orçamento convertido em fatura",
+      "devisDeleted": "Orçamento excluído",
+      "devisEmailSent": "Orçamento enviado por email",
+      "factureCreated": "Fatura criada",
+      "factureCreatedFromDevis": "Fatura criada a partir de um orçamento",
+      "factureUpdated": "Fatura modificada",
+      "factureDuplicated": "Fatura duplicada",
+      "factureDeleted": "Fatura excluída",
+      "facturePaymentAdded": "Pagamento registrado",
+      "facturePaymentRemoved": "Pagamento removido",
+      "factureEmailSent": "Fatura enviada por email",
+      "fournisseurCreated": "Fornecedor criado",
+      "fournisseurUpdated": "Fornecedor modificado",
+      "fournisseurDeleted": "Fornecedor arquivado",
+      "factureRecueCreated": "Documento adicionado",
+      "factureRecueUpdated": "Documento modificado",
+      "factureRecueDeleted": "Documento excluído",
+      "noHistory": "Nenhum histórico",
+      "statusChange": "Status: {old} → {new}",
+      "system": "Sistema",
+      "shownOfTotal": "{shown} de {total}",
+      "loadMore": "Ver mais"
+    }
+  },
+  "documentUpload": {
+    "fileTooLarge": "Arquivo muito grande (máx. 10 MB)",
+    "uploadError": "Erro ao enviar o arquivo",
+    "networkError": "Erro de rede ao enviar — tente novamente",
+    "pdfDocument": "Documento PDF",
+    "imageReceipt": "Comprovante em imagem",
+    "viewDocument": "Ver documento",
+    "remove": "Remover",
+    "uploading": "Enviando…",
+    "attach": "Anexar imagem ou PDF (máx. 10 MB)"
+  },
+  "factures": {
+    "form": {
+      "status": {
+        "brouillon": "Rascunho",
+        "enAttente": "Pendente",
+        "partiellementPayee": "Parcialmente paga",
+        "payee": "Paga",
+        "annulee": "Cancelada"
+      },
+      "dueDate": "Data de vencimento",
+      "statusLockedNotice": "Determinado pelos pagamentos registrados — você ainda pode cancelar a fatura."
+    },
+    "view": {
+      "title": "Faturas",
+      "newFacture": "Nova fatura",
+      "count": "{count, plural, one {# resultado} other {# resultados}}",
+      "countTotal": "{count, plural, one {# fatura} other {# faturas}}",
+      "columns": {
+        "number": "N°",
+        "dueDate": "Vencimento",
+        "amount": "Valor",
+        "paymentMethod": "Método de pagamento",
+        "status": "Status"
+      },
+      "fromDevis": "De {number}",
+      "remaining": "Restam {amount}",
+      "status": {
+        "enRetard": "Atrasada"
+      },
+      "actions": {
+        "recordPayment": "Registrar pagamento",
+        "paymentHistory": "Histórico de pagamentos",
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "preview": "Pré-visualizar",
+        "downloadPdf": "Baixar PDF",
+        "sendEmail": "Enviar por email",
+        "history": "Histórico",
+        "delete": "Excluir"
+      },
+      "searchPlaceholder": "Pesquisar uma fatura…",
+      "allStatuses": "Todos os status",
+      "supplierFilter": "Fornecedor: {name}",
+      "supplierFilterFallback": "filtrado",
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noFacture": "Nenhuma fatura registrada",
+      "loadingDetail": "Carregando…",
+      "editTitle": "Editar fatura",
+      "documentLabel": "a fatura {number}",
+      "documentTitle": "Fatura {number}",
+      "deleteConfirmTitle": "Excluir a fatura {number}?",
+      "deleteConfirmFromDevis": "Esta fatura vem do orçamento {number} — o orçamento ficará disponível novamente para conversão após esta exclusão.",
+      "deleteConfirmIrreversible": "Esta ação não pode ser desfeita.",
+      "toasts": {
+        "created": "Fatura criada com sucesso",
+        "updated": "Fatura atualizada",
+        "duplicated": "Fatura {number} criada",
+        "sent": "Fatura enviada por email",
+        "deleted": "Fatura excluída",
+        "confirm": "Confirmar"
+      }
+    },
+    "payment": {
+      "title": "Registrar pagamento",
+      "amount": "Valor",
+      "remainingBalance": "Saldo restante: {amount}",
+      "method": "Método",
+      "date": "Data do pagamento",
+      "note": "Observação",
+      "notePlaceholder": "Referência, observação…",
+      "historyTitle": "Histórico de pagamentos",
+      "noPayments": "Nenhum pagamento registrado",
+      "deleteConfirmTitle": "Excluir este pagamento?",
+      "deleteConfirmDescription": "O pagamento de {amount} será removido e o status da fatura recalculado.",
+      "deleteTooltip": "Excluir este pagamento",
+      "toasts": {
+        "amountMustBePositive": "O valor deve ser maior que 0",
+        "amountExceedsBalance": "O valor excede o saldo restante ({amount})",
+        "recorded": "Pagamento registrado",
+        "deleted": "Pagamento excluído"
+      }
+    }
+  },
+  "devis": {
+    "form": {
+      "status": {
+        "brouillon": "Rascunho",
+        "envoye": "Enviado",
+        "accepte": "Aceito",
+        "refuse": "Recusado",
+        "expire": "Expirado"
+      },
+      "validUntil": "Válido até"
+    },
+    "view": {
+      "title": "Orçamentos",
+      "newDevis": "Novo orçamento",
+      "count": "{count, plural, one {# resultado} other {# resultados}}",
+      "countTotal": "{count} orçamentos",
+      "columns": {
+        "number": "N°",
+        "date": "Data",
+        "amount": "Valor",
+        "status": "Status"
+      },
+      "invoiced": "Faturado",
+      "actions": {
+        "convert": "Converter em fatura",
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "preview": "Pré-visualizar",
+        "downloadPdf": "Baixar PDF",
+        "sendEmail": "Enviar por email",
+        "history": "Histórico",
+        "delete": "Excluir",
+        "deleteAlreadyInvoiced": "Excluir (já faturado)"
+      },
+      "searchPlaceholder": "Pesquisar um orçamento…",
+      "allStatuses": "Todos os status",
+      "supplierFilter": "Fornecedor: {name}",
+      "supplierFilterFallback": "filtrado",
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noDevis": "Nenhum orçamento registrado",
+      "loadingDetail": "Carregando…",
+      "editTitle": "Editar orçamento",
+      "alreadyConvertedNotice": "Este orçamento já foi convertido na fatura {number}. Os itens estão, portanto, congelados — apenas o status, as datas e as observações continuam editáveis.",
+      "documentLabel": "o orçamento {number}",
+      "documentTitle": "Orçamento {number}",
+      "deleteConfirmTitle": "Excluir o orçamento {number}?",
+      "deleteConfirmIrreversible": "Esta ação não pode ser desfeita.",
+      "toasts": {
+        "created": "Orçamento criado com sucesso",
+        "updated": "Orçamento atualizado",
+        "converted": "Fatura {number} criada",
+        "viewAction": "Ver",
+        "duplicated": "Orçamento {number} criado",
+        "sent": "Orçamento enviado por email",
+        "deleted": "Orçamento excluído",
+        "confirm": "Confirmar"
+      }
+    }
+  },
+  "fournisseurs": {
+    "form": {
+      "status": {
+        "actif": "Ativo",
+        "inactif": "Inativo"
+      },
+      "companyName": "Razão social",
+      "tradeName": "Nome fantasia",
+      "contact": "Contato",
+      "contactPlaceholder": "Nome do contato",
+      "contactRole": "Função do contato",
+      "email": "Email",
+      "emailPlaceholder": "contato@fornecedor.com",
+      "phone": "Telefone",
+      "phonePlaceholder": "+55 11 91234-5678",
+      "billingEmail": "Email de cobrança",
+      "website": "Site",
+      "address": "Endereço",
+      "addressPlaceholder": "Rua Exemplo, 123",
+      "city": "Cidade",
+      "postalCode": "CEP",
+      "country": "País",
+      "siret": "Registro",
+      "siren": "CNPJ/CPF",
+      "vatNumber": "N° de IVA",
+      "category": "Categoria",
+      "categoryPlaceholder": "ex: Gráfica, Buffet…",
+      "notes": "Observações internas"
+    },
+    "view": {
+      "title": "Fornecedores",
+      "count": "{count, plural, one {# resultado} other {# resultados}}",
+      "countTotal": "{count, plural, one {# fornecedor} other {# fornecedores}}",
+      "columns": {
+        "name": "Fornecedor",
+        "contact": "Contato",
+        "city": "Cidade",
+        "category": "Categoria",
+        "status": "Status"
+      },
+      "status": {
+        "archive": "Arquivado"
+      },
+      "actions": {
+        "view": "Ver ficha",
+        "edit": "Editar",
+        "archive": "Arquivar"
+      },
+      "searchPlaceholder": "Pesquisar um fornecedor…",
+      "allStatuses": "Todos os status",
+      "statusFilter": {
+        "actifs": "Ativos",
+        "inactifs": "Inativos"
+      },
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noFournisseur": "Nenhum fornecedor registrado",
+      "addTitle": "Adicionar fornecedor",
+      "editTitle": "Editar fornecedor",
+      "loadingDetail": "Carregando…",
+      "archiveConfirmTitle": "Arquivar {name}?",
+      "archiveConfirmWithDependencies": "Este fornecedor não aparecerá mais nas listas. Ele permanece vinculado a {devis} orçamento(s) e {factures} fatura(s) — que continuam acessíveis, mas este fornecedor não aparecerá mais nos formulários de criação (exceto nesses documentos existentes).",
+      "archiveConfirmSimple": "Este fornecedor não aparecerá mais nas listas.",
+      "toasts": {
+        "created": "Fornecedor adicionado com sucesso",
+        "updated": "Fornecedor atualizado",
+        "archived": "Fornecedor arquivado"
+      }
+    },
+    "detail": {
+      "notFound": "Este fornecedor não foi encontrado ou foi excluído.",
+      "backToList": "Voltar à lista",
+      "backLink": "Fornecedores",
+      "devisButton": "Orçamento",
+      "factureButton": "Fatura",
+      "documentButton": "Documento",
+      "contact": "Contato",
+      "noContactInfo": "Nenhuma informação de contato",
+      "addressAndIds": "Endereço e identificações",
+      "siret": "Registro: {value}",
+      "vat": "IVA: {value}",
+      "noInfo": "Nenhuma informação",
+      "internalNotes": "Observações internas",
+      "noNotes": "Nenhuma observação",
+      "tabs": {
+        "devis": "Orçamentos",
+        "factures": "Faturas",
+        "paiements": "Pagamentos",
+        "documents": "Documentos",
+        "historique": "Histórico"
+      },
+      "noDevis": "Nenhum orçamento para este fornecedor",
+      "viewAll": "Ver tudo ({count})",
+      "noFacture": "Nenhuma fatura para este fornecedor",
+      "noPayment": "Nenhum pagamento registrado",
+      "noDocument": "Nenhum documento recebido",
+      "documentTypes": {
+        "facture": "Fatura",
+        "devisRecu": "Orçamento recebido",
+        "comprovante": "Comprovante",
+        "contrat": "Contrato",
+        "autre": "Outro"
+      },
+      "inFinances": "Em Finanças",
+      "inFinancesTooltip": "Paga — gera uma despesa em Finanças; excluí-la ou alterar seu status também exclui essa despesa",
+      "viewDocument": "Ver o documento",
+      "delete": "Excluir",
+      "showingRecentDocuments": "Exibindo os {count} documentos mais recentes de {total} no total.",
+      "editTitle": "Editar fornecedor",
+      "newDevisTitle": "Novo orçamento",
+      "newFactureTitle": "Nova fatura",
+      "addDocumentTitle": "Adicionar documento",
+      "deleteDocumentTitle": "Excluir este documento?",
+      "deleteDocumentPaidDescription": "Esta ação não pode ser desfeita. Este documento está marcado como pago: a despesa gerada em Finanças (e sua eventual conciliação bancária) será excluída junto.",
+      "deleteDocumentDescription": "Esta ação não pode ser desfeita.",
+      "toasts": {
+        "updated": "Fornecedor atualizado",
+        "archived": "Fornecedor arquivado",
+        "devisCreated": "Orçamento criado com sucesso",
+        "factureCreated": "Fatura criada com sucesso",
+        "documentAdded": "Documento adicionado",
+        "documentDeleted": "Documento excluído"
+      }
+    },
+    "document": {
+      "type": "Tipo",
+      "number": "N° do documento",
+      "numberPlaceholder": "Referência do fornecedor",
+      "date": "Data",
+      "amount": "Valor",
+      "statusOptions": {
+        "aPayer": "A pagar",
+        "payee": "Paga",
+        "enLitige": "Em disputa",
+        "annulee": "Cancelada"
+      },
+      "unmarkPaidWarning": "Este documento está atualmente marcado como pago — remover esse status excluirá a despesa que ele gerou em Finanças, junto com sua eventual conciliação bancária.",
+      "markPaidNotice": "Marcar este documento como pago criará automaticamente uma despesa correspondente em Finanças.",
+      "file": "Documento",
+      "toasts": {
+        "uploadError": "Erro ao enviar o documento",
+        "networkError": "Erro de rede durante o envio — tente novamente"
+      }
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Painel",
+    "subtitle": "Visão geral da sua associação",
+    "stats": {
+      "activeMembers": "Membros ativos",
+      "eventsThisMonth": "Eventos este mês",
+      "cotisationsPending": "Mensalidades pendentes",
+      "financialBalance": "Saldo financeiro"
+    },
+    "nextEvent": {
+      "title": "Próximo evento",
+      "empty": "Nenhum evento próximo."
+    },
+    "cotisations": {
+      "title": "Mensalidades {year}",
+      "collectedThisYear": "arrecadado este ano",
+      "pendingPayment": "{count} aguardando pagamento"
+    },
+    "recentOrders": {
+      "title": "Pedidos recentes",
+      "pending": "Pendentes ({count})",
+      "recent": "Vendas recentes",
+      "guest": "Convidado",
+      "viewAll": "Ver todos os pedidos",
+      "empty": "Nenhuma venda no momento."
+    },
+    "loanedMaterial": {
+      "title": "Material emprestado",
+      "overdue": "Atrasado ({count})",
+      "inProgress": "Em andamento",
+      "noDueDate": "Sem prazo",
+      "viewAll": "Ver todo o material",
+      "empty": "Nenhum material emprestado no momento."
+    },
+    "charts": {
+      "income": "Receitas",
+      "expense": "Despesas",
+      "emptyState": "Os gráficos aparecerão aqui assim que houver mensalidades ou movimentações financeiras registradas.",
+      "collectedPercent": "% arrecadado",
+      "trendTitle": "Receitas vs despesas — últimos 6 meses",
+      "categoryTitle": "Receitas por categoria — {year}"
+    }
+  },
+  "tour": {
+    "next": "Próximo",
+    "previous": "Anterior",
+    "finish": "Concluir",
+    "progress": "'{{current}}' / '{{total}}'",
+    "helpButtonLabel": "Ajuda e tour guiado",
+    "helpButtonTooltip": "Tour guiado",
+    "steps": {
+      "welcome": {
+        "title": "Bem-vindo ao {appName} 👋",
+        "description": "Vamos fazer um tour rápido pelo seu espaço de gestão. Você vai descobrir para que serve cada seção e como começar. Pode reiniciar este tour a qualquer momento com o botão de ajuda no canto superior direito."
+      },
+      "dashboard": {
+        "title": "Painel",
+        "description": "Seu ponto de partida: números-chave, próximos eventos e atividade recente da associação em um relance."
+      },
+      "membres": {
+        "title": "Membros",
+        "description": "O coração da sua associação. Adicione um membro com o botão \"Adicionar\" no topo da página, importe uma lista, filtre por status ou tipo, e envie SMS em massa."
+      },
+      "evenements": {
+        "title": "Eventos",
+        "description": "Crie um evento (assembleia, passeio, oficina…) com \"Novo evento\". Gerencie as inscrições (RSVP), o local no mapa, e venda ingressos pagos via Stripe."
+      },
+      "cotisations": {
+        "title": "Mensalidades",
+        "description": "Acompanhe as mensalidades anuais de cada membro: quem pagou, quem ainda precisa ser lembrado. Defina o valor e exporte o acompanhamento quando quiser."
+      },
+      "tresorerie": {
+        "title": "Tesouraria",
+        "description": "Registre receitas e despesas por categoria para acompanhar o saldo da associação. Adicione uma operação com o botão dedicado no topo da página."
+      },
+      "dons": {
+        "title": "Doações",
+        "description": "Colete e acompanhe as doações feitas à sua associação, com detalhes por doador."
+      },
+      "reunions": {
+        "title": "Reuniões",
+        "description": "Organize videoconferências diretamente no {appName}. Crie uma reunião e compartilhe o link com os participantes."
+      },
+      "sondages": {
+        "title": "Enquetes",
+        "description": "Consulte seus membros: crie uma enquete, adicione suas perguntas e acompanhe as respostas em tempo real."
+      },
+      "boutique": {
+        "title": "Loja",
+        "description": "Venda produtos ou brindes aos seus membros. Adicione um item, defina o preço e gerencie os pedidos."
+      },
+      "actualites": {
+        "title": "Notícias",
+        "description": "Publique artigos com texto enriquecido e imagens. Escolha os destinatários: uma notificação em tempo real os avisa automaticamente."
+      },
+      "messages": {
+        "title": "Mensagens",
+        "description": "Converse com seus membros a partir de um espaço de mensagens centralizado."
+      },
+      "materiel": {
+        "title": "Material",
+        "description": "Faça o inventário do material da associação e acompanhe os empréstimos."
+      },
+      "site": {
+        "title": "Site",
+        "description": "Personalize a página pública da sua associação: banner, eventos, notícias, formulário de associação e contato. Cada seção é modulável."
+      },
+      "activite": {
+        "title": "Histórico",
+        "description": "Encontre o registro das ações realizadas no espaço de gestão para manter um histórico do que mudou."
+      },
+      "parametres": {
+        "title": "Configurações",
+        "description": "Configure sua associação e ative ou desative cada módulo. Um módulo desativado desaparece do menu, mas seus dados são mantidos."
+      },
+      "viewSwitcher": {
+        "title": "Alternar espaço",
+        "description": "Passe do espaço de gestão para \"Meu espaço\", a visão de membro do portal, para ver o que seus associados veem."
+      },
+      "notifications": {
+        "title": "Notificações",
+        "description": "Seus alertas em tempo real aparecem aqui: novas inscrições, respostas, pagamentos…"
+      },
+      "themeToggle": {
+        "title": "Tema claro / escuro",
+        "description": "Alterne entre o modo claro e o modo escuro conforme sua preferência."
+      },
+      "userMenu": {
+        "title": "Seu perfil",
+        "description": "Edite seu perfil, altere sua senha e saia a partir deste menu."
+      },
+      "help": {
+        "title": "Precisa de ajuda?",
+        "description": "Pronto! Esqueceu algo ou tem uma pergunta mais tarde? Clique neste botão para reiniciar o tour quando quiser."
+      }
+    }
+  },
+  "finances": {
+    "nav": {
+      "overview": "Visão geral",
+      "accounts": "Contas",
+      "income": "Receitas",
+      "expenses": "Despesas",
+      "import": "Importar",
+      "reconciliation": "Conciliação",
+      "categories": "Categorias",
+      "reports": "Relatórios"
+    },
+    "categoryForm": {
+      "name": "Nome",
+      "namePlaceholder": "Ex: Mensalidades",
+      "type": "Tipo",
+      "typeIncome": "Receita",
+      "typeExpense": "Despesa",
+      "accountingCode": "Código contábil",
+      "accountingCodePlaceholder": "Ex: 70600"
+    },
+    "bankAccountForm": {
+      "bankName": "Nome do banco",
+      "bankNamePlaceholder": "Ex: Banco do Brasil",
+      "accountName": "Nome da conta",
+      "accountNamePlaceholder": "Ex: Conta principal",
+      "ibanLast4": "4 últimos dígitos da conta",
+      "currency": "Moeda",
+      "currencies": {
+        "eur": "EUR — Euro",
+        "usd": "USD — Dólar",
+        "brl": "BRL — Real",
+        "chf": "CHF — Franco suíço",
+        "gbp": "GBP — Libra esterlina"
+      },
+      "openingBalance": "Saldo de abertura"
+    },
+    "incomeForm": {
+      "status": {
+        "pending": "Pendente",
+        "paid": "Pago",
+        "cancelled": "Cancelado"
+      },
+      "paymentMethod": {
+        "none": "Não informado",
+        "virement": "Transferência",
+        "cheque": "Cheque",
+        "especes": "Dinheiro",
+        "stripe": "Stripe",
+        "autre": "Outro"
+      },
+      "lockedNotice": "Valor, data, status e referência vêm do pagamento da fatura de origem — altere-os em Faturas. Categoria e descrição continuam editáveis aqui.",
+      "amount": "Valor",
+      "date": "Data",
+      "category": "Categoria",
+      "noCategory": "Nenhuma categoria",
+      "paymentMethodLabel": "Forma de pagamento",
+      "reference": "Referência",
+      "referencePlaceholder": "Ex: TRF-2024-001",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Ex: Mensalidade anual 2024"
+    },
+    "expenseForm": {
+      "status": {
+        "draft": "Rascunho",
+        "validated": "Validada",
+        "cancelled": "Cancelada"
+      },
+      "lockedNotice": "Valor, data, status e fornecedor vêm da fatura recebida de origem — altere-os em Fornecedores. Categoria e observações continuam editáveis aqui.",
+      "vendor": "Fornecedor",
+      "vendorPlaceholder": "Ex: Loja XYZ",
+      "descriptionPlaceholder": "Ex: Compra de material esportivo",
+      "internalNote": "Observação interna",
+      "internalNotePlaceholder": "Observação para o tesoureiro…",
+      "receipt": "Comprovante",
+      "toasts": {
+        "uploadError": "Erro ao enviar o comprovante",
+        "networkError": "Erro de rede durante o envio — tente novamente"
+      }
+    },
+    "accountsView": {
+      "title": "Contas bancárias",
+      "description": "Gerencie as contas bancárias da associação.",
+      "add": "Adicionar conta",
+      "columns": {
+        "account": "Conta",
+        "balance": "Saldo",
+        "status": "Status"
+      },
+      "status": {
+        "actif": "Ativa",
+        "inactif": "Inativa"
+      },
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "noAccounts": "Nenhuma conta bancária registrada",
+      "newAccountTitle": "Nova conta bancária",
+      "editAccountTitle": "Editar conta",
+      "deleteConfirmTitle": "Excluir esta conta?",
+      "toasts": {
+        "created": "Conta criada",
+        "updated": "Conta atualizada",
+        "deleted": "Conta excluída"
+      }
+    },
+    "categoriesView": {
+      "title": "Categorias",
+      "description": "Gerencie as categorias de receitas e despesas.",
+      "seedButton": "Inicializar categorias padrão",
+      "noCategories": "Nenhuma categoria",
+      "default": "Padrão",
+      "income": "Receitas",
+      "expenses": "Despesas",
+      "newCategoryTitle": "Nova categoria",
+      "editCategoryTitle": "Editar categoria",
+      "deleteConfirmTitle": "Excluir esta categoria?",
+      "deleteConfirmInUse": "\"{name}\" é usada por {count, plural, one {# receita/despesa} other {# receitas/despesas}}. Esses lançamentos passarão para \"Sem categoria\".",
+      "toasts": {
+        "created": "Categoria criada",
+        "updated": "Categoria atualizada",
+        "deleted": "Categoria excluída",
+        "seeded": "{count, plural, one {# categoria inicializada} other {# categorias inicializadas}}"
+      }
+    },
+    "incomesView": {
+      "title": "Receitas",
+      "description": "Todas as entradas de dinheiro da associação.",
+      "columns": {
+        "date": "Data",
+        "description": "Descrição",
+        "amount": "Valor",
+        "status": "Status"
+      },
+      "reconciled": "Conciliado",
+      "fromInvoiceBadge": "De uma fatura",
+      "fromInvoiceTooltip": "Gerada automaticamente a partir do pagamento de uma fatura — editável apenas em Faturas",
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "deleteFromInvoiceError": "Esta receita vem de uma fatura — remova o pagamento em Faturas.",
+      "searchPlaceholder": "Pesquisar…",
+      "allYears": "Todos os anos",
+      "allStatuses": "Todos os status",
+      "noIncome": "Nenhuma receita registrada",
+      "newTitle": "Nova receita",
+      "editTitle": "Editar receita",
+      "deleteConfirmTitle": "Excluir esta receita?",
+      "deleteConfirmFallback": "Receita de {amount}",
+      "toasts": {
+        "created": "Receita registrada",
+        "updated": "Receita atualizada",
+        "deleted": "Receita excluída"
+      }
+    },
+    "expensesView": {
+      "title": "Despesas",
+      "description": "Todas as saídas de dinheiro da associação.",
+      "columns": {
+        "date": "Data",
+        "description": "Descrição",
+        "receipt": "Comprovante",
+        "amount": "Valor",
+        "status": "Status"
+      },
+      "reconciled": "Conciliado",
+      "fromReceivedInvoiceBadge": "De uma fatura recebida",
+      "fromReceivedInvoiceTooltip": "Gerada automaticamente a partir de uma fatura recebida marcada como paga — editável apenas em Fornecedores",
+      "viewReceipt": "Ver",
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "deleteFromInvoiceError": "Esta despesa vem de uma fatura recebida — altere seu status em Fornecedores para removê-la.",
+      "allYears": "Todos os anos",
+      "allStatuses": "Todos os status",
+      "noExpense": "Nenhuma despesa registrada",
+      "newTitle": "Nova despesa",
+      "editTitle": "Editar despesa",
+      "deleteConfirmTitle": "Excluir esta despesa?",
+      "toasts": {
+        "created": "Despesa registrada",
+        "updated": "Despesa atualizada",
+        "deleted": "Despesa excluída"
+      }
+    },
+    "dashboard": {
+      "title": "Visão geral",
+      "description": "Resumo financeiro da associação.",
+      "incomeCard": "Receitas {year}",
+      "expensesCard": "Despesas {year}",
+      "resultCard": "Resultado {year}",
+      "cumulativeResultCard": "Resultado acumulado",
+      "unmatchedTitle": "Transações não conciliadas",
+      "unmatchedLabel": "a processar",
+      "pendingReceiptsTitle": "Comprovantes pendentes",
+      "pendingReceiptsLabel": "despesas em rascunho"
+    },
+    "reconciliationView": {
+      "title": "Conciliação bancária",
+      "description": "Associe as transações bancárias importadas às suas receitas e despesas.",
+      "statusFilters": {
+        "all": "Todas",
+        "unmatched": "Não conciliadas",
+        "matched": "Conciliadas",
+        "ignored": "Ignoradas",
+        "duplicate": "Duplicadas"
+      },
+      "status": {
+        "unmatched": "Não conciliada",
+        "matched": "Conciliada",
+        "pending": "Pendente",
+        "ignored": "Ignorada",
+        "duplicate": "Duplicada"
+      },
+      "columns": {
+        "date": "Data",
+        "label": "Descrição bancária",
+        "amount": "Valor",
+        "status": "Situação",
+        "actions": "Ações"
+      },
+      "reconciledFallback": "Conciliada",
+      "allAccounts": "Todas as contas",
+      "noTransactions": "Nenhuma transação para exibir",
+      "actions": {
+        "unmatch": "Desconciliar",
+        "unmatchTitle": "Cancelar a conciliação",
+        "reactivate": "Reativar",
+        "reactivateTitle": "Voltar para não conciliada",
+        "match": "Associar",
+        "addIncome": "Receita",
+        "addExpense": "Despesa",
+        "ignore": "Ignorar"
+      },
+      "createIncomeTitle": "Criar receita",
+      "createExpenseTitle": "Criar despesa",
+      "transactionLabel": "Transação:",
+      "toasts": {
+        "ignored": "Transação ignorada",
+        "markedDuplicate": "Marcada como duplicada",
+        "reactivated": "Transação devolvida à fila",
+        "unmatched": "Conciliação cancelada",
+        "incomeCreated": "Receita criada e conciliada",
+        "expenseCreated": "Despesa criada e conciliada",
+        "matched": "Conciliação confirmada"
+      }
+    },
+    "reconciliationMatchModal": {
+      "title": "Associar a uma receita ou despesa",
+      "searching": "Buscando correspondências…",
+      "noMatches": "Nenhuma correspondência encontrada dentro de ±7 dias.",
+      "suggestedMatches": "Correspondências sugeridas",
+      "typeIncome": "Receita",
+      "typeExpense": "Despesa",
+      "confirm": "Confirmar conciliação"
+    }
+  },
+  "evenements": {
+    "form": {
+      "title": "Título",
+      "titlePlaceholder": "Assembleia geral 2025",
+      "startDate": "Data de início",
+      "endDate": "Data de término",
+      "location": "Local",
+      "price": "Valor",
+      "priceHint": "Deixe em 0 para um evento gratuito",
+      "capacity": "Capacidade",
+      "capacityHint": "(vazio = ilimitada)",
+      "capacityUnit": "{count, plural, one {# vaga} other {# vagas}}",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Detalhes do evento…"
+    },
+    "view": {
+      "title": "Eventos",
+      "calendarView": "Visão de calendário",
+      "count": "{count, plural, one {# evento} other {# eventos}}",
+      "listLabel": "Lista",
+      "calendarLabel": "Calendário",
+      "create": "Criar",
+      "columns": {
+        "event": "Evento",
+        "date": "Data",
+        "presences": "Presenças"
+      },
+      "presentCount": "{count, plural, one {# presente} other {# presentes}}",
+      "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
+      "actions": {
+        "presences": "Presenças",
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "searchPlaceholder": "Pesquisar um evento…",
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noEvent": "Nenhum evento criado",
+      "createTitle": "Criar um evento",
+      "editTitle": "Editar evento",
+      "deleteConfirmTitle": "Excluir \"{title}\"?",
+      "deleteConfirmDescription": "O evento e todas as presenças associadas serão excluídos definitivamente.",
+      "toasts": {
+        "created": "Evento criado com sucesso",
+        "updated": "Evento atualizado",
+        "deleted": "Evento excluído"
+      }
+    },
+    "calendar": {
+      "days": {
+        "mon": "Seg",
+        "tue": "Ter",
+        "wed": "Qua",
+        "thu": "Qui",
+        "fri": "Sex",
+        "sat": "Sáb",
+        "sun": "Dom"
+      },
+      "today": "Hoje",
+      "todayTooltip": "Voltar ao mês atual",
+      "createHere": "Criar aqui",
+      "noEventThisDay": "Nenhum evento neste dia.",
+      "othersCount": "{count, plural, one {+# outro} other {+# outros}}"
+    },
+    "presences": {
+      "rsvp": {
+        "confirme": "Estarei lá",
+        "provavel": "Se possível",
+        "incerto": "Talvez",
+        "absent": "Ausente"
+      },
+      "export": {
+        "button": "Exportar",
+        "csv": "CSV (.csv)",
+        "excel": "Excel (.xlsx)",
+        "pdf": "PDF (.pdf)"
+      },
+      "notFound": {
+        "message": "Este evento não foi encontrado ou foi excluído.",
+        "backLabel": "Voltar à lista"
+      },
+      "checkInWindow": {
+        "beforePrefix": "O check-in por QR Code só abrirá em",
+        "beforeSuffix": "(3h antes do início do evento).",
+        "afterPrefix": "O check-in por QR Code está fechado desde",
+        "afterSuffixWithEnd": "(6h após o término do evento).",
+        "afterSuffixNoEnd": "(nenhum horário de término foi definido para este evento — a janela fecha 6h após o início padrão + 24h).",
+        "manualHint": "Você ainda pode marcar as presenças manualmente na lista abaixo."
+      },
+      "counter": {
+        "presentWord": "{count, plural, one {presente} other {presentes}}",
+        "full": "Completo",
+        "liveCheckIn": "Check-in em andamento · tempo real"
+      },
+      "qr": {
+        "heading": "QR Code de check-in",
+        "infoTooltip": "Um único QR Code para todo o evento, válido por 24h. Cada participante o escaneia com o celular, entra no portal se necessário e confirma sua presença — isso marca como presente o seu ingresso e o de seus convidados nomeados. É preciso ter um ingresso pago (evento pago) ou um RSVP confirmado (evento gratuito) para que funcione.",
+        "expiresOn": "Expira em {date}",
+        "copyLink": "Copiar link",
+        "regenerate": "Regenerar",
+        "regenerateTooltip": "Invalida o QR Code atual e gera um novo, válido por 24h",
+        "revokeTooltip": "Desativar o QR Code",
+        "expired": "QR Code expirado.",
+        "none": "Nenhum QR Code ativo.",
+        "generate": "Gerar um QR Code"
+      },
+      "list": {
+        "searchPlaceholder": "Pesquisar…",
+        "addGuest": "Adicionar convidado",
+        "noResults": "Nenhum resultado",
+        "noActiveMembers": "Nenhum membro ativo",
+        "guestBadge": "Convidado",
+        "paidBadge": "Pago",
+        "cancelPaymentTooltip": "Cancelar este pagamento em dinheiro",
+        "reservedBadge": "Reservado",
+        "markPaid": "Marcar como pago",
+        "editTitle": "Editar",
+        "removeTitle": "Remover"
+      },
+      "addGuestModal": {
+        "title": "Adicionar convidado",
+        "optional": "(opcional)",
+        "submit": "Adicionar e marcar presente"
+      },
+      "editGuestModal": {
+        "title": "Editar convidado"
+      },
+      "revokeConfirm": {
+        "title": "Desativar o QR Code?",
+        "description": "Os membros não poderão mais escanear este código para registrar a presença. As presenças já registradas são mantidas.",
+        "confirmLabel": "Desativar"
+      },
+      "regenerateConfirm": {
+        "title": "Regenerar o QR Code?",
+        "description": "O QR Code atual será imediatamente invalidado. Quem tentar escanear o código antigo não conseguirá mais se registrar."
+      },
+      "deleteGuestConfirm": {
+        "title": "Remover {name}?",
+        "descriptionPresent": "Esta pessoa já está marcada como presente — remover o registro também apagará esta presença.",
+        "descriptionAbsent": "Esta pessoa será removida da lista de presença deste evento.",
+        "confirmLabel": "Remover"
+      },
+      "toasts": {
+        "markedPaid": "{name} marcado como pago",
+        "paymentCancelled": "Pagamento de {name} cancelado",
+        "guestAdded": "{name} adicionado e marcado presente",
+        "guestUpdated": "Convidado atualizado",
+        "guestRemoved": "{name} removido da lista",
+        "updateError": "Erro ao atualizar",
+        "qrGenerated": "QR Code gerado",
+        "qrRevoked": "QR Code desativado",
+        "noMembersToExport": "Nenhum membro para exportar",
+        "linkCopied": "Link copiado"
+      }
+    }
+  },
+  "actualites": {
+    "form": {
+      "coverImage": "Imagem de capa",
+      "title": "Título",
+      "titlePlaceholder": "Título da notícia…",
+      "content": "Conteúdo",
+      "contentPlaceholder": "Escreva sua notícia…",
+      "relatedEvent": "Evento relacionado",
+      "noEvent": "Nenhum evento vinculado",
+      "noneOption": "Nenhum",
+      "pinned": "Fixar no topo do feed",
+      "recipients": "Destinatários",
+      "recipientsAll": "Todos os membros",
+      "recipientsSelected": "Seleção",
+      "searchMemberPlaceholder": "Pesquisar um membro…",
+      "loading": "Carregando…",
+      "noResult": "Nenhum resultado",
+      "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
+      "deselectAll": "Desmarcar todos",
+      "toasts": {
+        "uploadError": "Erro ao enviar a imagem"
+      }
+    },
+    "view": {
+      "title": "Notícias",
+      "count": "{count, plural, one {# publicação} other {# publicações}}",
+      "gridLabel": "Grade",
+      "listLabel": "Lista",
+      "write": "Escrever",
+      "searchPlaceholder": "Pesquisar uma notícia…",
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noPost": "Nenhuma publicação criada",
+      "published": "Publicado",
+      "draft": "Rascunho",
+      "pinned": "Fixado",
+      "actions": {
+        "edit": "Editar",
+        "unpublish": "Despublicar",
+        "publish": "Publicar",
+        "delete": "Excluir"
+      },
+      "previous": "Anterior",
+      "next": "Próximo",
+      "createTitle": "Escrever uma notícia",
+      "editTitle": "Editar notícia",
+      "deleteConfirmTitle": "Excluir \"{title}\"?",
+      "deleteConfirmDescription": "Esta publicação será excluída definitivamente.",
+      "toasts": {
+        "created": "Notícia criada",
+        "updated": "Notícia atualizada",
+        "deleted": "Notícia excluída",
+        "unpublished": "Notícia despublicada",
+        "published": "\"{title}\" publicada — membros notificados"
+      }
+    }
+  },
+  "sondages": {
+    "questionTypes": {
+      "textShort": "Texto curto",
+      "textLong": "Texto longo",
+      "singleChoice": "Escolha única",
+      "multipleChoice": "Múltipla escolha",
+      "rating": "Avaliação (1–5)",
+      "yesNo": "Sim / Não"
+    },
+    "questionBuilder": {
+      "questionPlaceholder": "Pergunta…",
+      "required": "Obrigatória",
+      "optionPlaceholder": "Opção {n}",
+      "addOption": "Adicionar opção",
+      "conditionalActive": "Lógica condicional ativa",
+      "addCondition": "Adicionar condição de exibição",
+      "showOnlyIf": "Exibir esta pergunta somente se:",
+      "chooseQuestion": "— escolher uma pergunta —",
+      "operatorEq": "é igual a",
+      "operatorNeq": "é diferente de",
+      "operatorIncludes": "contém",
+      "removeCondition": "Remover",
+      "conditionNotice": "Esta pergunta só será visível se a condição acima for atendida."
+    },
+    "formBuilder": {
+      "noQuestions": "Nenhuma pergunta. Adicione uma abaixo.",
+      "addQuestion": "Adicionar pergunta"
+    },
+    "view": {
+      "title": "Enquetes",
+      "description": "Crie questionários e veja os resultados.",
+      "newSurvey": "Nova enquete",
+      "searchPlaceholder": "Pesquisar…",
+      "noSurvey": "Nenhuma enquete ainda. Crie seu primeiro questionário.",
+      "status": {
+        "brouillon": "Rascunho",
+        "actif": "Ativa",
+        "ferme": "Encerrada"
+      },
+      "anonymous": "Anônima",
+      "questionsCount": "{count, plural, one {# pergunta} other {# perguntas}}",
+      "responsesCount": "{count, plural, one {# resposta} other {# respostas}}",
+      "deadlineLabel": "Encerramento: {date}",
+      "recipientsAll": "Todos os membros",
+      "recipientsSelected": "Seleção",
+      "activate": "Ativar",
+      "close": "Encerrar",
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "deleteConfirmTitle": "Excluir esta enquete?",
+      "toasts": {
+        "activated": "Enquete ativada",
+        "closed": "Enquete encerrada",
+        "deleted": "Enquete excluída"
+      }
+    },
+    "newSurveyPage": {
+      "title": "Nova enquete",
+      "subtitle": "Crie um questionário para seus membros.",
+      "generalInfo": "Informações gerais",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ex.: Satisfação da assembleia geral",
+      "descriptionLabel": "Descrição",
+      "optional": "(opcional)",
+      "descriptionPlaceholder": "Contexto ou instruções para os respondentes…",
+      "deadlineLabel": "Prazo final",
+      "recipientsManual": "Seleção manual",
+      "anonymousLabel": "Respostas anônimas",
+      "anonymousHint": "(o nome dos respondentes não será registrado)",
+      "questionsLabel": "Perguntas",
+      "createButton": "Criar a enquete",
+      "toasts": {
+        "createError": "Erro ao criar a enquete",
+        "created": "Enquete criada",
+        "titleRequired": "O título é obrigatório",
+        "atLeastOneQuestion": "Adicione pelo menos uma pergunta",
+        "atLeastOneMember": "Selecione pelo menos um membro"
+      }
+    }
+  },
+  "reunions": {
+    "form": {
+      "type": {
+        "generale": "Reunião geral",
+        "ag": "Assembleia geral",
+        "bureau": "Reunião de diretoria"
+      },
+      "allStatuses": "Todos os status",
+      "statusOptions": {
+        "actifs": "Ativos",
+        "enAttente": "Pendentes",
+        "inactifs": "Inativos",
+        "suspendus": "Suspensos"
+      },
+      "title": "Título",
+      "titlePlaceholder": "Ex: Reunião de diretoria",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Pauta, informações…",
+      "meetingType": "Tipo de reunião",
+      "startNow": "Iniciar imediatamente",
+      "scheduledDateTime": "Data e hora agendadas",
+      "participants": "Participantes",
+      "filterByStatus": "Filtrar por status",
+      "filterByGroup": "Filtrar por grupo",
+      "allGroups": "Todos os grupos",
+      "select": "Selecionar ({count})",
+      "deselect": "Desmarcar ({count})",
+      "selectedTotal": "{count, plural, one {# membro selecionado} other {# membros selecionados}} no total",
+      "noMatch": "Nenhum membro corresponde a este filtro.",
+      "start": "Iniciar",
+      "schedule": "Agendar"
+    },
+    "view": {
+      "title": "Reuniões",
+      "description": "Organize reuniões em vídeo com seus membros",
+      "newMeeting": "Nova reunião",
+      "loading": "Carregando…",
+      "noMeeting": "Nenhuma reunião no momento",
+      "createMeeting": "Criar uma reunião",
+      "leave": "Sair",
+      "defaultTitle": "Reunião",
+      "createTitle": "Nova reunião",
+      "editTitle": "Editar reunião",
+      "deleteConfirmTitle": "Excluir a reunião?",
+      "deleteConfirmDescription": "Esta ação não pode ser desfeita.",
+      "participantsCount": "{count, plural, one {# participante} other {# participantes}}",
+      "join": "Entrar",
+      "start": "Iniciar",
+      "transcription": "Transcrição",
+      "liveSince": "Em andamento há {mins} min",
+      "durationLessThanMin": "< 1 min",
+      "durationMin": "{mins} min",
+      "toasts": {
+        "meetingStarted": "Reunião iniciada",
+        "meetingScheduled": "Reunião agendada",
+        "meetingUpdated": "Reunião modificada",
+        "meetingDeleted": "Reunião excluída",
+        "refreshError": "Não foi possível atualizar o status da reunião.",
+        "liveNotification": "{title} — reunião em andamento",
+        "liveNotificationDescription": "Uma reunião acabou de começar."
+      }
+    },
+    "detail": {
+      "backToList": "Reuniões",
+      "status": {
+        "scheduled": "Agendada",
+        "live": "Em andamento",
+        "ended": "Encerrada",
+        "cancelled": "Cancelada"
+      },
+      "notFound": {
+        "message": "Esta reunião não foi encontrada ou foi excluída.",
+        "backLabel": "Voltar à lista"
+      },
+      "exportAttendance": {
+        "prefix": "Lista de ",
+        "suffix": "presença"
+      },
+      "toasts": {
+        "transcriptSaved": "Transcrição salva",
+        "transcriptSaveError": "Erro ao salvar",
+        "transcribeError": "Erro de transcrição",
+        "transcriptGenerated": "Transcrição gerada pelo Whisper",
+        "whisperError": "Erro do Whisper",
+        "aiError": "Erro de IA",
+        "summaryGenerated": "Resumo gerado",
+        "noParticipantsToExport": "Nenhum participante para exportar"
+      },
+      "transcribeRecording": "Transcrever a gravação",
+      "transcribing": "Transcrevendo…",
+      "uploadAudio": "Importar um áudio",
+      "saveTranscript": "Salvar",
+      "whisperTranscribing": "O Whisper está transcrevendo o áudio… Isso pode levar alguns instantes.",
+      "transcriptPlaceholder": "A transcrição aparecerá aqui após a reunião. Você também pode importar um arquivo de áudio ou digitar o texto manualmente.",
+      "acceptedFormats": "Formatos aceitos: MP3, M4A, WAV, WebM, OGG, FLAC · Máx. 25 MB · Detecção automática do idioma (francês, português, inglês…)",
+      "scheduledOn": "Agendada para {date}",
+      "startedOn": "Iniciada em {date}",
+      "endedOn": "Encerrada em {date}",
+      "recordingInProgress": "Gravação em andamento",
+      "recordingAvailable": "Gravação disponível",
+      "aiSummary": "Resumo com IA",
+      "regenerate": "Regenerar",
+      "generate": "Gerar",
+      "generateSummaryHint": "Clique em \"Gerar\" para criar o resumo.",
+      "transcriptRequiredHint": "A transcrição é necessária para gerar o resumo."
+    },
+    "livekitSettings": {
+      "heading": "Reuniões em vídeo (LiveKit)",
+      "description": "Usado para as reuniões em vídeo. Sem uma conta própria, as reuniões são executadas na conta compartilhada da plataforma — limitada ao plano LiveKit da plataforma. Configure seu próprio projeto LiveKit para uso ilimitado, cobrado diretamente na sua conta. As gravações de áudio permanecem sempre armazenadas na infraestrutura da plataforma — apenas a videoconferência usa sua conta.",
+      "configuredTitle": "Conta LiveKit personalizada configurada",
+      "urlLabel": "URL: ",
+      "notConfigured": "Conta da plataforma em uso — uso limitado ao plano LiveKit da plataforma.",
+      "serverUrlLabel": "URL do servidor (wss://)",
+      "apiKeyLabel": "API Key",
+      "apiKeyPlaceholderExisting": "Chave existente — digite uma nova para substituir",
+      "apiSecretLabel": "API Secret",
+      "apiSecretPlaceholderExisting": "Segredo existente — digite um novo para substituir",
+      "credentialsHint": "Encontre suas credenciais em ",
+      "testing": "Testando…",
+      "testConnection": "Testar a conexão",
+      "saving": "Salvando…",
+      "save": "Salvar",
+      "removeCredentials": "Remover as credenciais",
+      "webhookTitle": "Webhook a configurar no seu projeto LiveKit",
+      "webhookDescription": "Em cloud.livekit.io → Settings → Webhooks, adicione esta URL assinada com a mesma API Key acima; caso contrário, uma reunião esquecida aberta deixará de ser encerrada automaticamente na sua conta.",
+      "removeConfirmTitle": "Remover as credenciais do LiveKit?",
+      "removeConfirmDescription": "As reuniões voltarão a usar a conta compartilhada da plataforma, limitada ao seu próprio plano LiveKit. Uma reunião em andamento na sua conta não será transferida automaticamente.",
+      "toasts": {
+        "testSuccess": "Conexão bem-sucedida — essas credenciais funcionam.",
+        "testFailedDefault": "Falha na conexão.",
+        "testError": "Não foi possível testar a conexão.",
+        "saved": "Configuração do LiveKit salva",
+        "savedIncomplete": "Salvo, mas ainda falta um campo — as reuniões usarão a conta da plataforma até que os 3 campos sejam preenchidos.",
+        "saveError": "Não foi possível salvar a configuração do LiveKit",
+        "removed": "Credenciais do LiveKit removidas",
+        "removeError": "Não foi possível remover as credenciais"
+      }
+    },
+    "meetingRoom": {
+      "waitingForParticipants": "Aguardando participantes…",
+      "chat": "Chat",
+      "noMessages": "Nenhuma mensagem por enquanto.",
+      "messagePlaceholder": "Mensagem…",
+      "toasts": {
+        "sendMessageError": "Não foi possível enviar a mensagem.",
+        "stopRecordingError": "Não foi possível parar a gravação.",
+        "startRecordingError": "Não foi possível iniciar a gravação.",
+        "recordingError": "Erro ao gerenciar a gravação.",
+        "endMeetingError": "Não foi possível encerrar a reunião. Tente novamente."
+      },
+      "recording": "Gravação",
+      "record": "Gravar",
+      "stopRecordingTooltip": "Parar a gravação da reunião",
+      "startRecordingTooltip": "Iniciar a gravação (visível para os participantes)",
+      "end": "Encerrar",
+      "ending": "Encerrando a reunião…",
+      "recordingBanner": "Esta reunião está sendo gravada",
+      "recordingBannerTranscribable": " e poderá ser transcrita",
+      "joinError": "Não foi possível entrar na reunião.",
+      "kickedOutTitle": "A reunião foi encerrada pelo administrador.",
+      "kickedOutSubtitle": "Você será redirecionado…"
+    }
+  },
+  "materiel": {
+    "form": {
+      "photo": "Foto",
+      "name": "Nome",
+      "namePlaceholder": "MacBook Pro 2023",
+      "category": "Categoria",
+      "noneOption": "— Nenhuma —",
+      "status": {
+        "disponible": "Disponível",
+        "enUse": "Em uso",
+        "enMaintenance": "Em manutenção",
+        "horsService": "Fora de serviço",
+        "perdu": "Perdido"
+      },
+      "quantity": "Quantidade",
+      "location": "Localização",
+      "locationPlaceholder": "Sala A, Depósito…",
+      "serialNumber": "Número de série / referência",
+      "serialNumberPlaceholder": "SN-12345",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descrição curta…",
+      "purchaseDate": "Data de compra",
+      "purchasePrice": "Preço de compra",
+      "rentalRate": "Tarifa padrão de empréstimo (R$ / unidade)",
+      "rentalRateHint": "Preenche a tarifa automaticamente a cada novo empréstimo — cobrada × a quantidade emprestada",
+      "accountingCategory": "Categoria contábil",
+      "notes": "Observações",
+      "notesPlaceholder": "Observações internas…",
+      "editTitle": "Editar item",
+      "newTitle": "Novo item",
+      "create": "Criar",
+      "toasts": {
+        "uploadError": "Erro ao enviar a foto",
+        "updated": "Item atualizado",
+        "created": "Item criado"
+      },
+      "validation": {
+        "required": "Obrigatório",
+        "minQuantity": "Mín. 1"
+      }
+    },
+    "loanModal": {
+      "title": "Registrar um empréstimo — {name}",
+      "availableUnits": "{available, plural, one {# unidade disponível} other {# unidades disponíveis}} de {total}",
+      "borrowerMembre": "Membro",
+      "borrowerExterne": "Pessoa externa",
+      "memberLabel": "Membro",
+      "memberPlaceholder": "Selecionar um membro…",
+      "borrowerNameLabel": "Nome do tomador",
+      "borrowerNamePlaceholder": "João Silva",
+      "borrowedAt": "Data de saída",
+      "expectedReturn": "Retorno previsto",
+      "futureDateNotice": "Data futura: o item será registrado como reservado até esta data.",
+      "quantityBorrowed": "Quantidade emprestada",
+      "rateLabelMultiple": "Tarifa do empréstimo (R$ / unidade)",
+      "rateLabelSingle": "Valor do empréstimo (R$)",
+      "totalCharged": "Valor cobrado: {quantity} × {rate} = {total}",
+      "notes": "Observações",
+      "notesPlaceholder": "Uso previsto, estado na saída…",
+      "noCapacity": "Nenhuma unidade disponível",
+      "toasts": {
+        "created": "Empréstimo registrado"
+      },
+      "validation": {
+        "required": "Obrigatório",
+        "returnAfterBorrow": "Deve ser após a data de saída"
+      }
+    },
+    "view": {
+      "title": "Material",
+      "description": "Inventário e gestão de empréstimos",
+      "add": "Adicionar",
+      "statsLabels": {
+        "articles": "Itens",
+        "disponibles": "Disponíveis",
+        "enPret": "Emprestados",
+        "reserves": "Reservados",
+        "maintenance": "Manutenção"
+      },
+      "pendingRequests": "Solicitações pendentes",
+      "accept": "Aceitar",
+      "refuse": "Recusar",
+      "returnExpected": " · devolução prevista em {date}",
+      "toasts": {
+        "confirmed": "Empréstimo confirmado",
+        "refused": "Solicitação recusada"
+      },
+      "maintenancePill": "Manutenção",
+      "overdueCount": "{count} atrasado(s)",
+      "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
+      "availableOf": "{available}/{total} disponíveis",
+      "searchPlaceholder": "Pesquisar…",
+      "filters": {
+        "all": "Todos",
+        "disponibles": "Disponíveis",
+        "enUtilisation": "Em uso",
+        "reserves": "Reservados",
+        "maintenance": "Manutenção",
+        "horsService": "Fora de serviço",
+        "perdus": "Perdidos"
+      },
+      "noArticles": "Nenhum item",
+      "noResults": "Nenhum resultado",
+      "noArticlesHint": "Adicione seu primeiro item para começar.",
+      "noResultsHint": "Tente outros filtros ou termos de pesquisa.",
+      "addArticle": "Adicionar item"
+    },
+    "detailSheet": {
+      "helpAriaLabel": "O que esses ícones fazem?",
+      "helpPdfLabel": "PDF",
+      "helpPdfDesc": "— o comprovante de empréstimo, para consultar ou imprimir na hora.",
+      "helpEmailLabel": "E-mail",
+      "helpEmailDesc": "— envia esse mesmo comprovante de empréstimo ao tomador.",
+      "helpFactureLabel": "Fatura",
+      "helpFactureDesc": "— cria uma fatura real e cobrável em Faturas (diferente do comprovante de empréstimo).",
+      "factureStatusPartial": "Parc. paga",
+      "viewFactureTitle": "Ver a fatura {number}",
+      "generateFactureTitle": "Gerar uma fatura para este empréstimo",
+      "generateFacture": "Gerar fatura",
+      "infoGrid": {
+        "quantity": "Quantidade",
+        "availableOf": "{available}/{total} disp.",
+        "location": "Localização",
+        "reference": "Ref.",
+        "acquiredOn": "Adquirido em {date}",
+        "defaultRate": "Tarifa de empréstimo padrão: {amount}",
+        "accountingCategory": "Categoria contábil: {name}"
+      },
+      "pendingSection": {
+        "heading": "Solicitações pendentes",
+        "accept": "Aceitar",
+        "refuse": "Recusar",
+        "returnExpected": "Devolução prevista em {date}"
+      },
+      "activeSection": {
+        "heading": "Empréstimos e reservas",
+        "lend": "Emprestar",
+        "noActiveLoans": "Nenhum empréstimo em andamento.",
+        "reservedBadge": "Reservado",
+        "pdfTitle": "Comprovante de empréstimo (PDF)",
+        "emailTitle": "Enviar por e-mail",
+        "notYetOutTitle": "Ainda não retirado",
+        "markReturnedTitle": "Marcar como devolvido",
+        "returned": "Devolvido",
+        "deleteTitle": "Excluir",
+        "reservedFor": "Reservado para ",
+        "goneOn": "Retirado em ",
+        "returnExpected": " · Devolução prevista ",
+        "overdue": " (atrasado)"
+      },
+      "historySection": {
+        "heading": "Histórico ({count})",
+        "requestedOn": "solicitação de {date}",
+        "refusedBadge": "Recusado"
+      },
+      "deleteLoanConfirm": {
+        "title": "Excluir este empréstimo?",
+        "descriptionHistory": "O registro será removido do histórico.",
+        "descriptionActive": "O empréstimo ativo será excluído sem registrar uma data de devolução."
+      },
+      "deleteMaterialConfirm": {
+        "title": "Excluir \"{name}\"?",
+        "descriptionBlocked": "Impossível: {count} empréstimo(s) em andamento para este item. Registre a devolução antes de excluir.",
+        "descriptionConfirmed": "O item e todo o seu histórico de empréstimos serão excluídos definitivamente.",
+        "descriptionPendingWarning": " Atenção: {count} solicitação(ões) pendente(s) serão perdidas."
+      },
+      "emailModal": {
+        "documentLabel": "o comprovante de empréstimo"
+      },
+      "toasts": {
+        "returned": "Devolução registrada",
+        "emailSent": "Comprovante de empréstimo enviado por e-mail",
+        "factureGenerated": "Fatura gerada",
+        "loanDeleted": "Empréstimo excluído",
+        "materialDeleted": "\"{name}\" excluído",
+        "loanConfirmed": "Empréstimo confirmado",
+        "loanRefused": "Solicitação recusada"
+      }
+    },
+    "portalPage": {
+      "title": "Material",
+      "subtitle": "Consulte o catálogo e faça um pedido de empréstimo.",
+      "requestModal": {
+        "quantityLabel": "Quantidade",
+        "availableSuffix": "/ {count} disponíveis",
+        "expectedReturnLabel": "Data de devolução prevista",
+        "optional": "(opcional)",
+        "noteLabel": "Nota",
+        "notePlaceholder": "Detalhes sobre o uso pretendido…",
+        "sending": "Enviando…",
+        "send": "Enviar solicitação"
+      },
+      "loanStatus": {
+        "confirmed": "Confirmado",
+        "pending": "Pendente"
+      },
+      "refusedSection": {
+        "heading": "Solicitações não concedidas",
+        "requestedOn": "Sua solicitação de {date} não pôde ser concedida.",
+        "refusedBadge": "Recusado"
+      },
+      "activeSection": {
+        "heading": "Meus empréstimos em andamento",
+        "returnExpected": "Devolução prevista em {date}",
+        "overdueSuffix": " (atrasado)",
+        "editTitle": "Editar",
+        "cancelRequestTitle": "Cancelar solicitação"
+      },
+      "catalog": {
+        "heading": "Catálogo",
+        "searchPlaceholder": "Pesquisar…",
+        "noResultsSearch": "Nenhum item corresponde à sua pesquisa.",
+        "noResults": "Nenhum item disponível no momento.",
+        "availableOf": "{available}/{total} disp.",
+        "loanInProgress": "Solicitação em andamento",
+        "unavailable": "Item indisponível",
+        "outOfStock": "Estoque esgotado",
+        "requestLoan": "Solicitar empréstimo"
+      },
+      "cancelModal": {
+        "title": "Cancelar a solicitação?",
+        "cancelling": "Cancelando…"
+      },
+      "toasts": {
+        "requestSent": "Solicitação enviada — o administrador confirmará o empréstimo",
+        "requestUpdated": "Solicitação atualizada",
+        "requestCancelled": "Solicitação cancelada"
+      }
+    }
+  },
+  "boutique": {
+    "produitStatus": {
+      "draft": "Rascunho",
+      "active": "Online",
+      "archived": "Arquivado"
+    },
+    "commandeStatus": {
+      "pending": "Pendente",
+      "paid": "Pago",
+      "cancelled": "Cancelado"
+    },
+    "paymentType": {
+      "especes": "Dinheiro",
+      "cheque": "Cheque",
+      "cb": "Cartão",
+      "virement": "Transferência",
+      "stripe": "Stripe",
+      "manualFallback": "Manual"
+    },
+    "paymentMethodLabel": "Forma de pagamento",
+    "form": {
+      "nameLabel": "Nome",
+      "descriptionLabel": "Descrição",
+      "optional": "(opcional)",
+      "imageLabel": "Imagem do produto",
+      "visibilityLabel": "Visibilidade",
+      "categoryLabel": "Categoria contábil",
+      "categoryPlaceholder": "Nenhuma categoria",
+      "variantesLabel": "Variantes",
+      "variantesHint": "(tamanho, cor, etc.)",
+      "variantLabelColumn": "Rótulo",
+      "priceColumn": "Preço",
+      "stockColumn": "Estoque",
+      "variantLabelPlaceholder": "Ex. Tamanho M / Azul",
+      "addVariant": "Adicionar uma variante",
+      "validation": {
+        "nameRequired": "O nome é obrigatório",
+        "atLeastOneVariant": "É necessária pelo menos uma variante",
+        "variantLabelRequired": "Cada variante deve ter um rótulo"
+      }
+    },
+    "view": {
+      "title": "Loja",
+      "description": "Gerencie seus produtos e pedidos.",
+      "newProduct": "Novo produto",
+      "tabs": {
+        "produits": "Produtos",
+        "commandes": "Pedidos"
+      },
+      "produitColumns": {
+        "produit": "Produto",
+        "status": "Status",
+        "stock": "Estoque",
+        "prix": "Preço",
+        "ventes": "Vendas"
+      },
+      "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
+      "actions": {
+        "edit": "Editar",
+        "delete": "Excluir",
+        "deleteAlreadyOrdered": "Excluir (já pedido)",
+        "markPaid": "Marcar como pago",
+        "cancelOrder": "Cancelar",
+        "downloadReceipt": "Baixar recibo",
+        "editPaymentMethod": "Editar forma de pagamento"
+      },
+      "noProduct": "Nenhum produto",
+      "noOrder": "Nenhum pedido",
+      "guest": "Convidado",
+      "commandeColumns": {
+        "membre": "Membro",
+        "items": "Itens",
+        "total": "Total",
+        "paiement": "Pagamento",
+        "status": "Status",
+        "date": "Data"
+      },
+      "othersCount": "{count, plural, one {+# outro} other {+# outros}}",
+      "statusFilterAll": "Todos",
+      "deleteProduitTitle": "Excluir o produto",
+      "deleteProduitDescription": "Excluir \"{name}\"? Esta ação é irreversível.",
+      "cancelOrderTitle": "Cancelar o pedido?",
+      "cancelOrderDescriptionWithName": "Cancelar o pedido de {name}? O estoque dos itens será restaurado. Esta ação é irreversível.",
+      "cancelOrderDescription": "Cancelar este pedido? O estoque dos itens será restaurado. Esta ação é irreversível.",
+      "cancelOrderConfirm": "Cancelar o pedido",
+      "toasts": {
+        "productDeleted": "Produto excluído",
+        "deleteError": "Erro ao excluir",
+        "orderUpdated": "Pedido atualizado"
+      }
+    },
+    "payModal": {
+      "title": "Receber o pedido",
+      "orderOf": "Pedido de",
+      "confirmWithAmount": "Receber {amount}",
+      "orderedTotal": "Total pedido",
+      "restockNoticePlural": "{count, plural, one {O estoque do item não retirado será restaurado.} other {O estoque dos itens não retirados será restaurado.}}",
+      "restockNoticeStatic": "O estoque dos itens não retirados será restaurado."
+    },
+    "stripeConfirm": {
+      "title": "Marcar como pago?",
+      "descriptionSimple": "Este pedido do Stripe ({amount}) será marcado como pago manualmente.",
+      "descriptionWithHint": "Este pedido do Stripe ({amount}) será marcado como pago manualmente. Use isso apenas se o pagamento do Stripe foi recebido, mas o webhook não foi acionado.",
+      "confirmLabel": "Confirmar o pagamento"
+    },
+    "correctPaymentModal": {
+      "title": "Editar forma de pagamento",
+      "hint": "Isso não altera o valor já contabilizado em Finanças — corrija-o lá, se necessário."
+    },
+    "detail": {
+      "notFound": "Este produto não foi encontrado ou foi excluído.",
+      "backToList": "Voltar à lista",
+      "variantsAndStock": "{count, plural, one {# variante} other {# variantes}} · {stock} em estoque",
+      "putOnline": "Publicar",
+      "archive": "Arquivar",
+      "reactivate": "Reativar",
+      "tabs": {
+        "produit": "Produto"
+      },
+      "informationsTitle": "Informações",
+      "noCommandeForProduct": "Nenhum pedido para este produto",
+      "commandeColumns": {
+        "membre": "Membro",
+        "variante": "Variante",
+        "total": "Total",
+        "status": "Status",
+        "date": "Data"
+      },
+      "toasts": {
+        "updated": "Produto atualizado",
+        "saveError": "Erro ao salvar",
+        "orderUpdated": "Pedido atualizado"
+      }
+    },
+    "create": {
+      "heading": "Novo produto",
+      "subtitle": "Adicione um produto à sua loja.",
+      "generalInfoTitle": "Informações gerais",
+      "namePlaceholder": "Ex. Camisa da associação",
+      "descriptionPlaceholder": "Descreva o produto…",
+      "createButton": "Criar produto",
+      "toasts": {
+        "created": "Produto criado",
+        "createError": "Erro ao criar"
+      }
+    }
+  },
+  "messages": {
+    "categories": {
+      "general": "Geral",
+      "cotisation": "Mensalidade",
+      "evenement": "Evento",
+      "membre": "Membro",
+      "facturation": "Faturamento"
+    },
+    "view": {
+      "title": "Mensagens",
+      "description": "Modelos de mensagens e envios automáticos",
+      "tabs": {
+        "templates": "Modelos",
+        "rules": "Automações",
+        "historique": "Histórico"
+      },
+      "reminderSchedule": "Régua de lembretes"
+    },
+    "templatesManager": {
+      "title": "Modelos de mensagens",
+      "subtitle": "Escreva modelos reutilizáveis com variáveis dinâmicas.",
+      "newTemplate": "Novo modelo",
+      "noTemplates": "Nenhum modelo",
+      "noTemplatesHint": "Crie um primeiro modelo para usá-lo em suas regras.",
+      "createTemplate": "Criar um modelo",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "rulesCount": "{count, plural, one {# regra} other {# regras}}",
+      "modifiedOn": " · modificado em {date}",
+      "actions": {
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "deactivate": "Desativar",
+        "activate": "Ativar",
+        "delete": "Excluir"
+      },
+      "deleteConfirmTitle": "Excluir \"{name}\"?",
+      "deleteConfirmInUse": "{count, plural, one {Este modelo é usado por # regra. Exclua-a primeiro.} other {Este modelo é usado por # regras. Exclua-as primeiro.}}",
+      "deleteConfirmSimple": "Este modelo será excluído definitivamente.",
+      "deactivateConfirmTitle": "Desativar \"{name}\"?",
+      "deactivateConfirmDescription": "{count, plural, one {# regra ativa usa este modelo e não enviará mais nada enquanto ele permanecer desativado.} other {# regras ativas usam este modelo e não enviarão mais nada enquanto ele permanecer desativado.}}",
+      "toasts": {
+        "deleted": "Modelo \"{name}\" excluído",
+        "deactivated": "Modelo desativado",
+        "activated": "Modelo ativado",
+        "duplicated": "Modelo \"{name}\" duplicado",
+        "duplicateSuffix": " (cópia)"
+      }
+    },
+    "templateModal": {
+      "editTitle": "Editar modelo",
+      "newTitle": "Novo modelo",
+      "internalName": "Nome interno",
+      "internalNamePlaceholder": "Lembrete de mensalidade anual",
+      "category": "Categoria",
+      "emailSubject": "Assunto do email",
+      "emailSubjectPlaceholder": "Lembrete: sua mensalidade de '{{annee_cotisation}}'",
+      "variablesHint": "Variáveis — arraste para o assunto, corpo ou SMS",
+      "variables": {
+        "prenom": "Nome",
+        "nom": "Sobrenome",
+        "nomComplet": "Nome completo",
+        "email": "Email",
+        "association": "Associação",
+        "lienPortal": "Link do portal",
+        "anneeCotisation": "Ano da mensalidade",
+        "montantCotisation": "Valor da mensalidade",
+        "titreEvenement": "Título do evento",
+        "dateEvenement": "Data do evento",
+        "lieuEvenement": "Local do evento"
+      },
+      "emailBody": "Corpo da mensagem (email)",
+      "emailBodyPlaceholder": "Olá '{{prenom}}',…",
+      "smsBody": "Corpo do SMS",
+      "smsBodyHint": "Texto curto enviado por SMS. Deixe em branco se este modelo não for usado com um canal de SMS.",
+      "smsBodyPlaceholder": "'{{association}}' — Olá '{{prenom}}', …",
+      "smsCharCount": "{count} / 160 caracteres",
+      "smsWillSplit": " — será dividido em várias mensagens SMS",
+      "preview": "Pré-visualizar",
+      "test": "Testar",
+      "testTooltip": "Envia um email de teste para seu endereço",
+      "create": "Criar",
+      "previewTitle": "Pré-visualização da mensagem",
+      "previewDescription": "Renderizado com dados de exemplo",
+      "previewSubject": "Assunto",
+      "toasts": {
+        "updated": "Modelo atualizado",
+        "created": "Modelo criado",
+        "testSent": "Email de teste enviado para {email}"
+      },
+      "validation": {
+        "required": "Obrigatório"
+      }
+    },
+    "rulesManager": {
+      "title": "Regras de automação",
+      "subtitle": "Envios automáticos com base em uma agenda ou um evento.",
+      "newRule": "Nova regra",
+      "noRules": "Nenhuma regra",
+      "noRulesHint": "Crie uma primeira regra para automatizar seus envios.",
+      "createRule": "Criar uma regra",
+      "triggerLabels": {
+        "scheduledOnce": "Data única",
+        "scheduledRecurring": "Recorrente",
+        "eventCotisationDue": "Mensalidade próxima",
+        "eventPaymentOverdue": "Pagamento atrasado",
+        "eventReminder": "Lembrete de evento",
+        "rsvpConfirmed": "RSVP confirmado",
+        "memberCreated": "Novo membro",
+        "memberBirthday": "Aniversário",
+        "eventAdherentLapsed": "Associação não renovada"
+      },
+      "statusLabels": {
+        "active": "Ativa",
+        "paused": "Pausada",
+        "done": "Concluída"
+      },
+      "inactiveTemplateBadge": "Modelo inativo",
+      "inactiveTemplateTooltip": "O modelo associado está desativado: esta regra não envia mais nada",
+      "templateSuffix": " · Modelo: {name}",
+      "pendingExecution": "Aguardando execução",
+      "nextRun": "Próximo envio: {date}",
+      "lastRun": "Último envio: {date}",
+      "actions": {
+        "pause": "Pausar",
+        "activate": "Ativar",
+        "edit": "Editar",
+        "delete": "Excluir"
+      },
+      "toasts": {
+        "activated": "Regra ativada",
+        "paused": "Regra pausada",
+        "deleted": "Regra \"{name}\" excluída"
+      },
+      "deleteConfirmTitle": "Excluir \"{name}\"?",
+      "deleteConfirmDescription": "Esta regra será excluída definitivamente. Os emails já enviados não são afetados.",
+      "triggerSummary": {
+        "dateNotSet": "Data não definida",
+        "onDate": "Em {date} às {time}",
+        "frequency": {
+          "daily": "Diário",
+          "weekly": "Semanal",
+          "monthly": "Mensal"
+        },
+        "weekdaysShort": {
+          "sunday": "Dom",
+          "monday": "Seg",
+          "tuesday": "Ter",
+          "wednesday": "Qua",
+          "thursday": "Qui",
+          "friday": "Sex",
+          "saturday": "Sáb"
+        },
+        "weeklyOn": "{label} ({day}) às {time}",
+        "monthlyOn": "{label} (dia {day}) às {time}",
+        "atTime": "{label} às {time}",
+        "cotisationDue": "{days}d antes do vencimento · ano {year}",
+        "paymentOverdue": "{days}d de atraso · ano {year}",
+        "reminderTomorrow": "Na véspera de cada evento",
+        "reminderDays": "{days}d antes de cada evento",
+        "rsvpConfirmed": "Acionado na confirmação do RSVP",
+        "memberCreated": "Acionado na criação do membro",
+        "memberBirthday": "No dia do aniversário de cada membro"
+      }
+    },
+    "ruleModal": {
+      "editTitle": "Editar regra",
+      "newTitle": "Nova regra",
+      "ruleName": "Nome da regra",
+      "ruleNamePlaceholder": "Lembrete de mensalidade",
+      "trigger": "Gatilho",
+      "triggerOptions": {
+        "scheduledOnce": "Data única",
+        "scheduledRecurring": "Recorrente",
+        "eventCotisationDue": "Mensalidade próxima",
+        "eventPaymentOverdue": "Pagamento atrasado",
+        "eventReminder": "Lembrete de evento",
+        "rsvpConfirmed": "Confirmação de participação (RSVP)",
+        "memberCreated": "Novo membro cadastrado",
+        "memberBirthday": "Aniversário do membro",
+        "eventAdherentLapsed": "Associação não renovada"
+      },
+      "sendDate": "Data de envio",
+      "time": "Hora",
+      "frequency": "Frequência",
+      "frequencyOptions": {
+        "daily": "Diário",
+        "weekly": "Semanal",
+        "monthly": "Mensal"
+      },
+      "dayOfWeek": "Dia da semana",
+      "dayOfWeekOptions": {
+        "monday": "Segunda-feira",
+        "tuesday": "Terça-feira",
+        "wednesday": "Quarta-feira",
+        "thursday": "Quinta-feira",
+        "friday": "Sexta-feira",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      },
+      "dayOfMonth": "Dia do mês",
+      "sendTime": "Hora de envio",
+      "cotisationDueHint": "Envia uma mensagem aos membros com mensalidade em aberto, N dias antes da data de vencimento.",
+      "daysBeforeDue": "Dias antes do vencimento",
+      "dueDate": "Data de vencimento",
+      "cotisationYear": "Ano da mensalidade",
+      "cooldownDays": "Cooldown (dias)",
+      "cooldownHint": "Intervalo mínimo entre 2 envios ao mesmo membro",
+      "paymentOverdueHint": "Envia uma mensagem aos membros cuja mensalidade está em aberto há N dias após 1º de janeiro.",
+      "daysOverdue": "Dias de atraso",
+      "eventReminderHint": "Envia um lembrete automático aos participantes confirmados ou prováveis, N dias antes de cada evento.",
+      "daysBeforeEvent": "Dias antes do evento",
+      "daysBeforeEventHint": "Ex.: 1 = na véspera, 3 = 3 dias antes",
+      "adherentLapsedHint": "Envia uma mensagem aos membros ativos que eram associados no ano passado (mensalidade paga/isenta) mas ainda não têm uma mensalidade em dia para o ano atual. Um membro cujo status de associação foi forçado manualmente nunca é afetado.",
+      "birthdayHint": "Envia automaticamente uma mensagem no dia do aniversário de cada membro ativo (dia e mês, independentemente do ano de nascimento). Um único envio por membro e por ano.",
+      "birthdayNoDateWarningType": "Nenhum dos membros ativos deste tipo ({count}) tem uma data de nascimento cadastrada — esta regra não enviará nada até que uma data seja adicionada em seu cadastro.",
+      "birthdayNoDateWarningAll": "Nenhum dos seus membros ativos ({count}) tem uma data de nascimento cadastrada — esta regra não enviará nada até que uma data seja adicionada em seu cadastro.",
+      "birthdayCoverage": "{withDate} / {total} membros ativos têm uma data de nascimento cadastrada.",
+      "birthdayCoverageType": "{withDate} / {total} membros ativos deste tipo têm uma data de nascimento cadastrada.",
+      "rsvpConfirmedHint": "Acionado automaticamente quando um membro confirma sua participação em um evento.",
+      "memberCreatedHint": "Acionado automaticamente ao adicionar um novo membro (apenas papel Membro).",
+      "noTemplatesWarningPrefix": "Nenhum modelo disponível. Primeiro crie um modelo na aba ",
+      "noTemplatesWarningSuffix": ".",
+      "templateLabel": "Modelo de mensagem",
+      "templatePlaceholder": "Escolher um modelo…",
+      "templateInactiveSuffix": " (inativo)",
+      "channel": "Canal de envio",
+      "channelOptions": {
+        "email": "Somente email",
+        "sms": "Somente SMS",
+        "both": "Email + SMS"
+      },
+      "templateDeactivatedWarningPrefix": "Este modelo está desativado. Enquanto assim permanecer, esta regra não enviará nada — ative-o na aba ",
+      "templateDeactivatedWarningSuffix": ".",
+      "missingSmsBodyWarning": "O modelo selecionado não tem corpo de SMS. Edite o modelo para ativar o envio por SMS.",
+      "recipients": "Destinatários",
+      "recipientsAll": "Todos os membros ativos",
+      "recipientsType": "Tipo: {name}",
+      "testTooltip": "Envia um email de teste para seu endereço, usando a configuração salva",
+      "test": "Testar (config. salva)",
+      "create": "Criar",
+      "toasts": {
+        "updated": "Regra atualizada",
+        "created": "Regra criada",
+        "testSent": "Email de teste enviado para {email} (config. salva)"
+      },
+      "validation": {
+        "required": "Obrigatório"
+      }
+    },
+    "campagneModal": {
+      "title": "Sequência de lembretes",
+      "description": "Crie uma sequência de lembretes de mensalidade. Cada etapa se torna uma regra distinta acionada automaticamente.",
+      "noTemplatesWarningPrefix": "Nenhum modelo disponível. Primeiro crie um modelo na aba ",
+      "noTemplatesWarningSuffix": ".",
+      "campaignName": "Nome da campanha",
+      "campaignNamePlaceholder": "Lembretes de mensalidade 2026",
+      "templateLabel": "Modelo de mensagem",
+      "templatePlaceholder": "Escolher um modelo…",
+      "recipients": "Destinatários",
+      "recipientsAll": "Todos os membros ativos",
+      "recipientsType": "Tipo: {name}",
+      "cotisationYear": "Ano da mensalidade",
+      "dueDate": "Data de vencimento",
+      "dueDateHint": "Para as etapas 'antes'. Opcional — padrão: 31 de dez.",
+      "cooldownDays": "Cooldown (dias)",
+      "cooldownHint": "Intervalo mínimo entre 2 envios ao mesmo membro",
+      "stepsTitle": "Etapas da sequência",
+      "addStep": "Adicionar uma etapa",
+      "noSteps": "Nenhuma etapa — adicione pelo menos uma.",
+      "stepTypeBefore": "dias antes do vencimento",
+      "stepTypeAfter": "dias após o vencimento",
+      "create": "Criar",
+      "createWithCount": "Criar ({count, plural, one {# regra} other {# regras}})",
+      "validation": {
+        "nameRequired": "Nome da campanha obrigatório",
+        "templateRequired": "Modelo obrigatório",
+        "stepsRequired": "Adicione pelo menos uma etapa",
+        "yearMin": "O ano deve ser {year} ou posterior",
+        "stepDaysMin": "Cada etapa deve ter pelo menos 1 dia",
+        "duplicateSteps": "Etapas duplicadas foram detectadas"
+      },
+      "toasts": {
+        "created": "{count, plural, one {Campanha criada com # regra} other {Campanha criada com # regras}}",
+        "allFailed": "Nenhuma regra pôde ser criada",
+        "partial": "{createdCount, plural, one {# regra criada} other {# regras criadas}}, {failedCount, plural, one {# falhou} other {# falharam}} : {names}"
+      }
+    },
+    "historique": {
+      "title": "Histórico de envios",
+      "subtitle": "Todos os emails enviados automaticamente pelas regras ativas.",
+      "noSends": "Nenhum envio registrado",
+      "noSendsHint": "Os envios aparecerão aqui assim que uma regra for executada.",
+      "sendsCount": "{count, plural, one {# envio registrado} other {# envios registrados}}",
+      "columns": {
+        "date": "Data",
+        "rule": "Regra",
+        "recipient": "Destinatário",
+        "subject": "Assunto"
+      },
+      "pageOf": "Página {page} / {total}"
+    }
+  },
+  "parametres": {
+    "view": {
+      "title": "Configurações",
+      "description": "Configuração da sua associação",
+      "tabs": {
+        "general": "Geral",
+        "paiements": "Pagamentos",
+        "abonnement": "Assinatura",
+        "integrations": "Integrações"
+      },
+      "associationInfo": "Informações da associação",
+      "associationName": "Nome da associação",
+      "city": "Cidade",
+      "cityPlaceholder": "São Paulo",
+      "country": "País",
+      "toasts": {
+        "saved": "Configurações salvas"
+      }
+    },
+    "portalLinkSettings": {
+      "title": "Link do portal do membro",
+      "subtitle": "Compartilhe este link com seus membros para que possam acessar sua área.",
+      "copyFailed": "Cópia automática indisponível — selecione o texto acima e copie manualmente.",
+      "copied": "Copiado!",
+      "copy": "Copiar",
+      "open": "Abrir"
+    },
+    "cotisationDefaultsSettings": {
+      "title": "Mensalidade",
+      "subtitle": "Quando um valor é informado, uma mensalidade pendente do ano em curso é criada automaticamente para cada novo membro — ele pode então pagá-la pelo portal, sem esperar que um admin a crie. Deixe em branco para não criar nada automaticamente.",
+      "defaultAmount": "Valor padrão da mensalidade",
+      "defaultAmountHint": "R$ 0,00 = nenhuma mensalidade é criada automaticamente.",
+      "toasts": {
+        "updated": "Valor padrão atualizado"
+      }
+    },
+    "bankSettings": {
+      "title": "Site e dados bancários",
+      "subtitle": "Exibidos em orçamentos e faturas — os dados bancários somente em faturas, nunca em um orçamento ou recibo já pago.",
+      "website": "Site",
+      "websitePlaceholder": "minha-associacao.org",
+      "iban": "Conta bancária",
+      "bic": "Código do banco",
+      "previewTitle": "Prévia no documento",
+      "bankDetails": "Dados bancários",
+      "ibanColon": "Conta: {value}",
+      "bicColon": "Código: {value}",
+      "toasts": {
+        "updated": "Dados atualizados"
+      }
+    },
+    "membreTypes": {
+      "name": "Nome",
+      "namePlaceholder": "Membro ativo",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Membros em dia com a mensalidade anual",
+      "color": "Cor",
+      "preview": "Prévia",
+      "title": "Tipos de membros",
+      "subtitle": "Categorias atribuídas aos membros da sua associação",
+      "add": "Adicionar",
+      "noTypes": "Nenhum tipo criado",
+      "membersCount": "{count, plural, one {# membro} other {# membros}}",
+      "deleteConfirmTitle": "Excluir \"{name}\"?",
+      "deleteConfirmInUse": "Este tipo é usado por {count} membro(s). Reatribua-os antes de excluir.",
+      "deleteConfirmSimple": "Este tipo será excluído definitivamente.",
+      "toasts": {
+        "created": "Tipo \"{name}\" criado",
+        "deleted": "Tipo \"{name}\" excluído",
+        "updated": "Tipo atualizado"
+      }
+    },
+    "branding": {
+      "title": "Identidade visual",
+      "subtitle": "Logo e cores exibidos no painel, orçamentos/faturas, folha de presença e site público.",
+      "logo": "Logo",
+      "primaryColor": "Cor primária",
+      "secondaryColor": "Cor secundária",
+      "secondaryPlaceholder": "Opcional",
+      "proOnlyText": "O logo e as cores personalizadas (painel, orçamentos/faturas, folha de presença) são exclusivos do plano Pro. Faça upgrade na aba Assinatura para ativá-los.",
+      "toasts": {
+        "updated": "Identidade visual atualizada",
+        "uploadError": "Erro ao enviar o logo"
+      }
+    },
+    "identityDons": {
+      "title": "Identidade legal & Doações",
+      "subtitle": "Informações necessárias para emissão de recibos fiscais (Cerfa 11580).",
+      "address": "Endereço completo",
+      "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
+      "phone": "Telefone",
+      "phonePlaceholder": "01 23 45 67 89",
+      "siren": "SIREN / SIRET",
+      "sirenPlaceholder": "123456789",
+      "rna": "Número RNA",
+      "rnaPlaceholder": "W751234567",
+      "objet": "Objeto da associação",
+      "objetPlaceholder": "Ex.: promoção do esporte amador entre os jovens",
+      "organismeCategory": "Categoria do organismo",
+      "organismeCategoryHint": "Categoria marcada nos recibos fiscais (Cerfa 11580 / 16216), usada para doações de empresas.",
+      "organismeCategoryDetail": "Detalhes sobre a categoria (opcional)",
+      "organismeCategoryDetailPlaceholder": "Ex.: data de reconhecimento de utilidade pública",
+      "taxReceiptToggle": "Emitir recibos fiscais",
+      "taxReceiptToggleDesc": "Nossa associação é reconhecida de interesse geral (Art. 200 CGI) e habilitada a emitir recibos fiscais que permitem uma redução de imposto de 66% a 75%.",
+      "noIdentifierWarning": "Adicione um número SIREN ou RNA para poder ativar esta opção.",
+      "taxReceiptInfo": "Os recibos fiscais serão enviados automaticamente por e-mail após cada doação e ficarão disponíveis para download na área do membro. Conservação obrigatória: mínimo de 6 anos.",
+      "taxReceiptObjetWarning": "Verifique o Objeto e a Categoria do organismo acima antes de receber doações de empresas: eles são impressos no recibo fiscal (Cerfa 16216) e o padrão \"Association loi 1901\" pode não corresponder à sua situação.",
+      "toasts": {
+        "updated": "Identidade atualizada"
+      }
+    },
+    "billing": {
+      "title": "Assinatura",
+      "subtitle": "Gerencie sua assinatura da plataforma e seus meios de pagamento.",
+      "tier": {
+        "essential": "Essencial",
+        "pro": "Pro"
+      },
+      "status": {
+        "trial": "Teste gratuito",
+        "active": "Ativo",
+        "pastDue": "Pagamento atrasado",
+        "suspended": "Suspenso",
+        "cancelled": "Cancelado"
+      },
+      "planLabel": "Plano {tier}",
+      "membersCount": "{count} / {limit} membros",
+      "loadError": "Não foi possível obter o status da sua assinatura. Tente novamente mais tarde.",
+      "trialEndsAt": "Seu teste gratuito termina em {date}. Após essa data, o cartão registrado será debitado automaticamente, salvo cancelamento antes dessa data.",
+      "activeText": "Sua assinatura está ativa. Você pode consultar suas faturas, alterar o meio de pagamento ou cancelar a qualquer momento pelo portal de gerenciamento Stripe.",
+      "pastDueText": "A última cobrança falhou. Atualize seu meio de pagamento para evitar a suspensão da sua conta.",
+      "suspendedText": "Sua assinatura está suspensa após várias falhas de pagamento. Acesse a tela dedicada para reativá-la, exportar seus dados ou cancelá-la definitivamente.",
+      "cancelledText": "Sua assinatura foi cancelada. Entre em contato com o suporte para reativá-la.",
+      "cancelAtPeriodEnd": "Sua assinatura foi rescindida e terminará em {date}. Você mantém acesso completo até essa data.",
+      "updatePayment": "Atualizar pagamento",
+      "manageSubscription": "Gerenciar minha assinatura"
+    },
+    "stripeConnect": {
+      "title": "Pagamento online (Stripe)",
+      "subtitle": "Permita que seus membros paguem sua mensalidade online.",
+      "status": {
+        "notConnected": "Não conectado",
+        "incomplete": "Incompleto",
+        "pending": "Pendente",
+        "enabled": "Ativo",
+        "invalid": "Conexão perdida"
+      },
+      "toasts": {
+        "updated": "Conta Stripe atualizada",
+        "notFinalized": "A conexão Stripe não foi concluída. Tente novamente se necessário."
+      },
+      "enabledText": "Seus membros podem pagar a mensalidade online. Os valores são depositados diretamente na sua conta Stripe. Uma comissão de 1,5% é cobrada pela plataforma.",
+      "editAccount": "Editar conta",
+      "dashboardButton": "Painel Stripe",
+      "pendingText": "Sua conta está sendo verificada pela Stripe. Você receberá um e-mail de confirmação.",
+      "completeOnboarding": "Concluir cadastro",
+      "invalidText": "A conexão com sua conta Stripe foi perdida (conta excluída ou acesso revogado). O pagamento online está desativado até a reconexão.",
+      "reconnect": "Reconectar Stripe",
+      "connectText": "Conecte uma conta Stripe para ativar o pagamento online das mensalidades. Uma comissão de 1,5% será cobrada pela plataforma.",
+      "connect": "Conectar Stripe"
+    },
+    "suspended": {
+      "titleSuspended": "Assinatura suspensa",
+      "titleCancelled": "Assinatura cancelada",
+      "pollingText": "Estamos confirmando seu pagamento, aguarde alguns segundos...",
+      "cancelledDesc": "Sua assinatura foi cancelada e o acesso ao painel está bloqueado. Seus dados são mantidos: {action}",
+      "cancelledDescCanEdit": "você pode exportá-los ou assinar novamente a qualquer momento.",
+      "cancelledDescCannotEdit": "entre em contato com um administrador da associação para renovar a assinatura.",
+      "suspendedDescWithDate": "As últimas cobranças falharam e sua assinatura está suspensa desde {date}.",
+      "suspendedDescNoDate": "As últimas cobranças falharam e sua assinatura está suspensa.",
+      "suspendedDescSuffix": "O acesso ao painel está bloqueado até a reativação. Seus dados são mantidos: {action}",
+      "suspendedDescCanEdit": "você pode exportá-los ou cancelar definitivamente a qualquer momento.",
+      "suspendedDescCannotEdit": "entre em contato com um administrador da associação para reativar a assinatura.",
+      "pollTimeout": "A confirmação está demorando mais que o esperado. Atualize a página em instantes.",
+      "resubscribe": "Assinar novamente",
+      "reactivate": "Reativar minha assinatura",
+      "exportData": "Exportar meus dados",
+      "cancelForever": "Cancelar definitivamente minha assinatura",
+      "signOut": "Sair",
+      "cancelDialog": {
+        "title": "Cancelar definitivamente a assinatura",
+        "description": "Sua conta será encerrada e o acesso à plataforma cortado definitivamente para todos os membros. Esta ação é irreversível.",
+        "confirmLabel": "Confirmar cancelamento",
+        "confirming": "Cancelando..."
+      },
+      "toasts": {
+        "reactivated": "Assinatura reativada!"
+      }
+    },
+    "reactivateSubscription": {
+      "back": "Voltar",
+      "title": "Assinar novamente",
+      "subtitle": "Sua assinatura anterior foi cancelada. Escolha um plano e informe um meio de pagamento para recuperar o acesso.",
+      "newSubscription": "Nova assinatura",
+      "perMonth": "{amount}/mês",
+      "billedOnce": "Cobrado em pagamento único",
+      "perYear": "{amount}/ano",
+      "confirmButton": "Confirmar e assinar",
+      "securePayment": "Pagamento seguro pela Stripe",
+      "retry": "Tentar novamente",
+      "paymentError": "Erro de pagamento",
+      "reactivateError": "Erro ao reativar",
+      "toasts": {
+        "reactivated": "Assinatura reativada!"
+      }
+    }
+  },
+  "cotisations": {
+    "form": {
+      "member": "Membro",
+      "memberPlaceholder": "Selecionar um membro…",
+      "year": "Ano",
+      "amount": "Valor",
+      "paidAt": "Data de pagamento",
+      "note": "Observação",
+      "notePlaceholder": "Informações adicionais…"
+    },
+    "view": {
+      "title": "Mensalidades",
+      "count": "{count, plural, one {# mensalidade} other {# mensalidades}}",
+      "totalCollected": " · {amount} arrecadado",
+      "columns": {
+        "member": "Membro",
+        "year": "Ano",
+        "amount": "Valor",
+        "status": "Status",
+        "paidAt": "Pago em"
+      },
+      "actions": {
+        "edit": "Editar",
+        "declaration": "Recibo",
+        "delete": "Excluir"
+      },
+      "searchPlaceholder": "Pesquisar um membro…",
+      "allStatuses": "Todos os status",
+      "all": "Todos",
+      "statusFilter": {
+        "enAttente": "Pendente",
+        "payees": "Pagas",
+        "exonerees": "Isentas"
+      },
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noCotisation": "Nenhuma mensalidade registrada",
+      "addTitle": "Adicionar mensalidade",
+      "editTitle": "Editar mensalidade",
+      "deleteConfirmTitle": "Excluir esta mensalidade?",
+      "deleteConfirmDescription": "Mensalidade {year} de {name}.",
+      "toasts": {
+        "created": "Mensalidade registrada",
+        "updated": "Mensalidade atualizada",
+        "deleted": "Mensalidade excluída"
+      }
+    }
+  },
+  "membres": {
+    "form": {
+      "status": {
+        "pending": "Pendente",
+        "actif": "Ativo",
+        "inactif": "Inativo",
+        "suspendu": "Suspenso"
+      },
+      "role": {
+        "membre": "Membro",
+        "secretaire": "Secretário(a)",
+        "tresorier": "Tesoureiro(a)",
+        "president": "Presidente",
+        "admin": "Admin"
+      },
+      "civilite": {
+        "none": "Não informado",
+        "mme": "Sra.",
+        "mlle": "Srta.",
+        "m": "Sr."
+      },
+      "sexe": {
+        "none": "Não informado",
+        "homme": "Masculino",
+        "femme": "Feminino"
+      },
+      "groupeSanguinNone": "Não informado",
+      "tailleTshirtNone": "Não informado",
+      "adherentOverride": {
+        "auto": "Automático (conforme mensalidade)",
+        "forceAdherent": "Forçar Associado",
+        "forceBenevole": "Forçar Voluntário"
+      },
+      "fields": {
+        "firstName": "Nome",
+        "lastName": "Sobrenome",
+        "email": "Email",
+        "emailPlaceholder": "contato@exemplo.com",
+        "phone": "Telefone",
+        "phonePlaceholder": "+55 11 91234-5678",
+        "role": "Função",
+        "birthDate": "Data de nascimento",
+        "status": "Status",
+        "adhesionCotisation": "Associação (mensalidade)",
+        "civilite": "Tratamento",
+        "sexe": "Sexo",
+        "groupeSanguin": "Tipo sanguíneo",
+        "possedeTshirt": "Possui camiseta",
+        "tailleTshirt": "Tamanho da camiseta",
+        "responsable": "Responsável legal (se menor)",
+        "allergies": "Alergias conhecidas",
+        "allergiesPlaceholder": "Amendoim, pólen…",
+        "type": "Tipo de membro",
+        "address": "Endereço",
+        "addressPlaceholder": "Rua Exemplo, 123, São Paulo"
+      },
+      "invitationNotice": "Um email de convite com os dados de acesso será enviado para este endereço.",
+      "adherentAutoWithResponsable": "Calculado automaticamente: a própria mensalidade do ano em curso, se existir, senão a do responsável — só force em caso de exceção (independente de \"Status\", que controla a conta).",
+      "adherentAutoNoResponsable": "Calculado automaticamente conforme a mensalidade do ano em curso — só force em caso de exceção (independente de \"Status\", que controla a conta).",
+      "noType": "Nenhum tipo",
+      "noResponsable": "Nenhum",
+      "noAdultResponsable": "Nenhum membro maior de idade disponível",
+      "preview": "Prévia:"
+    },
+    "actions": {
+      "add": "Adicionar membro",
+      "edit": "Editar membro",
+      "delete": "Excluir",
+      "deleteConfirmTitle": "Excluir {name}?"
+    },
+    "view": {
+      "title": "Membros",
+      "resultsCount": "{count, plural, one {# resultado} other {# resultados}}",
+      "membersCount": "{count, plural, one {# membro} other {# membros}}",
+      "blankFormPdf": "Ficha em branco (PDF)",
+      "sendEmail": "Enviar um email",
+      "sendSms": "Enviar um SMS",
+      "export": "Exportar",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
+      "columns": {
+        "member": "Membro",
+        "phone": "Telefone",
+        "memberSince": "Membro desde",
+        "status": "Status",
+        "membership": "Associação"
+      },
+      "membershipAdherent": "Associado",
+      "membershipBenevole": "Voluntário",
+      "statsMembership": "Associação",
+      "statsAdherents": "Associados",
+      "statsBenevoles": "Voluntários",
+      "statsDemographics": "Demografia",
+      "statsMen": "Homens",
+      "statsWomen": "Mulheres",
+      "statsSexUnknown": "Sexo não informado",
+      "statsAdults": "Adultos",
+      "statsChildren": "Crianças",
+      "statsAgeUnknown": "Idade não informada",
+      "searchPlaceholder": "Pesquisar um membro…",
+      "allStatuses": "Todos os status",
+      "allTypes": "Todos os tipos",
+      "allMembership": "Associados e voluntários",
+      "statusOptions": {
+        "pending": "Pendente",
+        "actifs": "Ativos",
+        "inactifs": "Inativos",
+        "suspendus": "Suspensos"
+      },
+      "adherentOptions": {
+        "adherents": "Associados",
+        "benevoles": "Voluntários"
+      },
+      "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noMembers": "Nenhum membro cadastrado",
+      "actions": {
+        "view": "Ver ficha",
+        "edit": "Editar",
+        "history": "Histórico",
+        "changeRole": "Alterar função",
+        "createAccess": "Criar acesso",
+        "delete": "Excluir"
+      },
+      "deleteConfirmDescription": "Este membro será arquivado e não poderá mais acessar a associação.",
+      "historyTitle": "Histórico — {name}",
+      "historyTitleDefault": "Histórico",
+      "toasts": {
+        "accessCreated": "Acesso criado para {name} — um email foi enviado",
+        "memberAdded": "Membro adicionado com sucesso",
+        "memberUpdated": "Membro atualizado",
+        "memberDeleted": "Membro excluído",
+        "memberDeletedWithUnlink": "Membro excluído — removido como responsável legal de {count} membro(s)",
+        "noMembersToExport": "Nenhum membro para exportar",
+        "viewSubscription": "Ver assinatura",
+        "roleUpdated": "Função atualizada"
+      },
+      "changeRoleTitle": "Alterar função",
+      "changeRoleDescription": "Função de {name} na associação."
+    },
+    "detail": {
+      "notFound": "Este membro não foi encontrado ou foi excluído.",
+      "backToList": "Voltar à lista",
+      "backLink": "Membros",
+      "memberSince": "Membro desde {date}",
+      "adherentViaResponsable": "Status herdado do responsável — este membro não possui mensalidade em seu próprio nome",
+      "viaResponsable": " (via responsável)",
+      "cotisationButton": "Mensalidade",
+      "createAccessButton": "Criar acesso",
+      "roleButton": "Função",
+      "contact": "Contato",
+      "noContactInfo": "Nenhuma informação de contato",
+      "memberSinceColon": "Membro desde: {date}",
+      "typeColon": "Tipo: {name}",
+      "personalInfo": "Informações pessoais",
+      "civiliteColon": "Tratamento: {value}",
+      "sexeColon": "Sexo: {value}",
+      "birthColon": "Nascimento: {date}",
+      "groupeSanguinColon": "Tipo sanguíneo: {value}",
+      "hasTshirtColon": "Possui camiseta: {value}",
+      "tshirtSizeColon": "Tamanho da camiseta: {value}",
+      "allergiesColon": "Alergias: {value}",
+      "legalGuardianColon": "Responsável legal:",
+      "noInfo": "Nenhuma informação cadastrada",
+      "accountAccess": "Conta e acesso",
+      "activeAccount": "Conta ativa · {role}",
+      "noAccountWithEmail": "Nenhuma conta de usuário — um acesso pode ser criado",
+      "noAccountNoEmail": "Nenhuma conta de usuário — email necessário para criar acesso",
+      "dependantsTitle": "Membros sob sua responsabilidade:",
+      "tabs": {
+        "cotisations": "Mensalidades",
+        "evenements": "Eventos",
+        "reunions": "Reuniões",
+        "materiel": "Material",
+        "historique": "Histórico",
+        "emails": "Emails"
+      },
+      "cotisationStatus": {
+        "enAttente": "Pendente",
+        "paye": "Paga",
+        "exonere": "Isenta"
+      },
+      "loanStatus": {
+        "demande": "Solicitação pendente",
+        "confirme": "Em andamento",
+        "refuse": "Recusado",
+        "returned": "Devolvido"
+      },
+      "meetingStatus": {
+        "scheduled": "Agendada",
+        "live": "Em andamento",
+        "ended": "Encerrada",
+        "cancelled": "Cancelada"
+      },
+      "noCotisation": "Nenhuma mensalidade registrada",
+      "paidOn": "Paga em {date}",
+      "showingRecentCotisations": "Exibindo as {count} mensalidades mais recentes de {total} no total.",
+      "noParticipation": "Nenhuma participação registrada",
+      "present": "Presente",
+      "showingRecentParticipations": "Exibindo as {count} participações mais recentes de {total} no total.",
+      "noMeeting": "Nenhuma reunião registrada",
+      "participated": "Participou",
+      "notParticipated": "Não participou",
+      "showingRecentMeetings": "Exibindo as {count} reuniões mais recentes de {total} no total.",
+      "noLoan": "Nenhum empréstimo de material",
+      "borrowedOn": "Emprestado em {date}",
+      "returnedOn": " · Devolvido em {date}",
+      "showingRecentLoans": "Exibindo os {count} empréstimos mais recentes de {total} no total.",
+      "addCotisationTitle": "Adicionar mensalidade",
+      "deleteConfirmWithDependants": "Este membro será arquivado e não poderá mais acessar a associação. Também será removido como responsável legal de {count} membro(s): {names}.",
+      "toasts": {
+        "accessCreated": "Acesso criado — um email foi enviado",
+        "cotisationAdded": "Mensalidade adicionada"
+      }
+    },
+    "sms": {
+      "title": "Enviar um SMS",
+      "charsRemaining": "{count, plural, one {# caractere restante} other {# caracteres restantes}}",
+      "segmentsCount": "· {count} SMS",
+      "truncatedNotice": "Apenas os primeiros 500 membros são exibidos. Para atingir mais membros, use o modo \"Todos os membros\" ou \"Por tipo\".",
+      "searchPlaceholder": "Pesquisar…",
+      "membersCount": "{count, plural, one {# membro} other {# membros}}",
+      "deselectAll": "Desmarcar todos",
+      "selectAll": "Selecionar todos",
+      "noMemberFound": "Nenhum membro encontrado",
+      "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
+      "noMemberSelected": "Nenhum membro selecionado",
+      "recipients": "Destinatários",
+      "modeAll": "Todos os membros",
+      "modeType": "Por tipo",
+      "modeManual": "Seleção manual",
+      "allModeNotice": "O SMS será enviado para todos os membros ativos com um número de telefone.",
+      "typeLabel": "Tipo de membro",
+      "noTypeConfigured": "Nenhum tipo configurado",
+      "noActiveMemberWithPhone": "Nenhum membro ativo com número de telefone",
+      "message": "Mensagem",
+      "messagePlaceholder": "Escreva sua mensagem de SMS…",
+      "variablesNotice": "As variáveis {p} e {a} não estão disponíveis para envios manuais.",
+      "continue": "Continuar",
+      "confirmSendTitle": "Confirmação de envio",
+      "confirmSendDescription": "Este SMS será enviado para {recipients}. Esta ação não pode ser desfeita.",
+      "recipientsManualOnly": "Somente membros com um número de telefone válido receberão o SMS.",
+      "sendNow": "Enviar agora",
+      "discardTitle": "Descartar a mensagem?",
+      "discardDescription": "A mensagem escrita será perdida se você fechar agora.",
+      "discard": "Descartar",
+      "recipientsOfType": "{count, plural, one {# membro} other {# membros}} do tipo \"{type}\"",
+      "recipientsTypeSelected": "{count, plural, one {# membro (tipo selecionado)} other {# membros (tipo selecionado)}}",
+      "recipientsActive": "{count, plural, one {# membro ativo} other {# membros ativos}}",
+      "toasts": {
+        "selectType": "Selecione um tipo de membro",
+        "selectMember": "Selecione pelo menos um membro",
+        "writeMessage": "Escreva a mensagem de SMS",
+        "noPhoneRecipient": "Nenhum destinatário com número de telefone nesta seleção",
+        "cannotVerifyCount": "Não foi possível verificar o número de destinatários",
+        "noSmsSent": "Nenhum SMS enviado",
+        "noSmsSentWithFailures": "Nenhum SMS enviado — {count, plural, one {# falha} other {# falhas}}",
+        "smsSent": "{count, plural, one {SMS enviado para # membro} other {SMS enviado para # membros}}",
+        "sendFailures": "{count, plural, one {# envio falhou} other {# envios falharam}}{preview}",
+        "andOthers": " e mais {count}",
+        "networkError": "Erro de rede"
+      }
+    },
+    "email": {
+      "title": "Enviar um email",
+      "recipients": "Destinatários",
+      "modeAll": "Todos os membros",
+      "modeType": "Por tipo",
+      "modeManual": "Seleção manual",
+      "allModeNotice": "O email será enviado a todos os membros ativos com um endereço de email.",
+      "typeLabel": "Tipo de membro",
+      "noTypeConfigured": "Nenhum tipo configurado",
+      "noActiveMemberWithEmail": "Nenhum membro ativo com endereço de email",
+      "searchPlaceholder": "Pesquisar…",
+      "membersCount": "{count, plural, one {# membro} other {# membros}}",
+      "selectAll": "Selecionar tudo",
+      "deselectAll": "Desmarcar tudo",
+      "noMemberFound": "Nenhum membro encontrado",
+      "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
+      "noMemberSelected": "Nenhum membro selecionado",
+      "templateSectionLabel": "Modelo",
+      "deselectTemplate": "Desmarcar",
+      "noTemplateCreated": "Nenhum modelo criado.",
+      "createTemplateLink": "Criar um modelo",
+      "inMessagesSection": " na seção Mensagens.",
+      "messageSectionLabel": "Mensagem",
+      "saveAsTemplate": "Salvar como modelo",
+      "subjectLabel": "Assunto",
+      "subjectPlaceholder": "Assunto do email…",
+      "bodyLabel": "Corpo da mensagem",
+      "bodyPlaceholder": "Redija sua mensagem…",
+      "continue": "Continuar",
+      "confirmSendTitle": "Confirmação de envio",
+      "confirmSendDescription": "Este email será enviado a {recipients}. Esta ação é irreversível.",
+      "sendNow": "Enviar agora",
+      "replaceContentTitle": "Substituir o conteúdo?",
+      "replaceContentDescription": "Aplicar este modelo substituirá o assunto e o corpo já redigidos.",
+      "replace": "Substituir",
+      "discardTitle": "Descartar a mensagem?",
+      "discardDescription": "O conteúdo redigido será perdido se você fechar agora.",
+      "discard": "Descartar",
+      "templateNameLabel": "Nome do modelo",
+      "templateNamePlaceholder": "ex. Lembrete de mensalidade anual…",
+      "recipientsOfType": "{count, plural, one {# membro} other {# membros}} do tipo « {type} »",
+      "recipientsActive": "{count, plural, one {# membro ativo} other {# membros ativos}}",
+      "toasts": {
+        "selectType": "Selecione um tipo de membro",
+        "selectMember": "Selecione pelo menos um membro",
+        "subjectRequired": "Informe o assunto da mensagem",
+        "bodyRequired": "Redija o conteúdo da mensagem",
+        "noRecipientWithEmail": "Nenhum destinatário com endereço de email nesta seleção",
+        "cannotVerifyCount": "Não foi possível verificar o número de destinatários",
+        "templateSaved": "Modelo « {name} » salvo",
+        "noEmailSent": "Nenhum email enviado",
+        "noEmailSentWithFailures": "Nenhum email enviado — {count, plural, one {# falha} other {# falhas}}",
+        "emailSent": "{count, plural, one {Email enviado a # membro} other {Email enviado a # membros}} — o status de entrega de cada um aparecerá no seu histórico",
+        "sendFailures": "{count, plural, one {# envio falhou} other {# envios falharam}}{preview}",
+        "andOthers": " e {count} outro(s)"
+      }
+    },
+    "activityLog": {
+      "fields": {
+        "firstName": "Nome",
+        "lastName": "Sobrenome",
+        "name": "Nome",
+        "email": "Email",
+        "phone": "Telefone",
+        "address": "Endereço",
+        "birthDate": "Data de nascimento",
+        "status": "Status",
+        "typeId": "Tipo",
+        "role": "Função",
+        "adherentOverride": "Status de associação"
+      },
+      "adherentOverrideValues": {
+        "forcedAdherent": "Forçado Associado",
+        "forcedBenevole": "Forçado Voluntário"
+      },
+      "actions": {
+        "membreCreated": "Membro adicionado",
+        "membreUpdated": "Informações atualizadas",
+        "profilUpdated": "Perfil atualizado",
+        "profileUpdated": "Perfil atualizado",
+        "membreRoleChanged": "Função alterada",
+        "passwordChanged": "Senha alterada",
+        "passwordReset": "Senha redefinida",
+        "membreDeleted": "Membro arquivado",
+        "membrePortalRegistered": "Registro no portal",
+        "membreInscriptionRequested": "Solicitação de associação (site)",
+        "cotisationCreated": "Mensalidade adicionada",
+        "cotisationUpdated": "Mensalidade atualizada",
+        "cotisationDeleted": "Mensalidade excluída",
+        "cotisationPaid": "Mensalidade paga",
+        "cotisationRefunded": "Mensalidade reembolsada",
+        "loanCreated": "Empréstimo de material criado",
+        "loanRequested": "Empréstimo solicitado",
+        "loanConfirmed": "Empréstimo confirmado",
+        "loanRefused": "Empréstimo recusado",
+        "loanReturned": "Material devolvido",
+        "loanUpdated": "Empréstimo atualizado",
+        "loanCancelled": "Empréstimo cancelado",
+        "loanDeleted": "Empréstimo excluído"
+      },
+      "actorPrefix": "por {name}",
+      "loadError": "Não foi possível carregar o histórico.",
+      "empty": "Nenhuma atividade registrada para este membro.",
+      "shownOfTotal": "{shown} de {total, plural, one {# ação} other {# ações}}",
+      "loadMore": "Ver mais"
+    },
+    "activiteView": {
+      "title": "Atividade",
+      "actionsCount": "{count, plural, one {# ação} other {# ações}}",
+      "resetFilters": "Redefinir",
+      "allModules": "Todos os módulos",
+      "fromLabel": "De",
+      "toLabel": "até",
+      "errorLoading": "Erro ao carregar as atividades.",
+      "retry": "Tentar novamente",
+      "noActivityFound": "Nenhuma atividade encontrada",
+      "deletedElement": "Item excluído",
+      "system": "Sistema",
+      "pageOf": "Página {page} de {totalPages}",
+      "columns": {
+        "date": "Data",
+        "action": "Ação",
+        "element": "Item",
+        "by": "Por",
+        "details": "Detalhes"
+      },
+      "entities": {
+        "membre": "Membros",
+        "user": "Contas",
+        "actualite": "Notícias",
+        "evenement": "Eventos",
+        "participation": "Presenças / RSVP",
+        "cotisation": "Mensalidades",
+        "material": "Material",
+        "materialLoan": "Empréstimos",
+        "messageTemplate": "Modelos",
+        "automationRule": "Automações",
+        "membreType": "Tipos de membro",
+        "association": "Configurações",
+        "boutiqueProduit": "Loja – Produtos",
+        "boutiqueCommande": "Loja – Pedidos",
+        "sondage": "Enquetes",
+        "sondageReponse": "Enquetes – Respostas",
+        "meeting": "Reuniões",
+        "don": "Doações",
+        "bankAccount": "Contas bancárias",
+        "bankTransaction": "Transações bancárias",
+        "income": "Receitas",
+        "expense": "Despesas",
+        "financeCategory": "Categorias financeiras",
+        "payment": "Pagamentos"
+      },
+      "messageTemplateFilterLabel": "Modelos msg",
+      "actualiteFields": {
+        "title": "Título",
+        "pinned": "Fixado",
+        "publishedAt": "Publicação",
+        "recipientMode": "Destinatários",
+        "content": "Conteúdo"
+      },
+      "actualiteValues": {
+        "draft": "Rascunho",
+        "contentChanged": "alterado"
+      },
+      "recipientModeAll": "Todos os membros",
+      "recipientModeSelected": "Seleção",
+      "genericFields": {
+        "evenementLocation": "Local",
+        "evenementPrice": "Preço",
+        "evenementCapacity": "Capacidade",
+        "cotisationAmount": "Valor",
+        "cotisationPaidAt": "Data do pagamento",
+        "cotisationNote": "Observação"
+      },
+      "rsvp": {
+        "confirme": "Confirmado",
+        "provavel": "Provável",
+        "incerto": "Incerto",
+        "absent": "Ausente"
+      },
+      "statusValues": {
+        "paye": "Paga",
+        "exonere": "Isenta",
+        "paused": "Pausado",
+        "done": "Concluído"
+      },
+      "entrySortie": {
+        "entree": "Entrada",
+        "sortie": "Saída"
+      },
+      "detailsRsvpLabel": "RSVP:",
+      "detailsPresent": "Presente",
+      "detailsQuantityLabel": "Qtd.: {qty}",
+      "automationSkippedNoContact": "{skipped} / {total, plural, one {# aniversário} other {# aniversários}} de hoje {skipped, plural, one {ignorado} other {ignorados}} — membro sem email/telefone disponível.",
+      "actions": {
+        "membreCreated": "Membro adicionado",
+        "membreUpdated": "Membro atualizado",
+        "membreDeleted": "Membro arquivado",
+        "membrePortalRegistered": "Registrado (portal)",
+        "membreInscriptionRequested": "Solicitação de associação (site)",
+        "membreRoleChanged": "Função alterada",
+        "membreAccessCreated": "Acesso criado",
+        "profilUpdated": "Perfil atualizado",
+        "profileUpdated": "Perfil atualizado",
+        "passwordChanged": "Senha alterada",
+        "passwordReset": "Senha redefinida",
+        "emailSentBulk": "Email enviado",
+        "smsSentBulk": "SMS enviado",
+        "actualiteCreated": "Notícia criada",
+        "actualiteUpdated": "Notícia atualizada",
+        "actualiteDeleted": "Notícia excluída",
+        "evenementCreated": "Evento criado",
+        "evenementUpdated": "Evento atualizado",
+        "evenementDeleted": "Evento excluído",
+        "presenceMarked": "Presença marcada",
+        "rsvpUpdated": "RSVP atualizado",
+        "participationGuestUpdated": "Convidado atualizado",
+        "participationGuestRemoved": "Convidado removido",
+        "ticketCheckoutStarted": "Pagamento iniciado",
+        "ticketPaid": "Ingresso pago",
+        "ticketPaymentCancelled": "Pagamento cancelado",
+        "ticketRefunded": "Ingresso reembolsado",
+        "evenementQrGenerated": "QR de check-in gerado",
+        "evenementQrRevoked": "QR de check-in revogado",
+        "cotisationCreated": "Mensalidade criada",
+        "cotisationUpdated": "Mensalidade atualizada",
+        "cotisationDeleted": "Mensalidade excluída",
+        "cotisationRefunded": "Mensalidade reembolsada",
+        "bankAccountCreated": "Conta bancária adicionada",
+        "bankAccountUpdated": "Conta bancária atualizada",
+        "bankAccountDeleted": "Conta bancária excluída",
+        "bankStatementImported": "Extrato importado",
+        "bankTxStatusUpdated": "Transação atualizada",
+        "txIgnored": "Transação ignorada",
+        "txMarkedDuplicate": "Marcada como duplicada",
+        "txMatchedIncome": "Receita conciliada",
+        "txMatchedExpense": "Despesa conciliada",
+        "txUnmatched": "Conciliação cancelada",
+        "incomeCreated": "Receita adicionada",
+        "incomeUpdated": "Receita atualizada",
+        "incomeDeleted": "Receita excluída",
+        "expenseCreated": "Despesa adicionada",
+        "expenseUpdated": "Despesa atualizada",
+        "expenseDeleted": "Despesa excluída",
+        "financeCategoryCreated": "Categoria criada",
+        "financeCategoryUpdated": "Categoria atualizada",
+        "financeCategoryDeleted": "Categoria excluída",
+        "partialRefundReceived": "Reembolso parcial",
+        "materielCreated": "Material adicionado",
+        "materielUpdated": "Material atualizado",
+        "materielDeleted": "Material excluído",
+        "loanCreated": "Empréstimo criado",
+        "loanRequested": "Empréstimo solicitado",
+        "loanConfirmed": "Empréstimo confirmado",
+        "loanRefused": "Empréstimo recusado",
+        "loanReturned": "Empréstimo devolvido",
+        "loanUpdated": "Solicitação atualizada",
+        "loanCancelled": "Solicitação cancelada",
+        "loanDeleted": "Empréstimo excluído",
+        "templateCreated": "Modelo criado",
+        "templateUpdated": "Modelo atualizado",
+        "templateDeleted": "Modelo excluído",
+        "templateActivated": "Modelo ativado",
+        "templateDeactivated": "Modelo desativado",
+        "ruleCreated": "Regra criada",
+        "ruleUpdated": "Regra atualizada",
+        "ruleDeleted": "Regra excluída",
+        "automationSkipped": "Envio(s) ignorado(s) — sem contato",
+        "typeCreated": "Tipo criado",
+        "typeUpdated": "Tipo atualizado",
+        "typeDeleted": "Tipo excluído",
+        "meetingCreated": "Reunião criada",
+        "meetingUpdated": "Reunião atualizada",
+        "meetingDeleted": "Reunião excluída",
+        "meetingEnded": "Reunião encerrada",
+        "meetingRecordingStarted": "Gravação iniciada",
+        "meetingRecordingStopped": "Gravação interrompida",
+        "meetingTranscribed": "Transcrição gerada",
+        "meetingSummarized": "Resumo gerado",
+        "sondageCreated": "Enquete criada",
+        "sondageUpdated": "Enquete atualizada",
+        "sondageDeleted": "Enquete excluída",
+        "sondageActivated": "Enquete ativada",
+        "sondageClosed": "Enquete encerrada",
+        "sondageReponseSubmitted": "Resposta enviada",
+        "boutiqueProduitCreated": "Produto criado",
+        "boutiqueProduitUpdated": "Produto atualizado",
+        "boutiqueProduitDeleted": "Produto excluído",
+        "boutiqueCommandeCreated": "Pedido criado",
+        "boutiqueCommandeUpdated": "Pedido atualizado",
+        "commandeRefunded": "Pedido reembolsado",
+        "donCreated": "Doação criada",
+        "donPaid": "Doação recebida",
+        "donRefunded": "Doação reembolsada",
+        "cotisationPaidStripe": "Mensalidade paga (Stripe)",
+        "associationRegistered": "Associação criada",
+        "associationUpdated": "Configurações atualizadas",
+        "siteUpdated": "Site atualizado",
+        "sitePublished": "Site publicado",
+        "siteUnpublished": "Site despublicado",
+        "smsSettingsUpdated": "SMS — configurações",
+        "aiConfigUpdated": "IA — configurações",
+        "livekitConfigUpdated": "Vídeo — configurações",
+        "ticketCheckoutExpired": "Pagamento expirado"
+      }
+    }
+  },
+  "site": {
+    "sectionLabels": {
+      "hero": "Banner principal",
+      "about": "Sobre",
+      "events": "Próximos eventos",
+      "actualites": "Notícias",
+      "membership": "Junte-se à associação",
+      "contact": "Contato"
+    },
+    "defaultTitles": {
+      "hero": "Bem-vindo",
+      "about": "Sobre",
+      "events": "Próximos eventos",
+      "membership": "Junte-se à associação",
+      "actualites": "Notícias",
+      "contact": "Contato"
+    },
+    "view": {
+      "uploadFailedWarning": "{count, plural, one {# imagem não pôde ser enviada.} other {# imagens não puderam ser enviadas.}}",
+      "defaultAssociationName": "Minha associação",
+      "toasts": {
+        "saved": "Site salvo",
+        "saveError": "Erro ao salvar o site",
+        "publishFirst": "Salve suas alterações antes de publicar.",
+        "published": "Site publicado",
+        "unpublished": "Site despublicado",
+        "error": "Erro"
+      }
+    },
+    "controls": {
+      "published": "Publicado",
+      "unpublished": "Não publicado",
+      "copyLink": "Copiar link",
+      "open": "Abrir",
+      "unpublishButton": "Despublicar",
+      "publishButton": "Publicar",
+      "save": "Salvar",
+      "appearance": "Aparência",
+      "primaryColor": "Cor principal",
+      "logo": "Logo",
+      "header": "Cabeçalho",
+      "headerBgColor": "Cor de fundo",
+      "headerBgPlaceholder": "#ffffff (branco por padrão)",
+      "loginButton": "Botão \"Entrar\"",
+      "registerButton": "Botão \"Cadastrar\"",
+      "footer": "Rodapé",
+      "footerTextLabel": "Texto",
+      "footerTextPlaceholder": "© {year} Minha Associação",
+      "footerBgColor": "Cor de fundo",
+      "links": "Links",
+      "add": "Adicionar",
+      "linkLabelPlaceholder": "Rótulo",
+      "linkUrlPlaceholder": "https://…",
+      "linkUrlError": "A URL deve começar com https://",
+      "noLinks": "Nenhum link. Clique em Adicionar.",
+      "sections": "Seções",
+      "noSections": "Nenhuma seção. Adicione uma abaixo.",
+      "addSection": "Adicionar uma seção",
+      "deleteSectionTitle": "Excluir a seção",
+      "deleteSectionDescription": "Esta ação é irreversível."
+    },
+    "sectionSheet": {
+      "editTitle": "Editar — {label}",
+      "sectionTitle": "Título da seção",
+      "subtitle": "Subtítulo",
+      "subtitlePlaceholder": "Descubra nossa associação…",
+      "heroHeight": "Altura do banner",
+      "heroHeightFull": "Página inteira",
+      "heroHeightHalf": "Meia página",
+      "bgImage": "Imagem de fundo (opcional)",
+      "bgImageHint": "Uma sobreposição escura será adicionada automaticamente.",
+      "bgColor": "Cor de fundo (opcional)",
+      "bgColorHint": "Ignorada se uma imagem estiver definida.",
+      "bgColorPlaceholder": "Usa a cor principal por padrão",
+      "content": "Conteúdo",
+      "contentPlaceholder": "Apresente sua associação…",
+      "eventsLimit": "Número de eventos a exibir",
+      "eventsLimitHint": "Os eventos são retirados automaticamente do seu calendário.",
+      "actualitesLimit": "Número de notícias a exibir",
+      "actualitesLimitHint": "Apenas as N primeiras notícias publicadas serão exibidas no site.",
+      "membershipIntro": "Texto introdutório",
+      "membershipIntroPlaceholder": "Preencha este formulário para solicitar associação…",
+      "membershipHint": "As solicitações aparecem na lista de membros com status \"Pendente\".",
+      "contactHint": "Esta seção exibe automaticamente a cidade e o país configurados nas configurações da associação.",
+      "cancel": "Cancelar",
+      "apply": "Aplicar",
+      "discardTitle": "Descartar as alterações?",
+      "discardDescription": "As alterações não aplicadas serão perdidas.",
+      "discardConfirm": "Descartar"
+    },
+    "editor": {
+      "viewSite": "Ver o site",
+      "logoUrl": "URL do logo (opcional)",
+      "footerText": "Texto do rodapé"
+    }
+  },
+  "portalMembre": {
+    "sondages": {
+      "title": "Enquetes",
+      "subtitle": "Questionários a preencher da sua associação.",
+      "noSurveys": "Nenhuma enquete ativa no momento.",
+      "answered": "Respondido",
+      "toComplete": "A preencher",
+      "anonymous": "Anônimo",
+      "questionsCount": "{count, plural, one {# pergunta} other {# perguntas}}",
+      "deadline": "Encerra em: {date}",
+      "completedOn": "Concluído em {date}",
+      "respond": "Responder"
+    },
+    "boutique": {
+      "title": "Loja",
+      "subtitle": "Peça seus artigos online.",
+      "myOrders": "Meus pedidos",
+      "cart": "Carrinho ({count})",
+      "noProducts": "Nenhum artigo disponível no momento.",
+      "outOfStock": "Esgotado",
+      "notFound": "Produto não encontrado.",
+      "backToShop": "Voltar à loja",
+      "selectVariant": "Selecione uma variante",
+      "insufficientStock": "Estoque insuficiente",
+      "addedToCart": "Adicionado ao carrinho",
+      "variantLabel": "Variante",
+      "startingFrom": "A partir de {price}",
+      "quantity": "Quantidade",
+      "inStock": "{count} em estoque",
+      "variantOutOfStock": "Esta variante está esgotada",
+      "addToCart": "Adicionar ao carrinho",
+      "myCart": "Meu carrinho",
+      "cartEmpty": "Seu carrinho está vazio.",
+      "viewShop": "Ver a loja",
+      "orderPlacedTitle": "Pedido registrado!",
+      "orderPlacedDescription": "Seu pedido está aguardando pagamento. A administração entrará em contato para finalizar.",
+      "myOrdersButton": "Meus pedidos",
+      "continueShopping": "Continuar comprando",
+      "maxStockReached": "Estoque máximo atingido",
+      "summary": "Resumo",
+      "total": "Total",
+      "paymentMethod": "Forma de pagamento",
+      "paymentManual": "Na retirada",
+      "paymentStripe": "Online",
+      "paymentManualHint": "O pagamento é feito na retirada. A administração entrará em contato.",
+      "paymentStripeHint": "Você receberá um link de pagamento seguro após a confirmação do pedido.",
+      "note": "Observação",
+      "optional": "(opcional)",
+      "notePlaceholder": "Ex.: Retirar no sábado…",
+      "order": "Fazer pedido",
+      "paymentConfirmed": "Pagamento confirmado! Seu pedido foi registrado.",
+      "orderStatus": {
+        "pending": "Pendente",
+        "paid": "Pago",
+        "cancelled": "Cancelado"
+      },
+      "noOrders": "Nenhum pedido no momento.",
+      "noteLabel": "Observação: {note}",
+      "downloadReceipt": "Baixar recibo",
+      "pendingConfirmationHint": "Aguardando confirmação. A administração entrará em contato para a retirada.",
+      "editModalTitle": "Editar meu pedido",
+      "editModalDescription": "Você pode reduzir ou remover itens. Para adicionar mais, faça um novo pedido.",
+      "saveWithAmount": "Salvar {amount}",
+      "totalOrdered": "Total pedido",
+      "removeAllHint": "Para remover todos os itens, cancele o pedido em vez disso.",
+      "cancelOrderTitle": "Cancelar este pedido?",
+      "cancelOrderDescription": "Esta ação é irreversível. Os itens serão devolvidos ao estoque.",
+      "cancelOrderConfirm": "Cancelar o pedido",
+      "toasts": {
+        "paymentError": "Erro ao processar o pagamento",
+        "orderError": "Erro ao registrar o pedido",
+        "orderUpdated": "Pedido atualizado",
+        "orderCancelled": "Pedido cancelado"
+      }
+    },
+    "dons": {
+      "title": "Minhas doações",
+      "subtitle": "Histórico das suas contribuições.",
+      "makeDonation": "Fazer uma doação",
+      "noneYet": "Você ainda não fez nenhuma doação.",
+      "makeFirstDonation": "Fazer minha primeira doação",
+      "received": "Recebida",
+      "pending": "Pendente",
+      "messageQuote": "\"{message}\"",
+      "taxReceipt": "Recibo fiscal",
+      "taxReceiptHint": "Seus recibos fiscais dão direito a uma redução de imposto (Art. 200 CGI).",
+      "toWhom": "para {name}",
+      "taxDeductibleTitle": "Sua doação é dedutível do imposto de renda",
+      "taxDeductibleDetail": "75% de redução até 1.000 €, depois 66% — Art. 200 CGI. Um recibo fiscal será enviado por e-mail e ficará disponível em \"Minhas doações\".",
+      "noAddressWarning": "Seu perfil não tem um endereço registrado — seu recibo fiscal será emitido sem ele.",
+      "completeProfile": "Completar meu perfil",
+      "checkAvailabilityError": "Não foi possível verificar a disponibilidade do pagamento. Tente novamente mais tarde.",
+      "addEmailPrompt": "Adicione um e-mail ao seu perfil antes de fazer uma doação — é lá que você receberá a confirmação e o recibo fiscal.",
+      "paymentUnavailable": "O pagamento online não está disponível no momento.",
+      "amountLabel": "Valor",
+      "messageLabel": "Mensagem (opcional)",
+      "messagePlaceholder": "Uma mensagem para a associação…",
+      "anonymousLabel": "Desejo permanecer anônimo em qualquer exibição pública de doadores (não afeta seu recibo fiscal)",
+      "submitWithAmount": "Doar {amount}",
+      "toasts": {
+        "thanked": "Obrigado pela sua doação! Um e-mail de confirmação foi enviado.",
+        "cancelled": "Doação cancelada."
+      }
+    },
+    "reunions": {
+      "title": "Reuniões",
+      "subtitle": "Suas reuniões em andamento e futuras.",
+      "noMeetings": "Nenhuma reunião agendada no momento.",
+      "status": {
+        "scheduled": "Agendada",
+        "live": "Em andamento",
+        "ended": "Encerrada"
+      },
+      "join": "Entrar",
+      "start": "Iniciar",
+      "history": "Histórico",
+      "endedOn": "Encerrada em {date}",
+      "leave": "Sair",
+      "defaultTitle": "Reunião",
+      "refreshError": "Não foi possível atualizar o status da reunião.",
+      "liveNotification": "{title} — reunião em andamento",
+      "liveNotificationDescription": "Entre agora."
+    },
+    "cotisation": {
+      "title": "Minha mensalidade",
+      "subtitle": "Acompanhamento dos seus pagamentos anuais.",
+      "status": {
+        "enAttente": "Pendente",
+        "paye": "Pago",
+        "exonere": "Isento"
+      },
+      "currentYearTitle": "Mensalidade {year} — Ano atual",
+      "paidOn": "Pago em {date}",
+      "payOnline": "Pagar online",
+      "history": "Histórico",
+      "noHistory": "Nenhum histórico disponível.",
+      "yearLabel": "Ano {year}",
+      "paidOnShort": " · pago em {date}",
+      "pay": "Pagar",
+      "noMemberProfile": "Nenhum perfil de membro associado a esta conta.",
+      "toasts": {
+        "paymentDone": "Pagamento realizado!",
+        "paymentCancelled": "Pagamento cancelado.",
+        "paymentError": "Erro ao processar o pagamento"
+      }
+    },
+    "communications": {
+      "title": "Minhas comunicações",
+      "subtitle": "Os e-mails que sua associação enviou para você.",
+      "noEmails": "Nenhum e-mail recebido no momento.",
+      "statusBadge": {
+        "queued": "Na fila",
+        "sent": "Enviado",
+        "delivered": "Entregue",
+        "opened": "Aberto",
+        "clicked": "Aberto",
+        "delayed": "Em andamento",
+        "bounced": "Erro",
+        "complained": "Spam",
+        "failed": "Erro"
+      },
+      "statusNote": {
+        "bounced": "Este e-mail não pôde ser entregue (endereço inválido ou caixa cheia).",
+        "complained": "Você marcou este e-mail como indesejado.",
+        "failed": "O envio deste e-mail falhou."
+      },
+      "sourceLabel": {
+        "sondage": "Enquete",
+        "automation": "Automação",
+        "bulkMessage": "Mensagem em massa",
+        "memberInvite": "Convite",
+        "meetingInvite": "Reunião",
+        "transaction": "Confirmação",
+        "document": "Documento",
+        "test": "Teste"
+      },
+      "timeline": {
+        "created": "Criado",
+        "sent": "Enviado",
+        "delivered": "Entregue",
+        "opened": "Aberto",
+        "clicked": "Clicado",
+        "bounced": "Erro",
+        "complained": "Spam"
+      },
+      "tracking": "Rastreamento",
+      "content": "Conteúdo",
+      "loading": "Carregando…",
+      "contentLoadError": "Não foi possível carregar o conteúdo.",
+      "retry": "Tentar novamente",
+      "emailContentTitle": "Conteúdo do e-mail: {subject}",
+      "previewNotice": "Prévia — os links estão desativados.",
+      "attachmentsNotice": " Os anexos não são exibidos aqui.",
+      "contentUnavailable": "Conteúdo não disponível para este envio.",
+      "countOfTotal": "{shown} de {total, plural, one {# e-mail} other {# e-mails}}",
+      "seeMore": "Ver mais"
+    },
+    "profil": {
+      "notFound": "Perfil não encontrado.",
+      "title": "Meu perfil",
+      "subtitle": "Suas informações pessoais.",
+      "identity": {
+        "title": "Identidade",
+        "firstName": "Nome",
+        "lastName": "Sobrenome",
+        "email": "E-mail",
+        "notProvided": "Não informado",
+        "status": "Status",
+        "birthDate": "Data de nascimento",
+        "notProvidedFem": "Não informada"
+      },
+      "statusLabel": {
+        "PENDING": "Aguardando validação",
+        "ACTIF": "Ativo",
+        "INACTIF": "Inativo",
+        "SUSPENDU": "Suspenso"
+      },
+      "contact": {
+        "title": "Contato e informações",
+        "phone": "Telefone",
+        "phonePlaceholder": "+55 11 90000-0000",
+        "phoneInvalid": "Número de telefone inválido",
+        "birthDate": "Data de nascimento",
+        "birthDateInPast": "A data de nascimento deve estar no passado",
+        "address": "Endereço",
+        "addressPlaceholder": "Rua Principal 123, São Paulo",
+        "civilite": "Tratamento",
+        "groupeSanguin": "Tipo sanguíneo",
+        "possedeTshirt": "Possui camiseta",
+        "tailleTshirt": "Tamanho da camiseta",
+        "allergies": "Alergias conhecidas",
+        "allergiesPlaceholder": "Amendoim, pólen…",
+        "notProvided": "Não informado",
+        "yes": "Sim",
+        "no": "Não",
+        "save": "Salvar",
+        "saving": "Salvando…"
+      },
+      "civiliteLabels": {
+        "MME": "Sra.",
+        "MLLE": "Srta.",
+        "M": "Sr."
+      },
+      "groupeSanguinLabels": {
+        "A_POSITIF": "A+",
+        "A_NEGATIF": "A-",
+        "B_POSITIF": "B+",
+        "B_NEGATIF": "B-",
+        "AB_POSITIF": "AB+",
+        "AB_NEGATIF": "AB-",
+        "O_POSITIF": "O+",
+        "O_NEGATIF": "O-"
+      },
+      "toasts": {
+        "updated": "Perfil atualizado",
+        "updateError": "Erro ao atualizar o perfil",
+        "photoUpdated": "Foto atualizada",
+        "photoUpdateError": "Erro ao atualizar a foto"
+      },
+      "removePhoto": {
+        "title": "Remover a foto de perfil?",
+        "description": "Você pode adicionar uma nova a qualquer momento.",
+        "confirm": "Remover"
+      }
+    }
+  },
+  "ai": {
+    "heading": "Assistente de IA",
+    "description": "Usado para redação assistida nos editores de texto. Por padrão, a chave da plataforma é usada gratuitamente. Configure sua própria chave (Groq, OpenAI ou Mistral) para que os custos sejam cobrados na sua conta.",
+    "configuredTitle": "Chave personalizada configurada",
+    "providerLabel": "Provedor:",
+    "modelLabel": "· Modelo:",
+    "transcriptionNotice": "A transcrição de reuniões sempre usa o Groq (o único provedor compatível) — ela continua usando a chave da plataforma, não a sua chave {provider}.",
+    "platformKeyActive": "Chave da plataforma ativa — você pode usar a IA sem configuração.",
+    "providerFieldLabel": "Provedor",
+    "providerFieldPlaceholder": "Escolher um provedor…",
+    "apiKeyLabel": "Chave de API",
+    "apiKeyPlaceholderReplace": "Chave existente — digite para substituir",
+    "apiKeyPlaceholderNew": "Cole sua chave de API…",
+    "apiKeyHint": "Obtenha sua chave em {docs}",
+    "modelFieldLabel": "Modelo",
+    "modelFieldPlaceholderDefault": "Padrão: {model}",
+    "modelFieldPlaceholderSelectProvider": "Selecione primeiro um provedor",
+    "modelFieldHint": "Deixe em branco para usar o modelo padrão.",
+    "saving": "Salvando…",
+    "removeKey": "Remover a chave personalizada",
+    "toasts": {
+      "saved": "Configuração de IA salva",
+      "saveError": "Não foi possível salvar a configuração de IA",
+      "keyRemoved": "Chave removida — voltando à chave da plataforma",
+      "removeError": "Não foi possível remover a chave"
+    }
+  },
+  "sms": {
+    "heading": "Notificações por SMS",
+    "description": "Usado para enviar SMS aos membros. Requer sua própria conta Twilio — não há chave compartilhada pela plataforma, os SMS são cobrados diretamente na sua conta Twilio.",
+    "configuredTitle": "Conta Twilio configurada",
+    "phoneNumberLine": "Número: {number}",
+    "notConfiguredWarning": "Nenhuma conta Twilio configurada — o envio de SMS não funcionará até que você informe suas credenciais.",
+    "accountSidLabel": "Account SID",
+    "accountSidPlaceholderReplace": "SID existente — digite para substituir",
+    "authTokenLabel": "Auth Token",
+    "authTokenPlaceholderReplace": "Token existente — digite para substituir",
+    "credentialsHint": "Encontre suas credenciais em",
+    "phoneNumberLabel": "Número de envio",
+    "saving": "Salvando…",
+    "removeCredentials": "Remover credenciais",
+    "toasts": {
+      "saved": "Configuração de SMS salva",
+      "incomplete": "Salvo, mas ainda falta um campo — o SMS não funcionará até que os 3 campos sejam preenchidos.",
+      "saveError": "Não foi possível salvar a configuração de SMS",
+      "credentialsRemoved": "Credenciais Twilio removidas",
+      "removeError": "Não foi possível remover as credenciais"
+    }
+  },
+  "layout": {
+    "appSidebar": {
+      "associations": "Associações",
+      "parametres": "Configurações",
+      "dashboard": "Painel",
+      "membres": "Membros",
+      "evenements": "Eventos",
+      "cotisations": "Mensalidades",
+      "finances": "Finanças",
+      "devis": "Orçamentos",
+      "factures": "Faturas",
+      "fournisseurs": "Fornecedores",
+      "dons": "Doações",
+      "reunions": "Reuniões",
+      "sondages": "Enquetes",
+      "boutique": "Loja",
+      "actualites": "Notícias",
+      "messages": "Mensagens",
+      "materiel": "Material",
+      "site": "Site",
+      "activite": "Histórico"
+    },
+    "backofficeSidebar": {
+      "backoffice": "Backoffice",
+      "overview": "Visão geral",
+      "associations": "Associações",
+      "signOut": "Sair"
+    },
+    "legalLinksMenu": {
+      "trigger": "Documentos legais",
+      "mentionsLegales": "Aviso legal",
+      "cgu": "Termos de uso",
+      "cgs": "Termos de serviço",
+      "politiqueConfidentialite": "Política de privacidade",
+      "opensNewTab": "Abre em uma nova aba"
+    },
+    "themeToggle": {
+      "changeTheme": "Mudar tema"
+    },
+    "header": {
+      "myPortal": "Meu espaço",
+      "myProfile": "Meu perfil",
+      "management": "Gestão"
+    },
+    "userMenu": {
+      "roleLabels": {
+        "SUPER_ADMIN": "Super Administrador",
+        "ADMIN": "Administrador",
+        "PRESIDENT": "Presidente",
+        "TRESORIER": "Tesoureiro",
+        "SECRETAIRE": "Secretário",
+        "MEMBRE": "Membro"
+      },
+      "editProfile": "Editar perfil",
+      "changePassword": "Alterar senha",
+      "logout": "Sair"
+    },
+    "changePasswordModal": {
+      "title": "Alterar senha",
+      "currentPasswordLabel": "Senha atual",
+      "currentPasswordRequired": "Por favor, insira sua senha atual.",
+      "newPasswordLabel": "Nova senha",
+      "newPasswordRequired": "Por favor, insira a nova senha.",
+      "newPasswordMinLength": "Mín. 8 caracteres.",
+      "newPasswordMustDiffer": "A nova senha deve ser diferente da atual.",
+      "confirmPasswordLabel": "Confirmar nova senha",
+      "confirmPasswordRequired": "Confirme a nova senha.",
+      "passwordMismatch": "As senhas não coincidem.",
+      "toastSuccess": "Senha alterada.",
+      "toastError": "Erro ao salvar.",
+      "confirm": "Alterar"
+    },
+    "profileEditModal": {
+      "title": "Editar perfil",
+      "firstNameLabel": "Nome",
+      "firstNameRequired": "O nome é obrigatório.",
+      "lastNameLabel": "Sobrenome",
+      "lastNameRequired": "O sobrenome é obrigatório.",
+      "emailLabel": "E-mail",
+      "emailRequired": "O e-mail é obrigatório.",
+      "emailInvalid": "E-mail inválido.",
+      "toastSuccess": "Perfil atualizado. O nome no cabeçalho será atualizado no próximo login.",
+      "toastError": "Erro ao salvar.",
+      "toastNetworkError": "Erro de conexão. Tente novamente."
+    }
+  }
+}

@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
@@ -19,17 +20,19 @@ export function ConfirmDialog({
   open,
   onOpenChange,
   title,
-  description = "Cette action est irréversible.",
-  confirmLabel = "Confirmer",
+  description,
+  confirmLabel,
   loading,
   confirmDisabled,
   onConfirm,
 }: ConfirmDialogProps) {
+  const t = useTranslations()
+
   async function handleConfirm() {
     try {
       await onConfirm()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Une erreur est survenue")
+      toast.error(err instanceof Error ? err.message : t("common.genericError"))
     }
   }
 
@@ -38,17 +41,17 @@ export function ConfirmDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      description={description}
+      description={description ?? t("common.irreversibleAction")}
       size="sm"
       dismissable={!loading}
       footer={
         <>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Annuler
+            {t("common.cancel")}
           </Button>
           <Button variant="destructive" onClick={handleConfirm} disabled={loading || confirmDisabled}>
             {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-            {confirmLabel}
+            {confirmLabel ?? t("common.confirm")}
           </Button>
         </>
       }

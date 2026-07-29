@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -18,6 +19,8 @@ interface Props {
 type Errors = Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>
 
 export function ChangePasswordModal({ onClose, onSaved }: Props) {
+  const t = useTranslations("layout.changePasswordModal")
+  const tCommon = useTranslations("common")
   const [current, setCurrent] = useState("")
   const [next,    setNext]    = useState("")
   const [confirm, setConfirm] = useState("")
@@ -30,12 +33,12 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
 
   function validate(): boolean {
     const e: Errors = {}
-    if (!current) e.currentPassword = "Veuillez saisir le mot de passe actuel."
-    if (!next)    e.newPassword     = "Veuillez saisir le nouveau mot de passe."
-    else if (next.length < 8)       e.newPassword = "Min. 8 caractères."
-    else if (next === current)      e.newPassword = "Le nouveau mot de passe doit être différent de l'actuel."
-    if (next && !confirm)           e.confirmPassword = "Confirmez le nouveau mot de passe."
-    else if (next && next !== confirm) e.confirmPassword = "Les mots de passe ne correspondent pas."
+    if (!current) e.currentPassword = t("currentPasswordRequired")
+    if (!next)    e.newPassword     = t("newPasswordRequired")
+    else if (next.length < 8)       e.newPassword = t("newPasswordMinLength")
+    else if (next === current)      e.newPassword = t("newPasswordMustDiffer")
+    if (next && !confirm)           e.confirmPassword = t("confirmPasswordRequired")
+    else if (next && next !== confirm) e.confirmPassword = t("passwordMismatch")
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -49,12 +52,12 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
     })
     setSaving(false)
     if (res.ok) {
-      toast.success("Mot de passe modifié.")
+      toast.success(t("toastSuccess"))
       onSaved()
     } else {
       const data = await res.json().catch(() => ({}))
       if (data.field) setErrors({ [data.field]: data.error })
-      else toast.error(data.error ?? "Erreur lors de la sauvegarde.")
+      else toast.error(data.error ?? t("toastError"))
     }
   }
 
@@ -63,14 +66,14 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
-        <DialogHeader><DialogTitle>Changer le mot de passe</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("title")}</DialogTitle></DialogHeader>
 
         <form
           className="space-y-4 py-1"
           onSubmit={(e) => { e.preventDefault(); handleSave() }}
         >
           <div className="space-y-1.5">
-            <Label htmlFor="cp-cur">Mot de passe actuel</Label>
+            <Label htmlFor="cp-cur">{t("currentPasswordLabel")}</Label>
             <Input
               id="cp-cur" type="password" value={current}
               onChange={(e) => { setCurrent(e.target.value); clearError("currentPassword") }}
@@ -81,7 +84,7 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cp-new">Nouveau mot de passe</Label>
+            <Label htmlFor="cp-new">{t("newPasswordLabel")}</Label>
             <Input
               id="cp-new" type="password" value={next}
               onChange={(e) => {
@@ -92,18 +95,18 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
                 if (confirm) {
                   setErrors((p) => ({
                     ...p,
-                    confirmPassword: v !== confirm ? "Les mots de passe ne correspondent pas." : undefined,
+                    confirmPassword: v !== confirm ? t("passwordMismatch") : undefined,
                   }))
                 }
               }}
-              placeholder="Min. 8 caractères" autoComplete="new-password"
+              placeholder={t("newPasswordMinLength")} autoComplete="new-password"
               className={cn(errors.newPassword && "border-destructive")}
             />
             {errors.newPassword && <p className="text-xs text-destructive">{errors.newPassword}</p>}
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cp-confirm">Confirmer le nouveau mot de passe</Label>
+            <Label htmlFor="cp-confirm">{t("confirmPasswordLabel")}</Label>
             <Input
               id="cp-confirm" type="password" value={confirm}
               onChange={(e) => { setConfirm(e.target.value); clearError("confirmPassword") }}
@@ -118,9 +121,9 @@ export function ChangePasswordModal({ onClose, onSaved }: Props) {
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} loading={saving}>Annuler</Button>
+          <Button variant="outline" onClick={onClose} loading={saving}>{tCommon("cancel")}</Button>
           <Button onClick={handleSave} disabled={saving || !isDirty}>
-            Modifier
+            {t("confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

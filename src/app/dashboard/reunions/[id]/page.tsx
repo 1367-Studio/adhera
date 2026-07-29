@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -43,8 +44,15 @@ type Meeting = {
   participants: MeetingParticipant[]
 }
 
-const STATUS_LABELS: Record<Meeting["status"], string> = {
-  SCHEDULED: "Planifiée", LIVE: "En cours", ENDED: "Terminée", CANCELLED: "Annulée",
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusLabels(t: Translator): Record<Meeting["status"], string> {
+  return {
+    SCHEDULED: t("reunions.detail.status.scheduled"),
+    LIVE:      t("reunions.detail.status.live"),
+    ENDED:     t("reunions.detail.status.ended"),
+    CANCELLED: t("reunions.detail.status.cancelled"),
+  }
 }
 const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "destructive" | "outline"> = {
   SCHEDULED: "secondary", LIVE: "default", ENDED: "outline", CANCELLED: "destructive",
@@ -53,11 +61,13 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
 const AUDIO_ACCEPT = ".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac"
 
 export default function ReunionDetailPage() {
+  const t       = useTranslations()
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
   const canManage = isManager(useCurrentUser().role)
+  const STATUS_LABELS = getStatusLabels(t)
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
@@ -94,7 +104,7 @@ export default function ReunionDetailPage() {
   // invalidated query settles, instead of flashing a stale "Rejoindre".
   useEffect(() => {
     if (awaitingRefresh && !isFetching) {
-      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      if (isError) toast.error(t("reunions.view.toasts.refreshError"))
       setAwaitingRefresh(false)
     }
   }, [isFetching, isError, awaitingRefresh])
@@ -119,9 +129,9 @@ export default function ReunionDetailPage() {
       }).then(r => r.json()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription sauvegardée")
+      toast.success(t("reunions.detail.toasts.transcriptSaved"))
     },
-    onError: () => toast.error("Erreur lors de la sauvegarde"),
+    onError: () => toast.error(t("reunions.detail.toasts.transcriptSaveError")),
   })
 
   const transcribeRecording = useMutation({
@@ -129,16 +139,16 @@ export default function ReunionDetailPage() {
       const res = await fetch(`/api/meetings/${id}/transcribe`, { method: "POST" })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur transcription")
+        throw new Error(d.error ?? t("reunions.detail.toasts.transcribeError"))
       }
       return res.json() as Promise<{ transcript: string }>
     },
     onSuccess: (data) => {
       setTranscript(data.transcript)
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription générée par Whisper")
+      toast.success(t("reunions.detail.toasts.transcriptGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur Whisper"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.whisperError")),
   })
 
   const transcribeUpload = useMutation({
@@ -151,16 +161,16 @@ export default function ReunionDetailPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur transcription")
+        throw new Error(d.error ?? t("reunions.detail.toasts.transcribeError"))
       }
       return res.json() as Promise<{ transcript: string }>
     },
     onSuccess: (data) => {
       setTranscript(data.transcript)
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription générée par Whisper")
+      toast.success(t("reunions.detail.toasts.transcriptGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur Whisper"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.whisperError")),
   })
 
   const summarize = useMutation({
@@ -175,21 +185,21 @@ export default function ReunionDetailPage() {
       const res = await fetch(`/api/meetings/${id}/summarize`, { method: "POST" })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur IA")
+        throw new Error(d.error ?? t("reunions.detail.toasts.aiError"))
       }
       return res.json() as Promise<{ summary: string }>
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Résumé généré")
+      toast.success(t("reunions.detail.toasts.summaryGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur IA"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.aiError")),
   })
 
   async function handleExportPdf() {
     if (!meeting) return
     if (meeting.participants.length === 0) {
-      toast.error("Aucun participant à exporter")
+      toast.error(t("reunions.detail.toasts.noParticipantsToExport"))
       return
     }
     const { default: jsPDF }     = await import("jspdf")
@@ -339,9 +349,9 @@ export default function ReunionDetailPage() {
   if (!meeting) {
     return (
       <DetailNotFound
-        message="Cette réunion est introuvable ou a été supprimée."
+        message={t("reunions.detail.notFound.message")}
         backHref="/dashboard/reunions"
-        backLabel="Retour à la liste"
+        backLabel={t("reunions.detail.notFound.backLabel")}
       />
     )
   }
@@ -357,7 +367,7 @@ export default function ReunionDetailPage() {
     <div className="flex flex-col gap-6 h-full mt-4">
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
-        <BackLink href="/dashboard/reunions" iconOnly>Réunions</BackLink>
+        <BackLink href="/dashboard/reunions" iconOnly>{t("reunions.detail.backToList")}</BackLink>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold truncate">{meeting.title}</h1>
@@ -370,13 +380,13 @@ export default function ReunionDetailPage() {
         {canManage && (
           <Button size="sm" variant="outline" onClick={handleExportPdf}>
             <DownloadSimpleIcon className="size-4 mr-1.5" />
-            <span className="hidden sm:inline">Feuille de </span>présence
+            <span className="hidden sm:inline">{t("reunions.detail.exportAttendance.prefix")}</span>{t("reunions.detail.exportAttendance.suffix")}
           </Button>
         )}
         {canJoin && (
           <Button size="sm" onClick={() => setInRoom(true)} loading={awaitingRefresh} disabled={awaitingRefresh}>
             <PlayIcon className="size-4 mr-1.5" />
-            {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
+            {meeting.status === "LIVE" ? t("reunions.view.join") : t("reunions.view.start")}
           </Button>
         )}
       </div>
@@ -387,7 +397,7 @@ export default function ReunionDetailPage() {
         {/* Left — Transcript (2/3) */}
         <div className="lg:col-span-2 space-y-3 flex flex-col">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <Label>Transcription</Label>
+            <Label>{t("reunions.view.transcription")}</Label>
             <div className="flex flex-wrap items-center gap-2">
               {canTranscribe && hasRecording && (
                 <Button
@@ -399,7 +409,7 @@ export default function ReunionDetailPage() {
                   {transcribeRecording.isPending
                     ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                     : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                  {transcribeRecording.isPending ? "Transcription…" : "Transcrire l'enregistrement"}
+                  {transcribeRecording.isPending ? t("reunions.detail.transcribing") : t("reunions.detail.transcribeRecording")}
                 </Button>
               )}
 
@@ -425,7 +435,7 @@ export default function ReunionDetailPage() {
                     {transcribeUpload.isPending
                       ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                       : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                    {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
+                    {transcribeUpload.isPending ? t("reunions.detail.transcribing") : t("reunions.detail.uploadAudio")}
                   </Button>
                 </>
               )}
@@ -438,7 +448,7 @@ export default function ReunionDetailPage() {
                   loading={saveTranscript.isPending}
                 >
                   <FloppyDiskIcon className="size-3.5 mr-1.5" />
-                  Sauvegarder
+                  {t("reunions.detail.saveTranscript")}
                 </Button>
               )}
             </div>
@@ -447,18 +457,18 @@ export default function ReunionDetailPage() {
           {isTranscribing && (
             <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
               <CircleNotchIcon className="size-4 animate-spin shrink-0" />
-              Whisper transcrit l'audio… Cela peut prendre quelques instants.
+              {t("reunions.detail.whisperTranscribing")}
             </div>
           )}
 
           <Textarea
             value={transcript}
             onChange={e => setTranscript(e.target.value)}
-            placeholder="La transcription apparaîtra ici après la réunion. Vous pouvez aussi importer un fichier audio ou saisir le texte manuellement."
+            placeholder={t("reunions.detail.transcriptPlaceholder")}
             className="font-mono text-xs resize-none flex-1 min-h-[300px]"
           />
           <p className="text-[11px] text-muted-foreground">
-            Formats acceptés : MP3, M4A, WAV, WebM, OGG, FLAC · Max 25 Mo · Détection automatique de la langue (français, portugais, anglais…)
+            {t("reunions.detail.acceptedFormats")}
           </p>
         </div>
 
@@ -470,38 +480,38 @@ export default function ReunionDetailPage() {
             {meeting.scheduledAt && (
               <span className="flex items-center gap-1.5">
                 <CalendarBlankIcon className="size-4 shrink-0" />
-                Planifiée le {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.scheduledOn", { date: format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             {meeting.startedAt && (
               <span className="flex items-center gap-1.5">
                 <VideoCameraIcon className="size-4 shrink-0" />
-                Démarrée le {format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.startedOn", { date: format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             {meeting.endedAt && (
               <span className="flex items-center gap-1.5">
                 <ClockIcon className="size-4 shrink-0" />
-                Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.endedOn", { date: format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             <span className="flex items-start gap-1.5">
               <UsersIcon className="size-4 shrink-0 mt-0.5" />
               <span>
-                {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""} :{" "}
+                {t("reunions.view.participantsCount", { count: meeting.participants.length })} :{" "}
                 {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
               </span>
             </span>
             {meeting.egressId && (
               <span className="flex items-center gap-1.5 text-red-500">
                 <CircleIcon className="size-2 fill-current animate-pulse" />
-                Enregistrement en cours
+                {t("reunions.detail.recordingInProgress")}
               </span>
             )}
             {hasRecording && (
               <span className="flex items-center gap-1.5 text-green-600">
                 <CircleIcon className="size-2 fill-current" />
-                Enregistrement disponible
+                {t("reunions.detail.recordingAvailable")}
               </span>
             )}
           </div>
@@ -510,7 +520,7 @@ export default function ReunionDetailPage() {
           {canSummarize && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Compte-rendu IA</Label>
+                <Label>{t("reunions.detail.aiSummary")}</Label>
                 <Button
                   size="sm"
                   onClick={() => summarize.mutate()}
@@ -518,7 +528,7 @@ export default function ReunionDetailPage() {
                   disabled={!transcript.trim()}
                 >
                   <SparkleIcon className="size-3.5 mr-1.5" />
-                  {meeting.summary ? "Regénérer" : "Générer"}
+                  {meeting.summary ? t("reunions.detail.regenerate") : t("reunions.detail.generate")}
                 </Button>
               </div>
 
@@ -531,8 +541,8 @@ export default function ReunionDetailPage() {
                   <SparkleIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">
                     {transcript.trim()
-                      ? "Cliquez sur « Générer » pour créer le compte-rendu."
-                      : "La transcription est nécessaire pour générer le résumé."}
+                      ? t("reunions.detail.generateSummaryHint")
+                      : t("reunions.detail.transcriptRequiredHint")}
                   </p>
                 </div>
               )}

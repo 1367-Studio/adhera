@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -35,55 +36,34 @@ type Membre = {
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
 }
 
-const GROUPE_SANGUIN_LABELS: Record<string, string> = {
-  A_POSITIF:  "A+",
-  A_NEGATIF:  "A-",
-  B_POSITIF:  "B+",
-  B_NEGATIF:  "B-",
-  AB_POSITIF: "AB+",
-  AB_NEGATIF: "AB-",
-  O_POSITIF:  "O+",
-  O_NEGATIF:  "O-",
-}
-
-const CIVILITE_LABELS: Record<string, string> = {
-  MME:  "Mme",
-  MLLE: "Mlle",
-  M:    "M.",
-}
-
 const phoneRegex = /^[+\d][\d\s.\-()]{5,19}$/
 
-const schema = z.object({
-  phone:     z.string().trim().optional().or(z.literal("")).refine(
-    v => !v || phoneRegex.test(v),
-    "Numéro de téléphone invalide",
-  ),
-  address:   z.string().trim().optional().or(z.literal("")),
-  birthDate: z.string().optional().or(z.literal("")).refine(
-    v => !v || new Date(v) < new Date(),
-    "La date de naissance doit être dans le passé",
-  ),
-  civilite:      z.enum(["MME", "MLLE", "M"]).optional().or(z.literal("")),
-  groupeSanguin: z.enum([
-    "A_POSITIF", "A_NEGATIF",
-    "B_POSITIF", "B_NEGATIF",
-    "AB_POSITIF", "AB_NEGATIF",
-    "O_POSITIF", "O_NEGATIF",
-  ]).optional().or(z.literal("")),
-  allergies: z.string().trim().optional().or(z.literal("")),
-  photoUrl:  z.string().trim().optional().or(z.literal("")),
-  possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
-  tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
-})
-type FormValues = z.infer<typeof schema>
-
-const statusLabel: Record<string, string> = {
-  PENDING:  "En attente de validation",
-  ACTIF:    "Actif",
-  INACTIF:  "Inactif",
-  SUSPENDU: "Suspendu",
+function buildSchema(t: ReturnType<typeof useTranslations>) {
+  return z.object({
+    phone:     z.string().trim().optional().or(z.literal("")).refine(
+      v => !v || phoneRegex.test(v),
+      t("contact.phoneInvalid"),
+    ),
+    address:   z.string().trim().optional().or(z.literal("")),
+    birthDate: z.string().optional().or(z.literal("")).refine(
+      v => !v || new Date(v) < new Date(),
+      t("contact.birthDateInPast"),
+    ),
+    civilite:      z.enum(["MME", "MLLE", "M"]).optional().or(z.literal("")),
+    groupeSanguin: z.enum([
+      "A_POSITIF", "A_NEGATIF",
+      "B_POSITIF", "B_NEGATIF",
+      "AB_POSITIF", "AB_NEGATIF",
+      "O_POSITIF", "O_NEGATIF",
+    ]).optional().or(z.literal("")),
+    allergies: z.string().trim().optional().or(z.literal("")),
+    photoUrl:  z.string().trim().optional().or(z.literal("")),
+    possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
+    tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
+  })
 }
+type FormValues = z.infer<ReturnType<typeof buildSchema>>
+
 const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   PENDING:  "outline",
   ACTIF:    "default",
@@ -91,9 +71,44 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
   SUSPENDU: "destructive",
 }
 
+function getGroupeSanguinLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
+  return {
+    A_POSITIF:  t("groupeSanguinLabels.A_POSITIF"),
+    A_NEGATIF:  t("groupeSanguinLabels.A_NEGATIF"),
+    B_POSITIF:  t("groupeSanguinLabels.B_POSITIF"),
+    B_NEGATIF:  t("groupeSanguinLabels.B_NEGATIF"),
+    AB_POSITIF: t("groupeSanguinLabels.AB_POSITIF"),
+    AB_NEGATIF: t("groupeSanguinLabels.AB_NEGATIF"),
+    O_POSITIF:  t("groupeSanguinLabels.O_POSITIF"),
+    O_NEGATIF:  t("groupeSanguinLabels.O_NEGATIF"),
+  }
+}
+
+function getCiviliteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
+  return {
+    MME:  t("civiliteLabels.MME"),
+    MLLE: t("civiliteLabels.MLLE"),
+    M:    t("civiliteLabels.M"),
+  }
+}
+
+function getStatusLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
+  return {
+    PENDING:  t("statusLabel.PENDING"),
+    ACTIF:    t("statusLabel.ACTIF"),
+    INACTIF:  t("statusLabel.INACTIF"),
+    SUSPENDU: t("statusLabel.SUSPENDU"),
+  }
+}
+
 export default function ProfilPage() {
+  const t = useTranslations("portalMembre.profil")
   const qc = useQueryClient()
   const [removePhotoOpen, setRemovePhotoOpen] = useState(false)
+
+  const GROUPE_SANGUIN_LABELS = getGroupeSanguinLabels(t)
+  const CIVILITE_LABELS = getCiviliteLabels(t)
+  const statusLabel = getStatusLabels(t)
 
   const { data: membre, isLoading } = useQuery<Membre>({
     queryKey: ["portal-profil"],
@@ -102,7 +117,7 @@ export default function ProfilPage() {
   })
 
   const { register, control, handleSubmit, setValue, formState: { errors, isDirty } } = useForm<FormValues>({
-    resolver:      zodResolver(schema),
+    resolver:      zodResolver(buildSchema(t)),
     values: membre ? {
       phone:     membre.phone     ?? "",
       address:   membre.address   ?? "",
@@ -123,11 +138,11 @@ export default function ProfilPage() {
       return r.json()
     },
     onSuccess: () => {
-      toast.success("Profil mis à jour")
+      toast.success(t("toasts.updated"))
       qc.invalidateQueries({ queryKey: ["portal-profil"] })
       qc.invalidateQueries({ queryKey: ["membres"] })
     },
-    onError: () => toast.error("Erreur lors de la mise à jour"),
+    onError: () => toast.error(t("toasts.updateError")),
   })
 
   // Kept separate from `mutation`: the photo saves itself the moment it's picked, so it
@@ -140,11 +155,11 @@ export default function ProfilPage() {
       return r.json()
     },
     onSuccess: () => {
-      toast.success("Photo mise à jour")
+      toast.success(t("toasts.photoUpdated"))
       qc.invalidateQueries({ queryKey: ["portal-profil"] })
       qc.invalidateQueries({ queryKey: ["membres"] })
     },
-    onError: () => toast.error("Erreur lors de la mise à jour de la photo"),
+    onError: () => toast.error(t("toasts.photoUpdateError")),
   })
 
   function handlePhotoChange(url: string) {
@@ -196,14 +211,14 @@ export default function ProfilPage() {
   }
 
   if (!membre) {
-    return <div className="p-8 text-sm text-destructive">Profil introuvable.</div>
+    return <div className="p-8 text-sm text-destructive">{t("notFound")}</div>
   }
 
   return (
     <div className="w-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Mon profil</h1>
-        <p className="text-muted-foreground text-sm mt-1">Vos informations personnelles.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -211,16 +226,16 @@ export default function ProfilPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <UserIcon className="size-4" />
-            Identité
+            {t("identity.title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground text-xs mb-0.5">Prénom</p>
+            <p className="text-muted-foreground text-xs mb-0.5">{t("identity.firstName")}</p>
             <p className="font-medium">{membre.firstName}</p>
           </div>
           <div>
-            <p className="text-muted-foreground text-xs mb-0.5">Nom</p>
+            <p className="text-muted-foreground text-xs mb-0.5">{t("identity.lastName")}</p>
             <p className="font-medium">{membre.lastName}</p>
           </div>
           <div className="flex mb-2 justify-center">
@@ -241,23 +256,23 @@ export default function ProfilPage() {
             />
           </div>
           <div className="grid col-span-2">
-            <p className="text-muted-foreground text-xs mb-0.5">Email</p>
+            <p className="text-muted-foreground text-xs mb-0.5">{t("identity.email")}</p>
             <p className="flex items-center gap-1.5">
               <EnvelopeSimpleIcon className="size-3 text-muted-foreground shrink-0" />
-              {membre.email ?? <span className="text-muted-foreground italic">Non renseigné</span>}
+              {membre.email ?? <span className="text-muted-foreground italic">{t("identity.notProvided")}</span>}
             </p>
           </div>
           <div className="flex justify-center gap-1.5">
-            <p className="text-muted-foreground text-xs mb-0.5">Statut</p>
+            <p className="text-muted-foreground text-xs mb-0.5">{t("identity.status")}</p>
             <Badge variant={statusVariant[membre.status]}>{statusLabel[membre.status]}</Badge>
           </div>
           <div>
-            <p className="text-muted-foreground text-xs mb-0.5">Date de naissance</p>
+            <p className="text-muted-foreground text-xs mb-0.5">{t("identity.birthDate")}</p>
             <p className="flex items-center gap-1.5">
               <CalendarBlankIcon className="size-3 text-muted-foreground shrink-0" />
               {membre.birthDate
                 ? new Date(membre.birthDate).toLocaleDateString("fr-FR")
-                : <span className="text-muted-foreground italic">Non renseignée</span>
+                : <span className="text-muted-foreground italic">{t("identity.notProvidedFem")}</span>
               }
             </p>
           </div>
@@ -266,21 +281,21 @@ export default function ProfilPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Coordonnées &amp; informations</CardTitle>
+          <CardTitle className="text-base">{t("contact.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="phone" className="flex items-center gap-1.5">
-                <PhoneIcon className="size-3.5" /> Téléphone
+                <PhoneIcon className="size-3.5" /> {t("contact.phone")}
               </Label>
-              <Input id="phone" type="tel" placeholder="+33 6 00 00 00 00" {...register("phone")} />
+              <Input id="phone" type="tel" placeholder={t("contact.phonePlaceholder")} {...register("phone")} />
               {errors.phone && <p className="text-destructive text-xs">{errors.phone.message}</p>}
             </div>
 
             <div className="space-y-1.5">
               <Label htmlFor="birthDate" className="flex items-center gap-1.5">
-                <CalendarBlankIcon className="size-3.5" /> Date de naissance
+                <CalendarBlankIcon className="size-3.5" /> {t("contact.birthDate")}
               </Label>
               <Input id="birthDate" type="date" max={new Date().toISOString().split("T")[0]} {...register("birthDate")} />
               {errors.birthDate && <p className="text-destructive text-xs">{errors.birthDate.message}</p>}
@@ -288,9 +303,9 @@ export default function ProfilPage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="address" className="flex items-center gap-1.5">
-                <MapPinIcon className="size-3.5" /> Adresse
+                <MapPinIcon className="size-3.5" /> {t("contact.address")}
               </Label>
-              <Input id="address" placeholder="123 rue de la Paix, Paris" {...register("address")} />
+              <Input id="address" placeholder={t("contact.addressPlaceholder")} {...register("address")} />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -299,18 +314,18 @@ export default function ProfilPage() {
                 control={control}
                 render={({ field }) => (
                   <div className="space-y-1.5">
-                    <Label>Civilité</Label>
+                    <Label>{t("contact.civilite")}</Label>
                     <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Non renseigné">
-                          {field.value ? CIVILITE_LABELS[field.value] : "Non renseigné"}
+                        <SelectValue placeholder={t("contact.notProvided")}>
+                          {field.value ? CIVILITE_LABELS[field.value] : t("contact.notProvided")}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">Non renseigné</SelectItem>
-                        <SelectItem value="MME">Mme</SelectItem>
-                        <SelectItem value="MLLE">Mlle</SelectItem>
-                        <SelectItem value="M">M.</SelectItem>
+                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
+                        <SelectItem value="MME">{CIVILITE_LABELS.MME}</SelectItem>
+                        <SelectItem value="MLLE">{CIVILITE_LABELS.MLLE}</SelectItem>
+                        <SelectItem value="M">{CIVILITE_LABELS.M}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -322,23 +337,23 @@ export default function ProfilPage() {
                 control={control}
                 render={({ field }) => (
                   <div className="space-y-1.5">
-                    <Label>Groupe sanguin</Label>
+                    <Label>{t("contact.groupeSanguin")}</Label>
                     <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Non renseigné">
-                          {field.value ? GROUPE_SANGUIN_LABELS[field.value] : "Non renseigné"}
+                        <SelectValue placeholder={t("contact.notProvided")}>
+                          {field.value ? GROUPE_SANGUIN_LABELS[field.value] : t("contact.notProvided")}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">Non renseigné</SelectItem>
-                        <SelectItem value="A_POSITIF">A+</SelectItem>
-                        <SelectItem value="A_NEGATIF">A-</SelectItem>
-                        <SelectItem value="B_POSITIF">B+</SelectItem>
-                        <SelectItem value="B_NEGATIF">B-</SelectItem>
-                        <SelectItem value="AB_POSITIF">AB+</SelectItem>
-                        <SelectItem value="AB_NEGATIF">AB-</SelectItem>
-                        <SelectItem value="O_POSITIF">O+</SelectItem>
-                        <SelectItem value="O_NEGATIF">O-</SelectItem>
+                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
+                        <SelectItem value="A_POSITIF">{GROUPE_SANGUIN_LABELS.A_POSITIF}</SelectItem>
+                        <SelectItem value="A_NEGATIF">{GROUPE_SANGUIN_LABELS.A_NEGATIF}</SelectItem>
+                        <SelectItem value="B_POSITIF">{GROUPE_SANGUIN_LABELS.B_POSITIF}</SelectItem>
+                        <SelectItem value="B_NEGATIF">{GROUPE_SANGUIN_LABELS.B_NEGATIF}</SelectItem>
+                        <SelectItem value="AB_POSITIF">{GROUPE_SANGUIN_LABELS.AB_POSITIF}</SelectItem>
+                        <SelectItem value="AB_NEGATIF">{GROUPE_SANGUIN_LABELS.AB_NEGATIF}</SelectItem>
+                        <SelectItem value="O_POSITIF">{GROUPE_SANGUIN_LABELS.O_POSITIF}</SelectItem>
+                        <SelectItem value="O_NEGATIF">{GROUPE_SANGUIN_LABELS.O_NEGATIF}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -352,7 +367,7 @@ export default function ProfilPage() {
                 control={control}
                 render={({ field }) => (
                   <div className="space-y-1.5">
-                    <Label>Possède un tee-shirt</Label>
+                    <Label>{t("contact.possedeTshirt")}</Label>
                     <Select
                       value={field.value || "__none__"}
                       onValueChange={v => {
@@ -364,14 +379,14 @@ export default function ProfilPage() {
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Non renseigné">
-                          {field.value === "true" ? "Oui" : field.value === "false" ? "Non" : "Non renseigné"}
+                        <SelectValue placeholder={t("contact.notProvided")}>
+                          {field.value === "true" ? t("contact.yes") : field.value === "false" ? t("contact.no") : t("contact.notProvided")}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">Non renseigné</SelectItem>
-                        <SelectItem value="true">Oui</SelectItem>
-                        <SelectItem value="false">Non</SelectItem>
+                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
+                        <SelectItem value="true">{t("contact.yes")}</SelectItem>
+                        <SelectItem value="false">{t("contact.no")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -383,15 +398,15 @@ export default function ProfilPage() {
                 control={control}
                 render={({ field }) => (
                   <div className="space-y-1.5">
-                    <Label>Taille du tee-shirt</Label>
+                    <Label>{t("contact.tailleTshirt")}</Label>
                     <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Non renseigné">
-                          {field.value || "Non renseigné"}
+                        <SelectValue placeholder={t("contact.notProvided")}>
+                          {field.value || t("contact.notProvided")}
                         </SelectValue>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="__none__">Non renseigné</SelectItem>
+                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
                         <SelectItem value="XS">XS</SelectItem>
                         <SelectItem value="S">S</SelectItem>
                         <SelectItem value="M">M</SelectItem>
@@ -407,13 +422,13 @@ export default function ProfilPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="allergies">Allergies connues</Label>
-              <Textarea id="allergies" rows={2} placeholder="Arachides, pollen…" {...register("allergies")} />
+              <Label htmlFor="allergies">{t("contact.allergies")}</Label>
+              <Textarea id="allergies" rows={2} placeholder={t("contact.allergiesPlaceholder")} {...register("allergies")} />
               {errors.allergies && <p className="text-destructive text-xs">{errors.allergies.message}</p>}
             </div>
 
             <Button type="submit" disabled={!isDirty || mutation.isPending} className="w-full">
-              {mutation.isPending ? "Enregistrement…" : "Enregistrer"}
+              {mutation.isPending ? t("contact.saving") : t("contact.save")}
             </Button>
           </form>
         </CardContent>
@@ -423,9 +438,9 @@ export default function ProfilPage() {
       <ConfirmDialog
         open={removePhotoOpen}
         onOpenChange={setRemovePhotoOpen}
-        title="Retirer la photo de profil ?"
-        description="Vous pourrez en ajouter une nouvelle à tout moment."
-        confirmLabel="Retirer"
+        title={t("removePhoto.title")}
+        description={t("removePhoto.description")}
+        confirmLabel={t("removePhoto.confirm")}
         loading={photoMutation.isPending}
         onConfirm={confirmRemovePhoto}
       />

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, FileTextIcon, CopyIcon, PauseCircleIcon, PlayCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useMessageTemplates, useDeleteTemplate, useCreateTemplate, useToggleTemplateStatus,
@@ -14,9 +15,21 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { cn } from "@/lib/utils"
-import { TEMPLATE_CATEGORY_LABELS } from "@/lib/automation"
+import type { TemplateCategory } from "@/lib/automation"
+
+function getTemplateCategoryLabels(t: ReturnType<typeof useTranslations>): Record<TemplateCategory, string> {
+  return {
+    GENERAL:     t("messages.categories.general"),
+    COTISATION:  t("messages.categories.cotisation"),
+    EVENEMENT:   t("messages.categories.evenement"),
+    MEMBRE:      t("messages.categories.membre"),
+    FACTURATION: t("messages.categories.facturation"),
+  }
+}
 
 export function TemplatesManager() {
+  const t = useTranslations()
+  const templateCategoryLabels = getTemplateCategoryLabels(t)
   const { data: templates = [], isLoading } = useMessageTemplates()
   const deleteMut   = useDeleteTemplate()
   const createMut   = useCreateTemplate()
@@ -34,30 +47,30 @@ export function TemplatesManager() {
     if (!deleteTarget) return
     try {
       await deleteMut.mutateAsync(deleteTarget.id)
-      toast.success(`Modèle « ${deleteTarget.name} » supprimé`)
+      toast.success(t("messages.templatesManager.toasts.deleted", { name: deleteTarget.name }))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
-  async function doToggle(t: MessageTemplate) {
+  async function doToggle(template: MessageTemplate) {
     try {
-      await toggleMut.mutateAsync({ id: t.id, active: !t.active })
-      toast.success(t.active ? "Modèle désactivé" : "Modèle activé")
+      await toggleMut.mutateAsync({ id: template.id, active: !template.active })
+      toast.success(template.active ? t("messages.templatesManager.toasts.deactivated") : t("messages.templatesManager.toasts.activated"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
-  function handleToggle(t: MessageTemplate) {
+  function handleToggle(template: MessageTemplate) {
     // Deactivating silently stops every active rule that uses this template — confirm
     // when that's actually at stake. Reactivating has no downside, so it's immediate.
-    if (t.active && t.activeRulesCount > 0) {
-      setDeactivateTarget(t)
+    if (template.active && template.activeRulesCount > 0) {
+      setDeactivateTarget(template)
       return
     }
-    doToggle(t)
+    doToggle(template)
   }
 
   async function handleConfirmDeactivate() {
@@ -66,18 +79,18 @@ export function TemplatesManager() {
     setDeactivateTarget(null)
   }
 
-  async function handleDuplicate(t: MessageTemplate) {
+  async function handleDuplicate(template: MessageTemplate) {
     try {
       await createMut.mutateAsync({
-        name:     `${t.name} (copie)`,
-        category: t.category,
-        subject:  t.subject,
-        body:     t.body,
-        smsBody:  t.smsBody ?? undefined,
+        name:     `${template.name}${t("messages.templatesManager.toasts.duplicateSuffix")}`,
+        category: template.category,
+        subject:  template.subject,
+        body:     template.body,
+        smsBody:  template.smsBody ?? undefined,
       })
-      toast.success(`Modèle « ${t.name} » dupliqué`)
+      toast.success(t("messages.templatesManager.toasts.duplicated", { name: template.name }))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -85,11 +98,11 @@ export function TemplatesManager() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-base font-semibold">Modèles de messages</h2>
-          <p className="text-sm text-muted-foreground">Rédigez des templates réutilisables avec variables dynamiques.</p>
+          <h2 className="text-base font-semibold">{t("messages.templatesManager.title")}</h2>
+          <p className="text-sm text-muted-foreground">{t("messages.templatesManager.subtitle")}</p>
         </div>
         <Button size="sm" onClick={openCreate}>
-          <PlusIcon className="mr-1.5 size-4" /> Nouveau modèle
+          <PlusIcon className="mr-1.5 size-4" /> {t("messages.templatesManager.newTemplate")}
         </Button>
       </div>
 
@@ -101,48 +114,49 @@ export function TemplatesManager() {
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
           <FileTextIcon className="size-8 text-muted-foreground/40" />
           <div>
-            <p className="text-sm font-medium">Aucun modèle</p>
-            <p className="text-xs text-muted-foreground">Créez un premier template pour l'utiliser dans vos règles.</p>
+            <p className="text-sm font-medium">{t("messages.templatesManager.noTemplates")}</p>
+            <p className="text-xs text-muted-foreground">{t("messages.templatesManager.noTemplatesHint")}</p>
           </div>
           <Button size="sm" variant="outline" onClick={openCreate}>
-            <PlusIcon className="mr-1.5 size-3.5" /> Créer un modèle
+            <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.templatesManager.createTemplate")}
           </Button>
         </div>
       ) : (
         <div className="divide-y rounded-xl border overflow-hidden">
-          {templates.map(t => (
-            <div key={t.id} className="flex items-start justify-between gap-4 px-4 py-3 bg-card hover:bg-muted/30 transition-colors">
+          {templates.map(template => (
+            <div key={template.id} className="flex items-start justify-between gap-4 px-4 py-3 bg-card hover:bg-muted/30 transition-colors">
               <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-medium text-sm truncate">{t.name}</p>
+                  <p className="font-medium text-sm truncate">{template.name}</p>
                   <span className={cn(
                     "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                    t.active
+                    template.active
                       ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                       : "bg-muted text-muted-foreground",
                   )}>
-                    {t.active ? "Actif" : "Inactif"}
+                    {template.active ? t("messages.templatesManager.active") : t("messages.templatesManager.inactive")}
                   </span>
                   <span className="text-[10px] text-muted-foreground border rounded-full px-2 py-0.5">
-                    {TEMPLATE_CATEGORY_LABELS[t.category]}
+                    {templateCategoryLabels[template.category]}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground truncate">{t.subject}</p>
+                <p className="text-xs text-muted-foreground truncate">{template.subject}</p>
                 <p className="text-[11px] text-muted-foreground/60">
-                  {t._count.rules} règle{t._count.rules !== 1 ? "s" : ""} · modifié le {format(new Date(t.updatedAt), "d MMM yyyy", { locale: fr })}
+                  {t("messages.templatesManager.rulesCount", { count: template._count.rules })}
+                  {t("messages.templatesManager.modifiedOn", { date: format(new Date(template.updatedAt), "d MMM yyyy", { locale: fr }) })}
                 </p>
               </div>
               <div className="shrink-0">
                 <RowActions actions={[
-                  { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openEdit(t) },
-                  { label: "Dupliquer", icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(t), disabled: createMut.isPending },
+                  { label: t("messages.templatesManager.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openEdit(template) },
+                  { label: t("messages.templatesManager.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(template), disabled: createMut.isPending },
                   {
-                    label:   t.active ? "Désactiver" : "Activer",
-                    icon:    t.active ? <PauseCircleIcon className="size-3.5" /> : <PlayCircleIcon className="size-3.5" />,
-                    onClick: () => handleToggle(t),
+                    label:   template.active ? t("messages.templatesManager.actions.deactivate") : t("messages.templatesManager.actions.activate"),
+                    icon:    template.active ? <PauseCircleIcon className="size-3.5" /> : <PlayCircleIcon className="size-3.5" />,
+                    onClick: () => handleToggle(template),
                     disabled: toggleMut.isPending,
                   },
-                  { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(t) },
+                  { label: t("messages.templatesManager.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(template) },
                 ]} />
               </div>
             </div>
@@ -159,13 +173,13 @@ export function TemplatesManager() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={open => !open && setDeleteTarget(null)}
-        title={`Supprimer « ${deleteTarget?.name} » ?`}
+        title={t("messages.templatesManager.deleteConfirmTitle", { name: deleteTarget?.name ?? "" })}
         description={
           deleteTarget?._count.rules
-            ? `Ce modèle est utilisé par ${deleteTarget._count.rules} règle${deleteTarget._count.rules > 1 ? "s" : ""}. Supprimez-les d'abord.`
-            : "Ce modèle sera supprimé définitivement."
+            ? t("messages.templatesManager.deleteConfirmInUse", { count: deleteTarget._count.rules })
+            : t("messages.templatesManager.deleteConfirmSimple")
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t("messages.templatesManager.actions.delete")}
         confirmDisabled={!!deleteTarget?._count.rules}
         loading={deleteMut.isPending}
         onConfirm={handleDelete}
@@ -174,9 +188,9 @@ export function TemplatesManager() {
       <ConfirmDialog
         open={!!deactivateTarget}
         onOpenChange={open => !open && setDeactivateTarget(null)}
-        title={`Désactiver « ${deactivateTarget?.name} » ?`}
-        description={`${deactivateTarget?.activeRulesCount} règle${(deactivateTarget?.activeRulesCount ?? 0) > 1 ? "s" : ""} active${(deactivateTarget?.activeRulesCount ?? 0) > 1 ? "s" : ""} ${(deactivateTarget?.activeRulesCount ?? 0) > 1 ? "utilisent" : "utilise"} ce modèle et n'enverr${(deactivateTarget?.activeRulesCount ?? 0) > 1 ? "ont" : "a"} plus rien tant qu'il reste désactivé.`}
-        confirmLabel="Désactiver"
+        title={t("messages.templatesManager.deactivateConfirmTitle", { name: deactivateTarget?.name ?? "" })}
+        description={t("messages.templatesManager.deactivateConfirmDescription", { count: deactivateTarget?.activeRulesCount ?? 0 })}
+        confirmLabel={t("messages.templatesManager.actions.deactivate")}
         loading={toggleMut.isPending}
         onConfirm={handleConfirmDeactivate}
       />

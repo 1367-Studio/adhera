@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { ClipboardIcon, CheckIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { BASE_PATH } from "@/lib/env"
 
 export function PortalLinkSettings({ slug }: { slug: string }) {
+  const t = useTranslations("parametres.portalLinkSettings")
   const [copied, setCopied]       = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -34,9 +36,9 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
   return (
     <div className="space-y-3">
       <div>
-        <h3 className="text-sm font-medium">Lien du portail membre</h3>
+        <h3 className="text-sm font-medium">{t("title")}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Partagez ce lien avec vos membres pour qu&apos;ils puissent accéder à leur espace.
+          {t("subtitle")}
         </p>
       </div>
 
@@ -50,7 +52,7 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
 
       {copyFailed && (
         <p className="text-xs text-amber-600">
-          Copie automatique indisponible — sélectionnez le texte ci-dessus et copiez manuellement.
+          {t("copyFailed")}
         </p>
       )}
 
@@ -59,19 +61,19 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
           {copied ? (
             <>
               <CheckIcon className="mr-1.5 size-4 text-emerald-600" />
-              <span className="text-emerald-600">Copié !</span>
+              <span className="text-emerald-600">{t("copied")}</span>
             </>
           ) : (
             <>
               <ClipboardIcon className="mr-1.5 size-4" />
-              Copier
+              {t("copy")}
             </>
           )}
         </Button>
 
         <Button variant="outline" size="sm" onClick={handleOpen}>
           <ArrowSquareOutIcon className="mr-1.5 size-4" />
-          Ouvrir
+          {t("open")}
         </Button>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { PlusIcon, MagnifyingGlassIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
 import { MaterialModal } from "@/components/materiel/material-modal"
 import { MaterialDetailSheet } from "@/components/materiel/material-detail-sheet"
@@ -11,25 +12,32 @@ import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-const STATUS_CONFIG: Record<MaterialStatus, { label: string; dot: string; pill: string }> = {
-  DISPONIBLE:     { label: "Disponible",     dot: "bg-green-500", pill: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-  EN_USE:         { label: "En utilisation", dot: "bg-blue-500",  pill: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-  EN_MAINTENANCE: { label: "Maintenance",    dot: "bg-amber-400", pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
-  HORS_SERVICE:   { label: "Hors service",   dot: "bg-gray-400",  pill: "bg-muted text-muted-foreground" },
-  PERDU:          { label: "Perdu",          dot: "bg-red-500",   pill: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusConfig(t: Translator): Record<MaterialStatus, { label: string; dot: string; pill: string }> {
+  return {
+    DISPONIBLE:     { label: t("materiel.form.status.disponible"), dot: "bg-green-500", pill: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+    EN_USE:         { label: t("materiel.form.status.enUse"),      dot: "bg-blue-500",  pill: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+    EN_MAINTENANCE: { label: t("materiel.view.maintenancePill"),    dot: "bg-amber-400", pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
+    HORS_SERVICE:   { label: t("materiel.form.status.horsService"), dot: "bg-gray-400",  pill: "bg-muted text-muted-foreground" },
+    PERDU:          { label: t("materiel.form.status.perdu"),       dot: "bg-red-500",   pill: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  }
 }
 
-const FILTER_OPTIONS = [
-  { value: "ALL",           label: "Tous" },
-  { value: "DISPONIBLE",    label: "Disponibles" },
-  { value: "EN_USE",        label: "En utilisation" },
-  { value: "RESERVE",       label: "Réservés" },
-  { value: "EN_MAINTENANCE",label: "Maintenance" },
-  { value: "HORS_SERVICE",  label: "Hors service" },
-  { value: "PERDU",         label: "Perdus" },
-]
+function getFilterOptions(t: Translator) {
+  return [
+    { value: "ALL",            label: t("materiel.view.filters.all")           },
+    { value: "DISPONIBLE",     label: t("materiel.view.filters.disponibles")   },
+    { value: "EN_USE",         label: t("materiel.view.filters.enUtilisation") },
+    { value: "RESERVE",        label: t("materiel.view.filters.reserves")      },
+    { value: "EN_MAINTENANCE", label: t("materiel.view.filters.maintenance")   },
+    { value: "HORS_SERVICE",   label: t("materiel.view.filters.horsService")   },
+    { value: "PERDU",          label: t("materiel.view.filters.perdus")        },
+  ]
+}
 
 function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; material: Material; onOpen: () => void }) {
+  const t = useTranslations()
   const confirmLoan = useConfirmLoan(material.id)
   const refuseLoan  = useRefuseLoan(material.id)
   const busy        = confirmLoan.isPending || refuseLoan.isPending
@@ -45,7 +53,7 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
         </button>
         <p className="text-xs text-muted-foreground truncate">
           {name}{demande.quantity > 1 && ` · ×${demande.quantity}`}
-          {demande.expectedReturnAt && ` · retour prévu le ${new Date(demande.expectedReturnAt).toLocaleDateString("fr-FR")}`}
+          {demande.expectedReturnAt && t("materiel.view.returnExpected", { date: new Date(demande.expectedReturnAt).toLocaleDateString("fr-FR") })}
         </p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
@@ -53,23 +61,23 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
           type="button"
           disabled={busy}
           onClick={async () => {
-            try { await confirmLoan.mutateAsync(demande.id); toast.success("Emprunt confirmé") }
-            catch (err) { toast.error(err instanceof Error ? err.message : "Erreur") }
+            try { await confirmLoan.mutateAsync(demande.id); toast.success(t("materiel.view.toasts.confirmed")) }
+            catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
           }}
           className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 transition-colors disabled:opacity-40"
         >
-          <CheckIcon className="size-3" /> Accepter
+          <CheckIcon className="size-3" /> {t("materiel.view.accept")}
         </button>
         <button
           type="button"
           disabled={busy}
           onClick={async () => {
-            try { await refuseLoan.mutateAsync(demande.id); toast.success("Demande refusée") }
-            catch (err) { toast.error(err instanceof Error ? err.message : "Erreur") }
+            try { await refuseLoan.mutateAsync(demande.id); toast.success(t("materiel.view.toasts.refused")) }
+            catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
           }}
           className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors disabled:opacity-40"
         >
-          <XIcon className="size-3" /> Refuser
+          <XIcon className="size-3" /> {t("materiel.view.refuse")}
         </button>
       </div>
     </div>
@@ -77,14 +85,16 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
 }
 
 function MaterialCard({ material, onClick }: { material: Material; onClick: () => void }) {
+  const t = useTranslations()
+  const statusConfig = getStatusConfig(t)
   // availableQty already excludes future-dated reservations, so it hitting 0 means the item
   // is genuinely unavailable today — a reservation alone can't trigger this branch, it only
   // ever shows up via the "reservedQty réservé" badge below.
   const cfg = material.status !== "DISPONIBLE"
-    ? STATUS_CONFIG[material.status]
+    ? statusConfig[material.status]
     : material.availableQty === 0
-      ? STATUS_CONFIG.EN_USE
-      : STATUS_CONFIG.DISPONIBLE
+      ? statusConfig.EN_USE
+      : statusConfig.DISPONIBLE
 
   return (
     <button
@@ -127,7 +137,7 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
           {material.overdueCount > 0 && (
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
               <WarningCircleIcon className="size-2.5" />
-              {material.overdueCount} en retard
+              {t("materiel.view.overdueCount", { count: material.overdueCount })}
             </span>
           )}
           {material.pendingDemandesCount > 0 && (
@@ -138,14 +148,14 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
           )}
           {material.reservedQty > 0 && (
             <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-              {material.reservedQty} réservé{material.reservedQty > 1 ? "s" : ""}
+              {t("materiel.view.reservedCount", { count: material.reservedQty })}
             </span>
           )}
           <span className={cn(
             "shrink-0 font-medium",
             material.availableQty === 0 ? "text-red-600" : material.loanedQty > 0 ? "text-amber-600" : "text-green-600",
           )}>
-            {material.availableQty}/{material.quantity} disponibles
+            {t("materiel.view.availableOf", { available: material.availableQty, total: material.quantity })}
           </span>
         </div>
       </div>
@@ -154,6 +164,8 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
 }
 
 export function MaterielView() {
+  const t = useTranslations()
+  const filterOptions = getFilterOptions(t)
   const [searchInput,  setSearchInput]  = useState("")
   const [search,       setSearch]       = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("ALL")
@@ -162,8 +174,8 @@ export function MaterielView() {
   const [sheetOpen,    setSheetOpen]    = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setSearch(searchInput), 300)
-    return () => clearTimeout(t)
+    const timeoutId = setTimeout(() => setSearch(searchInput), 300)
+    return () => clearTimeout(timeoutId)
   }, [searchInput])
 
   const { data: materials = [], isLoading } = useMateriel(search || undefined)
@@ -194,11 +206,11 @@ export function MaterielView() {
   return (
     <div className="space-y-6 py-4">
       <PageHeader
-        title="Matériel"
-        description="Inventaire et gestion des emprunts"
+        title={t("materiel.view.title")}
+        description={t("materiel.view.description")}
         action={
           <Button onClick={() => setCreateOpen(true)}>
-            <PlusIcon className="mr-1.5 size-4" /> Ajouter
+            <PlusIcon className="mr-1.5 size-4" /> {t("materiel.view.add")}
           </Button>
         }
       />
@@ -207,11 +219,11 @@ export function MaterielView() {
       {!isLoading && materials.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           {[
-            { label: "Articles",    value: stats.total,       color: "text-foreground" },
-            { label: "Disponibles", value: stats.disponible,  color: "text-green-600"  },
-            { label: "En prêt",     value: stats.enPret,      color: "text-blue-600"   },
-            { label: "Réservés",    value: stats.reserve,     color: "text-indigo-600" },
-            { label: "Maintenance", value: stats.maintenance, color: "text-amber-600"  },
+            { label: t("materiel.view.statsLabels.articles"),    value: stats.total,       color: "text-foreground" },
+            { label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible,  color: "text-green-600"  },
+            { label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret,      color: "text-blue-600"   },
+            { label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve,     color: "text-indigo-600" },
+            { label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance, color: "text-amber-600"  },
           ].map(s => (
             <div key={s.label} className="rounded-xl border bg-card px-4 py-3">
               <p className="text-xs text-muted-foreground">{s.label}</p>
@@ -232,7 +244,7 @@ export function MaterielView() {
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-amber-200 dark:border-amber-900">
               <ClockIcon className="size-3.5 text-amber-600" />
               <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                Demandes en attente
+                {t("materiel.view.pendingRequests")}
               </p>
               <span className="text-xs text-amber-600 dark:text-amber-400">({allPending.length})</span>
             </div>
@@ -255,12 +267,12 @@ export function MaterielView() {
           <input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
-            placeholder="Rechercher…"
+            placeholder={t("materiel.view.searchPlaceholder")}
             className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
           />
         </div>
         <div className="flex gap-1.5 flex-wrap">
-          {FILTER_OPTIONS.map(f => (
+          {filterOptions.map(f => (
             <button
               key={f.value}
               type="button"
@@ -287,17 +299,17 @@ export function MaterielView() {
         <div className="flex flex-col items-center gap-3 py-20 text-center">
           <PackageIcon className="size-10 text-muted-foreground/30" />
           <div>
-            <p className="text-sm font-medium">{materials.length === 0 ? "Aucun article" : "Aucun résultat"}</p>
+            <p className="text-sm font-medium">{materials.length === 0 ? t("materiel.view.noArticles") : t("materiel.view.noResults")}</p>
             <p className="text-xs text-muted-foreground">
               {materials.length === 0
-                ? "Ajoutez votre premier article pour commencer."
-                : "Essayez d'autres filtres ou termes de recherche."
+                ? t("materiel.view.noArticlesHint")
+                : t("materiel.view.noResultsHint")
               }
             </p>
           </div>
           {materials.length === 0 && (
             <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)}>
-              <PlusIcon className="mr-1.5 size-3.5" /> Ajouter un article
+              <PlusIcon className="mr-1.5 size-3.5" /> {t("materiel.view.addArticle")}
             </Button>
           )}
         </div>

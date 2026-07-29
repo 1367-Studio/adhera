@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslations } from "next-intl"
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
 } from "@/components/ui/sheet"
@@ -10,8 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import type { SiteSection } from "@/types/site-config"
-import { SECTION_LABELS } from "@/types/site-config"
+import type { SiteSection, SectionType } from "@/types/site-config"
 
 type Props = {
   section:        SiteSection
@@ -23,6 +23,16 @@ type Props = {
 }
 
 export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftChange, onFilePending }: Props) {
+  const t         = useTranslations("site.sectionSheet")
+  const tSections = useTranslations("site.sectionLabels")
+  const sectionLabels: Record<SectionType, string> = {
+    hero:       tSections("hero"),
+    about:      tSections("about"),
+    events:     tSections("events"),
+    actualites: tSections("actualites"),
+    membership: tSections("membership"),
+    contact:    tSections("contact"),
+  }
   const [draft, setDraft]           = useState<SiteSection>(section)
   const [confirmClose, setConfirmClose] = useState(false)
 
@@ -63,17 +73,17 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-md flex flex-col gap-0 p-0 overflow-hidden">
           <SheetHeader className="px-4 pt-10 pb-4 border-b shrink-0">
-            <SheetTitle>Modifier — {SECTION_LABELS[draft.type]}</SheetTitle>
+            <SheetTitle>{t("editTitle", { label: sectionLabels[draft.type] })}</SheetTitle>
           </SheetHeader>
 
           <div className="flex-1 space-y-4 p-4 overflow-y-auto">
             {/* Title (all sections) */}
             <div className="space-y-1.5">
-              <Label className="text-xs">Titre de la section</Label>
+              <Label className="text-xs">{t("sectionTitle")}</Label>
               <Input
                 value={draft.title ?? ""}
                 onChange={e => set("title", e.target.value)}
-                placeholder={SECTION_LABELS[draft.type]}
+                placeholder={sectionLabels[draft.type]}
                 maxLength={80}
               />
             </div>
@@ -82,17 +92,17 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {draft.type === "hero" && (
               <>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Sous-titre</Label>
+                  <Label className="text-xs">{t("subtitle")}</Label>
                   <Textarea
                     value={draft.subtitle ?? ""}
                     onChange={e => set("subtitle", e.target.value as never)}
                     rows={3}
                     maxLength={300}
-                    placeholder="Découvrez notre association…"
+                    placeholder={t("subtitlePlaceholder")}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Hauteur de la bannière</Label>
+                  <Label className="text-xs">{t("heroHeight")}</Label>
                   <div className="flex gap-2">
                     {(["full", "half"] as const).map(value => (
                       <button
@@ -105,13 +115,13 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                             : "border-border text-muted-foreground hover:border-foreground/50"
                         }`}
                       >
-                        {value === "full" ? "Page entière" : "Demi-page"}
+                        {value === "full" ? t("heroHeightFull") : t("heroHeightHalf")}
                       </button>
                     ))}
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Image de fond (optionnel)</Label>
+                  <Label className="text-xs">{t("bgImage")}</Label>
                   <ImageUpload
                     value={draft.image || undefined}
                     onChange={url => set("image", url as never)}
@@ -120,11 +130,11 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                     lazy
                     onFilePending={onFilePending}
                   />
-                  <p className="text-[11px] text-muted-foreground">Une superposition sombre sera ajoutée automatiquement.</p>
+                  <p className="text-[11px] text-muted-foreground">{t("bgImageHint")}</p>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Couleur de fond (optionnel)</Label>
-                  <p className="text-[11px] text-muted-foreground mb-1.5">Ignorée si une image est définie.</p>
+                  <Label className="text-xs">{t("bgColor")}</Label>
+                  <p className="text-[11px] text-muted-foreground mb-1.5">{t("bgColorHint")}</p>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"
@@ -135,7 +145,7 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                     <Input
                       value={draft.bgColor ?? ""}
                       onChange={e => set("bgColor", e.target.value as never)}
-                      placeholder="Utilise la couleur principale par défaut"
+                      placeholder={t("bgColorPlaceholder")}
                       className="font-mono text-sm"
                     />
                   </div>
@@ -146,13 +156,13 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {/* About */}
             {draft.type === "about" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Contenu</Label>
+                <Label className="text-xs">{t("content")}</Label>
                 <Textarea
                   value={"content" in draft ? draft.content : ""}
                   onChange={e => set("content", e.target.value as never)}
                   rows={8}
                   maxLength={5000}
-                  placeholder="Présentez votre association…"
+                  placeholder={t("contentPlaceholder")}
                 />
               </div>
             )}
@@ -160,7 +170,7 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {/* Events */}
             {draft.type === "events" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Nombre d'événements à afficher</Label>
+                <Label className="text-xs">{t("eventsLimit")}</Label>
                 <Input
                   type="number"
                   min={1}
@@ -168,14 +178,14 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                   value={"limit" in draft ? (draft.limit || 1) : 6}
                   onChange={e => setLimit(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">Les événements sont automatiquement tirés de votre calendrier.</p>
+                <p className="text-xs text-muted-foreground">{t("eventsLimitHint")}</p>
               </div>
             )}
 
             {/* Actualités */}
             {draft.type === "actualites" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Nombre d'actualités à afficher</Label>
+                <Label className="text-xs">{t("actualitesLimit")}</Label>
                 <Input
                   type="number"
                   min={1}
@@ -183,23 +193,23 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                   value={"limit" in draft ? (draft.limit || 1) : 6}
                   onChange={e => setLimit(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">Seules les N premières actualités publiées seront affichées sur le site.</p>
+                <p className="text-xs text-muted-foreground">{t("actualitesLimitHint")}</p>
               </div>
             )}
 
             {/* Membership */}
             {draft.type === "membership" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">Texte introductif</Label>
+                <Label className="text-xs">{t("membershipIntro")}</Label>
                 <Textarea
                   value={"body" in draft ? draft.body : ""}
                   onChange={e => set("body", e.target.value as never)}
                   rows={4}
                   maxLength={500}
-                  placeholder="Remplissez ce formulaire pour demander à rejoindre l'association…"
+                  placeholder={t("membershipIntroPlaceholder")}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Les demandes apparaissent dans la liste des membres avec le statut &quot;En attente&quot;.
+                  {t("membershipHint")}
                 </p>
               </div>
             )}
@@ -207,14 +217,14 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {/* Contact */}
             {draft.type === "contact" && (
               <p className="text-xs text-muted-foreground">
-                Cette section affiche automatiquement la ville et le pays configurés dans les paramètres de l&apos;association.
+                {t("contactHint")}
               </p>
             )}
           </div>
 
           <SheetFooter className="border-t px-4 py-3 shrink-0 flex-row justify-end gap-2">
-            <Button variant="outline" onClick={() => handleOpenChange(false)}>Annuler</Button>
-            <Button onClick={() => onSave(draft)}>Appliquer</Button>
+            <Button variant="outline" onClick={() => handleOpenChange(false)}>{t("cancel")}</Button>
+            <Button onClick={() => onSave(draft)}>{t("apply")}</Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -222,9 +232,9 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
       <ConfirmDialog
         open={confirmClose}
         onOpenChange={setConfirmClose}
-        title="Ignorer les modifications ?"
-        description="Les modifications non appliquées seront perdues."
-        confirmLabel="Ignorer"
+        title={t("discardTitle")}
+        description={t("discardDescription")}
+        confirmLabel={t("discardConfirm")}
         onConfirm={forceClose}
       />
     </>

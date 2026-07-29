@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getPusherClient } from "@/lib/pusher-client"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
@@ -75,17 +76,23 @@ function getCheckInWindow(ev: Evenement) {
   }
 }
 
-const RSVP_LABELS: Record<string, { label: string; classes: string }> = {
-  CONFIRME: { label: "J'y serai",    classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-  PROVAVEL: { label: "Si possible",  classes: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
-  INCERTO:  { label: "Peut-être",    classes: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
-  ABSENT:   { label: "Absent",       classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+type Translator = ReturnType<typeof useTranslations>
+
+function getRsvpConfig(t: Translator): Record<string, { label: string; classes: string }> {
+  return {
+    CONFIRME: { label: t("evenements.presences.rsvp.confirme"), classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
+    PROVAVEL: { label: t("evenements.presences.rsvp.provavel"), classes: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" },
+    INCERTO:  { label: t("evenements.presences.rsvp.incerto"),  classes: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
+    ABSENT:   { label: t("evenements.presences.rsvp.absent"),   classes: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+  }
 }
 
 export default function PresencesPage() {
+  const t       = useTranslations()
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
   const user    = useCurrentUser()
+  const RSVP_LABELS = getRsvpConfig(t)
 
   // Local QR state — initialized from server data, updated immediately after mutations
   const [qrToken, setQrToken]           = useState<string | null>(null)
@@ -177,8 +184,8 @@ export default function PresencesPage() {
     if (payingIds.has(key)) return
     setPayingIds(prev => new Set(prev).add(key))
     markPaid.mutate(rowRef(row), {
-      onSuccess: () => toast.success(`${row.firstName} ${row.lastName} marqué comme payé`),
-      onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+      onSuccess: () => toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` })),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
   }
@@ -188,8 +195,8 @@ export default function PresencesPage() {
     if (cancelPayIds.has(key)) return
     setCancelPayIds(prev => new Set(prev).add(key))
     cancelPaid.mutate(rowRef(row), {
-      onSuccess: () => toast.success(`Paiement de ${row.firstName} ${row.lastName} annulé`),
-      onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+      onSuccess: () => toast.success(t("evenements.presences.toasts.paymentCancelled", { name: `${row.firstName} ${row.lastName}` })),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setCancelPayIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
   }
@@ -198,11 +205,11 @@ export default function PresencesPage() {
     if (!guestFirstName.trim() || !guestLastName.trim()) return
     try {
       await addGuest.mutateAsync({ firstName: guestFirstName.trim(), lastName: guestLastName.trim(), email: guestEmail.trim() || undefined })
-      toast.success(`${guestFirstName} ${guestLastName} ajouté·e et marqué·e présent·e`)
+      toast.success(t("evenements.presences.toasts.guestAdded", { name: `${guestFirstName} ${guestLastName}` }))
       setAddGuestOpen(false)
       setGuestFirstName(""); setGuestLastName(""); setGuestEmail("")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -220,10 +227,10 @@ export default function PresencesPage() {
         participationId: editTarget.participationId!,
         firstName: editFirstName.trim(), lastName: editLastName.trim(), email: editEmail.trim() || undefined,
       })
-      toast.success("Invité·e mis·e à jour")
+      toast.success(t("evenements.presences.toasts.guestUpdated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -231,10 +238,10 @@ export default function PresencesPage() {
     if (!deleteTarget) return
     try {
       await deleteGuest.mutateAsync(deleteTarget.participationId!)
-      toast.success(`${deleteTarget.firstName} ${deleteTarget.lastName} retiré·e de la liste`)
+      toast.success(t("evenements.presences.toasts.guestRemoved", { name: `${deleteTarget.firstName} ${deleteTarget.lastName}` }))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
       setDeleteTarget(null)
     }
   }
@@ -246,7 +253,7 @@ export default function PresencesPage() {
     try {
       await toggle.mutateAsync({ ...rowRef(row), present: !row.present })
     } catch {
-      toast.error("Erreur lors de la mise à jour")
+      toast.error(t("evenements.presences.toasts.updateError"))
     } finally {
       setPendingIds(prev => { const s = new Set(prev); s.delete(key); return s })
     }
@@ -257,9 +264,9 @@ export default function PresencesPage() {
       const result = await generateQr.mutateAsync()
       setQrToken(result.qrToken)
       setQrExpiresAt(result.qrExpiresAt)
-      toast.success("QR Code généré")
+      toast.success(t("evenements.presences.toasts.qrGenerated"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -268,15 +275,15 @@ export default function PresencesPage() {
       await revokeQr.mutateAsync()
       setQrToken(null)
       setQrExpiresAt(null)
-      toast.success("QR Code désactivé")
+      toast.success(t("evenements.presences.toasts.qrRevoked"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleExportPdf() {
     if (typed.length === 0) {
-      toast.error("Aucun membre à exporter")
+      toast.error(t("evenements.presences.toasts.noMembersToExport"))
       return
     }
     const { default: jsPDF }     = await import("jspdf")
@@ -466,9 +473,9 @@ export default function PresencesPage() {
   if (!ev) {
     return (
       <DetailNotFound
-        message="Cet événement est introuvable ou a été supprimé."
+        message={t("evenements.presences.notFound.message")}
         backHref="/dashboard/evenements"
-        backLabel="Retour à la liste"
+        backLabel={t("evenements.presences.notFound.backLabel")}
       />
     )
   }
@@ -488,23 +495,23 @@ export default function PresencesPage() {
     <div className="space-y-5 mt-4">
       {/* Back + export */}
       <div className="flex items-center justify-between gap-4">
-        <BackLink href="/dashboard/evenements">Événements</BackLink>
+        <BackLink href="/dashboard/evenements">{t("evenements.view.title")}</BackLink>
 
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
             <DownloadSimpleIcon className="mr-1.5 size-4" />
-            Exporter
+            {t("evenements.presences.export.button")}
             <CaretDownIcon className="ml-1 size-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => window.location.href = `/api/evenements/${id}/export?format=csv`}>
-              CSV (.csv)
+              {t("evenements.presences.export.csv")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => window.location.href = `/api/evenements/${id}/export?format=xlsx`}>
-              Excel (.xlsx)
+              {t("evenements.presences.export.excel")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportPdf}>
-              PDF (.pdf)
+              {t("evenements.presences.export.pdf")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -525,19 +532,19 @@ export default function PresencesPage() {
           <span>
             {checkInWindowState === "before" ? (
               <>
-                Le check-in via QR Code n&apos;ouvrira que le{" "}
-                <strong>{format(checkInOpensAt, "dd MMM · HH:mm", { locale: fr })}</strong> (3h avant le début de l&apos;événement).
+                {t("evenements.presences.checkInWindow.beforePrefix")}{" "}
+                <strong>{format(checkInOpensAt, "dd MMM · HH:mm", { locale: fr })}</strong> {t("evenements.presences.checkInWindow.beforeSuffix")}
               </>
             ) : (
               <>
-                Le check-in via QR Code est fermé depuis le{" "}
+                {t("evenements.presences.checkInWindow.afterPrefix")}{" "}
                 <strong>{format(checkInClosesAt, "dd MMM · HH:mm", { locale: fr })}</strong>{" "}
                 {ev.endDate
-                  ? "(6h après la fin de l'événement)."
-                  : "(aucune heure de fin n'est définie pour cet événement — la fenêtre se ferme 6h après début + 24h par défaut)."}
+                  ? t("evenements.presences.checkInWindow.afterSuffixWithEnd")
+                  : t("evenements.presences.checkInWindow.afterSuffixNoEnd")}
               </>
             )}{" "}
-            Vous pouvez toujours cocher les présences manuellement dans la liste ci-dessous.
+            {t("evenements.presences.checkInWindow.manualHint")}
           </span>
         </div>
       )}
@@ -552,11 +559,11 @@ export default function PresencesPage() {
               <span className="text-lg text-muted-foreground">/ {capacity}</span>
             )}
             <span className="text-sm text-muted-foreground">
-              présent{presentsCount !== 1 ? "s" : ""}
+              {t("evenements.presences.counter.presentWord", { count: presentsCount })}
             </span>
             {isFull && (
               <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                Complet
+                {t("evenements.presences.counter.full")}
               </span>
             )}
             {hasFee && reservedCount > 0 && (
@@ -564,7 +571,7 @@ export default function PresencesPage() {
                 <span className="text-muted-foreground/40">·</span>
                 <span className="flex items-center gap-1 text-sm text-muted-foreground">
                   <BookmarkSimpleIcon className="size-3.5" />
-                  {reservedCount} réservé{reservedCount !== 1 ? "s" : ""}
+                  {t("evenements.view.reservedCount", { count: reservedCount })}
                   {capacity && ` / ${capacity}`}
                 </span>
               </>
@@ -573,7 +580,7 @@ export default function PresencesPage() {
           {activeQrValid && (
             <span className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
               <span className="size-2 rounded-full bg-green-500 animate-pulse" />
-              Check-in en cours · temps réel
+              {t("evenements.presences.counter.liveCheckIn")}
             </span>
           )}
         </div>
@@ -593,18 +600,14 @@ export default function PresencesPage() {
         {/* QR Panel */}
         <div className="rounded-xl border bg-card p-4 space-y-4">
           <div className="flex items-center gap-1.5">
-            <h2 className="text-sm font-semibold">QR Code de check-in</h2>
+            <h2 className="text-sm font-semibold">{t("evenements.presences.qr.heading")}</h2>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger render={<span className="inline-flex" />}>
                   <InfoIcon className="size-3.5 text-muted-foreground" />
                 </TooltipTrigger>
                 <TooltipContent side="right" className="max-w-64">
-                  Un seul QR pour tout l&apos;événement, valide 24h. Chaque participant le scanne
-                  avec son téléphone, se connecte au portail si besoin, puis confirme sa venue —
-                  cela marque présent son billet et ceux de ses invité·e·s nommé·e·s. Il faut avoir
-                  un billet payé (événement payant) ou un RSVP confirmé (événement gratuit) pour
-                  que ça marche.
+                  {t("evenements.presences.qr.infoTooltip")}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -618,16 +621,16 @@ export default function PresencesPage() {
                 </div>
               </div>
               <p className="text-xs text-center text-muted-foreground">
-                Expire le {format(new Date(activeExpiresAt!), "dd MMM · HH:mm", { locale: fr })}
+                {t("evenements.presences.qr.expiresOn", { date: format(new Date(activeExpiresAt!), "dd MMM · HH:mm", { locale: fr }) })}
               </p>
               <div className="space-y-2">
                 <Button
                   variant="outline"
                   size="sm"
                   className="w-full"
-                  onClick={() => { navigator.clipboard.writeText(checkInUrl); toast.success("Lien copié") }}
+                  onClick={() => { navigator.clipboard.writeText(checkInUrl); toast.success(t("evenements.presences.toasts.linkCopied")) }}
                 >
-                  Copier le lien
+                  {t("evenements.presences.qr.copyLink")}
                 </Button>
                 <div className="flex gap-2">
                   <TooltipProvider>
@@ -635,10 +638,10 @@ export default function PresencesPage() {
                       <TooltipTrigger render={<span className="flex-1" />}>
                         <Button variant="outline" size="sm" className="w-full" onClick={() => setRegenerateConfirmOpen(true)} loading={generateQr.isPending}>
                           <ArrowsClockwiseIcon className="mr-1.5 size-3.5" />
-                          Régénérer
+                          {t("evenements.presences.qr.regenerate")}
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Invalide le QR actuel et génère un nouveau, valide 24h</TooltipContent>
+                      <TooltipContent>{t("evenements.presences.qr.regenerateTooltip")}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   <TooltipProvider>
@@ -654,7 +657,7 @@ export default function PresencesPage() {
                           <XIcon className="size-4" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Désactiver le QR Code</TooltipContent>
+                      <TooltipContent>{t("evenements.presences.qr.revokeTooltip")}</TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </div>
@@ -664,11 +667,11 @@ export default function PresencesPage() {
             <div className="text-center space-y-3 py-4">
               <QrCodeIcon className="size-12 mx-auto text-muted-foreground/30" />
               <p className="text-xs text-muted-foreground">
-                {activeToken && activeExpired ? "QR Code expiré." : "Aucun QR Code actif."}
+                {activeToken && activeExpired ? t("evenements.presences.qr.expired") : t("evenements.presences.qr.none")}
               </p>
               <Button onClick={handleGenerateQr} loading={generateQr.isPending} className="w-full">
                 <QrCodeIcon className="mr-1.5 size-4" />
-                Générer un QR Code
+                {t("evenements.presences.qr.generate")}
               </Button>
             </div>
           )}
@@ -681,7 +684,7 @@ export default function PresencesPage() {
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
-                placeholder="Rechercher…"
+                placeholder={t("evenements.presences.list.searchPlaceholder")}
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -690,7 +693,7 @@ export default function PresencesPage() {
             {!isPast && (
               <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddGuestOpen(true)}>
                 <UserPlusIcon className="mr-1.5 size-3.5" />
-                Ajouter un invité
+                {t("evenements.presences.list.addGuest")}
               </Button>
             )}
           </div>
@@ -703,7 +706,7 @@ export default function PresencesPage() {
             </div>
           ) : filtered.length === 0 ? (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              {search ? "Aucun résultat" : "Aucun membre actif"}
+              {search ? t("evenements.presences.list.noResults") : t("evenements.presences.list.noActiveMembers")}
             </p>
           ) : (
             <div className="divide-y max-h-[60vh] overflow-y-auto">
@@ -729,7 +732,7 @@ export default function PresencesPage() {
                       </span>
                       {row.isGuest && (
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
-                          Invité
+                          {t("evenements.presences.list.guestBadge")}
                         </span>
                       )}
                     </span>
@@ -755,7 +758,7 @@ export default function PresencesPage() {
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400">
                           <CheckIcon className="size-3" />
-                          Payé
+                          {t("evenements.presences.list.paidBadge")}
                         </span>
                         {!row.stripeSessionId && (
                           <TooltipProvider>
@@ -770,7 +773,7 @@ export default function PresencesPage() {
                                   <XIcon className="size-3" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>Annuler ce paiement en espèces</TooltipContent>
+                              <TooltipContent>{t("evenements.presences.list.cancelPaymentTooltip")}</TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         )}
@@ -779,7 +782,7 @@ export default function PresencesPage() {
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
                           <BookmarkSimpleIcon className="size-3" />
-                          Réservé
+                          {t("evenements.presences.list.reservedBadge")}
                         </span>
                         <button
                           type="button"
@@ -788,7 +791,7 @@ export default function PresencesPage() {
                           className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                         >
                           <MoneyIcon className="size-3" />
-                          Marquer payé
+                          {t("evenements.presences.list.markPaid")}
                         </button>
                       </div>
                     ) : (
@@ -799,7 +802,7 @@ export default function PresencesPage() {
                         className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                       >
                         <MoneyIcon className="size-3" />
-                        Marquer payé
+                        {t("evenements.presences.list.markPaid")}
                       </button>
                     )
                   )}
@@ -810,7 +813,7 @@ export default function PresencesPage() {
                         type="button"
                         onClick={() => openEdit(row)}
                         className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        title="Modifier"
+                        title={t("evenements.presences.list.editTitle")}
                       >
                         <PencilSimpleIcon className="size-3.5" />
                       </button>
@@ -818,7 +821,7 @@ export default function PresencesPage() {
                         type="button"
                         onClick={() => setDeleteTarget(row)}
                         className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        title="Retirer"
+                        title={t("evenements.presences.list.removeTitle")}
                       >
                         <TrashIcon className="size-3.5" />
                       </button>
@@ -835,25 +838,25 @@ export default function PresencesPage() {
       <Modal
         open={addGuestOpen}
         onOpenChange={setAddGuestOpen}
-        title="Ajouter un invité"
+        title={t("evenements.presences.addGuestModal.title")}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setAddGuestOpen(false)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setAddGuestOpen(false)}>{t("common.cancel")}</Button>
             <Button
               loading={addGuest.isPending}
               disabled={!guestFirstName.trim() || !guestLastName.trim()}
               onClick={handleAddGuest}
             >
               <UserPlusIcon className="mr-1.5 size-4" />
-              Ajouter et marquer présent
+              {t("evenements.presences.addGuestModal.submit")}
             </Button>
           </>
         }
       >
         <div className="space-y-3 py-2">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-foreground">Prénom</label>
+            <label className="block text-sm font-medium text-foreground">{t("membres.form.fields.firstName")}</label>
             <input
               type="text"
               value={guestFirstName}
@@ -862,7 +865,7 @@ export default function PresencesPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-foreground">Nom</label>
+            <label className="block text-sm font-medium text-foreground">{t("membres.form.fields.lastName")}</label>
             <input
               type="text"
               value={guestLastName}
@@ -872,7 +875,7 @@ export default function PresencesPage() {
           </div>
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-foreground">
-              Email <span className="text-muted-foreground font-normal">(optionnel)</span>
+              {t("membres.form.fields.email")} <span className="text-muted-foreground font-normal">{t("evenements.presences.addGuestModal.optional")}</span>
             </label>
             <input
               type="email"
@@ -888,9 +891,9 @@ export default function PresencesPage() {
       <ConfirmDialog
         open={revokeConfirmOpen}
         onOpenChange={setRevokeConfirmOpen}
-        title="Désactiver le QR Code ?"
-        description="Les membres ne pourront plus scanner ce code pour enregistrer leur présence. Les présences déjà enregistrées sont conservées."
-        confirmLabel="Désactiver"
+        title={t("evenements.presences.revokeConfirm.title")}
+        description={t("evenements.presences.revokeConfirm.description")}
+        confirmLabel={t("evenements.presences.revokeConfirm.confirmLabel")}
         loading={revokeQr.isPending}
         onConfirm={() => { setRevokeConfirmOpen(false); handleRevokeQr() }}
       />
@@ -899,9 +902,9 @@ export default function PresencesPage() {
       <ConfirmDialog
         open={regenerateConfirmOpen}
         onOpenChange={setRegenerateConfirmOpen}
-        title="Régénérer le QR Code ?"
-        description="Le QR Code actuel sera immédiatement invalidé. Toute personne qui essaie de scanner l'ancien code ne pourra plus s'enregistrer."
-        confirmLabel="Régénérer"
+        title={t("evenements.presences.regenerateConfirm.title")}
+        description={t("evenements.presences.regenerateConfirm.description")}
+        confirmLabel={t("evenements.presences.qr.regenerate")}
         loading={generateQr.isPending}
         onConfirm={() => { setRegenerateConfirmOpen(false); handleGenerateQr() }}
       />
@@ -910,24 +913,24 @@ export default function PresencesPage() {
       <Modal
         open={!!editTarget}
         onOpenChange={o => { if (!o) setEditTarget(null) }}
-        title="Modifier l'invité·e"
+        title={t("evenements.presences.editGuestModal.title")}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setEditTarget(null)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setEditTarget(null)}>{t("common.cancel")}</Button>
             <Button
               loading={editGuest.isPending}
               disabled={!editFirstName.trim() || !editLastName.trim()}
               onClick={handleEditGuest}
             >
-              Enregistrer
+              {t("common.save")}
             </Button>
           </>
         }
       >
         <div className="space-y-3 py-2">
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-foreground">Prénom</label>
+            <label className="block text-sm font-medium text-foreground">{t("membres.form.fields.firstName")}</label>
             <input
               type="text"
               value={editFirstName}
@@ -936,7 +939,7 @@ export default function PresencesPage() {
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-foreground">Nom</label>
+            <label className="block text-sm font-medium text-foreground">{t("membres.form.fields.lastName")}</label>
             <input
               type="text"
               value={editLastName}
@@ -946,7 +949,7 @@ export default function PresencesPage() {
           </div>
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-foreground">
-              Email <span className="text-muted-foreground font-normal">(optionnel)</span>
+              {t("membres.form.fields.email")} <span className="text-muted-foreground font-normal">{t("evenements.presences.addGuestModal.optional")}</span>
             </label>
             <input
               type="email"
@@ -962,13 +965,13 @@ export default function PresencesPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={o => { if (!o) setDeleteTarget(null) }}
-        title={`Retirer ${deleteTarget?.firstName} ${deleteTarget?.lastName} ?`}
+        title={t("evenements.presences.deleteGuestConfirm.title", { name: `${deleteTarget?.firstName} ${deleteTarget?.lastName}` })}
         description={
           deleteTarget?.present
-            ? "Cette personne est déjà marquée présente — retirer sa fiche effacera aussi cette présence."
-            : "Cette personne sera retirée de la liste de présences de cet événement."
+            ? t("evenements.presences.deleteGuestConfirm.descriptionPresent")
+            : t("evenements.presences.deleteGuestConfirm.descriptionAbsent")
         }
-        confirmLabel="Retirer"
+        confirmLabel={t("evenements.presences.deleteGuestConfirm.confirmLabel")}
         loading={deleteGuest.isPending}
         onConfirm={handleDeleteGuest}
       />

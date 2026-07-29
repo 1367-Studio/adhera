@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr";
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
+  const t = useTranslations()
   const [deleteTarget, setDeleteTarget] = useState<Payment | null>(null)
   const { data: facture, isLoading } = useFactureDetail(open ? factureId : "")
   const removeMutation = useRemoveFacturePayment(factureId)
@@ -31,20 +33,20 @@ export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
     if (!deleteTarget) return
     try {
       await removeMutation.mutateAsync(deleteTarget.id)
-      toast.success("Paiement supprimé")
+      toast.success(t("factures.payment.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   return (
     <>
-      <Modal open={open} onOpenChange={onOpenChange} title="Historique des paiements" size="md">
+      <Modal open={open} onOpenChange={onOpenChange} title={t("factures.payment.historyTitle")} size="md">
         {isLoading || !facture ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">Chargement…</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">{t("documents.loading")}</p>
         ) : payments.length === 0 ? (
-          <p className="py-6 text-center text-sm text-muted-foreground">Aucun paiement enregistré</p>
+          <p className="py-6 text-center text-sm text-muted-foreground">{t("factures.payment.noPayments")}</p>
         ) : (
           <div className="space-y-2">
             {payments.map(p => (
@@ -56,7 +58,7 @@ export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
                     {p.note && <> · {p.note}</>}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title="Supprimer ce paiement">
+                <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title={t("factures.payment.deleteTooltip")}>
                   <TrashIcon className="size-3.5 text-muted-foreground hover:text-destructive" />
                 </Button>
               </div>
@@ -68,9 +70,9 @@ export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer ce paiement ?"
-        description={deleteTarget ? `Le paiement de ${fmt(deleteTarget.amount)} sera retiré et le statut de la facture recalculé.` : ""}
-        confirmLabel="Supprimer"
+        title={t("factures.payment.deleteConfirmTitle")}
+        description={deleteTarget ? t("factures.payment.deleteConfirmDescription", { amount: fmt(deleteTarget.amount) }) : ""}
+        confirmLabel={t("common.delete")}
         loading={removeMutation.isPending}
         onConfirm={handleRemove}
       />

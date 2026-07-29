@@ -3,18 +3,13 @@
 import { useEffect } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { cotisationSchema, type CotisationInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
-
-const statusOptions = [
-  { value: "EN_ATTENTE", label: "En attente" },
-  { value: "PAYE",       label: "Payée"      },
-  { value: "EXONERE",    label: "Exonérée"   },
-]
 
 type MembreOption = { id: string; firstName: string; lastName: string }
 
@@ -28,6 +23,14 @@ interface CotisationFormProps {
 }
 
 export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loading, editMode }: CotisationFormProps) {
+  const t = useTranslations()
+
+  const statusOptions = [
+    { value: "EN_ATTENTE", label: t("membres.detail.cotisationStatus.enAttente") },
+    { value: "PAYE",       label: t("membres.detail.cotisationStatus.paye")      },
+    { value: "EXONERE",    label: t("membres.detail.cotisationStatus.exonere")   },
+  ]
+
   const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<CotisationInput>({
     resolver: zodResolver(cotisationSchema),
     defaultValues: { status: "EN_ATTENTE", year: new Date().getFullYear(), ...defaultValues },
@@ -49,13 +52,13 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Membre"
+              label={t("cotisations.form.member")}
               required
               options={membreOptions}
               value={field.value}
               onValueChange={field.onChange}
               error={errors.membreId?.message}
-              placeholder="Sélectionner un membre…"
+              placeholder={t("cotisations.form.memberPlaceholder")}
             />
           )}
         />
@@ -63,7 +66,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          label="Année"
+          label={t("cotisations.form.year")}
           type="number"
           required
           error={errors.year?.message}
@@ -74,7 +77,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
           control={control}
           render={({ field }) => (
             <CurrencyField
-              label="Montant"
+              label={t("cotisations.form.amount")}
               required
               value={field.value ?? 0}
               onChange={field.onChange}
@@ -91,7 +94,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Statut"
+              label={t("membres.form.fields.status")}
               required
               options={statusOptions}
               value={field.value}
@@ -104,7 +107,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
           )}
         />
         <FormField
-          label="Date de paiement"
+          label={t("cotisations.form.paidAt")}
           type="date"
           max={new Date().toISOString().split("T")[0]}
           error={errors.paidAt?.message}
@@ -113,8 +116,8 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
       </div>
 
       <TextareaField
-        label="Note"
-        placeholder="Informations supplémentaires…"
+        label={t("cotisations.form.note")}
+        placeholder={t("cotisations.form.notePlaceholder")}
         rows={2}
         error={errors.note?.message}
         {...register("note")}
@@ -122,10 +125,10 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Annuler
+          {t("common.cancel")}
         </Button>
         <Button type="submit" loading={loading}>
-          Enregistrer
+          {t("common.save")}
         </Button>
       </div>
     </form>

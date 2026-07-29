@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { VideoCameraIcon, CheckCircleIcon, CircleNotchIcon, WarningIcon, PlugsIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,8 @@ type LiveKitConfig = {
 }
 
 export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
+  const t  = useTranslations("reunions.livekitSettings")
+  const tc = useTranslations("common")
   const qc = useQueryClient()
 
   const { data, isLoading, refetch } = useQuery<LiveKitConfig>({
@@ -58,12 +61,12 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
       })
       const result = await res.json() as { ok: boolean; error?: string }
       if (result.ok) {
-        toast.success("Connexion réussie — ces identifiants fonctionnent.")
+        toast.success(t("toasts.testSuccess"))
       } else {
-        toast.error(result.error ?? "Connexion impossible.")
+        toast.error(result.error ?? t("toasts.testFailedDefault"))
       }
     } catch {
-      toast.error("Impossible de tester la connexion.")
+      toast.error(t("toasts.testError"))
     } finally {
       setTesting(false)
     }
@@ -85,9 +88,9 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
       if (!res.ok) throw new Error()
       const result = await res.json() as { livekitConfigured: boolean }
       if (result.livekitConfigured) {
-        toast.success("Configuration LiveKit enregistrée")
+        toast.success(t("toasts.saved"))
       } else {
-        toast.warning("Enregistré, mais il manque encore un champ — les réunions utiliseront le compte de la plateforme tant que les 3 champs ne sont pas remplis.")
+        toast.warning(t("toasts.savedIncomplete"))
       }
       setApiKey("")
       setApiSecret("")
@@ -95,7 +98,7 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
       refetch()
       qc.invalidateQueries({ queryKey: ["livekit-config"] })
     } catch {
-      toast.error("Impossible d'enregistrer la configuration LiveKit")
+      toast.error(t("toasts.saveError"))
     } finally {
       setSaving(false)
     }
@@ -110,14 +113,14 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
         body:    JSON.stringify({ livekitUrl: null, livekitApiKey: null, livekitApiSecret: null }),
       })
       if (!res.ok) throw new Error()
-      toast.success("Identifiants LiveKit supprimés")
+      toast.success(t("toasts.removed"))
       setApiKey("")
       setApiSecret("")
       setInitialized(false)
       setRemoveConfirmOpen(false)
       refetch()
     } catch {
-      toast.error("Impossible de supprimer les identifiants")
+      toast.error(t("toasts.removeError"))
     } finally {
       setSaving(false)
     }
@@ -136,14 +139,10 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
       <div>
         <div className="flex items-center gap-2 mb-0.5">
           <VideoCameraIcon className="size-3.5 text-violet-600" />
-          <h3 className="text-sm font-semibold">Réunions vidéo (LiveKit)</h3>
+          <h3 className="text-sm font-semibold">{t("heading")}</h3>
         </div>
         <p className="text-xs text-muted-foreground">
-          Utilisé pour les réunions vidéo. Sans compte propre, les réunions tournent sur le
-          compte partagé de la plateforme — limité au plan LiveKit de la plateforme.
-          Configurez votre propre projet LiveKit pour un usage illimité, facturé directement
-          sur votre compte. Les enregistrements audio restent stockés sur l'infrastructure de
-          la plateforme dans tous les cas — seule la visioconférence utilise votre compte.
+          {t("description")}
         </p>
       </div>
 
@@ -152,9 +151,9 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
         <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
           <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
-            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Compte LiveKit personnalisé configuré</p>
+            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t("configuredTitle")}</p>
             {data.livekitUrl && (
-              <p className="text-xs text-muted-foreground">URL : <code className="font-mono">{data.livekitUrl}</code></p>
+              <p className="text-xs text-muted-foreground">{t("urlLabel")}<code className="font-mono">{data.livekitUrl}</code></p>
             )}
           </div>
         </div>
@@ -162,7 +161,7 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
         <div className="rounded-xl border bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2.5">
           <WarningIcon className="size-4 mt-0.5 shrink-0 text-amber-600" />
           <p className="text-sm text-amber-700 dark:text-amber-300">
-            Compte de la plateforme utilisé — usage limité au plan LiveKit de la plateforme.
+            {t("notConfigured")}
           </p>
         </div>
       )}
@@ -170,28 +169,28 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
       {canEdit && (
         <div className="space-y-4">
           <FormField
-            label="URL du serveur (wss://)"
+            label={t("serverUrlLabel")}
             placeholder="wss://votre-projet.livekit.cloud"
             value={url}
             onChange={e => setUrl(e.target.value)}
           />
 
           <FormField
-            label="API Key"
-            placeholder={data?.livekitConfigured ? "Clé existante — saisissez pour remplacer" : "APIxxxxxxxxxxxxxxx"}
+            label={t("apiKeyLabel")}
+            placeholder={data?.livekitConfigured ? t("apiKeyPlaceholderExisting") : "APIxxxxxxxxxxxxxxx"}
             value={apiKey}
             onChange={e => setApiKey(e.target.value)}
           />
 
           <FormField
-            label="API Secret"
+            label={t("apiSecretLabel")}
             type="password"
-            placeholder={data?.livekitConfigured ? "Secret existant — saisissez pour remplacer" : "•••••••••••••••••••••••••••••••"}
+            placeholder={data?.livekitConfigured ? t("apiSecretPlaceholderExisting") : "•••••••••••••••••••••••••••••••"}
             value={apiSecret}
             onChange={e => setApiSecret(e.target.value)}
           />
           <p className="text-xs text-muted-foreground -mt-2">
-            Retrouvez vos identifiants sur <span className="font-mono">cloud.livekit.io</span>
+            {t("credentialsHint")}<span className="font-mono">cloud.livekit.io</span>
           </p>
 
           <div className="flex gap-2 flex-wrap">
@@ -202,8 +201,8 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
               disabled={!canTest || testing}
             >
               {testing
-                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />Test en cours…</>
-                : <><PlugsIcon className="mr-1.5 size-3.5" />Tester la connexion</>
+                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />{t("testing")}</>
+                : <><PlugsIcon className="mr-1.5 size-3.5" />{t("testConnection")}</>
               }
             </Button>
             <Button
@@ -212,8 +211,8 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
               disabled={!canSave || saving}
             >
               {saving
-                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
-                : <><VideoCameraIcon className="mr-1.5 size-3.5" />Enregistrer</>
+                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />{t("saving")}</>
+                : <><VideoCameraIcon className="mr-1.5 size-3.5" />{t("save")}</>
               }
             </Button>
             {data?.livekitConfigured && (
@@ -224,18 +223,16 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
                 disabled={saving}
                 className="text-xs text-muted-foreground"
               >
-                Supprimer les identifiants
+                {t("removeCredentials")}
               </Button>
             )}
           </div>
 
           {data?.webhookUrl && (
             <div className="rounded-xl border bg-muted/30 p-3 space-y-1">
-              <p className="text-xs font-medium">Webhook à configurer sur votre projet LiveKit</p>
+              <p className="text-xs font-medium">{t("webhookTitle")}</p>
               <p className="text-xs text-muted-foreground">
-                Dans cloud.livekit.io → Settings → Webhooks, ajoutez cette URL signée avec la
-                même API Key ci-dessus, sinon une réunion oubliée ouverte ne se fermera plus
-                automatiquement sur votre compte.
+                {t("webhookDescription")}
               </p>
               <code className="block text-xs font-mono bg-background rounded-lg border px-2 py-1.5 overflow-x-auto">
                 {data.webhookUrl}
@@ -249,9 +246,9 @@ export function LiveKitSettings({ canEdit }: { canEdit: boolean }) {
         open={removeConfirmOpen}
         onOpenChange={setRemoveConfirmOpen}
         onConfirm={handleRemove}
-        title="Supprimer les identifiants LiveKit ?"
-        description="Les réunions repasseront sur le compte partagé de la plateforme, limité à son propre plan LiveKit. Une réunion en cours sur votre compte ne sera pas automatiquement transférée."
-        confirmLabel="Supprimer"
+        title={t("removeConfirmTitle")}
+        description={t("removeConfirmDescription")}
+        confirmLabel={tc("delete")}
         loading={saving}
       />
     </div>

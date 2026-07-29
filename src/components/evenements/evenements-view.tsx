@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
@@ -59,6 +60,7 @@ type ViewMode = "list" | "calendar"
 const PAGE_SIZE = 20
 
 export function EvenementsView() {
+  const t = useTranslations()
   const router = useRouter()
   const [view, setView]                   = useState<ViewMode>("list")
   const [page, setPage]                   = useState(1)
@@ -108,10 +110,10 @@ export function EvenementsView() {
         date:    localDatetimeToISO(data.date),
         endDate: data.endDate ? localDatetimeToISO(data.endDate) : data.endDate,
       })
-      toast.success("Événement créé avec succès")
+      toast.success(t("evenements.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -122,10 +124,10 @@ export function EvenementsView() {
         date:    localDatetimeToISO(data.date),
         endDate: data.endDate ? localDatetimeToISO(data.endDate) : data.endDate,
       })
-      toast.success("Événement mis à jour")
+      toast.success(t("evenements.view.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -133,17 +135,17 @@ export function EvenementsView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Événement supprimé")
+      toast.success(t("evenements.view.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const columns: Column<Evenement>[] = [
     {
       key: "event",
-      header: "Événement",
+      header: t("evenements.view.columns.event"),
       cell: (e) => (
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
@@ -171,7 +173,7 @@ export function EvenementsView() {
     },
     {
       key: "date",
-      header: "Date",
+      header: t("evenements.view.columns.date"),
       cell: (e) => (
         <div>
           <p className="text-sm">{format(new Date(e.date), "dd MMM yyyy", { locale: fr })}</p>
@@ -181,7 +183,7 @@ export function EvenementsView() {
     },
     {
       key: "presences",
-      header: "Présences",
+      header: t("evenements.view.columns.presences"),
       cell: (e) => {
         const hasFee = e.price != null && Number(e.price) > 0
         return (
@@ -192,12 +194,12 @@ export function EvenementsView() {
           >
             <span className="flex items-center gap-1.5 text-sm text-primary">
               <UsersIcon className="size-3.5" />
-              {e._count.participations} présent{e._count.participations !== 1 ? "s" : ""}
+              {t("evenements.view.presentCount", { count: e._count.participations })}
             </span>
             {hasFee && e.confirmedCount > 0 && (
               <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <BookmarkSimpleIcon className="size-3.5" />
-                {e.confirmedCount} réservé{e.confirmedCount !== 1 ? "s" : ""}
+                {t("evenements.view.reservedCount", { count: e.confirmedCount })}
                 {e.capacity != null && ` / ${e.capacity}`}
               </span>
             )}
@@ -212,9 +214,9 @@ export function EvenementsView() {
       className: "w-10",
       cell: (e) => (
         <RowActions actions={[
-          { label: "Présences", icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
+          { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
+          { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
+          { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
         ]} />
       ),
     },
@@ -223,21 +225,21 @@ export function EvenementsView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Événements"
-        description={view === "list" ? `${result?.total ?? 0} événement${(result?.total ?? 0) !== 1 ? "s" : ""}` : "Vue calendrier"}
+        title={t("evenements.view.title")}
+        description={view === "list" ? t("evenements.view.count", { count: result?.total ?? 0 }) : t("evenements.view.calendarView")}
         action={
           <div className="flex items-center gap-2">
             <ViewToggle
               options={[
-                { value: "list",     label: "Liste",      icon: <ListIcon         className="size-3.5" /> },
-                { value: "calendar", label: "Calendrier", icon: <CalendarDotsIcon className="size-3.5" /> },
+                { value: "list",     label: t("evenements.view.listLabel"),     icon: <ListIcon         className="size-3.5" /> },
+                { value: "calendar", label: t("evenements.view.calendarLabel"), icon: <CalendarDotsIcon className="size-3.5" /> },
               ]}
               value={view}
               onChange={setView}
             />
             <Button size="sm" onClick={() => openCreate()}>
               <PlusIcon className="mr-1.5 size-4" />
-              Créer
+              {t("evenements.view.create")}
             </Button>
           </div>
         }
@@ -255,7 +257,7 @@ export function EvenementsView() {
             <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
             <input
               type="text"
-              placeholder="Rechercher un événement…"
+              placeholder={t("evenements.view.searchPlaceholder")}
               value={searchInput}
               onChange={e => handleSearch(e.target.value)}
               className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -281,7 +283,7 @@ export function EvenementsView() {
             data={evenements}
             loading={isLoading}
             keyExtractor={(e) => e.id}
-            empty={search ? `Aucun résultat pour « ${search} »` : "Aucun événement créé"}
+            empty={search ? t("evenements.view.noResultsFor", { search }) : t("evenements.view.noEvent")}
             pagination={result ? {
               page:         result.page,
               totalPages:   result.totalPages,
@@ -294,7 +296,7 @@ export function EvenementsView() {
       )}
 
       {/* Create */}
-      <Modal open={createOpen} onOpenChange={(o) => { if (!o) { setCreateOpen(false); setCreateDate(undefined) } }} title="Créer un événement" size="lg" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={(o) => { if (!o) { setCreateOpen(false); setCreateDate(undefined) } }} title={t("evenements.view.createTitle")} size="lg" dismissable={false}>
         <EvenementForm key={createDate ?? "create"}
           defaultValues={createDate ? { date: createDate } : undefined}
           onSubmit={handleCreate}
@@ -307,7 +309,7 @@ export function EvenementsView() {
       <Modal
         open={!!editTarget}
         onOpenChange={(open) => !open && setEditTarget(null)}
-        title="Modifier l'événement"
+        title={t("evenements.view.editTitle")}
         size="lg"
         dismissable={false}
       >
@@ -333,9 +335,9 @@ export function EvenementsView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`Supprimer « ${deleteTarget?.title} » ?`}
-        description="L'événement et toutes les présences associées seront supprimés définitivement."
-        confirmLabel="Supprimer"
+        title={t("evenements.view.deleteConfirmTitle", { title: deleteTarget?.title ?? "" })}
+        description={t("evenements.view.deleteConfirmDescription")}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

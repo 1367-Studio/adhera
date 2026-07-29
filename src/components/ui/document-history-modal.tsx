@@ -1,6 +1,7 @@
 "use client"
 
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Modal } from "@/components/ui/modal"
 import { ActivityLogList, type ActivityLogEntry } from "@/components/ui/activity-log-list"
 
@@ -15,6 +16,7 @@ interface Props {
 type LogsPage = { data: ActivityLogEntry[]; total: number; page: number; totalPages: number }
 
 export function DocumentHistoryModal({ entity, entityId, documentNumber, open, onOpenChange }: Props) {
+  const t = useTranslations("documents")
   // Paginated via useInfiniteQuery (same pattern as membre-activity-log.tsx) since the
   // backend caps each page at 50 entries — a heavily-edited document used to silently lose
   // everything past the first 50 with no "load more" affordance.
@@ -32,9 +34,9 @@ export function DocumentHistoryModal({ entity, entityId, documentNumber, open, o
   const total = data?.pages[0]?.total ?? 0
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title={`Historique${documentNumber ? ` — ${documentNumber}` : ""}`} size="md">
+    <Modal open={open} onOpenChange={onOpenChange} title={documentNumber ? t("historyTitleWithNumber", { number: documentNumber }) : t("historyTitle")} size="md">
       {isLoading ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">Chargement…</p>
+        <p className="py-6 text-center text-sm text-muted-foreground">{t("loading")}</p>
       ) : (
         <ActivityLogList
           logs={logs}
