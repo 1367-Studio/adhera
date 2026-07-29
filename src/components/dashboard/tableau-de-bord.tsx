@@ -1,15 +1,36 @@
 "use client"
 
-import Link from "next/link"
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon, ShoppingBagIcon, PackageIcon } from "@phosphor-icons/react/dist/ssr";
+import { toast } from "sonner"
+import {
+  DndContext, DragOverlay, closestCenter,
+  PointerSensor, KeyboardSensor, useSensor, useSensors,
+  type DragEndEvent, type DragStartEvent,
+} from "@dnd-kit/core"
+import { SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable"
+import { restrictToParentElement } from "@dnd-kit/modifiers"
+import {
+  UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon,
+  PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon,
+} from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useModules } from "@/lib/user-context"
-import { usePalette, hexToRgba } from "@/lib/finance-palette"
+import { usePalette } from "@/lib/finance-palette"
+import { Button } from "@/components/ui/button"
 import { FinanceCharts, IncomeByCategoryChart } from "@/components/dashboard/finance-charts"
+import { SortableWidget } from "@/components/dashboard/sortable-widget"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
+import { NextEventCard } from "@/components/dashboard/widgets/next-event-card"
+import { CotisationsSummaryCard } from "@/components/dashboard/widgets/cotisations-summary-card"
+import { RecentOrdersCard } from "@/components/dashboard/widgets/recent-orders-card"
+import { LoanedMaterialCard } from "@/components/dashboard/widgets/loaned-material-card"
+import { setDashboardLayout, resetDashboardLayout } from "@/lib/dashboard/actions"
+import {
+  DASHBOARD_WIDGET_IDS, DASHBOARD_WIDGET_META, isDashboardWidgetVisible,
+  type DashboardWidgetId,
+} from "@/lib/dashboard-widgets"
 
 type DashboardData = {
   membresActifs:         number
@@ -36,10 +57,23 @@ function fmt(n: number) {
   return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 }
 
-export function TableauDeBord() {
-  const t = useTranslations()
-  const modules = useModules()
-  const pal = usePalette()
+function overlayWidthClass(id: DashboardWidgetId) {
+  if (id === "finance-charts") return "w-[min(90vw,64rem)]"
+  if (id.startsWith("stat-")) return "w-56"
+  return "w-[min(90vw,28rem)]"
+}
+
+const AUTOSAVE_DELAY = 600
+
+interface Props {
+  initialLayout: DashboardWidgetId[]
+}
+
+export function TableauDeBord({ initialLayout }: Props) {
+  const t          = useTranslations()
+  const tCustomize = useTranslations("dashboard.customize")
+  const modules    = useModules()
+  const pal        = usePalette()
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
     queryFn:  async () => {
@@ -49,350 +83,200 @@ export function TableauDeBord() {
     },
   })
 
+  const [order, setOrder]       = useState<DashboardWidgetId[]>(initialLayout)
+  const [editMode, setEditMode] = useState(false)
+  const [activeId, setActiveId] = useState<DashboardWidgetId | null>(null)
+  const debounceRef     = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingOrderRef = useRef<DashboardWidgetId[] | null>(null)
+
+  // Flush-on-unmount: a debounced save still pending when the user navigates away right
+  // after the last drag must fire immediately instead of being silently dropped along
+  // with the timer.
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (pendingOrderRef.current) void setDashboardLayout(pendingOrderRef.current)
+  }, [])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
   const cotisationsAlert = !!data?.cotisationsEnAttente
   const soldePositive    = !data || data.solde >= 0
 
-  // Bottom row is (up to) two independent columns: left stacks Prochain événement above
-  // Cotisations, right stacks Commandes récentes above Matériel emprunté. Each column is
-  // its own vertical stack (`space-y-4`), not a shared grid with row-for-row placement —
-  // the two columns' cards have very different, unpredictable heights (a fixed title+date
-  // vs. a variable-length list), so locking them into synced rows left one card stretched
-  // (or, with `items-start`, just floating above a dead gap) whenever its counterpart was
-  // taller. Stacking each column independently means a column's height is simply the sum
-  // of its own cards, so neither ever has to accommodate the other's height.
-  const hasLeftColumn  = modules.evenements || modules.cotisations
-  const hasRightColumn = modules.boutique || modules.materiel
+  const visibleOrder = useMemo(
+    () => order.filter(id => isDashboardWidgetVisible(id, modules)),
+    [order, modules],
+  )
 
   // Membres/Événements are plain counts with no real financial meaning, so they get no
-  // accent color (null → neutral rendering below) instead of an arbitrary one each.
-  // Cotisations and Solde reuse the exact same palette as the charts just below
-  // (usePalette) — same yellow for "en attente", same green/red for paid/negative —
-  // instead of unrelated Tailwind shades, so a color means the same thing everywhere on
-  // this screen.
-  const allStats = [
-    {
-      label:     t("dashboard.stats.activeMembers"),
-      value:     data?.membresActifs ?? "—",
-      icon:      UsersIcon,
-      href:      "/dashboard/membres",
-      accent:    null as string | null,
-      moduleKey: null,
-    },
-    {
-      label:     t("dashboard.stats.eventsThisMonth"),
-      value:     data?.evenementsMois ?? "—",
-      icon:      CalendarBlankIcon,
-      href:      "/dashboard/evenements",
-      accent:    null as string | null,
-      moduleKey: "evenements" as const,
-    },
-    {
-      label:     t("dashboard.stats.cotisationsPending"),
-      value:     data?.cotisationsEnAttente ?? "—",
-      icon:      CoinsIcon,
-      href:      "/dashboard/cotisations",
-      accent:    cotisationsAlert ? pal.enAttente : null,
-      alert:     cotisationsAlert,
-      moduleKey: "cotisations" as const,
-    },
-    {
-      label:     t("dashboard.stats.financialBalance"),
-      value:     data ? fmt(data.solde) : "—",
-      icon:      BankIcon,
-      href:      "/dashboard/finances",
-      accent:    soldePositive ? pal.recettes : pal.depenses,
-      moduleKey: "finances" as const,
-    },
-  ]
+  // accent color (null → neutral rendering) instead of an arbitrary one each. Cotisations
+  // and Solde reuse the exact same palette as the charts below (usePalette) — same yellow
+  // for "en attente", same green/red for paid/negative — instead of unrelated Tailwind
+  // shades, so a color means the same thing everywhere on this screen.
+  const widgetContent: Record<DashboardWidgetId, ReactNode> = {
+    "stat-membres": (
+      <StatTile
+        label={t("dashboard.stats.activeMembers")}
+        value={data?.membresActifs ?? "—"}
+        icon={UsersIcon}
+        href="/dashboard/membres"
+        accent={null}
+        isLoading={isLoading}
+        dark={pal.dark}
+      />
+    ),
+    "stat-evenements": (
+      <StatTile
+        label={t("dashboard.stats.eventsThisMonth")}
+        value={data?.evenementsMois ?? "—"}
+        icon={CalendarBlankIcon}
+        href="/dashboard/evenements"
+        accent={null}
+        isLoading={isLoading}
+        dark={pal.dark}
+      />
+    ),
+    "stat-cotisations": (
+      <StatTile
+        label={t("dashboard.stats.cotisationsPending")}
+        value={data?.cotisationsEnAttente ?? "—"}
+        icon={CoinsIcon}
+        href="/dashboard/cotisations"
+        accent={cotisationsAlert ? pal.enAttente : null}
+        alert={cotisationsAlert}
+        isLoading={isLoading}
+        dark={pal.dark}
+      />
+    ),
+    "stat-solde": (
+      <StatTile
+        label={t("dashboard.stats.financialBalance")}
+        value={data ? fmt(data.solde) : "—"}
+        icon={BankIcon}
+        href="/dashboard/finances"
+        accent={soldePositive ? pal.recettes : pal.depenses}
+        isLoading={isLoading}
+        dark={pal.dark}
+      />
+    ),
+    "next-event": (
+      <NextEventCard prochainEvenement={data?.prochainEvenement ?? null} isLoading={isLoading} />
+    ),
+    "cotisations-summary": (
+      <CotisationsSummaryCard
+        cotisationsEncaissees={data?.cotisationsEncaissees ?? 0}
+        cotisationsEnAttente={data?.cotisationsEnAttente ?? 0}
+        isLoading={isLoading}
+      />
+    ),
+    "income-by-category": <IncomeByCategoryChart />,
+    "recent-orders": (
+      <RecentOrdersCard ventesRecentes={data?.ventesRecentes ?? []} isLoading={isLoading} />
+    ),
+    "loaned-material": (
+      <LoanedMaterialCard
+        materielEmpruntsListe={data?.materielEmpruntsListe ?? []}
+        materielEnRetardCount={data?.materielEnRetardCount ?? 0}
+        isLoading={isLoading}
+      />
+    ),
+    "finance-charts": <FinanceCharts />,
+  }
 
-  const stats = allStats.filter(s => !s.moduleKey || modules[s.moduleKey])
+  function persist(next: DashboardWidgetId[]) {
+    pendingOrderRef.current = next
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      setDashboardLayout(next)
+        .catch(() => toast.error(t("common.networkError")))
+        .finally(() => { pendingOrderRef.current = null })
+    }, AUTOSAVE_DELAY)
+  }
+
+  function handleDragStart(e: DragStartEvent) {
+    setActiveId(e.active.id as DashboardWidgetId)
+  }
+
+  function handleDragEnd(e: DragEndEvent) {
+    setActiveId(null)
+    const { active, over } = e
+    if (!over || active.id === over.id) return
+    setOrder(prev => {
+      const oldIndex = prev.indexOf(active.id as DashboardWidgetId)
+      const newIndex = prev.indexOf(over.id as DashboardWidgetId)
+      const next = arrayMove(prev, oldIndex, newIndex)
+      persist(next)
+      return next
+    })
+  }
+
+  function handleReset() {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    pendingOrderRef.current = null
+    setOrder([...DASHBOARD_WIDGET_IDS])
+    resetDashboardLayout().catch(() => toast.error(t("common.networkError")))
+  }
 
   return (
     <div className="space-y-6 py-4">
       <div
-        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+        className="flex items-start justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
         style={{ animationFillMode: "both" }}
       >
-        <h1 className="text-2xl font-bold tracking-tight">{t("dashboard.pageTitle")}</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          {t("dashboard.subtitle")}
-        </p>
-      </div>
-
-      {/* Stats grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, i) => (
-          <div
-            key={stat.label}
-            className="animate-in fade-in slide-in-from-bottom-3 duration-300"
-            style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
-          >
-            <Link
-              href={stat.href}
-              className="group rounded-xl border bg-card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
-                <div
-                  className={cn("flex size-8 items-center justify-center rounded-lg", !stat.accent && "bg-accent")}
-                  style={stat.accent ? { backgroundColor: hexToRgba(stat.accent, pal.dark ? 0.2 : 0.12) } : undefined}
-                >
-                  {stat.alert
-                    ? <WarningCircleIcon className="size-4" style={stat.accent ? { color: stat.accent } : undefined} />
-                    : <stat.icon
-                        className={cn("size-4", !stat.accent && "text-accent-foreground")}
-                        style={stat.accent ? { color: stat.accent } : undefined}
-                      />
-                  }
-                </div>
-              </div>
-              <div className="flex items-end justify-between">
-                <span
-                  className={cn(
-                    "text-2xl font-bold tabular-nums",
-                    isLoading && "animate-pulse text-muted-foreground",
-                  )}
-                  style={!isLoading && stat.accent ? { color: stat.accent } : undefined}
-                >
-                  {isLoading ? "…" : stat.value}
-                </span>
-                <ArrowRightIcon className="size-4 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom row */}
-      {(modules.evenements || modules.cotisations || modules.boutique || modules.materiel) && (
-        <div
-          className={cn(
-            "grid gap-4",
-            // The right column is capped at 240–280px (not an equal 1fr share) — its cards
-            // are meant to read as portrait/narrow, not balloon out to match the left
-            // column's width on a wide monitor.
-            hasRightColumn && hasLeftColumn && "sm:grid-cols-2 lg:grid-cols-[1fr_minmax(240px,280px)]",
-          )}
-        >
-          {/* Left column: Prochain événement, Cotisations — stacked, each sized to its own
-              content, independent of whatever height the right column ends up being. */}
-          {hasLeftColumn && (
-            <div className="space-y-4">
-              {modules.evenements && (
-                <div
-                  className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: "240ms", animationFillMode: "both" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <CalendarBlankIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{t("dashboard.nextEvent.title")}</span>
-                  </div>
-                  {isLoading ? (
-                    <div className="h-12 rounded-lg bg-muted animate-pulse" />
-                  ) : data?.prochainEvenement ? (
-                    <Link href="/dashboard/evenements" className="block group">
-                      <p className="font-semibold group-hover:text-primary transition-colors">
-                        {data.prochainEvenement.title}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {format(new Date(data.prochainEvenement.date), "EEEE d MMMM yyyy 'à' HH:mm", { locale: fr })}
-                      </p>
-                      {data.prochainEvenement.location && (
-                        <p className="text-xs text-muted-foreground">{data.prochainEvenement.location}</p>
-                      )}
-                    </Link>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">{t("dashboard.nextEvent.empty")}</p>
-                  )}
-                </div>
-              )}
-
-              {modules.cotisations && (
-                <div
-                  className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                  style={{ animationDelay: "300ms", animationFillMode: "both" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <TrendUpIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{t("dashboard.cotisations.title", { year: new Date().getFullYear() })}</span>
-                  </div>
-                  {isLoading ? (
-                    <div className="h-12 rounded-lg bg-muted animate-pulse" />
-                  ) : (
-                    <div className="space-y-1">
-                      <p className="text-2xl font-bold tabular-nums" style={{ color: pal.payees }}>
-                        {fmt(data?.cotisationsEncaissees ?? 0)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{t("dashboard.cotisations.collectedThisYear")}</p>
-                      {(data?.cotisationsEnAttente ?? 0) > 0 && (
-                        <Link
-                          href="/dashboard/cotisations"
-                          className="text-xs hover:underline flex items-center gap-1 mt-1"
-                          style={{ color: pal.enAttente }}
-                        >
-                          <WarningCircleIcon className="size-3" />
-                          {t("dashboard.cotisations.pendingPayment", { count: data?.cotisationsEnAttente ?? 0 })}
-                        </Link>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {modules.finances && <IncomeByCategoryChart />}
-            </div>
-          )}
-
-          {/* Right column: Commandes récentes, Matériel emprunté — same idea, stacked and
-              independently sized instead of row-synced with the left column. */}
-          {hasRightColumn && (
-            <div className="space-y-4">
-              {modules.boutique && (
-                <div
-                  className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col"
-                  style={{ animationDelay: "330ms", animationFillMode: "both" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <ShoppingBagIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{t("dashboard.recentOrders.title")}</span>
-                  </div>
-                  {isLoading ? (
-                    <div className="h-12 rounded-lg bg-muted animate-pulse" />
-                  ) : data?.ventesRecentes.length ? (
-                    <div className="space-y-2">
-                      {data.ventesRecentes.map((v, i) => {
-                        // The list is pre-sorted PENDING-block-then-PAID-block — a status
-                        // change between two consecutive rows marks the boundary. Flagged
-                        // rather than relying on the amber date text alone, which is easy
-                        // to skim past in a mixed list and doesn't say *how many* of each
-                        // are in view.
-                        const prev = data.ventesRecentes[i - 1]
-                        const startsNewGroup = i === 0 || prev.status !== v.status
-                        return (
-                          <div key={v.id}>
-                            {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
-                            {startsNewGroup && v.status === "PENDING" && (
-                              <p className="text-[11px] font-medium uppercase tracking-wide text-amber-600 dark:text-amber-500 mb-1">
-                                {t("dashboard.recentOrders.pending", { count: data.ventesRecentes.filter(x => x.status === "PENDING").length })}
-                              </p>
-                            )}
-                            {startsNewGroup && v.status === "PAID" && i > 0 && (
-                              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
-                                {t("dashboard.recentOrders.recent")}
-                              </p>
-                            )}
-                            <Link
-                              href={`/dashboard/boutique?tab=commandes&commandeId=${v.id}`}
-                              className={cn(
-                                "flex items-center justify-between group -mx-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors",
-                                v.status === "PENDING" && "border-l-2 border-amber-500",
-                              )}
-                            >
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
-                                  {v.membre ? `${v.membre.firstName} ${v.membre.lastName}` : (v.guestName ?? t("dashboard.recentOrders.guest"))}
-                                </p>
-                                <p className={cn("text-xs", v.status === "PENDING" ? "text-amber-600 dark:text-amber-500" : "text-muted-foreground")}>
-                                  {format(new Date(v.date), "d MMM 'à' HH:mm", { locale: fr })}
-                                </p>
-                              </div>
-                              <span className="text-sm font-semibold tabular-nums shrink-0 ml-2">{fmt(v.totalAmount / 100)}</span>
-                            </Link>
-                          </div>
-                        )
-                      })}
-                      <Link href="/dashboard/boutique?tab=commandes" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
-                        {t("dashboard.recentOrders.viewAll")}
-                        <ArrowRightIcon className="size-3" />
-                      </Link>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">{t("dashboard.recentOrders.empty")}</p>
-                  )}
-                </div>
-              )}
-
-              {/* Matériel emprunté — portrait, same shape as Commandes récentes, stacked
-                  below it in the right column. Every active loan, not just overdue ones
-                  (per client feedback: they want to see what's out, not only what's late)
-                  — overdue loans still sort first and stay visually flagged, mirroring how
-                  Commandes récentes splits PENDING ahead of PAID above. */}
-              {modules.materiel && (
-                <div
-                  className="rounded-xl border bg-card p-5 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col"
-                  style={{ animationDelay: "360ms", animationFillMode: "both" }}
-                >
-                  <div className="flex items-center gap-2">
-                    <PackageIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{t("dashboard.loanedMaterial.title")}</span>
-                  </div>
-                  {isLoading ? (
-                    <div className="h-12 rounded-lg bg-muted animate-pulse" />
-                  ) : data?.materielEmpruntsListe.length ? (
-                    <div className="space-y-2">
-                      {data.materielEmpruntsListe.map((l, i) => {
-                        const prev = data.materielEmpruntsListe[i - 1]
-                        const startsNewGroup = i === 0 || prev.isOverdue !== l.isOverdue
-                        // No cutoff on how old an overdue loan can be (unlike the 14-day
-                        // window on pending boutique orders above), so a loan overdue
-                        // since last year needs the year in the label — otherwise
-                        // "3 janv." reads as this January, not a year-old forgotten loan.
-                        const returnDate = l.expectedReturnAt ? new Date(l.expectedReturnAt) : null
-                        const dateFmt = returnDate && returnDate.getFullYear() !== new Date().getFullYear() ? "d MMM yyyy" : "d MMM"
-                        return (
-                          <div key={l.id}>
-                            {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
-                            {startsNewGroup && l.isOverdue && (
-                              <p className="text-[11px] font-medium uppercase tracking-wide text-red-600 dark:text-red-500 mb-1">
-                                {t("dashboard.loanedMaterial.overdue", { count: data.materielEnRetardCount })}
-                              </p>
-                            )}
-                            {startsNewGroup && !l.isOverdue && i > 0 && (
-                              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
-                                {t("dashboard.loanedMaterial.inProgress")}
-                              </p>
-                            )}
-                            <Link
-                              href="/dashboard/materiel"
-                              className={cn(
-                                "flex items-center justify-between group -mx-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors",
-                                l.isOverdue && "border-l-2 border-red-500",
-                              )}
-                            >
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
-                                  {l.materialName}
-                                </p>
-                                <p className="text-xs text-muted-foreground truncate">{l.borrowerName}</p>
-                              </div>
-                              <span className={cn("text-xs shrink-0 ml-2", l.isOverdue ? "font-medium text-red-600 dark:text-red-400" : "text-muted-foreground")}>
-                                {returnDate ? format(returnDate, dateFmt, { locale: fr }) : t("dashboard.loanedMaterial.noDueDate")}
-                              </span>
-                            </Link>
-                          </div>
-                        )
-                      })}
-                      <Link href="/dashboard/materiel" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
-                        {t("dashboard.loanedMaterial.viewAll")}
-                        <ArrowRightIcon className="size-3" />
-                      </Link>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">{t("dashboard.loanedMaterial.empty")}</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t("dashboard.pageTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {t("dashboard.subtitle")}
+          </p>
         </div>
-      )}
-
-      <div
-        className="animate-in fade-in slide-in-from-bottom-2 duration-300"
-        style={{ animationDelay: "360ms", animationFillMode: "both" }}
-      >
-        <FinanceCharts />
+        <div className="flex shrink-0 items-center gap-2">
+          {editMode && (
+            <Button variant="ghost" size="sm" onClick={handleReset}>
+              <ArrowCounterClockwiseIcon className="mr-1.5 size-3.5" /> {tCustomize("reset")}
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={() => setEditMode(v => !v)}>
+            {editMode
+              ? <><CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}</>
+              : <><PencilSimpleIcon className="mr-1.5 size-3.5" /> {tCustomize("customize")}</>
+            }
+          </Button>
+        </div>
       </div>
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToParentElement]}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={visibleOrder} strategy={rectSortingStrategy}>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4", "[grid-auto-flow:dense]")}>
+            {visibleOrder.map(id => (
+              <SortableWidget
+                key={id}
+                id={id}
+                span={DASHBOARD_WIDGET_META[id].span}
+                editMode={editMode}
+                dragHint={tCustomize("dragHint")}
+              >
+                {widgetContent[id]}
+              </SortableWidget>
+            ))}
+          </div>
+        </SortableContext>
+
+        <DragOverlay>
+          {activeId ? (
+            <div className={cn(overlayWidthClass(activeId), "shadow-lg scale-[1.02] rounded-xl")}>
+              {widgetContent[activeId]}
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   )
 }

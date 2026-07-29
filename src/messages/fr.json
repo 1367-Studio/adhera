@@ -514,6 +514,12 @@
   "dashboard": {
     "pageTitle": "Tableau de bord",
     "subtitle": "Vue d'ensemble de votre association",
+    "customize": {
+      "customize": "Personnaliser",
+      "done": "Terminé",
+      "reset": "Réinitialiser",
+      "dragHint": "Glisser pour réorganiser"
+    },
     "stats": {
       "activeMembers": "Membres actifs",
       "eventsThisMonth": "Événements ce mois",

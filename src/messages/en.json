@@ -514,6 +514,12 @@
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Overview of your association",
+    "customize": {
+      "customize": "Customize",
+      "done": "Done",
+      "reset": "Reset",
+      "dragHint": "Drag to reorder"
+    },
     "stats": {
       "activeMembers": "Active members",
       "eventsThisMonth": "Events this month",
