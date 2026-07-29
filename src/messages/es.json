@@ -514,6 +514,12 @@
   "dashboard": {
     "pageTitle": "Panel de control",
     "subtitle": "Resumen de su asociación",
+    "customize": {
+      "customize": "Personalizar",
+      "done": "Listo",
+      "reset": "Restablecer",
+      "dragHint": "Arrastrar para reordenar"
+    },
     "stats": {
       "activeMembers": "Miembros activos",
       "eventsThisMonth": "Eventos este mes",

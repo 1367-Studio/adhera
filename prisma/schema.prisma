@@ -361,6 +361,11 @@ model User {
   role          UserRole  @default(MEMBRE)
   active        Boolean   @default(true)
   locale        String    @default("fr")
+  // Ordered array of DashboardWidgetId strings (see src/lib/dashboard-widgets.ts) —
+  // null means "never customized", resolved to the default order in app code via
+  // parseDashboardLayout(), same shape as Association.modules falling back to
+  // DEFAULT_MODULES via parseModules().
+  dashboardLayout Json?
   associationId String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
