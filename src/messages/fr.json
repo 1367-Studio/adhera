@@ -785,6 +785,9 @@
       "columns": {
         "date": "Date",
         "description": "Description",
+        "compte": "Compte",
+        "category": "Catégorie",
+        "paymentMethod": "Moyen de paiement",
         "amount": "Montant",
         "status": "Statut"
       },
@@ -798,6 +801,7 @@
       "deleteFromInvoiceError": "Cette recette vient d'une facture — supprimez plutôt le paiement depuis Factures.",
       "searchPlaceholder": "Rechercher…",
       "allYears": "Toutes années",
+      "exercise": "Exercice {year}",
       "allStatuses": "Tous statuts",
       "noIncome": "Aucune recette enregistrée",
       "newTitle": "Nouvelle recette",
@@ -830,6 +834,7 @@
       },
       "deleteFromInvoiceError": "Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer.",
       "allYears": "Toutes années",
+      "exercise": "Exercice {year}",
       "allStatuses": "Tous statuts",
       "noExpense": "Aucune dépense enregistrée",
       "newTitle": "Nouvelle dépense",
@@ -844,6 +849,7 @@
     "dashboard": {
       "title": "Vue d'ensemble",
       "description": "Résumé financier de l'association.",
+      "exercise": "Exercice {year}",
       "incomeCard": "Recettes {year}",
       "expensesCard": "Dépenses {year}",
       "resultCard": "Résultat {year}",
@@ -3291,7 +3297,7 @@
       "membres": "Membres",
       "evenements": "Événements",
       "cotisations": "Cotisations",
-      "finances": "Finances",
+      "finances": "Suivi financier",
       "devis": "Devis",
       "factures": "Factures",
       "fournisseurs": "Fournisseurs",
@@ -3300,10 +3306,16 @@
       "sondages": "Sondages",
       "boutique": "Boutique",
       "actualites": "Actualités",
-      "messages": "Messages",
+      "messages": "Messagerie",
       "materiel": "Matériel",
       "site": "Site web",
-      "activite": "Historique"
+      "activite": "Historique",
+      "categories": {
+        "adherents": "Adhérents",
+        "communication": "Communication",
+        "finances": "Finances",
+        "outils": "Outils"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",

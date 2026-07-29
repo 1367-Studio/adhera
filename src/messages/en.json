@@ -785,6 +785,9 @@
       "columns": {
         "date": "Date",
         "description": "Description",
+        "compte": "Account",
+        "category": "Category",
+        "paymentMethod": "Payment method",
         "amount": "Amount",
         "status": "Status"
       },
@@ -798,6 +801,7 @@
       "deleteFromInvoiceError": "This income comes from an invoice — remove the payment from Invoices instead.",
       "searchPlaceholder": "Search…",
       "allYears": "All years",
+      "exercise": "Fiscal year {year}",
       "allStatuses": "All statuses",
       "noIncome": "No income recorded",
       "newTitle": "New income",
@@ -830,6 +834,7 @@
       },
       "deleteFromInvoiceError": "This expense comes from a received invoice — change its status from Suppliers to remove it.",
       "allYears": "All years",
+      "exercise": "Fiscal year {year}",
       "allStatuses": "All statuses",
       "noExpense": "No expense recorded",
       "newTitle": "New expense",
@@ -844,6 +849,7 @@
     "dashboard": {
       "title": "Overview",
       "description": "Financial summary of the association.",
+      "exercise": "Fiscal year {year}",
       "incomeCard": "Income {year}",
       "expensesCard": "Expenses {year}",
       "resultCard": "Result {year}",
@@ -3291,7 +3297,7 @@
       "membres": "Members",
       "evenements": "Events",
       "cotisations": "Dues",
-      "finances": "Finances",
+      "finances": "Financial tracking",
       "devis": "Quotes",
       "factures": "Invoices",
       "fournisseurs": "Suppliers",
@@ -3300,10 +3306,16 @@
       "sondages": "Surveys",
       "boutique": "Shop",
       "actualites": "News",
-      "messages": "Messages",
+      "messages": "Messaging",
       "materiel": "Equipment",
       "site": "Website",
-      "activite": "History"
+      "activite": "History",
+      "categories": {
+        "adherents": "Membership",
+        "communication": "Communication",
+        "finances": "Finances",
+        "outils": "Tools"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",

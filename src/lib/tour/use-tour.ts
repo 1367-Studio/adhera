@@ -19,32 +19,43 @@ export function useTour() {
   const start = useCallback((steps?: TourStepDef[]) => {
     if (typeof document === "undefined") return
 
-    const present = (steps ?? getDashboardTour(tourSteps)).filter(s => !s.selector || document.querySelector(s.selector))
-    if (present.length === 0) return
+    // Sidebar nav targets can live inside a closed category accordion or an
+    // icon-collapsed flyout (only mounted while its dropdown is open) — force every
+    // category open and the sidebar out of icon mode (see AppSidebar's
+    // "adhera:expand-all-nav" listener) before querying the DOM for step targets. That
+    // state update is async, so wait a tick for React to actually render it — same
+    // "trigger a UI change, then delay before starting the tour" shape already used below
+    // for the mobile sidebar sheet.
+    window.dispatchEvent(new Event("adhera:expand-all-nav"))
 
-    const driverObj = driver({
-      showProgress:     true,
-      allowClose:       true,
-      overlayColor:     "rgba(0, 0, 0, 0.55)",
-      stagePadding:     6,
-      stageRadius:      8,
-      popoverClass:     "adhera-tour",
-      nextBtnText:      t("next"),
-      prevBtnText:      t("previous"),
-      doneBtnText:      t("finish"),
-      progressText:     t("progress"),
-      steps: present.map(s => ({
-        element: s.selector || undefined,
-        popover: {
-          title:       s.title,
-          description: s.description,
-          side:        s.side,
-          align:       s.align,
-        },
-      })),
-    })
+    window.setTimeout(() => {
+      const present = (steps ?? getDashboardTour(tourSteps)).filter(s => !s.selector || document.querySelector(s.selector))
+      if (present.length === 0) return
 
-    driverObj.drive()
+      const driverObj = driver({
+        showProgress:     true,
+        allowClose:       true,
+        overlayColor:     "rgba(0, 0, 0, 0.55)",
+        stagePadding:     6,
+        stageRadius:      8,
+        popoverClass:     "adhera-tour",
+        nextBtnText:      t("next"),
+        prevBtnText:      t("previous"),
+        doneBtnText:      t("finish"),
+        progressText:     t("progress"),
+        steps: present.map(s => ({
+          element: s.selector || undefined,
+          popover: {
+            title:       s.title,
+            description: s.description,
+            side:        s.side,
+            align:       s.align,
+          },
+        })),
+      })
+
+      driverObj.drive()
+    }, 50)
   }, [t, tourSteps])
 
   return { start }

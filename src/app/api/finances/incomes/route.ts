@@ -31,7 +31,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const include = {
     membre:   { select: { firstName: true, lastName: true } },
     category: { select: { name: true, type: true } },
-    reconciliations: { select: { id: true } },
+    reconciliations: {
+      select: {
+        id: true,
+        bankTransaction: { select: { bankAccount: { select: { accountName: true } } } },
+      },
+    },
   }
 
   const orderBy = { date: "desc" as const }
