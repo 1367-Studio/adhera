@@ -786,7 +786,6 @@
         "date": "Date",
         "description": "Description",
         "compte": "Account",
-        "category": "Category",
         "paymentMethod": "Payment method",
         "amount": "Amount",
         "status": "Status"
