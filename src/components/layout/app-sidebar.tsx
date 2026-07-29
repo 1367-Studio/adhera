@@ -344,7 +344,7 @@ export function AppSidebar() {
         <div
           aria-hidden
           className={cn(
-            "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-sidebar to-transparent transition-opacity duration-200",
+            "pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-sidebar from-40% via-sidebar/80 to-transparent transition-opacity duration-200",
             showFade && !isFlyout ? "opacity-100" : "opacity-0",
           )}
         />
