@@ -171,6 +171,46 @@ export function AppSidebar() {
     if (isMobile) setOpenMobile(false)
   }
 
+  // On a short viewport (typical laptop height) the nav list can outgrow the space
+  // between the header and footer — SidebarContent already scrolls independently
+  // (flex-1/min-h-0/overflow-auto), this just adds a fade at its bottom edge while
+  // there's more to scroll to, so items visually "run under" the footer instead of the
+  // list just stopping abruptly. Not shown in the icon-collapsed flyout mode, where the
+  // content doesn't scroll (overflow-hidden) so a "scroll for more" hint would be wrong.
+  const contentRef = useRef<HTMLDivElement>(null)
+  const menuRef    = useRef<HTMLUListElement>(null)
+  const [showFade, setShowFade] = useState(false)
+
+  useEffect(() => {
+    const el = contentRef.current
+    if (!el) return
+
+    function updateFade() {
+      if (!el) return
+      const hasOverflow = el.scrollHeight > el.clientHeight + 1
+      const atBottom    = el.scrollTop + el.clientHeight >= el.scrollHeight - 1
+      setShowFade(hasOverflow && !atBottom)
+    }
+
+    updateFade()
+    el.addEventListener("scroll", updateFade)
+    window.addEventListener("resize", updateFade)
+
+    // Watches the menu list itself (not the scroll container, whose own box never
+    // changes — only its scrollHeight does) so this reacts to *any* reason the nav's
+    // height changes — a category toggling, sure, but just as correctly if the item set
+    // itself ever changes for some other reason — instead of only recomputing on the one
+    // trigger (category open/close) that happens to be the only cause today.
+    const observer = new ResizeObserver(updateFade)
+    if (menuRef.current) observer.observe(menuRef.current)
+
+    return () => {
+      el.removeEventListener("scroll", updateFade)
+      window.removeEventListener("resize", updateFade)
+      observer.disconnect()
+    }
+  }, [])
+
   // "Associations" only makes sense as a category label under the generic Adhera
   // identity — once the association shows its own logo/color, the name above it is
   // already unambiguous and the subtitle just reads as redundant.
@@ -197,111 +237,120 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {leadingItems.map((item, idx) => (
-                <SidebarMenuItem
-                  key={item.href}
-                  data-tour={`nav-${item.href.split("/").pop()}`}
-                  style={{ animationDelay: `${30 + idx * 40}ms`, animationFillMode: "both" }}
-                >
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={isActive(item.href, pathname)}
-                    tooltip={t(item.key)}
-                    onClick={closeMobile}
-                  >
-                    <item.icon />
-                    <span>{t(item.key)}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-
-              {CATEGORIES.map((cat, idx) => {
-                const items = grouped.get(cat.key)
-                if (!items?.length) return null
-                const isOpen      = openCategories.has(cat.key)
-                const isCatActive = activeCategory === cat.key
-
-                return (
+      <div className="relative min-h-0 flex-1">
+        <SidebarContent ref={contentRef} className="h-full">
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu ref={menuRef}>
+                {leadingItems.map((item, idx) => (
                   <SidebarMenuItem
-                    key={cat.key}
-                    data-tour={`nav-category-${cat.key}`}
-                    style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
+                    key={item.href}
+                    data-tour={`nav-${item.href.split("/").pop()}`}
+                    style={{ animationDelay: `${30 + idx * 40}ms`, animationFillMode: "both" }}
                   >
-                    {isFlyout ? (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger render={<SidebarMenuButton isActive={isCatActive} tooltip={t(`categories.${cat.key}`)} />}>
-                          <cat.icon />
-                          <span>{t(`categories.${cat.key}`)}</span>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="right" align="start">
-                          {items.map(item => (
-                            <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
-                              <item.icon />
-                              {t(item.key)}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : (
-                      <>
-                        <SidebarMenuButton
-                          isActive={isCatActive && !isOpen}
-                          aria-expanded={isOpen}
-                          onClick={() => toggleCategory(cat.key)}
-                        >
-                          <cat.icon />
-                          <span>{t(`categories.${cat.key}`)}</span>
-                          <CaretRightIcon className={cn("ml-auto size-3.5 transition-transform", isOpen && "rotate-90")} />
-                        </SidebarMenuButton>
-                        {isOpen && (
-                          <SidebarMenuSub>
-                            {items.map(item => (
-                              <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
-                                <SidebarMenuSubButton
-                                  render={<Link href={item.href} />}
-                                  isActive={isActive(item.href, pathname)}
-                                  onClick={closeMobile}
-                                >
-                                  <item.icon />
-                                  <span>{t(item.key)}</span>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        )}
-                      </>
-                    )}
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive(item.href, pathname)}
+                      tooltip={t(item.key)}
+                      onClick={closeMobile}
+                    >
+                      <item.icon />
+                      <span>{t(item.key)}</span>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
-              })}
+                ))}
 
-              {trailingItems.map((item, idx) => (
-                <SidebarMenuItem
-                  key={item.href}
-                  data-tour={`nav-${item.href.split("/").pop()}`}
-                  style={{ animationDelay: `${30 + (leadingItems.length + CATEGORIES.length + idx) * 40}ms`, animationFillMode: "both" }}
-                >
-                  <SidebarMenuButton
-                    render={<Link href={item.href} />}
-                    isActive={isActive(item.href, pathname)}
-                    tooltip={t(item.key)}
-                    onClick={closeMobile}
+                {CATEGORIES.map((cat, idx) => {
+                  const items = grouped.get(cat.key)
+                  if (!items?.length) return null
+                  const isOpen      = openCategories.has(cat.key)
+                  const isCatActive = activeCategory === cat.key
+
+                  return (
+                    <SidebarMenuItem
+                      key={cat.key}
+                      data-tour={`nav-category-${cat.key}`}
+                      style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
+                    >
+                      {isFlyout ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger render={<SidebarMenuButton isActive={isCatActive} tooltip={t(`categories.${cat.key}`)} />}>
+                            <cat.icon />
+                            <span>{t(`categories.${cat.key}`)}</span>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent side="right" align="start">
+                            {items.map(item => (
+                              <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                                <item.icon />
+                                {t(item.key)}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <>
+                          <SidebarMenuButton
+                            isActive={isCatActive && !isOpen}
+                            aria-expanded={isOpen}
+                            onClick={() => toggleCategory(cat.key)}
+                          >
+                            <cat.icon />
+                            <span>{t(`categories.${cat.key}`)}</span>
+                            <CaretRightIcon className={cn("ml-auto size-3.5 transition-transform", isOpen && "rotate-90")} />
+                          </SidebarMenuButton>
+                          {isOpen && (
+                            <SidebarMenuSub>
+                              {items.map(item => (
+                                <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+                                  <SidebarMenuSubButton
+                                    render={<Link href={item.href} />}
+                                    isActive={isActive(item.href, pathname)}
+                                    onClick={closeMobile}
+                                  >
+                                    <item.icon />
+                                    <span>{t(item.key)}</span>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              ))}
+                            </SidebarMenuSub>
+                          )}
+                        </>
+                      )}
+                    </SidebarMenuItem>
+                  )
+                })}
+
+                {trailingItems.map((item, idx) => (
+                  <SidebarMenuItem
+                    key={item.href}
+                    data-tour={`nav-${item.href.split("/").pop()}`}
+                    style={{ animationDelay: `${30 + (leadingItems.length + CATEGORIES.length + idx) * 40}ms`, animationFillMode: "both" }}
                   >
-                    <item.icon />
-                    <span>{t(item.key)}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={isActive(item.href, pathname)}
+                      tooltip={t(item.key)}
+                      onClick={closeMobile}
+                    >
+                      <item.icon />
+                      <span>{t(item.key)}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-sidebar to-transparent transition-opacity duration-200",
+            showFade && !isFlyout ? "opacity-100" : "opacity-0",
+          )}
+        />
+      </div>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border pt-3">
         <LegalLinksMenuItem />
         {["ADMIN", "PRESIDENT"].includes(userRole) && (
           <SidebarMenu>
