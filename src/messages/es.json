@@ -786,7 +786,6 @@
         "date": "Fecha",
         "description": "Descripción",
         "compte": "Cuenta",
-        "category": "Categoría",
         "paymentMethod": "Método de pago",
         "amount": "Importe",
         "status": "Estado"

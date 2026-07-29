@@ -147,12 +147,6 @@ export function IncomesView() {
       cell: (i) => i.reconciliations[0]?.bankTransaction.bankAccount.accountName ?? "—",
     },
     {
-      key: "category",
-      header: t("finances.incomesView.columns.category"),
-      className: "w-36",
-      cell: (i) => i.category?.name ?? "—",
-    },
-    {
       key: "paymentMethod",
       header: t("finances.incomesView.columns.paymentMethod"),
       className: "w-36",
