@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { BuildingsIcon, CreditCardIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -44,12 +45,14 @@ type Association = {
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations"
 
-const ALL_TABS = [
-  { value: "general"      as Tab, label: "Général",      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
-  { value: "paiements"    as Tab, label: "Paiements",    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
-  { value: "abonnement"   as Tab, label: "Abonnement",   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
-  { value: "integrations" as Tab, label: "Intégrations", icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
-] as const
+function getAllTabs(t: ReturnType<typeof useTranslations>) {
+  return [
+    { value: "general"      as Tab, label: t("parametres.view.tabs.general"),      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
+    { value: "paiements"    as Tab, label: t("parametres.view.tabs.paiements"),    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
+    { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
+    { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
+  ] as const
+}
 
 const ADMINS  = ["ADMIN", "PRESIDENT"]
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
@@ -65,6 +68,8 @@ export function ParametresView() {
 // useSearchParams() (pour revenir sur l'onglet Abonnement après le Customer Portal
 // Stripe) exige une limite Suspense au-dessus, sous peine d'échec du prerendering.
 function ParametresViewInner() {
+  const t = useTranslations()
+  const allTabs = getAllTabs(t)
   const { role } = useCurrentUser()
   const modules  = useModules()
   const canEdit  = ADMINS.includes(role)
@@ -73,20 +78,20 @@ function ParametresViewInner() {
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => {
     const fromUrl = searchParams.get("tab")
-    return (ALL_TABS.some(t => t.value === fromUrl) ? fromUrl : "general") as Tab
+    return (allTabs.some(opt => opt.value === fromUrl) ? fromUrl : "general") as Tab
   })
 
-  const tabs = ALL_TABS.filter(t => !t.modules || t.modules.some(m => modules[m]))
+  const tabs = allTabs.filter(opt => !opt.modules || opt.modules.some(m => modules[m]))
 
   useEffect(() => {
-    if (!tabs.some(t => t.value === tab)) setTab("general")
+    if (!tabs.some(opt => opt.value === tab)) setTab("general")
   }, [tabs, tab])
 
   const { data: assoc, isLoading } = useQuery<Association>({
     queryKey: ["association"],
     queryFn:  async () => {
       const res = await fetch("/api/association")
-      if (!res.ok) throw new Error("Erreur")
+      if (!res.ok) throw new Error(t("common.error"))
       return res.json()
     },
   })
@@ -107,22 +112,22 @@ function ParametresViewInner() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, t("common.error")))
       return res.json()
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["association"] })
       qc.invalidateQueries({ queryKey: ["activity-logs"] })
-      toast.success("Paramètres enregistrés")
+      toast.success(t("parametres.view.toasts.saved"))
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
   })
 
   return (
     <div className="space-y-6 py-4">
       <PageHeader
-        title="Paramètres"
-        description="Configuration de votre association"
+        title={t("parametres.view.title")}
+        description={t("parametres.view.description")}
         action={<ViewToggle options={tabs} value={tab} onChange={setTab} />}
       />
 
@@ -130,7 +135,7 @@ function ParametresViewInner() {
       {tab === "general" && (
         <div className="space-y-6">
           <div className="rounded-xl border bg-card p-6">
-            <h3 className="text-sm font-semibold mb-4">Informations de l'association</h3>
+            <h3 className="text-sm font-semibold mb-4">{t("parametres.view.associationInfo")}</h3>
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
@@ -138,7 +143,7 @@ function ParametresViewInner() {
             ) : (
               <form onSubmit={handleSubmit(d => updateMutation.mutate(d))} className="space-y-4" noValidate>
                 <FormField
-                  label="Nom de l'association"
+                  label={t("parametres.view.associationName")}
                   required
                   disabled={!canEdit}
                   error={errors.name?.message}
@@ -146,14 +151,14 @@ function ParametresViewInner() {
                 />
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
-                    label="Ville"
+                    label={t("parametres.view.city")}
                     disabled={!canEdit}
-                    placeholder="Paris"
+                    placeholder={t("parametres.view.cityPlaceholder")}
                     error={errors.city?.message}
                     {...register("city")}
                   />
                   <FormField
-                    label="Pays"
+                    label={t("parametres.view.country")}
                     required
                     disabled={!canEdit}
                     error={errors.country?.message}
@@ -162,7 +167,7 @@ function ParametresViewInner() {
                 </div>
                 {canEdit && (
                   <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
-                    Enregistrer
+                    {t("common.save")}
                   </Button>
                 )}
               </form>

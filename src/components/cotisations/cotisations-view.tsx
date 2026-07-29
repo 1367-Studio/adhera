@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -31,10 +32,14 @@ type Cotisation = {
 
 type MembreOption = { id: string; firstName: string; lastName: string }
 
-const statusBadge: Record<Cotisation["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  EN_ATTENTE: { label: "En attente", variant: "secondary"   },
-  PAYE:       { label: "Payée",      variant: "default"     },
-  EXONERE:    { label: "Exonérée",   variant: "outline"     },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusBadge(t: Translator): Record<Cotisation["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    EN_ATTENTE: { label: t("membres.detail.cotisationStatus.enAttente"), variant: "secondary" },
+    PAYE:       { label: t("membres.detail.cotisationStatus.paye"),      variant: "default"   },
+    EXONERE:    { label: t("membres.detail.cotisationStatus.exonere"),   variant: "outline"   },
+  }
 }
 
 const currentYear = new Date().getFullYear()
@@ -43,6 +48,7 @@ const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 const PAGE_SIZE = 25
 
 export function CotisationsView() {
+  const t = useTranslations()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -91,20 +97,20 @@ export function CotisationsView() {
   async function handleCreate(data: CotisationInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Cotisation enregistrée")
+      toast.success(t("cotisations.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: CotisationInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Cotisation mise à jour")
+      toast.success(t("cotisations.view.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -112,17 +118,19 @@ export function CotisationsView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Cotisation supprimée")
+      toast.success(t("cotisations.view.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
+
+  const statusBadge = getStatusBadge(t)
 
   const columns: Column<Cotisation>[] = [
     {
       key: "membre",
-      header: "Membre",
+      header: t("cotisations.view.columns.member"),
       cell: (c) => (
         <div>
           <p className="font-medium">{c.membre.lastName} {c.membre.firstName}</p>
@@ -132,13 +140,13 @@ export function CotisationsView() {
     },
     {
       key: "year",
-      header: "Année",
+      header: t("cotisations.view.columns.year"),
       cell: (c) => <span className="font-mono text-sm">{c.year}</span>,
       className: "w-20",
     },
     {
       key: "amount",
-      header: "Montant",
+      header: t("cotisations.view.columns.amount"),
       cell: (c) => (
         <span className="font-medium tabular-nums">
           {parseFloat(c.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
@@ -148,7 +156,7 @@ export function CotisationsView() {
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("cotisations.view.columns.status"),
       cell: (c) => {
         const s = statusBadge[c.status]
         return <Badge variant={s.variant}>{s.label}</Badge>
@@ -157,7 +165,7 @@ export function CotisationsView() {
     },
     {
       key: "paidAt",
-      header: "Payé le",
+      header: t("cotisations.view.columns.paidAt"),
       cell: (c) => c.paidAt
         ? format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr })
         : <span className="text-muted-foreground text-xs">—</span>,
@@ -170,13 +178,13 @@ export function CotisationsView() {
       className: "w-10",
       cell: (c) => {
         const actions = [
-          { label: "Modifier", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
+          { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
           ...(c.status === "PAYE" ? [{
-            label:   "Déclaration",
+            label:   t("cotisations.view.actions.declaration"),
             icon:    <DownloadSimpleIcon className="size-3.5" />,
             onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),
           }] : []),
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
+          { label: t("cotisations.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
         ]
         return <RowActions actions={actions} />
       },
@@ -186,12 +194,12 @@ export function CotisationsView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Cotisations"
-        description={`${result?.total ?? 0} cotisation${(result?.total ?? 0) !== 1 ? "s" : ""}${totalPaye > 0 ? ` · ${totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} encaissé` : ""}`}
+        title={t("cotisations.view.title")}
+        description={t("cotisations.view.count", { count: result?.total ?? 0 }) + (totalPaye > 0 ? t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) }) : "")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
@@ -202,7 +210,7 @@ export function CotisationsView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher un membre…"
+            placeholder={t("cotisations.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -244,13 +252,13 @@ export function CotisationsView() {
           onValueChange={v => { setStatusFilter(v === "all" || v === null ? "" : v); setPage(1) }}
         >
           <SelectTrigger className="w-36">
-            <SelectValue placeholder="Tous les statuts" />
+            <SelectValue placeholder={t("cotisations.view.allStatuses")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tous</SelectItem>
-            <SelectItem value="EN_ATTENTE">En attente</SelectItem>
-            <SelectItem value="PAYE">Payées</SelectItem>
-            <SelectItem value="EXONERE">Exonérées</SelectItem>
+            <SelectItem value="all">{t("cotisations.view.all")}</SelectItem>
+            <SelectItem value="EN_ATTENTE">{t("cotisations.view.statusFilter.enAttente")}</SelectItem>
+            <SelectItem value="PAYE">{t("cotisations.view.statusFilter.payees")}</SelectItem>
+            <SelectItem value="EXONERE">{t("cotisations.view.statusFilter.exonerees")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -260,7 +268,7 @@ export function CotisationsView() {
         data={cotisations}
         loading={isLoading}
         keyExtractor={(c) => c.id}
-        empty={search ? `Aucun résultat pour « ${search} »` : "Aucune cotisation enregistrée"}
+        empty={search ? t("cotisations.view.noResultsFor", { search }) : t("cotisations.view.noCotisation")}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,
@@ -271,7 +279,7 @@ export function CotisationsView() {
       />
 
       {/* Create */}
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Ajouter une cotisation" size="lg" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("cotisations.view.addTitle")} size="lg" dismissable={false}>
         <CotisationForm
           membres={membres}
           defaultValues={{ year: yearFilter }}
@@ -285,7 +293,7 @@ export function CotisationsView() {
       <Modal
         open={!!editTarget}
         onOpenChange={(open) => !open && setEditTarget(null)}
-        title="Modifier la cotisation"
+        title={t("cotisations.view.editTitle")}
         size="lg"
         dismissable={false}
       >
@@ -310,11 +318,11 @@ export function CotisationsView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title="Supprimer cette cotisation ?"
+        title={t("cotisations.view.deleteConfirmTitle")}
         description={deleteTarget
-          ? `Cotisation ${deleteTarget.year} de ${deleteTarget.membre.lastName} ${deleteTarget.membre.firstName}.`
+          ? t("cotisations.view.deleteConfirmDescription", { year: deleteTarget.year, name: `${deleteTarget.membre.lastName} ${deleteTarget.membre.firstName}` })
           : ""}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

@@ -1,28 +1,34 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
 type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT"
 
-const CONFIG: Record<RsvpStatus, { label: string; dot: string; classes: string }> = {
-  CONFIRME: {
-    label:   "J'y serai !",
-    dot:     "bg-green-500",
-    classes: "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950/40 dark:text-green-400",
-  },
-  PROVAVEL: {
-    label:   "Si possible",
-    dot:     "bg-yellow-400",
-    classes: "border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-400",
-  },
-  INCERTO: {
-    label:   "Peut-être",
-    dot:     "bg-orange-400",
-    classes: "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-950/40 dark:text-orange-400",
-  },
-  ABSENT: {
-    label:   "Je ne viens pas",
-    dot:     "bg-red-500",
-    classes: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400",
-  },
+function useRsvpConfig(): Record<RsvpStatus, { label: string; dot: string; classes: string }> {
+  const t = useTranslations("portal.rsvp")
+  return {
+    CONFIRME: {
+      label:   t("confirme"),
+      dot:     "bg-green-500",
+      classes: "border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950/40 dark:text-green-400",
+    },
+    PROVAVEL: {
+      label:   t("provavel"),
+      dot:     "bg-yellow-400",
+      classes: "border-yellow-200 bg-yellow-50 text-yellow-700 dark:border-yellow-800 dark:bg-yellow-950/40 dark:text-yellow-400",
+    },
+    INCERTO: {
+      label:   t("incerto"),
+      dot:     "bg-orange-400",
+      classes: "border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-800 dark:bg-orange-950/40 dark:text-orange-400",
+    },
+    ABSENT: {
+      label:   t("absent"),
+      dot:     "bg-red-500",
+      classes: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400",
+    },
+  }
 }
 
 interface RsvpBadgeProps {
@@ -31,7 +37,8 @@ interface RsvpBadgeProps {
 }
 
 export function RsvpBadge({ rsvp, className }: RsvpBadgeProps) {
-  const cfg = CONFIG[rsvp as RsvpStatus]
+  const config = useRsvpConfig()
+  const cfg = config[rsvp as RsvpStatus]
   if (!cfg) return null
 
   return (

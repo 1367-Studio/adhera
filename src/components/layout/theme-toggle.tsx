@@ -2,11 +2,13 @@
 
 import { useState } from "react"
 import { useTheme } from "next-themes"
+import { useTranslations } from "next-intl"
 import { MoonIcon, SunIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function ThemeToggle() {
+  const t = useTranslations("layout.themeToggle")
   const { theme, setTheme } = useTheme()
   const [spins, setSpins] = useState(0)
 
@@ -29,7 +31,7 @@ export function ThemeToggle() {
         <SunIcon weight="fill" className="size-4 rotate-0 scale-100 text-amber-500 transition-all dark:-rotate-90 dark:scale-0" />
         <MoonIcon weight="fill" className="absolute size-4 rotate-90 scale-0 text-indigo-400 transition-all dark:rotate-0 dark:scale-100" />
       </span>
-      <span className="sr-only">Changer le thème</span>
+      <span className="sr-only">{t("changeTheme")}</span>
     </Button>
   )
 }

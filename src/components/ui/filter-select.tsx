@@ -35,7 +35,7 @@ export function FilterSelect({
   return (
     <Select value={value || "__all__"} onValueChange={v => onValueChange(v === "__all__" ? "" : (v ?? ""))}>
       <SelectTrigger className={cn(width, className)}>
-        <span className={cn("flex-1 text-left text-sm truncate", !selected && "text-muted-foreground")}>
+        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 text-left text-sm truncate", !selected && "text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
       </SelectTrigger>

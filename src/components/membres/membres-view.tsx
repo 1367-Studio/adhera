@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
+import { cn } from "@/lib/utils"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
@@ -61,27 +63,35 @@ type Membre = {
   user:          { role: UserRole } | null
 }
 
-const ROLE_LABELS: Record<UserRole, string> = {
-  ADMIN:      "Admin",
-  PRESIDENT:  "Président",
-  TRESORIER:  "Trésorier",
-  SECRETAIRE: "Secrétaire",
-  MEMBRE:     "Membre",
+type Translator = ReturnType<typeof useTranslations>
+
+function getRoleLabels(t: Translator): Record<UserRole, string> {
+  return {
+    ADMIN:      t("membres.form.role.admin"),
+    PRESIDENT:  t("membres.form.role.president"),
+    TRESORIER:  t("membres.form.role.tresorier"),
+    SECRETAIRE: t("membres.form.role.secretaire"),
+    MEMBRE:     t("membres.form.role.membre"),
+  }
 }
 
-const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
-  { value: "MEMBRE",     label: "Membre"     },
-  { value: "SECRETAIRE", label: "Secrétaire" },
-  { value: "TRESORIER",  label: "Trésorier"  },
-  { value: "PRESIDENT",  label: "Président"  },
-  { value: "ADMIN",      label: "Admin"      },
-]
+function getRoleOptions(t: Translator): { value: UserRole; label: string }[] {
+  return [
+    { value: "MEMBRE",     label: t("membres.form.role.membre")     },
+    { value: "SECRETAIRE", label: t("membres.form.role.secretaire") },
+    { value: "TRESORIER",  label: t("membres.form.role.tresorier")  },
+    { value: "PRESIDENT",  label: t("membres.form.role.president")  },
+    { value: "ADMIN",      label: t("membres.form.role.admin")      },
+  ]
+}
 
-const statusBadge: Record<Membre["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  PENDING:  { label: "En attente", variant: "outline"     },
-  ACTIF:    { label: "Actif",      variant: "default"     },
-  INACTIF:  { label: "Inactif",    variant: "secondary"   },
-  SUSPENDU: { label: "Suspendu",   variant: "destructive" },
+function getStatusBadge(t: Translator): Record<Membre["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    PENDING:  { label: t("membres.form.status.pending"),  variant: "outline"     },
+    ACTIF:    { label: t("membres.form.status.actif"),    variant: "default"     },
+    INACTIF:  { label: t("membres.form.status.inactif"),  variant: "secondary"   },
+    SUSPENDU: { label: t("membres.form.status.suspendu"), variant: "destructive" },
+  }
 }
 
 type MembresStatsBucket = {
@@ -128,7 +138,7 @@ function FilterSelect({
   return (
     <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
       <SelectTrigger className="w-40">
-        <span className={selected ? "text-sm" : "text-sm text-muted-foreground"}>
+        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
       </SelectTrigger>
@@ -149,29 +159,31 @@ export function ChangeRoleModal({
   membre: Membre
   onClose: () => void
 }) {
+  const t = useTranslations()
   const [role, setRole] = useState<UserRole>(membre.user?.role ?? "MEMBRE")
   const mutation        = useChangeRole()
   const currentUser     = useCurrentUser()
 
+  const allRoleOptions = getRoleOptions(t)
   const roleOptions = currentUser.role === "ADMIN"
-    ? ROLE_OPTIONS
-    : ROLE_OPTIONS.filter(o => o.value !== "ADMIN")
+    ? allRoleOptions
+    : allRoleOptions.filter(o => o.value !== "ADMIN")
 
   async function handleSave() {
     try {
       await mutation.mutateAsync({ id: membre.id, role })
-      toast.success("Rôle mis à jour")
+      toast.success(t("membres.view.toasts.roleUpdated"))
       onClose()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   return (
-    <Modal open onOpenChange={open => { if (!open) onClose() }} title="Modifier le rôle">
+    <Modal open onOpenChange={open => { if (!open) onClose() }} title={t("membres.view.changeRoleTitle")}>
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Rôle de <strong>{membre.firstName} {membre.lastName}</strong> dans l'association.
+          {t("membres.view.changeRoleDescription", { name: `${membre.firstName} ${membre.lastName}` })}
         </p>
         <Select value={role} onValueChange={v => setRole(v as UserRole)}>
           <SelectTrigger>
@@ -184,8 +196,8 @@ export function ChangeRoleModal({
           </SelectContent>
         </Select>
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>Annuler</Button>
-          <Button onClick={handleSave} loading={mutation.isPending}>Enregistrer</Button>
+          <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>{t("common.cancel")}</Button>
+          <Button onClick={handleSave} loading={mutation.isPending}>{t("common.save")}</Button>
         </div>
       </div>
     </Modal>
@@ -195,6 +207,7 @@ export function ChangeRoleModal({
 const PAGE_SIZE = 20
 
 export function MembresView() {
+  const t                               = useTranslations()
   const router                          = useRouter()
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
@@ -225,7 +238,7 @@ export function MembresView() {
 
   function handleExportXlsx() {
     if (!result?.total) {
-      toast.error("Aucun membre à exporter")
+      toast.error(t("membres.view.toasts.noMembersToExport"))
       return
     }
     const params = buildExportParams()
@@ -259,38 +272,38 @@ export function MembresView() {
   async function handleCreateAccess(m: Membre) {
     try {
       await createAccessMutation.mutateAsync(m.id)
-      toast.success(`Accès créé pour ${m.firstName} ${m.lastName} — un email lui a été envoyé`)
+      toast.success(t("membres.view.toasts.accessCreated", { name: `${m.firstName} ${m.lastName}` }))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreate(data: MembreCreateInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Membre ajouté avec succès")
+      toast.success(t("membres.view.toasts.memberAdded"))
       setCreateOpen(false)
     } catch (err) {
       if (err instanceof ApiError && err.code === MEMBER_LIMIT_ERROR_CODE) {
         toast.error(err.message, {
           action: {
-            label:   "Voir l'abonnement",
+            label:   t("membres.view.toasts.viewSubscription"),
             onClick: () => router.push("/dashboard/parametres?tab=abonnement"),
           },
         })
         return
       }
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: MembreInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Membre mis à jour")
+      toast.success(t("membres.view.toasts.memberUpdated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -299,18 +312,21 @@ export function MembresView() {
     try {
       const { unlinkedDependants } = await deleteMutation.mutateAsync(deleteTarget.id)
       toast.success(unlinkedDependants > 0
-        ? `Membre supprimé — retiré comme responsable légal de ${unlinkedDependants} membre(s)`
-        : "Membre supprimé")
+        ? t("membres.view.toasts.memberDeletedWithUnlink", { count: unlinkedDependants })
+        : t("membres.view.toasts.memberDeleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
+
+  const roleLabels = getRoleLabels(t)
+  const statusBadge = getStatusBadge(t)
 
   const columns: Column<Membre>[] = [
     {
       key: "name",
-      header: "Membre",
+      header: t("membres.view.columns.member"),
       cell: (m) => (
         <div className="flex items-center gap-2.5">
           {m.photoUrl ? (
@@ -332,7 +348,7 @@ export function MembresView() {
               {m.user && m.user.role !== "MEMBRE" && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
                   <ShieldIcon className="size-2.5" />
-                  {ROLE_LABELS[m.user.role]}
+                  {roleLabels[m.user.role]}
                 </span>
               )}
             </div>
@@ -343,19 +359,19 @@ export function MembresView() {
     },
     {
       key: "phone",
-      header: "Téléphone",
+      header: t("membres.view.columns.phone"),
       cell: (m) => m.phone ?? <span className="text-muted-foreground text-xs">—</span>,
       hideInCard: true,
     },
     {
       key: "joinedAt",
-      header: "Membre depuis",
+      header: t("membres.view.columns.memberSince"),
       cell: (m) => format(new Date(m.joinedAt), "MMM yyyy", { locale: fr }),
       hideInCard: true,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("membres.view.columns.status"),
       cell: (m) => {
         const s = statusBadge[m.status]
         return <Badge variant={s.variant}>{s.label}</Badge>
@@ -363,10 +379,10 @@ export function MembresView() {
     },
     ...(modules.cotisations ? [{
       key: "adherent",
-      header: "Adhésion",
+      header: t("membres.view.columns.membership"),
       cell: (m: Membre) => (
         <Badge variant={m.isAdherent ? "secondary" : "outline"}>
-          {m.isAdherent ? "Adhérent" : "Bénévole"}
+          {m.isAdherent ? t("membres.view.membershipAdherent") : t("membres.view.membershipBenevole")}
         </Badge>
       ),
     }] : []),
@@ -378,17 +394,17 @@ export function MembresView() {
         const isSelf = m.userId === currentUser.id
         return (
           <RowActions actions={[
-            { label: "Voir la fiche", icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/membres/${m.id}`) },
-            { label: "Modifier",   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
-            { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
+            { label: t("membres.view.actions.view"), icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/membres/${m.id}`) },
+            { label: t("membres.view.actions.edit"),   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+            { label: t("membres.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
             ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
-              { label: "Modifier le rôle", icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
+              { label: t("membres.view.actions.changeRole"), icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
             ] : []),
             ...(!m.userId && m.email ? [
-              { label: "Créer un accès", icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
+              { label: t("membres.view.actions.createAccess"), icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
             ] : []),
             ...(!isSelf ? [
-              { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
+              { label: t("membres.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
             ] : []),
           ]} />
         )
@@ -397,48 +413,48 @@ export function MembresView() {
   ]
 
   const descriptionText = search
-    ? `${result?.total ?? 0} résultat${(result?.total ?? 0) !== 1 ? "s" : ""}`
-    : `${result?.total ?? 0} membre${(result?.total ?? 0) !== 1 ? "s" : ""}`
+    ? t("membres.view.resultsCount", { count: result?.total ?? 0 })
+    : t("membres.view.membersCount", { count: result?.total ?? 0 })
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Membres"
+        title={t("membres.view.title")}
         description={descriptionText}
         action={
           <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
               <DownloadSimpleIcon className="mr-1.5 size-4" />
-              Fiche vierge (PDF)
+              {t("membres.view.blankFormPdf")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
               <EnvelopeSimpleIcon className="mr-1.5 size-4" />
-              Envoyer un email
+              {t("membres.view.sendEmail")}
             </Button>
             {modules.sms && (
               <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
                 <DeviceMobileIcon className="mr-1.5 size-4" />
-                Envoyer un SMS
+                {t("membres.view.sendSms")}
               </Button>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
                 <DownloadSimpleIcon className="mr-1.5 size-4" />
-                Exporter
+                {t("membres.view.export")}
                 <CaretDownIcon className="ml-1 size-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleExportXlsx}>
-                  Excel (.xlsx)
+                  {t("membres.view.exportExcel")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => exportMembresPdf(buildExportParams())}>
-                  PDF (.pdf)
+                  {t("membres.view.exportPdf")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <Button size="sm" onClick={() => setCreateOpen(true)}>
               <PlusIcon className="mr-1.5 size-4" />
-              Ajouter
+              {t("common.add")}
             </Button>
           </div>
         }
@@ -448,22 +464,22 @@ export function MembresView() {
         <div className="space-y-3">
           {modules.cotisations && (
             <div className="space-y-1.5">
-              <p className="text-xs text-muted-foreground">Adhésion</p>
+              <p className="text-xs text-muted-foreground">{t("membres.view.statsMembership")}</p>
               <div className="grid grid-cols-2 gap-2">
-                <StatTile label="Adhérents" value={stats.adherents.count} icon={UserIcon} />
-                <StatTile label="Bénévoles" value={stats.benevoles.count} icon={UserIcon} />
+                <StatTile label={t("membres.view.statsAdherents")} value={stats.adherents.count} icon={UserIcon} />
+                <StatTile label={t("membres.view.statsBenevoles")} value={stats.benevoles.count} icon={UserIcon} />
               </div>
             </div>
           )}
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Démographie</p>
+            <p className="text-xs text-muted-foreground">{t("membres.view.statsDemographics")}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              <StatTile label="Hommes" value={stats.hommes} icon={GenderMaleIcon} />
-              <StatTile label="Femmes" value={stats.femmes} icon={GenderFemaleIcon} />
-              <StatTile label="Sexe non renseigné" value={stats.sexeNonRenseigne} icon={QuestionIcon} />
-              <StatTile label="Adultes" value={stats.adultes} icon={UserIcon} />
-              <StatTile label="Enfants" value={stats.enfants} icon={BabyIcon} />
-              <StatTile label="Âge non renseigné" value={stats.ageNonRenseigne} icon={QuestionIcon} />
+              <StatTile label={t("membres.view.statsMen")} value={stats.hommes} icon={GenderMaleIcon} />
+              <StatTile label={t("membres.view.statsWomen")} value={stats.femmes} icon={GenderFemaleIcon} />
+              <StatTile label={t("membres.view.statsSexUnknown")} value={stats.sexeNonRenseigne} icon={QuestionIcon} />
+              <StatTile label={t("membres.view.statsAdults")} value={stats.adultes} icon={UserIcon} />
+              <StatTile label={t("membres.view.statsChildren")} value={stats.enfants} icon={BabyIcon} />
+              <StatTile label={t("membres.view.statsAgeUnknown")} value={stats.ageNonRenseigne} icon={QuestionIcon} />
             </div>
           </div>
         </div>
@@ -475,7 +491,7 @@ export function MembresView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher un membre…"
+            placeholder={t("membres.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -501,12 +517,12 @@ export function MembresView() {
           value={statusFilter}
           onChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "PENDING",  label: "En attente" },
-            { value: "ACTIF",    label: "Actifs"     },
-            { value: "INACTIF",  label: "Inactifs"   },
-            { value: "SUSPENDU", label: "Suspendus"  },
+            { value: "PENDING",  label: t("membres.view.statusOptions.pending")   },
+            { value: "ACTIF",    label: t("membres.view.statusOptions.actifs")    },
+            { value: "INACTIF",  label: t("membres.view.statusOptions.inactifs")  },
+            { value: "SUSPENDU", label: t("membres.view.statusOptions.suspendus") },
           ]}
-          placeholder="Tous les statuts"
+          placeholder={t("membres.view.allStatuses")}
         />
 
         {/* Type filter */}
@@ -514,8 +530,8 @@ export function MembresView() {
           <FilterSelect
             value={typeFilter}
             onChange={v => { setTypeFilter(v); setPage(1) }}
-            options={types.map(t => ({ value: t.id, label: t.name }))}
-            placeholder="Tous les types"
+            options={types.map(type => ({ value: type.id, label: type.name }))}
+            placeholder={t("membres.view.allTypes")}
           />
         )}
 
@@ -525,10 +541,10 @@ export function MembresView() {
             value={adherentFilter}
             onChange={v => { setAdherentFilter(v); setPage(1) }}
             options={[
-              { value: "ADHERENT", label: "Adhérents" },
-              { value: "BENEVOLE", label: "Bénévoles"  },
+              { value: "ADHERENT", label: t("membres.view.adherentOptions.adherents") },
+              { value: "BENEVOLE", label: t("membres.view.adherentOptions.benevoles")  },
             ]}
-            placeholder="Adhérents et bénévoles"
+            placeholder={t("membres.view.allMembership")}
           />
         )}
       </div>
@@ -538,7 +554,7 @@ export function MembresView() {
         data={membres}
         loading={isLoading}
         keyExtractor={(m) => m.id}
-        empty={search ? `Aucun résultat pour « ${search} »` : "Aucun membre enregistré"}
+        empty={search ? t("membres.view.noResultsFor", { search }) : t("membres.view.noMembers")}
         onRowClick={(m) => router.push(`/dashboard/membres/${m.id}`)}
         pagination={result ? {
           page:         result.page,
@@ -552,7 +568,7 @@ export function MembresView() {
       <Modal
         open={createOpen}
         onOpenChange={setCreateOpen}
-        title="Ajouter un membre"
+        title={t("membres.actions.add")}
         size="lg"
         dismissable={false}
       >
@@ -568,7 +584,7 @@ export function MembresView() {
       <Modal
         open={!!editTarget}
         onOpenChange={(open) => !open && setEditTarget(null)}
-        title="Modifier le membre"
+        title={t("membres.actions.edit")}
         size="lg"
         dismissable={false}
       >
@@ -603,9 +619,9 @@ export function MembresView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`Supprimer ${deleteTarget?.firstName} ${deleteTarget?.lastName} ?`}
-        description="Ce membre sera archivé et ne pourra plus accéder à l'association."
-        confirmLabel="Supprimer"
+        title={t("membres.actions.deleteConfirmTitle", { name: `${deleteTarget?.firstName} ${deleteTarget?.lastName}` })}
+        description={t("membres.view.deleteConfirmDescription")}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
@@ -623,7 +639,7 @@ export function MembresView() {
       <Modal
         open={!!historyTarget}
         onOpenChange={(open) => !open && setHistoryTarget(null)}
-        title={historyTarget ? `Historique — ${historyTarget.firstName} ${historyTarget.lastName}` : "Historique"}
+        title={historyTarget ? t("membres.view.historyTitle", { name: `${historyTarget.firstName} ${historyTarget.lastName}` }) : t("membres.view.historyTitleDefault")}
         size="md"
       >
         {historyTarget && <MembreActivityLog membreId={historyTarget.id} />}

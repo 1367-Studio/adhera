@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { CrownIcon } from "@phosphor-icons/react/dist/ssr";
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -25,6 +26,8 @@ interface BrandingSettingsProps {
 const DEFAULT_PRIMARY = "#6366f1"
 
 export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProps) {
+  const t       = useTranslations("parametres.branding")
+  const tCommon = useTranslations("common")
   const qc     = useQueryClient()
   const router = useRouter()
 
@@ -68,7 +71,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
         fd.append("file", pendingFile.file)
         fd.append("prefix", "brand-logo")
         const uploadRes = await fetch("/api/upload", { method: "POST", body: fd })
-        if (!uploadRes.ok) throw new Error("Erreur lors de l'upload du logo")
+        if (!uploadRes.ok) throw new Error(t("toasts.uploadError"))
         finalLogoUrl = ((await uploadRes.json()) as { url: string }).url
       }
 
@@ -79,7 +82,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
       })
       if (!res.ok) {
         const d = await res.json().catch(() => ({}))
-        throw new Error(typeof d.error === "string" ? d.error : "Erreur")
+        throw new Error(typeof d.error === "string" ? d.error : tCommon("error"))
       }
       return { logoUrl: finalLogoUrl }
     },
@@ -91,23 +94,19 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
       // component (src/app/dashboard/layout.tsx), not this page's own fetch — refresh()
       // re-renders it with the new DB values without a full page reload.
       router.refresh()
-      toast.success("Identité visuelle mise à jour")
+      toast.success(t("toasts.updated"))
       setDirty(false)
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   if (!canUse) {
     return (
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold">Identité visuelle</h3>
+        <h3 className="text-sm font-semibold">{t("title")}</h3>
         <div className="flex items-start gap-2 rounded-lg border p-4 text-xs text-muted-foreground">
           <CrownIcon className="size-3.5 shrink-0 mt-0.5 text-amber-500" />
-          <span>
-            Le logo et les couleurs personnalisés (dashboard, devis/factures, feuille de
-            présence) sont réservés à la formule Pro. Passez à la formule supérieure dans
-            l&apos;onglet Abonnement pour les activer.
-          </span>
+          <span>{t("proOnlyText")}</span>
         </div>
       </div>
     )
@@ -116,16 +115,15 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-sm font-semibold">Identité visuelle</h3>
+        <h3 className="text-sm font-semibold">{t("title")}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Logo et couleurs affichés sur le dashboard, les devis/factures, la feuille de
-          présence et le site public.
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-start gap-4">
         <div className="space-y-1.5 shrink-0">
-          <Label className="text-xs">Logo</Label>
+          <Label className="text-xs">{t("logo")}</Label>
           <ImageUpload
             value={logoUrl || undefined}
             onChange={handleLogoChange}
@@ -139,7 +137,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
 
         <div className="flex-1 grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur primaire</Label>
+            <Label className="text-xs">{t("primaryColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -158,7 +156,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur secondaire</Label>
+            <Label className="text-xs">{t("secondaryColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -172,7 +170,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
                 value={secondaryColor}
                 onChange={e => { setSecondaryColor(e.target.value); setDirty(true) }}
                 className="font-mono text-xs"
-                placeholder="Optionnel"
+                placeholder={t("secondaryPlaceholder")}
               />
             </div>
           </div>
@@ -186,7 +184,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
           loading={mutation.isPending}
           onClick={() => mutation.mutate()}
         >
-          Enregistrer
+          {tCommon("save")}
         </Button>
       )}
     </div>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useTranslations } from "next-intl"
 import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,20 +11,20 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { SiteSectionSheet } from "./site-section-sheet"
 import type { SiteConfig, SiteSection, SectionType, FooterLink } from "@/types/site-config"
-import { DEFAULT_SITE_CONFIG, SECTION_LABELS } from "@/types/site-config"
+import { DEFAULT_SITE_CONFIG } from "@/types/site-config"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
 function newId() { return Math.random().toString(36).slice(2, 10) }
 
-function createSection(type: SectionType): SiteSection {
+function createSection(type: SectionType, defaultTitles: Record<SectionType, string>): SiteSection {
   switch (type) {
-    case "hero":       return { id: newId(), type: "hero",       title: "Bienvenue",               subtitle: "", heroHeight: "full" as const }
-    case "about":      return { id: newId(), type: "about",      title: "À propos",                content: "" }
-    case "events":     return { id: newId(), type: "events",     title: "Prochains événements",    limit: 6 }
-    case "membership": return { id: newId(), type: "membership", title: "Rejoindre l'association", body: "" }
-    case "actualites": return { id: newId(), type: "actualites", title: "Actualités", limit: 6 }
-    case "contact":    return { id: newId(), type: "contact",    title: "Contact" }
+    case "hero":       return { id: newId(), type: "hero",       title: defaultTitles.hero,       subtitle: "", heroHeight: "full" as const }
+    case "about":      return { id: newId(), type: "about",      title: defaultTitles.about,      content: "" }
+    case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
+    case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
+    case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
+    case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
   }
 }
 
@@ -63,6 +64,26 @@ type Props = {
 export function SiteControlsPanel({
   config, published, isDirty, canEdit, siteUrl, isSaving, onChange, onSave, onTogglePublish, onFilePending,
 }: Props) {
+  const t             = useTranslations("site.controls")
+  const tCommon       = useTranslations("common")
+  const tSections     = useTranslations("site.sectionLabels")
+  const tDefaults     = useTranslations("site.defaultTitles")
+  const sectionLabels: Record<SectionType, string> = {
+    hero:       tSections("hero"),
+    about:      tSections("about"),
+    events:     tSections("events"),
+    actualites: tSections("actualites"),
+    membership: tSections("membership"),
+    contact:    tSections("contact"),
+  }
+  const defaultTitles: Record<SectionType, string> = {
+    hero:       tDefaults("hero"),
+    about:      tDefaults("about"),
+    events:     tDefaults("events"),
+    actualites: tDefaults("actualites"),
+    membership: tDefaults("membership"),
+    contact:    tDefaults("contact"),
+  }
   const [editingSection, setEditingSection] = useState<SiteSection | null>(null)
   const [sheetOpen, setSheetOpen]           = useState(false)
   const [addMenuOpen, setAddMenuOpen]       = useState(false)
@@ -105,7 +126,7 @@ export function SiteControlsPanel({
   function update(patch: Partial<SiteConfig>) { onChange(patch) }
 
   function addSection(type: SectionType) {
-    const section = createSection(type)
+    const section = createSection(type, defaultTitles)
     update({ sections: [...sections, section] })
     setAddMenuOpen(false)
     openSheet(section)
@@ -174,14 +195,14 @@ export function SiteControlsPanel({
         <div className="flex items-center justify-between gap-2">
           <Badge variant={published ? "default" : "secondary"} className="gap-1.5 text-xs">
             {published ? <GlobeIcon className="size-3" /> : <EyeSlashIcon className="size-3" />}
-            {published ? "Publié" : "Non publié"}
+            {published ? t("published") : t("unpublished")}
           </Badge>
           {siteUrl && published && (
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={copyLink}
-                title="Copier le lien"
+                title={t("copyLink")}
                 className="inline-flex items-center justify-center rounded-md border p-1.5 hover:bg-muted transition-colors"
               >
                 {copied ? <CheckIcon className="size-3 text-green-600" /> : <CopyIcon className="size-3" />}
@@ -193,7 +214,7 @@ export function SiteControlsPanel({
                 className="inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs font-medium hover:bg-muted transition-colors"
               >
                 <ArrowSquareOutIcon className="size-3" />
-                Ouvrir
+                {t("open")}
               </a>
             </div>
           )}
@@ -201,11 +222,11 @@ export function SiteControlsPanel({
         {canEdit && (
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="flex-1 h-8 text-xs" onClick={onTogglePublish} loading={isSaving}>
-              {published ? "Dépublier" : "Publier"}
+              {published ? t("unpublishButton") : t("publishButton")}
             </Button>
             <Button size="sm" className="flex-1 h-8 text-xs" disabled={!isDirty} loading={isSaving} onClick={onSave}>
               <FloppyDiskIcon className="size-3 mr-1" />
-              Enregistrer
+              {t("save")}
             </Button>
           </div>
         )}
@@ -215,9 +236,9 @@ export function SiteControlsPanel({
       <div className="flex-1 overflow-y-auto">
 
         {/* Apparence */}
-        <Panel title="Apparence" defaultOpen>
+        <Panel title={t("appearance")} defaultOpen>
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur principale</Label>
+            <Label className="text-xs">{t("primaryColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -234,7 +255,7 @@ export function SiteControlsPanel({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Logo</Label>
+            <Label className="text-xs">{t("logo")}</Label>
             <ImageUpload
               value={cfg.logoUrl || undefined}
               onChange={url => update({ logoUrl: url })}
@@ -248,9 +269,9 @@ export function SiteControlsPanel({
         </Panel>
 
         {/* En-tête */}
-        <Panel title="En-tête">
+        <Panel title={t("header")}>
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur de fond</Label>
+            <Label className="text-xs">{t("headerBgColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -262,12 +283,12 @@ export function SiteControlsPanel({
                 value={cfg.headerBgColor ?? ""}
                 onChange={e => update({ headerBgColor: e.target.value })}
                 className="font-mono text-xs h-8"
-                placeholder="#ffffff (blanc par défaut)"
+                placeholder={t("headerBgPlaceholder")}
               />
             </div>
           </div>
           {(["headerShowMembres", "headerShowRegister"] as const).map((key, i) => {
-            const label  = i === 0 ? "Bouton \"Se connecter\"" : "Bouton \"S'inscrire\""
+            const label  = i === 0 ? t("loginButton") : t("registerButton")
             const active = key === "headerShowMembres" ? (cfg.headerShowMembres ?? true) : (cfg.headerShowRegister ?? false)
             return (
               <div key={key} className="flex items-center justify-between">
@@ -285,18 +306,18 @@ export function SiteControlsPanel({
         </Panel>
 
         {/* Pied de page */}
-        <Panel title="Pied de page">
+        <Panel title={t("footer")}>
           <div className="space-y-1.5">
-            <Label className="text-xs">Texte</Label>
+            <Label className="text-xs">{t("footerTextLabel")}</Label>
             <Input
               value={cfg.footerText ?? ""}
               onChange={e => update({ footerText: e.target.value })}
-              placeholder={`© ${new Date().getFullYear()} Mon Association`}
+              placeholder={t("footerTextPlaceholder", { year: new Date().getFullYear() })}
               className="text-xs h-8"
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur de fond</Label>
+            <Label className="text-xs">{t("footerBgColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -308,20 +329,20 @@ export function SiteControlsPanel({
                 value={cfg.footerBgColor ?? ""}
                 onChange={e => update({ footerBgColor: e.target.value })}
                 className="font-mono text-xs h-8"
-                placeholder="#ffffff (blanc par défaut)"
+                placeholder={t("headerBgPlaceholder")}
               />
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs">Liens</Label>
+              <Label className="text-xs">{t("links")}</Label>
               {footerLinks.length < 6 && (
                 <button
                   type="button"
                   onClick={addLink}
                   className="text-[10px] font-medium text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
                 >
-                  <PlusIcon className="size-3" /> Ajouter
+                  <PlusIcon className="size-3" /> {t("add")}
                 </button>
               )}
             </div>
@@ -333,16 +354,16 @@ export function SiteControlsPanel({
                   <Input
                     value={link.label}
                     onChange={e => updateLink(idx, { label: e.target.value })}
-                    placeholder="Label"
+                    placeholder={t("linkLabelPlaceholder")}
                     className="text-xs h-7"
                   />
                   <Input
                     value={link.url}
                     onChange={e => updateLink(idx, { url: e.target.value })}
-                    placeholder="https://…"
+                    placeholder={t("linkUrlPlaceholder")}
                     className={cn("text-xs h-7 font-mono", urlInvalid && "border-red-400 focus-visible:ring-red-400")}
                   />
-                  {urlInvalid && <p className="text-[10px] text-red-500">L'URL doit commencer par https://</p>}
+                  {urlInvalid && <p className="text-[10px] text-red-500">{t("linkUrlError")}</p>}
                 </div>
                 <button
                   type="button"
@@ -354,16 +375,16 @@ export function SiteControlsPanel({
               </div>
             )})}
             {footerLinks.length === 0 && (
-              <p className="text-[11px] text-muted-foreground">Aucun lien. Cliquez sur Ajouter.</p>
+              <p className="text-[11px] text-muted-foreground">{t("noLinks")}</p>
             )}
           </div>
         </Panel>
 
         {/* Sections */}
-        <Panel title="Sections" defaultOpen>
+        <Panel title={t("sections")} defaultOpen>
           {sections.length === 0 && (
             <div className="border border-dashed rounded-lg p-5 text-center text-xs text-muted-foreground">
-              Aucune section. Ajoutez-en une ci-dessous.
+              {t("noSections")}
             </div>
           )}
 
@@ -394,8 +415,8 @@ export function SiteControlsPanel({
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium truncate">{section.title || SECTION_LABELS[section.type]}</p>
-                  <p className="text-[10px] text-muted-foreground">{SECTION_LABELS[section.type]}</p>
+                  <p className="text-xs font-medium truncate">{section.title || sectionLabels[section.type]}</p>
+                  <p className="text-[10px] text-muted-foreground">{sectionLabels[section.type]}</p>
                 </div>
 
                 {canEdit && (
@@ -416,7 +437,7 @@ export function SiteControlsPanel({
             <div className="relative pt-1" ref={addMenuRef}>
               <Button variant="outline" size="sm" className="h-7 text-xs w-full" onClick={() => setAddMenuOpen(v => !v)}>
                 <PlusIcon className="size-3 mr-1" />
-                Ajouter une section
+                {t("addSection")}
               </Button>
               {addMenuOpen && (
                 <div className="absolute bottom-full left-0 right-0 mb-1 z-20 bg-popover border rounded-lg shadow-md py-1">
@@ -432,7 +453,7 @@ export function SiteControlsPanel({
                           used ? "opacity-40 cursor-not-allowed" : "hover:bg-muted"
                         )}
                       >
-                        <span>{SECTION_LABELS[type]}</span>
+                        <span>{sectionLabels[type]}</span>
                         {used && <CheckIcon className="size-3 shrink-0" />}
                       </button>
                     )
@@ -448,9 +469,9 @@ export function SiteControlsPanel({
       <ConfirmDialog
         open={!!deletingId}
         onOpenChange={open => !open && setDeletingId(null)}
-        title="Supprimer la section"
-        description="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("deleteSectionTitle")}
+        description={t("deleteSectionDescription")}
+        confirmLabel={tCommon("delete")}
         onConfirm={() => { if (deletingId) removeSection(deletingId) }}
       />
 

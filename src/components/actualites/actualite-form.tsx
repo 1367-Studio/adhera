@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery } from "@tanstack/react-query"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { MagnifyingGlassIcon, CheckIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { actualiteSchema, type ActualiteInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
@@ -27,6 +28,8 @@ type Evenement = { id: string; title: string }
 type Membre    = { id: string; firstName: string; lastName: string; email: string | null }
 
 export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: ActualiteFormProps) {
+  const t = useTranslations("actualites.form")
+  const tCommon = useTranslations("common")
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<ActualiteInput>({
     resolver: zodResolver(actualiteSchema),
     defaultValues: {
@@ -92,7 +95,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
   }
 
   const evenementOptions = [
-    { value: "", label: "Aucun événement lié" },
+    { value: "", label: t("noEvent") },
     ...evenementsRaw.map(e => ({ value: e.id, label: e.title })),
   ]
 
@@ -107,7 +110,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
       fd.append("file", pendingFile.file)
       fd.append("prefix", "adhera/actualites")
       const res = await fetch("/api/upload", { method: "POST", body: fd })
-      if (!res.ok) { toast.error("Erreur lors de l'upload de l'image"); return }
+      if (!res.ok) { toast.error(t("toasts.uploadError")); return }
       const { url } = (await res.json()) as { url: string }
       await onSubmit({ ...data, imageUrl: url })
       setPendingFile(null)
@@ -124,7 +127,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
         control={control}
         render={({ field }) => (
           <div className="space-y-1.5">
-            <Label>Image de couverture</Label>
+            <Label>{t("coverImage")}</Label>
             <ImageUpload
               value={field.value ?? ""}
               onChange={url => { if (url === "") setPendingFile(null); field.onChange(url) }}
@@ -138,9 +141,9 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
       />
 
       <FormField
-        label="Titre"
+        label={t("title")}
         required
-        placeholder="Titre de l'actualité…"
+        placeholder={t("titlePlaceholder")}
         error={errors.title?.message}
         {...register("title")}
       />
@@ -150,11 +153,11 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
         control={control}
         render={({ field }) => (
           <RichTextEditor
-            label="Contenu"
+            label={t("content")}
             required
             value={field.value ?? ""}
             onChange={field.onChange}
-            placeholder="Rédigez votre actualité…"
+            placeholder={t("contentPlaceholder")}
             minHeight="180px"
             error={errors.content?.message}
           />
@@ -167,18 +170,18 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Événement associé"
+              label={t("relatedEvent")}
               options={evenementOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
-              placeholder="Aucun"
+              placeholder={t("noneOption")}
               error={errors.evenementId?.message}
             />
           )}
         />
         <div className="flex items-end pb-1">
           <CheckboxField
-            label="Épingler en tête de fil"
+            label={t("pinned")}
             {...register("pinned")}
           />
         </div>
@@ -186,7 +189,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
 
       {/* Recipients */}
       <div className="space-y-3">
-        <Label>Destinataires</Label>
+        <Label>{t("recipients")}</Label>
 
         {/* Toggle */}
         <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5">
@@ -205,7 +208,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              {mode === "ALL" ? "Tous les membres" : "Sélection"}
+              {mode === "ALL" ? t("recipientsAll") : t("recipientsSelected")}
             </button>
           ))}
         </div>
@@ -218,7 +221,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
-                placeholder="Rechercher un membre…"
+                placeholder={t("searchMemberPlaceholder")}
                 value={memberSearch}
                 onChange={e => setMemberSearch(e.target.value)}
                 className="w-full bg-transparent pl-8 pr-3 py-2 text-sm outline-none"
@@ -230,7 +233,7 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
               {filteredMembres.length === 0 ? (
                 <div className="flex items-center justify-center gap-2 py-6 text-muted-foreground text-sm">
                   <UsersIcon className="size-4" />
-                  {membres.length === 0 ? "Chargement…" : "Aucun résultat"}
+                  {membres.length === 0 ? t("loading") : t("noResult")}
                 </div>
               ) : (
                 filteredMembres.map(m => {
@@ -265,14 +268,14 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
             {recipientIds.length > 0 && (
               <div className="border-t px-3 py-2 bg-muted/20 flex items-center justify-between">
                 <span className="text-xs text-muted-foreground">
-                  {recipientIds.length} membre{recipientIds.length > 1 ? "s" : ""} sélectionné{recipientIds.length > 1 ? "s" : ""}
+                  {t("selectedCount", { count: recipientIds.length })}
                 </span>
                 <button
                   type="button"
                   onClick={() => setValue("recipientIds", [], { shouldValidate: false })}
                   className="text-xs text-muted-foreground hover:text-foreground underline"
                 >
-                  Tout désélectionner
+                  {t("deselectAll")}
                 </button>
               </div>
             )}
@@ -282,10 +285,10 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
 
       <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading || uploading}>
-          Annuler
+          {tCommon("cancel")}
         </Button>
         <Button type="submit" loading={loading || uploading}>
-          Enregistrer
+          {tCommon("save")}
         </Button>
       </div>
     </form>

@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -32,23 +33,31 @@ import { useCurrentUser, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
 import { isMembreAdherentViaResponsable } from "@/lib/membre-adherent"
 
-const ROLE_LABELS: Record<string, string> = {
-  ADMIN:      "Admin",
-  PRESIDENT:  "Président",
-  TRESORIER:  "Trésorier",
-  SECRETAIRE: "Secrétaire",
-  MEMBRE:     "Membre",
+type Translator = ReturnType<typeof useTranslations>
+
+function getRoleLabels(t: Translator): Record<string, string> {
+  return {
+    ADMIN:      t("membres.form.role.admin"),
+    PRESIDENT:  t("membres.form.role.president"),
+    TRESORIER:  t("membres.form.role.tresorier"),
+    SECRETAIRE: t("membres.form.role.secretaire"),
+    MEMBRE:     t("membres.form.role.membre"),
+  }
 }
 
-const CIVILITE_LABELS: Record<string, string> = {
-  MME:  "Mme",
-  MLLE: "Mlle",
-  M:    "M.",
+function getCiviliteLabels(t: Translator): Record<string, string> {
+  return {
+    MME:  t("membres.form.civilite.mme"),
+    MLLE: t("membres.form.civilite.mlle"),
+    M:    t("membres.form.civilite.m"),
+  }
 }
 
-const SEXE_LABELS: Record<string, string> = {
-  HOMME: "Homme",
-  FEMME: "Femme",
+function getSexeLabels(t: Translator): Record<string, string> {
+  return {
+    HOMME: t("membres.form.sexe.homme"),
+    FEMME: t("membres.form.sexe.femme"),
+  }
 }
 
 const GROUPE_SANGUIN_LABELS: Record<string, string> = {
@@ -66,40 +75,49 @@ const TAILLE_TSHIRT_LABELS: Record<string, string> = {
   XS: "XS", S: "S", M: "M", L: "L", XL: "XL", XXL: "XXL", XXXL: "XXXL",
 }
 
-const statusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  PENDING:  { label: "En attente", variant: "outline"     },
-  ACTIF:    { label: "Actif",      variant: "default"     },
-  INACTIF:  { label: "Inactif",    variant: "secondary"   },
-  SUSPENDU: { label: "Suspendu",   variant: "destructive" },
+function getStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    PENDING:  { label: t("membres.form.status.pending"),  variant: "outline"     },
+    ACTIF:    { label: t("membres.form.status.actif"),    variant: "default"     },
+    INACTIF:  { label: t("membres.form.status.inactif"),  variant: "secondary"   },
+    SUSPENDU: { label: t("membres.form.status.suspendu"), variant: "destructive" },
+  }
 }
 
-const cotisationStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
-  EN_ATTENTE: { label: "En attente", variant: "secondary" },
-  PAYE:       { label: "Payée",      variant: "default"   },
-  EXONERE:    { label: "Exonérée",   variant: "outline"   },
+function getCotisationStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "outline" }> {
+  return {
+    EN_ATTENTE: { label: t("membres.detail.cotisationStatus.enAttente"), variant: "secondary" },
+    PAYE:       { label: t("membres.detail.cotisationStatus.paye"),      variant: "default"   },
+    EXONERE:    { label: t("membres.detail.cotisationStatus.exonere"),   variant: "outline"   },
+  }
 }
 
-const loanStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  DEMANDE:  { label: "Demande en attente", variant: "outline"     },
-  CONFIRME: { label: "En cours",           variant: "default"     },
-  REFUSE:   { label: "Refusé",             variant: "destructive" },
+function getLoanStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    DEMANDE:  { label: t("membres.detail.loanStatus.demande"),  variant: "outline"     },
+    CONFIRME: { label: t("membres.detail.loanStatus.confirme"), variant: "default"     },
+    REFUSE:   { label: t("membres.detail.loanStatus.refuse"),   variant: "destructive" },
+  }
 }
 
 // Same labels/variants as reunions-view.tsx's STATUS_LABELS/STATUS_VARIANTS — kept in
 // sync manually since that map isn't exported, but must stay identical: a cancelled
 // meeting showing up here as "Convoqué" (as if still upcoming) would flatly contradict
 // what the meeting's own page says about it.
-const meetingStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  SCHEDULED: { label: "Planifiée", variant: "secondary"   },
-  LIVE:      { label: "En cours",  variant: "default"     },
-  ENDED:     { label: "Terminée",  variant: "outline"     },
-  CANCELLED: { label: "Annulée",   variant: "destructive" },
+function getMeetingStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    SCHEDULED: { label: t("membres.detail.meetingStatus.scheduled"), variant: "secondary"   },
+    LIVE:      { label: t("membres.detail.meetingStatus.live"),      variant: "default"     },
+    ENDED:     { label: t("membres.detail.meetingStatus.ended"),     variant: "outline"     },
+    CANCELLED: { label: t("membres.detail.meetingStatus.cancelled"), variant: "destructive" },
+  }
 }
 
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
 export function MembreDetailView() {
   const { id } = useParams<{ id: string }>()
+  const t = useTranslations()
   const router = useRouter()
   const modules = useModules()
   const currentUser = useCurrentUser()
@@ -121,10 +139,10 @@ export function MembreDetailView() {
   async function handleUpdate(data: MembreInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Membre mis à jour")
+      toast.success(t("membres.view.toasts.memberUpdated"))
       setEditOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -132,30 +150,30 @@ export function MembreDetailView() {
     try {
       const { unlinkedDependants } = await deleteMutation.mutateAsync(id)
       toast.success(unlinkedDependants > 0
-        ? `Membre supprimé — retiré comme responsable légal de ${unlinkedDependants} membre(s)`
-        : "Membre supprimé")
+        ? t("membres.view.toasts.memberDeletedWithUnlink", { count: unlinkedDependants })
+        : t("membres.view.toasts.memberDeleted"))
       router.push("/dashboard/membres")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreateAccess() {
     try {
       await createAccessMutation.mutateAsync(id)
-      toast.success("Accès créé — un email a été envoyé")
+      toast.success(t("membres.detail.toasts.accessCreated"))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreateCotisation(data: CotisationInput) {
     try {
       await createCotisationMutation.mutateAsync(data)
-      toast.success("Cotisation ajoutée")
+      toast.success(t("membres.detail.toasts.cotisationAdded"))
       setCreateCotisationOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -166,13 +184,20 @@ export function MembreDetailView() {
   if (isError || !membre) {
     return (
       <DetailNotFound
-        message="Ce membre est introuvable ou a été supprimé."
+        message={t("membres.detail.notFound")}
         backHref="/dashboard/membres"
-        backLabel="Retour à la liste"
+        backLabel={t("membres.detail.backToList")}
       />
     )
   }
 
+  const roleLabels            = getRoleLabels(t)
+  const civiliteLabels        = getCiviliteLabels(t)
+  const sexeLabels            = getSexeLabels(t)
+  const statusBadge           = getStatusBadge(t)
+  const cotisationStatusBadge = getCotisationStatusBadge(t)
+  const loanStatusBadge       = getLoanStatusBadge(t)
+  const meetingStatusBadge    = getMeetingStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
   const participations        = membre.participations ?? []
@@ -187,7 +212,7 @@ export function MembreDetailView() {
   return (
     <div className="space-y-4 mt-4">
       <div className="space-y-3">
-        <BackLink href="/dashboard/membres">Membres</BackLink>
+        <BackLink href="/dashboard/membres">{t("membres.detail.backLink")}</BackLink>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
@@ -209,22 +234,22 @@ export function MembreDetailView() {
               {modules.cotisations && (
                 <Badge
                   variant={membre.isAdherent ? "secondary" : "outline"}
-                  title={isMembreAdherentViaResponsable(membre) ? "Statut hérité de son responsable — ce membre n'a pas de cotisation à son nom" : undefined}
+                  title={isMembreAdherentViaResponsable(membre) ? t("membres.detail.adherentViaResponsable") : undefined}
                 >
-                  {membre.isAdherent ? "Adhérent" : "Bénévole"}
-                  {isMembreAdherentViaResponsable(membre) && " (via responsable)"}
+                  {membre.isAdherent ? t("membres.view.membershipAdherent") : t("membres.view.membershipBenevole")}
+                  {isMembreAdherentViaResponsable(membre) && t("membres.detail.viaResponsable")}
                 </Badge>
               )}
               {membre.type && <MembreTypeBadge name={membre.type.name} color={membre.type.color} />}
               {membre.user && membre.user.role !== "MEMBRE" && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
                   <ShieldIcon className="size-2.5" />
-                  {ROLE_LABELS[membre.user.role] ?? membre.user.role}
+                  {roleLabels[membre.user.role] ?? membre.user.role}
                 </span>
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              Membre depuis {format(new Date(membre.joinedAt), "MMMM yyyy", { locale: fr })}
+              {t("membres.detail.memberSince", { date: format(new Date(membre.joinedAt), "MMMM yyyy", { locale: fr }) })}
             </p>
           </div>
 
@@ -232,13 +257,13 @@ export function MembreDetailView() {
             {modules.cotisations && (
               <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
                 <PlusIcon className="mr-1.5 size-4" />
-                Cotisation
+                {t("membres.detail.cotisationButton")}
               </Button>
             )}
             {!membre.userId && membre.email && (
               <Button size="sm" variant="outline" onClick={handleCreateAccess} loading={createAccessMutation.isPending}>
                 <KeyIcon className="mr-1.5 size-4" />
-                Créer un accès
+                {t("membres.detail.createAccessButton")}
               </Button>
             )}
             {/* Role changes are ADMIN/PRESIDENT-only server-side (see membres/[id]/role/route.ts)
@@ -247,17 +272,17 @@ export function MembreDetailView() {
             {(currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && membre.userId && !isSelf && (
               <Button size="sm" variant="outline" onClick={() => setRoleOpen(true)}>
                 <ShieldIcon className="mr-1.5 size-4" />
-                Rôle
+                {t("membres.detail.roleButton")}
               </Button>
             )}
             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
               <PencilSimpleIcon className="mr-1.5 size-4" />
-              Modifier
+              {t("common.edit")}
             </Button>
             {!isSelf && (
               <Button size="sm" variant="outline" onClick={() => setDeleteOpen(true)}>
                 <TrashIcon className="mr-1.5 size-4" />
-                Supprimer
+                {t("common.delete")}
               </Button>
             )}
           </div>
@@ -266,7 +291,7 @@ export function MembreDetailView() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contact</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.contact")}</p>
           {membre.email && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><EnvelopeSimpleIcon className="size-3.5" />{membre.email}</p>
           )}
@@ -277,48 +302,48 @@ export function MembreDetailView() {
             <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membre.address}</span></p>
           )}
           {!membre.email && !membre.phone && !membre.address && (
-            <p className="text-muted-foreground">Aucune information de contact</p>
+            <p className="text-muted-foreground">{t("membres.detail.noContactInfo")}</p>
           )}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Statut</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.form.fields.status")}</p>
           <p className="flex items-center gap-1.5 text-muted-foreground">
             <CalendarIcon className="size-3.5" />
-            Membre depuis : {format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr })}
+            {t("membres.detail.memberSinceColon", { date: format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr }) })}
           </p>
-          {membre.type && <p className="text-muted-foreground">Type : {membre.type.name}</p>}
+          {membre.type && <p className="text-muted-foreground">{t("membres.detail.typeColon", { name: membre.type.name })}</p>}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Informations personnelles</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.personalInfo")}</p>
           {membre.civilite && (
-            <p className="text-muted-foreground">Civilité : {CIVILITE_LABELS[membre.civilite] ?? membre.civilite}</p>
+            <p className="text-muted-foreground">{t("membres.detail.civiliteColon", { value: civiliteLabels[membre.civilite] ?? membre.civilite })}</p>
           )}
           {membre.sexe && (
-            <p className="text-muted-foreground">Sexe : {SEXE_LABELS[membre.sexe] ?? membre.sexe}</p>
+            <p className="text-muted-foreground">{t("membres.detail.sexeColon", { value: sexeLabels[membre.sexe] ?? membre.sexe })}</p>
           )}
           {membre.birthDate && (
-            <p className="text-muted-foreground">Naissance : {format(new Date(membre.birthDate), "dd/MM/yyyy", { locale: fr })}</p>
+            <p className="text-muted-foreground">{t("membres.detail.birthColon", { date: format(new Date(membre.birthDate), "dd/MM/yyyy", { locale: fr }) })}</p>
           )}
           {membre.groupeSanguin && (
-            <p className="text-muted-foreground">Groupe sanguin : {GROUPE_SANGUIN_LABELS[membre.groupeSanguin] ?? membre.groupeSanguin}</p>
+            <p className="text-muted-foreground">{t("membres.detail.groupeSanguinColon", { value: GROUPE_SANGUIN_LABELS[membre.groupeSanguin] ?? membre.groupeSanguin })}</p>
           )}
           {membre.possedeTshirt !== null && (
-            <p className="text-muted-foreground">Possède un tee-shirt : {membre.possedeTshirt ? "Oui" : "Non"}</p>
+            <p className="text-muted-foreground">{t("membres.detail.hasTshirtColon", { value: membre.possedeTshirt ? t("common.yes") : t("common.no") })}</p>
           )}
           {membre.tailleTshirt && (
-            <p className="text-muted-foreground">Taille du tee-shirt : {TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt}</p>
+            <p className="text-muted-foreground">{t("membres.detail.tshirtSizeColon", { value: TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt })}</p>
           )}
           {membre.allergies && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
               <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
-              <span>Allergies : {membre.allergies}</span>
+              <span>{t("membres.detail.allergiesColon", { value: membre.allergies })}</span>
             </p>
           )}
           {membre.responsable && (
             <p className="text-muted-foreground">
-              Responsable légal :{" "}
+              {t("membres.detail.legalGuardianColon")}{" "}
               <button
                 type="button"
                 onClick={() => router.push(`/dashboard/membres/${membre.responsable!.id}`)}
@@ -330,25 +355,25 @@ export function MembreDetailView() {
           )}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
             && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && (
-            <p className="text-muted-foreground">Aucune information renseignée</p>
+            <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Compte & accès</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.accountAccess")}</p>
           {membre.userId ? (
             <p className="flex items-center gap-1.5 text-muted-foreground">
               <UserIcon className="size-3.5" />
-              Compte actif · {ROLE_LABELS[membre.user?.role ?? "MEMBRE"]}
+              {t("membres.detail.activeAccount", { role: roleLabels[membre.user?.role ?? "MEMBRE"] })}
             </p>
           ) : (
             <p className="text-muted-foreground">
-              Aucun compte utilisateur{membre.email ? " — un accès peut être créé" : " — email requis pour créer un accès"}
+              {membre.email ? t("membres.detail.noAccountWithEmail") : t("membres.detail.noAccountNoEmail")}
             </p>
           )}
           {membre.dependants.length > 0 && (
             <div className="pt-1">
-              <p className="text-muted-foreground">Membres sous sa responsabilité :</p>
+              <p className="text-muted-foreground">{t("membres.detail.dependantsTitle")}</p>
               <ul className="mt-1 space-y-1">
                 {membre.dependants.map(d => (
                   <li key={d.id}>
@@ -369,18 +394,18 @@ export function MembreDetailView() {
 
       <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : "historique"}>
         <TabsList>
-          {modules.cotisations && <TabsTrigger value="cotisations">Cotisations</TabsTrigger>}
-          {modules.evenements && <TabsTrigger value="evenements">Événements</TabsTrigger>}
-          {modules.reunions && <TabsTrigger value="reunions">Réunions</TabsTrigger>}
-          {modules.materiel && <TabsTrigger value="materiel">Matériel</TabsTrigger>}
-          <TabsTrigger value="historique">Historique</TabsTrigger>
-          <TabsTrigger value="emails">Emails</TabsTrigger>
+          {modules.cotisations && <TabsTrigger value="cotisations">{t("membres.detail.tabs.cotisations")}</TabsTrigger>}
+          {modules.evenements && <TabsTrigger value="evenements">{t("membres.detail.tabs.evenements")}</TabsTrigger>}
+          {modules.reunions && <TabsTrigger value="reunions">{t("membres.detail.tabs.reunions")}</TabsTrigger>}
+          {modules.materiel && <TabsTrigger value="materiel">{t("membres.detail.tabs.materiel")}</TabsTrigger>}
+          <TabsTrigger value="historique">{t("membres.detail.tabs.historique")}</TabsTrigger>
+          <TabsTrigger value="emails">{t("membres.detail.tabs.emails")}</TabsTrigger>
         </TabsList>
 
         {modules.cotisations && (
         <TabsContent value="cotisations" className="pt-3">
           {cotisations.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune cotisation enregistrée</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCotisation")}</p>
           ) : (
             <div className="space-y-2">
               {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null }) => {
@@ -389,7 +414,7 @@ export function MembreDetailView() {
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                     <div>
                       <p className="font-medium tabular-nums">{c.year}</p>
-                      {c.paidAt && <p className="text-xs text-muted-foreground">Payée le {format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr })}</p>}
+                      {c.paidAt && <p className="text-xs text-muted-foreground">{t("membres.detail.paidOn", { date: format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr }) })}</p>}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(c.amount)}</span>
@@ -411,7 +436,7 @@ export function MembreDetailView() {
           )}
           {cotisationsTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Affichage des {TAB_PAGE_SIZE} cotisations les plus récentes sur {cotisationsTotal} au total.
+              {t("membres.detail.showingRecentCotisations", { count: TAB_PAGE_SIZE, total: cotisationsTotal })}
             </p>
           )}
         </TabsContent>
@@ -420,7 +445,7 @@ export function MembreDetailView() {
         {modules.evenements && (
         <TabsContent value="evenements" className="pt-3">
           {participations.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune participation enregistrée</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noParticipation")}</p>
           ) : (
             <div className="space-y-2">
               {participations.map((p: { id: string; evenementId: string; present: boolean; rsvp: string | null; evenement: { title: string; date: string } }) => (
@@ -435,7 +460,7 @@ export function MembreDetailView() {
                     <p className="text-xs text-muted-foreground">{format(new Date(p.evenement.date), "dd/MM/yyyy", { locale: fr })}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {p.present && <Badge variant="default">Présent</Badge>}
+                    {p.present && <Badge variant="default">{t("membres.detail.present")}</Badge>}
                     {p.rsvp && <RsvpBadge rsvp={p.rsvp} />}
                   </div>
                 </button>
@@ -444,7 +469,7 @@ export function MembreDetailView() {
           )}
           {participationsTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Affichage des {TAB_PAGE_SIZE} participations les plus récentes sur {participationsTotal} au total.
+              {t("membres.detail.showingRecentParticipations", { count: TAB_PAGE_SIZE, total: participationsTotal })}
             </p>
           )}
         </TabsContent>
@@ -453,7 +478,7 @@ export function MembreDetailView() {
         {modules.reunions && (
         <TabsContent value="reunions" className="pt-3">
           {meetingsAsParticipant.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune réunion enregistrée</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noMeeting")}</p>
           ) : (
             <div className="space-y-2">
               {meetingsAsParticipant.map((mp) => {
@@ -474,8 +499,8 @@ export function MembreDetailView() {
                     </div>
                     {mp.meeting.status === "ENDED" ? (
                       mp.joinedAt
-                        ? <Badge variant="default">A participé</Badge>
-                        : <Badge variant="secondary">N&apos;a pas participé</Badge>
+                        ? <Badge variant="default">{t("membres.detail.participated")}</Badge>
+                        : <Badge variant="secondary">{t("membres.detail.notParticipated")}</Badge>
                     ) : (
                       <Badge variant={meetingStatusBadge[mp.meeting.status].variant}>{meetingStatusBadge[mp.meeting.status].label}</Badge>
                     )}
@@ -486,7 +511,7 @@ export function MembreDetailView() {
           )}
           {meetingsTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Affichage des {TAB_PAGE_SIZE} réunions les plus récentes sur {meetingsTotal} au total.
+              {t("membres.detail.showingRecentMeetings", { count: TAB_PAGE_SIZE, total: meetingsTotal })}
             </p>
           )}
         </TabsContent>
@@ -495,7 +520,7 @@ export function MembreDetailView() {
         {modules.materiel && (
         <TabsContent value="materiel" className="pt-3">
           {materialLoans.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucun prêt de matériel</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noLoan")}</p>
           ) : (
             <div className="space-y-2">
               {materialLoans.map((l: { id: string; status: string; quantity: number; borrowedAt: string; returnedAt: string | null; material: { name: string } }) => {
@@ -505,11 +530,11 @@ export function MembreDetailView() {
                     <div>
                       <p className="font-medium">{l.material.name}{l.quantity > 1 && <span className="text-muted-foreground font-normal"> · x{l.quantity}</span>}</p>
                       <p className="text-xs text-muted-foreground">
-                        Emprunté le {format(new Date(l.borrowedAt), "dd/MM/yyyy", { locale: fr })}
-                        {l.returnedAt && <> · Rendu le {format(new Date(l.returnedAt), "dd/MM/yyyy", { locale: fr })}</>}
+                        {t("membres.detail.borrowedOn", { date: format(new Date(l.borrowedAt), "dd/MM/yyyy", { locale: fr }) })}
+                        {l.returnedAt && t("membres.detail.returnedOn", { date: format(new Date(l.returnedAt), "dd/MM/yyyy", { locale: fr }) })}
                       </p>
                     </div>
-                    <Badge variant={l.returnedAt ? "secondary" : s.variant}>{l.returnedAt ? "Rendu" : s.label}</Badge>
+                    <Badge variant={l.returnedAt ? "secondary" : s.variant}>{l.returnedAt ? t("membres.detail.loanStatus.returned") : s.label}</Badge>
                   </div>
                 )
               })}
@@ -517,7 +542,7 @@ export function MembreDetailView() {
           )}
           {materialLoansTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Affichage des {TAB_PAGE_SIZE} prêts les plus récents sur {materialLoansTotal} au total.
+              {t("membres.detail.showingRecentLoans", { count: TAB_PAGE_SIZE, total: materialLoansTotal })}
             </p>
           )}
         </TabsContent>
@@ -532,7 +557,7 @@ export function MembreDetailView() {
         </TabsContent>
       </Tabs>
 
-      <Modal open={editOpen} onOpenChange={setEditOpen} title="Modifier le membre" size="lg" dismissable={false}>
+      <Modal open={editOpen} onOpenChange={setEditOpen} title={t("membres.actions.edit")} size="lg" dismissable={false}>
         <MembreForm
           defaultValues={{
             firstName: membre.firstName,
@@ -564,11 +589,14 @@ export function MembreDetailView() {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title={`Supprimer ${membre.firstName} ${membre.lastName} ?`}
+        title={t("membres.actions.deleteConfirmTitle", { name: `${membre.firstName} ${membre.lastName}` })}
         description={membre.dependants.length > 0
-          ? `Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de ${membre.dependants.length} membre(s) : ${membre.dependants.map(d => `${d.firstName} ${d.lastName}`).join(", ")}.`
-          : "Ce membre sera archivé et ne pourra plus accéder à l'association."}
-        confirmLabel="Supprimer"
+          ? t("membres.detail.deleteConfirmWithDependants", {
+              count: membre.dependants.length,
+              names: membre.dependants.map(d => `${d.firstName} ${d.lastName}`).join(", "),
+            })
+          : t("membres.view.deleteConfirmDescription")}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
@@ -580,7 +608,7 @@ export function MembreDetailView() {
         />
       )}
 
-      <Modal open={createCotisationOpen} onOpenChange={setCreateCotisationOpen} title="Ajouter une cotisation" size="lg" dismissable={false}>
+      <Modal open={createCotisationOpen} onOpenChange={setCreateCotisationOpen} title={t("membres.detail.addCotisationTitle")} size="lg" dismissable={false}>
         <CotisationForm
           membres={[]}
           editMode

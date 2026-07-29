@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
@@ -11,6 +12,7 @@ import { useCreateRule } from "@/hooks/use-automation-rules"
 import { useMessageTemplates } from "@/hooks/use-message-templates"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 
+type Translator = ReturnType<typeof useTranslations>
 type StepType = "before" | "after"
 
 interface Step {
@@ -24,10 +26,12 @@ interface Props {
   onOpenChange: (open: boolean) => void
 }
 
-const TYPE_OPTIONS = [
-  { value: "before", label: "jours avant l'échéance" },
-  { value: "after",  label: "jours après l'échéance" },
-]
+function getTypeOptions(t: Translator) {
+  return [
+    { value: "before", label: t("messages.campagneModal.stepTypeBefore") },
+    { value: "after",  label: t("messages.campagneModal.stepTypeAfter") },
+  ]
+}
 
 const DEFAULT_STEPS: Step[] = [
   { key: 0, type: "before", days: 30 },
@@ -36,6 +40,8 @@ const DEFAULT_STEPS: Step[] = [
 ]
 
 export function CampagneModal({ open, onOpenChange }: Props) {
+  const t = useTranslations()
+  const TYPE_OPTIONS = getTypeOptions(t)
   const createRule = useCreateRule()
   const { data: templates = [] } = useMessageTemplates()
   const { data: membreTypes = [] } = useMembreTypes()
@@ -73,22 +79,22 @@ export function CampagneModal({ open, onOpenChange }: Props) {
   }
 
   function validate(): string | null {
-    if (!name.trim())       return "Nom de la campagne requis"
-    if (!templateId)        return "Modèle requis"
-    if (steps.length === 0) return "Ajoutez au moins une étape"
+    if (!name.trim())       return t("messages.campagneModal.validation.nameRequired")
+    if (!templateId)        return t("messages.campagneModal.validation.templateRequired")
+    if (steps.length === 0) return t("messages.campagneModal.validation.stepsRequired")
 
     const yearNum = Number(year)
     if (!year || isNaN(yearNum) || yearNum < currentYear) {
-      return `L'année doit être ${currentYear} ou plus`
+      return t("messages.campagneModal.validation.yearMin", { year: currentYear })
     }
 
     for (const step of steps) {
-      if (!step.days || step.days < 1) return "Chaque étape doit avoir au moins 1 jour"
+      if (!step.days || step.days < 1) return t("messages.campagneModal.validation.stepDaysMin")
     }
 
     const keys = steps.map(s => `${s.type}:${s.days}`)
     const unique = new Set(keys)
-    if (unique.size !== keys.length) return "Des étapes en double ont été détectées"
+    if (unique.size !== keys.length) return t("messages.campagneModal.validation.duplicateSteps")
 
     return null
   }
@@ -124,22 +130,26 @@ export function CampagneModal({ open, onOpenChange }: Props) {
     setLoading(false)
 
     if (failed.length === 0) {
-      toast.success(`Campagne créée avec ${created.length} règle${created.length > 1 ? "s" : ""}`)
+      toast.success(t("messages.campagneModal.toasts.created", { count: created.length }))
       reset()
       onOpenChange(false)
     } else if (created.length === 0) {
-      toast.error("Aucune règle n'a pu être créée")
+      toast.error(t("messages.campagneModal.toasts.allFailed"))
     } else {
-      toast.warning(`${created.length} règle${created.length > 1 ? "s" : ""} créée${created.length > 1 ? "s" : ""}, ${failed.length} échoué${failed.length > 1 ? "es" : "e"} : ${failed.join(", ")}`)
+      toast.warning(t("messages.campagneModal.toasts.partial", {
+        createdCount: created.length,
+        failedCount:  failed.length,
+        names:        failed.join(", "),
+      }))
       reset()
       onOpenChange(false)
     }
   }
 
-  const templateOptions  = templates.map(t => ({ value: t.id, label: t.name }))
+  const templateOptions  = templates.map(tpl => ({ value: tpl.id, label: tpl.name }))
   const recipientOptions = [
-    { value: "ALL", label: "Tous les membres actifs" },
-    ...membreTypes.map(t => ({ value: `TYPE:${t.id}`, label: `Type : ${t.name}` })),
+    { value: "ALL", label: t("messages.campagneModal.recipientsAll") },
+    ...membreTypes.map(mt => ({ value: `TYPE:${mt.id}`, label: t("messages.campagneModal.recipientsType", { name: mt.name }) })),
   ]
   const noTemplates = templates.length === 0
 
@@ -147,41 +157,45 @@ export function CampagneModal({ open, onOpenChange }: Props) {
     <Modal
       open={open}
       onOpenChange={open => { if (!open) reset(); onOpenChange(open) }}
-      title="Séquence de relances"
+      title={t("messages.campagneModal.title")}
       size="lg"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         <p className="text-sm text-muted-foreground">
-          Créez une séquence de rappels de cotisation. Chaque étape devient une règle distincte déclenchée automatiquement.
+          {t("messages.campagneModal.description")}
         </p>
 
         {noTemplates && (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
             <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
-            <span>Aucun modèle disponible. Créez d'abord un modèle dans l'onglet <strong>Modèles</strong>.</span>
+            <span>
+              {t("messages.campagneModal.noTemplatesWarningPrefix")}
+              <strong>{t("messages.view.tabs.templates")}</strong>
+              {t("messages.campagneModal.noTemplatesWarningSuffix")}
+            </span>
           </div>
         )}
 
         <FormField
-          label="Nom de la campagne"
+          label={t("messages.campagneModal.campaignName")}
           required
-          placeholder="Relances cotisation 2026"
+          placeholder={t("messages.campagneModal.campaignNamePlaceholder")}
           value={name}
           onChange={e => setName(e.target.value)}
         />
 
         <div className="grid grid-cols-2 gap-3">
           <SelectField
-            label="Modèle de message"
+            label={t("messages.campagneModal.templateLabel")}
             required
             options={templateOptions}
             value={templateId}
             onValueChange={setTemplateId}
-            placeholder="Choisir un modèle…"
+            placeholder={t("messages.campagneModal.templatePlaceholder")}
             disabled={noTemplates}
           />
           <SelectField
-            label="Destinataires"
+            label={t("messages.campagneModal.recipients")}
             options={recipientOptions}
             value={recipients}
             onValueChange={setRecipients}
@@ -190,7 +204,7 @@ export function CampagneModal({ open, onOpenChange }: Props) {
 
         <div className="grid grid-cols-3 gap-3">
           <FormField
-            label="Année de cotisation"
+            label={t("messages.campagneModal.cotisationYear")}
             type="number"
             placeholder={String(new Date().getFullYear())}
             min={new Date().getFullYear()}
@@ -198,18 +212,18 @@ export function CampagneModal({ open, onOpenChange }: Props) {
             onChange={e => setYear(e.target.value)}
           />
           <FormField
-            label="Date d'échéance"
+            label={t("messages.campagneModal.dueDate")}
             type="date"
-            hint="Pour les étapes 'avant'. Optionnel — défaut: 31 déc."
+            hint={t("messages.campagneModal.dueDateHint")}
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
           />
           <FormField
-            label="Cooldown (jours)"
+            label={t("messages.campagneModal.cooldownDays")}
             type="number"
             min={1}
             placeholder="7"
-            hint="Délai min. entre 2 envois au même membre"
+            hint={t("messages.campagneModal.cooldownHint")}
             value={cooldown}
             onChange={e => setCooldown(e.target.value)}
           />
@@ -217,15 +231,15 @@ export function CampagneModal({ open, onOpenChange }: Props) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">Étapes de la séquence</p>
+            <p className="text-sm font-medium">{t("messages.campagneModal.stepsTitle")}</p>
             <Button type="button" variant="outline" size="sm" onClick={addStep}>
-              <PlusIcon className="mr-1.5 size-3.5" /> Ajouter une étape
+              <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.campagneModal.addStep")}
             </Button>
           </div>
 
           {steps.length === 0 ? (
             <p className="text-xs text-muted-foreground py-3 text-center border border-dashed rounded-lg">
-              Aucune étape — ajoutez-en au moins une.
+              {t("messages.campagneModal.noSteps")}
             </p>
           ) : (
             <div className="space-y-2">
@@ -264,9 +278,12 @@ export function CampagneModal({ open, onOpenChange }: Props) {
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>Annuler</Button>
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>{t("common.cancel")}</Button>
           <Button type="submit" loading={loading} disabled={noTemplates || steps.length === 0}>
-            Créer {steps.length > 0 ? `(${steps.length} règle${steps.length > 1 ? "s" : ""})` : ""}
+            {steps.length > 0
+              ? t("messages.campagneModal.createWithCount", { count: steps.length })
+              : t("messages.campagneModal.create")
+            }
           </Button>
         </div>
       </form>

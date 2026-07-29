@@ -1,14 +1,26 @@
 "use client"
 
 import { useId } from "react"
+import { useTranslations } from "next-intl"
 import { CaretUpIcon, CaretDownIcon, TrashIcon, PlusIcon, GitBranchIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import {
-  QUESTION_TYPE_LABELS, QUESTION_TYPES, CONDITIONAL_TRIGGER_TYPES,
+  QUESTION_TYPES, CONDITIONAL_TRIGGER_TYPES,
   type QuestionType, type QuestionCondition,
 } from "@/lib/sondages/types"
 import type { BuilderQuestion } from "./sondage-form-builder"
 import { cn } from "@/lib/utils"
+
+function getQuestionTypeLabels(t: ReturnType<typeof useTranslations>): Record<QuestionType, string> {
+  return {
+    TEXT_SHORT:      t("sondages.questionTypes.textShort"),
+    TEXT_LONG:       t("sondages.questionTypes.textLong"),
+    SINGLE_CHOICE:   t("sondages.questionTypes.singleChoice"),
+    MULTIPLE_CHOICE: t("sondages.questionTypes.multipleChoice"),
+    RATING:          t("sondages.questionTypes.rating"),
+    YES_NO:          t("sondages.questionTypes.yesNo"),
+  }
+}
 
 interface QuestionBuilderProps {
   question:    BuilderQuestion
@@ -24,6 +36,8 @@ interface QuestionBuilderProps {
 export function QuestionBuilder({
   question, index, total, allQuestions, onChange, onMoveUp, onMoveDown, onDelete,
 }: QuestionBuilderProps) {
+  const t = useTranslations()
+  const questionTypeLabels = getQuestionTypeLabels(t)
   const uid = useId()
 
   function update(patch: Partial<BuilderQuestion>) {
@@ -70,7 +84,7 @@ export function QuestionBuilder({
           {/* Label */}
           <input
             type="text"
-            placeholder="Question…"
+            placeholder={t("sondages.questionBuilder.questionPlaceholder")}
             value={question.label}
             onChange={e => update({ label: e.target.value })}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring font-medium"
@@ -81,17 +95,17 @@ export function QuestionBuilder({
             <select
               value={question.type}
               onChange={e => {
-                const t = e.target.value as QuestionType
+                const newType = e.target.value as QuestionType
                 update({
-                  type:      t,
-                  options:   ["SINGLE_CHOICE", "MULTIPLE_CHOICE"].includes(t) ? (question.options ?? ["", ""]) : null,
+                  type:      newType,
+                  options:   ["SINGLE_CHOICE", "MULTIPLE_CHOICE"].includes(newType) ? (question.options ?? ["", ""]) : null,
                   condition: null,
                 })
               }}
               className="rounded-md border border-input bg-background px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
             >
-              {QUESTION_TYPES.map(t => (
-                <option key={t} value={t}>{QUESTION_TYPE_LABELS[t]}</option>
+              {QUESTION_TYPES.map(type => (
+                <option key={type} value={type}>{questionTypeLabels[type]}</option>
               ))}
             </select>
 
@@ -102,7 +116,7 @@ export function QuestionBuilder({
                 onChange={e => update({ required: e.target.checked })}
                 className="rounded accent-foreground"
               />
-              Obligatoire
+              {t("sondages.questionBuilder.required")}
             </label>
           </div>
         </div>
@@ -146,7 +160,7 @@ export function QuestionBuilder({
               <input
                 type="text"
                 value={opt}
-                placeholder={`Option ${i + 1}`}
+                placeholder={t("sondages.questionBuilder.optionPlaceholder", { n: i + 1 })}
                 onChange={e => updateOption(i, e.target.value)}
                 className="flex-1 rounded-md border border-input bg-background px-2.5 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
@@ -165,7 +179,7 @@ export function QuestionBuilder({
             onClick={addOption}
             className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground pl-6"
           >
-            <PlusIcon className="size-3" /> Ajouter une option
+            <PlusIcon className="size-3" /> {t("sondages.questionBuilder.addOption")}
           </button>
         </div>
       )}
@@ -179,12 +193,12 @@ export function QuestionBuilder({
               question.condition ? "text-violet-600 dark:text-violet-400 font-medium" : "text-muted-foreground hover:text-foreground",
             )}>
               <GitBranchIcon className="size-3.5" />
-              {question.condition ? "Logique conditionnelle active" : "Ajouter une condition d'affichage"}
+              {question.condition ? t("sondages.questionBuilder.conditionalActive") : t("sondages.questionBuilder.addCondition")}
             </summary>
 
             <div className="mt-3 rounded-lg border border-violet-200 dark:border-violet-800 bg-violet-50/50 dark:bg-violet-950/20 p-3 space-y-3">
               <p className="text-xs font-medium text-violet-700 dark:text-violet-400">
-                Afficher cette question uniquement si :
+                {t("sondages.questionBuilder.showOnlyIf")}
               </p>
 
               <div className="flex flex-wrap gap-2 items-center text-sm">
@@ -206,7 +220,7 @@ export function QuestionBuilder({
                   }}
                   className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-violet-400 max-w-[180px]"
                 >
-                  <option value="">— choisir une question —</option>
+                  <option value="">{t("sondages.questionBuilder.chooseQuestion")}</option>
                   {triggerCandidates.map((q, i) => (
                     <option key={q._key} value={q._key}>
                       Q{allQuestions.indexOf(q) + 1}. {q.label.slice(0, 40)}{q.label.length > 40 ? "…" : ""}
@@ -224,10 +238,10 @@ export function QuestionBuilder({
                       })}
                       className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-violet-400"
                     >
-                      <option value="eq">est égal à</option>
-                      <option value="neq">est différent de</option>
+                      <option value="eq">{t("sondages.questionBuilder.operatorEq")}</option>
+                      <option value="neq">{t("sondages.questionBuilder.operatorNeq")}</option>
                       {conditionTrigger.type === "MULTIPLE_CHOICE" && (
-                        <option value="includes">contient</option>
+                        <option value="includes">{t("sondages.questionBuilder.operatorIncludes")}</option>
                       )}
                     </select>
 
@@ -252,14 +266,14 @@ export function QuestionBuilder({
                     onClick={() => update({ condition: null })}
                     className="text-xs text-destructive hover:underline"
                   >
-                    Supprimer
+                    {t("sondages.questionBuilder.removeCondition")}
                   </button>
                 )}
               </div>
 
               {question.condition && (
                 <p className="text-xs text-muted-foreground italic">
-                  Cette question ne sera visible que si la condition ci-dessus est remplie.
+                  {t("sondages.questionBuilder.conditionNotice")}
                 </p>
               )}
             </div>

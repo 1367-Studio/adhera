@@ -3,6 +3,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState, Suspense } from "react"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -33,7 +34,6 @@ type Commande = {
 }
 type EditItem = { id: string; produitName: string; varianteLabel: string; unitPrice: number; qty: number; originalQty: number }
 
-const STATUS_LABEL: Record<string, string>   = { PENDING: "En attente", PAID: "Payée", CANCELLED: "Annulée" }
 const STATUS_VARIANT: Record<string, "secondary" | "default" | "destructive"> = {
   PENDING:   "secondary",
   PAID:      "default",
@@ -49,6 +49,9 @@ export default function MesCommandesPage() {
 }
 
 function MesCommandesPageInner() {
+  const t              = useTranslations("portalMembre.boutique")
+  const tCommon        = useTranslations("common")
+  const statusLabel: Record<string, string> = { PENDING: t("orderStatus.pending"), PAID: t("orderStatus.paid"), CANCELLED: t("orderStatus.cancelled") }
   const { slug }       = useParams<{ slug: string }>()
   const router         = useRouter()
   const searchParams   = useSearchParams()
@@ -61,10 +64,10 @@ function MesCommandesPageInner() {
 
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
-      toast.success("Paiement confirmé ! Votre commande est enregistrée.")
+      toast.success(t("paymentConfirmed"))
       router.replace(`/portal/${slug}/boutique/commandes`)
     }
-  }, [searchParams, router, slug])
+  }, [searchParams, router, slug, t])
 
   const { data: commandes = [], isLoading } = useQuery<Commande[]>({
     queryKey: ["portal-boutique-commandes", slug],
@@ -79,7 +82,7 @@ function MesCommandesPageInner() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(body),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json()
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ["portal-boutique-commandes", slug] }),
@@ -110,10 +113,10 @@ function MesCommandesPageInner() {
         id:   editTarget.id,
         body: { items: editItems.map(i => ({ id: i.id, quantity: i.qty })) },
       })
-      toast.success("Commande mise à jour")
+      toast.success(t("toasts.orderUpdated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
     }
   }
 
@@ -121,10 +124,10 @@ function MesCommandesPageInner() {
     if (!cancelTarget) return
     try {
       await updateMutation.mutateAsync({ id: cancelTarget.id, body: { status: "CANCELLED" } })
-      toast.success("Commande annulée")
+      toast.success(t("toasts.orderCancelled"))
       setCancelTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
     }
   }
 
@@ -140,7 +143,7 @@ function MesCommandesPageInner() {
         <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <PackageIcon className="size-6 text-primary" />
         </div>
-        <h1 className="text-xl font-semibold tracking-tight">Mes commandes</h1>
+        <h1 className="text-xl font-semibold tracking-tight">{t("myOrders")}</h1>
       </div>
 
       {isLoading ? (
@@ -152,9 +155,9 @@ function MesCommandesPageInner() {
       ) : commandes.length === 0 ? (
         <div className="rounded-xl border bg-card p-12 text-center space-y-3">
           <ShoppingBagIcon className="size-8 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-sm">Aucune commande pour le moment.</p>
+          <p className="text-muted-foreground text-sm">{t("noOrders")}</p>
           <Button variant="outline" onClick={() => router.push(`/portal/${slug}/boutique`)}>
-            Voir la boutique
+            {t("viewShop")}
           </Button>
         </div>
       ) : (
@@ -169,7 +172,7 @@ function MesCommandesPageInner() {
                   <p className="font-semibold text-primary tabular-nums">{fmt(c.totalAmount)}</p>
                 </div>
                 <Badge variant={STATUS_VARIANT[c.status]}>
-                  {STATUS_LABEL[c.status]}
+                  {statusLabel[c.status]}
                 </Badge>
               </div>
 
@@ -188,7 +191,7 @@ function MesCommandesPageInner() {
               </div>
 
               {c.note && (
-                <p className="text-xs text-muted-foreground italic border-t pt-2">Note : {c.note}</p>
+                <p className="text-xs text-muted-foreground italic border-t pt-2">{t("noteLabel", { note: c.note })}</p>
               )}
 
               {c.status === "PAID" && (
@@ -199,7 +202,7 @@ function MesCommandesPageInner() {
                     onClick={() => window.open(`${BASE_PATH}/api/portal/boutique/commandes/${c.id}/pdf`, "_blank")}
                   >
                     <FileArrowDownIcon className="mr-1.5 size-3.5" />
-                    Télécharger le reçu
+                    {t("downloadReceipt")}
                   </Button>
                 </div>
               )}
@@ -207,18 +210,18 @@ function MesCommandesPageInner() {
               {c.status === "PENDING" && (
                 <div className="border-t pt-2 space-y-2">
                   <p className="text-xs text-muted-foreground">
-                    En attente de confirmation. L'administration vous contactera pour le retrait.
+                    {t("pendingConfirmationHint")}
                   </p>
                   <div className="flex gap-2">
                     {c.paymentMethod === "MANUAL" && (
                       <Button size="sm" variant="outline" onClick={() => openEditModal(c)}>
                         <PencilSimpleIcon className="mr-1.5 size-3.5" />
-                        Modifier
+                        {tCommon("edit")}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setCancelTarget(c)}>
                       <XIcon className="mr-1.5 size-3.5" />
-                      Annuler
+                      {tCommon("cancel")}
                     </Button>
                   </div>
                 </div>
@@ -231,14 +234,14 @@ function MesCommandesPageInner() {
       <Modal
         open={!!editTarget}
         onOpenChange={o => { if (!o) setEditTarget(null) }}
-        title="Modifier ma commande"
-        description="Vous pouvez réduire ou retirer des articles. Pour en ajouter, passez une nouvelle commande."
+        title={t("editModalTitle")}
+        description={t("editModalDescription")}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setEditTarget(null)}>Fermer</Button>
+            <Button variant="outline" onClick={() => setEditTarget(null)}>{tCommon("close")}</Button>
             <Button loading={updateMutation.isPending} disabled={adjustedTotal === 0} onClick={handleSaveEdit}>
-              Enregistrer {fmt(adjustedTotal)}
+              {t("saveWithAmount", { amount: fmt(adjustedTotal) })}
             </Button>
           </>
         }
@@ -266,12 +269,12 @@ function MesCommandesPageInner() {
             </div>
             {hasAdjustment && (
               <div className="border-t pt-3 flex justify-between text-xs text-muted-foreground">
-                <span>Total commandé</span>
+                <span>{t("totalOrdered")}</span>
                 <span className="line-through">{fmt(editTarget.totalAmount)}</span>
               </div>
             )}
             {adjustedTotal === 0 && (
-              <p className="text-xs text-muted-foreground">Pour retirer tous les articles, annulez plutôt la commande.</p>
+              <p className="text-xs text-muted-foreground">{t("removeAllHint")}</p>
             )}
           </div>
         )}
@@ -280,9 +283,9 @@ function MesCommandesPageInner() {
       <ConfirmDialog
         open={!!cancelTarget}
         onOpenChange={o => { if (!o) setCancelTarget(null) }}
-        title="Annuler cette commande ?"
-        description="Cette action est irréversible. Les articles seront remis en stock."
-        confirmLabel="Annuler la commande"
+        title={t("cancelOrderTitle")}
+        description={t("cancelOrderDescription")}
+        confirmLabel={t("cancelOrderConfirm")}
         loading={updateMutation.isPending}
         onConfirm={handleCancel}
       />

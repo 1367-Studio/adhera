@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { useQueryClient } from "@tanstack/react-query"
 import { SignOutIcon, PencilSimpleIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
@@ -19,13 +20,15 @@ import { BASE_PATH } from "@/lib/env"
 import { ProfileEditModal }    from "./profile-edit-modal"
 import { ChangePasswordModal } from "./change-password-modal"
 
-const roleLabels: Record<string, string> = {
-  SUPER_ADMIN: "Super Administrateur",
-  ADMIN:       "Administrateur",
-  PRESIDENT:   "Président",
-  TRESORIER:   "Trésorier",
-  SECRETAIRE:  "Secrétaire",
-  MEMBRE:      "Membre",
+function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
+  return {
+    SUPER_ADMIN: t("roleLabels.SUPER_ADMIN"),
+    ADMIN:       t("roleLabels.ADMIN"),
+    PRESIDENT:   t("roleLabels.PRESIDENT"),
+    TRESORIER:   t("roleLabels.TRESORIER"),
+    SECRETAIRE:  t("roleLabels.SECRETAIRE"),
+    MEMBRE:      t("roleLabels.MEMBRE"),
+  }
 }
 
 interface UserMenuProps {
@@ -34,6 +37,8 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
+  const t = useTranslations("layout.userMenu")
+  const roleLabels = getRoleLabels(t)
   const [modal, setModal] = useState<"profile" | "password" | null>(null)
   const queryClient = useQueryClient()
   const logoutAction = logout.bind(null, `${BASE_PATH}${logoutRedirect ?? "/login"}`)
@@ -82,11 +87,11 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => setModal("profile")}>
               <PencilSimpleIcon className="mr-2 size-4" />
-              Modifier le profil
+              {t("editProfile")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setModal("password")}>
               <KeyIcon className="mr-2 size-4" />
-              Changer le mot de passe
+              {t("changePassword")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
 
@@ -95,7 +100,7 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
           <DropdownMenuGroup>
             <DropdownMenuItem variant="destructive" onClick={handleLogout}>
               <SignOutIcon className="mr-2 size-4" />
-              Se déconnecter
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>

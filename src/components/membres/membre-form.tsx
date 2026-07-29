@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useResponsableOptions } from "@/hooks/use-membres"
@@ -14,78 +15,19 @@ import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "../ui/image-upload"
 
-const statusOptions = [
-  { value: "PENDING",  label: "En attente" },
-  { value: "ACTIF",    label: "Actif"      },
-  { value: "INACTIF",  label: "Inactif"    },
-  { value: "SUSPENDU", label: "Suspendu"   },
-]
-
-// Only ACTIF is safe to self-select — any other status flips User.active to false server-side,
-// which would lock the acting manager out of their own account.
-const selfStatusOptions = statusOptions.filter(o => o.value === "ACTIF")
-
 // Same role set as the PATCH /api/membres/[id] server-side check and cotisation-defaults'
 // FINANCE roles — forcing a member's adhérent status is a financial call equivalent to
 // marking a cotisation paid, so it's scoped the same way, narrower than general membre
 // management (which SECRETAIRE also has).
 const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-const allRoleOptions = [
-  { value: "MEMBRE",     label: "Membre"     },
-  { value: "SECRETAIRE", label: "Secrétaire" },
-  { value: "TRESORIER",  label: "Trésorier"  },
-  { value: "PRESIDENT",  label: "Président"  },
-  { value: "ADMIN",      label: "Admin"      },
-]
+const GROUPE_SANGUIN_VALUES = ["A_POSITIF", "A_NEGATIF", "B_POSITIF", "B_NEGATIF", "AB_POSITIF", "AB_NEGATIF", "O_POSITIF", "O_NEGATIF"] as const
+const GROUPE_SANGUIN_LABELS: Record<(typeof GROUPE_SANGUIN_VALUES)[number], string> = {
+  A_POSITIF: "A+", A_NEGATIF: "A-", B_POSITIF: "B+", B_NEGATIF: "B-",
+  AB_POSITIF: "AB+", AB_NEGATIF: "AB-", O_POSITIF: "O+", O_NEGATIF: "O-",
+}
 
-const civiliteOptions = [
-  { value: "",     label: "Non renseigné" },
-  { value: "MME",  label: "Mme"           },
-  { value: "MLLE", label: "Mlle"          },
-  { value: "M",    label: "M."            },
-]
-
-const sexeOptions = [
-  { value: "",      label: "Non renseigné" },
-  { value: "HOMME", label: "Homme"         },
-  { value: "FEMME", label: "Femme"         },
-]
-
-const groupeSanguinOptions = [
-  { value: "",           label: "Non renseigné" },
-  { value: "A_POSITIF",  label: "A+"  },
-  { value: "A_NEGATIF",  label: "A-"  },
-  { value: "B_POSITIF",  label: "B+"  },
-  { value: "B_NEGATIF",  label: "B-"  },
-  { value: "AB_POSITIF", label: "AB+" },
-  { value: "AB_NEGATIF", label: "AB-" },
-  { value: "O_POSITIF",  label: "O+"  },
-  { value: "O_NEGATIF",  label: "O-"  },
-]
-
-const adherentOverrideOptions = [
-  { value: "",      label: "Automatique (selon cotisation)" },
-  { value: "true",  label: "Forcer Adhérent" },
-  { value: "false", label: "Forcer Bénévole" },
-]
-
-const possedeTshirtOptions = [
-  { value: "",      label: "Non renseigné" },
-  { value: "true",  label: "Oui"           },
-  { value: "false", label: "Non"           },
-]
-
-const tailleTshirtOptions = [
-  { value: "",     label: "Non renseigné" },
-  { value: "XS",   label: "XS"  },
-  { value: "S",    label: "S"   },
-  { value: "M",    label: "M"   },
-  { value: "L",    label: "L"   },
-  { value: "XL",   label: "XL"  },
-  { value: "XXL",  label: "XXL" },
-  { value: "XXXL", label: "XXXL" },
-]
+const TAILLE_TSHIRT_VALUES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const
 
 // Même seuil que /api/membres/stats/route.ts et /api/membres/route.ts (adultsOnly).
 const ADULT_AGE_YEARS = 18
@@ -108,9 +50,63 @@ interface MembreFormProps {
 }
 
 export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId }: MembreFormProps) {
+  const t = useTranslations()
   const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
   const modules = useModules()
+
+  const statusOptions = [
+    { value: "PENDING",  label: t("membres.form.status.pending")  },
+    { value: "ACTIF",    label: t("membres.form.status.actif")    },
+    { value: "INACTIF",  label: t("membres.form.status.inactif")  },
+    { value: "SUSPENDU", label: t("membres.form.status.suspendu") },
+  ]
+  // Only ACTIF is safe to self-select — any other status flips User.active to false server-side,
+  // which would lock the acting manager out of their own account.
+  const selfStatusOptions = statusOptions.filter(o => o.value === "ACTIF")
+
+  const allRoleOptions = [
+    { value: "MEMBRE",     label: t("membres.form.role.membre")     },
+    { value: "SECRETAIRE", label: t("membres.form.role.secretaire") },
+    { value: "TRESORIER",  label: t("membres.form.role.tresorier")  },
+    { value: "PRESIDENT",  label: t("membres.form.role.president")  },
+    { value: "ADMIN",      label: t("membres.form.role.admin")      },
+  ]
+
+  const civiliteOptions = [
+    { value: "",     label: t("membres.form.civilite.none") },
+    { value: "MME",  label: t("membres.form.civilite.mme")  },
+    { value: "MLLE", label: t("membres.form.civilite.mlle") },
+    { value: "M",    label: t("membres.form.civilite.m")    },
+  ]
+
+  const sexeOptions = [
+    { value: "",      label: t("membres.form.sexe.none")  },
+    { value: "HOMME", label: t("membres.form.sexe.homme") },
+    { value: "FEMME", label: t("membres.form.sexe.femme") },
+  ]
+
+  const groupeSanguinOptions = [
+    { value: "", label: t("membres.form.groupeSanguinNone") },
+    ...GROUPE_SANGUIN_VALUES.map(value => ({ value, label: GROUPE_SANGUIN_LABELS[value] })),
+  ]
+
+  const adherentOverrideOptions = [
+    { value: "",      label: t("membres.form.adherentOverride.auto")          },
+    { value: "true",  label: t("membres.form.adherentOverride.forceAdherent") },
+    { value: "false", label: t("membres.form.adherentOverride.forceBenevole") },
+  ]
+
+  const possedeTshirtOptions = [
+    { value: "",      label: t("membres.form.tailleTshirtNone") },
+    { value: "true",  label: t("common.yes") },
+    { value: "false", label: t("common.no")  },
+  ]
+
+  const tailleTshirtOptions = [
+    { value: "", label: t("membres.form.tailleTshirtNone") },
+    ...TAILLE_TSHIRT_VALUES.map(value => ({ value, label: value })),
+  ]
 
   const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
     resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
@@ -130,16 +126,16 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   const roleOptions = actorRole === "ADMIN" ? allRoleOptions : allRoleOptions.filter(o => o.value !== "ADMIN")
 
   const typeOptions = [
-    { value: "", label: "Aucun type" },
-    ...types.map(t => ({ value: t.id, label: t.name })),
+    { value: "", label: t("membres.form.noType") },
+    ...types.map(type => ({ value: type.id, label: type.name })),
   ]
 
   const responsableOptions = responsableCandidates.length > 0
     ? [
-        { value: "", label: "Aucun" },
+        { value: "", label: t("membres.form.noResponsable") },
         ...responsableCandidates.map(m => ({ value: m.id, label: `${m.firstName} ${m.lastName}` })),
       ]
-    : [{ value: "", label: "Aucun membre majeur disponible" }]
+    : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -161,13 +157,13 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       />
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          label="Prénom"
+          label={t("membres.form.fields.firstName")}
           required
           error={errors.firstName?.message}
           {...register("firstName")}
         />
         <FormField
-          label="Nom"
+          label={t("membres.form.fields.lastName")}
           required
           error={errors.lastName?.message}
           {...register("lastName")}
@@ -176,17 +172,17 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          label="Email"
+          label={t("membres.form.fields.email")}
           type="email"
-          placeholder="contact@example.com"
+          placeholder={t("membres.form.fields.emailPlaceholder")}
           required={isCreate}
           error={errors.email?.message}
           {...register("email")}
         />
         <FormField
-          label="Téléphone"
+          label={t("membres.form.fields.phone")}
           type="tel"
-          placeholder="+33 6 12 34 56 78"
+          placeholder={t("membres.form.fields.phonePlaceholder")}
           error={errors.phone?.message}
           {...register("phone")}
         />
@@ -199,14 +195,14 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           render={({ field }) => (
             <div className="space-y-1.5">
               <SelectField
-                label="Rôle"
+                label={t("membres.form.fields.role")}
                 options={roleOptions}
                 value={field.value ?? "MEMBRE"}
                 onValueChange={field.onChange}
                 error={errors.role?.message}
               />
               <p className="text-xs text-muted-foreground">
-                Un email d&apos;invitation avec les identifiants sera envoyé à cette adresse.
+                {t("membres.form.invitationNotice")}
               </p>
             </div>
           )}
@@ -215,7 +211,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          label="Date de naissance"
+          label={t("membres.form.fields.birthDate")}
           type="date"
           max={new Date().toISOString().split("T")[0]}
           error={errors.birthDate?.message}
@@ -226,7 +222,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Statut"
+              label={t("membres.form.fields.status")}
               required
               options={isSelf ? selfStatusOptions : statusOptions}
               value={field.value}
@@ -243,7 +239,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           render={({ field }) => (
             <div className="space-y-1.5 rounded-lg border bg-muted/20 p-3">
               <SelectField
-                label="Adhésion (cotisation)"
+                label={t("membres.form.fields.adhesionCotisation")}
                 options={adherentOverrideOptions}
                 value={field.value ?? ""}
                 onValueChange={field.onChange}
@@ -251,8 +247,8 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               />
               <p className="text-xs text-muted-foreground">
                 {responsableIdValue
-                  ? "Calculé automatiquement : sa propre cotisation de l'année en cours si elle existe, sinon celle de son responsable — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte)."
-                  : "Calculé automatiquement selon la cotisation de l'année en cours — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte)."}
+                  ? t("membres.form.adherentAutoWithResponsable")
+                  : t("membres.form.adherentAutoNoResponsable")}
               </p>
             </div>
           )}
@@ -264,7 +260,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Civilité"
+              label={t("membres.form.fields.civilite")}
               options={civiliteOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
@@ -277,7 +273,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Sexe"
+              label={t("membres.form.fields.sexe")}
               options={sexeOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
@@ -290,7 +286,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Groupe sanguin"
+              label={t("membres.form.fields.groupeSanguin")}
               options={groupeSanguinOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
@@ -306,7 +302,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Possède un tee-shirt"
+              label={t("membres.form.fields.possedeTshirt")}
               options={possedeTshirtOptions}
               value={field.value ?? ""}
               onValueChange={(v) => {
@@ -324,7 +320,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Taille du tee-shirt"
+              label={t("membres.form.fields.tailleTshirt")}
               options={tailleTshirtOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
@@ -340,7 +336,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Responsable légal (si mineur)"
+              label={t("membres.form.fields.responsable")}
               options={responsableOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
@@ -351,8 +347,8 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       )}
 
       <TextareaField
-        label="Allergies connues"
-        placeholder="Arachides, pollen…"
+        label={t("membres.form.fields.allergies")}
+        placeholder={t("membres.form.fields.allergiesPlaceholder")}
         rows={2}
         error={errors.allergies?.message}
         {...register("allergies")}
@@ -366,18 +362,18 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           render={({ field }) => (
             <div className="space-y-1.5">
               <SelectField
-                label="Type de membre"
+                label={t("membres.form.fields.type")}
                 options={typeOptions}
                 value={field.value ?? ""}
                 onValueChange={field.onChange}
                 error={errors.typeId?.message}
               />
               {field.value && (() => {
-                const t = types.find(t => t.id === field.value)
-                return t ? (
+                const matchedType = types.find(type => type.id === field.value)
+                return matchedType ? (
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>Aperçu :</span>
-                    <MembreTypeBadge name={t.name} color={t.color} />
+                    <span>{t("membres.form.preview")}</span>
+                    <MembreTypeBadge name={matchedType.name} color={matchedType.color} />
                   </div>
                 ) : null
               })()}
@@ -387,18 +383,18 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       )}
 
       <FormField
-        label="Adresse"
-        placeholder="12 rue de la Paix, 75001 Paris"
+        label={t("membres.form.fields.address")}
+        placeholder={t("membres.form.fields.addressPlaceholder")}
         error={errors.address?.message}
         {...register("address")}
       />
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Annuler
+          {t("common.cancel")}
         </Button>
         <Button type="submit" loading={loading}>
-          Enregistrer
+          {t("common.save")}
         </Button>
       </div>
     </form>

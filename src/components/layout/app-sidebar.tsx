@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon, EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -18,7 +19,7 @@ import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 
 interface NavItem {
-  name:      string
+  key:       string
   href:      string
   icon:      React.ElementType
   roles:     UserRole[]
@@ -29,23 +30,23 @@ const MANAGERS: UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 const navigationItems: NavItem[] = [
-  { name: "Tableau de bord", href: "/dashboard",             icon: SquaresFourIcon, roles: MANAGERS },
-  { name: "Membres",         href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
-  { name: "Événements",      href: "/dashboard/evenements",  icon: CalendarBlankIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
-  { name: "Cotisations",     href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
-  { name: "Finances",        href: "/dashboard/finances",    icon: MoneyIcon,         roles: FINANCE,   moduleKey: "finances"    },
-  { name: "Devis",           href: "/dashboard/devis",       icon: FileTextIcon,      roles: FINANCE,   moduleKey: "devis"       },
-  { name: "Factures",        href: "/dashboard/factures",    icon: ReceiptIcon,       roles: FINANCE,   moduleKey: "factures"    },
-  { name: "Fournisseurs",    href: "/dashboard/fournisseurs", icon: BuildingsIcon,    roles: FINANCE,   moduleKey: "fournisseurs" },
-  { name: "Dons",            href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
-  { name: "Réunions",        href: "/dashboard/reunions",    icon: VideoCameraIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
-  { name: "Sondages",        href: "/dashboard/sondages",    icon: ClipboardTextIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
-  { name: "Boutique",        href: "/dashboard/boutique",    icon: ShoppingBagIcon,      roles: MANAGERS,  moduleKey: "boutique"    },
-  { name: "Actualités",      href: "/dashboard/actualites",  icon: NewspaperIcon,        roles: MANAGERS,  moduleKey: "actualites"  },
-  { name: "Messages",        href: "/dashboard/messages",    icon: EnvelopeSimpleIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
-  { name: "Matériel",        href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },
-  { name: "Site web",        href: "/dashboard/site",        icon: GlobeIcon,            roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site" },
-  { name: "Historique",      href: "/dashboard/activite",    icon: PulseIcon,         roles: MANAGERS },
+  { key: "dashboard",     href: "/dashboard",             icon: SquaresFourIcon, roles: MANAGERS },
+  { key: "membres",       href: "/dashboard/membres",     icon: UsersIcon,            roles: MANAGERS },
+  { key: "evenements",    href: "/dashboard/evenements",  icon: CalendarBlankIcon,         roles: MANAGERS,  moduleKey: "evenements"  },
+  { key: "cotisations",   href: "/dashboard/cotisations", icon: CoinsIcon,            roles: MANAGERS,  moduleKey: "cotisations" },
+  { key: "finances",      href: "/dashboard/finances",    icon: MoneyIcon,         roles: FINANCE,   moduleKey: "finances"    },
+  { key: "devis",         href: "/dashboard/devis",       icon: FileTextIcon,      roles: FINANCE,   moduleKey: "devis"       },
+  { key: "factures",      href: "/dashboard/factures",    icon: ReceiptIcon,       roles: FINANCE,   moduleKey: "factures"    },
+  { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,    roles: FINANCE,   moduleKey: "fournisseurs" },
+  { key: "dons",          href: "/dashboard/dons",        icon: HeartIcon,            roles: FINANCE,   moduleKey: "dons"        },
+  { key: "reunions",      href: "/dashboard/reunions",    icon: VideoCameraIcon,            roles: MANAGERS,  moduleKey: "reunions"    },
+  { key: "sondages",      href: "/dashboard/sondages",    icon: ClipboardTextIcon,    roles: MANAGERS,  moduleKey: "sondages"    },
+  { key: "boutique",      href: "/dashboard/boutique",    icon: ShoppingBagIcon,      roles: MANAGERS,  moduleKey: "boutique"    },
+  { key: "actualites",    href: "/dashboard/actualites",  icon: NewspaperIcon,        roles: MANAGERS,  moduleKey: "actualites"  },
+  { key: "messages",      href: "/dashboard/messages",    icon: EnvelopeSimpleIcon,             roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages" },
+  { key: "materiel",      href: "/dashboard/materiel",    icon: PackageIcon,          roles: MANAGERS,  moduleKey: "materiel"    },
+  { key: "site",          href: "/dashboard/site",        icon: GlobeIcon,            roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site" },
+  { key: "activite",      href: "/dashboard/activite",    icon: PulseIcon,         roles: MANAGERS },
 
 ]
 
@@ -55,7 +56,8 @@ function isActive(href: string, pathname: string): boolean {
 }
 
 export function AppSidebar() {
-  const { role } = useCurrentUser()
+  const t         = useTranslations("layout.appSidebar")
+  const { role }  = useCurrentUser()
   const modules   = useModules()
   const branding  = useBranding()
   const pathname  = usePathname()
@@ -85,7 +87,7 @@ export function AppSidebar() {
               <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
               <div className="flex flex-col gap-0.5 leading-none min-w-0 ml-1">
                 <span className="font-semibold truncate">{branding?.name ?? APP_NAME}</span>
-                {!isBranded && <span className="text-xs text-muted-foreground">Associations</span>}
+                {!isBranded && <span className="text-xs text-muted-foreground">{t("associations")}</span>}
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -105,11 +107,11 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
                     isActive={isActive(item.href, pathname)}
-                    tooltip={item.name}
+                    tooltip={t(item.key)}
                     onClick={() => { if (isMobile) setOpenMobile(false) }}
                   >
                     <item.icon />
-                    <span>{item.name}</span>
+                    <span>{t(item.key)}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -126,11 +128,11 @@ export function AppSidebar() {
               <SidebarMenuButton
                 render={<Link href="/dashboard/parametres" />}
                 isActive={isActive("/dashboard/parametres", pathname)}
-                tooltip="Paramètres"
+                tooltip={t("parametres")}
                 onClick={() => { if (isMobile) setOpenMobile(false) }}
               >
                 <GearIcon />
-                <span>Paramètres</span>
+                <span>{t("parametres")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

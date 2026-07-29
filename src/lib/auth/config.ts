@@ -6,6 +6,7 @@ import { z } from "zod"
 import { cookies } from "next/headers"
 import { prisma } from "@/lib/prisma/client"
 import { BASE_PATH } from "@/lib/env"
+import { NEXT_LOCALE_COOKIE } from "@/i18n/locales"
 
 const credentialsSchema = z.object({
   email:    z.string().email(),
@@ -191,11 +192,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               select: { subscriptionStatus: true },
             }))?.subscriptionStatus ?? null
           : null
+        token.locale = (
+          await prisma.user.findUnique({ where: { id: user.id }, select: { locale: true } })
+        )?.locale ?? "fr"
+
+        // Sync the user's saved preference to the device on every fresh sign-in, so switching
+        // devices/browsers shows their chosen language immediately instead of that device's
+        // previous NEXT_LOCALE cookie (or lack thereof) until they open the switcher again.
+        const cookieStore = await cookies()
+        cookieStore.set(NEXT_LOCALE_COOKIE, token.locale as string, {
+          secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 60 * 60 * 24 * 365, path: "/",
+        })
       } else if (token.id) {
         const fresh = await prisma.user.findUnique({
           where:  { id: token.id as string },
           select: {
-            role: true, associationId: true, active: true, deletedAt: true,
+            role: true, associationId: true, active: true, deletedAt: true, locale: true,
             association: { select: { subscriptionStatus: true } },
           },
         })
@@ -205,6 +217,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role               = fresh.role
         token.associationId      = fresh.associationId
         token.subscriptionStatus = fresh.association?.subscriptionStatus ?? null
+        token.locale             = fresh.locale
       }
       return token
     },
@@ -216,12 +229,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           associationId?:      string | null
           associationSlug?:    string | null
           subscriptionStatus?: string | null
+          locale?:             string
         }
         u.id                 = token.id                 as string
         u.role               = token.role               as string
         u.associationId      = token.associationId      as string | null | undefined
         u.associationSlug    = token.associationSlug    as string | null | undefined
         u.subscriptionStatus = token.subscriptionStatus as string | null | undefined
+        u.locale             = token.locale              as string | undefined
       }
       return session
     },

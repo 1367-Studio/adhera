@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, ClipboardTextIcon, UsersIcon, CheckCircleIcon, LockIcon, NotePencilIcon, MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
@@ -28,7 +29,6 @@ type Sondage = {
   _count:       { reponses: number; questions: number }
 }
 
-const STATUS_LABEL = { BROUILLON: "Brouillon", ACTIF: "Actif", FERME: "Fermé" }
 const STATUS_VARIANT: Record<string, "secondary" | "default" | "outline"> = {
   BROUILLON: "secondary",
   ACTIF:     "default",
@@ -43,6 +43,12 @@ const STATUS_ICON = {
 const PAGE_SIZE = 20
 
 export default function SondagesPage() {
+  const t = useTranslations()
+  const statusLabel = {
+    BROUILLON: t("sondages.view.status.brouillon"),
+    ACTIF:     t("sondages.view.status.actif"),
+    FERME:     t("sondages.view.status.ferme"),
+  }
   const router = useRouter()
   const qc     = useQueryClient()
   const [deleteTarget,  setDeleteTarget]  = useState<Sondage | null>(null)
@@ -51,8 +57,8 @@ export default function SondagesPage() {
   const [search,        setSearch]        = useState("")
 
   useEffect(() => {
-    const t = setTimeout(() => { setSearch(searchInput); setPage(1) }, 300)
-    return () => clearTimeout(t)
+    const timeoutId = setTimeout(() => { setSearch(searchInput); setPage(1) }, 300)
+    return () => clearTimeout(timeoutId)
   }, [searchInput])
 
   const { data: result, isLoading } = useQuery<PaginatedResult<Sondage>>({
@@ -76,8 +82,8 @@ export default function SondagesPage() {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage activé") },
-    onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success(t("sondages.view.toasts.activated")) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   })
 
   const closeMutation = useMutation({
@@ -85,8 +91,8 @@ export default function SondagesPage() {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage fermé") },
-    onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success(t("sondages.view.toasts.closed")) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   })
 
   const deleteMutation = useMutation({
@@ -94,19 +100,19 @@ export default function SondagesPage() {
       if (!r.ok) return r.json().then(d => Promise.reject(new Error(d.error)))
       return r.json()
     }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success("Sondage supprimé"); setDeleteTarget(null) },
-    onError:   (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["sondages"] }); setPage(1); toast.success(t("sondages.view.toasts.deleted")); setDeleteTarget(null) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   })
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Sondages"
-        description="Créez des questionnaires et consultez les résultats."
+        title={t("sondages.view.title")}
+        description={t("sondages.view.description")}
         action={
           <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
-            Nouveau sondage
+            {t("sondages.view.newSurvey")}
           </Button>
         }
       />
@@ -116,7 +122,7 @@ export default function SondagesPage() {
         <input
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
-          placeholder="Rechercher…"
+          placeholder={t("sondages.view.searchPlaceholder")}
           className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
       </div>
@@ -133,10 +139,10 @@ export default function SondagesPage() {
       ) : sondages.length === 0 ? (
         <div className="rounded-xl border border-dashed p-12 text-center space-y-3">
           <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
-          <p className="text-sm text-muted-foreground">Aucun sondage. Créez votre premier questionnaire.</p>
+          <p className="text-sm text-muted-foreground">{t("sondages.view.noSurvey")}</p>
           <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
-            Nouveau sondage
+            {t("sondages.view.newSurvey")}
           </Button>
         </div>
       ) : (
@@ -152,27 +158,27 @@ export default function SondagesPage() {
                   <span className="font-semibold text-sm truncate">{s.title}</span>
                   <Badge variant={STATUS_VARIANT[s.status]} className="gap-1 shrink-0">
                     {STATUS_ICON[s.status]}
-                    {STATUS_LABEL[s.status]}
+                    {statusLabel[s.status]}
                   </Badge>
                   {s.anonymous && (
-                    <Badge variant="outline" className="text-xs shrink-0">Anonyme</Badge>
+                    <Badge variant="outline" className="text-xs shrink-0">{t("sondages.view.anonymous")}</Badge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-                  <span>{s._count.questions} question{s._count.questions !== 1 ? "s" : ""}</span>
+                  <span>{t("sondages.view.questionsCount", { count: s._count.questions })}</span>
                   <span className="flex items-center gap-1">
                     <UsersIcon className="size-3" />
-                    {s._count.reponses} réponse{s._count.reponses !== 1 ? "s" : ""}
+                    {t("sondages.view.responsesCount", { count: s._count.reponses })}
                   </span>
                   {s.deadline && (
                     <span>
-                      Clôture : {format(new Date(s.deadline), "d MMM yyyy", { locale: fr })}
+                      {t("sondages.view.deadlineLabel", { date: format(new Date(s.deadline), "d MMM yyyy", { locale: fr }) })}
                     </span>
                   )}
                   <span className={cn(
                     s.recipientMode === "ALL" ? "text-muted-foreground" : "text-violet-600 dark:text-violet-400",
                   )}>
-                    {s.recipientMode === "ALL" ? "Tous les membres" : "Sélection"}
+                    {s.recipientMode === "ALL" ? t("sondages.view.recipientsAll") : t("sondages.view.recipientsSelected")}
                   </span>
                 </div>
               </div>
@@ -185,7 +191,7 @@ export default function SondagesPage() {
                     loading={activateMutation.isPending}
                     className="h-7 text-xs"
                   >
-                    Activer
+                    {t("sondages.view.activate")}
                   </Button>
                 )}
                 {s.status === "ACTIF" && (
@@ -196,13 +202,13 @@ export default function SondagesPage() {
                     loading={closeMutation.isPending}
                     className="h-7 text-xs"
                   >
-                    Fermer
+                    {t("sondages.view.close")}
                   </Button>
                 )}
                 <RowActions actions={[
-                  { label: "Modifier", onClick: () => router.push(`/dashboard/sondages/${s.id}`) },
+                  { label: t("sondages.view.actions.edit"), onClick: () => router.push(`/dashboard/sondages/${s.id}`) },
                   ...(s.status === "BROUILLON" ? [{
-                    label: "Supprimer",
+                    label: t("sondages.view.actions.delete"),
                     destructive: true as const,
                     separator: true as const,
                     onClick: () => setDeleteTarget(s),
@@ -227,9 +233,9 @@ export default function SondagesPage() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={o => { if (!o) setDeleteTarget(null) }}
-        title="Supprimer ce sondage ?"
+        title={t("sondages.view.deleteConfirmTitle")}
         description={deleteTarget?.title ?? ""}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => { if (deleteTarget) deleteMutation.mutate(deleteTarget.id) }}
       />

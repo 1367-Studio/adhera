@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, TrendUpIcon, ArrowRightIcon, WarningCircleIcon, ShoppingBagIcon, PackageIcon } from "@phosphor-icons/react/dist/ssr";
@@ -36,13 +37,14 @@ function fmt(n: number) {
 }
 
 export function TableauDeBord() {
+  const t = useTranslations()
   const modules = useModules()
   const pal = usePalette()
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
     queryFn:  async () => {
       const res = await fetch("/api/dashboard")
-      if (!res.ok) throw new Error("Erreur")
+      if (!res.ok) throw new Error(t("common.error"))
       return res.json()
     },
   })
@@ -69,7 +71,7 @@ export function TableauDeBord() {
   // this screen.
   const allStats = [
     {
-      label:     "Membres actifs",
+      label:     t("dashboard.stats.activeMembers"),
       value:     data?.membresActifs ?? "—",
       icon:      UsersIcon,
       href:      "/dashboard/membres",
@@ -77,7 +79,7 @@ export function TableauDeBord() {
       moduleKey: null,
     },
     {
-      label:     "Événements ce mois",
+      label:     t("dashboard.stats.eventsThisMonth"),
       value:     data?.evenementsMois ?? "—",
       icon:      CalendarBlankIcon,
       href:      "/dashboard/evenements",
@@ -85,7 +87,7 @@ export function TableauDeBord() {
       moduleKey: "evenements" as const,
     },
     {
-      label:     "Cotisations en attente",
+      label:     t("dashboard.stats.cotisationsPending"),
       value:     data?.cotisationsEnAttente ?? "—",
       icon:      CoinsIcon,
       href:      "/dashboard/cotisations",
@@ -94,7 +96,7 @@ export function TableauDeBord() {
       moduleKey: "cotisations" as const,
     },
     {
-      label:     "Solde financier",
+      label:     t("dashboard.stats.financialBalance"),
       value:     data ? fmt(data.solde) : "—",
       icon:      BankIcon,
       href:      "/dashboard/finances",
@@ -111,9 +113,9 @@ export function TableauDeBord() {
         className="animate-in fade-in slide-in-from-bottom-2 duration-300"
         style={{ animationFillMode: "both" }}
       >
-        <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t("dashboard.pageTitle")}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          Vue d&apos;ensemble de votre association
+          {t("dashboard.subtitle")}
         </p>
       </div>
 
@@ -183,7 +185,7 @@ export function TableauDeBord() {
                 >
                   <div className="flex items-center gap-2">
                     <CalendarBlankIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Prochain événement</span>
+                    <span className="text-sm font-medium">{t("dashboard.nextEvent.title")}</span>
                   </div>
                   {isLoading ? (
                     <div className="h-12 rounded-lg bg-muted animate-pulse" />
@@ -200,7 +202,7 @@ export function TableauDeBord() {
                       )}
                     </Link>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucun événement à venir.</p>
+                    <p className="text-sm text-muted-foreground">{t("dashboard.nextEvent.empty")}</p>
                   )}
                 </div>
               )}
@@ -212,7 +214,7 @@ export function TableauDeBord() {
                 >
                   <div className="flex items-center gap-2">
                     <TrendUpIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Cotisations {new Date().getFullYear()}</span>
+                    <span className="text-sm font-medium">{t("dashboard.cotisations.title", { year: new Date().getFullYear() })}</span>
                   </div>
                   {isLoading ? (
                     <div className="h-12 rounded-lg bg-muted animate-pulse" />
@@ -221,7 +223,7 @@ export function TableauDeBord() {
                       <p className="text-2xl font-bold tabular-nums" style={{ color: pal.payees }}>
                         {fmt(data?.cotisationsEncaissees ?? 0)}
                       </p>
-                      <p className="text-xs text-muted-foreground">encaissé cette année</p>
+                      <p className="text-xs text-muted-foreground">{t("dashboard.cotisations.collectedThisYear")}</p>
                       {(data?.cotisationsEnAttente ?? 0) > 0 && (
                         <Link
                           href="/dashboard/cotisations"
@@ -229,7 +231,7 @@ export function TableauDeBord() {
                           style={{ color: pal.enAttente }}
                         >
                           <WarningCircleIcon className="size-3" />
-                          {data?.cotisationsEnAttente} en attente de paiement
+                          {t("dashboard.cotisations.pendingPayment", { count: data?.cotisationsEnAttente ?? 0 })}
                         </Link>
                       )}
                     </div>
@@ -252,7 +254,7 @@ export function TableauDeBord() {
                 >
                   <div className="flex items-center gap-2">
                     <ShoppingBagIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Commandes récentes</span>
+                    <span className="text-sm font-medium">{t("dashboard.recentOrders.title")}</span>
                   </div>
                   {isLoading ? (
                     <div className="h-12 rounded-lg bg-muted animate-pulse" />
@@ -271,12 +273,12 @@ export function TableauDeBord() {
                             {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
                             {startsNewGroup && v.status === "PENDING" && (
                               <p className="text-[11px] font-medium uppercase tracking-wide text-amber-600 dark:text-amber-500 mb-1">
-                                En attente ({data.ventesRecentes.filter(x => x.status === "PENDING").length})
+                                {t("dashboard.recentOrders.pending", { count: data.ventesRecentes.filter(x => x.status === "PENDING").length })}
                               </p>
                             )}
                             {startsNewGroup && v.status === "PAID" && i > 0 && (
                               <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
-                                Ventes récentes
+                                {t("dashboard.recentOrders.recent")}
                               </p>
                             )}
                             <Link
@@ -288,7 +290,7 @@ export function TableauDeBord() {
                             >
                               <div className="min-w-0">
                                 <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
-                                  {v.membre ? `${v.membre.firstName} ${v.membre.lastName}` : (v.guestName ?? "Invité")}
+                                  {v.membre ? `${v.membre.firstName} ${v.membre.lastName}` : (v.guestName ?? t("dashboard.recentOrders.guest"))}
                                 </p>
                                 <p className={cn("text-xs", v.status === "PENDING" ? "text-amber-600 dark:text-amber-500" : "text-muted-foreground")}>
                                   {format(new Date(v.date), "d MMM 'à' HH:mm", { locale: fr })}
@@ -300,12 +302,12 @@ export function TableauDeBord() {
                         )
                       })}
                       <Link href="/dashboard/boutique?tab=commandes" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
-                        Voir toutes les commandes
+                        {t("dashboard.recentOrders.viewAll")}
                         <ArrowRightIcon className="size-3" />
                       </Link>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucune vente pour le moment.</p>
+                    <p className="text-sm text-muted-foreground">{t("dashboard.recentOrders.empty")}</p>
                   )}
                 </div>
               )}
@@ -322,7 +324,7 @@ export function TableauDeBord() {
                 >
                   <div className="flex items-center gap-2">
                     <PackageIcon className="size-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Matériel emprunté</span>
+                    <span className="text-sm font-medium">{t("dashboard.loanedMaterial.title")}</span>
                   </div>
                   {isLoading ? (
                     <div className="h-12 rounded-lg bg-muted animate-pulse" />
@@ -342,12 +344,12 @@ export function TableauDeBord() {
                             {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
                             {startsNewGroup && l.isOverdue && (
                               <p className="text-[11px] font-medium uppercase tracking-wide text-red-600 dark:text-red-500 mb-1">
-                                En retard ({data.materielEnRetardCount})
+                                {t("dashboard.loanedMaterial.overdue", { count: data.materielEnRetardCount })}
                               </p>
                             )}
                             {startsNewGroup && !l.isOverdue && i > 0 && (
                               <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
-                                En cours
+                                {t("dashboard.loanedMaterial.inProgress")}
                               </p>
                             )}
                             <Link
@@ -364,19 +366,19 @@ export function TableauDeBord() {
                                 <p className="text-xs text-muted-foreground truncate">{l.borrowerName}</p>
                               </div>
                               <span className={cn("text-xs shrink-0 ml-2", l.isOverdue ? "font-medium text-red-600 dark:text-red-400" : "text-muted-foreground")}>
-                                {returnDate ? format(returnDate, dateFmt, { locale: fr }) : "Sans échéance"}
+                                {returnDate ? format(returnDate, dateFmt, { locale: fr }) : t("dashboard.loanedMaterial.noDueDate")}
                               </span>
                             </Link>
                           </div>
                         )
                       })}
                       <Link href="/dashboard/materiel" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
-                        Voir tout le matériel
+                        {t("dashboard.loanedMaterial.viewAll")}
                         <ArrowRightIcon className="size-3" />
                       </Link>
                     </div>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Aucun matériel actuellement emprunté.</p>
+                    <p className="text-sm text-muted-foreground">{t("dashboard.loanedMaterial.empty")}</p>
                   )}
                 </div>
               )}

@@ -1,11 +1,16 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import { PortalRegisterForm } from "@/components/auth/portal-register-form"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 
-export const metadata: Metadata = { title: "Créer un compte — Espace membre" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("portal.register")
+  return { title: t("pageTitle") }
+}
 
 export default async function PortalRegisterPage({
   params,
@@ -13,20 +18,24 @@ export default async function PortalRegisterPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  const t = await getTranslations("portal.register")
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
-        <div className="flex items-center gap-2">
-          <LogoMark className="size-6" />
-          <span className="text-base font-semibold">{APP_NAME}</span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <LogoMark className="size-6" />
+            <span className="text-base font-semibold">{APP_NAME}</span>
+          </div>
+          <LocaleSwitcher />
         </div>
 
         <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">
           <div className="space-y-1.5">
-            <h1 className="text-xl font-semibold tracking-tight">Créer un compte</h1>
+            <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="text-sm text-muted-foreground">
-              Rejoignez l'espace membre de votre association.
+              {t("subtitle")}
             </p>
           </div>
 
@@ -37,7 +46,7 @@ export default async function PortalRegisterPage({
             className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeftIcon className="size-3.5" />
-            Déjà un compte ? Se connecter
+            {t("alreadyAccount")}
           </Link>
         </div>
       </div>

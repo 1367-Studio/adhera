@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { ChatTextIcon, CheckCircleIcon, CircleNotchIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -13,6 +14,8 @@ type SmsConfig = {
 }
 
 export function SmsSettings({ canEdit }: { canEdit: boolean }) {
+  const t  = useTranslations("sms")
+  const tc = useTranslations("common")
   const qc = useQueryClient()
 
   const { data, isLoading, refetch } = useQuery<SmsConfig>({
@@ -57,9 +60,9 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
       if (!res.ok) throw new Error()
       const result = await res.json() as { smsConfigured: boolean }
       if (result.smsConfigured) {
-        toast.success("Configuration SMS enregistrée")
+        toast.success(t("toasts.saved"))
       } else {
-        toast.warning("Enregistré, mais il manque encore un champ — les SMS ne fonctionneront pas tant que les 3 champs ne sont pas remplis.")
+        toast.warning(t("toasts.incomplete"))
       }
       setAccountSid("")
       setAuthToken("")
@@ -67,7 +70,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
       refetch()
       qc.invalidateQueries({ queryKey: ["sms-config"] })
     } catch {
-      toast.error("Impossible d'enregistrer la configuration SMS")
+      toast.error(t("toasts.saveError"))
     } finally {
       setSaving(false)
     }
@@ -82,13 +85,13 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
         body:    JSON.stringify({ smsAccountSid: null, smsAuthToken: null, smsPhoneNumber: null }),
       })
       if (!res.ok) throw new Error()
-      toast.success("Identifiants Twilio supprimés")
+      toast.success(t("toasts.credentialsRemoved"))
       setAccountSid("")
       setAuthToken("")
       setInitialized(false)
       refetch()
     } catch {
-      toast.error("Impossible de supprimer les identifiants")
+      toast.error(t("toasts.removeError"))
     } finally {
       setSaving(false)
     }
@@ -107,11 +110,10 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
       <div>
         <div className="flex items-center gap-2 mb-0.5">
           <ChatTextIcon className="size-3.5 text-sky-600" />
-          <h3 className="text-sm font-semibold">Notifications SMS</h3>
+          <h3 className="text-sm font-semibold">{t("heading")}</h3>
         </div>
         <p className="text-xs text-muted-foreground">
-          Utilisé pour l'envoi de SMS aux membres. Nécessite votre propre compte Twilio —
-          il n'y a pas de clé partagée par la plateforme, les SMS sont facturés directement sur votre compte Twilio.
+          {t("description")}
         </p>
       </div>
 
@@ -120,9 +122,9 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
         <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
           <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
-            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">Compte Twilio configuré</p>
+            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t("configuredTitle")}</p>
             {data.smsPhoneNumber && (
-              <p className="text-xs text-muted-foreground">Numéro : <code className="font-mono">{data.smsPhoneNumber}</code></p>
+              <p className="text-xs text-muted-foreground">{t("phoneNumberLine", { number: data.smsPhoneNumber })}</p>
             )}
           </div>
         </div>
@@ -130,7 +132,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
         <div className="rounded-xl border bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2.5">
           <WarningIcon className="size-4 mt-0.5 shrink-0 text-amber-600" />
           <p className="text-sm text-amber-700 dark:text-amber-300">
-            Aucun compte Twilio configuré — l'envoi de SMS ne fonctionnera pas tant que vous n'aurez pas renseigné vos identifiants.
+            {t("notConfiguredWarning")}
           </p>
         </div>
       )}
@@ -138,25 +140,25 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
       {canEdit && (
         <div className="space-y-4">
           <FormField
-            label="Account SID"
-            placeholder={data?.smsConfigured ? "SID existant — saisissez pour remplacer" : "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+            label={t("accountSidLabel")}
+            placeholder={data?.smsConfigured ? t("accountSidPlaceholderReplace") : "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
             value={accountSid}
             onChange={e => setAccountSid(e.target.value)}
           />
 
           <FormField
-            label="Auth Token"
+            label={t("authTokenLabel")}
             type="password"
-            placeholder={data?.smsConfigured ? "Token existant — saisissez pour remplacer" : "•••••••••••••••••••••••••••••••"}
+            placeholder={data?.smsConfigured ? t("authTokenPlaceholderReplace") : "•••••••••••••••••••••••••••••••"}
             value={authToken}
             onChange={e => setAuthToken(e.target.value)}
           />
           <p className="text-xs text-muted-foreground -mt-2">
-            Retrouvez vos identifiants sur <span className="font-mono">console.twilio.com</span>
+            {t("credentialsHint")} <span className="font-mono">console.twilio.com</span>
           </p>
 
           <FormField
-            label="Numéro d'envoi"
+            label={t("phoneNumberLabel")}
             placeholder="+33612345678"
             value={phoneNumber}
             onChange={e => setPhoneNumber(e.target.value)}
@@ -169,8 +171,8 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
               disabled={!canSave || saving}
             >
               {saving
-                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />Enregistrement…</>
-                : <><ChatTextIcon className="mr-1.5 size-3.5" />Enregistrer</>
+                ? <><CircleNotchIcon className="mr-1.5 size-3.5 animate-spin" />{t("saving")}</>
+                : <><ChatTextIcon className="mr-1.5 size-3.5" />{tc("save")}</>
               }
             </Button>
             {data?.smsConfigured && (
@@ -181,7 +183,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
                 disabled={saving}
                 className="text-xs text-muted-foreground"
               >
-                Supprimer les identifiants
+                {t("removeCredentials")}
               </Button>
             )}
           </div>

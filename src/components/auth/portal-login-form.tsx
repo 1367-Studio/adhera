@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { authenticate, signInWithGooglePortal } from "@/lib/auth/actions"
 import { loginSchema, type LoginInput } from "@/lib/schemas"
@@ -12,6 +13,7 @@ import { FormField } from "@/components/ui/form-field"
 import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackUrl?: string }) {
+  const t = useTranslations("portal.login")
   const [googleLoading, setGoogleLoading] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -41,9 +43,9 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <FormField
-        label="Adresse email"
+        label={t("emailLabel")}
         type="email"
-        placeholder="contact@association.fr"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
         required
@@ -52,7 +54,7 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
       />
 
       <FormField
-        label="Mot de passe"
+        label={t("passwordLabel")}
         type="password"
         placeholder="••••••••"
         autoComplete="current-password"
@@ -63,7 +65,7 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
 
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Se connecter
+        {t("signIn")}
       </Button>
 
       <div className="flex flex-col gap-2 pt-1">
@@ -71,12 +73,12 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
           href={`/forgot-password?callbackUrl=/portal/${slug}/login`}
           className="text-center text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
         >
-          Mot de passe oublié ?
+          {t("forgotPassword")}
         </Link>
 
         <div className="relative flex items-center gap-2 py-1">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground/60 shrink-0">ou</span>
+          <span className="text-xs text-muted-foreground/60 shrink-0">{t("or")}</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -91,14 +93,14 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
             ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
             : <GoogleIcon className="mr-2 size-4" />
           }
-          Continuer avec Google
+          {t("continueWithGoogle")}
         </Button>
 
         <Link
           href={`/portal/${slug}/register`}
           className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-all"
         >
-          Pas encore de compte ? S'inscrire
+          {t("noAccount")}
         </Link>
       </div>
     </form>

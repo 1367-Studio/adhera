@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -35,13 +36,18 @@ const PAGE_SIZE   = 25
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
-const statusConfig = {
-  DRAFT:     { label: "Brouillon", variant: "secondary" as const },
-  VALIDATED: { label: "Validée",   variant: "default"   as const },
-  CANCELLED: { label: "Annulée",   variant: "destructive" as const },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusConfig(t: Translator) {
+  return {
+    DRAFT:     { label: t("finances.expenseForm.status.draft"),     variant: "secondary" as const },
+    VALIDATED: { label: t("finances.expenseForm.status.validated"), variant: "default"   as const },
+    CANCELLED: { label: t("finances.expenseForm.status.cancelled"), variant: "destructive" as const },
+  }
 }
 
 export function ExpensesView() {
+  const t = useTranslations()
   const [page, setPage]                 = useState(1)
   const [yearFilter, setYearFilter]     = useState(String(currentYear))
   const [statusFilter, setStatusFilter] = useState("")
@@ -64,20 +70,20 @@ export function ExpensesView() {
   async function handleCreate(data: ExpenseInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Dépense enregistrée")
+      toast.success(t("finances.expensesView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: ExpenseInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Dépense mise à jour")
+      toast.success(t("finances.expensesView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -85,35 +91,36 @@ export function ExpensesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Dépense supprimée")
+      toast.success(t("finances.expensesView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const fmt = (n: string | number) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusConfig = getStatusConfig(t)
 
   const columns: Column<Expense>[] = [
     {
       key: "date",
-      header: "Date",
+      header: t("finances.expensesView.columns.date"),
       className: "w-28",
       cell: (e) => format(new Date(e.date), "dd/MM/yyyy", { locale: fr }),
     },
     {
       key: "description",
-      header: "Description",
+      header: t("finances.expensesView.columns.description"),
       cell: (e) => (
         <div>
           <p className="font-medium">{e.description || e.vendor || "—"}</p>
           <div className="flex items-center gap-2 mt-0.5">
             {e.vendor && e.description && <span className="text-xs text-muted-foreground">{e.vendor}</span>}
             {e.category && <span className="text-xs text-muted-foreground">{e.category.name}</span>}
-            {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
+            {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· {t("finances.expensesView.reconciled")}</span>}
             {e.factureRecueId && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title="Générée automatiquement depuis une facture reçue marquée payée — modifiable uniquement depuis Fournisseurs">
-                <ReceiptIcon className="size-3" /> Depuis une facture reçue
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.expensesView.fromReceivedInvoiceTooltip")}>
+                <ReceiptIcon className="size-3" /> {t("finances.expensesView.fromReceivedInvoiceBadge")}
               </span>
             )}
           </div>
@@ -122,21 +129,21 @@ export function ExpensesView() {
     },
     {
       key: "receipt",
-      header: "Justificatif",
+      header: t("finances.expensesView.columns.receipt"),
       className: "w-28",
       cell: (e) => e.receiptUrl
-        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />Voir</a>
+        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}</a>
         : <span className="text-xs text-muted-foreground">—</span>,
     },
     {
       key: "amount",
-      header: "Montant",
+      header: t("finances.expensesView.columns.amount"),
       className: "w-28 text-right",
       cell: (e) => <span className="font-semibold tabular-nums text-destructive">−{fmt(e.amount)}</span>,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("finances.expensesView.columns.status"),
       className: "w-28",
       cell: (e) => {
         const cfg = statusConfig[e.status]
@@ -149,11 +156,11 @@ export function ExpensesView() {
       className: "w-10",
       cell: (e) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
+          { label: t("finances.expensesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
           {
-            label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            label: t("finances.expensesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
             onClick: () => e.factureRecueId
-              ? toast.error("Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer.")
+              ? toast.error(t("finances.expensesView.deleteFromInvoiceError"))
               : setDeleteTarget(e),
           },
         ]} />
@@ -164,12 +171,12 @@ export function ExpensesView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Dépenses"
-        description="Toutes les sorties d'argent de l'association."
+        title={t("finances.expensesView.title")}
+        description={t("finances.expensesView.description")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
@@ -179,7 +186,7 @@ export function ExpensesView() {
           value={yearFilter}
           onValueChange={v => { setYearFilter(v); setPage(1) }}
           options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
-          placeholder="Toutes années"
+          placeholder={t("finances.expensesView.allYears")}
           width="w-32"
         />
 
@@ -187,11 +194,11 @@ export function ExpensesView() {
           value={statusFilter}
           onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "DRAFT",     label: "Brouillon" },
-            { value: "VALIDATED", label: "Validée" },
-            { value: "CANCELLED", label: "Annulée" },
+            { value: "DRAFT",     label: t("finances.expenseForm.status.draft")     },
+            { value: "VALIDATED", label: t("finances.expenseForm.status.validated") },
+            { value: "CANCELLED", label: t("finances.expenseForm.status.cancelled") },
           ]}
-          placeholder="Tous statuts"
+          placeholder={t("finances.expensesView.allStatuses")}
         />
       </div>
 
@@ -200,15 +207,15 @@ export function ExpensesView() {
         data={expenses}
         loading={isLoading}
         keyExtractor={(e) => e.id}
-        empty="Aucune dépense enregistrée"
+        empty={t("finances.expensesView.noExpense")}
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle dépense" size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.expensesView.newTitle")} size="md" dismissable={false}>
         <ExpenseForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier la dépense" size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.expensesView.editTitle")} size="md" dismissable={false}>
         <ExpenseForm
           defaultValues={editTarget ? {
             amount:       parseFloat(editTarget.amount),
@@ -229,9 +236,9 @@ export function ExpensesView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer cette dépense ?"
+        title={t("finances.expensesView.deleteConfirmTitle")}
         description={deleteTarget?.description ?? deleteTarget?.vendor ?? ""}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

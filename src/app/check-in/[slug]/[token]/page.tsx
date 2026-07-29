@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CheckCircleIcon, WarningCircleIcon, ClockIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
@@ -23,6 +24,8 @@ type EventInfo = {
 type State = "loading" | "ready" | "checking-in" | "success" | "already" | "expired" | "invalid" | "error"
 
 export default function CheckInPage() {
+  const t = useTranslations("portal.checkin")
+  const tCommon = useTranslations("common")
   const { slug, token } = useParams<{ slug: string; token: string }>()
   const [state, setState]      = useState<State>("loading")
   const [info, setInfo]        = useState<EventInfo | null>(null)
@@ -61,10 +64,10 @@ export default function CheckInPage() {
     try {
       const res  = await fetch(`/api/portal/check-in/${token}`, { method: "POST" })
       const data = await res.json()
-      if (!res.ok) { setErrMsg(data.error ?? "Erreur"); setState("error"); return }
+      if (!res.ok) { setErrMsg(data.error ?? tCommon("error")); setState("error"); return }
       setState(data.alreadyCheckedIn ? "already" : "success")
     } catch {
-      setErrMsg("Erreur réseau")
+      setErrMsg(t("genericError"))
       setState("error")
     }
   }
@@ -100,7 +103,7 @@ export default function CheckInPage() {
         {(state === "ready" || state === "checking-in") && info && (
           <>
             <div className="space-y-1">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Check-in</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("label")}</p>
               <h1 className="text-2xl font-semibold">{info.title}</h1>
               <p className="text-sm text-muted-foreground">
                 {format(new Date(info.date), "EEEE dd MMMM yyyy · HH:mm", { locale: fr })}
@@ -108,10 +111,10 @@ export default function CheckInPage() {
             </div>
             <Button size="lg" className="w-full" onClick={handleCheckIn} loading={state === "checking-in"}>
               <CheckCircleIcon className="mr-2 size-5" />
-              Confirmer ma présence
+              {t("confirmPresence")}
             </Button>
             <p className="text-xs text-muted-foreground">
-              {info.totalPresent} personne{info.totalPresent !== 1 ? "s" : ""} déjà enregistrée{info.totalPresent !== 1 ? "s" : ""}
+              {t("peopleCheckedIn", { count: info.totalPresent })}
             </p>
           </>
         )}
@@ -119,9 +122,9 @@ export default function CheckInPage() {
         {state === "success" && (
           <div className="space-y-3">
             <CheckCircleIcon className="size-16 mx-auto text-green-500" />
-            <h2 className="text-xl font-semibold text-green-700 dark:text-green-400">Présence enregistrée !</h2>
+            <h2 className="text-xl font-semibold text-green-700 dark:text-green-400">{t("successTitle")}</h2>
             <p className="text-sm text-muted-foreground">
-              Votre présence pour <strong>{info?.title}</strong> a été confirmée.
+              {t("successDescription", { title: info?.title ?? "" })}
             </p>
           </div>
         )}
@@ -129,9 +132,9 @@ export default function CheckInPage() {
         {state === "already" && (
           <div className="space-y-3">
             <CheckCircleIcon className="size-16 mx-auto text-blue-500" />
-            <h2 className="text-xl font-semibold">Déjà enregistré</h2>
+            <h2 className="text-xl font-semibold">{t("alreadyTitle")}</h2>
             <p className="text-sm text-muted-foreground">
-              Votre présence pour <strong>{info?.title}</strong> a déjà été confirmée.
+              {t("alreadyDescription", { title: info?.title ?? "" })}
             </p>
           </div>
         )}
@@ -139,25 +142,25 @@ export default function CheckInPage() {
         {state === "expired" && (
           <div className="space-y-3">
             <ClockIcon className="size-16 mx-auto text-amber-500" />
-            <h2 className="text-xl font-semibold text-amber-700 dark:text-amber-400">QR Code expiré</h2>
-            <p className="text-sm text-muted-foreground">Ce QR Code n&apos;est plus valide. Contactez l&apos;organisateur.</p>
+            <h2 className="text-xl font-semibold text-amber-700 dark:text-amber-400">{t("expiredTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("expiredDescription")}</p>
           </div>
         )}
 
         {state === "invalid" && (
           <div className="space-y-3">
             <WarningCircleIcon className="size-16 mx-auto text-destructive" />
-            <h2 className="text-xl font-semibold">QR Code invalide</h2>
-            <p className="text-sm text-muted-foreground">Ce lien ne correspond à aucun événement.</p>
+            <h2 className="text-xl font-semibold">{t("invalidTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("invalidDescription")}</p>
           </div>
         )}
 
         {state === "error" && (
           <div className="space-y-3">
             <WarningCircleIcon className="size-16 mx-auto text-destructive" />
-            <h2 className="text-xl font-semibold">Erreur</h2>
-            <p className="text-sm text-muted-foreground">{errMsg || "Une erreur est survenue."}</p>
-            <Button variant="outline" onClick={handleRetry}>Réessayer</Button>
+            <h2 className="text-xl font-semibold">{t("errorTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{errMsg || t("genericError")}</p>
+            <Button variant="outline" onClick={handleRetry}>{t("retry")}</Button>
           </div>
         )}
 

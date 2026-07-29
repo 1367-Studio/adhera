@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { ArrowSquareOutIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CreditCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,12 +18,15 @@ type ConnectStatus = {
   requirements?:    string[]
 }
 
-const statusConfig = {
-  not_connected: { label: "Non connecté",     variant: "secondary" as const, icon: <CreditCardIcon  className="size-3.5" /> },
-  incomplete:    { label: "Incomplet",        variant: "secondary" as const, icon: <WarningCircleIcon className="size-3.5 text-yellow-500" /> },
-  pending:       { label: "En attente",       variant: "outline"   as const, icon: <ClockIcon        className="size-3.5 text-blue-500"   /> },
-  enabled:       { label: "Actif",            variant: "default"   as const, icon: <CheckCircleIcon  className="size-3.5 text-green-500"  /> },
-  invalid:       { label: "Connexion perdue", variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
+function useStatusConfig() {
+  const t = useTranslations("parametres.stripeConnect")
+  return {
+    not_connected: { label: t("status.notConnected"), variant: "secondary" as const, icon: <CreditCardIcon  className="size-3.5" /> },
+    incomplete:    { label: t("status.incomplete"),    variant: "secondary" as const, icon: <WarningCircleIcon className="size-3.5 text-yellow-500" /> },
+    pending:       { label: t("status.pending"),       variant: "outline"   as const, icon: <ClockIcon        className="size-3.5 text-blue-500"   /> },
+    enabled:       { label: t("status.enabled"),       variant: "default"   as const, icon: <CheckCircleIcon  className="size-3.5 text-green-500"  /> },
+    invalid:       { label: t("status.invalid"),       variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
+  }
 }
 
 export function StripeConnectSettings({ canEdit }: { canEdit: boolean }) {
@@ -36,6 +40,9 @@ export function StripeConnectSettings({ canEdit }: { canEdit: boolean }) {
 // useSearchParams() (for the Stripe Connect return redirect) requires a Suspense
 // boundary above it, or `next build` fails prerendering whatever page renders this.
 function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
+  const t             = useTranslations("parametres.stripeConnect")
+  const tCommon       = useTranslations("common")
+  const statusConfig  = useStatusConfig()
   const searchParams = useSearchParams()
   const qc           = useQueryClient()
 
@@ -49,30 +56,30 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
     if (result === "success") {
       refetch()
       qc.invalidateQueries({ queryKey: ["portal-connect-status"] })
-      toast.success("Compte Stripe mis à jour")
+      toast.success(t("toasts.updated"))
     } else if (result === "refresh") {
-      toast.info("La connexion Stripe n'a pas été finalisée. Réessayez si nécessaire.")
+      toast.info(t("toasts.notFinalized"))
     }
-  }, [searchParams, refetch, qc])
+  }, [searchParams, refetch, qc, t])
 
   const onboardMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/connect/onboard", { method: "POST" })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<{ url: string }>
     },
     onSuccess: ({ url }) => { window.location.href = url },
-    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError:   (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const dashboardMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/connect/dashboard-link", { method: "POST" })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<{ url: string }>
     },
     onSuccess: ({ url }) => { window.open(url, "_blank") },
-    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError:   (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const status = data?.status ?? "not_connected"
@@ -82,9 +89,9 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold">Paiement en ligne (Stripe)</h3>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Permettez à vos membres de payer leur cotisation en ligne.
+            {t("subtitle")}
           </p>
         </div>
         {!isLoading && (
@@ -100,8 +107,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
           {status === "enabled" ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Vos membres peuvent payer leur cotisation en ligne. Les fonds sont versés directement sur votre compte Stripe.
-                Une commission de 1,5 % est prélevée par la plateforme.
+                {t("enabledText")}
               </p>
               <div className="flex gap-2">
                 {canEdit && (
@@ -112,7 +118,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                       loading={onboardMutation.isPending}
                       onClick={() => onboardMutation.mutate()}
                     >
-                      Modifier le compte
+                      {t("editAccount")}
                     </Button>
                     <Button
                       size="sm"
@@ -121,7 +127,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                       onClick={() => dashboardMutation.mutate()}
                     >
                       <ArrowSquareOutIcon className="size-3.5 mr-1.5" />
-                      Dashboard Stripe
+                      {t("dashboardButton")}
                     </Button>
                   </>
                 )}
@@ -130,7 +136,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
           ) : status === "pending" ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Votre compte est en cours de vérification par Stripe. Vous recevrez un email de confirmation.
+                {t("pendingText")}
               </p>
               {canEdit && (
                 <Button
@@ -139,15 +145,14 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                   loading={onboardMutation.isPending}
                   onClick={() => onboardMutation.mutate()}
                 >
-                  Compléter l'inscription
+                  {t("completeOnboarding")}
                 </Button>
               )}
             </div>
           ) : status === "invalid" ? (
             <div className="space-y-2">
               <p className="text-xs text-destructive">
-                La connexion à votre compte Stripe a été perdue (compte supprimé ou accès révoqué).
-                Le paiement en ligne est désactivé jusqu'à reconnexion.
+                {t("invalidText")}
               </p>
               {canEdit && (
                 <Button
@@ -155,15 +160,14 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                   loading={onboardMutation.isPending}
                   onClick={() => onboardMutation.mutate()}
                 >
-                  Reconnecter Stripe
+                  {t("reconnect")}
                 </Button>
               )}
             </div>
           ) : (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Connectez un compte Stripe pour activer le paiement en ligne des cotisations.
-                Une commission de 1,5 % sera prélevée par la plateforme.
+                {t("connectText")}
               </p>
               {canEdit && (
                 <Button
@@ -171,7 +175,7 @@ function StripeConnectSettingsInner({ canEdit }: { canEdit: boolean }) {
                   loading={onboardMutation.isPending}
                   onClick={() => onboardMutation.mutate()}
                 >
-                  Connecter Stripe
+                  {t("connect")}
                 </Button>
               )}
             </div>

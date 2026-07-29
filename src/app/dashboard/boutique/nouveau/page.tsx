@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,8 @@ function newVariante(): VarianteRow {
 
 export default function NouveauProduitPage() {
   const router = useRouter()
+  const t       = useTranslations("boutique")
+  const tCommon = useTranslations("common")
 
   const [name, setName]               = useState("")
   const [description, setDescription] = useState("")
@@ -32,7 +35,7 @@ export default function NouveauProduitPage() {
 
   const { data: categories = [] } = useFinanceCategories("INCOME")
   const categoryOptions = [
-    { value: "", label: "Aucune catégorie" },
+    { value: "", label: t("form.categoryPlaceholder") },
     ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
   ]
 
@@ -63,23 +66,23 @@ export default function NouveauProduitPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(typeof d.error === "string" ? d.error : "Erreur lors de la création")
+        throw new Error(typeof d.error === "string" ? d.error : t("create.toasts.createError"))
       }
       return res.json()
     },
     onSuccess: (data) => {
-      toast.success("Produit créé")
+      toast.success(t("create.toasts.created"))
       router.push(`/dashboard/boutique/${data.id}`)
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { toast.error("Le nom est obligatoire"); return }
-    if (variantes.length === 0) { toast.error("Au moins une variante est requise"); return }
+    if (!name.trim()) { toast.error(t("form.validation.nameRequired")); return }
+    if (variantes.length === 0) { toast.error(t("form.validation.atLeastOneVariant")); return }
     for (const v of variantes) {
-      if (!v.label.trim()) { toast.error("Chaque variante doit avoir un libellé"); return }
+      if (!v.label.trim()) { toast.error(t("form.validation.variantLabelRequired")); return }
     }
     mutation.mutate()
   }
@@ -95,8 +98,8 @@ export default function NouveauProduitPage() {
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight">Nouveau produit</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Ajoutez un produit à votre boutique.</p>
+          <h1 className="text-xl font-semibold tracking-tight">{t("create.heading")}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t("create.subtitle")}</p>
         </div>
       </div>
 
@@ -106,32 +109,32 @@ export default function NouveauProduitPage() {
 
           {/* Left — informations */}
           <div className="lg:col-span-2 p-5 space-y-4">
-            <h2 className="text-sm font-semibold">Informations générales</h2>
+            <h2 className="text-sm font-semibold">{t("create.generalInfoTitle")}</h2>
 
             <div className="space-y-1.5">
-              <Label htmlFor="name">Nom <span className="text-destructive ml-0.5">*</span></Label>
+              <Label htmlFor="name">{t("form.nameLabel")} <span className="text-destructive ml-0.5">*</span></Label>
               <Input
                 id="name"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="Ex. Maillot de l'association"
+                placeholder={t("create.namePlaceholder")}
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="desc">Description <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+              <Label htmlFor="desc">{t("form.descriptionLabel")} <span className="text-muted-foreground font-normal">{t("form.optional")}</span></Label>
               <textarea
                 id="desc"
                 rows={3}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                placeholder="Décrivez le produit…"
+                placeholder={t("create.descriptionPlaceholder")}
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label>Image du produit <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+              <Label>{t("form.imageLabel")} <span className="text-muted-foreground font-normal">{t("form.optional")}</span></Label>
               <ImageUpload
                 value={imageUrl}
                 onChange={setImageUrl}
@@ -142,11 +145,11 @@ export default function NouveauProduitPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label>Visibilité</Label>
+              <Label>{t("form.visibilityLabel")}</Label>
               <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
                 {([
-                  { v: "DRAFT",  l: "Brouillon" },
-                  { v: "ACTIVE", l: "En ligne"  },
+                  { v: "DRAFT",  l: t("produitStatus.draft")  },
+                  { v: "ACTIVE", l: t("produitStatus.active") },
                 ] as const).map(opt => (
                   <button
                     key={opt.v}
@@ -166,26 +169,26 @@ export default function NouveauProduitPage() {
             </div>
 
             <SelectField
-              label="Catégorie comptable"
+              label={t("form.categoryLabel")}
               options={categoryOptions}
               value={categoryId}
               onValueChange={setCategoryId}
-              placeholder="Aucune catégorie"
+              placeholder={t("form.categoryPlaceholder")}
             />
           </div>
 
           {/* Right — variantes */}
           <div className="lg:col-span-3 p-5 space-y-4">
             <h2 className="text-sm font-semibold">
-              Variantes <span className="text-destructive ml-0.5">*</span>
-              <span className="text-muted-foreground font-normal ml-1.5">(taille, couleur, etc.)</span>
+              {t("form.variantesLabel")} <span className="text-destructive ml-0.5">*</span>
+              <span className="text-muted-foreground font-normal ml-1.5">{t("form.variantesHint")}</span>
             </h2>
 
             <div className="space-y-2">
               <div className="grid grid-cols-[1fr_140px_80px_32px] gap-2 px-1">
-                <p className="text-xs text-muted-foreground font-medium">Libellé</p>
-                <p className="text-xs text-muted-foreground font-medium">Prix</p>
-                <p className="text-xs text-muted-foreground font-medium">Stock</p>
+                <p className="text-xs text-muted-foreground font-medium">{t("form.variantLabelColumn")}</p>
+                <p className="text-xs text-muted-foreground font-medium">{t("form.priceColumn")}</p>
+                <p className="text-xs text-muted-foreground font-medium">{t("form.stockColumn")}</p>
                 <span />
               </div>
 
@@ -193,7 +196,7 @@ export default function NouveauProduitPage() {
                 <div key={v._key} className="grid grid-cols-[1fr_140px_80px_32px] gap-2 items-center">
                   <Input
                     className="h-9"
-                    placeholder="Ex. Taille M / Bleu"
+                    placeholder={t("form.variantLabelPlaceholder")}
                     value={v.label}
                     onChange={e => updateVariante(v._key, "label", e.target.value)}
                   />
@@ -220,15 +223,15 @@ export default function NouveauProduitPage() {
 
               <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addVariante}>
                 <PlusIcon className="size-3.5" />
-                Ajouter une variante
+                {t("form.addVariant")}
               </Button>
             </div>
           </div>
         </div>
 
         <div className="border-t px-5 py-3 bg-muted/20 flex justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => router.back()}>Annuler</Button>
-          <Button type="submit" loading={mutation.isPending}>Créer le produit</Button>
+          <Button type="button" variant="outline" onClick={() => router.back()}>{tCommon("cancel")}</Button>
+          <Button type="submit" loading={mutation.isPending}>{t("create.createButton")}</Button>
         </div>
       </div>
     </form>

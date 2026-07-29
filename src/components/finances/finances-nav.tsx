@@ -2,21 +2,23 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
-const tabs = [
-  { href: "/dashboard/finances",             label: "Vue d'ensemble" },
-  { href: "/dashboard/finances/comptes",     label: "Comptes" },
-  { href: "/dashboard/finances/recettes",    label: "Recettes" },
-  { href: "/dashboard/finances/depenses",    label: "Dépenses" },
-  { href: "/dashboard/finances/import",      label: "Importer" },
-  { href: "/dashboard/finances/conciliation",label: "Conciliation" },
-  { href: "/dashboard/finances/categories",  label: "Catégories" },
-  { href: "/dashboard/finances/rapports",    label: "Rapports" },
-]
-
 export function FinancesNav() {
+  const t = useTranslations("finances.nav")
   const pathname = usePathname()
+
+  const tabs = [
+    { href: "/dashboard/finances",              label: t("overview") },
+    { href: "/dashboard/finances/comptes",      label: t("accounts") },
+    { href: "/dashboard/finances/recettes",     label: t("income") },
+    { href: "/dashboard/finances/depenses",     label: t("expenses") },
+    { href: "/dashboard/finances/import",       label: t("import") },
+    { href: "/dashboard/finances/conciliation", label: t("reconciliation") },
+    { href: "/dashboard/finances/categories",   label: t("categories") },
+    { href: "/dashboard/finances/rapports",     label: t("reports") },
+  ]
 
   return (
     <div className="border-b">

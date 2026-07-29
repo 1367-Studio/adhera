@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { signInWithGooglePortal } from "@/lib/auth/actions"
@@ -28,6 +29,7 @@ export function PortalRegisterForm({ slug }: { slug: string }) {
 // &g_email= — see the signIn callback in src/lib/auth/config.ts) requires a Suspense
 // boundary above it, same reasoning as the dashboard's register-form.tsx.
 function PortalRegisterFormInner({ slug }: { slug: string }) {
+  const t = useTranslations("portal.register")
   const router = useRouter()
   const searchParams = useSearchParams()
   const [types, setTypes] = useState<MembreType[]>([])
@@ -68,17 +70,17 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
 
     if (!res.ok) {
       const json = await res.json().catch(() => ({}))
-      toast.error(json.error ?? "Erreur lors de la création du compte")
+      toast.error(json.error ?? t("toasts.createError"))
       return
     }
 
     if (viaGoogle && data.email.toLowerCase() === gEmail.toLowerCase()) {
-      toast.success("Compte créé !")
+      toast.success(t("toasts.accountCreated"))
       await signInWithGooglePortal(slug)
       return
     }
 
-    toast.success("Compte créé ! Vérifiez votre email pour recevoir vos identifiants.")
+    toast.success(t("toasts.accountCreatedCheckEmail"))
     await signOut({ redirect: false })
     router.push(`/portal/${slug}/login`)
   }
@@ -87,13 +89,13 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       {viaGoogle && (
         <p className="text-xs text-muted-foreground">
-          Vous continuez avec Google. Confirmez vos informations pour terminer la création de votre compte.
+          {t("viaGoogleNotice")}
         </p>
       )}
 
       <div className="grid grid-cols-2 gap-3">
         <FormField
-          label="Prénom"
+          label={t("firstName")}
           placeholder="Jean"
           autoComplete="given-name"
           autoFocus
@@ -102,7 +104,7 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
           {...register("firstName")}
         />
         <FormField
-          label="Nom"
+          label={t("lastName")}
           placeholder="Dupont"
           autoComplete="family-name"
           required
@@ -112,7 +114,7 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
       </div>
 
       <FormField
-        label="Adresse email"
+        label={t("emailLabel")}
         type="email"
         placeholder="jean.dupont@email.fr"
         autoComplete="email"
@@ -127,9 +129,9 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Type de membre"
-              placeholder="Choisir un type…"
-              options={types.map(t => ({ value: t.id, label: t.name }))}
+              label={t("typeLabel")}
+              placeholder={t("typePlaceholder")}
+              options={types.map(type => ({ value: type.id, label: type.name }))}
               value={field.value}
               onValueChange={field.onChange}
               error={errors.typeId?.message}
@@ -142,9 +144,9 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
         id="portal-accepted-terms"
         label={
           <>
-            J&apos;accepte que mes données soient traitées conformément à la{" "}
+            {t("acceptTerms")}{" "}
             <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
-              politique de confidentialité
+              {t("privacyPolicy")}
             </a>
           </>
         }
@@ -154,7 +156,7 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
 
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Créer mon compte
+        {t("submit")}
       </Button>
     </form>
   )

@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ArrowRightIcon, WarningIcon, CopyIcon, ClockCounterClockwiseIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useDevisPaginated, useDevisDetail, useCreateDevis, useUpdateDevis, useDeleteDevis, useConvertDevis, useDuplicateDevis, useSendDevisEmail } from "@/hooks/use-devis"
 import { ApiError } from "@/lib/api-error"
+import { cn } from "@/lib/utils"
 import type { DevisInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -39,12 +41,16 @@ type Devis = {
   items?: { id: string; description: string; quantity: string; unitPrice: string; vatRate: string; discount: string }[]
 }
 
-const statusBadge: Record<Devis["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  BROUILLON: { label: "Brouillon", variant: "secondary"   },
-  ENVOYE:    { label: "Envoyé",    variant: "outline"     },
-  ACCEPTE:   { label: "Accepté",   variant: "default"     },
-  REFUSE:    { label: "Refusé",    variant: "destructive" },
-  EXPIRE:    { label: "Expiré",    variant: "outline"     },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusBadge(t: Translator): Record<Devis["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    BROUILLON: { label: t("devis.form.status.brouillon"), variant: "secondary"   },
+    ENVOYE:    { label: t("devis.form.status.envoye"),    variant: "outline"     },
+    ACCEPTE:   { label: t("devis.form.status.accepte"),   variant: "default"     },
+    REFUSE:    { label: t("devis.form.status.refuse"),    variant: "destructive" },
+    EXPIRE:    { label: t("devis.form.status.expire"),    variant: "outline"     },
+  }
 }
 
 function FilterSelect({
@@ -59,7 +65,7 @@ function FilterSelect({
   return (
     <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
       <SelectTrigger className="w-40">
-        <span className={selected ? "text-sm" : "text-sm text-muted-foreground"}>
+        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
       </SelectTrigger>
@@ -95,6 +101,7 @@ function toFormValues(d: Devis): Partial<DevisInput> {
 }
 
 export function DevisView() {
+  const t = useTranslations()
   const router = useRouter()
   const modules = useModules()
   // Seeded from ?search=… so a "Voir tout" link from the Fournisseur detail page (or
@@ -146,42 +153,42 @@ export function DevisView() {
   async function handleCreate(data: DevisInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Devis créé avec succès")
+      toast.success(t("devis.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: DevisInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Devis mis à jour")
+      toast.success(t("devis.view.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleConvert(d: Devis) {
     try {
       const facture = await convertMutation.mutateAsync(d.id)
-      toast.success(`Facture ${facture.number} créée`, {
-        action: { label: "Voir", onClick: () => router.push("/dashboard/factures") },
+      toast.success(t("devis.view.toasts.converted", { number: facture.number }), {
+        action: { label: t("devis.view.toasts.viewAction"), onClick: () => router.push("/dashboard/factures") },
       })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleDuplicate(d: Devis) {
     try {
       const copy = await duplicateMutation.mutateAsync(d.id)
-      toast.success(`Devis ${copy.number} créé`, {
-        action: { label: "Modifier", onClick: () => setEditTarget({ id: copy.id } as Devis) },
+      toast.success(t("devis.view.toasts.duplicated", { number: copy.number }), {
+        action: { label: t("common.edit"), onClick: () => setEditTarget({ id: copy.id } as Devis) },
       })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -189,10 +196,10 @@ export function DevisView() {
     if (!emailTarget) return
     try {
       await sendEmailMutation.mutateAsync({ to, message })
-      toast.success("Devis envoyé par e-mail")
+      toast.success(t("devis.view.toasts.sent"))
       setEmailTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -200,23 +207,25 @@ export function DevisView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync({ id: deleteTarget.id, force })
-      toast.success("Devis supprimé")
+      toast.success(t("devis.view.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
       if (err instanceof ApiError && err.code === "REQUIRES_CONFIRMATION") {
         toast.error(err.message, {
-          action: { label: "Confirmer", onClick: () => handleDelete(true) },
+          action: { label: t("devis.view.toasts.confirm"), onClick: () => handleDelete(true) },
         })
         return
       }
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
+
+  const statusBadge = getStatusBadge(t)
 
   const columns: Column<Devis>[] = [
     {
       key: "number",
-      header: "N°",
+      header: t("devis.view.columns.number"),
       cell: (d) => (
         <div className="space-y-0.5">
           <p className="font-medium tabular-nums">{d.number}</p>
@@ -226,25 +235,25 @@ export function DevisView() {
     },
     {
       key: "issueDate",
-      header: "Date",
+      header: t("devis.view.columns.date"),
       cell: (d) => format(new Date(d.issueDate), "dd/MM/yyyy", { locale: fr }),
       hideInCard: true,
     },
     {
       key: "total",
-      header: "Montant",
+      header: t("devis.view.columns.amount"),
       className: "text-right",
       cell: (d) => <span className="tabular-nums font-medium">{Number(d.total).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</span>,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("devis.view.columns.status"),
       cell: (d) => {
         const s = statusBadge[d.status]
         return (
           <div className="flex items-center gap-1.5">
             <Badge variant={s.variant}>{s.label}</Badge>
-            {d.facture && <Badge variant="outline">Facturé</Badge>}
+            {d.facture && <Badge variant="outline">{t("devis.view.invoiced")}</Badge>}
           </div>
         )
       },
@@ -256,16 +265,16 @@ export function DevisView() {
       cell: (d) => (
         <RowActions actions={[
           ...(d.status === "ACCEPTE" && !d.facture && modules.factures ? [
-            { label: "Convertir en facture", icon: <ArrowRightIcon className="size-3.5" />, onClick: () => handleConvert(d) },
+            { label: t("devis.view.actions.convert"), icon: <ArrowRightIcon className="size-3.5" />, onClick: () => handleConvert(d) },
           ] : []),
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(d), separator: true },
-          { label: "Dupliquer", icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(d) },
-          { label: "Prévisualiser", icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(d) },
-          { label: "Télécharger le PDF", icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/devis/${d.id}/pdf`, "_blank") },
-          { label: "Envoyer par e-mail", icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(d) },
-          { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(d) },
+          { label: t("devis.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(d), separator: true },
+          { label: t("devis.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(d) },
+          { label: t("devis.view.actions.preview"), icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(d) },
+          { label: t("devis.view.actions.downloadPdf"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/devis/${d.id}/pdf`, "_blank") },
+          { label: t("devis.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(d) },
+          { label: t("devis.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(d) },
           {
-            label: d.facture ? "Supprimer (déjà facturé)" : "Supprimer",
+            label: d.facture ? t("devis.view.actions.deleteAlreadyInvoiced") : t("devis.view.actions.delete"),
             icon: <TrashIcon className="size-3.5" />,
             destructive: true,
             separator: true,
@@ -278,18 +287,18 @@ export function DevisView() {
   ]
 
   const descriptionText = search
-    ? `${result?.total ?? 0} résultat${(result?.total ?? 0) !== 1 ? "s" : ""}`
-    : `${result?.total ?? 0} devis`
+    ? t("devis.view.count", { count: result?.total ?? 0 })
+    : t("devis.view.countTotal", { count: result?.total ?? 0 })
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Devis"
+        title={t("devis.view.title")}
         description={descriptionText}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Nouveau devis
+            {t("devis.view.newDevis")}
           </Button>
         }
       />
@@ -299,7 +308,7 @@ export function DevisView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher un devis…"
+            placeholder={t("devis.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -324,13 +333,13 @@ export function DevisView() {
           value={statusFilter}
           onChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "BROUILLON", label: "Brouillon" },
-            { value: "ENVOYE",    label: "Envoyé"    },
-            { value: "ACCEPTE",   label: "Accepté"   },
-            { value: "REFUSE",    label: "Refusé"    },
-            { value: "EXPIRE",    label: "Expiré"    },
+            { value: "BROUILLON", label: t("devis.form.status.brouillon") },
+            { value: "ENVOYE",    label: t("devis.form.status.envoye")    },
+            { value: "ACCEPTE",   label: t("devis.form.status.accepte")   },
+            { value: "REFUSE",    label: t("devis.form.status.refuse")    },
+            { value: "EXPIRE",    label: t("devis.form.status.expire")    },
           ]}
-          placeholder="Tous les statuts"
+          placeholder={t("devis.view.allStatuses")}
         />
 
         {fournisseurIdParam && (
@@ -339,7 +348,7 @@ export function DevisView() {
             onClick={() => router.push("/dashboard/devis")}
             className="flex items-center gap-1.5 rounded-md border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Fournisseur : {devisList.find(d => d.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? "filtré"}
+            {t("devis.view.supplierFilter", { name: devisList.find(d => d.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? t("devis.view.supplierFilterFallback") })}
             <XIcon className="size-3.5" />
           </button>
         )}
@@ -351,7 +360,7 @@ export function DevisView() {
         loading={isLoading}
         keyExtractor={(d) => d.id}
         onRowClick={(d) => setPreviewTarget(d)}
-        empty={search ? `Aucun résultat pour « ${search} »` : "Aucun devis enregistré"}
+        empty={search ? t("devis.view.noResultsFor", { search }) : t("devis.view.noDevis")}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,
@@ -361,7 +370,7 @@ export function DevisView() {
         } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouveau devis" size="2xl" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("devis.view.newDevis")} size="2xl" dismissable={false}>
         <DevisForm
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
@@ -369,17 +378,16 @@ export function DevisView() {
         />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)} title="Modifier le devis" size="2xl" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)} title={t("devis.view.editTitle")} size="2xl" dismissable={false}>
         {editDetailLoading || !editDetail ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Chargement…</p>
+          <p className="py-8 text-center text-sm text-muted-foreground">{t("devis.view.loadingDetail")}</p>
         ) : (
           <div className="space-y-4">
             {(editDetail as Devis).facture && (
               <div className="flex items-start gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
                 <WarningIcon className="mt-0.5 size-4 shrink-0" />
                 <p>
-                  Ce devis a déjà été converti en facture <strong>{(editDetail as Devis).facture?.number}</strong>.
-                  Les articles sont donc figés — seuls le statut, les dates et les notes restent modifiables.
+                  {t("devis.view.alreadyConvertedNotice", { number: (editDetail as Devis).facture?.number ?? "" })}
                 </p>
               </div>
             )}
@@ -407,7 +415,7 @@ export function DevisView() {
 
       {emailTarget && (
         <SendEmailModal
-          documentLabel={`le devis ${emailTarget.number}`}
+          documentLabel={t("devis.view.documentLabel", { number: emailTarget.number })}
           defaultTo={emailTarget.fournisseur?.billingEmail || emailTarget.fournisseur?.email || ""}
           open={!!emailTarget}
           onOpenChange={(open) => !open && setEmailTarget(null)}
@@ -421,16 +429,16 @@ export function DevisView() {
           open={!!previewTarget}
           onOpenChange={(open) => !open && setPreviewTarget(null)}
           pdfUrl={`${BASE_PATH}/api/devis/${previewTarget.id}/pdf`}
-          title={`Devis ${previewTarget.number}`}
+          title={t("devis.view.documentTitle", { number: previewTarget.number })}
         />
       )}
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`Supprimer le devis ${deleteTarget?.number} ?`}
-        description="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("devis.view.deleteConfirmTitle", { number: deleteTarget?.number ?? "" })}
+        description={t("devis.view.deleteConfirmIrreversible")}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => handleDelete(false)}
       />

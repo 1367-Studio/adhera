@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react"
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { useSearchParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
@@ -23,11 +24,6 @@ type Cotisation = {
   note:    string | null
 }
 
-const statusLabel: Record<string, string> = {
-  EN_ATTENTE: "En attente",
-  PAYE:       "Payé",
-  EXONERE:    "Exonéré",
-}
 const statusIcon: Record<string, React.ReactNode> = {
   EN_ATTENTE: <ClockIcon className="size-3.5 text-yellow-500" />,
   PAYE:       <CheckCircleIcon className="size-3.5 text-green-500" />,
@@ -52,6 +48,13 @@ export default function CotisationPortalPage() {
 }
 
 function CotisationPortalPageInner() {
+  const t             = useTranslations("portalMembre.cotisation")
+  const tCommon       = useTranslations("common")
+  const statusLabel: Record<string, string> = {
+    EN_ATTENTE: t("status.enAttente"),
+    PAYE:       t("status.paye"),
+    EXONERE:    t("status.exonere"),
+  }
   const searchParams = useSearchParams()
   const [paymentEnabled, setPaymentEnabled] = useState(false)
 
@@ -71,7 +74,7 @@ function CotisationPortalPageInner() {
   useEffect(() => {
     const payment = searchParams.get("payment")
     if (payment === "success") {
-      toast.success("Paiement effectué !")
+      toast.success(t("toasts.paymentDone"))
       // The Stripe webhook that flips the cotisation to PAYE can lag slightly behind
       // this redirect — poll briefly instead of a single refetch that may still show EN_ATTENTE.
       let attempts = 0
@@ -83,9 +86,9 @@ function CotisationPortalPageInner() {
       }
       poll()
     } else if (payment === "cancelled") {
-      toast.info("Paiement annulé.")
+      toast.info(t("toasts.paymentCancelled"))
     }
-  }, [searchParams, refetch])
+  }, [searchParams, refetch, t])
 
   const checkoutMutation = useMutation({
     mutationFn: async (cotisationId: string) => {
@@ -94,11 +97,11 @@ function CotisationPortalPageInner() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ cotisationId }),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<{ url: string }>
     },
     onSuccess: ({ url }) => { window.location.href = url },
-    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur lors du paiement"),
+    onError:   (err) => toast.error(err instanceof Error ? err.message : t("toasts.paymentError")),
   })
 
   if (isLoading) {
@@ -134,7 +137,7 @@ function CotisationPortalPageInner() {
     )
   }
 
-  if (isError) return <p className="text-sm text-muted-foreground py-8 text-center">Aucun profil membre associé à ce compte.</p>
+  if (isError) return <p className="text-sm text-muted-foreground py-8 text-center">{t("noMemberProfile")}</p>
 
   const list     = cotisations ?? []
   const thisYear = list.find(c => c.year === currentYear())
@@ -143,15 +146,15 @@ function CotisationPortalPageInner() {
   return (
     <div className="w-full space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Ma cotisation</h1>
-        <p className="text-muted-foreground text-sm mt-1">Suivi de vos paiements annuels.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
       </div>
 
       {thisYear && (
         <Card className="border-2 border-sky-500/30 bg-sky-50/30 dark:bg-sky-950/20">
           <CardHeader>
             <CardTitle className="text-base text-sky-700 dark:text-sky-300">
-              Cotisation {thisYear.year} — Année en cours
+              {t("currentYearTitle", { year: thisYear.year })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -160,7 +163,7 @@ function CotisationPortalPageInner() {
                 <p className="text-2xl font-bold">{parseFloat(thisYear.amount).toFixed(2)} €</p>
                 {thisYear.paidAt && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Payé le {format(new Date(thisYear.paidAt), "d MMMM yyyy", { locale: fr })}
+                    {t("paidOn", { date: format(new Date(thisYear.paidAt), "d MMMM yyyy", { locale: fr }) })}
                   </p>
                 )}
                 {thisYear.note && (
@@ -192,7 +195,7 @@ function CotisationPortalPageInner() {
                 className="gap-1.5"
               >
                 <CreditCardIcon className="size-3.5" />
-                Payer en ligne
+                {t("payOnline")}
               </Button>
             )}
           </CardContent>
@@ -200,23 +203,23 @@ function CotisationPortalPageInner() {
       )}
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Historique</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("history")}</h2>
 
         {history.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center border rounded-lg">
-            Aucun historique disponible.
+            {t("noHistory")}
           </p>
         ) : (
           history.map(c => (
             <Card key={c.id}>
               <CardContent className="py-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="font-semibold text-sm">Année {c.year}</p>
+                  <p className="font-semibold text-sm">{t("yearLabel", { year: c.year })}</p>
                   <p className="text-sm text-muted-foreground mt-0.5">
                     {parseFloat(c.amount).toFixed(2)} €
                     {c.paidAt && (
                       <span className="ml-2">
-                        · payé le {format(new Date(c.paidAt), "d MMM yyyy", { locale: fr })}
+                        {t("paidOnShort", { date: format(new Date(c.paidAt), "d MMM yyyy", { locale: fr }) })}
                       </span>
                     )}
                   </p>
@@ -244,7 +247,7 @@ function CotisationPortalPageInner() {
                       loading={checkoutMutation.isPending}
                     >
                       <CreditCardIcon className="size-3.5 mr-1" />
-                      Payer
+                      {t("pay")}
                     </Button>
                   )}
                 </div>

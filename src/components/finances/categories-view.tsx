@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFinanceCategories, useCreateFinanceCategory, useUpdateFinanceCategory, useDeleteFinanceCategory, useSeedFinanceCategories } from "@/hooks/use-finance-categories"
 import type { FinanceCategoryInput } from "@/lib/schemas"
@@ -27,11 +28,12 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
   onEdit:     (c: Category) => void
   onDelete:   (c: Category) => void
 }) {
+  const t = useTranslations("finances.categoriesView")
   if (loading) {
     return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-10 rounded-lg bg-muted/30 animate-pulse" />)}</div>
   }
   if (!categories.length) {
-    return <p className="text-sm text-muted-foreground py-4 text-center">Aucune catégorie</p>
+    return <p className="text-sm text-muted-foreground py-4 text-center">{t("noCategories")}</p>
   }
   return (
     <ul className="space-y-1">
@@ -40,7 +42,7 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
           <div className="flex items-center gap-2">
             <span className="font-medium">{c.name}</span>
             {c.accountingCode && <span className="text-xs text-muted-foreground">{c.accountingCode}</span>}
-            {c.isDefault && <Badge variant="outline" className="text-xs">Défaut</Badge>}
+            {c.isDefault && <Badge variant="outline" className="text-xs">{t("default")}</Badge>}
           </div>
           <div className="flex items-center gap-1">
             <Button size="icon" variant="ghost" className="size-7" onClick={() => onEdit(c)}>
@@ -57,6 +59,7 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
 }
 
 export function CategoriesView() {
+  const t = useTranslations()
   const [createOpen, setCreateOpen]         = useState(false)
   const [createType, setCreateType]         = useState<"INCOME" | "EXPENSE">("INCOME")
   const [editTarget, setEditTarget]         = useState<Category | null>(null)
@@ -73,20 +76,20 @@ export function CategoriesView() {
   async function handleCreate(data: FinanceCategoryInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Catégorie créée")
+      toast.success(t("finances.categoriesView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: FinanceCategoryInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Catégorie mise à jour")
+      toast.success(t("finances.categoriesView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -94,31 +97,31 @@ export function CategoriesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Catégorie supprimée")
+      toast.success(t("finances.categoriesView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleSeed() {
     try {
       const res = await seedMutation.mutateAsync()
-      toast.success(`${res.created} catégorie(s) initialisée(s)`)
+      toast.success(t("finances.categoriesView.toasts.seeded", { count: res.created }))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Catégories"
-        description="Gérez les catégories de recettes et de dépenses."
+        title={t("finances.categoriesView.title")}
+        description={t("finances.categoriesView.description")}
         action={
           <Button size="sm" variant="outline" onClick={handleSeed} loading={seedMutation.isPending}>
             <SparkleIcon className="mr-1.5 size-4" />
-            Initialiser les catégories par défaut
+            {t("finances.categoriesView.seedButton")}
           </Button>
         }
       />
@@ -126,7 +129,7 @@ export function CategoriesView() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-xl border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm text-green-700 dark:text-green-400">Recettes</h3>
+            <h3 className="font-semibold text-sm text-green-700 dark:text-green-400">{t("finances.categoriesView.income")}</h3>
             <Button size="sm" variant="ghost" onClick={() => { setCreateType("INCOME"); setCreateOpen(true) }}>
               <PlusIcon className="size-4" />
             </Button>
@@ -136,7 +139,7 @@ export function CategoriesView() {
 
         <div className="rounded-xl border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-sm text-red-700 dark:text-red-400">Dépenses</h3>
+            <h3 className="font-semibold text-sm text-red-700 dark:text-red-400">{t("finances.categoriesView.expenses")}</h3>
             <Button size="sm" variant="ghost" onClick={() => { setCreateType("EXPENSE"); setCreateOpen(true) }}>
               <PlusIcon className="size-4" />
             </Button>
@@ -145,7 +148,7 @@ export function CategoriesView() {
         </div>
       </div>
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle catégorie" size="sm" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.categoriesView.newCategoryTitle")} size="sm" dismissable={false}>
         <FinanceCategoryForm
           defaultValues={{ type: createType }}
           onSubmit={handleCreate}
@@ -154,7 +157,7 @@ export function CategoriesView() {
         />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier la catégorie" size="sm" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.categoriesView.editCategoryTitle")} size="sm" dismissable={false}>
         <FinanceCategoryForm
           defaultValues={editTarget ? { name: editTarget.name, type: editTarget.type, accountingCode: editTarget.accountingCode ?? "" } : undefined}
           onSubmit={handleUpdate}
@@ -166,14 +169,14 @@ export function CategoriesView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer cette catégorie ?"
+        title={t("finances.categoriesView.deleteConfirmTitle")}
         description={(() => {
           const uses = (deleteTarget?._count?.incomes ?? 0) + (deleteTarget?._count?.expenses ?? 0)
           return uses > 0
-            ? `« ${deleteTarget?.name} » est utilisée par ${uses} recette${uses > 1 ? "s" : ""}/dépense${uses > 1 ? "s" : ""}. Ces entrées passeront en « Non catégorisé ».`
+            ? t("finances.categoriesView.deleteConfirmInUse", { name: deleteTarget?.name ?? "", count: uses })
             : deleteTarget?.name ?? ""
         })()}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

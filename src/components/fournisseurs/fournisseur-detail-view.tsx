@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -32,40 +33,51 @@ import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useModules } from "@/lib/user-context"
 
-const fournisseurStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
-  ACTIF:   { label: "Actif",   variant: "default"   },
-  INACTIF: { label: "Inactif", variant: "secondary" },
-  ARCHIVE: { label: "Archivé", variant: "outline"   },
+type Translator = ReturnType<typeof useTranslations>
+
+function getFournisseurStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "outline" }> {
+  return {
+    ACTIF:   { label: t("fournisseurs.form.status.actif"),   variant: "default"   },
+    INACTIF: { label: t("fournisseurs.form.status.inactif"), variant: "secondary" },
+    ARCHIVE: { label: t("fournisseurs.view.status.archive"), variant: "outline"   },
+  }
 }
 
-const devisStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  BROUILLON: { label: "Brouillon", variant: "secondary"   },
-  ENVOYE:    { label: "Envoyé",    variant: "outline"     },
-  ACCEPTE:   { label: "Accepté",   variant: "default"     },
-  REFUSE:    { label: "Refusé",    variant: "destructive" },
-  EXPIRE:    { label: "Expiré",    variant: "outline"     },
+function getDevisStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    BROUILLON: { label: t("devis.form.status.brouillon"), variant: "secondary"   },
+    ENVOYE:    { label: t("devis.form.status.envoye"),    variant: "outline"     },
+    ACCEPTE:   { label: t("devis.form.status.accepte"),   variant: "default"     },
+    REFUSE:    { label: t("devis.form.status.refuse"),    variant: "destructive" },
+    EXPIRE:    { label: t("devis.form.status.expire"),    variant: "outline"     },
+  }
 }
 
-const factureStatusBadge: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  BROUILLON:           { label: "Brouillon",           variant: "secondary"   },
-  EN_ATTENTE:          { label: "En attente",          variant: "outline"     },
-  PARTIELLEMENT_PAYEE: { label: "Partiellement payée", variant: "outline"     },
-  PAYEE:               { label: "Payée",               variant: "default"    },
-  EN_RETARD:           { label: "En retard",           variant: "destructive" },
-  ANNULEE:             { label: "Annulée",             variant: "secondary"  },
+function getFactureStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    BROUILLON:           { label: t("factures.form.status.brouillon"),          variant: "secondary"   },
+    EN_ATTENTE:          { label: t("factures.form.status.enAttente"),          variant: "outline"     },
+    PARTIELLEMENT_PAYEE: { label: t("factures.form.status.partiellementPayee"), variant: "outline"     },
+    PAYEE:               { label: t("factures.form.status.payee"),              variant: "default"    },
+    EN_RETARD:           { label: t("factures.view.status.enRetard"),           variant: "destructive" },
+    ANNULEE:             { label: t("factures.form.status.annulee"),            variant: "secondary"  },
+  }
 }
 
-const documentTypeLabel: Record<string, string> = {
-  facture:     "Facture",
-  devis_recu:  "Devis reçu",
-  comprovante: "Justificatif",
-  contrat:     "Contrat",
-  autre:       "Autre",
+function getDocumentTypeLabels(t: Translator): Record<string, string> {
+  return {
+    facture:     t("fournisseurs.detail.documentTypes.facture"),
+    devis_recu:  t("fournisseurs.detail.documentTypes.devisRecu"),
+    comprovante: t("fournisseurs.detail.documentTypes.comprovante"),
+    contrat:     t("fournisseurs.detail.documentTypes.contrat"),
+    autre:       t("fournisseurs.detail.documentTypes.autre"),
+  }
 }
 
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
 export function FournisseurDetailView() {
+  const t = useTranslations()
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const modules = useModules()
@@ -114,50 +126,50 @@ export function FournisseurDetailView() {
   async function handleUpdate(data: FournisseurInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Fournisseur mis à jour")
+      toast.success(t("fournisseurs.detail.toasts.updated"))
       setEditOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleArchive() {
     try {
       await archiveMutation.mutateAsync(id)
-      toast.success("Fournisseur archivé")
+      toast.success(t("fournisseurs.detail.toasts.archived"))
       router.push("/dashboard/fournisseurs")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreateDevis(data: DevisInput) {
     try {
       await createDevisMutation.mutateAsync({ ...data, fournisseurId: id })
-      toast.success("Devis créé avec succès")
+      toast.success(t("fournisseurs.detail.toasts.devisCreated"))
       setCreateDevisOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreateFacture(data: FactureInput) {
     try {
       await createFactureMutation.mutateAsync({ ...data, fournisseurId: id })
-      toast.success("Facture créée avec succès")
+      toast.success(t("fournisseurs.detail.toasts.factureCreated"))
       setCreateFactureOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleCreateDoc(data: FactureRecueInput) {
     try {
       await createDocMutation.mutateAsync({ ...data, fournisseurId: id })
-      toast.success("Document ajouté")
+      toast.success(t("fournisseurs.detail.toasts.documentAdded"))
       setCreateDocOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -165,10 +177,10 @@ export function FournisseurDetailView() {
     if (!deleteDocTarget) return
     try {
       await deleteDocMutation.mutateAsync(deleteDocTarget.id)
-      toast.success("Document supprimé")
+      toast.success(t("fournisseurs.detail.toasts.documentDeleted"))
       setDeleteDocTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -179,19 +191,23 @@ export function FournisseurDetailView() {
   if (isError || !fournisseur) {
     return (
       <DetailNotFound
-        message="Ce fournisseur est introuvable ou a été supprimé."
+        message={t("fournisseurs.detail.notFound")}
         backHref="/dashboard/fournisseurs"
-        backLabel="Retour à la liste"
+        backLabel={t("fournisseurs.detail.backToList")}
       />
     )
   }
 
+  const fournisseurStatusBadge = getFournisseurStatusBadge(t)
+  const devisStatusBadge       = getDevisStatusBadge(t)
+  const factureStatusBadge     = getFactureStatusBadge(t)
+  const documentTypeLabel      = getDocumentTypeLabels(t)
   const statusInfo = fournisseurStatusBadge[fournisseur.status]
 
   return (
     <div className="space-y-4 mt-4">
       <div className="space-y-3">
-        <BackLink href="/dashboard/fournisseurs">Fournisseurs</BackLink>
+        <BackLink href="/dashboard/fournisseurs">{t("fournisseurs.detail.backLink")}</BackLink>
 
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="space-y-1">
@@ -206,27 +222,27 @@ export function FournisseurDetailView() {
             {modules.devis && (
               <Button size="sm" variant="outline" onClick={() => setCreateDevisOpen(true)}>
                 <FileTextIcon className="mr-1.5 size-4" />
-                Devis
+                {t("fournisseurs.detail.devisButton")}
               </Button>
             )}
             {modules.factures && (
               <Button size="sm" variant="outline" onClick={() => setCreateFactureOpen(true)}>
                 <ReceiptIcon className="mr-1.5 size-4" />
-                Facture
+                {t("fournisseurs.detail.factureButton")}
               </Button>
             )}
             <Button size="sm" variant="outline" onClick={() => setCreateDocOpen(true)}>
               <PaperclipIcon className="mr-1.5 size-4" />
-              Document
+              {t("fournisseurs.detail.documentButton")}
             </Button>
             <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
               <PencilSimpleIcon className="mr-1.5 size-4" />
-              Modifier
+              {t("common.edit")}
             </Button>
             {fournisseur.status !== "ARCHIVE" && (
               <Button size="sm" variant="outline" onClick={() => setArchiveOpen(true)}>
                 <ArchiveIcon className="mr-1.5 size-4" />
-                Archiver
+                {t("fournisseurs.view.actions.archive")}
               </Button>
             )}
           </div>
@@ -235,7 +251,7 @@ export function FournisseurDetailView() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Contact</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.contact")}</p>
           {fournisseur.contactName && <p className="font-medium">{fournisseur.contactName}{fournisseur.contactRole && <span className="text-muted-foreground font-normal"> · {fournisseur.contactRole}</span>}</p>}
           {fournisseur.email && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><EnvelopeSimpleIcon className="size-3.5" />{fournisseur.email}</p>
@@ -249,44 +265,44 @@ export function FournisseurDetailView() {
             </a>
           )}
           {!fournisseur.contactName && !fournisseur.email && !fournisseur.phone && !fournisseur.website && (
-            <p className="text-muted-foreground">Aucune information de contact</p>
+            <p className="text-muted-foreground">{t("fournisseurs.detail.noContactInfo")}</p>
           )}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Adresse & identifiants</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.addressAndIds")}</p>
           {(fournisseur.address || fournisseur.city) && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
               <MapPinIcon className="size-3.5 mt-0.5 shrink-0" />
               <span>{[fournisseur.address, [fournisseur.postalCode, fournisseur.city].filter(Boolean).join(" "), fournisseur.country].filter(Boolean).join(", ")}</span>
             </p>
           )}
-          {fournisseur.siret && <p className="text-muted-foreground">SIRET : {fournisseur.siret}</p>}
-          {fournisseur.vatNumber && <p className="text-muted-foreground">TVA : {fournisseur.vatNumber}</p>}
+          {fournisseur.siret && <p className="text-muted-foreground">{t("fournisseurs.detail.siret", { value: fournisseur.siret })}</p>}
+          {fournisseur.vatNumber && <p className="text-muted-foreground">{t("fournisseurs.detail.vat", { value: fournisseur.vatNumber })}</p>}
           {!fournisseur.address && !fournisseur.siret && !fournisseur.vatNumber && (
-            <p className="text-muted-foreground">Aucune information</p>
+            <p className="text-muted-foreground">{t("fournisseurs.detail.noInfo")}</p>
           )}
         </div>
 
         <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
-          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Notes internes</p>
-          <p className="text-muted-foreground whitespace-pre-wrap">{fournisseur.notes || "Aucune note"}</p>
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.internalNotes")}</p>
+          <p className="text-muted-foreground whitespace-pre-wrap">{fournisseur.notes || t("fournisseurs.detail.noNotes")}</p>
         </div>
       </div>
 
       <Tabs defaultValue={modules.devis ? "devis" : modules.factures ? "factures" : "documents"}>
         <TabsList>
-          {modules.devis && <TabsTrigger value="devis">Devis</TabsTrigger>}
-          {modules.factures && <TabsTrigger value="factures">Factures</TabsTrigger>}
-          {modules.factures && <TabsTrigger value="paiements">Paiements</TabsTrigger>}
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-          <TabsTrigger value="historique">Historique</TabsTrigger>
+          {modules.devis && <TabsTrigger value="devis">{t("fournisseurs.detail.tabs.devis")}</TabsTrigger>}
+          {modules.factures && <TabsTrigger value="factures">{t("fournisseurs.detail.tabs.factures")}</TabsTrigger>}
+          {modules.factures && <TabsTrigger value="paiements">{t("fournisseurs.detail.tabs.paiements")}</TabsTrigger>}
+          <TabsTrigger value="documents">{t("fournisseurs.detail.tabs.documents")}</TabsTrigger>
+          <TabsTrigger value="historique">{t("fournisseurs.detail.tabs.historique")}</TabsTrigger>
         </TabsList>
 
         {modules.devis && (
         <TabsContent value="devis" className="pt-3">
           {(devisResult?.data ?? []).length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucun devis pour ce fournisseur</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("fournisseurs.detail.noDevis")}</p>
           ) : (
             <div className="space-y-2">
               {(devisResult?.data as Array<{ id: string; number: string; issueDate: string; total: string; status: string }> ?? []).map(d => {
@@ -313,7 +329,7 @@ export function FournisseurDetailView() {
           )}
           {(devisResult?.total ?? 0) > TAB_PAGE_SIZE && (
             <button type="button" onClick={() => router.push(`/dashboard/devis?fournisseurId=${id}`)} className="mt-2 text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
-              Voir tout ({devisResult?.total})
+              {t("fournisseurs.detail.viewAll", { count: devisResult?.total ?? 0 })}
             </button>
           )}
         </TabsContent>
@@ -322,7 +338,7 @@ export function FournisseurDetailView() {
         {modules.factures && (
         <TabsContent value="factures" className="pt-3">
           {(facturesResult?.data ?? []).length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucune facture pour ce fournisseur</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("fournisseurs.detail.noFacture")}</p>
           ) : (
             <div className="space-y-2">
               {(facturesResult?.data as Array<{ id: string; number: string; issueDate: string; total: string; status: string }> ?? []).map(f => {
@@ -349,7 +365,7 @@ export function FournisseurDetailView() {
           )}
           {(facturesResult?.total ?? 0) > TAB_PAGE_SIZE && (
             <button type="button" onClick={() => router.push(`/dashboard/factures?fournisseurId=${id}`)} className="mt-2 text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
-              Voir tout ({facturesResult?.total})
+              {t("fournisseurs.detail.viewAll", { count: facturesResult?.total ?? 0 })}
             </button>
           )}
         </TabsContent>
@@ -358,7 +374,7 @@ export function FournisseurDetailView() {
         {modules.factures && (
         <TabsContent value="paiements" className="pt-3">
           {payments.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucun paiement enregistré</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("fournisseurs.detail.noPayment")}</p>
           ) : (
             <div className="space-y-2">
               {payments.map(p => (
@@ -385,7 +401,7 @@ export function FournisseurDetailView() {
 
         <TabsContent value="documents" className="pt-3">
           {documents.length === 0 ? (
-            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">Aucun document reçu</p>
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("fournisseurs.detail.noDocument")}</p>
           ) : (
             <div className="space-y-2">
               {documents.map(doc => (
@@ -396,20 +412,20 @@ export function FournisseurDetailView() {
                       {doc.status === "PAYEE" && (
                         <span
                           className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
-                          title="Payée — génère une dépense dans Finances ; la supprimer ou changer son statut supprime aussi cette dépense"
+                          title={t("fournisseurs.detail.inFinancesTooltip")}
                         >
-                          <ReceiptIcon className="size-3" /> Dans Finances
+                          <ReceiptIcon className="size-3" /> {t("fournisseurs.detail.inFinances")}
                         </span>
                       )}
                     </p>
                     <p className="text-xs text-muted-foreground">{format(new Date(doc.issueDate), "dd/MM/yyyy", { locale: fr })} · {fmt(doc.amount)}</p>
                   </div>
                   <div className="flex items-center gap-1">
-                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-muted-foreground hover:text-foreground" title="Voir le document">
+                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-muted-foreground hover:text-foreground" title={t("fournisseurs.detail.viewDocument")}>
                       <ArrowSquareOutIcon className="size-4" />
                     </a>
                     <RowActions actions={[
-                      { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
+                      { label: t("fournisseurs.detail.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
                     ]} />
                   </div>
                 </div>
@@ -418,7 +434,7 @@ export function FournisseurDetailView() {
           )}
           {(documentsResult?.total ?? 0) > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
-              Affichage des {TAB_PAGE_SIZE} documents les plus récents sur {documentsResult?.total} au total.
+              {t("fournisseurs.detail.showingRecentDocuments", { count: TAB_PAGE_SIZE, total: documentsResult?.total ?? 0 })}
             </p>
           )}
         </TabsContent>
@@ -434,7 +450,7 @@ export function FournisseurDetailView() {
         </TabsContent>
       </Tabs>
 
-      <Modal open={editOpen} onOpenChange={setEditOpen} title="Modifier le fournisseur" size="lg" dismissable={false}>
+      <Modal open={editOpen} onOpenChange={setEditOpen} title={t("fournisseurs.detail.editTitle")} size="lg" dismissable={false}>
         <FournisseurForm
           defaultValues={{
             companyName:  fournisseur.companyName,
@@ -462,7 +478,7 @@ export function FournisseurDetailView() {
         />
       </Modal>
 
-      <Modal open={createDevisOpen} onOpenChange={setCreateDevisOpen} title="Nouveau devis" size="2xl" dismissable={false}>
+      <Modal open={createDevisOpen} onOpenChange={setCreateDevisOpen} title={t("fournisseurs.detail.newDevisTitle")} size="2xl" dismissable={false}>
         <DevisForm
           defaultValues={{ fournisseurId: id }}
           onSubmit={handleCreateDevis}
@@ -471,7 +487,7 @@ export function FournisseurDetailView() {
         />
       </Modal>
 
-      <Modal open={createFactureOpen} onOpenChange={setCreateFactureOpen} title="Nouvelle facture" size="2xl" dismissable={false}>
+      <Modal open={createFactureOpen} onOpenChange={setCreateFactureOpen} title={t("fournisseurs.detail.newFactureTitle")} size="2xl" dismissable={false}>
         <FactureForm
           defaultValues={{ fournisseurId: id }}
           onSubmit={handleCreateFacture}
@@ -480,7 +496,7 @@ export function FournisseurDetailView() {
         />
       </Modal>
 
-      <Modal open={createDocOpen} onOpenChange={setCreateDocOpen} title="Ajouter un document" size="lg" dismissable={false}>
+      <Modal open={createDocOpen} onOpenChange={setCreateDocOpen} title={t("fournisseurs.detail.addDocumentTitle")} size="lg" dismissable={false}>
         <FactureRecueForm
           onSubmit={handleCreateDoc}
           onCancel={() => setCreateDocOpen(false)}
@@ -491,13 +507,13 @@ export function FournisseurDetailView() {
       <ConfirmDialog
         open={archiveOpen}
         onOpenChange={setArchiveOpen}
-        title={`Archiver ${fournisseur.companyName} ?`}
+        title={t("fournisseurs.view.archiveConfirmTitle", { name: fournisseur.companyName })}
         description={
           (devisResult?.total ?? 0) + (facturesResult?.total ?? 0) > 0
-            ? `Ce fournisseur n'apparaîtra plus dans les listes. Il reste lié à ${devisResult?.total ?? 0} devis et ${facturesResult?.total ?? 0} facture(s) — ils resteront consultables, mais ce fournisseur n'apparaîtra plus dans les formulaires de création (sauf sur ces documents existants).`
-            : "Ce fournisseur n'apparaîtra plus dans les listes."
+            ? t("fournisseurs.view.archiveConfirmWithDependencies", { devis: devisResult?.total ?? 0, factures: facturesResult?.total ?? 0 })
+            : t("fournisseurs.view.archiveConfirmSimple")
         }
-        confirmLabel="Archiver"
+        confirmLabel={t("fournisseurs.view.actions.archive")}
         loading={archiveMutation.isPending}
         onConfirm={handleArchive}
       />
@@ -505,13 +521,13 @@ export function FournisseurDetailView() {
       <ConfirmDialog
         open={!!deleteDocTarget}
         onOpenChange={(open) => !open && setDeleteDocTarget(null)}
-        title={`Supprimer ce document ?`}
+        title={t("fournisseurs.detail.deleteDocumentTitle")}
         description={
           deleteDocTarget?.payee
-            ? "Cette action est irréversible. Ce document est marqué payée : la dépense qu'il a générée dans Finances (et sa réconciliation bancaire éventuelle) sera supprimée avec lui."
-            : "Cette action est irréversible."
+            ? t("fournisseurs.detail.deleteDocumentPaidDescription")
+            : t("fournisseurs.detail.deleteDocumentDescription")
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteDocMutation.isPending}
         onConfirm={handleDeleteDoc}
       />

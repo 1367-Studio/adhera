@@ -1,9 +1,10 @@
 "use client"
 
 import { useCallback } from "react"
+import { useTranslations } from "next-intl"
 import { driver } from "driver.js"
 import "driver.js/dist/driver.css"
-import { dashboardTour, type TourStepDef } from "./steps"
+import { getDashboardTour, type TourStepDef } from "./steps"
 
 /**
  * Returns a `start` callback that launches the guided dashboard tour.
@@ -12,10 +13,13 @@ import { dashboardTour, type TourStepDef } from "./steps"
  * adapts to whatever the current user can actually see.
  */
 export function useTour() {
-  const start = useCallback((steps: TourStepDef[] = dashboardTour) => {
+  const t          = useTranslations("tour")
+  const tourSteps  = useTranslations("tour.steps")
+
+  const start = useCallback((steps?: TourStepDef[]) => {
     if (typeof document === "undefined") return
 
-    const present = steps.filter(s => !s.selector || document.querySelector(s.selector))
+    const present = (steps ?? getDashboardTour(tourSteps)).filter(s => !s.selector || document.querySelector(s.selector))
     if (present.length === 0) return
 
     const driverObj = driver({
@@ -25,10 +29,10 @@ export function useTour() {
       stagePadding:     6,
       stageRadius:      8,
       popoverClass:     "adhera-tour",
-      nextBtnText:      "Suivant",
-      prevBtnText:      "Précédent",
-      doneBtnText:      "Terminer",
-      progressText:     "{{current}} / {{total}}",
+      nextBtnText:      t("next"),
+      prevBtnText:      t("previous"),
+      doneBtnText:      t("finish"),
+      progressText:     t("progress"),
       steps: present.map(s => ({
         element: s.selector || undefined,
         popover: {
@@ -41,7 +45,7 @@ export function useTour() {
     })
 
     driverObj.drive()
-  }, [])
+  }, [t, tourSteps])
 
   return { start }
 }

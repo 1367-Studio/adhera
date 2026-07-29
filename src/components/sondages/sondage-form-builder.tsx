@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react"
+import { useTranslations } from "next-intl"
 import { PlusIcon, ClipboardTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { QuestionBuilder } from "./question-builder"
@@ -30,6 +31,7 @@ interface SondageFormBuilderProps {
 }
 
 export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBuilderProps) {
+  const t = useTranslations("sondages.formBuilder")
   const [questions, setQuestions] = useState<BuilderQuestion[]>(
     initialQuestions ?? [makeQuestion(0)],
   )
@@ -87,7 +89,7 @@ export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBu
       {questions.length === 0 ? (
         <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground space-y-2">
           <ClipboardTextIcon className="size-8 mx-auto text-muted-foreground/50" />
-          <p>Aucune question. Ajoutez-en une ci-dessous.</p>
+          <p>{t("noQuestions")}</p>
         </div>
       ) : (
         questions.map((q, i) => (
@@ -107,7 +109,7 @@ export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBu
 
       <Button type="button" variant="outline" size="sm" onClick={addQuestion} className="gap-1.5">
         <PlusIcon className="size-4" />
-        Ajouter une question
+        {t("addQuestion")}
       </Button>
     </div>
   )

@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { ClipboardTextIcon, CheckCircleIcon, ClockIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
@@ -21,6 +22,7 @@ type SondageItem = {
 }
 
 export default function SondagesPortalPage() {
+  const t        = useTranslations("portalMembre.sondages")
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
 
@@ -33,8 +35,8 @@ export default function SondagesPortalPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Sondages</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Questionnaires à compléter de votre association.</p>
+        <h1 className="text-2xl font-bold">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">{t("subtitle")}</p>
       </div>
 
       {isLoading ? (
@@ -49,7 +51,7 @@ export default function SondagesPortalPage() {
       ) : sondages.length === 0 ? (
         <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
           <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
-          <p className="text-sm text-muted-foreground">Aucun sondage actif pour le moment.</p>
+          <p className="text-sm text-muted-foreground">{t("noSurveys")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -67,35 +69,35 @@ export default function SondagesPortalPage() {
                   {s.repondu ? (
                     <Badge variant="default" className="gap-1 shrink-0 bg-green-600/90 hover:bg-green-600">
                       <CheckCircleIcon className="size-3" />
-                      Répondu
+                      {t("answered")}
                     </Badge>
                   ) : (
                     <Badge variant="secondary" className="gap-1 shrink-0">
                       <ClockIcon className="size-3" />
-                      À compléter
+                      {t("toComplete")}
                     </Badge>
                   )}
                   {s.anonymous && (
-                    <Badge variant="outline" className="text-xs shrink-0">Anonyme</Badge>
+                    <Badge variant="outline" className="text-xs shrink-0">{t("anonymous")}</Badge>
                   )}
                 </div>
                 {s.description && (
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
                 )}
                 <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                  <span>{s.questionsCount} question{s.questionsCount !== 1 ? "s" : ""}</span>
+                  <span>{t("questionsCount", { count: s.questionsCount })}</span>
                   {s.deadline && (
-                    <span>Clôture : {format(new Date(s.deadline), "d MMM yyyy", { locale: fr })}</span>
+                    <span>{t("deadline", { date: format(new Date(s.deadline), "d MMM yyyy", { locale: fr }) })}</span>
                   )}
                   {s.repondu && s.submittedAt && (
-                    <span>Complété le {format(new Date(s.submittedAt), "d MMM", { locale: fr })}</span>
+                    <span>{t("completedOn", { date: format(new Date(s.submittedAt), "d MMM", { locale: fr }) })}</span>
                   )}
                 </div>
               </div>
 
               {!s.repondu && (
                 <Button size="sm" variant="outline" className="shrink-0 gap-1" onClick={() => router.push(`/portal/${slug}/sondages/${s.id}`)}>
-                  Répondre
+                  {t("respond")}
                   <CaretRightIcon className="size-3.5" />
                 </Button>
               )}

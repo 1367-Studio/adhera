@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, unstable_rethrow } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import type { PricingInfo, PlanTier } from "@/lib/stripe"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
@@ -24,9 +25,10 @@ import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
 function StepIndicator({ current }: { current: "info" | "payment" }) {
+  const t = useTranslations("auth.register.steps")
   const steps = [
-    { id: "info",    label: "Votre compte" },
-    { id: "payment", label: "Paiement"     },
+    { id: "info",    label: t("info")    },
+    { id: "payment", label: t("payment") },
   ]
   return (
     <div className="flex items-center justify-center gap-0">
@@ -78,6 +80,7 @@ function StepInfo({
   pricing:             PricingInfo
   onNext: (info: Info, customerId: string, clientSecret: string) => void
 }) {
+  const t = useTranslations("auth.register.form")
   const [loading,  setLoading]  = useState(false)
   const [apiError, setApiError] = useState("")
 
@@ -101,48 +104,54 @@ function StepInfo({
         }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error ?? "Erreur")
+      if (!res.ok) throw new Error(json.error ?? t("genericError"))
       onNext(
         { associationName: data.associationName, city: data.city ?? "", firstName: data.firstName, lastName: data.lastName, email: data.email, password: data.password, acceptedTerms: data.acceptedTerms },
         json.customerId,
         json.clientSecret,
       )
     } catch (err) {
-      setApiError(err instanceof Error ? err.message : "Erreur")
+      setApiError(err instanceof Error ? err.message : t("genericError"))
     } finally {
       setLoading(false)
     }
   }
 
+  const perks = [
+    t("perkTrialDays", { days: pricing.trialDays }),
+    t("perkNoCommitment"),
+    t("perkEasyCancel"),
+  ]
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <FormField
-        label="Nom de l'association"
-        placeholder="Association Sportive de Paris"
+        label={t("associationNameLabel")}
+        placeholder={t("associationNamePlaceholder")}
         required
         error={errors.associationName?.message}
         {...register("associationName")}
       />
 
       <FormField
-        label="Ville"
-        placeholder="Paris"
+        label={t("cityLabel")}
+        placeholder={t("cityPlaceholder")}
         error={errors.city?.message}
         {...register("city")}
       />
 
       <div className="grid grid-cols-2 gap-3">
         <FormField
-          label="Prénom"
-          placeholder="Jean"
+          label={t("firstNameLabel")}
+          placeholder={t("firstNamePlaceholder")}
           autoComplete="given-name"
           required
           error={errors.firstName?.message}
           {...register("firstName")}
         />
         <FormField
-          label="Nom"
-          placeholder="Dupont"
+          label={t("lastNameLabel")}
+          placeholder={t("lastNamePlaceholder")}
           autoComplete="family-name"
           required
           error={errors.lastName?.message}
@@ -151,9 +160,9 @@ function StepInfo({
       </div>
 
       <FormField
-        label="Adresse email"
+        label={t("emailLabel")}
         type="email"
-        placeholder="contact@association.fr"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         required
         error={errors.email?.message}
@@ -162,9 +171,9 @@ function StepInfo({
 
       <div className="space-y-1.5">
         <FormField
-          label="Mot de passe"
+          label={t("passwordLabel")}
           type="password"
-          placeholder="Min. 8 caractères"
+          placeholder={t("passwordPlaceholder")}
           autoComplete="new-password"
           required
           error={errors.password?.message}
@@ -172,7 +181,7 @@ function StepInfo({
         />
         {viaGoogle && (
           <p className="text-xs text-muted-foreground">
-            Pour cette première création de compte, choisissez un mot de passe. Vous pourrez ensuite vous connecter avec Google.
+            {t("passwordGoogleHint")}
           </p>
         )}
       </div>
@@ -181,13 +190,13 @@ function StepInfo({
         id="accepted-terms"
         label={
           <>
-            J&apos;accepte les{" "}
+            {t("acceptTermsPrefix")}{" "}
             <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
-              Conditions Générales de Services
+              {t("termsOfService")}
             </a>{" "}
-            et la{" "}
+            {t("acceptTermsAnd")}{" "}
             <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
-              politique de confidentialité
+              {t("privacyPolicy")}
             </a>
           </>
         }
@@ -204,14 +213,14 @@ function StepInfo({
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
         }
-        Continuer vers le paiement
+        {t("continueToPayment")}
       </Button>
 
       <div className="flex items-center justify-center gap-4 pt-1">
-        {[`${pricing.trialDays} jours gratuits`, "Sans engagement", "Annulation facile"].map(t => (
-          <span key={t} className="flex items-center gap-1 text-xs text-muted-foreground">
+        {perks.map(perk => (
+          <span key={perk} className="flex items-center gap-1 text-xs text-muted-foreground">
             <CheckCircleIcon className="size-3 text-emerald-500" />
-            {t}
+            {perk}
           </span>
         ))}
       </div>
@@ -240,6 +249,7 @@ function PaymentForm({
   onBack:       () => void
   onSuccess:    () => void
 }) {
+  const t = useTranslations("auth.register.payment")
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -272,7 +282,7 @@ function PaymentForm({
           throw new Error(stripeErr.message)
         }
       } else {
-        if (!setupIntent?.payment_method) throw new Error("Erreur de paiement")
+        if (!setupIntent?.payment_method) throw new Error(t("paymentError"))
         paymentMethodId = setupIntent.payment_method as string
       }
 
@@ -294,11 +304,11 @@ function PaymentForm({
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Erreur lors de la création du compte")
+      if (!res.ok) throw new Error(data.error ?? t("createAccountError"))
 
       onSuccess()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur")
+      setError(err instanceof Error ? err.message : t("genericError"))
     } finally {
       setLoading(false)
     }
@@ -314,27 +324,27 @@ function PaymentForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-xl border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">{APP_NAME} · Essai gratuit</span>
+          <span className="text-sm font-medium">{APP_NAME} · {t("trialBadge")}</span>
           <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-            0 € aujourd&apos;hui
+            {t("freeToday")}
           </span>
         </div>
         <div className="h-px bg-border" />
         <div className="space-y-1.5 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>{info.associationName}</span>
-            <span>{pricing.trialDays} jours offerts</span>
+            <span>{t("trialOffered", { days: pricing.trialDays })}</span>
           </div>
           <div className="flex justify-between text-muted-foreground">
-            <span>Après la période d&apos;essai</span>
+            <span>{t("afterTrial")}</span>
             <span className="font-medium text-foreground">
-              {plan === "yearly" ? `${yearlyEquiv}/mois` : `${monthlyPrice}/mois`}
+              {t("perMonth", { price: plan === "yearly" ? yearlyEquiv : monthlyPrice })}
             </span>
           </div>
           {plan === "yearly" && (
             <div className="flex justify-between text-xs text-muted-foreground">
-              <span className="text-amber-600 dark:text-amber-400">Facturé en une fois · {yearlyTotal}/an</span>
-              <span className="text-emerald-600">−{discountPct} %</span>
+              <span className="text-amber-600 dark:text-amber-400">{t("billedOnce", { total: yearlyTotal })}</span>
+              <span className="text-emerald-600">{t("discount", { pct: discountPct })}</span>
             </div>
           )}
         </div>
@@ -359,13 +369,13 @@ function PaymentForm({
         </Button>
         <Button type="submit" className="flex-1 h-11 text-sm font-medium" disabled={loading || !stripe}>
           {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-          Démarrer mon essai gratuit
+          {t("startTrial")}
         </Button>
       </div>
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <LockIcon className="size-3" />
-        <span>Paiement sécurisé par Stripe · Annulez avant {pricing.trialDays} jours pour ne rien payer</span>
+        <span>{t("securePayment", { days: pricing.trialDays })}</span>
       </div>
     </form>
   )
@@ -388,8 +398,9 @@ export function RegisterForm({ pricing }: { pricing: PricingInfo }) {
 // useSearchParams() (for the Google prefill) requires a Suspense boundary above it, or
 // `next build` fails prerendering this page — the wrapper above provides that.
 function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
-  const router       = useRouter()
-  const searchParams = useSearchParams()
+  const t             = useTranslations("auth.register.done")
+  const router        = useRouter()
+  const searchParams  = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
   const [tier,         setTier]         = useState<PlanTier>("essential")
   const [plan,         setPlan]         = useState<Plan>("monthly")
@@ -443,11 +454,9 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
           <CheckCircleIcon className="size-7 text-emerald-500" />
         </div>
         <div className="space-y-1">
-          <p className="font-semibold">Compte créé avec succès !</p>
+          <p className="font-semibold">{t("title")}</p>
           <p className="text-sm text-muted-foreground">
-            {showGoogleCta
-              ? "Connectez-vous avec Google pour accéder à votre tableau de bord."
-              : "Connectez-vous avec l'email et le mot de passe que vous venez de définir."}
+            {showGoogleCta ? t("withGoogle") : t("withPassword")}
           </p>
         </div>
         {showGoogleCta && (
@@ -461,7 +470,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
                 await signInWithGoogleDashboard()
               } catch (err) {
                 unstable_rethrow(err)
-                toast.error("La connexion avec Google a échoué. Réessayez ou connectez-vous avec votre mot de passe.")
+                toast.error(t("googleSignInFailed"))
               } finally {
                 setGoogleSigningIn(false)
               }
@@ -471,7 +480,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
               ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
               : <GoogleIcon className="mr-2 size-4" />
             }
-            Continuer avec Google
+            {t("continueWithGoogle")}
           </Button>
         )}
         {/* Always keep a way to the plain login, even when the Google CTA is shown above —
@@ -484,7 +493,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
             showGoogleCta ? "text-xs text-muted-foreground" : "text-sm"
           )}
         >
-          {showGoogleCta ? "Ou connectez-vous avec votre email et mot de passe" : "Se connecter"}
+          {showGoogleCta ? t("orSignInWithPassword") : t("signIn")}
         </Link>
       </div>
     )
