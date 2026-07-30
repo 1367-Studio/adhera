@@ -42,10 +42,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
 
   const results = await sendSmsBatch(jobs, ctx.associationId)
-  const sent    = results.filter(Boolean).length
+  const sent    = results.filter(r => r.ok).length
   const failedMembers = recipients
-    .filter((_, i) => !results[i])
-    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
+    .map((m, i) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, reason: results[i].reason, ok: results[i].ok }))
+    .filter(m => !m.ok)
+    .map(({ id, name, reason }) => ({ id, name, reason }))
   const failed  = failedMembers.length
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
