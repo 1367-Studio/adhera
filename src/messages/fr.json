@@ -820,6 +820,8 @@
         "date": "Date",
         "description": "Description",
         "receipt": "Justificatif",
+        "compte": "Compte",
+        "paymentMethod": "Moyen de paiement",
         "amount": "Montant",
         "status": "Statut"
       },
@@ -843,6 +845,90 @@
         "created": "Dépense enregistrée",
         "updated": "Dépense mise à jour",
         "deleted": "Dépense supprimée"
+      }
+    },
+    "importWizard": {
+      "title": "Importer un relevé bancaire",
+      "description": "Importez un relevé CSV, Excel ou PDF depuis votre banque.",
+      "steps": {
+        "upload": "Upload",
+        "mapping": "Mapping",
+        "account": "Compte",
+        "preview": "Aperçu",
+        "result": "Résultat"
+      },
+      "detected": "Détecté",
+      "select": "Sélectionner",
+      "step1": {
+        "dropTitle": "Glissez-déposez votre relevé ici",
+        "dropSubtitle": "CSV ou Excel (.xlsx, .xls) — export depuis votre banque",
+        "pdfTitle": "Importer un PDF (analyse par IA)",
+        "pdfParsing": "Analyse du PDF en cours…",
+        "pdfSubtitle": "Relevé PDF avec texte natif — les lignes sont extraites automatiquement",
+        "pdfModuleRequired": "Nécessite le module {module} — activez-le dans Paramètres → Modules"
+      },
+      "step2": {
+        "fileSelected": "Fichier sélectionné",
+        "rowsDetected": "{file} — {count} lignes détectées",
+        "rowsExtractedByAi": "{file} — {count} ligne(s) extraite(s) par l'IA",
+        "noBankAccount": "Aucun compte bancaire configuré.",
+        "createBankAccount": "Créer un compte bancaire →",
+        "bankAccount": "Compte bancaire",
+        "selectAccount": "Sélectionner un compte",
+        "dateColumn": "Colonne de date",
+        "labelColumn": "Colonne de libellé",
+        "amountFormat": "Format des montants",
+        "singleColumn": "Colonne unique (±montant)",
+        "splitColumns": "Deux colonnes (Débit / Crédit)",
+        "singleColumnHint": "Colonne unique (positif = crédit, négatif = débit)",
+        "splitColumnsHint": "Deux colonnes séparées (Débit / Crédit)",
+        "amountColumn": "Colonne montant",
+        "debitColumn": "Colonne débit",
+        "creditColumn": "Colonne crédit",
+        "balanceColumn": "Colonne solde (optionnel)",
+        "previewRows": "Aperçu des premières lignes du fichier",
+        "restart": "Recommencer",
+        "previewResult": "Aperçu du résultat"
+      },
+      "step3": {
+        "parsingResult": "Résultat du parsing",
+        "validRows": "Lignes valides",
+        "credits": "Crédits",
+        "debits": "Débits",
+        "date": "Date",
+        "label": "Libellé",
+        "amount": "Montant",
+        "type": "Type",
+        "credit": "Crédit",
+        "debit": "Débit",
+        "moreRows": "… et {count} ligne(s) supplémentaire(s)",
+        "back": "Retour",
+        "importAction": "Importer {count} transaction(s)"
+      },
+      "step4": {
+        "success": "Importation réussie",
+        "imported": "Importées",
+        "duplicates": "Doublons ignorés",
+        "errors": "Erreurs",
+        "toReconcile": "À concilier",
+        "importAnother": "Importer un autre fichier",
+        "goToReconciliation": "Aller à la conciliation"
+      },
+      "toasts": {
+        "fileReadError": "Impossible de lire le fichier",
+        "unsupportedFormat": "Format non supporté. Utilisez un fichier CSV, XLSX ou XLS.",
+        "notPdf": "Ce fichier n'est pas un PDF.",
+        "pdfTooLarge": "Fichier trop volumineux (max 4 Mo).",
+        "pdfExtracted": "{extracted} ligne(s) extraite(s), {skipped} ignorée(s) (données incomplètes)",
+        "pdfAnalysisError": "Erreur lors de l'analyse du PDF",
+        "pdfNetworkError": "Erreur réseau lors de l'analyse du PDF",
+        "selectAccountRequired": "Veuillez sélectionner le compte",
+        "selectAccountAndColumns": "Veuillez sélectionner le compte et les colonnes obligatoires",
+        "selectAmountColumn": "Veuillez sélectionner la colonne de montant",
+        "selectDebitCredit": "Veuillez sélectionner les colonnes Débit et Crédit",
+        "noValidRows": "Aucune ligne valide détectée",
+        "importError": "Erreur d'importation",
+        "genericError": "Erreur"
       }
     },
     "dashboard": {

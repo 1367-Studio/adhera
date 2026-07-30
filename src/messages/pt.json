@@ -820,6 +820,8 @@
         "date": "Data",
         "description": "Descrição",
         "receipt": "Comprovante",
+        "compte": "Conta",
+        "paymentMethod": "Forma de pagamento",
         "amount": "Valor",
         "status": "Status"
       },
@@ -843,6 +845,90 @@
         "created": "Despesa registrada",
         "updated": "Despesa atualizada",
         "deleted": "Despesa excluída"
+      }
+    },
+    "importWizard": {
+      "title": "Importar um extrato bancário",
+      "description": "Importe um extrato CSV, Excel ou PDF do seu banco.",
+      "steps": {
+        "upload": "Upload",
+        "mapping": "Mapeamento",
+        "account": "Conta",
+        "preview": "Pré-visualização",
+        "result": "Resultado"
+      },
+      "detected": "Detectado",
+      "select": "Selecionar",
+      "step1": {
+        "dropTitle": "Arraste e solte seu extrato aqui",
+        "dropSubtitle": "CSV ou Excel (.xlsx, .xls) — exportado do seu banco",
+        "pdfTitle": "Importar um PDF (análise por IA)",
+        "pdfParsing": "Analisando o PDF…",
+        "pdfSubtitle": "Extrato PDF com texto nativo — as linhas são extraídas automaticamente",
+        "pdfModuleRequired": "Requer o módulo {module} — ative-o em Configurações → Módulos"
+      },
+      "step2": {
+        "fileSelected": "Arquivo selecionado",
+        "rowsDetected": "{file} — {count} linha(s) detectada(s)",
+        "rowsExtractedByAi": "{file} — {count} linha(s) extraída(s) pela IA",
+        "noBankAccount": "Nenhuma conta bancária configurada.",
+        "createBankAccount": "Criar uma conta bancária →",
+        "bankAccount": "Conta bancária",
+        "selectAccount": "Selecionar uma conta",
+        "dateColumn": "Coluna de data",
+        "labelColumn": "Coluna de descrição",
+        "amountFormat": "Formato dos valores",
+        "singleColumn": "Coluna única (±valor)",
+        "splitColumns": "Duas colunas (Débito / Crédito)",
+        "singleColumnHint": "Coluna única (positivo = crédito, negativo = débito)",
+        "splitColumnsHint": "Duas colunas separadas (Débito / Crédito)",
+        "amountColumn": "Coluna de valor",
+        "debitColumn": "Coluna de débito",
+        "creditColumn": "Coluna de crédito",
+        "balanceColumn": "Coluna de saldo (opcional)",
+        "previewRows": "Pré-visualização das primeiras linhas do arquivo",
+        "restart": "Recomeçar",
+        "previewResult": "Pré-visualizar resultado"
+      },
+      "step3": {
+        "parsingResult": "Resultado da análise",
+        "validRows": "Linhas válidas",
+        "credits": "Créditos",
+        "debits": "Débitos",
+        "date": "Data",
+        "label": "Descrição",
+        "amount": "Valor",
+        "type": "Tipo",
+        "credit": "Crédito",
+        "debit": "Débito",
+        "moreRows": "… e mais {count} linha(s)",
+        "back": "Voltar",
+        "importAction": "Importar {count} transação(ões)"
+      },
+      "step4": {
+        "success": "Importação concluída",
+        "imported": "Importadas",
+        "duplicates": "Duplicadas ignoradas",
+        "errors": "Erros",
+        "toReconcile": "A conciliar",
+        "importAnother": "Importar outro arquivo",
+        "goToReconciliation": "Ir para a conciliação"
+      },
+      "toasts": {
+        "fileReadError": "Não foi possível ler o arquivo",
+        "unsupportedFormat": "Formato não suportado. Use um arquivo CSV, XLSX ou XLS.",
+        "notPdf": "Este arquivo não é um PDF.",
+        "pdfTooLarge": "Arquivo muito grande (máx. 4 MB).",
+        "pdfExtracted": "{extracted} linha(s) extraída(s), {skipped} ignorada(s) (dados incompletos)",
+        "pdfAnalysisError": "Erro ao analisar o PDF",
+        "pdfNetworkError": "Erro de rede ao analisar o PDF",
+        "selectAccountRequired": "Selecione a conta",
+        "selectAccountAndColumns": "Selecione a conta e as colunas obrigatórias",
+        "selectAmountColumn": "Selecione a coluna de valor",
+        "selectDebitCredit": "Selecione as colunas de Débito e Crédito",
+        "noValidRows": "Nenhuma linha válida detectada",
+        "importError": "Erro na importação",
+        "genericError": "Erro"
       }
     },
     "dashboard": {

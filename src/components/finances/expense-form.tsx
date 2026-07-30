@@ -33,6 +33,15 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
     { value: "CANCELLED", label: t("finances.expenseForm.status.cancelled") },
   ]
 
+  const paymentMethodOptions = [
+    { value: "",         label: t("finances.incomeForm.paymentMethod.none")     },
+    { value: "VIREMENT", label: t("finances.incomeForm.paymentMethod.virement") },
+    { value: "CHEQUE",   label: t("finances.incomeForm.paymentMethod.cheque")   },
+    { value: "ESPECES",  label: t("finances.incomeForm.paymentMethod.especes")  },
+    { value: "STRIPE",   label: t("finances.incomeForm.paymentMethod.stripe")  },
+    { value: "AUTRE",    label: t("finances.incomeForm.paymentMethod.autre")   },
+  ]
+
   const { data: categories = [] } = useFinanceCategories("EXPENSE")
   const categoryOptions = [
     { value: "", label: t("finances.incomeForm.noCategory") },
@@ -125,7 +134,13 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
             <SelectField label={t("membres.form.fields.status")} options={statusOptions} disabled={locked} value={field.value ?? "DRAFT"} onValueChange={field.onChange} />
           )}
         />
-        <div />
+        <Controller
+          name="paymentMethod"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.paymentMethodLabel")} options={paymentMethodOptions} value={field.value ?? ""} onValueChange={field.onChange} />
+          )}
+        />
       </div>
 
       <FormField label={t("finances.incomeForm.description")} placeholder={t("finances.expenseForm.descriptionPlaceholder")} error={errors.description?.message} {...register("description")} />
