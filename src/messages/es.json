@@ -820,6 +820,8 @@
         "date": "Fecha",
         "description": "Descripción",
         "receipt": "Comprobante",
+        "compte": "Cuenta",
+        "paymentMethod": "Método de pago",
         "amount": "Importe",
         "status": "Estado"
       },
@@ -843,6 +845,90 @@
         "created": "Gasto registrado",
         "updated": "Gasto actualizado",
         "deleted": "Gasto eliminado"
+      }
+    },
+    "importWizard": {
+      "title": "Importar un extracto bancario",
+      "description": "Importe un extracto CSV, Excel o PDF de su banco.",
+      "steps": {
+        "upload": "Subida",
+        "mapping": "Asignación",
+        "account": "Cuenta",
+        "preview": "Vista previa",
+        "result": "Resultado"
+      },
+      "detected": "Detectado",
+      "select": "Seleccionar",
+      "step1": {
+        "dropTitle": "Arrastre y suelte su extracto aquí",
+        "dropSubtitle": "CSV o Excel (.xlsx, .xls) — exportado desde su banco",
+        "pdfTitle": "Importar un PDF (análisis por IA)",
+        "pdfParsing": "Analizando el PDF…",
+        "pdfSubtitle": "Extracto PDF con texto nativo — las líneas se extraen automáticamente",
+        "pdfModuleRequired": "Requiere el módulo {module} — actívelo en Configuración → Módulos"
+      },
+      "step2": {
+        "fileSelected": "Archivo seleccionado",
+        "rowsDetected": "{file} — {count} línea(s) detectada(s)",
+        "rowsExtractedByAi": "{file} — {count} línea(s) extraída(s) por la IA",
+        "noBankAccount": "No hay ninguna cuenta bancaria configurada.",
+        "createBankAccount": "Crear una cuenta bancaria →",
+        "bankAccount": "Cuenta bancaria",
+        "selectAccount": "Seleccionar una cuenta",
+        "dateColumn": "Columna de fecha",
+        "labelColumn": "Columna de descripción",
+        "amountFormat": "Formato de los importes",
+        "singleColumn": "Columna única (±importe)",
+        "splitColumns": "Dos columnas (Débito / Crédito)",
+        "singleColumnHint": "Columna única (positivo = crédito, negativo = débito)",
+        "splitColumnsHint": "Dos columnas separadas (Débito / Crédito)",
+        "amountColumn": "Columna de importe",
+        "debitColumn": "Columna de débito",
+        "creditColumn": "Columna de crédito",
+        "balanceColumn": "Columna de saldo (opcional)",
+        "previewRows": "Vista previa de las primeras líneas del archivo",
+        "restart": "Reiniciar",
+        "previewResult": "Vista previa del resultado"
+      },
+      "step3": {
+        "parsingResult": "Resultado del análisis",
+        "validRows": "Líneas válidas",
+        "credits": "Créditos",
+        "debits": "Débitos",
+        "date": "Fecha",
+        "label": "Descripción",
+        "amount": "Importe",
+        "type": "Tipo",
+        "credit": "Crédito",
+        "debit": "Débito",
+        "moreRows": "… y {count} línea(s) más",
+        "back": "Volver",
+        "importAction": "Importar {count} transacción(es)"
+      },
+      "step4": {
+        "success": "Importación exitosa",
+        "imported": "Importadas",
+        "duplicates": "Duplicados ignorados",
+        "errors": "Errores",
+        "toReconcile": "Por conciliar",
+        "importAnother": "Importar otro archivo",
+        "goToReconciliation": "Ir a la conciliación"
+      },
+      "toasts": {
+        "fileReadError": "No se pudo leer el archivo",
+        "unsupportedFormat": "Formato no compatible. Use un archivo CSV, XLSX o XLS.",
+        "notPdf": "Este archivo no es un PDF.",
+        "pdfTooLarge": "Archivo demasiado grande (máx. 4 MB).",
+        "pdfExtracted": "{extracted} línea(s) extraída(s), {skipped} ignorada(s) (datos incompletos)",
+        "pdfAnalysisError": "Error al analizar el PDF",
+        "pdfNetworkError": "Error de red al analizar el PDF",
+        "selectAccountRequired": "Seleccione la cuenta",
+        "selectAccountAndColumns": "Seleccione la cuenta y las columnas obligatorias",
+        "selectAmountColumn": "Seleccione la columna de importe",
+        "selectDebitCredit": "Seleccione las columnas de Débito y Crédito",
+        "noValidRows": "No se detectó ninguna línea válida",
+        "importError": "Error de importación",
+        "genericError": "Error"
       }
     },
     "dashboard": {

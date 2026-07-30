@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
@@ -31,7 +32,7 @@ type Income = {
   paymentMethod: string | null
   facturePaymentId: string | null
   category:    { name: string } | null
-  membre:      { firstName: string; lastName: string } | null
+  membre:      { id: string; firstName: string; lastName: string } | null
   reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
@@ -126,7 +127,13 @@ export function IncomesView() {
       header: t("finances.incomesView.columns.description"),
       cell: (i) => (
         <div>
-          <p className="font-medium">{i.description || (i.membre ? `${i.membre.firstName} ${i.membre.lastName}` : "—")}</p>
+          <p className="font-medium">
+            {i.description
+              ? i.description
+              : i.membre
+                ? <Link href={`/dashboard/membres/${i.membre.id}`} className="hover:underline" onClick={e => e.stopPropagation()}>{i.membre.firstName} {i.membre.lastName}</Link>
+                : "—"}
+          </p>
           {(i.reconciliations.length > 0 || i.facturePaymentId) && (
             <div className="flex items-center gap-2 mt-0.5">
               {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">{t("finances.incomesView.reconciled")}</span>}

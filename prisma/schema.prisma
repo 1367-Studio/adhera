@@ -1096,6 +1096,7 @@ model Expense {
   description    String?
   receiptUrl     String?
   internalNote   String?
+  paymentMethod  String?
   status         ExpenseStatus @default(DRAFT)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

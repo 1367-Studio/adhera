@@ -820,6 +820,8 @@
         "date": "Date",
         "description": "Description",
         "receipt": "Receipt",
+        "compte": "Account",
+        "paymentMethod": "Payment method",
         "amount": "Amount",
         "status": "Status"
       },
@@ -843,6 +845,90 @@
         "created": "Expense recorded",
         "updated": "Expense updated",
         "deleted": "Expense deleted"
+      }
+    },
+    "importWizard": {
+      "title": "Import a bank statement",
+      "description": "Import a CSV, Excel or PDF statement from your bank.",
+      "steps": {
+        "upload": "Upload",
+        "mapping": "Mapping",
+        "account": "Account",
+        "preview": "Preview",
+        "result": "Result"
+      },
+      "detected": "Detected",
+      "select": "Select",
+      "step1": {
+        "dropTitle": "Drag and drop your statement here",
+        "dropSubtitle": "CSV or Excel (.xlsx, .xls) — export from your bank",
+        "pdfTitle": "Import a PDF (AI analysis)",
+        "pdfParsing": "Analyzing PDF…",
+        "pdfSubtitle": "PDF statement with native text — lines are extracted automatically",
+        "pdfModuleRequired": "Requires the {module} module — enable it in Settings → Modules"
+      },
+      "step2": {
+        "fileSelected": "Selected file",
+        "rowsDetected": "{file} — {count} row(s) detected",
+        "rowsExtractedByAi": "{file} — {count} row(s) extracted by AI",
+        "noBankAccount": "No bank account configured.",
+        "createBankAccount": "Create a bank account →",
+        "bankAccount": "Bank account",
+        "selectAccount": "Select an account",
+        "dateColumn": "Date column",
+        "labelColumn": "Label column",
+        "amountFormat": "Amount format",
+        "singleColumn": "Single column (±amount)",
+        "splitColumns": "Two columns (Debit / Credit)",
+        "singleColumnHint": "Single column (positive = credit, negative = debit)",
+        "splitColumnsHint": "Two separate columns (Debit / Credit)",
+        "amountColumn": "Amount column",
+        "debitColumn": "Debit column",
+        "creditColumn": "Credit column",
+        "balanceColumn": "Balance column (optional)",
+        "previewRows": "Preview of the file's first rows",
+        "restart": "Start over",
+        "previewResult": "Preview result"
+      },
+      "step3": {
+        "parsingResult": "Parsing result",
+        "validRows": "Valid rows",
+        "credits": "Credits",
+        "debits": "Debits",
+        "date": "Date",
+        "label": "Label",
+        "amount": "Amount",
+        "type": "Type",
+        "credit": "Credit",
+        "debit": "Debit",
+        "moreRows": "… and {count} more row(s)",
+        "back": "Back",
+        "importAction": "Import {count} transaction(s)"
+      },
+      "step4": {
+        "success": "Import successful",
+        "imported": "Imported",
+        "duplicates": "Duplicates ignored",
+        "errors": "Errors",
+        "toReconcile": "To reconcile",
+        "importAnother": "Import another file",
+        "goToReconciliation": "Go to reconciliation"
+      },
+      "toasts": {
+        "fileReadError": "Unable to read the file",
+        "unsupportedFormat": "Unsupported format. Use a CSV, XLSX or XLS file.",
+        "notPdf": "This file is not a PDF.",
+        "pdfTooLarge": "File too large (max 4 MB).",
+        "pdfExtracted": "{extracted} row(s) extracted, {skipped} skipped (incomplete data)",
+        "pdfAnalysisError": "Error analyzing the PDF",
+        "pdfNetworkError": "Network error while analyzing the PDF",
+        "selectAccountRequired": "Please select the account",
+        "selectAccountAndColumns": "Please select the account and required columns",
+        "selectAmountColumn": "Please select the amount column",
+        "selectDebitCredit": "Please select the Debit and Credit columns",
+        "noValidRows": "No valid rows detected",
+        "importError": "Import error",
+        "genericError": "Error"
       }
     },
     "dashboard": {

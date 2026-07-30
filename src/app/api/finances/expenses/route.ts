@@ -30,7 +30,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const include = {
     category:       { select: { name: true, type: true } },
-    reconciliations: { select: { id: true } },
+    reconciliations: {
+      select: {
+        id: true,
+        bankTransaction: { select: { bankAccount: { select: { accountName: true } } } },
+      },
+    },
   }
 
   const orderBy = { date: "desc" as const }
@@ -58,17 +63,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, categoryId, vendor, description, receiptUrl, internalNote, ...rest } = parsed.data
+  const { date, categoryId, vendor, description, receiptUrl, internalNote, paymentMethod, ...rest } = parsed.data
   const expense = await prisma.expense.create({
     data: {
       ...rest,
       associationId,
-      date:         new Date(date),
-      categoryId:   categoryId   || null,
-      vendor:       vendor       || null,
-      description:  description  || null,
-      receiptUrl:   receiptUrl   || null,
-      internalNote: internalNote || null,
+      date:          new Date(date),
+      categoryId:    categoryId    || null,
+      vendor:        vendor        || null,
+      description:   description   || null,
+      receiptUrl:    receiptUrl    || null,
+      internalNote:  internalNote  || null,
+      paymentMethod: paymentMethod || null,
     },
   })
 

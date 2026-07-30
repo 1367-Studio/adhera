@@ -43,14 +43,15 @@ export type IncomeInput       = z.infer<typeof incomeSchema>
 export type IncomeUpdateInput = z.infer<typeof incomeUpdateSchema>
 
 export const expenseSchema = z.object({
-  amount:       z.number().positive("Montant doit être positif"),
-  categoryId:   z.string().optional().or(z.literal("")),
-  date:         z.string().min(1, "Date requise"),
-  vendor:       z.string().trim().optional().or(z.literal("")),
-  description:  z.string().trim().optional().or(z.literal("")),
-  receiptUrl:   z.string().trim().optional().or(z.literal("")),
-  internalNote: z.string().trim().optional().or(z.literal("")),
-  status:       z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).default("DRAFT"),
+  amount:        z.number().positive("Montant doit être positif"),
+  categoryId:    z.string().optional().or(z.literal("")),
+  date:          z.string().min(1, "Date requise"),
+  vendor:        z.string().trim().optional().or(z.literal("")),
+  description:   z.string().trim().optional().or(z.literal("")),
+  receiptUrl:    z.string().trim().optional().or(z.literal("")),
+  internalNote:  z.string().trim().optional().or(z.literal("")),
+  paymentMethod: z.string().optional().or(z.literal("")),
+  status:        z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).default("DRAFT"),
 })
 
 export const expenseUpdateSchema = expenseSchema.partial()
@@ -87,6 +88,19 @@ export const importRowSchema = z.object({
 })
 
 export type ImportRow = z.infer<typeof importRowSchema>
+
+// Same shape as a parsed statement row, minus externalId — the AI extracting rows from a
+// PDF (src/app/api/finances/import/parse-pdf/route.ts) never produces that hash, it's
+// computed client-side afterwards (import-wizard.tsx) exactly like the CSV path does.
+// balanceAfter is widened to accept an explicit `null` (not just a missing key) and
+// normalized to undefined — despite the prompt asking the model to omit it when unknown,
+// JSON-mode completions frequently emit `null` anyway, and a strict `.optional()` alone
+// would reject that value and silently drop an otherwise-valid transaction.
+export const aiExtractedRowSchema = importRowSchema.omit({ externalId: true }).extend({
+  balanceAfter: z.number().nullable().optional().transform(v => v ?? undefined),
+})
+
+export type AiExtractedRow = z.infer<typeof aiExtractedRowSchema>
 
 export const reconcileActionSchema = z.object({
   bankTransactionId: z.string().min(1),

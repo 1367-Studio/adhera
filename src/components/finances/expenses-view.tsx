@@ -27,9 +27,10 @@ type Expense = {
   status:      "DRAFT" | "VALIDATED" | "CANCELLED"
   receiptUrl:  string | null
   internalNote: string | null
+  paymentMethod: string | null
   factureRecueId: string | null
   category:    { name: string } | null
-  reconciliations: { id: string }[]
+  reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
@@ -136,6 +137,18 @@ export function ExpensesView() {
         : <span className="text-xs text-muted-foreground">—</span>,
     },
     {
+      key: "compte",
+      header: t("finances.expensesView.columns.compte"),
+      className: "w-36",
+      cell: (e) => e.reconciliations[0]?.bankTransaction.bankAccount.accountName ?? "—",
+    },
+    {
+      key: "paymentMethod",
+      header: t("finances.expensesView.columns.paymentMethod"),
+      className: "w-36",
+      cell: (e) => e.paymentMethod ?? "—",
+    },
+    {
       key: "amount",
       header: t("finances.expensesView.columns.amount"),
       className: "w-28 text-right",
@@ -218,13 +231,14 @@ export function ExpensesView() {
       <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.expensesView.editTitle")} size="md" dismissable={false}>
         <ExpenseForm
           defaultValues={editTarget ? {
-            amount:       parseFloat(editTarget.amount),
-            date:         editTarget.date.split("T")[0],
-            description:  editTarget.description  ?? "",
-            vendor:       editTarget.vendor        ?? "",
-            status:       editTarget.status,
-            receiptUrl:   editTarget.receiptUrl    ?? "",
-            internalNote: editTarget.internalNote  ?? "",
+            amount:        parseFloat(editTarget.amount),
+            date:          editTarget.date.split("T")[0],
+            description:   editTarget.description   ?? "",
+            vendor:        editTarget.vendor         ?? "",
+            status:        editTarget.status,
+            receiptUrl:    editTarget.receiptUrl     ?? "",
+            internalNote:  editTarget.internalNote   ?? "",
+            paymentMethod: editTarget.paymentMethod  ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
