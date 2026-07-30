@@ -2359,6 +2359,9 @@
     },
     "view": {
       "title": "Cotisations",
+      "exportMembers": "Exporter les membres",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
       "totalCollected": " · {amount} encaissé",
       "columns": {

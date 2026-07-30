@@ -2359,6 +2359,9 @@
     },
     "view": {
       "title": "Cuotas",
+      "exportMembers": "Exportar miembros",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cuota} other {# cuotas}}",
       "totalCollected": " · {amount} recaudado",
       "columns": {

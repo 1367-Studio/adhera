@@ -2359,6 +2359,9 @@
     },
     "view": {
       "title": "Membership fees",
+      "exportMembers": "Export members",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# membership fee} other {# membership fees}}",
       "totalCollected": " · {amount} collected",
       "columns": {

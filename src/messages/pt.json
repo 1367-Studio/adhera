@@ -2359,6 +2359,9 @@
     },
     "view": {
       "title": "Mensalidades",
+      "exportMembers": "Exportar membros",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# mensalidade} other {# mensalidades}}",
       "totalCollected": " · {amount} arrecadado",
       "columns": {

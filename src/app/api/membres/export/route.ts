@@ -19,6 +19,12 @@ const GROUPE_SANGUIN_LABELS: Record<string, string> = {
 const STATUS_LABELS: Record<string, string> = {
   PENDING: "En attente", ACTIF: "Actif", INACTIF: "Inactif", SUSPENDU: "Suspendu",
 }
+const SEXE_LABELS: Record<string, string> = { HOMME: "Homme", FEMME: "Femme" }
+
+// Matches the role gate on GET /api/membres (src/app/api/membres/route.ts) — this export
+// returns the same data in bulk, so it shouldn't be reachable by anyone the list itself
+// already excludes.
+const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -28,6 +34,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const search   = searchParams.get("search")?.trim()
   const status   = searchParams.get("status") ?? undefined
   const typeId   = searchParams.get("typeId") ?? undefined
+  // Adds every remaining "fiche" field (see src/lib/pdf/fiche-membre-vierge.ts, the blank
+  // intake form these mirror) beyond the default column set below — opt-in so the existing
+  // membres page export keeps its current column layout unchanged.
+  const full     = searchParams.get("full") === "1"
 
   // Mirrors the same where-building logic as GET /api/membres — deliberately duplicated
   // rather than imported, so pagination and export stay independently testable/changeable.
@@ -45,7 +55,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const membres = await prisma.membre.findMany({
     where,
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-    include: { type: { select: { name: true } } },
+    include: {
+      type: { select: { name: true } },
+      ...(full ? { responsable: { select: { firstName: true, lastName: true } } } : {}),
+    },
   })
 
   const rows = membres.map((m, i) => ({
@@ -57,8 +70,14 @@ export const GET = withAdminAuth(async (req, ctx) => {
     Téléphone:         sanitizeCell(m.phone ?? ""),
     Adresse:           sanitizeCell(m.address ?? ""),
     "Date de naissance": m.birthDate ? format(m.birthDate, "dd/MM/yyyy") : "",
+    ...(full ? { Sexe: m.sexe ? SEXE_LABELS[m.sexe] : "" } : {}),
     "Groupe sanguin":  m.groupeSanguin ? GROUPE_SANGUIN_LABELS[m.groupeSanguin] : "",
     Allergies:         sanitizeCell(m.allergies ?? ""),
+    ...(full ? {
+      "Possède un tee-shirt": m.possedeTshirt == null ? "" : (m.possedeTshirt ? "Oui" : "Non"),
+      "Taille tee-shirt":     m.tailleTshirt ?? "",
+      "Responsable légal":    m.responsable ? `${sanitizeCell(m.responsable.firstName)} ${sanitizeCell(m.responsable.lastName)}` : "",
+    } : {}),
     Statut:            STATUS_LABELS[m.status] ?? m.status,
     Type:              m.type?.name ?? "",
     Adhésion:          format(m.joinedAt, "dd/MM/yyyy"),
@@ -69,11 +88,15 @@ export const GET = withAdminAuth(async (req, ctx) => {
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, "Membres")
 
-    ws["!cols"] = [
-      { wch: 4 }, { wch: 8 }, { wch: 20 }, { wch: 20 }, { wch: 28 },
-      { wch: 16 }, { wch: 30 }, { wch: 14 }, { wch: 12 }, { wch: 24 },
-      { wch: 12 }, { wch: 16 }, { wch: 14 },
-    ]
+    // Keyed by header name (not position) so widths stay correct whether or not `full`
+    // inserted extra columns in between — unlisted headers fall back to a plain default.
+    const COLUMN_WIDTHS: Record<string, number> = {
+      "#": 4, Civilité: 8, Nom: 20, Prénom: 20, Email: 28, Téléphone: 16, Adresse: 30,
+      "Date de naissance": 14, Sexe: 10, "Groupe sanguin": 12, Allergies: 24,
+      "Possède un tee-shirt": 12, "Taille tee-shirt": 12, "Responsable légal": 24,
+      Statut: 12, Type: 16, Adhésion: 14,
+    }
+    ws["!cols"] = Object.keys(rows[0] ?? {}).map(key => ({ wch: COLUMN_WIDTHS[key] ?? 16 }))
 
     const buf = write(wb, { type: "buffer", bookType: "xlsx" })
     return new NextResponse(buf, {
@@ -87,4 +110,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // Plain JSON — consumed client-side by the PDF export, which builds the jspdf-autotable
   // document with the same branded header used elsewhere (declaration, presences).
   return NextResponse.json(rows)
-})
+}, { roles: MANAGERS })

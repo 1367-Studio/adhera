@@ -86,14 +86,21 @@ y += 8
   const head = Object.keys(rows[0])
   const body = rows.map(r => head.map(k => String(r[k] ?? "")))
 
+  // A landscape A4 page comfortably fits ~13 narrow columns at size 7 — the "full" ficha
+  // export (src/app/api/membres/export/route.ts's ?full=1) adds several more, which would
+  // otherwise squeeze every column and wrap most cells onto multiple lines.
+  const fontSize = head.length > 13 ? 6 : 7
+  const cellPadding = head.length > 13 ? 1.5 : 2
+
   autoTable(doc, {
     startY:             y,
     margin:             { left: M, right: M },
     head:               [head],
     body,
-    headStyles: { fillColor: [255, 255, 255], textColor: [24, 24, 27], fontStyle: "bold", fontSize: 7 },    bodyStyles:         { fontSize: 7, textColor: [24, 24, 27] },
+    headStyles: { fillColor: [255, 255, 255], textColor: [24, 24, 27], fontStyle: "bold", fontSize },
+    bodyStyles:         { fontSize, textColor: [24, 24, 27] },
     alternateRowStyles: { fillColor: [250, 250, 250] },
-    styles:             { cellPadding: 2, lineColor: [228, 228, 231], lineWidth: 0.1, overflow: "linebreak" },
+    styles:             { cellPadding, lineColor: [228, 228, 231], lineWidth: 0.1, overflow: "linebreak" },
   })
 
   const pageCount = doc.getNumberOfPages()
