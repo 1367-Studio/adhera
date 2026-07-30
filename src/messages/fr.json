@@ -1296,7 +1296,8 @@
         "created": "Sondage créé",
         "titleRequired": "Le titre est obligatoire",
         "atLeastOneQuestion": "Ajoutez au moins une question",
-        "atLeastOneMember": "Sélectionnez au moins un membre"
+        "atLeastOneMember": "Sélectionnez au moins un membre",
+        "deadlinePast": "La date limite ne peut pas être dans le passé"
       }
     }
   },
@@ -2416,7 +2417,7 @@
       "removeRecipient": "Retirer ce destinataire",
       "subjectLabel": "Objet",
       "bodyLabel": "Message",
-      "variablesNotice": "Le message est personnalisé pour chaque destinataire — {{prenom}}, {{montant_cotisation}} et {{annee_cotisation}} sont remplacés automatiquement à l'envoi.",
+      "variablesNotice": "Le message est personnalisé pour chaque destinataire — '{{prenom}}', '{{montant_cotisation}}' et '{{annee_cotisation}}' sont remplacés automatiquement à l'envoi.",
       "sendNow": "Envoyer ({count})",
       "resultTitle": "Rappels envoyés",
       "sent": "Envoyés",
@@ -3105,6 +3106,7 @@
       "title": "Sondages",
       "subtitle": "Questionnaires à compléter de votre association.",
       "noSurveys": "Aucun sondage actif pour le moment.",
+      "loadError": "Impossible de charger les sondages. Réessayez plus tard.",
       "answered": "Répondu",
       "toComplete": "À compléter",
       "anonymous": "Anonyme",

@@ -3,6 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendSondageInvitations } from "@/lib/sondage-invitations"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -19,7 +20,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     return NextResponse.json({ error: "Seul un brouillon peut être activé" }, { status: 400 })
   if (sondage.recipientMode === "SELECTED" && sondage.recipients.length === 0)
     return NextResponse.json({ error: "Ajoutez au moins un destinataire avant d'activer" }, { status: 400 })
-  if (sondage.deadline && new Date(sondage.deadline) < new Date())
+  if (sondage.deadline && new Date(sondage.deadline) < startOfTodayUTC())
     return NextResponse.json({ error: "La date limite est déjà passée — modifiez-la avant d'activer" }, { status: 400 })
 
   let membreIds: string[]

@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 export const GET = withPortalAuth(async (_req, ctx) => {
-  const now = new Date()
-
   // Active sondages for this association that this member is a recipient of
   const sondages = await prisma.sondage.findMany({
     where: {
       associationId: ctx.associationId,
       status:        "ACTIF",
       AND: [
-        { OR: [{ deadline: null }, { deadline: { gte: now } }] },
+        { OR: [{ deadline: null }, { deadline: { gte: startOfTodayUTC() } }] },
         { OR: [
           { recipientMode: "ALL" },
           { recipientMode: "SELECTED", recipients: { some: { membreId: ctx.membreId! } } },

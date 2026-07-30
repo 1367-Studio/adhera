@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -31,11 +32,22 @@ const createSchema = z.object({
   deadline:      z.string().datetime().optional().nullable(),
   questions:     z.array(questionSchema).min(1).max(50),
   recipientIds:  z.array(z.string()).optional(),
+}).refine(data => !data.deadline || new Date(data.deadline) >= startOfTodayUTC(), {
+  message: "La date limite ne peut pas être dans le passé.",
+  path:    ["deadline"],
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+
+  // Nothing else ever flips status back to FERME once a deadline passes — lazily
+  // close stale ones here so the list doesn't keep showing "Actif" past the deadline
+  // while the member portal (which filters on deadline directly) already hides them.
+  await prisma.sondage.updateMany({
+    where: { associationId: ctx.associationId, status: "ACTIF", deadline: { lt: startOfTodayUTC() } },
+    data:  { status: "FERME" },
+  })
 
   const { searchParams } = new URL(req.url)
   const search = searchParams.get("search")?.trim()

@@ -1296,7 +1296,8 @@
         "created": "Survey created",
         "titleRequired": "The title is required",
         "atLeastOneQuestion": "Add at least one question",
-        "atLeastOneMember": "Select at least one member"
+        "atLeastOneMember": "Select at least one member",
+        "deadlinePast": "The deadline cannot be in the past"
       }
     }
   },
@@ -2416,7 +2417,7 @@
       "removeRecipient": "Remove this recipient",
       "subjectLabel": "Subject",
       "bodyLabel": "Message",
-      "variablesNotice": "The message is personalized for each recipient — {{prenom}}, {{montant_cotisation}} and {{annee_cotisation}} are filled in automatically when sending.",
+      "variablesNotice": "The message is personalized for each recipient — '{{prenom}}', '{{montant_cotisation}}' and '{{annee_cotisation}}' are filled in automatically when sending.",
       "sendNow": "Send ({count})",
       "resultTitle": "Reminders sent",
       "sent": "Sent",
@@ -3105,6 +3106,7 @@
       "title": "Surveys",
       "subtitle": "Questionnaires to complete for your association.",
       "noSurveys": "No active survey at the moment.",
+      "loadError": "Unable to load surveys. Please try again later.",
       "answered": "Answered",
       "toComplete": "To complete",
       "anonymous": "Anonymous",

@@ -187,7 +187,7 @@ export function ChangeRoleModal({
         </p>
         <Select value={role} onValueChange={v => setRole(v as UserRole)}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue>{roleOptions.find(o => o.value === role)?.label}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {roleOptions.map(o => (

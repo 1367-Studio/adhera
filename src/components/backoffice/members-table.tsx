@@ -125,7 +125,7 @@ export function MembersTable({ associationId, initialMembers }: { associationId:
                           disabled={isRowPending}
                         >
                           <SelectTrigger className="h-8 text-xs w-36">
-                            <SelectValue />
+                            <SelectValue>{ROLE_LABELS[m.user.role as Role] ?? m.user.role}</SelectValue>
                           </SelectTrigger>
                           <SelectContent>
                             {ROLE_OPTIONS.map((r) => (

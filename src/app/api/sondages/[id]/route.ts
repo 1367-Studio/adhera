@@ -5,6 +5,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendSondageInvitations, type SondageInviteResult } from "@/lib/sondage-invitations"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -37,6 +38,12 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
+  // See src/app/api/sondages/route.ts — lazily close this one too if its deadline slipped by.
+  await prisma.sondage.updateMany({
+    where: { id, associationId: ctx.associationId, status: "ACTIF", deadline: { lt: startOfTodayUTC() } },
+    data:  { status: "FERME" },
+  })
+
   const sondage = await prisma.sondage.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: {
@@ -57,7 +64,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
     select: {
-      id: true, status: true, title: true, recipientMode: true,
+      id: true, status: true, title: true, recipientMode: true, deadline: true,
       recipients: { select: { membreId: true } },
       _count: { select: { reponses: true } },
     },
@@ -72,6 +79,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   const { title, description, recipientMode, anonymous, deadline, questions, recipientIds } = parsed.data
+
+  // Only reject a past deadline when it's actually being changed to a new value — the form
+  // always resends the current deadline unchanged on every save, and a deadline that was
+  // valid when set can legitimately become "past" between page load and save. Blocking that
+  // would reject unrelated edits (title, description, ...) for no reason.
+  const deadlineChanged = deadline !== undefined && deadline !== (sondage.deadline?.toISOString() ?? null)
+  if (deadlineChanged && deadline && new Date(deadline) < startOfTodayUTC())
+    return NextResponse.json({ error: "La date limite ne peut pas être dans le passé." }, { status: 400 })
 
   // Rebuilding `questions` cascade-deletes every submitted SondageReponseItem
   // (onDelete: Cascade) and the unique [sondageId, membreId] constraint means those

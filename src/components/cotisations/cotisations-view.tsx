@@ -218,6 +218,12 @@ export function CotisationsView() {
   }
 
   const statusBadge = getStatusBadge(t)
+  const statusFilterLabel: Record<string, string> = {
+    all:        t("cotisations.view.all"),
+    EN_ATTENTE: t("cotisations.view.statusFilter.enAttente"),
+    PAYE:       t("cotisations.view.statusFilter.payees"),
+    EXONERE:    t("cotisations.view.statusFilter.exonerees"),
+  }
 
   const columns: Column<Cotisation>[] = [
     {
@@ -361,7 +367,13 @@ export function CotisationsView() {
           onValueChange={v => { setStatusFilter(v === "all" || v === null ? "" : v); setPage(1) }}
         >
           <SelectTrigger className="w-36">
-            <SelectValue placeholder={t("cotisations.view.allStatuses")} />
+            {/* base-ui's SelectValue only auto-resolves a label when Select.Root is given an
+                `items` prop — without it, it falls back to the raw value ("EN_ATTENTE" etc).
+                Passing explicit children here is the documented workaround (see the
+                valueMode Select in import-wizard.tsx for the same pattern). */}
+            <SelectValue placeholder={t("cotisations.view.allStatuses")}>
+              {statusFilterLabel[statusFilter || "all"]}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("cotisations.view.all")}</SelectItem>
