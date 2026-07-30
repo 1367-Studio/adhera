@@ -29,7 +29,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
 
   const include = {
-    membre:   { select: { firstName: true, lastName: true } },
+    membre:   { select: { id: true, firstName: true, lastName: true } },
     category: { select: { name: true, type: true } },
     reconciliations: {
       select: {
