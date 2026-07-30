@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
@@ -45,6 +45,80 @@ function getStatusConfig(t: Translator) {
     VALIDATED: { label: t("finances.expenseForm.status.validated"), variant: "default"   as const },
     CANCELLED: { label: t("finances.expenseForm.status.cancelled"), variant: "destructive" as const },
   }
+}
+
+// Lets the receipt be attached straight from the table row, no need to open the edit
+// modal — just stores the uploaded file's URL, no parsing/extraction of its contents
+// (that's a deliberately separate concern from the PDF-statement-import feature).
+//
+// `editModalOpen` disables this while the same row's edit modal is open: that modal
+// snapshots the row's receiptUrl into its own form state when it opens and always resends
+// it on save (see ExpenseForm's submit), so an inline upload landing in the background
+// while the modal is still open would get silently overwritten back to empty the moment
+// the modal is saved. Simplest fix is just not offering two write paths for the same row
+// at once — upload from the modal's own field instead while it's open.
+function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOpen: boolean }) {
+  const t = useTranslations()
+  const updateMutation = useUpdateExpense(expense.id)
+  const [uploading, setUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFile(file: File) {
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(t("documentUpload.fileTooLarge"))
+      return
+    }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      fd.append("prefix", "receipts")
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        toast.error(body.error ?? t("documentUpload.uploadError"))
+        return
+      }
+      const { url } = await res.json()
+      await updateMutation.mutateAsync({ receiptUrl: url })
+      toast.success(t("finances.expensesView.receiptAttached"))
+    } catch {
+      toast.error(t("documentUpload.networkError"))
+    } finally {
+      setUploading(false)
+      if (inputRef.current) inputRef.current.value = ""
+    }
+  }
+
+  if (expense.receiptUrl) {
+    return (
+      <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+        <PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}
+      </a>
+    )
+  }
+
+  if (editModalOpen) {
+    return <span className="text-xs text-muted-foreground">—</span>
+  }
+
+  return (
+    <label className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
+      <input
+        ref={inputRef}
+        type="file"
+        disabled={uploading}
+        accept="image/jpeg,image/png,image/webp,application/pdf"
+        className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
+      />
+      {uploading
+        ? <CircleNotchIcon className="size-3 animate-spin" />
+        : <UploadSimpleIcon className="size-3" />
+      }
+      {uploading ? t("finances.expensesView.uploadingReceipt") : t("finances.expensesView.attachReceipt")}
+    </label>
+  )
 }
 
 export function ExpensesView() {
@@ -141,18 +215,16 @@ export function ExpensesView() {
       cell: (e) => e.paymentMethod ?? "—",
     },
     {
-      key: "receipt",
-      header: t("finances.expensesView.columns.receipt"),
-      className: "w-28",
-      cell: (e) => e.receiptUrl
-        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}</a>
-        : <span className="text-xs text-muted-foreground">—</span>,
-    },
-    {
       key: "amount",
       header: t("finances.expensesView.columns.amount"),
       className: "w-28 text-right",
       cell: (e) => <span className="font-semibold tabular-nums text-destructive">−{fmt(e.amount)}</span>,
+    },
+    {
+      key: "receipt",
+      header: t("finances.expensesView.columns.receipt"),
+      className: "w-28",
+      cell: (e) => <ReceiptCell expense={e} editModalOpen={editTarget?.id === e.id} />,
     },
     {
       key: "status",
