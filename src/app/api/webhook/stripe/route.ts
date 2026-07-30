@@ -191,6 +191,7 @@ export async function POST(req: Request) {
                 title:  "Nouvelle commande boutique",
                 body:   `${memberName} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
                 link:   `/dashboard/boutique`,
+                scope:  "GESTION",
               })),
               skipDuplicates: true,
             })
@@ -426,6 +427,7 @@ export async function POST(req: Request) {
                       title:  "Échec de génération d'un reçu fiscal",
                       body:   `Le reçu fiscal pour le don de ${donorLabel} n'a pas pu être généré automatiquement — téléchargez-le et renvoyez-le manuellement.`,
                       link:   "/dashboard/dons",
+                      scope:  "GESTION",
                     })),
                     skipDuplicates: true,
                   })
@@ -605,6 +607,7 @@ export async function POST(req: Request) {
                 title:  "Remboursement partiel reçu",
                 body,
                 link:   "/dashboard/tresorerie",
+                scope:  "GESTION",
               })),
               skipDuplicates: true,
             })
@@ -745,6 +748,7 @@ export async function POST(req: Request) {
                   title:  "Formule en dessous du nombre de membres",
                   body:   `Votre formule ${tierLabel} limite à ${newLimit} membres actifs, mais votre association en compte ${activeCount}. Vous ne pourrez pas ajouter de nouveaux membres tant que vous n'aurez pas repris une formule supérieure.`,
                   link:   "/dashboard/parametres?tab=abonnement",
+                  scope:  "GESTION",
                 })),
               })
               await pusherServer.trigger(`private-association-${assoc.id}`, "new-notification", {}).catch(() => {})
@@ -837,6 +841,7 @@ export async function POST(req: Request) {
           title:  "Échec de paiement",
           body:   "Le prélèvement de votre abonnement a échoué. Mettez à jour votre moyen de paiement.",
           link:   "/dashboard/parametres",
+          scope:  "GESTION",
         })),
         skipDuplicates: true,
       })

@@ -82,7 +82,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         where: { id: { in: toAdd }, userId: { not: null } },
         include: { user: { select: { name: true, email: true } } },
       })
-      const portalBase   = `${process.env.NEXTAUTH_URL ?? ""}/portal/${association?.slug}/reunions`
+      const portalPath   = `/portal/${association?.slug}/reunions`
+      const portalBase   = `${process.env.NEXTAUTH_URL ?? ""}${portalPath}`
       const branding     = association ? resolveDocumentBranding(association) : null
       const finalTitle       = title ?? existing.title
       const finalScheduledAt = scheduledAt !== undefined
@@ -110,7 +111,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
             userId: m.userId!,
             title:  `Nouvelle réunion : ${finalTitle}`,
             body:   "Vous avez été invité à une réunion.",
-            link:   portalBase,
+            link:   portalPath,
           })),
         skipDuplicates: true,
       })

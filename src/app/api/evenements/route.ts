@@ -99,15 +99,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   // Notify all active members with portal access
   const pusherReady = !!(process.env.PUSHER_APP_ID && process.env.PUSHER_KEY && process.env.PUSHER_SECRET)
-  const members = await prisma.membre.findMany({
-    where:  { associationId, deletedAt: null, status: "ACTIF", userId: { not: null } },
-    select: { userId: true },
-  })
+  const [members, association] = await Promise.all([
+    prisma.membre.findMany({
+      where:  { associationId, deletedAt: null, status: "ACTIF", userId: { not: null } },
+      select: { userId: true },
+    }),
+    prisma.association.findUnique({ where: { id: associationId }, select: { slug: true } }),
+  ])
   const notifDateStr = evenement.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
   const notifBody    = [notifDateStr, evenement.location].filter(Boolean).join(" · ")
   void (async () => {
     await prisma.notification.createMany({
-      data: members.map(m => ({ userId: m.userId!, title: evenement.title, body: notifBody || null, link: "/portal/evenements" })),
+      data: members.map(m => ({ userId: m.userId!, title: evenement.title, body: notifBody || null, link: `/portal/${association?.slug}/evenements` })),
       skipDuplicates: true,
     })
     if (pusherReady) {
