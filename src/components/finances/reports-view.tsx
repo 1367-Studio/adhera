@@ -130,7 +130,7 @@ export function ReportsView() {
         action={
           <div className="flex items-center gap-2">
             <Select value={String(year)} onValueChange={v => setYear(parseInt(v ?? String(year)))}>
-              <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-36"><SelectValue>{`Exercice ${year}`}</SelectValue></SelectTrigger>
               <SelectContent>
                 {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{`Exercice ${y}`}</SelectItem>)}
               </SelectContent>

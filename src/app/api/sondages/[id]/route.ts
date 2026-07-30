@@ -37,6 +37,12 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
+  // See src/app/api/sondages/route.ts — lazily close this one too if its deadline slipped by.
+  await prisma.sondage.updateMany({
+    where: { id, associationId: ctx.associationId, status: "ACTIF", deadline: { lt: new Date() } },
+    data:  { status: "FERME" },
+  })
+
   const sondage = await prisma.sondage.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: {

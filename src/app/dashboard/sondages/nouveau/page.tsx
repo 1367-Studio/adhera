@@ -63,7 +63,7 @@ export default function NouveauSondagePage() {
           title,
           description:  description || null,
           anonymous,
-          deadline:     deadline || null,
+          deadline:     deadline ? `${deadline}T23:59:59.000Z` : null,
           recipientMode,
           recipientIds: recipientMode === "SELECTED" ? recipientIds : undefined,
           questions:    questions.map(q => ({

@@ -37,6 +37,14 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!MANAGERS.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
+  // Nothing else ever flips status back to FERME once a deadline passes — lazily
+  // close stale ones here so the list doesn't keep showing "Actif" past the deadline
+  // while the member portal (which filters on deadline directly) already hides them.
+  await prisma.sondage.updateMany({
+    where: { associationId: ctx.associationId, status: "ACTIF", deadline: { lt: new Date() } },
+    data:  { status: "FERME" },
+  })
+
   const { searchParams } = new URL(req.url)
   const search = searchParams.get("search")?.trim()
 

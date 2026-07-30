@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { ClipboardTextIcon, CheckCircleIcon, ClockIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
+import { ClipboardTextIcon, CheckCircleIcon, ClockIcon, CaretRightIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { portalFetch } from "@/lib/portal-fetch"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,7 +26,7 @@ export default function SondagesPortalPage() {
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
 
-  const { data: sondages = [], isLoading } = useQuery<SondageItem[]>({
+  const { data: sondages = [], isLoading, isError } = useQuery<SondageItem[]>({
     queryKey: ["portal-sondages"],
     queryFn:  () => portalFetch("/api/portal/sondages") as Promise<SondageItem[]>,
     staleTime: 0,
@@ -47,6 +47,11 @@ export default function SondagesPortalPage() {
               <div className="h-3 w-32 bg-muted rounded" />
             </div>
           ))}
+        </div>
+      ) : isError ? (
+        <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+          <WarningIcon className="size-10 text-muted-foreground/50 mx-auto" />
+          <p className="text-sm text-muted-foreground">{t("loadError")}</p>
         </div>
       ) : sondages.length === 0 ? (
         <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
