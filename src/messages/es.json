@@ -829,6 +829,9 @@
       "fromReceivedInvoiceBadge": "Desde una factura recibida",
       "fromReceivedInvoiceTooltip": "Generado automáticamente desde una factura recibida marcada como pagada — editable solo desde Proveedores",
       "viewReceipt": "Ver",
+      "attachReceipt": "Adjuntar",
+      "receiptAttached": "Comprobante adjuntado",
+      "uploadingReceipt": "Subiendo…",
       "actions": {
         "edit": "Editar",
         "delete": "Eliminar"

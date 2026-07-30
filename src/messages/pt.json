@@ -829,6 +829,9 @@
       "fromReceivedInvoiceBadge": "De uma fatura recebida",
       "fromReceivedInvoiceTooltip": "Gerada automaticamente a partir de uma fatura recebida marcada como paga — editável apenas em Fornecedores",
       "viewReceipt": "Ver",
+      "attachReceipt": "Anexar",
+      "receiptAttached": "Comprovante anexado",
+      "uploadingReceipt": "Enviando…",
       "actions": {
         "edit": "Editar",
         "delete": "Excluir"

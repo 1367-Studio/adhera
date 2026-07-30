@@ -829,6 +829,9 @@
       "fromReceivedInvoiceBadge": "From a received invoice",
       "fromReceivedInvoiceTooltip": "Automatically generated from a received invoice marked paid — editable only from Suppliers",
       "viewReceipt": "View",
+      "attachReceipt": "Attach",
+      "receiptAttached": "Receipt attached",
+      "uploadingReceipt": "Uploading…",
       "actions": {
         "edit": "Edit",
         "delete": "Delete"
