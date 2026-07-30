@@ -15,6 +15,11 @@ import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
 
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 export default function NouveauSondagePage() {
   const t = useTranslations()
   const router = useRouter()
@@ -94,6 +99,7 @@ export default function NouveauSondagePage() {
     e.preventDefault()
     if (!title.trim()) { toast.error(t("sondages.newSurveyPage.toasts.titleRequired")); return }
     if (questions.length === 0) { toast.error(t("sondages.newSurveyPage.toasts.atLeastOneQuestion")); return }
+    if (deadline && deadline < todayStr()) { toast.error(t("sondages.newSurveyPage.toasts.deadlinePast")); return }
     if (recipientMode === "SELECTED" && recipientIds.length === 0) {
       toast.error(t("sondages.newSurveyPage.toasts.atLeastOneMember"))
       return
@@ -150,6 +156,7 @@ export default function NouveauSondagePage() {
               <Input
                 id="deadline"
                 type="date"
+                min={todayStr()}
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
               />

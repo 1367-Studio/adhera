@@ -1296,7 +1296,8 @@
         "created": "Encuesta creada",
         "titleRequired": "El título es obligatorio",
         "atLeastOneQuestion": "Añada al menos una pregunta",
-        "atLeastOneMember": "Seleccione al menos un miembro"
+        "atLeastOneMember": "Seleccione al menos un miembro",
+        "deadlinePast": "La fecha límite no puede estar en el pasado"
       }
     }
   },

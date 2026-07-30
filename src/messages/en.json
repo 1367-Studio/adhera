@@ -1296,7 +1296,8 @@
         "created": "Survey created",
         "titleRequired": "The title is required",
         "atLeastOneQuestion": "Add at least one question",
-        "atLeastOneMember": "Select at least one member"
+        "atLeastOneMember": "Select at least one member",
+        "deadlinePast": "The deadline cannot be in the past"
       }
     }
   },
