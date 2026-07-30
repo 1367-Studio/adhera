@@ -72,7 +72,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
       where: { id: { in: participantIds }, userId: { not: null } },
       include: { user: { select: { name: true, email: true } } },
     })
-    const portalBase = `${process.env.NEXTAUTH_URL ?? ""}/portal/${association?.slug}/reunions`
+    const portalPath = `/portal/${association?.slug}/reunions`
+    const portalBase = `${process.env.NEXTAUTH_URL ?? ""}${portalPath}`
     const branding = association ? resolveDocumentBranding(association) : null
     for (const m of membres) {
       if (!m.user?.email) continue
@@ -102,7 +103,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
           userId: m.userId!,
           title:  notifTitle,
           body:   notifBody,
-          link:   portalBase,
+          link:   portalPath,
         })),
       skipDuplicates: true,
     })

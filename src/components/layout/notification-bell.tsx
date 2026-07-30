@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { BellIcon, ChecksIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -11,7 +11,9 @@ import { cn, stripHtml } from "@/lib/utils"
 export function NotificationBell() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const { data: notifications = [] } = useNotifications()
+  const pathname = usePathname()
+  const scope = pathname.startsWith("/portal/") ? "MEMBRE" : "GESTION"
+  const { data: notifications = [] } = useNotifications(scope)
   const markRead    = useMarkRead()
   const markAllRead = useMarkAllRead()
 
@@ -48,8 +50,9 @@ export function NotificationBell() {
               </span>
               {unread.length > 0 && (
                 <button
-                  onClick={() => markAllRead.mutate()}
+                  onClick={() => markAllRead.mutate(scope)}
                   disabled={markAllRead.isPending}
+                  title="Marque comme lues les notifications affichées ici"
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 disabled:opacity-50"
                 >
                   {markAllRead.isPending

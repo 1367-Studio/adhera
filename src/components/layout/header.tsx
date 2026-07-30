@@ -20,6 +20,7 @@ import { NotificationBell } from "@/components/layout/notification-bell"
 import { HelpButton } from "@/components/layout/help-button"
 import { UserIcon, SquaresFourIcon } from "@phosphor-icons/react/dist/ssr"
 import { isManager } from "@/lib/user-context"
+import { useNotifications } from "@/hooks/use-notifications"
 import { cn } from "@/lib/utils"
 
 function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
@@ -55,29 +56,38 @@ interface HeaderProps {
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const t = useTranslations("layout.header")
   const inPortal = pathname.includes("/portal/")
+  // Bell only shows the current context's notifications (src/components/layout/notification-bell.tsx),
+  // so unread items in the other one would otherwise go unnoticed until the user happens to
+  // switch over — a dot here surfaces that without merging the two lists back together.
+  const { data: membreNotifs = [] }  = useNotifications("MEMBRE")
+  const { data: gestionNotifs = [] } = useNotifications("GESTION")
+  const membreUnread  = membreNotifs.some(n => !n.read)
+  const gestionUnread = gestionNotifs.some(n => !n.read)
   return (
     <div className="flex shrink-0 items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
       <Link
         href={`/portal/${slug}/actualites`}
         title={t("myPortal")}
         className={cn(
-          "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
+          "relative flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <UserIcon className="size-3.5 sm:hidden" />
         <span className="hidden sm:inline">{t("myPortal")}</span>
+        {membreUnread && <span className="absolute top-0.5 right-0.5 size-1.5 rounded-full bg-primary sm:top-1 sm:right-1" />}
       </Link>
       <Link
         href="/dashboard"
         title={t("management")}
         className={cn(
-          "flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
+          "relative flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
           !inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <SquaresFourIcon className="size-3.5 sm:hidden" />
         <span className="hidden sm:inline">{t("management")}</span>
+        {gestionUnread && <span className="absolute top-0.5 right-0.5 size-1.5 rounded-full bg-primary sm:top-1 sm:right-1" />}
       </Link>
     </div>
   )

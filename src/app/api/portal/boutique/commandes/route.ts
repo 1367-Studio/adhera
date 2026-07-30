@@ -125,6 +125,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
           title:  "Nouvelle commande boutique",
           body:   `${buyerLabel} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
           link:   `/dashboard/boutique`,
+          scope:  "GESTION",
         })),
         skipDuplicates: true,
       })
