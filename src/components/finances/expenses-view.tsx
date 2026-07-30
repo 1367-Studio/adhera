@@ -129,14 +129,6 @@ export function ExpensesView() {
       ),
     },
     {
-      key: "receipt",
-      header: t("finances.expensesView.columns.receipt"),
-      className: "w-28",
-      cell: (e) => e.receiptUrl
-        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}</a>
-        : <span className="text-xs text-muted-foreground">—</span>,
-    },
-    {
       key: "compte",
       header: t("finances.expensesView.columns.compte"),
       className: "w-36",
@@ -147,6 +139,14 @@ export function ExpensesView() {
       header: t("finances.expensesView.columns.paymentMethod"),
       className: "w-36",
       cell: (e) => e.paymentMethod ?? "—",
+    },
+    {
+      key: "receipt",
+      header: t("finances.expensesView.columns.receipt"),
+      className: "w-28",
+      cell: (e) => e.receiptUrl
+        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}</a>
+        : <span className="text-xs text-muted-foreground">—</span>,
     },
     {
       key: "amount",

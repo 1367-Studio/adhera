@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import { BASE_PATH } from "@/lib/env";
 
 type Cotisation = {
@@ -78,7 +80,7 @@ export function CotisationsView() {
   const totalPaye   = result?.totalPaye ?? 0
 
   // Load all active membres for the create form
-  const { data: membres = [] } = useQuery<MembreOption[]>({
+  const { data: membres = [], isLoading: membresLoading } = useQuery<MembreOption[]>({
     queryKey: ["membres", "all"],
     queryFn:  async () => {
       const res = await fetch("/api/membres")
@@ -123,6 +125,22 @@ export function CotisationsView() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
+  }
+
+  function handleExportMembresXlsx() {
+    if (!membres.length) {
+      toast.error(t("membres.view.toasts.noMembersToExport"))
+      return
+    }
+    window.location.href = `${BASE_PATH}/api/membres/export?full=1&format=xlsx`
+  }
+
+  function handleExportMembresPdf() {
+    if (!membres.length) {
+      toast.error(t("membres.view.toasts.noMembersToExport"))
+      return
+    }
+    exportMembresPdf(new URLSearchParams({ full: "1" }))
   }
 
   const statusBadge = getStatusBadge(t)
@@ -197,10 +215,27 @@ export function CotisationsView() {
         title={t("cotisations.view.title")}
         description={t("cotisations.view.count", { count: result?.total ?? 0 }) + (totalPaye > 0 ? t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) }) : "")}
         action={
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("common.add")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={membresLoading} />}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                {t("cotisations.view.exportMembers")}
+                <CaretDownIcon className="ml-1 size-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportMembresXlsx}>
+                  {t("cotisations.view.exportExcel")}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportMembresPdf}>
+                  {t("cotisations.view.exportPdf")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("common.add")}
+            </Button>
+          </div>
         }
       />
 
