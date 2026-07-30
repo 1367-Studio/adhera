@@ -115,7 +115,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
     const outcomes = await sendSmsBatch(jobs, associationId)
     eligible.forEach((c, i) => {
-      results.push({ cotisationId: c.id, membreId: c.membre.id, status: outcomes[i] ? "SENT" : "FAILED" })
+      results.push({ cotisationId: c.id, membreId: c.membre.id, status: outcomes[i].ok ? "SENT" : "FAILED" })
     })
   }
 
