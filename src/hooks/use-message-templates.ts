@@ -11,13 +11,14 @@ export type MessageTemplate = {
   body:      string
   smsBody:   string | null
   active:    boolean
+  isDefault: boolean
   createdAt: string
   updatedAt: string
   _count:    { rules: number }
   activeRulesCount: number
 }
 
-export type TemplateInput = { name: string; category?: TemplateCategory; subject: string; body: string; smsBody?: string }
+export type TemplateInput = { name: string; category?: TemplateCategory; subject: string; body: string; smsBody?: string; isDefault?: boolean }
 
 const KEY = ["message-templates"]
 
@@ -62,7 +63,7 @@ export function useCreateTemplate() {
 export function useUpdateTemplate(id: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (data: Partial<TemplateInput & { active: boolean }>) =>
+    mutationFn: (data: Partial<TemplateInput & { active: boolean; isDefault: boolean }>) =>
       fetchJson(`/api/message-templates/${id}`, {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },

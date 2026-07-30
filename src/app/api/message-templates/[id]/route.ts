@@ -8,12 +8,13 @@ import { findUnknownVars, TEMPLATE_CATEGORIES } from "@/lib/automation"
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
 const schema = z.object({
-  name:     z.string().min(1).max(100).optional(),
-  category: z.enum(TEMPLATE_CATEGORIES).optional(),
-  subject:  z.string().min(1).max(200).optional(),
-  body:     z.string().min(1).optional(),
-  smsBody:  z.string().optional(),
-  active:   z.boolean().optional(),
+  name:      z.string().min(1).max(100).optional(),
+  category:  z.enum(TEMPLATE_CATEGORIES).optional(),
+  subject:   z.string().min(1).max(200).optional(),
+  body:      z.string().min(1).optional(),
+  smsBody:   z.string().optional(),
+  active:    z.boolean().optional(),
+  isDefault: z.boolean().optional(),
 })
 
 async function resolve(id: string, associationId: string) {
@@ -49,8 +50,21 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (parsed.data.body     != null) updateData.body     = parsed.data.body
   if ("smsBody" in parsed.data)     updateData.smsBody  = parsed.data.smsBody || null
   if (parsed.data.active   != null) updateData.active   = parsed.data.active
+  if (parsed.data.isDefault != null) updateData.isDefault = parsed.data.isDefault
 
-  const updated = await prisma.messageTemplate.update({ where: { id }, data: updateData })
+  // At most one default per (associationId, category) — unset whichever one currently
+  // holds it (there's at most one) before the new one is set, in the same transaction as
+  // the update itself so a request can't race in between the two writes.
+  const category = parsed.data.category ?? existing.category
+  const [updated] = await prisma.$transaction([
+    prisma.messageTemplate.update({ where: { id }, data: updateData }),
+    ...(parsed.data.isDefault
+      ? [prisma.messageTemplate.updateMany({
+          where: { associationId, category, isDefault: true, id: { not: id } },
+          data:  { isDefault: false },
+        })]
+      : []),
+  ])
   const action  = parsed.data.active != null ? (parsed.data.active ? "TEMPLATE_ACTIVATED" : "TEMPLATE_DEACTIVATED") : "TEMPLATE_UPDATED"
   await writeActivityLog({ associationId, actorId: userId, action, entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
