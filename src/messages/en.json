@@ -1892,6 +1892,8 @@
       "internalName": "Internal name",
       "internalNamePlaceholder": "Annual membership fee reminder",
       "category": "Category",
+      "isDefault": "Default template",
+      "isDefaultHint": "Automatically used as the suggested message for this category (e.g. cotisation reminders sent from the Cotisations page).",
       "emailSubject": "Email subject",
       "emailSubjectPlaceholder": "Reminder: your '{{annee_cotisation}}' membership fee",
       "variablesHint": "Variables — drag into the subject, body, or SMS",
@@ -2359,6 +2361,10 @@
     },
     "view": {
       "title": "Membership fees",
+      "selectAllMatching": "Select all (active filters)",
+      "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+      "deselectAll": "Deselect",
+      "sendReminder": "Send reminder",
       "exportMembers": "Export members",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
@@ -2394,7 +2400,36 @@
         "created": "Membership fee recorded",
         "updated": "Membership fee updated",
         "deleted": "Membership fee deleted"
-      }
+      },
+      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected."
+    },
+    "reminderModal": {
+      "title": "Send a cotisation reminder",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "smsModuleRequired": "Requires the SMS module",
+      "recipients": "{count, plural, one {# recipient} other {# recipients}}",
+      "noRecipient": "No recipient",
+      "removeRecipient": "Remove this recipient",
+      "subjectLabel": "Subject",
+      "bodyLabel": "Message",
+      "variablesNotice": "The message is personalized for each recipient — {{prenom}}, {{montant_cotisation}} and {{annee_cotisation}} are filled in automatically when sending.",
+      "sendNow": "Send ({count})",
+      "resultTitle": "Reminders sent",
+      "sent": "Sent",
+      "failed": "Failed",
+      "skippedNoEmail": "No email",
+      "skippedNoPhone": "No phone",
+      "toasts": {
+        "subjectRequired": "Please enter a subject",
+        "bodyRequired": "Please enter a message",
+        "templateLoadError": "Unable to load the reminder template"
+      },
+      "continue": "Continue",
+      "confirmTitle": "Confirm sending",
+      "confirmDescription": "You're about to send a {channel} reminder to {count, plural, one {# recipient} other {# recipients}}. This action cannot be undone.",
+      "andOthers": " and {count} more",
+      "skippedInvalid": "{count, plural, one {# cotisation was no longer pending by the time it was sent (already paid or deleted) and was skipped} other {# cotisations were no longer pending by the time they were sent (already paid or deleted) and were skipped}}"
     }
   },
   "membres": {

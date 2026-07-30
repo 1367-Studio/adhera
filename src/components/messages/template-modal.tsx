@@ -36,11 +36,12 @@ function getTemplateCategoryLabels(t: ReturnType<typeof useTranslations>): Recor
 
 function buildSchema(t: ReturnType<typeof useTranslations>) {
   return z.object({
-    name:     z.string().min(1, t("messages.templateModal.validation.required")),
-    category: z.enum(TEMPLATE_CATEGORIES),
-    subject:  z.string().min(1, t("messages.templateModal.validation.required")),
-    body:     z.string().refine(hasText, t("messages.templateModal.validation.required")),
-    smsBody:  z.string().optional(),
+    name:      z.string().min(1, t("messages.templateModal.validation.required")),
+    category:  z.enum(TEMPLATE_CATEGORIES),
+    subject:   z.string().min(1, t("messages.templateModal.validation.required")),
+    body:      z.string().refine(hasText, t("messages.templateModal.validation.required")),
+    smsBody:   z.string().optional(),
+    isDefault: z.boolean(),
   })
 }
 
@@ -92,25 +93,26 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
 
   const { register, handleSubmit, reset, setValue, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver:      zodResolver(buildSchema(t)),
-    defaultValues: { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" },
+    defaultValues: { name: "", category: "GENERAL", subject: "", body: "", smsBody: "", isDefault: false },
   })
 
   useEffect(() => {
     if (open) {
       reset(template
-        ? { name: template.name, category: template.category, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "" }
-        : { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" }
+        ? { name: template.name, category: template.category, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "", isDefault: template.isDefault }
+        : { name: "", category: "GENERAL", subject: "", body: "", smsBody: "", isDefault: false }
       )
     }
   }, [open, template, reset])
 
   async function onSubmit(data: FormValues) {
     const payload: TemplateInput = {
-      name:     data.name,
-      category: data.category,
-      subject:  data.subject,
-      body:     data.body,
-      smsBody:  data.smsBody?.trim() || undefined,
+      name:      data.name,
+      category:  data.category,
+      subject:   data.subject,
+      body:      data.body,
+      smsBody:   data.smsBody?.trim() || undefined,
+      isDefault: data.isDefault,
     }
     try {
       if (isEditing) {
@@ -208,6 +210,18 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
           minHeight="200px"
           error={errors.body?.message}
         />
+
+        <label className="flex items-start gap-2.5 rounded-lg border p-3 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register("isDefault")}
+            className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border border-input accent-primary"
+          />
+          <span className="space-y-0.5">
+            <span className="block text-sm font-medium">{t("messages.templateModal.isDefault")}</span>
+            <span className="block text-xs text-muted-foreground">{t("messages.templateModal.isDefaultHint")}</span>
+          </span>
+        </label>
 
         {sms && (
           <div className="space-y-2 rounded-xl border bg-muted/20 p-4">

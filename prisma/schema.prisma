@@ -676,6 +676,10 @@ model MessageTemplate {
   body          String   @db.Text
   smsBody       String?  @db.Text
   active        Boolean  @default(true)
+  // At most one default per (associationId, category) — enforced in the API, not the DB.
+  // Lets a feature like the cotisation bulk-reminder action ("send-reminder-modal.tsx")
+  // know which template to preload without the admin picking one every time.
+  isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
