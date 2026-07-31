@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PaperPlaneTiltIcon, WarningIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon } from "@phosphor-icons/react/dist/ssr";
+import { z } from "zod"
+import { PaperPlaneTiltIcon, WarningIcon, WarningCircleIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon, PlusIcon, XIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -23,6 +24,7 @@ type MembrePick = {
   firstName: string
   lastName:  string
   email:     string | null
+  status:    string
   typeId:    string | null
   type:      MembreTypeRef | null
 }
@@ -39,21 +41,48 @@ function hasContent(subject: string, body: string): boolean {
   return subject.trim().length > 0 || hasHtmlContent(body)
 }
 
+// Same check the server runs on externalEmails (see /api/membres/email) — kept identical on
+// purpose. A client regex that's even slightly looser than the server's would let an address
+// through here that gets rejected there, failing the *entire* zod array and killing the send
+// for every recipient, members included, with no indication of which address was the problem.
+const EXTERNAL_EMAIL_SCHEMA = z.string().email()
+const MAX_EXTERNAL_EMAILS = 100
+
+// {{prenom}}/{{nom}}/{{nom_complet}} only resolve for members — external emails have no
+// Membre record to pull them from. Cotisation/event variables never resolve here at all:
+// this is an ad-hoc send with no cotisation or event context (unlike the automation engine).
+// Must stay in sync with KNOWN_TEMPLATE_VARS in src/lib/automation.ts — duplicated here
+// (rather than imported) because that module pulls in the Prisma runtime, which shouldn't
+// end up in a client bundle.
+const NAME_VARS = ["prenom", "nom", "nom_complet"]
+const ALWAYS_RESOLVED_VARS = ["email", "association", "lien_portal"]
+const CONTEXTUAL_VARS = ["annee_cotisation", "montant_cotisation", "titre_evenement", "date_evenement", "lieu_evenement"]
+const KNOWN_VARS = [...NAME_VARS, ...ALWAYS_RESOLVED_VARS, ...CONTEXTUAL_VARS]
+
+function extractVarTokens(text: string): string[] {
+  return [...text.matchAll(/\{\{(\w+)\}\}/g)].map(m => m[1])
+}
+
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function TemplateCard({
   template,
   selected,
   onSelect,
+  contextWarning,
+  contextWarningLabel,
 }: {
   template: { id: string; name: string; subject: string }
   selected: boolean
   onSelect: () => void
+  contextWarning?: boolean
+  contextWarningLabel?: string
 }) {
   return (
     <button
       type="button"
       onClick={onSelect}
+      title={contextWarning ? contextWarningLabel : undefined}
       className={cn(
         "w-full text-left rounded-lg border p-3 transition-all text-sm",
         selected
@@ -63,7 +92,10 @@ function TemplateCard({
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-medium truncate">{template.name}</span>
-        {selected && <CheckIcon className="size-3.5 text-primary shrink-0" />}
+        <div className="flex items-center gap-1 shrink-0">
+          {contextWarning && <WarningCircleIcon className="size-3.5 text-amber-500" />}
+          {selected && <CheckIcon className="size-3.5 text-primary" />}
+        </div>
       </div>
       <p className="text-xs text-muted-foreground mt-0.5 truncate">{template.subject}</p>
     </button>
@@ -177,6 +209,9 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const [recipientMode,     setRecipientMode]     = useState<RecipientMode>("all")
   const [selectedTypeId,    setSelectedTypeId]    = useState<string>("")
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([])
+  const [externalEmails,    setExternalEmails]    = useState<string[]>([])
+  const [externalInput,     setExternalInput]     = useState("")
+  const [externalInputError, setExternalInputError] = useState<string | null>(null)
   const [selectedTemplate,    setSelectedTemplate]    = useState<MessageTemplate | null>(null)
   const [pendingTemplate,     setPendingTemplate]     = useState<MessageTemplate | null>(null)
   const [appliedBodyBaseline, setAppliedBodyBaseline] = useState<string>("")
@@ -197,6 +232,9 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       setRecipientMode("all")
       setSelectedTypeId("")
       setSelectedMemberIds([])
+      setExternalEmails([])
+      setExternalInput("")
+      setExternalInputError(null)
       setSelectedTemplate(null)
       setPendingTemplate(null)
       setAppliedBodyBaseline("")
@@ -223,13 +261,19 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const { data: templates = [], isLoading: loadingTemplates } = useMessageTemplates({ enabled: open })
   const createTemplate = useCreateTemplate()
 
+  // Fetched for every mode (not just "manual") — an external email can match a member who
+  // isn't in the current send at all (inactive/suspended/pending, or simply not selected/of
+  // a different type), so checking against it needs the full roster, not just who's ACTIF.
   const { data: allMembres = [], isLoading: loadingMembres } = useQuery<MembrePick[]>({
     queryKey:  ["membres-email-pick"],
-    queryFn:   () => fetch("/api/membres?status=ACTIF").then(r => r.json()),
-    enabled:   open && recipientMode === "manual",
+    queryFn:   () => fetch("/api/membres").then(r => r.json()),
+    enabled:   open,
     staleTime: 30_000,
   })
-  const membresWithEmail = allMembres.filter(m => m.email)
+  const membresWithEmail = allMembres.filter(m => m.status === "ACTIF" && m.email)
+  const memberByEmail = new Map(
+    allMembres.filter(m => m.email).map(m => [m.email!.toLowerCase(), m]),
+  )
 
   // Computed — no need for state + effect
   const selectedTypeName = types.find(t => t.id === selectedTypeId)?.name ?? ""
@@ -290,12 +334,69 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
     )
   }
 
+  // Used for the paste-multiple path. Feedback is inline (the same slot addExternalEmail
+  // uses below), not a toast — toasts render behind/outside this modal's dialog and don't
+  // actually become visible while it's open, so anything shown only as a toast here was
+  // effectively silent.
+  function addEmails(candidates: string[]) {
+    let invalidCount = 0
+    let limitHit = false
+    setExternalEmails(prev => {
+      const next = [...prev]
+      for (const raw of candidates) {
+        const email = raw.trim().toLowerCase()
+        if (!email) continue
+        if (next.length >= MAX_EXTERNAL_EMAILS) { limitHit = true; break }
+        if (!EXTERNAL_EMAIL_SCHEMA.safeParse(email).success) { invalidCount++; continue }
+        if (!next.includes(email)) next.push(email)
+      }
+      return next
+    })
+    if (limitHit) {
+      setExternalInputError(t("membres.email.toasts.externalEmailLimitReached", { max: MAX_EXTERNAL_EMAILS }))
+    } else if (invalidCount > 0) {
+      setExternalInputError(t("membres.email.toasts.pasteInvalidSkipped", { count: invalidCount }))
+    } else {
+      setExternalInputError(null)
+    }
+  }
+
+  function addExternalEmail() {
+    const email = externalInput.trim().toLowerCase()
+    if (!email) return
+    if (externalEmails.length >= MAX_EXTERNAL_EMAILS) {
+      setExternalInputError(t("membres.email.toasts.externalEmailLimitReached", { max: MAX_EXTERNAL_EMAILS }))
+      return
+    }
+    if (!EXTERNAL_EMAIL_SCHEMA.safeParse(email).success) {
+      setExternalInputError(t("membres.email.toasts.invalidExternalEmail"))
+      return
+    }
+    setExternalInputError(null)
+    if (!externalEmails.includes(email)) setExternalEmails(prev => [...prev, email])
+    setExternalInput("")
+  }
+
+  // Splits a pasted comma/semicolon/whitespace-separated list into individual chips instead
+  // of letting the whole blob land in the input as one (invalid) address.
+  function handleExternalPaste(e: React.ClipboardEvent<HTMLInputElement>) {
+    const text = e.clipboardData.getData("text")
+    if (!/[,;\s]/.test(text.trim())) return
+    e.preventDefault()
+    addEmails(text.split(/[,;\s]+/))
+    setExternalInput("")
+  }
+
+  function removeExternalEmail(email: string) {
+    setExternalEmails(prev => prev.filter(e => e !== email))
+  }
+
   async function handleContinue() {
     if (recipientMode === "type" && !selectedTypeId) {
       toast.error(t("membres.email.toasts.selectType"))
       return
     }
-    if (recipientMode === "manual" && selectedMemberIds.length === 0) {
+    if (recipientMode === "manual" && selectedMemberIds.length === 0 && externalEmails.length === 0) {
       toast.error(t("membres.email.toasts.selectMember"))
       return
     }
@@ -321,7 +422,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       const d     = await res.json()
       const count = d.count ?? 0
 
-      if (count === 0) {
+      if (count === 0 && externalEmails.length === 0) {
         toast.error(t("membres.email.toasts.noRecipientWithEmail"))
         return
       }
@@ -341,6 +442,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       const body: Record<string, unknown> = { subject, bodyHtml }
       if (recipientMode === "manual")                 body.recipientIds = selectedMemberIds
       if (recipientMode === "type" && selectedTypeId) body.typeId       = selectedTypeId
+      if (externalEmails.length > 0)                  body.externalEmails = externalEmails
 
       const res  = await fetch("/api/membres/email", {
         method:  "POST",
@@ -366,6 +468,9 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
           )
         }
       }
+      if (data.skippedDuplicateExternalCount > 0) {
+        toast.info(t("membres.email.toasts.duplicateExternalSkipped", { count: data.skippedDuplicateExternalCount }))
+      }
       onOpenChange(false)
     } catch {
       toast.error(t("common.networkError"))
@@ -383,12 +488,37 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
     onOpenChange(false)
   }
 
-  const recipientSummary =
+  const memberSummary =
     recipientMode === "manual"
       ? t("membres.email.selectedCount", { count: selectedMemberIds.length })
       : recipientMode === "type" && selectedTypeName
         ? t("membres.email.recipientsOfType", { count: recipientCount ?? 0, type: selectedTypeName })
         : t("membres.email.recipientsActive", { count: recipientCount ?? 0 })
+
+  const memberCount = recipientMode === "manual" ? selectedMemberIds.length : (recipientCount ?? 0)
+  const recipientSummary =
+    externalEmails.length === 0
+      ? memberSummary
+      : memberCount === 0
+        ? t("membres.email.externalOnlyCount", { count: externalEmails.length })
+        : t("membres.email.recipientsWithExternal", { members: memberSummary, count: externalEmails.length })
+
+  const usedVars = new Set([...extractVarTokens(subject), ...extractVarTokens(bodyHtml)])
+  const unresolvedVars = [
+    ...(externalEmails.length > 0 ? NAME_VARS.filter(v => usedVars.has(v)) : []),
+    ...CONTEXTUAL_VARS.filter(v => usedVars.has(v)),
+  ]
+  // Tokens that aren't recognized at all (typos, made-up names) never resolve for anyone —
+  // member or external — and are distinct from the "known but no data in this context" case above.
+  const unknownVars = [...usedVars].filter(v => !KNOWN_VARS.includes(v))
+
+  // An external email that matches an existing member (any status) gets sent, not blocked —
+  // but it's worth flagging: unlike a real member send, it won't be personalized and won't
+  // show up on that member's Emails tab, which is easy to not realize when just typing an
+  // address by hand instead of picking them from the list.
+  const externalMemberConflicts = externalEmails
+    .map(email => memberByEmail.get(email))
+    .filter((m): m is MembrePick => !!m)
 
   return (
     <>
@@ -478,6 +608,85 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   />
                 )
               )}
+
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">{t("membres.email.externalEmailsLabel")}</p>
+                  {externalEmails.length > 0 && (
+                    <p className="text-xs text-muted-foreground">{externalEmails.length}/{MAX_EXTERNAL_EMAILS}</p>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">{t("membres.email.externalEmailsHint")}</p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={externalInput}
+                    onChange={e => { setExternalInput(e.target.value); setExternalInputError(null) }}
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addExternalEmail() } }}
+                    onPaste={handleExternalPaste}
+                    placeholder={t("membres.email.externalEmailsPlaceholder")}
+                    disabled={externalEmails.length >= MAX_EXTERNAL_EMAILS}
+                    aria-invalid={!!externalInputError}
+                    className={cn(
+                      "flex-1 rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring disabled:opacity-50",
+                      externalInputError ? "border-destructive focus-visible:ring-destructive/30" : "border-input",
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addExternalEmail}
+                    disabled={externalEmails.length >= MAX_EXTERNAL_EMAILS}
+                  >
+                    <PlusIcon className="size-3.5" />
+                  </Button>
+                </div>
+                {externalInputError && (
+                  <p className="text-xs text-destructive">{externalInputError}</p>
+                )}
+                {externalEmails.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {externalEmails.map(email => {
+                      const conflictMember = memberByEmail.get(email)
+                      return (
+                        <span
+                          key={email}
+                          title={conflictMember
+                            ? t("membres.email.externalMemberConflictChipTitle", { name: `${conflictMember.firstName} ${conflictMember.lastName}` })
+                            : undefined}
+                          className={cn(
+                            "inline-flex items-center gap-1 rounded-full border pl-2.5 pr-1.5 py-1 text-xs",
+                            conflictMember
+                              ? "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300"
+                              : "bg-muted/40",
+                          )}
+                        >
+                          {conflictMember && <WarningCircleIcon className="size-3 shrink-0" />}
+                          {email}
+                          <button
+                            type="button"
+                            onClick={() => removeExternalEmail(email)}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                          >
+                            <XIcon className="size-3" />
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
+                )}
+                {externalMemberConflicts.length > 0 && (
+                  <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300">
+                    <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
+                    <span>
+                      {t("membres.email.externalMemberConflictWarning", {
+                        list: externalMemberConflicts.map(m => `${m.email} (${m.firstName} ${m.lastName})`).join(", "),
+                      })}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="border-t" />
@@ -520,6 +729,8 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                       template={tpl}
                       selected={selectedTemplate?.id === tpl.id}
                       onSelect={() => applyTemplate(tpl)}
+                      contextWarning={tpl.category === "COTISATION" || tpl.category === "EVENEMENT"}
+                      contextWarningLabel={t("membres.email.templateContextWarning")}
                     />
                   ))}
                 </div>
@@ -543,6 +754,22 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   </button>
                 )}
               </div>
+              {unknownVars.length > 0 && (
+                <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300">
+                  <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
+                  <span>
+                    {t("membres.email.unknownVarsWarning", { vars: unknownVars.map(v => `{{${v}}}`).join(", ") })}
+                  </span>
+                </div>
+              )}
+              {unresolvedVars.length > 0 && (
+                <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/20 px-3 py-2.5 text-xs text-blue-800 dark:text-blue-300">
+                  <InfoIcon className="size-4 shrink-0 mt-0.5" />
+                  <span>
+                    {t("membres.email.unresolvedVarsWarning", { vars: unresolvedVars.map(v => `{{${v}}}`).join(", ") })}
+                  </span>
+                </div>
+              )}
               <FormField
                 label={t("membres.email.subjectLabel")}
                 required
@@ -592,6 +819,16 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 <p className="text-xs text-muted-foreground">{t("membres.email.recipients")}</p>
                 <p className="text-sm font-medium">{recipientSummary}</p>
               </div>
+              {externalEmails.length > 0 && (
+                <div className="space-y-0.5">
+                  <p className="text-xs text-muted-foreground">{t("membres.email.externalEmailsLabel")}</p>
+                  <p className="text-sm">
+                    {externalEmails.length > 10
+                      ? `${externalEmails.slice(0, 10).join(", ")}${t("membres.email.toasts.andOthers", { count: externalEmails.length - 10 })}`
+                      : externalEmails.join(", ")}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-2">

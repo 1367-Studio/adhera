@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { sendSmsBatch } from "@/lib/sms"
 import { writeActivityLog } from "@/lib/activity-log"
+import { buildVars, substituteVars } from "@/lib/automation"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -24,6 +25,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const { body, recipientIds, typeId } = parsed.data
 
+  const assoc = await prisma.association.findUnique({
+    where:  { id: ctx.associationId },
+    select: { name: true, slug: true },
+  })
+  if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
   const membres = await prisma.membre.findMany({
     where: {
       associationId: ctx.associationId,
@@ -38,7 +45,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.phone)
-  const jobs = recipients.map(m => ({ to: m.phone!, body }))
+  const jobs = recipients.map(m => {
+    const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: "", association: assoc.name, slug: assoc.slug })
+    return { to: m.phone!, body: substituteVars(body, vars) }
+  })
   if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
 
   const results = await sendSmsBatch(jobs, ctx.associationId)
