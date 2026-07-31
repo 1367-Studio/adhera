@@ -2610,7 +2610,8 @@
         "reunions": "Réunions",
         "materiel": "Matériel",
         "historique": "Historique",
-        "emails": "Emails"
+        "emails": "Emails",
+        "sms": "SMS"
       },
       "cotisationStatus": {
         "enAttente": "En attente",

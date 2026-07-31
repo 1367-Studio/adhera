@@ -22,6 +22,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { MembreForm } from "@/components/membres/membre-form"
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { MembreEmailLog } from "@/components/membres/membre-email-log"
+import { MembreSmsLog } from "@/components/membres/membre-sms-log"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -400,6 +401,7 @@ export function MembreDetailView() {
           {modules.materiel && <TabsTrigger value="materiel">{t("membres.detail.tabs.materiel")}</TabsTrigger>}
           <TabsTrigger value="historique">{t("membres.detail.tabs.historique")}</TabsTrigger>
           <TabsTrigger value="emails">{t("membres.detail.tabs.emails")}</TabsTrigger>
+          {modules.sms && <TabsTrigger value="sms">{t("membres.detail.tabs.sms")}</TabsTrigger>}
         </TabsList>
 
         {modules.cotisations && (
@@ -555,6 +557,12 @@ export function MembreDetailView() {
         <TabsContent value="emails" className="pt-3">
           <MembreEmailLog membreId={id} />
         </TabsContent>
+
+        {modules.sms && (
+        <TabsContent value="sms" className="pt-3">
+          <MembreSmsLog membreId={id} />
+        </TabsContent>
+        )}
       </Tabs>
 
       <Modal open={editOpen} onOpenChange={setEditOpen} title={t("membres.actions.edit")} size="lg" dismissable={false}>

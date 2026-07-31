@@ -47,11 +47,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const recipients = membres.filter(m => m.phone)
   const jobs = recipients.map(m => {
     const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: "", association: assoc.name, slug: assoc.slug })
-    return { to: m.phone!, body: substituteVars(body, vars) }
+    return { to: m.phone!, body: substituteVars(body, vars), membreId: m.id }
   })
   if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
 
-  const results = await sendSmsBatch(jobs, ctx.associationId)
+  const results = await sendSmsBatch(jobs, ctx.associationId, { source: "BULK_MESSAGE" })
   const sent    = results.filter(r => r.ok).length
   const failedMembers = recipients
     .map((m, i) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, reason: results[i].reason, ok: results[i].ok }))
