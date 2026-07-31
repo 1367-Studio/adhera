@@ -37,6 +37,12 @@ type LogEntry = {
     quantity?:   number
     skippedNoContact?: number
     birthdaysToday?:   number
+    sent?:              number
+    failed?:            number
+    recipientMode?:     string
+    recipientCount?:    number
+    externalEmailCount?: number
+    externalEmails?:    string[]
   } | null
   createdAt: string
 }
@@ -431,6 +437,29 @@ function Details({ log, t }: { log: LogEntry; t: Translator }) {
       <p className="text-xs text-muted-foreground">
         {t("membres.activiteView.automationSkippedNoContact", { skipped: m.skippedNoContact, total: m.birthdaysToday ?? 0 })}
       </p>
+    )
+  }
+
+  if ((log.action === "EMAIL_SENT_BULK" || log.action === "SMS_SENT_BULK") && m.sent != null) {
+    const bulkModeLabels: Record<string, string> = {
+      all:    t("membres.activiteView.bulkSend.modeAll"),
+      type:   t("membres.activiteView.bulkSend.modeType"),
+      manual: t("membres.activiteView.bulkSend.modeManual"),
+    }
+    const modeLabel = m.recipientMode ? (bulkModeLabels[m.recipientMode] ?? m.recipientMode) : null
+    return (
+      <div className="space-y-0.5">
+        <p className="text-xs text-muted-foreground">
+          {t("membres.activiteView.bulkSend.summary", { sent: m.sent })}
+          {m.failed ? ` · ${t("membres.activiteView.bulkSend.failedSuffix", { failed: m.failed })}` : ""}
+          {modeLabel ? ` — ${modeLabel}` : ""}
+        </p>
+        {m.externalEmails && m.externalEmails.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {t("membres.activiteView.bulkSend.externalEmails", { emails: m.externalEmails.join(", ") })}
+          </p>
+        )}
+      </div>
     )
   }
 
