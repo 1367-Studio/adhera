@@ -359,6 +359,7 @@ model Association {
   factures            Facture[]
   facturesRecues      FactureRecue[]
   emailMessages       EmailMessage[]
+  smsMessages         SmsMessage[]
 }
 
 model User {
@@ -467,6 +468,7 @@ model Membre {
   meetingsAsParticipant MeetingParticipant[]
   incomes               Income[]
   emailMessages         EmailMessage[]
+  smsMessages           SmsMessage[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -850,6 +852,40 @@ model EmailMessage {
   bouncedAt      DateTime?
   complainedAt   DateTime?
   createdAt      DateTime    @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, membreId, createdAt(sort: Desc)])
+  @@index([source, sourceId])
+}
+
+enum SmsStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  UNDELIVERED
+  FAILED
+}
+
+model SmsMessage {
+  id            String    @id @default(cuid())
+  associationId String
+  membreId      String?
+  twilioSid     String?   @unique
+  to            String
+  body          String    @db.Text
+  // "BULK_MESSAGE" | "AUTOMATION" | "COTISATION_REMINDER" — String not enum, same
+  // convention as EmailMessage.source (new sources shouldn't need a migration).
+  source        String
+  sourceId      String?
+  status        SmsStatus @default(QUEUED)
+  errorMessage  String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failedAt      DateTime?
+  createdAt     DateTime  @default(now())
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)

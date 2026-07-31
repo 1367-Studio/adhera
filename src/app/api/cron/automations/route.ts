@@ -214,7 +214,11 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
       const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
@@ -339,7 +343,11 @@ async function processBirthday(
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
       const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
@@ -467,7 +475,11 @@ async function processAdherentLapsed(
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
       const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
@@ -589,7 +601,11 @@ async function processEventReminder(
 
       for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
         const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-        const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
+        const results = await sendSmsBatch(
+          chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId ?? undefined })),
+          rule.associationId,
+          { source: "AUTOMATION", sourceId: rule.id },
+        )
         const succeeded = chunk.filter((_, idx) => results[idx].ok)
         if (succeeded.length > 0) {
           await prisma.automationLog.createMany({

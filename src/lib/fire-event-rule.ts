@@ -62,10 +62,14 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
   }
 
   if ((channel === "SMS" || channel === "BOTH") && mods.sms && rule.template.smsBody && membre.phone) {
-    sendSms(membre.phone, substituteVars(rule.template.smsBody, vars), associationId).catch(() => {})
+    sendSms(membre.phone, substituteVars(rule.template.smsBody, vars), associationId, { membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
     dispatched = true
   }
 
+  // "dispatched" means attempted, not confirmed — both sends above are fire-and-forget,
+  // so this AutomationLog row (and its subject line) exists whether the send actually
+  // went through or not. The real per-message outcome — including failures — lives in
+  // EmailMessage/SmsMessage, keyed by this same source/sourceId ("AUTOMATION"/rule.id).
   if (dispatched) {
     await prisma.automationLog.create({
       data: {

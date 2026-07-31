@@ -111,9 +111,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
         association: assoc.name, slug: assoc.slug,
         anneeCotisation: c.year, montantCotisation: c.amount.toString(),
       })
-      return { to: c.membre.phone!, body: substituteVars(body, vars) }
+      return { to: c.membre.phone!, body: substituteVars(body, vars), membreId: c.membre.id }
     })
-    const outcomes = await sendSmsBatch(jobs, associationId)
+    const outcomes = await sendSmsBatch(jobs, associationId, { source: "COTISATION_REMINDER" })
     eligible.forEach((c, i) => {
       results.push({ cotisationId: c.id, membreId: c.membre.id, status: outcomes[i].ok ? "SENT" : "FAILED" })
     })
