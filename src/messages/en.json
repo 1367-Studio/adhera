@@ -2361,7 +2361,10 @@
       "amount": "Amount",
       "paidAt": "Payment date",
       "note": "Note",
-      "notePlaceholder": "Additional information…"
+      "notePlaceholder": "Additional information…",
+      "dueDate": "Due date",
+      "paymentMethod": "Payment method",
+      "statusLockedHint": "To change this status, first remove the recorded payments from the payment history."
     },
     "view": {
       "title": "Membership fees",
@@ -2379,12 +2382,17 @@
         "year": "Year",
         "amount": "Amount",
         "status": "Status",
-        "paidAt": "Paid on"
+        "paidAt": "Paid on",
+        "dueDate": "Due date",
+        "paymentMethod": "Payment method",
+        "lastReminder": "Last reminder"
       },
       "actions": {
         "edit": "Edit",
         "declaration": "Receipt",
-        "delete": "Delete"
+        "delete": "Delete",
+        "recordPayment": "Record a payment",
+        "paymentHistory": "Payment history"
       },
       "searchPlaceholder": "Search for a member…",
       "allStatuses": "All statuses",
@@ -2392,7 +2400,8 @@
       "statusFilter": {
         "enAttente": "Pending",
         "payees": "Paid",
-        "exonerees": "Exempt"
+        "exonerees": "Exempt",
+        "partiellementPayees": "Partially paid"
       },
       "noResultsFor": "No results for \"{search}\"",
       "noCotisation": "No membership fee recorded",
@@ -2403,9 +2412,11 @@
       "toasts": {
         "created": "Membership fee recorded",
         "updated": "Membership fee updated",
-        "deleted": "Membership fee deleted"
+        "deleted": "Membership fee deleted",
+        "confirm": "Confirm"
       },
-      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected."
+      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
+      "remaining": "{amount} remaining"
     },
     "reminderModal": {
       "title": "Send a cotisation reminder",
@@ -2434,6 +2445,26 @@
       "confirmDescription": "You're about to send a {channel} reminder to {count, plural, one {# recipient} other {# recipients}}. This action cannot be undone.",
       "andOthers": " and {count} more",
       "skippedInvalid": "{count, plural, one {# cotisation was no longer pending by the time it was sent (already paid or deleted) and was skipped} other {# cotisations were no longer pending by the time they were sent (already paid or deleted) and were skipped}}"
+    },
+    "payment": {
+      "title": "Record a payment",
+      "amount": "Amount",
+      "remainingBalance": "Remaining balance: {amount}",
+      "method": "Payment method",
+      "date": "Payment date",
+      "note": "Note",
+      "notePlaceholder": "Reference, remark…",
+      "historyTitle": "Payment history",
+      "noPayments": "No payment recorded",
+      "deleteConfirmTitle": "Delete this payment?",
+      "deleteConfirmDescription": "The {amount} payment will be removed and the dues balance recalculated.",
+      "deleteTooltip": "Delete this payment",
+      "toasts": {
+        "amountMustBePositive": "The amount must be greater than 0",
+        "amountExceedsBalance": "The amount exceeds the remaining balance ({amount})",
+        "recorded": "Payment recorded",
+        "deleted": "Payment deleted"
+      }
     }
   },
   "membres": {
@@ -2616,7 +2647,8 @@
       "cotisationStatus": {
         "enAttente": "Pending",
         "paye": "Paid",
-        "exonere": "Exempt"
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid"
       },
       "loanStatus": {
         "demande": "Pending request",
@@ -3254,7 +3286,8 @@
       "status": {
         "enAttente": "Pending",
         "paye": "Paid",
-        "exonere": "Exempt"
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid"
       },
       "currentYearTitle": "{year} dues — Current year",
       "paidOn": "Paid on {date}",
@@ -3269,7 +3302,10 @@
         "paymentDone": "Payment successful!",
         "paymentCancelled": "Payment cancelled.",
         "paymentError": "Error during payment"
-      }
+      },
+      "remaining": "{amount} remaining",
+      "otherPaymentMethodsNotice": "You can also pay this due another way (check, cash, bank transfer) directly with your association — the payment will be recorded by a manager.",
+      "offlinePaymentNotice": "Contact your association to pay this due (check, cash, bank transfer) — the payment will be recorded by a manager."
     },
     "communications": {
       "title": "My communications",

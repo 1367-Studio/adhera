@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { CheckCircleIcon, ClockIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, ClockIcon, CircleHalfIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,23 +16,26 @@ import { portalFetch } from "@/lib/portal-fetch"
 import { BASE_PATH } from "@/lib/env"
 
 type Cotisation = {
-  id:      string
-  year:    number
-  amount:  string
-  status:  "EN_ATTENTE" | "PAYE" | "EXONERE"
-  paidAt:  string | null
-  note:    string | null
+  id:         string
+  year:       number
+  amount:     string
+  amountPaid: string
+  status:     "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
+  paidAt:     string | null
+  note:       string | null
 }
 
 const statusIcon: Record<string, React.ReactNode> = {
-  EN_ATTENTE: <ClockIcon className="size-3.5 text-yellow-500" />,
-  PAYE:       <CheckCircleIcon className="size-3.5 text-green-500" />,
-  EXONERE:    <GiftIcon className="size-3.5 text-sky-500" />,
+  EN_ATTENTE:          <ClockIcon className="size-3.5 text-yellow-500" />,
+  PARTIELLEMENT_PAYEE: <CircleHalfIcon className="size-3.5 text-amber-500" />,
+  PAYE:                <CheckCircleIcon className="size-3.5 text-green-500" />,
+  EXONERE:             <GiftIcon className="size-3.5 text-sky-500" />,
 }
 const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
-  PAYE:       "default",
-  EN_ATTENTE: "secondary",
-  EXONERE:    "outline",
+  PAYE:                "default",
+  EN_ATTENTE:          "secondary",
+  PARTIELLEMENT_PAYEE: "outline",
+  EXONERE:             "outline",
 }
 
 function currentYear() {
@@ -51,12 +54,17 @@ function CotisationPortalPageInner() {
   const t             = useTranslations("portalMembre.cotisation")
   const tCommon       = useTranslations("common")
   const statusLabel: Record<string, string> = {
-    EN_ATTENTE: t("status.enAttente"),
-    PAYE:       t("status.paye"),
-    EXONERE:    t("status.exonere"),
+    EN_ATTENTE:          t("status.enAttente"),
+    PARTIELLEMENT_PAYEE: t("status.partiellementPayee"),
+    PAYE:                t("status.paye"),
+    EXONERE:             t("status.exonere"),
   }
   const searchParams = useSearchParams()
   const [paymentEnabled, setPaymentEnabled] = useState(false)
+  // Distinct from paymentEnabled itself — without this, the "you can also pay another way"
+  // disclaimer (which assumes an online option exists alongside it) would flash briefly on
+  // load before the connect-status check resolves, since paymentEnabled starts false.
+  const [paymentStatusLoaded, setPaymentStatusLoaded] = useState(false)
 
   const { data: cotisations, isLoading, isError, refetch } = useQuery<Cotisation[]>({
     queryKey: ["portal-cotisation"],
@@ -69,6 +77,7 @@ function CotisationPortalPageInner() {
       .then(r => r.json())
       .then((d: { enabled?: boolean }) => setPaymentEnabled(d.enabled === true))
       .catch(() => {})
+      .finally(() => setPaymentStatusLoaded(true))
   }, [])
 
   useEffect(() => {
@@ -81,7 +90,7 @@ function CotisationPortalPageInner() {
       const poll = async () => {
         attempts++
         const result = await refetch()
-        const stillPending = result.data?.some(c => c.year === currentYear() && c.status === "EN_ATTENTE")
+        const stillPending = result.data?.some(c => c.year === currentYear() && (c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE"))
         if (stillPending && attempts < 5) setTimeout(poll, 1500)
       }
       poll()
@@ -161,6 +170,11 @@ function CotisationPortalPageInner() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-2xl font-bold">{parseFloat(thisYear.amount).toFixed(2)} €</p>
+                {Number(thisYear.amountPaid) > 0 && Number(thisYear.amountPaid) < parseFloat(thisYear.amount) && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t("remaining", { amount: `${(parseFloat(thisYear.amount) - Number(thisYear.amountPaid)).toFixed(2)} €` })}
+                  </p>
+                )}
                 {thisYear.paidAt && (
                   <p className="text-xs text-muted-foreground mt-1">
                     {t("paidOn", { date: format(new Date(thisYear.paidAt), "d MMMM yyyy", { locale: fr }) })}
@@ -187,16 +201,23 @@ function CotisationPortalPageInner() {
               </div>
             </div>
 
-            {thisYear.status === "EN_ATTENTE" && paymentEnabled && (
-              <Button
-                size="sm"
-                onClick={() => checkoutMutation.mutate(thisYear.id)}
-                loading={checkoutMutation.isPending}
-                className="gap-1.5"
-              >
-                <CreditCardIcon className="size-3.5" />
-                {t("payOnline")}
-              </Button>
+            {(thisYear.status === "EN_ATTENTE" || thisYear.status === "PARTIELLEMENT_PAYEE") && paymentStatusLoaded && (
+              <div className="space-y-2">
+                {paymentEnabled && (
+                  <Button
+                    size="sm"
+                    onClick={() => checkoutMutation.mutate(thisYear.id)}
+                    loading={checkoutMutation.isPending}
+                    className="gap-1.5"
+                  >
+                    <CreditCardIcon className="size-3.5" />
+                    {t("payOnline")}
+                  </Button>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {paymentEnabled ? t("otherPaymentMethodsNotice") : t("offlinePaymentNotice")}
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -210,50 +231,65 @@ function CotisationPortalPageInner() {
             {t("noHistory")}
           </p>
         ) : (
-          history.map(c => (
+          history.map(c => {
+            const owesSomething = c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE"
+            return (
             <Card key={c.id}>
-              <CardContent className="py-4 flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-sm">{t("yearLabel", { year: c.year })}</p>
-                  <p className="text-sm text-muted-foreground mt-0.5">
-                    {parseFloat(c.amount).toFixed(2)} €
-                    {c.paidAt && (
-                      <span className="ml-2">
-                        {t("paidOnShort", { date: format(new Date(c.paidAt), "d MMM yyyy", { locale: fr }) })}
-                      </span>
+              <CardContent className="py-4 space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-sm">{t("yearLabel", { year: c.year })}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {parseFloat(c.amount).toFixed(2)} €
+                      {Number(c.amountPaid) > 0 && Number(c.amountPaid) < parseFloat(c.amount) && (
+                        <span className="ml-2">
+                          {t("remaining", { amount: `${(parseFloat(c.amount) - Number(c.amountPaid)).toFixed(2)} €` })}
+                        </span>
+                      )}
+                      {c.paidAt && (
+                        <span className="ml-2">
+                          {t("paidOnShort", { date: format(new Date(c.paidAt), "d MMM yyyy", { locale: fr }) })}
+                        </span>
+                      )}
+                    </p>
+                    {c.note && <p className="text-xs text-muted-foreground italic mt-0.5">{c.note}</p>}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge variant={statusVariant[c.status]} className="gap-1">
+                      {statusIcon[c.status]}
+                      {statusLabel[c.status]}
+                    </Badge>
+                    {c.status === "PAYE" && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${c.id}/declaration`)}
+                      >
+                        <DownloadSimpleIcon className="size-3.5" />
+                      </Button>
                     )}
+                    {owesSomething && paymentEnabled && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => checkoutMutation.mutate(c.id)}
+                        loading={checkoutMutation.isPending}
+                      >
+                        <CreditCardIcon className="size-3.5 mr-1" />
+                        {t("pay")}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                {owesSomething && paymentStatusLoaded && (
+                  <p className="text-xs text-muted-foreground">
+                    {paymentEnabled ? t("otherPaymentMethodsNotice") : t("offlinePaymentNotice")}
                   </p>
-                  {c.note && <p className="text-xs text-muted-foreground italic mt-0.5">{c.note}</p>}
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge variant={statusVariant[c.status]} className="gap-1">
-                    {statusIcon[c.status]}
-                    {statusLabel[c.status]}
-                  </Badge>
-                  {c.status === "PAYE" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${c.id}/declaration`)}
-                    >
-                      <DownloadSimpleIcon className="size-3.5" />
-                    </Button>
-                  )}
-                  {c.status === "EN_ATTENTE" && paymentEnabled && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => checkoutMutation.mutate(c.id)}
-                      loading={checkoutMutation.isPending}
-                    >
-                      <CreditCardIcon className="size-3.5 mr-1" />
-                      {t("pay")}
-                    </Button>
-                  )}
-                </div>
+                )}
               </CardContent>
             </Card>
-          ))
+            )
+          })
         )}
       </section>
     </div>

@@ -47,10 +47,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
       where:  { id: associationId },
       select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
     }),
-    // Scoped to this association and EN_ATTENTE — defense in depth, doesn't just trust
-    // that the client only ever sends ids that were actually selectable in the UI.
+    // Scoped to this association and to members who still owe something (EN_ATTENTE or
+    // PARTIELLEMENT_PAYEE) — defense in depth, doesn't just trust that the client only ever
+    // sends ids that were actually selectable in the UI.
     prisma.cotisation.findMany({
-      where:   { id: { in: cotisationIds }, associationId, status: "EN_ATTENTE" },
+      where:   { id: { in: cotisationIds }, associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
       include: { membre: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } } },
     }),
   ])
@@ -119,8 +120,13 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
   }
 
-  const sent   = results.filter(r => r.status === "SENT").length
-  const failed = results.length - sent
+  const sentIds = results.filter(r => r.status === "SENT").map(r => r.cotisationId)
+  const sent    = sentIds.length
+  const failed  = results.length - sent
+
+  if (sentIds.length > 0) {
+    await prisma.cotisation.updateMany({ where: { id: { in: sentIds } }, data: { lastReminderSentAt: new Date() } })
+  }
 
   const cotisationById = new Map(cotisations.map(c => [c.id, c]))
   // One entry per cotisation — this is what makes it show up on the member's own ficha

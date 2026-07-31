@@ -4,6 +4,7 @@ import { cotisationSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { recordCotisationPayment } from "@/lib/cotisation-payments"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -17,7 +18,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const where: Record<string, unknown> = { associationId, membre: { deletedAt: null } }
   if (year)   where.year   = parseInt(year)
-  if (status) where.status = status
+  // Comma-separated accepts multiple statuses (e.g. "select all matching" for reminders,
+  // which targets both EN_ATTENTE and PARTIELLEMENT_PAYEE) — single value stays a plain
+  // equality match for the status-filter dropdown's normal usage.
+  if (status) where.status = status.includes(",") ? { in: status.split(",") } : status
   if (search) {
     where.membre = {
       deletedAt: null,
@@ -29,7 +33,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
 
   const include = {
-    membre: { select: { id: true, firstName: true, lastName: true, email: true } },
+    membre:   { select: { id: true, firstName: true, lastName: true, email: true } },
+    payments: { orderBy: { paidAt: "desc" as const } },
   }
   const orderBy = [
     { membre: { lastName: "asc" as const } },
@@ -70,30 +75,27 @@ export const POST = withAdminAuth(async (req, ctx) => {
     )
   }
 
-  const { paidAt, note, amount, ...rest } = parsed.data
-  const cotisation = await prisma.cotisation.create({
+  const { paidAt, dueDate, paymentMethod, note, amount, ...rest } = parsed.data
+  let cotisation = await prisma.cotisation.create({
     data: {
       ...rest,
       associationId,
-      amount: amount,
-      paidAt: paidAt ? new Date(paidAt) : null,
-      note:   note   || null,
+      amount:  amount,
+      paidAt:  paidAt  ? new Date(paidAt)  : null,
+      dueDate: dueDate ? new Date(dueDate) : null,
+      note:    note    || null,
     },
-    include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } } },
+    include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } }, payments: { orderBy: { paidAt: "desc" } } },
   })
 
-  if (cotisation.status === "PAYE" && cotisation.amount != null) {
-    await prisma.income.create({
-      data: {
-        associationId,
-        memberId:    cotisation.membreId,
-        amount:      cotisation.amount,
-        description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-        source:      "MANUAL",
-        status:      "PAID",
-        date:        cotisation.paidAt ?? new Date(),
-      },
-    })
+  if (cotisation.status === "PAYE" && cotisation.amount != null && paymentMethod) {
+    cotisation = await prisma.$transaction((tx) => recordCotisationPayment(tx, {
+      associationId,
+      cotisationId: cotisation.id,
+      amount:       Number(cotisation.amount),
+      method:       paymentMethod,
+      paidAt:       cotisation.paidAt ?? undefined,
+    }))
   }
 
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
