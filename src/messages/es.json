@@ -2361,7 +2361,10 @@
       "amount": "Importe",
       "paidAt": "Fecha de pago",
       "note": "Nota",
-      "notePlaceholder": "Información adicional…"
+      "notePlaceholder": "Información adicional…",
+      "dueDate": "Fecha de vencimiento",
+      "paymentMethod": "Método de pago",
+      "statusLockedHint": "Para cambiar este estado, primero elimine los pagos registrados desde el historial de pagos."
     },
     "view": {
       "title": "Cuotas",
@@ -2379,12 +2382,17 @@
         "year": "Año",
         "amount": "Importe",
         "status": "Estado",
-        "paidAt": "Pagada el"
+        "paidAt": "Pagada el",
+        "dueDate": "Vencimiento",
+        "paymentMethod": "Método de pago",
+        "lastReminder": "Último recordatorio"
       },
       "actions": {
         "edit": "Editar",
         "declaration": "Recibo",
-        "delete": "Eliminar"
+        "delete": "Eliminar",
+        "recordPayment": "Registrar un pago",
+        "paymentHistory": "Historial de pagos"
       },
       "searchPlaceholder": "Buscar un miembro…",
       "allStatuses": "Todos los estados",
@@ -2392,7 +2400,8 @@
       "statusFilter": {
         "enAttente": "Pendiente",
         "payees": "Pagadas",
-        "exonerees": "Exentas"
+        "exonerees": "Exentas",
+        "partiellementPayees": "Parcialmente pagadas"
       },
       "noResultsFor": "Sin resultados para «{search}»",
       "noCotisation": "Ninguna cuota registrada",
@@ -2403,9 +2412,11 @@
       "toasts": {
         "created": "Cuota registrada",
         "updated": "Cuota actualizada",
-        "deleted": "Cuota eliminada"
+        "deleted": "Cuota eliminada",
+        "confirm": "Confirmar"
       },
-      "selectAllTruncated": "Hay más de 500 cuotas que coinciden con los filtros — solo se seleccionaron las primeras 500."
+      "selectAllTruncated": "Hay más de 500 cuotas que coinciden con los filtros — solo se seleccionaron las primeras 500.",
+      "remaining": "Quedan {amount}"
     },
     "reminderModal": {
       "title": "Enviar un recordatorio de cuota",
@@ -2434,6 +2445,26 @@
       "confirmDescription": "Está a punto de enviar un recordatorio por {channel} a {count, plural, one {# destinatario} other {# destinatarios}}. Esta acción no se puede deshacer.",
       "andOthers": " y {count} más",
       "skippedInvalid": "{count, plural, one {# cuota ya no estaba pendiente en el momento del envío (ya pagada o eliminada) y fue omitida} other {# cuotas ya no estaban pendientes en el momento del envío (ya pagadas o eliminadas) y fueron omitidas}}"
+    },
+    "payment": {
+      "title": "Registrar un pago",
+      "amount": "Importe",
+      "remainingBalance": "Saldo pendiente: {amount}",
+      "method": "Método de pago",
+      "date": "Fecha de pago",
+      "note": "Nota",
+      "notePlaceholder": "Referencia, observación…",
+      "historyTitle": "Historial de pagos",
+      "noPayments": "Ningún pago registrado",
+      "deleteConfirmTitle": "¿Eliminar este pago?",
+      "deleteConfirmDescription": "El pago de {amount} será eliminado y el saldo de la cuota recalculado.",
+      "deleteTooltip": "Eliminar este pago",
+      "toasts": {
+        "amountMustBePositive": "El importe debe ser mayor que 0",
+        "amountExceedsBalance": "El importe supera el saldo pendiente ({amount})",
+        "recorded": "Pago registrado",
+        "deleted": "Pago eliminado"
+      }
     }
   },
   "membres": {
@@ -2616,7 +2647,8 @@
       "cotisationStatus": {
         "enAttente": "Pendiente",
         "paye": "Pagada",
-        "exonere": "Exenta"
+        "exonere": "Exenta",
+        "partiellementPayee": "Parcialmente pagada"
       },
       "loanStatus": {
         "demande": "Solicitud pendiente",
@@ -3254,7 +3286,8 @@
       "status": {
         "enAttente": "Pendiente",
         "paye": "Pagada",
-        "exonere": "Exenta"
+        "exonere": "Exenta",
+        "partiellementPayee": "Parcialmente pagada"
       },
       "currentYearTitle": "Cuota {year} — Año en curso",
       "paidOn": "Pagada el {date}",
@@ -3269,7 +3302,10 @@
         "paymentDone": "¡Pago realizado!",
         "paymentCancelled": "Pago cancelado.",
         "paymentError": "Error al procesar el pago"
-      }
+      },
+      "remaining": "Quedan {amount}",
+      "otherPaymentMethodsNotice": "También puede pagar esta cuota de otra forma (cheque, efectivo, transferencia) directamente con su asociación — el pago será registrado por un gestor.",
+      "offlinePaymentNotice": "Póngase en contacto con su asociación para pagar esta cuota (cheque, efectivo, transferencia) — el pago será registrado por un gestor."
     },
     "communications": {
       "title": "Mis comunicaciones",

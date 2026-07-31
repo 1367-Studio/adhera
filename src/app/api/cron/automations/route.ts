@@ -115,7 +115,10 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     },
     include: {
       cotisations: {
-        where:   { status: "EN_ATTENTE" },
+        // A partially-paid member still owes something — they should get the same
+        // "due"/"overdue" nudges as someone who hasn't paid anything yet, not go silent
+        // the moment a first installment is recorded.
+        where:   { status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
         orderBy: { year: "desc" },
         take:    1,
       },
@@ -163,7 +166,10 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
       association:       rule.association.name,
       slug:              rule.association.slug,
       anneeCotisation:   cotisation?.year,
-      montantCotisation: cotisation ? cotisation.amount.toString() : undefined,
+      // The remaining balance, not the cotisation's sticker amount — those diverge once a
+      // partial payment has been recorded, and the reminder should ask for what's actually
+      // still owed.
+      montantCotisation: cotisation ? (Number(cotisation.amount) - Number(cotisation.amountPaid)).toFixed(2) : undefined,
     })
     return { membreId: membre.id, membre, vars }
   })

@@ -2361,7 +2361,10 @@
       "amount": "Valor",
       "paidAt": "Data de pagamento",
       "note": "Observação",
-      "notePlaceholder": "Informações adicionais…"
+      "notePlaceholder": "Informações adicionais…",
+      "dueDate": "Data de vencimento",
+      "paymentMethod": "Método de pagamento",
+      "statusLockedHint": "Para alterar este status, remova primeiro os pagamentos registrados no histórico de pagamentos."
     },
     "view": {
       "title": "Mensalidades",
@@ -2379,12 +2382,17 @@
         "year": "Ano",
         "amount": "Valor",
         "status": "Status",
-        "paidAt": "Pago em"
+        "paidAt": "Pago em",
+        "dueDate": "Vencimento",
+        "paymentMethod": "Método de pagamento",
+        "lastReminder": "Último lembrete"
       },
       "actions": {
         "edit": "Editar",
         "declaration": "Recibo",
-        "delete": "Excluir"
+        "delete": "Excluir",
+        "recordPayment": "Registrar pagamento",
+        "paymentHistory": "Histórico de pagamentos"
       },
       "searchPlaceholder": "Pesquisar um membro…",
       "allStatuses": "Todos os status",
@@ -2392,7 +2400,8 @@
       "statusFilter": {
         "enAttente": "Pendente",
         "payees": "Pagas",
-        "exonerees": "Isentas"
+        "exonerees": "Isentas",
+        "partiellementPayees": "Parcialmente pagas"
       },
       "noResultsFor": "Nenhum resultado para \"{search}\"",
       "noCotisation": "Nenhuma mensalidade registrada",
@@ -2403,9 +2412,11 @@
       "toasts": {
         "created": "Mensalidade registrada",
         "updated": "Mensalidade atualizada",
-        "deleted": "Mensalidade excluída"
+        "deleted": "Mensalidade excluída",
+        "confirm": "Confirmar"
       },
-      "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas."
+      "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas.",
+      "remaining": "Restam {amount}"
     },
     "reminderModal": {
       "title": "Enviar um lembrete de cotização",
@@ -2434,6 +2445,26 @@
       "confirmDescription": "Você está prestes a enviar um lembrete por {channel} para {count, plural, one {# destinatário} other {# destinatários}}. Essa ação não pode ser desfeita.",
       "andOthers": " e mais {count}",
       "skippedInvalid": "{count, plural, one {# cotização não estava mais pendente no momento do envio (já paga ou excluída) e foi ignorada} other {# cotizações não estavam mais pendentes no momento do envio (já pagas ou excluídas) e foram ignoradas}}"
+    },
+    "payment": {
+      "title": "Registrar pagamento",
+      "amount": "Valor",
+      "remainingBalance": "Saldo restante: {amount}",
+      "method": "Método de pagamento",
+      "date": "Data do pagamento",
+      "note": "Observação",
+      "notePlaceholder": "Referência, observação…",
+      "historyTitle": "Histórico de pagamentos",
+      "noPayments": "Nenhum pagamento registrado",
+      "deleteConfirmTitle": "Excluir este pagamento?",
+      "deleteConfirmDescription": "O pagamento de {amount} será removido e o saldo da cotização recalculado.",
+      "deleteTooltip": "Excluir este pagamento",
+      "toasts": {
+        "amountMustBePositive": "O valor deve ser maior que 0",
+        "amountExceedsBalance": "O valor excede o saldo restante ({amount})",
+        "recorded": "Pagamento registrado",
+        "deleted": "Pagamento excluído"
+      }
     }
   },
   "membres": {
@@ -2616,7 +2647,8 @@
       "cotisationStatus": {
         "enAttente": "Pendente",
         "paye": "Paga",
-        "exonere": "Isenta"
+        "exonere": "Isenta",
+        "partiellementPayee": "Parcialmente paga"
       },
       "loanStatus": {
         "demande": "Solicitação pendente",
@@ -3254,7 +3286,8 @@
       "status": {
         "enAttente": "Pendente",
         "paye": "Pago",
-        "exonere": "Isento"
+        "exonere": "Isento",
+        "partiellementPayee": "Parcialmente paga"
       },
       "currentYearTitle": "Mensalidade {year} — Ano atual",
       "paidOn": "Pago em {date}",
@@ -3269,7 +3302,10 @@
         "paymentDone": "Pagamento realizado!",
         "paymentCancelled": "Pagamento cancelado.",
         "paymentError": "Erro ao processar o pagamento"
-      }
+      },
+      "remaining": "Restam {amount}",
+      "otherPaymentMethodsNotice": "Você também pode pagar essa cotisation de outra forma (cheque, dinheiro, transferência) diretamente com a associação — o pagamento será registrado por um gestor.",
+      "offlinePaymentNotice": "Entre em contato com a associação para pagar essa cotisation (cheque, dinheiro, transferência) — o pagamento será registrado por um gestor."
     },
     "communications": {
       "title": "Minhas comunicações",

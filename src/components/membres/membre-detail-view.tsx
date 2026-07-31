@@ -87,9 +87,10 @@ function getStatusBadge(t: Translator): Record<string, { label: string; variant:
 
 function getCotisationStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "outline" }> {
   return {
-    EN_ATTENTE: { label: t("membres.detail.cotisationStatus.enAttente"), variant: "secondary" },
-    PAYE:       { label: t("membres.detail.cotisationStatus.paye"),      variant: "default"   },
-    EXONERE:    { label: t("membres.detail.cotisationStatus.exonere"),   variant: "outline"   },
+    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          variant: "secondary" },
+    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), variant: "outline"   },
+    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               variant: "default"  },
+    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            variant: "outline"  },
   }
 }
 

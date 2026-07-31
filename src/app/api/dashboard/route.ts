@@ -21,6 +21,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     evenementsMois,
     cotisationsEnAttente,
     cotisationsPayees,
+    cotisationsPartielles,
     totalIncomes,
     totalExpenses,
     prochainEvenement,
@@ -30,10 +31,22 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
-    prisma.cotisation.count({ where: { associationId, status: "EN_ATTENTE", year } }),
+    // A partially-paid cotisation still owes something — counts as pending here too.
+    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] }, year } }),
     prisma.cotisation.aggregate({
       where: { associationId, status: "PAYE", year },
       _sum: { amount: true },
+    }),
+    // Money actually collected on cotisations that aren't fully settled yet — without this,
+    // partial payments wouldn't count as "encaissé" until the balance is paid off in full,
+    // understating real cash received (the Income rows behind them are already correct in
+    // Finances; this just mirrors that here). Summed separately from cotisationsPayees
+    // above (which uses the cotisation's full amount) rather than switching that one to sum
+    // CotisationPayment directly, since cotisations marked PAYE before this feature existed
+    // have amountPaid=0 with no payment rows behind them at all.
+    prisma.cotisation.aggregate({
+      where: { associationId, status: "PARTIELLEMENT_PAYEE", year },
+      _sum: { amountPaid: true },
     }),
     prisma.income.aggregate({
       where: { associationId, status: "PAID" },
@@ -129,7 +142,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ]
 
   const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
-  const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0)
+  const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0) + Number(cotisationsPartielles._sum.amountPaid ?? 0)
 
   return NextResponse.json({
     membresActifs,
