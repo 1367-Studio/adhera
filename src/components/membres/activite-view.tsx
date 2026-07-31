@@ -201,6 +201,12 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     FINANCE_CATEGORY_UPDATED: { label: t("membres.activiteView.actions.financeCategoryUpdated"),       color: CYA_L },
     FINANCE_CATEGORY_DELETED: { label: t("membres.activiteView.actions.financeCategoryDeleted"),      color: DEL   },
     PARTIAL_REFUND_RECEIVED:  { label: t("membres.activiteView.actions.partialRefundReceived"),    color: AMB_L },
+    EXERCICE_CREATED:         { label: t("membres.activiteView.actions.exerciceCreated"),         color: CYA   },
+    EXERCICE_UPDATED:         { label: t("membres.activiteView.actions.exerciceUpdated"),         color: CYA_L },
+    EXERCICE_CLOTURE:         { label: t("membres.activiteView.actions.exerciceCloture"),         color: SLA   },
+    EXERCICE_REOUVERT:        { label: t("membres.activiteView.actions.exerciceReouvert"),        color: CYA   },
+    EXERCICE_DELETED:         { label: t("membres.activiteView.actions.exerciceDeleted"),         color: DEL   },
+
     // Matériel (orange)
     MATERIEL_CREATED:         { label: t("membres.activiteView.actions.materielCreated"),     color: ORA    },
     MATERIEL_UPDATED:         { label: t("membres.activiteView.actions.materielUpdated"),    color: ORA_L  },
