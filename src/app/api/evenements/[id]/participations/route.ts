@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -101,8 +102,12 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (participation.ticketPaidAt)
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
-  const paidAt = new Date()
+    const paidAt = new Date()
   const amount = Number(evenement.price)
+
+  const exercice = await resolveExerciceForDate(associationId, paidAt)
+  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  if (exerciceGuard) return exerciceGuard
 
   const updated = await prisma.participation.update({
     where: { id: participation.id },
@@ -112,6 +117,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   await prisma.income.create({
     data: {
       associationId,
+      exerciceId:      exercice?.id ?? null,
       memberId:        participation.membreId,
       participationId: participation.id,
       amount,

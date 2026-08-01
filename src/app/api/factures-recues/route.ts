@@ -5,6 +5,7 @@ import { factureRecueCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { factureRecueExpenseDescription } from "@/lib/facture-recue"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
@@ -52,6 +53,13 @@ export const POST = withAdminAuth(async (req, ctx) => {
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }
 
+  // Created directly as PAYEE bridges to Expense immediately — resolve which exercice the
+  // issueDate falls into up front and refuse if that period is already closed, same as the
+  // entersPaid branch on PATCH.
+  const exercice = status === "PAYEE" ? await resolveExerciceForDate(associationId, new Date(issueDate)) : null
+  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  if (exerciceGuard) return exerciceGuard
+
   const factureRecue = await prisma.$transaction(async (tx) => {
     const created = await tx.factureRecue.create({
       data: {
@@ -74,6 +82,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       await tx.expense.create({
         data: {
           associationId,
+          exerciceId:  exercice?.id ?? null,
           factureRecueId: created.id,
           amount:      created.amount,
           status:      "VALIDATED",

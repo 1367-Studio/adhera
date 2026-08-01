@@ -4,6 +4,7 @@ import { cotisationSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -70,6 +71,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
     )
   }
 
+  // Resolve up front, before creating anything, so a cotisation dated into an already-closed
+  // exercice fails the whole request instead of leaving a PAYE cotisation with no Income behind it.
+  const exercice = parsed.data.status === "PAYE"
+    ? await resolveExerciceForDate(associationId, new Date(parsed.data.paidAt as string))
+    : null
+  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  if (exerciceGuard) return exerciceGuard
+
   const { paidAt, note, amount, ...rest } = parsed.data
   const cotisation = await prisma.cotisation.create({
     data: {
@@ -86,6 +95,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     await prisma.income.create({
       data: {
         associationId,
+        exerciceId:  exercice?.id ?? null,
         memberId:    cotisation.membreId,
         amount:      cotisation.amount,
         description: `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,

@@ -6,13 +6,18 @@ import { paymentConfirmationEmail } from "@/lib/email"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import type { ExerciceStatus } from "@prisma/client"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.cotisation.findFirst({ where: { id, associationId, membre: { deletedAt: null } } })
+  const existing = await prisma.cotisation.findFirst({
+    where:   { id, associationId, membre: { deletedAt: null } },
+    include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
 
   const body = await req.json()
@@ -34,26 +39,51 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     )
   }
 
+  const becomingPaid = parsed.data.status === "PAYE" && existing.status !== "PAYE"
+  // Must require an explicit status change — omitting `status` in a partial PATCH must never
+  // be read as "leaving PAYE", or any unrelated edit (e.g. a note) would delete the Income.
+  const unbecomingPaid = existing.status === "PAYE" && parsed.data.status !== undefined && parsed.data.status !== "PAYE"
+
+  // Resolve/guard before touching anything: becomingPaid needs the target period for the new
+  // paidAt, unbecomingPaid needs the period the existing linked Income already sits in.
+  let newExercice: { id: string; status: ExerciceStatus } | null = null
+  if (becomingPaid) {
+    newExercice = await resolveExerciceForDate(associationId, new Date(parsed.data.paidAt as string))
+    const guard = closedExerciceGuard(newExercice?.status)
+    if (guard) return guard
+  }
+
+  // membreId/year are immutable via this endpoint (omitted from cotisationUpdateSchema), so
+  // the description used to look up the linked Income is stable before and after the update.
+  const incomeDesc = `Cotisation ${existing.year} — ${existing.membre.firstName} ${existing.membre.lastName}`
+
+  if (unbecomingPaid) {
+    const linkedIncome = await prisma.income.findFirst({
+      where:  { associationId, memberId: existing.membreId, description: incomeDesc },
+      select: { exercice: { select: { status: true } } },
+    })
+    const guard = closedExerciceGuard(linkedIncome?.exercice?.status)
+    if (guard) return guard
+  }
+
   const { paidAt, note, amount, ...rest } = parsed.data
   const cotisation = await prisma.cotisation.update({
     where: { id },
     data: {
       ...rest,
-      ...(amount    !== undefined ? { amount: amount }                              : {}),
-      ...(paidAt    !== undefined ? { paidAt: paidAt ? new Date(paidAt) : null }    : {}),
-      ...(note      !== undefined ? { note:   note   || null }                      : {}),
+      ...(amount !== undefined ? { amount: amount }                           : {}),
+      ...(paidAt !== undefined ? { paidAt: paidAt ? new Date(paidAt) : null } : {}),
+      ...(note   !== undefined ? { note:   note   || null }                   : {}),
     },
     include: { membre: { select: { id: true, firstName: true, lastName: true, email: true } } },
   })
 
-  const becomingPaid = parsed.data.status === "PAYE" && existing.status !== "PAYE"
-
   if (becomingPaid && cotisation.amount != null) {
-    const incomeDesc = `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`
     await prisma.income.deleteMany({ where: { associationId, memberId: existing.membreId, description: incomeDesc } })
     await prisma.income.create({
       data: {
         associationId,
+        exerciceId:  newExercice?.id ?? null,
         memberId:    existing.membreId,
         amount:      cotisation.amount,
         description: incomeDesc,
@@ -64,11 +94,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     })
   }
 
-  const unbecomingPaid = existing.status === "PAYE" && parsed.data.status !== "PAYE"
   if (unbecomingPaid) {
-    await prisma.income.deleteMany({
-      where: { associationId, memberId: existing.membreId, description: `Cotisation ${existing.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}` },
-    })
+    await prisma.income.deleteMany({ where: { associationId, memberId: existing.membreId, description: incomeDesc } })
   }
 
   if (becomingPaid && cotisation.membre.email) {
@@ -114,10 +141,19 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
     )
   }
 
+  const incomeDesc = `Cotisation ${existing.year} — ${existing.membre.firstName} ${existing.membre.lastName}`
+
+  if (existing.status === "PAYE") {
+    const linkedIncome = await prisma.income.findFirst({
+      where:  { associationId, memberId: existing.membreId, description: incomeDesc },
+      select: { exercice: { select: { status: true } } },
+    })
+    const guard = closedExerciceGuard(linkedIncome?.exercice?.status)
+    if (guard) return guard
+  }
+
   await prisma.$transaction([
-    prisma.income.deleteMany({
-      where: { associationId, memberId: existing.membreId, description: `Cotisation ${existing.year} — ${existing.membre.firstName} ${existing.membre.lastName}` },
-    }),
+    prisma.income.deleteMany({ where: { associationId, memberId: existing.membreId, description: incomeDesc } }),
     prisma.cotisation.delete({ where: { id } }),
   ])
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
