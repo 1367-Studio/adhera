@@ -9,7 +9,17 @@ export const bankAccountSchema = z.object({
   isActive:       z.boolean().default(true),
 })
 
-export const bankAccountUpdateSchema = bankAccountSchema.partial()
+// Rebuilt as its own literal object instead of bankAccountSchema.partial() — Zod's
+// .default() still fires on an omitted field even after .partial(), so a derived
+// schema would silently inject "EUR"/0/true into every partial PATCH.
+export const bankAccountUpdateSchema = z.object({
+  bankName:       z.string().trim().min(1, "Nom de la banque requis").optional(),
+  accountName:    z.string().trim().min(1, "Nom du compte requis").optional(),
+  ibanLast4:      z.string().trim().max(4).optional().or(z.literal("")),
+  currency:       z.string().optional(),
+  openingBalance: z.number().optional(),
+  isActive:       z.boolean().optional(),
+})
 
 export type BankAccountInput       = z.infer<typeof bankAccountSchema>
 export type BankAccountUpdateInput = z.infer<typeof bankAccountUpdateSchema>
@@ -37,7 +47,20 @@ export const incomeSchema = z.object({
   reference:     z.string().trim().optional().or(z.literal("")),
 })
 
-export const incomeUpdateSchema = incomeSchema.partial()
+// Rebuilt as its own literal object instead of incomeSchema.partial() — same .default()
+// leak as bankAccountUpdateSchema. An omitted status/source must resolve to undefined
+// so Prisma leaves the existing column untouched, not "PENDING"/"MANUAL".
+export const incomeUpdateSchema = z.object({
+  amount:        z.number().positive("Montant doit être positif").optional(),
+  categoryId:    z.string().optional().or(z.literal("")),
+  memberId:      z.string().optional().or(z.literal("")),
+  paymentMethod: z.string().optional().or(z.literal("")),
+  date:          z.string().min(1, "Date requise").optional(),
+  description:   z.string().trim().optional().or(z.literal("")),
+  source:        z.enum(["MANUAL", "STRIPE", "BANK_IMPORT"]).optional(),
+  status:        z.enum(["PENDING", "PAID", "CANCELLED"]).optional(),
+  reference:     z.string().trim().optional().or(z.literal("")),
+})
 
 export type IncomeInput       = z.infer<typeof incomeSchema>
 export type IncomeUpdateInput = z.infer<typeof incomeUpdateSchema>
@@ -54,11 +77,21 @@ export const expenseSchema = z.object({
   status:        z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).default("DRAFT"),
 })
 
-export const expenseUpdateSchema = expenseSchema.partial()
+// Same fix as incomeUpdateSchema — status must stay undefined when omitted.
+export const expenseUpdateSchema = z.object({
+  amount:        z.number().positive("Montant doit être positif").optional(),
+  categoryId:    z.string().optional().or(z.literal("")),
+  date:          z.string().min(1, "Date requise").optional(),
+  vendor:        z.string().trim().optional().or(z.literal("")),
+  description:   z.string().trim().optional().or(z.literal("")),
+  receiptUrl:    z.string().trim().optional().or(z.literal("")),
+  internalNote:  z.string().trim().optional().or(z.literal("")),
+  paymentMethod: z.string().optional().or(z.literal("")),
+  status:        z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).optional(),
+})
 
 export type ExpenseInput       = z.infer<typeof expenseSchema>
 export type ExpenseUpdateInput = z.infer<typeof expenseUpdateSchema>
-
 export const bankTransactionUpdateSchema = z.object({
   status: z.enum(["UNMATCHED", "MATCHED", "PENDING", "IGNORED", "DUPLICATE"]),
 })
