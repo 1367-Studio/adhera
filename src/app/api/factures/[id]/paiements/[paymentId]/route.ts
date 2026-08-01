@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 const EPSILON = 0.01
@@ -15,6 +16,13 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
 
   const payment = await prisma.facturePayment.findFirst({ where: { id: paymentId, factureId: id } })
   if (!payment) return NextResponse.json({ error: "Paiement introuvable" }, { status: 404 })
+
+  const linkedIncomePreview = await prisma.income.findUnique({
+    where:  { facturePaymentId: paymentId },
+    select: { exercice: { select: { status: true } } },
+  })
+  const closedGuard = closedExerciceGuard(linkedIncomePreview?.exercice?.status)
+  if (closedGuard) return closedGuard
 
   try {
     const updated = await prisma.$transaction(async (tx) => {

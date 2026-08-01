@@ -4,6 +4,7 @@ import { expenseSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -64,11 +65,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   const { date, categoryId, vendor, description, receiptUrl, internalNote, paymentMethod, ...rest } = parsed.data
+  const expenseDate = new Date(date)
+
+  const exercice = await resolveExerciceForDate(associationId, expenseDate)
+  const guard = closedExerciceGuard(exercice?.status)
+  if (guard) return guard
+
   const expense = await prisma.expense.create({
     data: {
       ...rest,
       associationId,
-      date:          new Date(date),
+      exerciceId:    exercice?.id ?? null,
+      date:          expenseDate,
       categoryId:    categoryId    || null,
       vendor:        vendor        || null,
       description:   description   || null,

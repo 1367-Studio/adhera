@@ -4,6 +4,7 @@ import { importColumnMappingSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { Prisma } from "@prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { findExerciceForDate, type ExerciceLookup } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -31,9 +32,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Aucune ligne à importer" }, { status: 422 })
   }
 
+  const exercices: ExerciceLookup[] = await prisma.exerciceComptable.findMany({
+    where:  { associationId },
+    select: { id: true, status: true, startDate: true, endDate: true },
+  })
+
   let imported   = 0
   let duplicates = 0
   let errors     = 0
+  let blocked    = 0
 
   for (const row of rows as Array<{ transactionDate: string; label: string; amount: number; type: "CREDIT" | "DEBIT"; balanceAfter?: number; externalId: string }>) {
     // Basic server-side validation: reject zero or negative amounts
@@ -42,12 +49,20 @@ export const POST = withAdminAuth(async (req, ctx) => {
       continue
     }
 
+    const transactionDate = new Date(row.transactionDate)
+    const exercice = findExerciceForDate(exercices, transactionDate)
+    if (exercice?.status === "CLOTURE") {
+      blocked++
+      continue
+    }
+
     try {
       await prisma.bankTransaction.create({
         data: {
           associationId,
+          exerciceId:      exercice?.id ?? null,
           bankAccountId:   mapping.bankAccountId,
-          transactionDate: new Date(row.transactionDate),
+          transactionDate,
           label:           row.label,
           amount:          row.amount,
           type:            row.type,
@@ -95,8 +110,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
     action: "BANK_STATEMENT_IMPORTED",
     entity: "BankTransaction",
     label: account.accountName,
-    metadata: { imported, duplicates, errors, total: rows.length },
+    metadata: { imported, duplicates, errors, blocked, total: rows.length },
   })
 
-  return NextResponse.json({ imported, duplicates, errors, toReconcile: imported })
+  return NextResponse.json({ imported, duplicates, errors, blocked, toReconcile: imported })
 }, { roles: FINANCE, module: "finances" })

@@ -3,6 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { facturePaymentSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -42,6 +43,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const { amount, method, paidAt, note } = parsed.data
+  const paymentDate = paidAt ? new Date(paidAt) : new Date()
+
+  const exercice = await resolveExerciceForDate(associationId, paymentDate)
+  const guard = closedExerciceGuard(exercice?.status)
+  if (guard) return guard
 
   try {
     // amountPaid is updated via an atomic `increment` inside the transaction (not read-then-
@@ -52,8 +58,6 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // two concurrent payments would together exceed the total, since Postgres serializes the
     // two increments and whichever one pushes amountPaid past the total gets rolled back here.
     const facture = await prisma.$transaction(async (tx) => {
-      const paymentDate = paidAt ? new Date(paidAt) : new Date()
-
       const payment = await tx.facturePayment.create({
         data: {
           factureId: id,
@@ -82,8 +86,9 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       await tx.income.create({
         data: {
           associationId,
-          memberId:         existing.materialLoan?.membreId ?? null,
-          facturePaymentId: payment.id,
+          exerciceId:        exercice?.id ?? null,
+          memberId:          existing.materialLoan?.membreId ?? null,
+          facturePaymentId:  payment.id,
           amount,
           categoryId:    existing.materialLoan?.material.categoryId ?? null,
           paymentMethod: method,

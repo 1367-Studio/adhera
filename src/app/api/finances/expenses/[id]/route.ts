@@ -3,14 +3,21 @@ import { prisma } from "@/lib/prisma/client"
 import { expenseUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.expense.findFirst({ where: { id, associationId } })
+  const existing = await prisma.expense.findFirst({
+    where:   { id, associationId },
+    include: { exercice: { select: { status: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  if (closedGuard) return closedGuard
 
   const body   = await req.json()
   const parsed = expenseUpdateSchema.safeParse(body)
@@ -68,8 +75,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.expense.findFirst({ where: { id, associationId } })
+  const existing = await prisma.expense.findFirst({
+    where:   { id, associationId },
+    include: { exercice: { select: { status: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  if (closedGuard) return closedGuard
+
   if (existing.factureRecueId) {
     return NextResponse.json({ error: "Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer." }, { status: 409 })
   }

@@ -1,20 +1,16 @@
 // src/lib/finance/exercice.ts
+import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import type { ExerciceStatus } from "@prisma/client"
 
 export async function resolveExerciceForDate(
   associationId: string,
   date: Date,
-): Promise<string | null> {
-  const exercice = await prisma.exerciceComptable.findFirst({
-    where: {
-      associationId,
-      startDate: { lte: date },
-      endDate: { gte: date },
-    },
-    select: { id: true },
+): Promise<{ id: string; status: ExerciceStatus } | null> {
+  return prisma.exerciceComptable.findFirst({
+    where: { associationId, startDate: { lte: date }, endDate: { gte: date } },
+    select: { id: true, status: true },
   })
-
-  return exercice?.id ?? null
 }
 
 export interface ExerciceRange {
@@ -71,6 +67,33 @@ export function findExerciceGap(
   }
   return null
 }
+
+// Shared by every write path that touches a possibly-exercice-linked record: creating a new
+// Income/Expense/BankTransaction (status comes from resolveExerciceForDate on the record's
+// date) and editing/deleting an existing one (status comes from its already-fetched
+// `exercice` relation). A closed exercice is never written to again, in either direction.
+export function closedExerciceGuard(status: ExerciceStatus | null | undefined): NextResponse | null {
+  if (status !== "CLOTURE") return null
+  return NextResponse.json(
+    { error: "Cet exercice est clôturé — impossible de créer ou modifier un enregistrement sur cette période." },
+    { status: 409 },
+  )
+}
+
+export interface ExerciceLookup {
+  id:        string
+  status:    ExerciceStatus
+  startDate: Date
+  endDate:   Date
+}
+
+// In-memory version of resolveExerciceForDate for bulk operations (e.g. bank statement
+// import) that would otherwise hit the database once per row — fetch the association's
+// exercices a single time up front, then resolve each row's date against that list locally.
+export function findExerciceForDate(exercices: ExerciceLookup[], date: Date): ExerciceLookup | null {
+  return exercices.find(e => e.startDate <= date && date <= e.endDate) ?? null
+}
+
 
 export interface ExercicePattern {
   startMonth: number

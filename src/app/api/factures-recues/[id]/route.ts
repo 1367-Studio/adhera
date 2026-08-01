@@ -6,6 +6,8 @@ import { factureRecueUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { deleteFromR2 } from "@/lib/r2"
 import { factureRecueExpenseDescription } from "@/lib/facture-recue"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import type { ExerciceStatus } from "@prisma/client"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
@@ -62,6 +64,29 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const issueDateChanged   = issueDate     !== undefined && new Date(issueDate).getTime() !== existing.issueDate.getTime()
   const numberChanged      = number        !== undefined && (number || null) !== existing.number
   const typeChanged        = type          !== undefined && type !== existing.type
+  const syncsExpense       = staysPaid && (amountChanged || fournisseurChanged || issueDateChanged || numberChanged || typeChanged)
+
+  // Deleting the linked Expense (leavesPaid) or syncing it in place (syncsExpense) must not
+  // touch one that's already sitting in a closed exercice.
+  if (leavesPaid || syncsExpense) {
+    const linkedExpense = await prisma.expense.findUnique({
+      where:  { factureRecueId: id },
+      select: { exercice: { select: { status: true } } },
+    })
+    const currentGuard = closedExerciceGuard(linkedExpense?.exercice?.status)
+    if (currentGuard) return currentGuard
+  }
+
+  // entersPaid creates a brand-new Expense; issueDateChanged (while staying payée) re-dates
+  // the existing one — both need to resolve which exercice the *resulting* date falls into,
+  // and refuse if that would land the record inside an already-closed period.
+let newExercice: { id: string; status: ExerciceStatus } | null = null
+  if (entersPaid || (syncsExpense && issueDateChanged)) {
+    const effectiveDate = issueDate !== undefined ? new Date(issueDate) : existing.issueDate
+    newExercice = await resolveExerciceForDate(associationId, effectiveDate)
+    const newGuard = closedExerciceGuard(newExercice?.status)
+    if (newGuard) return newGuard
+  }
 
   let factureRecue
   try {
@@ -85,6 +110,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         await tx.expense.create({
           data: {
             associationId,
+            exerciceId:  newExercice?.id ?? null,
             factureRecueId: id,
             amount:      updated.amount,
             status:      "VALIDATED",
@@ -105,7 +131,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           }
           await tx.expense.delete({ where: { id: linkedExpense.id } })
         }
-      } else if (staysPaid && (amountChanged || fournisseurChanged || issueDateChanged || numberChanged || typeChanged)) {
+      } else if (syncsExpense) {
         // Keeps the linked Expense in step with any edit made while the document stays payée
         // — previously only amount/vendor were synced, silently leaving the Expense's date
         // and description stale after an issueDate/number/type correction.
@@ -114,7 +140,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           data: {
             ...(amountChanged      ? { amount: updated.amount } : {}),
             ...(fournisseurChanged ? { vendor: updated.fournisseur?.companyName ?? null } : {}),
-            ...(issueDateChanged   ? { date: updated.issueDate } : {}),
+            ...(issueDateChanged   ? { date: updated.issueDate, exerciceId: newExercice?.id ?? null } : {}),
             ...((numberChanged || typeChanged) ? { description: factureRecueExpenseDescription(updated) } : {}),
           },
         })
@@ -155,6 +181,15 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   const existing = await prisma.factureRecue.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
+
+  if (existing.status === "PAYEE") {
+    const linkedExpense = await prisma.expense.findUnique({
+      where:  { factureRecueId: id },
+      select: { exercice: { select: { status: true } } },
+    })
+    const closedGuard = closedExerciceGuard(linkedExpense?.exercice?.status)
+    if (closedGuard) return closedGuard
+  }
 
   await prisma.$transaction(async (tx) => {
     await tx.factureRecue.update({ where: { id }, data: { deletedAt: new Date() } })
