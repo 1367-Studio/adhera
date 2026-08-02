@@ -946,6 +946,8 @@
         "imported": "Importadas",
         "duplicates": "Duplicados ignorados",
         "errors": "Errores",
+        "blocked": "Omitidos (período cerrado)",
+        "blockedExplanation": "{count, plural, one {# registro fue omitido} other {# registros fueron omitidos}} por caer en un período ya cerrado. Reabra el período correspondiente y vuelva a importar el mismo archivo para incluirlos — los ya importados no se duplicarán.",
         "toReconcile": "Por conciliar",
         "importAnother": "Importar otro archivo",
         "goToReconciliation": "Ir a la conciliación"

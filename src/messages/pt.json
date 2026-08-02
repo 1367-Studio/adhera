@@ -946,6 +946,8 @@
         "imported": "Importadas",
         "duplicates": "Duplicadas ignoradas",
         "errors": "Erros",
+        "blocked": "Ignorados (período fechado)",
+        "blockedExplanation": "{count, plural, one {# lançamento foi ignorado} other {# lançamentos foram ignorados}} por caírem num período já fechado. Reabra o período correspondente e reimporte esse mesmo arquivo para incluí-los — os que já foram importados não serão duplicados.",
         "toReconcile": "A conciliar",
         "importAnother": "Importar outro arquivo",
         "goToReconciliation": "Ir para a conciliação"

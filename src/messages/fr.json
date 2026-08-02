@@ -946,6 +946,8 @@
         "imported": "Importées",
         "duplicates": "Doublons ignorés",
         "errors": "Erreurs",
+        "blocked": "Ignorées (période clôturée)",
+        "blockedExplanation": "{count, plural, one {# ligne a été ignorée} other {# lignes ont été ignorées}} car elle{count, plural, one {} other {s}} tombe{count, plural, one {} other {nt}} dans une période déjà clôturée. Réouvrez la période concernée et réimportez ce même fichier pour les inclure — les lignes déjà importées ne seront pas dupliquées.",
         "toReconcile": "À concilier",
         "importAnother": "Importer un autre fichier",
         "goToReconciliation": "Aller à la conciliation"

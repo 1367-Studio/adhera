@@ -36,7 +36,7 @@ type ColumnMapping = {
   balanceColumn: string
 }
 
-type ImportResult = { imported: number; duplicates: number; errors: number; toReconcile: number }
+type ImportResult = { imported: number; duplicates: number; errors: number; blocked: number; toReconcile: number }
 
 function fnv1a(raw: string): string {
   // FNV-1a 32-bit — deterministic, collision-resistant enough for dedup
@@ -781,11 +781,22 @@ export function ImportWizard() {
                 <p className="text-xs text-muted-foreground">{t("step4.errors")}</p>
               </div>
             )}
+            {result.blocked > 0 && (
+              <div>
+                <p className="text-3xl font-bold text-amber-600">{result.blocked}</p>
+                <p className="text-xs text-muted-foreground">{t("step4.blocked")}</p>
+              </div>
+            )}
             <div>
               <p className="text-3xl font-bold text-orange-600">{result.toReconcile}</p>
               <p className="text-xs text-muted-foreground">{t("step4.toReconcile")}</p>
             </div>
           </div>
+          {result.blocked > 0 && (
+            <p className="text-sm text-amber-700 dark:text-amber-400 max-w-md mx-auto">
+              {t("step4.blockedExplanation", { count: result.blocked })}
+            </p>
+          )}
           <div className="flex justify-center gap-3 pt-2">
             <Button variant="outline" onClick={reset}>{t("step4.importAnother")}</Button>
             <Button onClick={() => window.location.href = `${BASE_PATH}/dashboard/finances/conciliation`}>{t("step4.goToReconciliation")}</Button>

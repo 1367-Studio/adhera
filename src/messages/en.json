@@ -946,6 +946,8 @@
         "imported": "Imported",
         "duplicates": "Duplicates ignored",
         "errors": "Errors",
+        "blocked": "Skipped (closed period)",
+        "blockedExplanation": "{count, plural, one {# row was} other {# rows were}} skipped because {count, plural, one {it falls} other {they fall}} inside an already-closed period. Reopen that period and re-import this same file to include them — already-imported rows won't be duplicated.",
         "toReconcile": "To reconcile",
         "importAnother": "Import another file",
         "goToReconciliation": "Go to reconciliation"
