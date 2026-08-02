@@ -43,7 +43,7 @@ async function createExercice(data: ExerciceInput) {
   return res.json()
 }
 
-async function updateExercice(id: string, data: ExerciceUpdateInput) {
+async function updateExercice(id: string, data: ExerciceUpdateInput): Promise<Exercice & { linkedRecords: number }> {
   const res = await fetch(`/api/finances/exercices/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },

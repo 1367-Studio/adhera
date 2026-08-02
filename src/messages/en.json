@@ -750,6 +750,7 @@
       "actions": { "close": "Close", "reopen": "Reopen", "delete": "Delete" },
       "noExercices": "No fiscal year recorded",
       "closeConfirmTitle": "Close this fiscal year?",
+      "closeConfirmWarning": "No income or expense from this period can be created or edited until it's reopened.",
       "deleteConfirmTitle": "Delete this fiscal year?",
       "add": "New fiscal year",
       "newExerciceTitle": "New fiscal year",
@@ -758,7 +759,7 @@
       "earlyClosureTitle": "Early closure",
       "earlyClosureDescription": "This fiscal year doesn't officially end until {date}. Closing it now will block new entries until {date}. Continue?",
       "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
-      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created" }
+      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created", "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically" }
     },
     "accountsView": {
       "title": "Bank accounts",

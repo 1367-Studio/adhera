@@ -750,6 +750,7 @@
       "actions": { "close": "Cerrar", "reopen": "Reabrir", "delete": "Eliminar" },
       "noExercices": "Ningún ejercicio contable registrado",
       "closeConfirmTitle": "¿Cerrar este ejercicio?",
+      "closeConfirmWarning": "Ningún ingreso o gasto de este período podrá crearse o editarse hasta que se reabra.",
       "deleteConfirmTitle": "¿Eliminar este ejercicio?",
       "add": "Nuevo ejercicio",
       "newExerciceTitle": "Nuevo ejercicio contable",
@@ -758,7 +759,7 @@
       "earlyClosureTitle": "Cierre anticipado",
       "earlyClosureDescription": "Este ejercicio no termina oficialmente hasta el {date}. Cerrarlo ahora bloqueará nuevos registros hasta el {date}. ¿Continuar?",
       "patternMismatchHint": "Las fechas no coinciden con el calendario fiscal establecido. Fechas corregidas: {start} – {end}.",
-      "toasts": { "closed": "Ejercicio cerrado", "reopened": "Ejercicio reaberto", "deleted": "Ejercicio eliminado", "created": "Ejercicio creado" }
+      "toasts": { "closed": "Ejercicio cerrado", "reopened": "Ejercicio reaberto", "deleted": "Ejercicio eliminado", "created": "Ejercicio creado", "closedWithLinked": "Ejercicio cerrado — {count, plural, one {# registro vinculado} other {# registros vinculados}} automáticamente" }
     },
     "accountsView": {
       "title": "Cuentas bancarias",

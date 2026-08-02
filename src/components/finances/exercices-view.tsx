@@ -108,8 +108,12 @@ export function ExercicesView() {
   async function handleClose() {
     if (!closeTarget) return
     try {
-      await updateMutation.mutateAsync({ id: closeTarget.id, data: { status: "CLOTURE" } })
-      toast.success(t("finances.exercicesView.toasts.closed"))
+      const result = await updateMutation.mutateAsync({ id: closeTarget.id, data: { status: "CLOTURE" } })
+      toast.success(
+        result.linkedRecords > 0
+          ? t("finances.exercicesView.toasts.closedWithLinked", { count: result.linkedRecords })
+          : t("finances.exercicesView.toasts.closed"),
+      )
       setCloseTarget(null)
     } catch (err) {
       if (err instanceof ApiError && err.code === "EARLY_CLOSURE") {
@@ -124,11 +128,15 @@ export function ExercicesView() {
   async function confirmEarlyClosureAndClose() {
     if (!earlyClosureWarning) return
     try {
-      await updateMutation.mutateAsync({
+      const result = await updateMutation.mutateAsync({
         id:   earlyClosureWarning.target.id,
         data: { status: "CLOTURE", confirmEarlyClosure: true },
       })
-      toast.success(t("finances.exercicesView.toasts.closed"))
+      toast.success(
+        result.linkedRecords > 0
+          ? t("finances.exercicesView.toasts.closedWithLinked", { count: result.linkedRecords })
+          : t("finances.exercicesView.toasts.closed"),
+      )
       setEarlyClosureWarning(null)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
@@ -234,7 +242,7 @@ export function ExercicesView() {
         open={!!closeTarget}
         onOpenChange={(o) => !o && setCloseTarget(null)}
         title={t("finances.exercicesView.closeConfirmTitle")}
-        description={closeTarget?.label ?? ""}
+        description={closeTarget ? `${closeTarget.label} — ${t("finances.exercicesView.closeConfirmWarning")}` : ""}
         confirmLabel={t("finances.exercicesView.actions.close")}
         loading={updateMutation.isPending}
         onConfirm={handleClose}
