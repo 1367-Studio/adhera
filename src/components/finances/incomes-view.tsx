@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, CheckCircleIcon, ClockIcon, ReceiptIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from "@/hooks/use-incomes"
-import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useExercices } from "@/hooks/use-exercices"
 import type { IncomeInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -19,26 +19,24 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { IncomeForm } from "@/components/finances/income-form"
-import { cn } from "@/lib/utils"
 
 type Income = {
-  id:          string
-  amount:      string
-  date:        string
-  description: string | null
-  status:      "PENDING" | "PAID" | "CANCELLED"
-  source:      string
-  reference:   string | null
-  paymentMethod: string | null
+  id:               string
+  amount:           string
+  date:             string
+  description:      string | null
+  status:           "PENDING" | "PAID" | "CANCELLED"
+  source:           string
+  reference:        string | null
+  paymentMethod:    string | null
   facturePaymentId: string | null
-  category:    { name: string } | null
-  membre:      { id: string; firstName: string; lastName: string } | null
-  reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
+  exerciceId:       string | null
+  category:         { name: string } | null
+  membre:           { id: string; firstName: string; lastName: string } | null
+  reconciliations:  { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -55,7 +53,7 @@ export function IncomesView() {
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
-  const [yearFilter, setYearFilter]     = useState(String(currentYear))
+  const [exerciceFilter, setExerciceFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Income | null>(null)
@@ -64,14 +62,11 @@ export function IncomesView() {
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
-  const { data: categories = [] } = useFinanceCategories("INCOME")
+  const { data: exercices = [] } = useExercices()
 
   const filters = {
-    ...(statusFilter ? { status: statusFilter } : {}),
-    ...(yearFilter ? {
-      dateFrom: `${yearFilter}-01-01`,
-      dateTo:   `${yearFilter}-12-31`,
-    } : {}),
+    ...(statusFilter   ? { status: statusFilter }     : {}),
+    ...(exerciceFilter ? { exerciceId: exerciceFilter } : {}),
   }
 
   const { data: result, isLoading } = useIncomes(page, PAGE_SIZE, filters)
@@ -134,12 +129,17 @@ export function IncomesView() {
                 ? <Link href={`/dashboard/membres/${i.membre.id}`} className="hover:underline" onClick={e => e.stopPropagation()}>{i.membre.firstName} {i.membre.lastName}</Link>
                 : "—"}
           </p>
-          {(i.reconciliations.length > 0 || i.facturePaymentId) && (
+          {(i.reconciliations.length > 0 || i.facturePaymentId || !i.exerciceId) && (
             <div className="flex items-center gap-2 mt-0.5">
               {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">{t("finances.incomesView.reconciled")}</span>}
               {i.facturePaymentId && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
                   <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
+                </span>
+              )}
+              {!i.exerciceId && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.incomesView.noExerciceTooltip")}>
+                  <WarningIcon className="size-3" /> {t("finances.incomesView.noExerciceBadge")}
                 </span>
               )}
             </div>
@@ -227,11 +227,14 @@ export function IncomesView() {
         </div>
 
         <FilterSelect
-          value={yearFilter}
-          onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: t("finances.incomesView.exercise", { year: y }) }))}
-          placeholder={t("finances.incomesView.allYears")}
-          width="w-36"
+          value={exerciceFilter}
+          onValueChange={v => { setExerciceFilter(v); setPage(1) }}
+          options={[
+            ...exercices.map(ex => ({ value: ex.id, label: ex.label })),
+            { value: "none", label: t("finances.incomesView.noExercice") },
+          ]}
+          placeholder={t("finances.incomesView.allExercices")}
+          width="w-40"
         />
 
         <FilterSelect

@@ -12,11 +12,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
-  const status     = searchParams.get("status")     ?? undefined
-  const categoryId = searchParams.get("categoryId") ?? undefined
-  const vendor     = searchParams.get("vendor")     ?? undefined
-  const dateFrom   = searchParams.get("dateFrom")   ?? undefined
-  const dateTo     = searchParams.get("dateTo")     ?? undefined
+  const status          = searchParams.get("status")     ?? undefined
+  const categoryId      = searchParams.get("categoryId") ?? undefined
+  const vendor          = searchParams.get("vendor")     ?? undefined
+  const dateFrom        = searchParams.get("dateFrom")   ?? undefined
+  const dateTo          = searchParams.get("dateTo")     ?? undefined
+  const exerciceIdParam = searchParams.get("exerciceId") ?? undefined
 
   const where: Record<string, unknown> = { associationId }
   if (status)     where.status     = status
@@ -28,6 +29,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
       ...(dateTo   ? { lte: new Date(dateTo) }   : {}),
     }
   }
+  if (exerciceIdParam === "none") where.exerciceId = null
+  else if (exerciceIdParam) where.exerciceId = exerciceIdParam
 
   const include = {
     category:       { select: { name: true, type: true } },
