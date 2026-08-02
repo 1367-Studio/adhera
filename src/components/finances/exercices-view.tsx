@@ -24,6 +24,8 @@ export function ExercicesView() {
   const [gapWarning, setGapWarning]     = useState<GapWarning | null>(null)
   const [closeTarget, setCloseTarget]   = useState<Exercice | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Exercice | null>(null)
+  const [earlyClosureWarning, setEarlyClosureWarning] = useState<{ target: Exercice; endDate: string } | null>(null)
+
 
   const { data: exercices = [], isLoading } = useExercices()
   const createMutation = useCreateExercice()
@@ -110,7 +112,27 @@ export function ExercicesView() {
       toast.success(t("finances.exercicesView.toasts.closed"))
       setCloseTarget(null)
     } catch (err) {
+      if (err instanceof ApiError && err.code === "EARLY_CLOSURE") {
+        setEarlyClosureWarning({ target: closeTarget, endDate: String(err.details?.endDate ?? "") })
+        setCloseTarget(null)
+        return
+      }
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function confirmEarlyClosureAndClose() {
+    if (!earlyClosureWarning) return
+    try {
+      await updateMutation.mutateAsync({
+        id:   earlyClosureWarning.target.id,
+        data: { status: "CLOTURE", confirmEarlyClosure: true },
+      })
+      toast.success(t("finances.exercicesView.toasts.closed"))
+      setEarlyClosureWarning(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+      setEarlyClosureWarning(null)
     }
   }
 
@@ -190,13 +212,13 @@ export function ExercicesView() {
       </Modal>
 
       <ConfirmDialog
-        open={!!gapWarning}
-        onOpenChange={(o) => !o && setGapWarning(null)}
-        title={t("finances.exercicesView.gapWarningTitle")}
-        description={gapWarning ? t("finances.exercicesView.gapWarningDescription", { days: gapWarning.gapDays, start: fmtDate(gapWarning.gapStart), end: fmtDate(gapWarning.gapEnd) }) : ""}
-        confirmLabel={t("common.confirm")}
-        loading={createMutation.isPending}
-        onConfirm={confirmGapAndCreate}
+        open={!!earlyClosureWarning}
+        onOpenChange={(o) => !o && setEarlyClosureWarning(null)}
+        title={t("finances.exercicesView.earlyClosureTitle")}
+        description={earlyClosureWarning ? t("finances.exercicesView.earlyClosureDescription", { date: fmtDate(earlyClosureWarning.endDate) }) : ""}
+        confirmLabel={t("finances.exercicesView.actions.close")}
+        loading={updateMutation.isPending}
+        onConfirm={confirmEarlyClosureAndClose}
       />
 
       <ConfirmDialog

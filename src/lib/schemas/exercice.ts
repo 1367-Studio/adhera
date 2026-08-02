@@ -17,6 +17,9 @@ export type ExerciceComptableInput = z.infer<typeof exerciceComptableSchema>
 export const exerciceComptableUpdateSchema = z.object({
   label:  z.string().trim().min(1, "Libellé requis").optional(),
   status: z.enum(["OUVERT", "CLOTURE"]).optional(),
+  // Returned by the client after confirmation of an EARLY_CLOSURE warning — see
+  // PATCH /finances/exercices/[id].
+  confirmEarlyClosure: z.boolean().optional(),
 })
 
 export type ExerciceComptableUpdateInput = z.infer<typeof exerciceComptableUpdateSchema>

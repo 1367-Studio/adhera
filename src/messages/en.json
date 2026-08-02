@@ -755,6 +755,8 @@
       "newExerciceTitle": "New fiscal year",
       "gapWarningTitle": "Gap between fiscal years",
       "gapWarningDescription": "There is an uncovered gap of {days, plural, one {# day} other {# days}} (from {start} to {end}). Continue anyway?",
+      "earlyClosureTitle": "Early closure",
+      "earlyClosureDescription": "This fiscal year doesn't officially end until {date}. Closing it now will block new entries until {date}. Continue?",
       "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
       "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created" }
     },

@@ -24,6 +24,7 @@ export type ExerciceInput = {
 export type ExerciceUpdateInput = {
   label?:  string
   status?: ExerciceStatus
+  confirmEarlyClosure?: boolean
 }
 
 async function fetchExercices(): Promise<Exercice[]> {

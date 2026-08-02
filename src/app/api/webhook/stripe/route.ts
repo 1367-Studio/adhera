@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         let receiptNumber = ""
         const buyerLabel = commande?.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
 
-         if (commande && commande.status === "PENDING") {
+        if (commande && commande.status === "PENDING") {
           // Best-effort: link to whichever exercice covers today's date, but never block —
           // the payment already happened on Stripe's side, there's no user to show an error
           // to, and the early-closure rule on exercice closing means this can basically only
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
                   await tx.income.create({
                     data: {
                       associationId: commande.associationId,
-                      exerciceId:    exercice?.id ?? null,
+                      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
                       memberId:      commande.membreId ?? undefined,
                       amount:        group.amount / 100,
                       categoryId:    categoryId ?? undefined,
@@ -255,7 +255,7 @@ export async function POST(req: Request) {
           await prisma.income.create({
             data: {
               associationId: cotisation.associationId,
-              exerciceId:    exercice?.id ?? null,
+              exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:      cotisation.membreId,
               amount:        chargedAmount,
               description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
@@ -339,7 +339,7 @@ export async function POST(req: Request) {
           await prisma.income.createMany({
             data: tickets.map(t => ({
               associationId:   evenement.associationId,
-              exerciceId:      exercice?.id ?? null,
+              exerciceId:      exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:        t.membreId,
               participationId: t.id,
               amount:          unitAmount,
@@ -401,7 +401,7 @@ export async function POST(req: Request) {
         await prisma.income.create({
           data: {
             associationId: don.associationId,
-            exerciceId:    exercice?.id ?? null,
+            exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
             amount:        don.amount,
             // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
             // comptabilité interne — l'association doit toujours savoir qui a donné.

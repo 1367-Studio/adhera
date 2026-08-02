@@ -755,6 +755,8 @@
       "newExerciceTitle": "Nouvel exercice comptable",
       "gapWarningTitle": "Écart entre exercices",
       "gapWarningDescription": "Il y a un écart de {days, plural, one {# jour} other {# jours}} non couvert (du {start} au {end}). Continuer quand même ?",
+      "earlyClosureTitle": "Clôture anticipée",
+      "earlyClosureDescription": "Cet exercice ne se termine officiellement que le {date}. Le clôturer maintenant bloquera tout nouvel enregistrement jusqu'au {date}. Continuer ?",
       "patternMismatchHint": "Les dates ne correspondent pas au calendrier fiscal établi. Dates corrigées : {start} – {end}.",
       "toasts": { "closed": "Exercice clôturé", "reopened": "Exercice réouvert", "deleted": "Exercice supprimé", "created": "Exercice créé" }
     },

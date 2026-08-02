@@ -19,16 +19,20 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  // Schema only exposes label/status — startDate/endDate are immutable post-creation and
-  // aren't accepted here at all, so no extra guard is needed against tampering with them.
-  const { label, status } = parsed.data
+  // Schema only exposes label/status/confirmEarlyClosure — startDate/endDate are immutable
+  // post-creation and aren't accepted here at all, so no extra guard is needed against
+  // tampering with them.
+  const { label, status, confirmEarlyClosure } = parsed.data
   const statusChanged = status !== undefined && status !== existing.status
   const closing       = statusChanged && status === "CLOTURE"
+  const isEarly        = closing && new Date() < existing.endDate
 
   // A period can only be closed once its own calendar range is over — otherwise a
   // real-time event (e.g. a Stripe payment landing "today") could still fall inside the
-  // range of an already-closed period.
-  if (closing && new Date() < existing.endDate) {
+  // range of an already-closed period. Escape hatch: an explicit confirmEarlyClosure lets
+  // an association close early on purpose (e.g. dissolved/inactive mid-year) — same
+  // confirm-then-resend pattern as confirmGap on creation.
+  if (isEarly && !confirmEarlyClosure) {
     return NextResponse.json({
       error: "Impossible de clôturer un exercice avant sa date de fin.",
       code:  "EARLY_CLOSURE",
@@ -73,9 +77,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   const action = !statusChanged ? "EXERCICE_UPDATED" : status === "CLOTURE" ? "EXERCICE_CLOTURE" : "EXERCICE_REOUVERT"
+  const metadata = {
+    ...(linkedRecords > 0 ? { linkedRecords } : {}),
+    ...(isEarly && confirmEarlyClosure ? { earlyClosure: true } : {}),
+  }
   await writeActivityLog({
     associationId, actorId: userId, action, entity: "ExerciceComptable", entityId: id, label: exercice.label,
-    ...(linkedRecords > 0 ? { metadata: { linkedRecords } } : {}),
+    ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
   })
   return NextResponse.json({ ...exercice, linkedRecords })
 }, { roles: FINANCE, module: "finances" })

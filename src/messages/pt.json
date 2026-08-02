@@ -755,6 +755,8 @@
       "newExerciceTitle": "Novo exercício contábil",
       "gapWarningTitle": "Intervalo entre exercícios",
       "gapWarningDescription": "Existe um intervalo de {days, plural, one {# dia} other {# dias}} não coberto (de {start} até {end}). Deseja continuar mesmo assim?",
+      "earlyClosureTitle": "Fechamento antecipado",
+      "earlyClosureDescription": "Este exercício só termina oficialmente em {date}. Fechá-lo agora irá bloquear novos lançamentos até {date}. Continuar?",
       "patternMismatchHint": "As datas não correspondem ao calendário fiscal estabelecido. Datas corrigidas: {start} – {end}.",
       "toasts": { "closed": "Exercício fechado", "reopened": "Exercício reaberto", "deleted": "Exercício excluído", "created": "Exercício criado" }
     },
