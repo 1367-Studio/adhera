@@ -11,6 +11,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import type Stripe from "stripe"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
 
 export const dynamic = "force-dynamic"
 
@@ -57,7 +58,13 @@ export async function POST(req: Request) {
         let receiptNumber = ""
         const buyerLabel = commande?.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
 
-        if (commande && commande.status === "PENDING") {
+         if (commande && commande.status === "PENDING") {
+          // Best-effort: link to whichever exercice covers today's date, but never block —
+          // the payment already happened on Stripe's side, there's no user to show an error
+          // to, and the early-closure rule on exercice closing means this can basically only
+          // land in an open period anyway (see PATCH /finances/exercices/[id]).
+          const exercice = await resolveExerciceForDate(commande.associationId, paidAt)
+
           // One Income row per accounting category — a mixed-category order posts
           // several partial rows instead of forcing one row into a single category. Grouped
           // by the category snapshot taken when the item was ordered, not the product's
@@ -97,6 +104,7 @@ export async function POST(req: Request) {
                   await tx.income.create({
                     data: {
                       associationId: commande.associationId,
+                      exerciceId:    exercice?.id ?? null,
                       memberId:      commande.membreId ?? undefined,
                       amount:        group.amount / 100,
                       categoryId:    categoryId ?? undefined,
@@ -240,10 +248,14 @@ export async function POST(req: Request) {
         // that doesn't match the real payment.
         const chargedAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(cotisation.amount)
 
+        // Best-effort exercice link — never blocks, same reasoning as the boutique branch above.
+        const exercice = await resolveExerciceForDate(cotisation.associationId, paidAt)
+
         if (cotisation.amount != null) {
           await prisma.income.create({
             data: {
               associationId: cotisation.associationId,
+              exerciceId:    exercice?.id ?? null,
               memberId:      cotisation.membreId,
               amount:        chargedAmount,
               description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
@@ -317,6 +329,9 @@ export async function POST(req: Request) {
           const totalAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(evenement.price!) * quantity
           const unitAmount  = totalAmount / quantity
 
+          // Best-effort exercice link — never blocks, same reasoning as the other branches.
+          const exercice = await resolveExerciceForDate(evenement.associationId, paidAt)
+
           await prisma.participation.updateMany({ where: { orderId }, data: { amount: unitAmount } })
 
           // One Income row per seat (not a single lump sum) so cancelling a single
@@ -324,6 +339,7 @@ export async function POST(req: Request) {
           await prisma.income.createMany({
             data: tickets.map(t => ({
               associationId:   evenement.associationId,
+              exerciceId:      exercice?.id ?? null,
               memberId:        t.membreId,
               participationId: t.id,
               amount:          unitAmount,
@@ -379,9 +395,13 @@ export async function POST(req: Request) {
         })
         if (!don) break
 
+        // Best-effort exercice link — never blocks, same reasoning as the other branches.
+        const exercice = await resolveExerciceForDate(don.associationId, paidAt)
+
         await prisma.income.create({
           data: {
             associationId: don.associationId,
+            exerciceId:    exercice?.id ?? null,
             amount:        don.amount,
             // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
             // comptabilité interne — l'association doit toujours savoir qui a donné.
