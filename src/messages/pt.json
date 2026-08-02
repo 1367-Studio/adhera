@@ -734,6 +734,14 @@
         "networkError": "Erro de rede durante o envio — tente novamente"
       }
     },
+    "exerciceForm": {
+      "foundingWarning": "Este primeiro exercício define permanentemente o calendário fiscal da associação — todos os seguintes deverão seguir o mesmo padrão de datas.",
+      "label": "Rótulo",
+      "labelPlaceholder": "Ex: Exercício 2026",
+      "startDate": "Data de início",
+      "endDate": "Data de fim",
+      "patternHint": "O calendário fiscal já estabelecido segue este padrão: {pattern}."
+    },
     "exercicesView": {
       "title": "Exercícios contábeis",
       "description": "Gerencie os períodos fiscais da associação.",
@@ -743,7 +751,12 @@
       "noExercices": "Nenhum exercício contábil registrado",
       "closeConfirmTitle": "Fechar este exercício?",
       "deleteConfirmTitle": "Excluir este exercício?",
-      "toasts": { "closed": "Exercício fechado", "reopened": "Exercício reaberto", "deleted": "Exercício excluído" }
+      "add": "Novo exercício",
+      "newExerciceTitle": "Novo exercício contábil",
+      "gapWarningTitle": "Intervalo entre exercícios",
+      "gapWarningDescription": "Existe um intervalo de {days, plural, one {# dia} other {# dias}} não coberto (de {start} até {end}). Deseja continuar mesmo assim?",
+      "patternMismatchHint": "As datas não correspondem ao calendário fiscal estabelecido. Datas corrigidas: {start} – {end}.",
+      "toasts": { "closed": "Exercício fechado", "reopened": "Exercício reaberto", "deleted": "Exercício excluído", "created": "Exercício criado" }
     },
     "accountsView": {
       "title": "Contas bancárias",

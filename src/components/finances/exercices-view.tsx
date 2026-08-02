@@ -3,25 +3,96 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { LockIcon, LockOpenIcon, TrashIcon, CalendarIcon } from "@phosphor-icons/react/dist/ssr"
-import { useExercices, useUpdateExercice, useDeleteExercice, type Exercice } from "@/hooks/use-exercices"
+import { PlusIcon, LockIcon, LockOpenIcon, TrashIcon, CalendarIcon } from "@phosphor-icons/react/dist/ssr"
+import { useExercices, useCreateExercice, useUpdateExercice, useDeleteExercice, type Exercice, type ExerciceInput } from "@/hooks/use-exercices"
+import { ApiError } from "@/lib/api-error"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
+import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
+import { ExerciceForm } from "@/components/finances/exercice-form"
+
+type GapWarning = { data: ExerciceInput; gapDays: number; gapStart: string; gapEnd: string }
 
 export function ExercicesView() {
   const t = useTranslations()
+  const [createOpen, setCreateOpen]     = useState(false)
+  const [formDefaults, setFormDefaults] = useState<Partial<ExerciceInput> | undefined>(undefined)
+  const [gapWarning, setGapWarning]     = useState<GapWarning | null>(null)
   const [closeTarget, setCloseTarget]   = useState<Exercice | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Exercice | null>(null)
 
   const { data: exercices = [], isLoading } = useExercices()
+  const createMutation = useCreateExercice()
   const updateMutation = useUpdateExercice()
   const deleteMutation = useDeleteExercice()
 
+  const isFounding = exercices.length === 0
+
   const fmtDate  = (d: string) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "UTC" })
   const fmtRange = (e: Exercice) => `${fmtDate(e.startDate)} – ${fmtDate(e.endDate)}`
+
+  // Not the authoritative rule (the server validates the real thing on submit) — just a
+  // best-effort hint so the user isn't guessing blind. Reads month/day off whichever
+  // exercice sorts first by startDate, which in practice is always the founding one.
+  const fmtMonthDay = (d: string) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "UTC", day: "2-digit", month: "2-digit" })
+  const patternHint = exercices.length > 0 ? `${fmtMonthDay(exercices[0].startDate)} – ${fmtMonthDay(exercices[0].endDate)}` : undefined
+
+  function closeCreateModal() {
+    setCreateOpen(false)
+    setFormDefaults(undefined)
+  }
+
+  // Shared between the first attempt and the gap-confirmed retry — a PATTERN_MISMATCH
+  // can surface on either one (e.g. gap-confirmed dates that also don't match the
+  // established pattern), so both callers need the same auto-fill-and-explain handling.
+  function handlePatternMismatch(err: unknown, data: ExerciceInput): boolean {
+    if (!(err instanceof ApiError) || err.code !== "PATTERN_MISMATCH") return false
+    const expectedStartDate = String(err.details?.expectedStartDate ?? "").slice(0, 10)
+    const expectedEndDate   = String(err.details?.expectedEndDate ?? "").slice(0, 10)
+    setFormDefaults({ label: data.label, startDate: expectedStartDate, endDate: expectedEndDate })
+    toast.error(t("finances.exercicesView.patternMismatchHint", { start: fmtDate(expectedStartDate), end: fmtDate(expectedEndDate) }))
+    return true
+  }
+
+  async function handleCreate(data: ExerciceInput) {
+    try {
+      await createMutation.mutateAsync(data)
+      toast.success(t("finances.exercicesView.toasts.created"))
+      closeCreateModal()
+      return
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "GAP_WARNING") {
+        setGapWarning({
+          data,
+          gapDays:  Number(err.details?.gapDays ?? 0),
+          gapStart: String(err.details?.gapStart ?? ""),
+          gapEnd:   String(err.details?.gapEnd ?? ""),
+        })
+        return
+      }
+      if (handlePatternMismatch(err, data)) return
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function confirmGapAndCreate() {
+    if (!gapWarning) return
+    const data = { ...gapWarning.data, confirmGap: true }
+    try {
+      await createMutation.mutateAsync(data)
+      toast.success(t("finances.exercicesView.toasts.created"))
+      setGapWarning(null)
+      closeCreateModal()
+    } catch (err) {
+      setGapWarning(null)
+      if (handlePatternMismatch(err, gapWarning.data)) return
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
 
   async function handleReopen(e: Exercice) {
     try {
@@ -98,6 +169,12 @@ export function ExercicesView() {
       <PageHeader
         title={t("finances.exercicesView.title")}
         description={t("finances.exercicesView.description")}
+        action={
+          <Button size="sm" onClick={() => setCreateOpen(true)}>
+            <PlusIcon className="mr-1.5 size-4" />
+            {t("finances.exercicesView.add")}
+          </Button>
+        }
       />
 
       <DataTable
@@ -106,6 +183,20 @@ export function ExercicesView() {
         loading={isLoading}
         keyExtractor={(e) => e.id}
         empty={t("finances.exercicesView.noExercices")}
+      />
+
+      <Modal open={createOpen} onOpenChange={(o) => !o && closeCreateModal()} title={t("finances.exercicesView.newExerciceTitle")} size="md" dismissable={false}>
+        <ExerciceForm isFounding={isFounding} patternHint={patternHint} defaultValues={formDefaults} onSubmit={handleCreate} onCancel={closeCreateModal} loading={createMutation.isPending} />
+      </Modal>
+
+      <ConfirmDialog
+        open={!!gapWarning}
+        onOpenChange={(o) => !o && setGapWarning(null)}
+        title={t("finances.exercicesView.gapWarningTitle")}
+        description={gapWarning ? t("finances.exercicesView.gapWarningDescription", { days: gapWarning.gapDays, start: fmtDate(gapWarning.gapStart), end: fmtDate(gapWarning.gapEnd) }) : ""}
+        confirmLabel={t("common.confirm")}
+        loading={createMutation.isPending}
+        onConfirm={confirmGapAndCreate}
       />
 
       <ConfirmDialog

@@ -734,6 +734,14 @@
         "networkError": "Network error during upload — please try again"
       }
     },
+    "exerciceForm": {
+      "foundingWarning": "This first fiscal year permanently sets the association's fiscal calendar — every following one must follow the same date pattern.",
+      "label": "Label",
+      "labelPlaceholder": "E.g.: Fiscal year 2026",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "patternHint": "The established fiscal calendar follows this pattern: {pattern}."
+    },
     "exercicesView": {
       "title": "Fiscal years",
       "description": "Manage the association's fiscal periods.",
@@ -743,7 +751,12 @@
       "noExercices": "No fiscal year recorded",
       "closeConfirmTitle": "Close this fiscal year?",
       "deleteConfirmTitle": "Delete this fiscal year?",
-      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted" }
+      "add": "New fiscal year",
+      "newExerciceTitle": "New fiscal year",
+      "gapWarningTitle": "Gap between fiscal years",
+      "gapWarningDescription": "There is an uncovered gap of {days, plural, one {# day} other {# days}} (from {start} to {end}). Continue anyway?",
+      "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
+      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created" }
     },
     "accountsView": {
       "title": "Bank accounts",
