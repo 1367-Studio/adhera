@@ -657,6 +657,7 @@
   "finances": {
     "nav": {
       "overview": "Visão geral",
+      "exercices": "Exercícios",
       "accounts": "Contas",
       "income": "Receitas",
       "expenses": "Despesas",
@@ -732,6 +733,17 @@
         "uploadError": "Erro ao enviar o comprovante",
         "networkError": "Erro de rede durante o envio — tente novamente"
       }
+    },
+    "exercicesView": {
+      "title": "Exercícios contábeis",
+      "description": "Gerencie os períodos fiscais da associação.",
+      "columns": { "exercice": "Exercício", "status": "Status" },
+      "status": { "ouvert": "Aberto", "cloture": "Fechado" },
+      "actions": { "close": "Fechar", "reopen": "Reabrir", "delete": "Excluir" },
+      "noExercices": "Nenhum exercício contábil registrado",
+      "closeConfirmTitle": "Fechar este exercício?",
+      "deleteConfirmTitle": "Excluir este exercício?",
+      "toasts": { "closed": "Exercício fechado", "reopened": "Exercício reaberto", "deleted": "Exercício excluído" }
     },
     "accountsView": {
       "title": "Contas bancárias",

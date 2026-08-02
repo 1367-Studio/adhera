@@ -657,6 +657,7 @@
   "finances": {
     "nav": {
       "overview": "Resumen",
+      "exercices": "Ejercicios",
       "accounts": "Cuentas",
       "income": "Ingresos",
       "expenses": "Gastos",
@@ -732,6 +733,17 @@
         "uploadError": "Error al subir el comprobante",
         "networkError": "Error de red durante la subida — inténtelo de nuevo"
       }
+    },
+    "exercicesView": {
+      "title": "Ejercicios contables",
+      "description": "Gestione los períodos fiscales de la asociación.",
+      "columns": { "exercice": "Ejercicio", "status": "Estado" },
+      "status": { "ouvert": "Abierto", "cloture": "Cerrado" },
+      "actions": { "close": "Cerrar", "reopen": "Reabrir", "delete": "Eliminar" },
+      "noExercices": "Ningún ejercicio contable registrado",
+      "closeConfirmTitle": "¿Cerrar este ejercicio?",
+      "deleteConfirmTitle": "¿Eliminar este ejercicio?",
+      "toasts": { "closed": "Ejercicio cerrado", "reopened": "Ejercicio reaberto", "deleted": "Ejercicio eliminado" }
     },
     "accountsView": {
       "title": "Cuentas bancarias",

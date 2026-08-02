@@ -657,6 +657,7 @@
   "finances": {
     "nav": {
       "overview": "Overview",
+      "exercices": "Fiscal years",
       "accounts": "Accounts",
       "income": "Income",
       "expenses": "Expenses",
@@ -732,6 +733,17 @@
         "uploadError": "Error uploading the receipt",
         "networkError": "Network error during upload — please try again"
       }
+    },
+    "exercicesView": {
+      "title": "Fiscal years",
+      "description": "Manage the association's fiscal periods.",
+      "columns": { "exercice": "Fiscal year", "status": "Status" },
+      "status": { "ouvert": "Open", "cloture": "Closed" },
+      "actions": { "close": "Close", "reopen": "Reopen", "delete": "Delete" },
+      "noExercices": "No fiscal year recorded",
+      "closeConfirmTitle": "Close this fiscal year?",
+      "deleteConfirmTitle": "Delete this fiscal year?",
+      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted" }
     },
     "accountsView": {
       "title": "Bank accounts",

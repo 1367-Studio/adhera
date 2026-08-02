@@ -15,13 +15,16 @@ export async function apiErrorMessage(res: Response, fallback = "Erreur"): Promi
   }
 }
 
-// Same message extraction as apiErrorMessage, but also carries the optional { code } some
-// routes return (see src/lib/api-error-codes.ts) — for callers whose UI needs to react
-// specifically to one error (e.g. an "upgrade" action button) rather than just display it.
-// A separate export rather than changing apiErrorMessage's return type, since that's
-// already relied on as a plain string by every other call site.
 export class ApiError extends Error {
-  constructor(message: string, public readonly code?: string) {
+  constructor(
+    message: string,
+    public readonly code?: string,
+    // Any extra structured fields the response carried alongside error/code (e.g.
+    // gapDays, expectedStartDate) — callers that need to react to more than just the
+    // code (like a confirmation dialog showing the exact gap or expected dates) read
+    // them from here instead of re-fetching or re-parsing the response themselves.
+    public readonly details?: Record<string, unknown>,
+  ) {
     super(message)
     this.name = "ApiError"
   }
@@ -34,7 +37,12 @@ export async function apiError(res: Response, fallback = "Erreur"): Promise<ApiE
       typeof data.error === "string" ? data.error :
       Array.isArray(data.error) && data.error.length > 0 ? (data.error[0]?.message ?? fallback) :
       fallback
-    return new ApiError(message, typeof data.code === "string" ? data.code : undefined)
+    const { error: _error, code, ...details } = data
+    return new ApiError(
+      message,
+      typeof code === "string" ? code : undefined,
+      Object.keys(details).length > 0 ? details : undefined,
+    )
   } catch {
     return new ApiError(fallback)
   }

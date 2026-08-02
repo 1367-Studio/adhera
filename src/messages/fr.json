@@ -657,6 +657,7 @@
   "finances": {
     "nav": {
       "overview": "Vue d'ensemble",
+      "exercices": "Exercices",
       "accounts": "Comptes",
       "income": "Recettes",
       "expenses": "Dépenses",
@@ -732,6 +733,17 @@
         "uploadError": "Erreur lors de l'upload du justificatif",
         "networkError": "Erreur réseau lors de l'upload — réessayez"
       }
+    },
+    "exercicesView": {
+      "title": "Exercices comptables",
+      "description": "Gérez les périodes fiscales de l'association.",
+      "columns": { "exercice": "Exercice", "status": "Statut" },
+      "status": { "ouvert": "Ouvert", "cloture": "Clôturé" },
+      "actions": { "close": "Clôturer", "reopen": "Réouvrir", "delete": "Supprimer" },
+      "noExercices": "Aucun exercice comptable enregistré",
+      "closeConfirmTitle": "Clôturer cet exercice ?",
+      "deleteConfirmTitle": "Supprimer cet exercice ?",
+      "toasts": { "closed": "Exercice clôturé", "reopened": "Exercice réouvert", "deleted": "Exercice supprimé" }
     },
     "accountsView": {
       "title": "Comptes bancaires",
