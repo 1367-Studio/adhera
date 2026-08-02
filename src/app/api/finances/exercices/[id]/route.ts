@@ -29,7 +29,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // real-time event (e.g. a Stripe payment landing "today") could still fall inside the
   // range of an already-closed period.
   if (closing && new Date() < existing.endDate) {
-    return NextResponse.json({ error: "EARLY_CLOSURE", endDate: existing.endDate }, { status: 422 })
+    return NextResponse.json({
+      error: "Impossible de clôturer un exercice avant sa date de fin.",
+      code:  "EARLY_CLOSURE",
+      endDate: existing.endDate,
+    }, { status: 422 })
   }
 
   const { exercice, linkedRecords } = await prisma.$transaction(async (tx) => {

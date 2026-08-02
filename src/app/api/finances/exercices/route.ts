@@ -44,7 +44,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const gap = findExerciceGap(existing, range)
     if (gap) {
       return NextResponse.json({
-        error:    "GAP_WARNING",
+        error:    "Il existe un écart entre cet exercice et le précédent/suivant — confirmez pour continuer.",
+        code:     "GAP_WARNING",
         gapDays:  gap.gapDays,
         gapStart: gap.gapStart,
         gapEnd:   gap.gapEnd,
@@ -63,7 +64,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
     if (range.startDate.getTime() !== expected.startDate.getTime() || range.endDate.getTime() !== expected.endDate.getTime()) {
       return NextResponse.json({
-        error:             "PATTERN_MISMATCH",
+        error:             "Les dates ne correspondent pas au calendrier fiscal déjà établi.",
+        code:              "PATTERN_MISMATCH",
         expectedStartDate: expected.startDate,
         expectedEndDate:   expected.endDate,
       }, { status: 422 })
