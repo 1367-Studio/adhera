@@ -72,27 +72,30 @@ export const POST = withAdminAuth(async (req, ctx) => {
     }
   }
 
-  const exercice = await prisma.$transaction(async (tx) => {
+  const { exercice, linkedRecords } = await prisma.$transaction(async (tx) => {
     const created = await tx.exerciceComptable.create({
       data: { associationId, label, startDate: range.startDate, endDate: range.endDate },
     })
 
-    await tx.income.updateMany({
+    const incomes = await tx.income.updateMany({
       where: { associationId, exerciceId: null, date: { gte: range.startDate, lte: range.endDate } },
       data:  { exerciceId: created.id },
     })
-    await tx.expense.updateMany({
+    const expenses = await tx.expense.updateMany({
       where: { associationId, exerciceId: null, date: { gte: range.startDate, lte: range.endDate } },
       data:  { exerciceId: created.id },
     })
-    await tx.bankTransaction.updateMany({
+    const bankTxs = await tx.bankTransaction.updateMany({
       where: { associationId, exerciceId: null, transactionDate: { gte: range.startDate, lte: range.endDate } },
       data:  { exerciceId: created.id },
     })
 
-    return created
+    return { exercice: created, linkedRecords: incomes.count + expenses.count + bankTxs.count }
   })
 
-  await writeActivityLog({ associationId, actorId: userId, action: "EXERCICE_CREATED", entity: "ExerciceComptable", entityId: exercice.id, label: exercice.label })
-  return NextResponse.json(exercice, { status: 201 })
+  await writeActivityLog({
+    associationId, actorId: userId, action: "EXERCICE_CREATED", entity: "ExerciceComptable", entityId: exercice.id, label: exercice.label,
+    ...(linkedRecords > 0 ? { metadata: { linkedRecords } } : {}),
+  })
+  return NextResponse.json({ ...exercice, linkedRecords }, { status: 201 })
 }, { roles: FINANCE, module: "finances" })

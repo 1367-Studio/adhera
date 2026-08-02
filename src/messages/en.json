@@ -759,7 +759,7 @@
       "earlyClosureTitle": "Early closure",
       "earlyClosureDescription": "This fiscal year doesn't officially end until {date}. Closing it now will block new entries until {date}. Continue?",
       "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
-      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created", "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically" }
+      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created", "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically","createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically" }
     },
     "accountsView": {
       "title": "Bank accounts",

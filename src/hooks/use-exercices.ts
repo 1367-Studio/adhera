@@ -33,7 +33,7 @@ async function fetchExercices(): Promise<Exercice[]> {
   return res.json()
 }
 
-async function createExercice(data: ExerciceInput) {
+async function createExercice(data: ExerciceInput): Promise<Exercice & { linkedRecords: number }> {
   const res = await fetch("/api/finances/exercices", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

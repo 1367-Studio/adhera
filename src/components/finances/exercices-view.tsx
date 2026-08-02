@@ -62,8 +62,12 @@ export function ExercicesView() {
 
   async function handleCreate(data: ExerciceInput) {
     try {
-      await createMutation.mutateAsync(data)
-      toast.success(t("finances.exercicesView.toasts.created"))
+      const result = await createMutation.mutateAsync(data)
+      toast.success(
+        result.linkedRecords > 0
+          ? t("finances.exercicesView.toasts.createdWithLinked", { count: result.linkedRecords })
+          : t("finances.exercicesView.toasts.created"),
+      )
       closeCreateModal()
       return
     } catch (err) {
@@ -85,8 +89,12 @@ export function ExercicesView() {
     if (!gapWarning) return
     const data = { ...gapWarning.data, confirmGap: true }
     try {
-      await createMutation.mutateAsync(data)
-      toast.success(t("finances.exercicesView.toasts.created"))
+      const result = await createMutation.mutateAsync(data)
+      toast.success(
+        result.linkedRecords > 0
+          ? t("finances.exercicesView.toasts.createdWithLinked", { count: result.linkedRecords })
+          : t("finances.exercicesView.toasts.created"),
+      )
       setGapWarning(null)
       closeCreateModal()
     } catch (err) {
