@@ -210,6 +210,15 @@ export function ExercicesView() {
       <Modal open={createOpen} onOpenChange={(o) => !o && closeCreateModal()} title={t("finances.exercicesView.newExerciceTitle")} size="md" dismissable={false}>
         <ExerciceForm isFounding={isFounding} patternHint={patternHint} defaultValues={formDefaults} onSubmit={handleCreate} onCancel={closeCreateModal} loading={createMutation.isPending} />
       </Modal>
+      <ConfirmDialog
+        open={!!gapWarning}
+        onOpenChange={(o) => !o && setGapWarning(null)}
+        title={t("finances.exercicesView.gapWarningTitle")}
+        description={gapWarning ? t("finances.exercicesView.gapWarningDescription", { days: gapWarning.gapDays, start: fmtDate(gapWarning.gapStart), end: fmtDate(gapWarning.gapEnd) }) : ""}
+        confirmLabel={t("common.confirm")}
+        loading={createMutation.isPending}
+        onConfirm={confirmGapAndCreate}
+      />
 
       <ConfirmDialog
         open={!!earlyClosureWarning}
