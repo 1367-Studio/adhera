@@ -3584,6 +3584,7 @@
       "materiel": "Material",
       "site": "Site",
       "activite": "Histórico",
+      "suporte": "Suporte",
       "categories": {
         "adherents": "Associados",
         "communication": "Comunicação",
@@ -3595,6 +3596,7 @@
       "backoffice": "Backoffice",
       "overview": "Visão geral",
       "associations": "Associações",
+      "support": "Suporte",
       "signOut": "Sair"
     },
     "legalLinksMenu": {
@@ -3653,6 +3655,39 @@
       "toastSuccess": "Perfil atualizado. O nome no cabeçalho será atualizado no próximo login.",
       "toastError": "Erro ao salvar.",
       "toastNetworkError": "Erro de conexão. Tente novamente."
+    }
+  },
+  "support": {
+    "title": "Suporte",
+    "subtitle": "Uma dúvida, um problema, um feedback? Fale conosco.",
+    "newTicket": "Novo chamado",
+    "empty": "Nenhum chamado por enquanto.",
+    "notFound": "Chamado não encontrado.",
+    "backToList": "Voltar",
+    "backofficeTitle": "Suporte",
+    "filterAll": "Todos",
+    "status": {
+      "open": "Aberto",
+      "closed": "Fechado"
+    },
+    "closeTicket": "Fechar chamado",
+    "reopenTicket": "Reabrir chamado",
+    "closeConfirmTitle": "Fechar este chamado?",
+    "closeConfirmDescription": "Você poderá reabri-lo a qualquer momento enviando uma nova mensagem.",
+    "noMessages": "Nenhuma mensagem.",
+    "staffLabel": "Suporte Adhera",
+    "composerPlaceholder": "Escreva sua mensagem…",
+    "form": {
+      "subject": "Assunto",
+      "message": "Mensagem",
+      "cancel": "Cancelar",
+      "send": "Enviar"
+    },
+    "toasts": {
+      "created": "Chamado enviado",
+      "error": "Ocorreu um erro",
+      "closed": "Chamado fechado",
+      "reopened": "Chamado reaberto"
     }
   }
 }

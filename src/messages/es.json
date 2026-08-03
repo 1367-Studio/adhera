@@ -3584,6 +3584,7 @@
       "materiel": "Material",
       "site": "Sitio web",
       "activite": "Historial",
+      "suporte": "Soporte",
       "categories": {
         "adherents": "Afiliación",
         "communication": "Comunicación",
@@ -3595,6 +3596,7 @@
       "backoffice": "Backoffice",
       "overview": "Resumen",
       "associations": "Asociaciones",
+      "support": "Soporte",
       "signOut": "Cerrar sesión"
     },
     "legalLinksMenu": {
@@ -3653,6 +3655,39 @@
       "toastSuccess": "Perfil actualizado. El nombre en el encabezado se actualizará en el próximo inicio de sesión.",
       "toastError": "Error al guardar.",
       "toastNetworkError": "Error de conexión. Inténtalo de nuevo."
+    }
+  },
+  "support": {
+    "title": "Soporte",
+    "subtitle": "¿Una pregunta, un problema, un comentario? Escríbanos.",
+    "newTicket": "Nueva solicitud",
+    "empty": "Aún no hay solicitudes.",
+    "notFound": "Solicitud no encontrada.",
+    "backToList": "Volver",
+    "backofficeTitle": "Soporte",
+    "filterAll": "Todas",
+    "status": {
+      "open": "Abierta",
+      "closed": "Cerrada"
+    },
+    "closeTicket": "Cerrar solicitud",
+    "reopenTicket": "Reabrir solicitud",
+    "closeConfirmTitle": "¿Cerrar esta solicitud?",
+    "closeConfirmDescription": "Podrás reabrirla en cualquier momento enviando un nuevo mensaje.",
+    "noMessages": "Sin mensajes.",
+    "staffLabel": "Soporte Adhera",
+    "composerPlaceholder": "Escriba su mensaje…",
+    "form": {
+      "subject": "Asunto",
+      "message": "Mensaje",
+      "cancel": "Cancelar",
+      "send": "Enviar"
+    },
+    "toasts": {
+      "created": "Solicitud enviada",
+      "error": "Ocurrió un error",
+      "closed": "Solicitud cerrada",
+      "reopened": "Solicitud reabierta"
     }
   }
 }

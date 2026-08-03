@@ -3584,6 +3584,7 @@
       "materiel": "Equipment",
       "site": "Website",
       "activite": "History",
+      "suporte": "Support",
       "categories": {
         "adherents": "Membership",
         "communication": "Communication",
@@ -3595,6 +3596,7 @@
       "backoffice": "Backoffice",
       "overview": "Overview",
       "associations": "Associations",
+      "support": "Support",
       "signOut": "Sign out"
     },
     "legalLinksMenu": {
@@ -3653,6 +3655,39 @@
       "toastSuccess": "Profile updated. The name in the header will update on next sign-in.",
       "toastError": "Error saving changes.",
       "toastNetworkError": "Connection error. Please try again."
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "A question, an issue, some feedback? Write to us.",
+    "newTicket": "New request",
+    "empty": "No requests yet.",
+    "notFound": "Request not found.",
+    "backToList": "Back",
+    "backofficeTitle": "Support",
+    "filterAll": "All",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "closeTicket": "Close request",
+    "reopenTicket": "Reopen request",
+    "closeConfirmTitle": "Close this request?",
+    "closeConfirmDescription": "You can always reopen it by sending a new message.",
+    "noMessages": "No messages.",
+    "staffLabel": "Adhera Support",
+    "composerPlaceholder": "Write your message…",
+    "form": {
+      "subject": "Subject",
+      "message": "Message",
+      "cancel": "Cancel",
+      "send": "Send"
+    },
+    "toasts": {
+      "created": "Request sent",
+      "error": "Something went wrong",
+      "closed": "Request closed",
+      "reopened": "Request reopened"
     }
   }
 }

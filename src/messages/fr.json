@@ -3584,6 +3584,7 @@
       "materiel": "Matériel",
       "site": "Site web",
       "activite": "Historique",
+      "suporte": "Support",
       "categories": {
         "adherents": "Adhérents",
         "communication": "Communication",
@@ -3595,6 +3596,7 @@
       "backoffice": "Backoffice",
       "overview": "Vue d'ensemble",
       "associations": "Associations",
+      "support": "Support",
       "signOut": "Se déconnecter"
     },
     "legalLinksMenu": {
@@ -3653,6 +3655,39 @@
       "toastSuccess": "Profil mis à jour. Le nom dans l'en-tête sera mis à jour à la prochaine connexion.",
       "toastError": "Erreur lors de la sauvegarde.",
       "toastNetworkError": "Erreur de connexion. Veuillez réessayer."
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "Une question, un problème, un retour ? Écrivez-nous.",
+    "newTicket": "Nouvelle demande",
+    "empty": "Aucune demande pour l'instant.",
+    "notFound": "Demande introuvable.",
+    "backToList": "Retour",
+    "backofficeTitle": "Support",
+    "filterAll": "Toutes",
+    "status": {
+      "open": "Ouverte",
+      "closed": "Fermée"
+    },
+    "closeTicket": "Fermer la demande",
+    "reopenTicket": "Rouvrir la demande",
+    "closeConfirmTitle": "Fermer cette demande ?",
+    "closeConfirmDescription": "Vous pourrez toujours la rouvrir en envoyant un nouveau message.",
+    "noMessages": "Aucun message.",
+    "staffLabel": "Support Adhera",
+    "composerPlaceholder": "Écrivez votre message…",
+    "form": {
+      "subject": "Objet",
+      "message": "Message",
+      "cancel": "Annuler",
+      "send": "Envoyer"
+    },
+    "toasts": {
+      "created": "Demande envoyée",
+      "error": "Une erreur est survenue",
+      "closed": "Demande fermée",
+      "reopened": "Demande réouverte"
     }
   }
 }

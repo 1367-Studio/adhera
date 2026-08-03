@@ -715,3 +715,65 @@ export function boutiqueNewOrderAdminEmail(p: {
     html:    layout(APP_NAME, content),
   }
 }
+
+// Sent to SUPPORT_TEAM_EMAIL whenever an association creates or replies to a support ticket
+// (see src/lib/support-tickets.ts). Branded as the platform (APP_NAME), not the association —
+// this is an internal ops notification, not something sent on the association's behalf.
+// subject/body/authorName/associationName are all admin-typed free text, escaped before
+// interpolation (unlike some older templates in this file — see boutiqueNewOrderAdminEmail —
+// this one takes no chances with it).
+export function supportTicketStaffEmail(p: {
+  to:              string
+  associationName: string
+  authorName:      string
+  subject:         string
+  body:            string
+  ticketUrl:       string
+  // Whether this message opened the ticket vs. was added to an existing one — the subject
+  // line stays identical either way (deliberately, so a client threads them together), but
+  // the body copy needs to say which one this is or "reply" reads as "brand-new" at a glance.
+  isNewTicket:     boolean
+}) {
+  const heading = p.isNewTicket ? "Nouvelle demande support" : "Nouvelle réponse sur une demande support"
+  const intro   = p.isNewTicket
+    ? `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a ouvert une nouvelle demande — objet : <strong>${escapeHtml(p.subject)}</strong>`
+    : `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a répondu sur la demande <strong>${escapeHtml(p.subject)}</strong> :`
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">${intro}</p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
+      <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
+    </table>
+    ${btn("Répondre", p.ticketUrl)}`
+  return {
+    to:      p.to,
+    subject: `[Support] ${p.associationName} — ${p.subject}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// Sent to the ticket's author when the platform team replies (src/lib/support-tickets.ts).
+// Same "platform-branded, not association-branded" reasoning as supportTicketStaffEmail — the
+// reply is from Adhera's own team, not from the association itself.
+export function supportTicketReplyEmail(p: {
+  to:           string
+  name:         string
+  subject:      string
+  body:         string
+  dashboardUrl: string
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle réponse à votre demande</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${escapeHtml(p.name)}, l'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
+    </p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
+      <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
+    </table>
+    ${btn("Voir la conversation", p.dashboardUrl)}`
+  return {
+    to:      p.to,
+    subject: `Réponse à votre demande — ${p.subject}`,
+    html:    layout(APP_NAME, content),
+  }
+}
