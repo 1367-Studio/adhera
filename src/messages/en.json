@@ -2473,7 +2473,8 @@
         "created": "Membership fee recorded",
         "updated": "Membership fee updated",
         "deleted": "Membership fee deleted",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "editCancelled": "Edit the cancelled membership fee"
       },
       "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
       "remaining": "{amount} remaining"
@@ -2747,10 +2748,12 @@
       "returnedOn": " · Returned on {date}",
       "showingRecentLoans": "Showing the {count} most recent loans out of {total} total.",
       "addCotisationTitle": "Add a membership fee",
+      "editCotisationTitle": "Edit membership fee",
       "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",
       "toasts": {
         "accessCreated": "Access created — an email was sent",
-        "cotisationAdded": "Membership fee added"
+        "cotisationAdded": "Membership fee added",
+        "cotisationUpdated": "Membership fee updated"
       }
     },
     "sms": {

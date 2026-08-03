@@ -2473,7 +2473,8 @@
         "created": "Cotisation enregistrée",
         "updated": "Cotisation mise à jour",
         "deleted": "Cotisation supprimée",
-        "confirm": "Confirmer"
+        "confirm": "Confirmer",
+        "editCancelled": "Modifier la cotisation annulée"
       },
       "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées.",
       "remaining": "Reste {amount}"
@@ -2747,10 +2748,12 @@
       "returnedOn": " · Rendu le {date}",
       "showingRecentLoans": "Affichage des {count} prêts les plus récents sur {total} au total.",
       "addCotisationTitle": "Ajouter une cotisation",
+      "editCotisationTitle": "Modifier la cotisation",
       "deleteConfirmWithDependants": "Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de {count} membre(s) : {names}.",
       "toasts": {
         "accessCreated": "Accès créé — un email a été envoyé",
-        "cotisationAdded": "Cotisation ajoutée"
+        "cotisationAdded": "Cotisation ajoutée",
+        "cotisationUpdated": "Cotisation mise à jour"
       }
     },
     "sms": {

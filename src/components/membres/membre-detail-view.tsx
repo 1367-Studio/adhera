@@ -12,8 +12,9 @@ import {
   DownloadSimpleIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
-import { useCreateCotisation } from "@/hooks/use-cotisations"
+import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
+import { ApiError } from "@/lib/api-error"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Modal } from "@/components/ui/modal"
@@ -120,6 +121,19 @@ function getMeetingStatusBadge(t: Translator): Record<string, { label: string; v
 
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
+// Only what's needed to fetch a specific cotisation (via GET /api/cotisations/[id]) and open
+// it in CotisationForm's edit mode — see openCancelledCotisationForEdit below.
+type FetchedCotisation = {
+  id:         string
+  year:       number
+  amount:     string
+  amountPaid: string
+  status:     "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
+  dueDate:    string | null
+  note:       string | null
+  installments: { amount: string; dueDate: string }[]
+}
+
 export function MembreDetailView() {
   const { id } = useParams<{ id: string }>()
   const t = useTranslations()
@@ -131,6 +145,10 @@ export function MembreDetailView() {
   const [deleteOpen, setDeleteOpen]             = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
+  // Set when the create attempt hits a cancelled cotisation already occupying that year (see
+  // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
+  // opened here rather than sending the admin off to the main Cotisations list to find it.
+  const [editCotisationTarget, setEditCotisationTarget] = useState<FetchedCotisation | null>(null)
 
   const { data: membre, isLoading, isError } = useMembre(id)
 
@@ -138,6 +156,7 @@ export function MembreDetailView() {
   const deleteMutation          = useDeleteMembre()
   const createAccessMutation    = useCreateAccess()
   const createCotisationMutation = useCreateCotisation()
+  const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
   const isSelf = !!membre && membre.userId === currentUser.id
 
@@ -172,11 +191,44 @@ export function MembreDetailView() {
     }
   }
 
+  // Mirrors cotisations-view.tsx's own openCancelledForEdit — a cotisation exists per
+  // (membre, year) forever regardless of status, so a cancelled one blocks creating a new one
+  // for the same year (see POST /api/cotisations). This page has no other way to reach that
+  // cancelled cotisation to edit it, so it's fetched and opened right here.
+  async function openCancelledCotisationForEdit(cotisationId: string) {
+    try {
+      const res = await fetch(`/api/cotisations/${cotisationId}`)
+      if (!res.ok) { toast.error(t("common.error")); return }
+      const cotisation = await res.json() as FetchedCotisation
+      setCreateCotisationOpen(false)
+      setEditCotisationTarget(cotisation)
+    } catch {
+      toast.error(t("common.networkError"))
+    }
+  }
+
   async function handleCreateCotisation(data: CotisationInput) {
     try {
       await createCotisationMutation.mutateAsync(data)
       toast.success(t("membres.detail.toasts.cotisationAdded"))
       setCreateCotisationOpen(false)
+    } catch (err) {
+      if (err instanceof ApiError && err.code === "CANCELLED_EXISTS" && typeof err.details?.cotisationId === "string") {
+        const cotisationId = err.details.cotisationId
+        toast.error(err.message, {
+          action: { label: t("cotisations.view.toasts.editCancelled"), onClick: () => openCancelledCotisationForEdit(cotisationId) },
+        })
+        return
+      }
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleUpdateCotisation(data: CotisationInput) {
+    try {
+      await updateCotisationMutation.mutateAsync(data)
+      toast.success(t("membres.detail.toasts.cotisationUpdated"))
+      setEditCotisationTarget(null)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -635,6 +687,33 @@ export function MembreDetailView() {
           onSubmit={handleCreateCotisation}
           onCancel={() => setCreateCotisationOpen(false)}
           loading={createCotisationMutation.isPending}
+        />
+      </Modal>
+
+      <Modal
+        open={!!editCotisationTarget}
+        onOpenChange={(open) => !open && setEditCotisationTarget(null)}
+        title={t("membres.detail.editCotisationTitle")}
+        size="lg"
+        dismissable={false}
+      >
+        <CotisationForm
+          membres={[]}
+          editMode
+          amountPaid={editCotisationTarget ? Number(editCotisationTarget.amountPaid) : 0}
+          currentStatus={editCotisationTarget?.status}
+          defaultValues={editCotisationTarget ? {
+            membreId:     id,
+            year:         editCotisationTarget.year,
+            amount:       parseFloat(editCotisationTarget.amount),
+            status:       editCotisationTarget.status === "EXONERE" || editCotisationTarget.status === "ANNULEE" ? editCotisationTarget.status : null,
+            dueDate:      editCotisationTarget.dueDate ? editCotisationTarget.dueDate.split("T")[0] : "",
+            installments: editCotisationTarget.installments.map(i => ({ amount: parseFloat(i.amount), dueDate: i.dueDate.split("T")[0] })),
+            note:         editCotisationTarget.note ?? "",
+          } : undefined}
+          onSubmit={handleUpdateCotisation}
+          onCancel={() => setEditCotisationTarget(null)}
+          loading={updateCotisationMutation.isPending}
         />
       </Modal>
     </div>
