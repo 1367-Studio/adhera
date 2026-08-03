@@ -4,6 +4,7 @@ import { expenseSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -11,11 +12,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
-  const status     = searchParams.get("status")     ?? undefined
-  const categoryId = searchParams.get("categoryId") ?? undefined
-  const vendor     = searchParams.get("vendor")     ?? undefined
-  const dateFrom   = searchParams.get("dateFrom")   ?? undefined
-  const dateTo     = searchParams.get("dateTo")     ?? undefined
+  const status          = searchParams.get("status")     ?? undefined
+  const categoryId      = searchParams.get("categoryId") ?? undefined
+  const vendor          = searchParams.get("vendor")     ?? undefined
+  const dateFrom        = searchParams.get("dateFrom")   ?? undefined
+  const dateTo          = searchParams.get("dateTo")     ?? undefined
+  const exerciceIdParam = searchParams.get("exerciceId") ?? undefined
 
   const where: Record<string, unknown> = { associationId }
   if (status)     where.status     = status
@@ -27,6 +29,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
       ...(dateTo   ? { lte: new Date(dateTo) }   : {}),
     }
   }
+  if (exerciceIdParam === "none") where.exerciceId = null
+  else if (exerciceIdParam) where.exerciceId = exerciceIdParam
 
   const include = {
     category:       { select: { name: true, type: true } },
@@ -64,11 +68,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   const { date, categoryId, vendor, description, receiptUrl, internalNote, paymentMethod, ...rest } = parsed.data
+  const expenseDate = new Date(date)
+
+  const exercice = await resolveExerciceForDate(associationId, expenseDate)
+  const guard = closedExerciceGuard(exercice?.status)
+  if (guard) return guard
+
   const expense = await prisma.expense.create({
     data: {
       ...rest,
       associationId,
-      date:          new Date(date),
+      exerciceId:    exercice?.id ?? null,
+      date:          expenseDate,
       categoryId:    categoryId    || null,
       vendor:        vendor        || null,
       description:   description   || null,

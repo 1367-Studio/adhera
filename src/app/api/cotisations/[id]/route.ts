@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { cotisationUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import type { ExerciceStatus } from "@prisma/client"
 import { recordCotisationPayment, reverseCotisationPayments, sendCotisationPaymentConfirmation, deleteCotisationWithPayments } from "@/lib/cotisation-payments"
 
 const EPSILON = 0.01
@@ -46,6 +48,23 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const unbecomingPaid = (existing.status === "PAYE" || existing.status === "PARTIELLEMENT_PAYEE")
     && parsed.data.status !== undefined && parsed.data.status !== "PAYE" && parsed.data.status !== "PARTIELLEMENT_PAYEE"
 
+  // Resolve/guard before touching anything: becomingPaid needs the target period for the new
+  // payment's Income row, unbecomingPaid needs the period every already-linked payment sits in.
+  let newExercice: { id: string; status: ExerciceStatus } | null = null
+  if (becomingPaid) {
+    newExercice = await resolveExerciceForDate(associationId, new Date(parsed.data.paidAt as string))
+    const guard = closedExerciceGuard(newExercice?.status)
+    if (guard) return guard
+  }
+  if (unbecomingPaid) {
+    const closedLinkedIncome = await prisma.income.findFirst({
+      where:  { cotisationPayment: { cotisationId: id }, exercice: { status: "CLOTURE" } },
+      select: { id: true },
+    })
+    const guard = closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
+    if (guard) return guard
+  }
+
   const { paidAt, dueDate, paymentMethod, note, amount, ...rest } = parsed.data
 
   // Only checked when payments aren't about to be wiped wholesale by unbecomingPaid below —
@@ -88,6 +107,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amount:       remaining,
         method:       paymentMethod!,
         paidAt:       paidAt ? new Date(paidAt) : undefined,
+        exerciceId:   newExercice?.id ?? null,
       }))
       paidJustNow = remaining
     }
@@ -128,6 +148,15 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
       { error: "Cette cotisation a été payée par carte — remboursez le paiement depuis Stripe avant de la supprimer." },
       { status: 422 },
     )
+  }
+
+  if (existing.payments.length > 0) {
+    const closedLinkedIncome = await prisma.income.findFirst({
+      where:  { cotisationPayment: { cotisationId: id }, exercice: { status: "CLOTURE" } },
+      select: { id: true },
+    })
+    const guard = closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
+    if (guard) return guard
   }
 
   let force = false

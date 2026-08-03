@@ -6,6 +6,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import type { ExerciceStatus } from "@prisma/client"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 
@@ -110,6 +112,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json(corrected)
   }
 
+  let exercice: { id: string; status: ExerciceStatus } | null = null
+  if (status === "PAID") {
+    exercice = await resolveExerciceForDate(ctx.associationId, new Date())
+    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    if (exerciceGuard) return exerciceGuard
+  }
+
   try {
     // Retried up to 5x on a receiptNumber collision, same pattern as the Devis/Facture
     // numbering call sites — the whole attempt (including the status flip) is one
@@ -207,6 +216,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
               await tx.income.create({
                 data: {
                   associationId: ctx.associationId,
+                  exerciceId:    exercice?.id ?? null,
                   memberId:      commande.membreId ?? undefined,
                   amount:        group.amount / 100,
                   categoryId:    categoryId ?? undefined,

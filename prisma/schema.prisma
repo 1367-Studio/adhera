@@ -157,6 +157,11 @@ enum NotificationScope {
   GESTION
 }
 
+enum ExerciceStatus {
+  OUVERT
+  CLOTURE
+}
+
 enum BankTransactionStatus {
   UNMATCHED
   MATCHED
@@ -349,6 +354,7 @@ model Association {
   boutiqueProduits    BoutiqueProduit[]
   boutiqueCommandes   BoutiqueCommande[]
   meetings            Meeting[]
+  exercicesComptables ExerciceComptable[]
   bankAccounts        BankAccount[]
   bankTransactions    BankTransaction[]
   financeCategories   FinanceCategory[]
@@ -1054,6 +1060,26 @@ model MeetingParticipant {
 
 // ─── Finances & Conciliation bancaire ────────────────────────────────────────
 
+model ExerciceComptable {
+  id            String         @id @default(cuid())
+  associationId String
+  label         String
+  startDate     DateTime
+  endDate       DateTime
+  status        ExerciceStatus @default(OUVERT)
+  closedAt      DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes          Income[]
+  expenses         Expense[]
+  bankTransactions BankTransaction[]
+
+  @@index([associationId, status])
+  @@index([associationId, startDate])
+}
+
 model BankAccount {
   id             String   @id @default(cuid())
   associationId  String
@@ -1076,6 +1102,7 @@ model BankAccount {
 model BankTransaction {
   id              String                @id @default(cuid())
   associationId   String
+  exerciceId      String?
   bankAccountId   String
   transactionDate DateTime
   label           String
@@ -1089,6 +1116,7 @@ model BankTransaction {
   updatedAt       DateTime              @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   bankAccount     BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
   reconciliations BankReconciliation[]
 
@@ -1120,6 +1148,7 @@ model FinanceCategory {
 model Income {
   id                  String       @id @default(cuid())
   associationId       String
+  exerciceId          String?
   memberId            String?
   participationId     String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
   facturePaymentId    String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
@@ -1136,6 +1165,7 @@ model Income {
   updatedAt           DateTime     @updatedAt
 
   association       Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice          ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   membre            Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
   participation     Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
   facturePayment    FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
@@ -1150,6 +1180,7 @@ model Income {
 model Expense {
   id             String        @id @default(cuid())
   associationId  String
+  exerciceId     String?
   factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
   amount         Decimal       @db.Decimal(10, 2)
   categoryId     String?
@@ -1164,6 +1195,7 @@ model Expense {
   updatedAt      DateTime      @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]

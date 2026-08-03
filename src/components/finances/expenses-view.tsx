@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon, WarningIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
+import { useExercices } from "@/hooks/use-exercices"
 import type { ExpenseInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -19,23 +20,22 @@ import { FilterSelect } from "@/components/ui/filter-select"
 import { ExpenseForm } from "@/components/finances/expense-form"
 
 type Expense = {
-  id:          string
-  amount:      string
-  date:        string
-  description: string | null
-  vendor:      string | null
-  status:      "DRAFT" | "VALIDATED" | "CANCELLED"
-  receiptUrl:  string | null
-  internalNote: string | null
-  paymentMethod: string | null
-  factureRecueId: string | null
-  category:    { name: string } | null
+  id:              string
+  amount:          string
+  date:            string
+  description:     string | null
+  vendor:          string | null
+  status:          "DRAFT" | "VALIDATED" | "CANCELLED"
+  receiptUrl:      string | null
+  internalNote:    string | null
+  paymentMethod:   string | null
+  factureRecueId:  string | null
+  exerciceId:      string | null
+  category:        { name: string } | null
   reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -123,16 +123,18 @@ function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOp
 
 export function ExpensesView() {
   const t = useTranslations()
-  const [page, setPage]                 = useState(1)
-  const [yearFilter, setYearFilter]     = useState(String(currentYear))
-  const [statusFilter, setStatusFilter] = useState("")
-  const [createOpen, setCreateOpen]     = useState(false)
-  const [editTarget, setEditTarget]     = useState<Expense | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null)
+  const [page, setPage]                     = useState(1)
+  const [statusFilter, setStatusFilter]     = useState("")
+  const [createOpen, setCreateOpen]         = useState(false)
+  const [editTarget, setEditTarget]         = useState<Expense | null>(null)
+  const [deleteTarget, setDeleteTarget]     = useState<Expense | null>(null)
+  const [exerciceFilter, setExerciceFilter] = useState("")
+
+  const { data: exercices = [] } = useExercices()
 
   const filters = {
-    ...(statusFilter ? { status: statusFilter } : {}),
-    ...(yearFilter ? { dateFrom: `${yearFilter}-01-01`, dateTo: `${yearFilter}-12-31` } : {}),
+    ...(statusFilter   ? { status: statusFilter }      : {}),
+    ...(exerciceFilter ? { exerciceId: exerciceFilter } : {}),
   }
 
   const { data: result, isLoading } = useExpenses(page, PAGE_SIZE, filters)
@@ -196,6 +198,11 @@ export function ExpensesView() {
             {e.factureRecueId && (
               <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.expensesView.fromReceivedInvoiceTooltip")}>
                 <ReceiptIcon className="size-3" /> {t("finances.expensesView.fromReceivedInvoiceBadge")}
+              </span>
+            )}
+            {!e.exerciceId && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.expensesView.noExerciceTooltip")}>
+                <WarningIcon className="size-3" /> {t("finances.expensesView.noExerciceBadge")}
               </span>
             )}
           </div>
@@ -268,11 +275,14 @@ export function ExpensesView() {
 
       <div className="flex flex-wrap gap-2">
         <FilterSelect
-          value={yearFilter}
-          onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: t("finances.expensesView.exercise", { year: y }) }))}
-          placeholder={t("finances.expensesView.allYears")}
-          width="w-36"
+          value={exerciceFilter}
+          onValueChange={v => { setExerciceFilter(v); setPage(1) }}
+          options={[
+            ...exercices.map(ex => ({ value: ex.id, label: ex.label })),
+            { value: "none", label: t("finances.expensesView.noExercice") },
+          ]}
+          placeholder={t("finances.expensesView.allExercices")}
+          width="w-40"
         />
 
         <FilterSelect

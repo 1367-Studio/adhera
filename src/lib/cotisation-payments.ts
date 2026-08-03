@@ -56,6 +56,10 @@ export async function recordCotisationPayment(tx: TxClient, params: {
   // portal checkout flow — passed straight through to the linked Income row.
   source?:       "MANUAL" | "STRIPE"
   reference?:    string | null
+  // Resolved by the caller (resolveExerciceForDate, guarded with closedExerciceGuard for
+  // admin-initiated payments, best-effort/OUVERT-only for the Stripe webhook — see callers)
+  // before the transaction opens, same as every other Income-creating write path.
+  exerciceId?:   string | null
 }) {
   const existing = await tx.cotisation.findUniqueOrThrow({
     where:  { id: params.cotisationId },
@@ -89,6 +93,7 @@ export async function recordCotisationPayment(tx: TxClient, params: {
   await tx.income.create({
     data: {
       associationId:       params.associationId,
+      exerciceId:          params.exerciceId ?? null,
       memberId:            existing.membreId,
       cotisationPaymentId: payment.id,
       amount:              params.amount,

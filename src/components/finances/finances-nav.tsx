@@ -17,6 +17,7 @@ export function FinancesNav() {
     { href: "/dashboard/finances/import",       label: t("import") },
     { href: "/dashboard/finances/conciliation", label: t("reconciliation") },
     { href: "/dashboard/finances/categories",   label: t("categories") },
+    { href: "/dashboard/finances/exercices",    label: t("exercices") },
     { href: "/dashboard/finances/rapports",     label: t("reports") },
   ]
 

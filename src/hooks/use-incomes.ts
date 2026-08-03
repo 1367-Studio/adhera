@@ -11,6 +11,7 @@ type Filters = {
   memberId?:   string
   dateFrom?:   string
   dateTo?:     string
+  exerciceId?: string
 }
 
 async function fetchIncomes(page: number, limit: number, filters: Filters) {
@@ -20,6 +21,8 @@ async function fetchIncomes(page: number, limit: number, filters: Filters) {
   if (filters.memberId)   params.set("memberId",   filters.memberId)
   if (filters.dateFrom)   params.set("dateFrom",   filters.dateFrom)
   if (filters.dateTo)     params.set("dateTo",     filters.dateTo)
+  if (filters.exerciceId) params.set("exerciceId", filters.exerciceId)
+
   const res = await fetch(`/api/finances/incomes?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement")
   return res.json() as Promise<PaginatedResult<unknown>>
