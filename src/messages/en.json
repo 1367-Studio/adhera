@@ -2322,7 +2322,33 @@
       "cancelledText": "Your subscription has been cancelled. Contact support to reactivate it.",
       "cancelAtPeriodEnd": "Your subscription has been cancelled and will end on {date}. You keep full access until then.",
       "updatePayment": "Update payment",
-      "manageSubscription": "Manage my subscription"
+      "manageSubscription": "Manage my subscription",
+      "cancelPlan": "Cancel my subscription",
+      "resumeSubscription": "Undo cancellation",
+      "resumeSuccessToast": "The scheduled cancellation has been undone. Your subscription continues as normal.",
+      "cancelPlanDialog": {
+        "title": "Cancel your subscription",
+        "description": "Your subscription will stay active until the end of the period you've already paid for. No further charge will be made after that.",
+        "descriptionTrial": "Your access will stay active until your free trial ends. You won't be charged.",
+        "reasonLabel": "Why do you want to cancel?",
+        "reasonPlaceholder": "Choose a reason",
+        "reasons": {
+          "price": "The price is too high",
+          "missingFeatures": "Missing features",
+          "associationInactive": "The association is no longer active",
+          "switchingTool": "We're switching to another tool",
+          "hardToUse": "The tool is hard to use",
+          "other": "Other reason"
+        },
+        "feedbackLabel": "Tell us more (optional)",
+        "feedbackPlaceholder": "Tell us more…",
+        "validation": {
+          "reasonRequired": "Select a reason",
+          "feedbackRequired": "Please specify the reason"
+        },
+        "confirmLabel": "Confirm cancellation",
+        "successToast": "Cancellation scheduled. You keep access until the end of the current period."
+      }
     },
     "stripeConnect": {
       "title": "Online payment (Stripe)",
