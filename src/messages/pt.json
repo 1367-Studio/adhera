@@ -2377,10 +2377,11 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# mensalidade} other {# mensalidades}}",
       "totalCollected": " · {amount} arrecadado",
+      "exercise": "Exercício {year}",
       "columns": {
         "member": "Membro",
-        "year": "Ano",
         "amount": "Valor",
+        "remaining": "Restante",
         "status": "Status",
         "paidAt": "Pago em",
         "dueDate": "Vencimento",

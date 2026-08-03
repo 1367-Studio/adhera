@@ -259,12 +259,6 @@ export function CotisationsView() {
       ),
     },
     {
-      key: "year",
-      header: t("cotisations.view.columns.year"),
-      cell: (c) => <span className="font-mono text-sm">{c.year}</span>,
-      className: "w-20",
-    },
-    {
       key: "dueDate",
       header: t("cotisations.view.columns.dueDate"),
       cell: (c) => c.dueDate
@@ -275,16 +269,35 @@ export function CotisationsView() {
     {
       key: "amount",
       header: t("cotisations.view.columns.amount"),
+      cell: (c) => <span className="font-medium tabular-nums">{fmt(c.amount)}</span>,
+      className: "w-28",
+    },
+    {
+      key: "remaining",
+      header: t("cotisations.view.columns.remaining"),
       cell: (c) => {
         const remaining = Number(c.amount) - Number(c.amountPaid)
-        return (
-          <div>
-            <p className="font-medium tabular-nums">{fmt(c.amount)}</p>
-            {remaining > 0 && Number(c.amountPaid) > 0 && (
-              <p className="text-xs text-muted-foreground tabular-nums">{t("cotisations.view.remaining", { amount: fmt(remaining) })}</p>
-            )}
-          </div>
-        )
+        return remaining > 0 && c.status !== "EXONERE"
+          ? <span className="tabular-nums">{fmt(remaining)}</span>
+          : <span className="text-muted-foreground text-xs">—</span>
+      },
+      className: "w-28",
+    },
+    {
+      key: "paidAt",
+      header: t("cotisations.view.columns.paidAt"),
+      cell: (c) => c.paidAt
+        ? format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr })
+        : <span className="text-muted-foreground text-xs">—</span>,
+      className: "w-28",
+      hideInCard: true,
+    },
+    {
+      key: "status",
+      header: t("cotisations.view.columns.status"),
+      cell: (c) => {
+        const s = statusBadge[c.status]
+        return <Badge variant={s.variant}>{s.label}</Badge>
       },
       className: "w-28",
     },
@@ -299,24 +312,6 @@ export function CotisationsView() {
           ? <span className="block truncate text-sm" title={label}>{label}</span>
           : <span className="text-muted-foreground text-xs">—</span>
       },
-      hideInCard: true,
-    },
-    {
-      key: "status",
-      header: t("cotisations.view.columns.status"),
-      cell: (c) => {
-        const s = statusBadge[c.status]
-        return <Badge variant={s.variant}>{s.label}</Badge>
-      },
-      className: "w-28",
-    },
-    {
-      key: "paidAt",
-      header: t("cotisations.view.columns.paidAt"),
-      cell: (c) => c.paidAt
-        ? format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr })
-        : <span className="text-muted-foreground text-xs">—</span>,
-      className: "w-28",
       hideInCard: true,
     },
     {
@@ -419,12 +414,12 @@ export function CotisationsView() {
           value={String(yearFilter)}
           onValueChange={v => { if (v !== null) { setYearFilter(parseInt(v)); setPage(1) } }}
         >
-          <SelectTrigger className="w-28">
-            <SelectValue />
+          <SelectTrigger className="w-36">
+            <SelectValue>{t("cotisations.view.exercise", { year: yearFilter })}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {yearOptions.map(y => (
-              <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              <SelectItem key={y} value={String(y)}>{t("cotisations.view.exercise", { year: y })}</SelectItem>
             ))}
           </SelectContent>
         </Select>

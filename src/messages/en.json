@@ -2377,10 +2377,11 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# membership fee} other {# membership fees}}",
       "totalCollected": " · {amount} collected",
+      "exercise": "Fiscal year {year}",
       "columns": {
         "member": "Member",
-        "year": "Year",
         "amount": "Amount",
+        "remaining": "Remaining",
         "status": "Status",
         "paidAt": "Paid on",
         "dueDate": "Due date",

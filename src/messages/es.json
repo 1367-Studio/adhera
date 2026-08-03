@@ -2377,10 +2377,11 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cuota} other {# cuotas}}",
       "totalCollected": " · {amount} recaudado",
+      "exercise": "Ejercicio {year}",
       "columns": {
         "member": "Miembro",
-        "year": "Año",
         "amount": "Importe",
+        "remaining": "Restante",
         "status": "Estado",
         "paidAt": "Pagada el",
         "dueDate": "Vencimiento",

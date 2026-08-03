@@ -2377,10 +2377,11 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
       "totalCollected": " · {amount} encaissé",
+      "exercise": "Exercice {year}",
       "columns": {
         "member": "Membre",
-        "year": "Année",
         "amount": "Montant",
+        "remaining": "Reste à payer",
         "status": "Statut",
         "paidAt": "Payé le",
         "dueDate": "Échéance",
