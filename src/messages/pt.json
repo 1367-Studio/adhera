@@ -2329,6 +2329,7 @@
       "cancelPlanDialog": {
         "title": "Cancelar sua assinatura",
         "description": "Sua assinatura permanecerá ativa até o fim do período já pago. Nenhuma nova cobrança será feita depois disso.",
+        "descriptionTrial": "Seu acesso permanecerá ativo até o fim do seu período de teste gratuito. Nenhuma cobrança será feita.",
         "reasonLabel": "Por que deseja cancelar?",
         "reasonPlaceholder": "Escolher um motivo",
         "reasons": {

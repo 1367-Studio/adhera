@@ -2329,6 +2329,7 @@
       "cancelPlanDialog": {
         "title": "Cancelar su suscripción",
         "description": "Su suscripción seguirá activa hasta el final del período ya pagado. No se realizará ningún cobro adicional después.",
+        "descriptionTrial": "Su acceso seguirá activo hasta el final de su prueba gratuita. No se le realizará ningún cobro.",
         "reasonLabel": "¿Por qué desea cancelar?",
         "reasonPlaceholder": "Elegir un motivo",
         "reasons": {

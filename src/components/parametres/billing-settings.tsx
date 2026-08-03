@@ -115,7 +115,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
 
       {!isLoading && !isError && (
         <div className="space-y-3">
-          {status === "TRIAL" && data?.trialEndsAt && (
+          {status === "TRIAL" && data?.trialEndsAt && !data?.cancelAtPeriodEnd && (
             <p className="text-xs text-muted-foreground">
               {t("trialEndsAt", { date: new Date(data.trialEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
             </p>
@@ -182,7 +182,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
         </div>
       )}
 
-      <CancelPlanDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen} />
+      <CancelPlanDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen} isTrial={status === "TRIAL"} />
     </div>
   )
 }

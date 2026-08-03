@@ -1,23 +1,11 @@
 import { NextResponse } from "next/server"
-import { z } from "zod"
 import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
+import { cancelSubscriptionSchema as schema } from "@/lib/schemas"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
-
-const CANCEL_REASONS = [
-  "PRICE", "MISSING_FEATURES", "ASSOCIATION_INACTIVE", "SWITCHING_TOOL", "HARD_TO_USE", "OTHER",
-] as const
-
-const schema = z.object({
-  reason:   z.enum(CANCEL_REASONS),
-  feedback: z.string().trim().max(1000).optional(),
-}).refine(
-  (data) => data.reason !== "OTHER" || !!data.feedback?.length,
-  { message: "Feedback requis pour le motif \"Autre\"", path: ["feedback"] },
-)
 
 // Self-service in-app cancellation for a trialing/active subscription — schedules the
 // cancellation for the end of the current billing period instead of cancelling immediately,

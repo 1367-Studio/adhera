@@ -2329,6 +2329,7 @@
       "cancelPlanDialog": {
         "title": "Cancel your subscription",
         "description": "Your subscription will stay active until the end of the period you've already paid for. No further charge will be made after that.",
+        "descriptionTrial": "Your access will stay active until your free trial ends. You won't be charged.",
         "reasonLabel": "Why do you want to cancel?",
         "reasonPlaceholder": "Choose a reason",
         "reasons": {

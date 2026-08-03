@@ -11,21 +11,15 @@ import { Button } from "@/components/ui/button"
 import { SelectField } from "@/components/ui/select-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { apiErrorMessage } from "@/lib/api-error"
-
-const CANCEL_REASONS = [
-  "PRICE", "MISSING_FEATURES", "ASSOCIATION_INACTIVE", "SWITCHING_TOOL", "HARD_TO_USE", "OTHER",
-] as const
+import { buildCancelSubscriptionSchema } from "@/lib/schemas"
 
 type Translator = ReturnType<typeof useTranslations>
 
 function buildSchema(t: Translator) {
-  return z.object({
-    reason:   z.enum(CANCEL_REASONS, { message: t("cancelPlanDialog.validation.reasonRequired") }),
-    feedback: z.string().trim().max(1000).optional(),
-  }).refine(
-    (data) => data.reason !== "OTHER" || !!data.feedback?.length,
-    { message: t("cancelPlanDialog.validation.feedbackRequired"), path: ["feedback"] },
-  )
+  return buildCancelSubscriptionSchema({
+    reasonRequired:   t("cancelPlanDialog.validation.reasonRequired"),
+    feedbackRequired: t("cancelPlanDialog.validation.feedbackRequired"),
+  })
 }
 
 type FormValues = z.infer<ReturnType<typeof buildSchema>>
@@ -33,11 +27,14 @@ type FormValues = z.infer<ReturnType<typeof buildSchema>>
 interface CancelPlanDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  // TRIAL cancellation has nothing "already paid" to keep access to — swaps the dialog
+  // copy so it doesn't imply a paid period that doesn't exist yet.
+  isTrial: boolean
 }
 
 // Self-service cancellation from TRIAL/ACTIVE — pairs with POST /api/billing/cancel-subscription,
 // which schedules cancel_at_period_end instead of cancelling immediately (see that route for why).
-export function CancelPlanDialog({ open, onOpenChange }: CancelPlanDialogProps) {
+export function CancelPlanDialog({ open, onOpenChange, isTrial }: CancelPlanDialogProps) {
   const t       = useTranslations("parametres.billing")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -82,7 +79,7 @@ export function CancelPlanDialog({ open, onOpenChange }: CancelPlanDialogProps) 
       open={open}
       onOpenChange={(next) => { if (!isPending) { reset(); onOpenChange(next) } }}
       title={t("cancelPlanDialog.title")}
-      description={t("cancelPlanDialog.description")}
+      description={isTrial ? t("cancelPlanDialog.descriptionTrial") : t("cancelPlanDialog.description")}
       size="sm"
       dismissable={!isPending}
     >
