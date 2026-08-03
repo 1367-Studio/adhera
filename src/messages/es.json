@@ -2322,7 +2322,32 @@
       "cancelledText": "Su suscripción ha sido cancelada. Contacte con soporte para reactivarla.",
       "cancelAtPeriodEnd": "Su suscripción ha sido rescindida y finalizará el {date}. Conserva el acceso completo hasta esa fecha.",
       "updatePayment": "Actualizar pago",
-      "manageSubscription": "Gestionar mi suscripción"
+      "manageSubscription": "Gestionar mi suscripción",
+      "cancelPlan": "Cancelar mi suscripción",
+      "resumeSubscription": "Deshacer la cancelación",
+      "resumeSuccessToast": "Se deshizo la cancelación programada. Su suscripción continúa con normalidad.",
+      "cancelPlanDialog": {
+        "title": "Cancelar su suscripción",
+        "description": "Su suscripción seguirá activa hasta el final del período ya pagado. No se realizará ningún cobro adicional después.",
+        "reasonLabel": "¿Por qué desea cancelar?",
+        "reasonPlaceholder": "Elegir un motivo",
+        "reasons": {
+          "price": "El precio es demasiado alto",
+          "missingFeatures": "Faltan funcionalidades",
+          "associationInactive": "La asociación dejó de estar activa",
+          "switchingTool": "Estamos migrando a otra herramienta",
+          "hardToUse": "La herramienta es difícil de usar",
+          "other": "Otro motivo"
+        },
+        "feedbackLabel": "Cuéntenos más (opcional)",
+        "feedbackPlaceholder": "Cuéntenos más...",
+        "validation": {
+          "reasonRequired": "Seleccione un motivo",
+          "feedbackRequired": "Indique el motivo, por favor"
+        },
+        "confirmLabel": "Confirmar cancelación",
+        "successToast": "Cancelación programada. Mantiene el acceso hasta el final del período actual."
+      }
     },
     "stripeConnect": {
       "title": "Pago en línea (Stripe)",

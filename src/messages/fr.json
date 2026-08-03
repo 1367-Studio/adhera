@@ -2322,7 +2322,32 @@
       "cancelledText": "Votre abonnement a été annulé. Contactez le support pour le réactiver.",
       "cancelAtPeriodEnd": "Votre abonnement a été résilié et prendra fin le {date}. Vous conservez l'accès complet jusqu'à cette date.",
       "updatePayment": "Mettre à jour le paiement",
-      "manageSubscription": "Gérer mon abonnement"
+      "manageSubscription": "Gérer mon abonnement",
+      "cancelPlan": "Annuler mon abonnement",
+      "resumeSubscription": "Annuler la résiliation",
+      "resumeSuccessToast": "La résiliation programmée a été annulée. Votre abonnement continue normalement.",
+      "cancelPlanDialog": {
+        "title": "Annuler votre abonnement",
+        "description": "Votre abonnement restera actif jusqu'au terme de la période déjà payée. Aucun nouveau prélèvement ne sera effectué ensuite.",
+        "reasonLabel": "Pourquoi souhaitez-vous annuler ?",
+        "reasonPlaceholder": "Choisir un motif",
+        "reasons": {
+          "price": "Le prix est trop élevé",
+          "missingFeatures": "Il manque des fonctionnalités",
+          "associationInactive": "L'association a cessé son activité",
+          "switchingTool": "Nous utilisons un autre outil",
+          "hardToUse": "L'outil est difficile à utiliser",
+          "other": "Autre raison"
+        },
+        "feedbackLabel": "Précisez (facultatif)",
+        "feedbackPlaceholder": "Dites-nous en plus…",
+        "validation": {
+          "reasonRequired": "Sélectionnez un motif",
+          "feedbackRequired": "Merci de préciser la raison"
+        },
+        "confirmLabel": "Confirmer l'annulation",
+        "successToast": "Annulation programmée. Vous conservez l'accès jusqu'à la fin de la période en cours."
+      }
     },
     "stripeConnect": {
       "title": "Paiement en ligne (Stripe)",

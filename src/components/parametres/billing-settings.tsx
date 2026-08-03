@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -9,6 +9,7 @@ import { CheckCircleIcon, ClockIcon, WarningCircleIcon, XCircleIcon } from "@pho
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
+import { CancelPlanDialog } from "@/components/parametres/cancel-plan-dialog"
 
 type BillingStatus = {
   subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
@@ -39,6 +40,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
   const statusConfig  = useStatusConfig()
   const qc           = useQueryClient()
   const searchParams = useSearchParams()
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 
   const { data, isLoading, isError } = useQuery<BillingStatus>({
     queryKey: ["billing-status"],
@@ -61,6 +63,19 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
     },
     onSuccess: ({ url }) => { window.location.href = url },
     onError:   (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
+  })
+
+  const resumeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/billing/resume-subscription", { method: "POST" })
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["billing-status"] })
+      toast.success(t("resumeSuccessToast"))
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const status = data?.subscriptionStatus ?? null
@@ -134,23 +149,40 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
           )}
 
           {data?.cancelAtPeriodEnd && data?.currentPeriodEndsAt && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              {t("cancelAtPeriodEnd", { date: new Date(data.currentPeriodEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
-            </p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                {t("cancelAtPeriodEnd", { date: new Date(data.currentPeriodEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
+              </p>
+              {canEdit && (
+                <Button size="sm" variant="outline" loading={resumeMutation.isPending} onClick={() => resumeMutation.mutate()}>
+                  {t("resumeSubscription")}
+                </Button>
+              )}
+            </div>
           )}
 
           {canEdit && data?.hasBilling && status !== "CANCELLED" && status !== "SUSPENDED" && (
-            <Button
-              size="sm"
-              variant={status === "PAST_DUE" ? "default" : "outline"}
-              loading={portalMutation.isPending}
-              onClick={() => portalMutation.mutate()}
-            >
-              {status === "PAST_DUE" ? t("updatePayment") : t("manageSubscription")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={status === "PAST_DUE" ? "default" : "outline"}
+                loading={portalMutation.isPending}
+                onClick={() => portalMutation.mutate()}
+              >
+                {status === "PAST_DUE" ? t("updatePayment") : t("manageSubscription")}
+              </Button>
+
+              {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (
+                <Button size="sm" variant="ghost" onClick={() => setCancelDialogOpen(true)}>
+                  {t("cancelPlan")}
+                </Button>
+              )}
+            </div>
           )}
         </div>
       )}
+
+      <CancelPlanDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen} />
     </div>
   )
 }
