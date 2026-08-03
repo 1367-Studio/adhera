@@ -3,13 +3,15 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { deriveCotisationStatus } from "@/lib/cotisation-status"
 
 type TxClient = Prisma.TransactionClient
 
 // A tiny epsilon guards against float/Decimal rounding noise (e.g. 19.99 + 0.01
 // landing on 20.000000000000004) without letting a real overpayment through.
-// Mirrors src/app/api/factures/[id]/paiements/route.ts.
-const EPSILON = 0.01
+// Mirrors src/app/api/factures/[id]/paiements/route.ts. Exported so cotisation-status.ts
+// shares the exact same tolerance instead of redeclaring its own copy.
+export const EPSILON = 0.01
 
 export class CotisationOverpaymentError extends Error {
   constructor(public remaining: number) { super("overpayment") }
@@ -63,7 +65,11 @@ export async function recordCotisationPayment(tx: TxClient, params: {
 }) {
   const existing = await tx.cotisation.findUniqueOrThrow({
     where:  { id: params.cotisationId },
-    select: { year: true, membreId: true, membre: { select: { firstName: true, lastName: true } } },
+    select: {
+      year: true, membreId: true, membre: { select: { firstName: true, lastName: true } },
+      status: true, amount: true, dueDate: true,
+      installments: { select: { amount: true, dueDate: true, order: true } },
+    },
   })
 
   const paymentDate = params.paidAt ?? new Date()
@@ -88,7 +94,16 @@ export async function recordCotisationPayment(tx: TxClient, params: {
   if (amountPaid > amount + EPSILON) {
     throw new CotisationOverpaymentError(Math.max(0, amount - (amountPaid - params.amount)))
   }
-  const newStatus = amountPaid >= amount - EPSILON ? "PAYE" : "PARTIELLEMENT_PAYEE"
+  // Defensive: recording a payment against an EXONERE/ANNULEE cotisation is already blocked
+  // upstream by the route guards, but deriveCotisationStatus's own manual-status guard keeps
+  // this the single choke point that can never silently promote one of those to PAYE.
+  const newStatus = deriveCotisationStatus({
+    currentStatus: existing.status,
+    amount,
+    amountPaid,
+    dueDate:       existing.dueDate,
+    installments:  existing.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+  })
 
   await tx.income.create({
     data: {
@@ -158,16 +173,24 @@ export async function removeCotisationPayment(tx: TxClient, cotisationId: string
   await tx.cotisationPayment.delete({ where: { id: paymentId } })
 
   const updated = await tx.cotisation.update({
-    where: { id: cotisationId },
-    data:  { amountPaid: { decrement: payment.amount } },
+    where:  { id: cotisationId },
+    data:   { amountPaid: { decrement: payment.amount } },
+    include: { installments: { select: { amount: true, dueDate: true, order: true } } },
   })
 
   const amountPaid = Number(updated.amountPaid)
   const amount     = Number(updated.amount)
-  const newStatus =
-    updated.status === "PAYE" || updated.status === "PARTIELLEMENT_PAYEE"
-      ? (amountPaid <= EPSILON ? "EN_ATTENTE" : amountPaid >= amount - EPSILON ? "PAYE" : "PARTIELLEMENT_PAYEE")
-      : updated.status
+  // Unconditional (not gated to PAYE/PARTIELLEMENT_PAYEE like before EN_RETARD existed) —
+  // removing a payment from a late cotisation must also reconsider whether it's still late,
+  // not just whether it's still fully/partially paid. deriveCotisationStatus's own guard
+  // still leaves EXONERE/ANNULEE untouched.
+  const newStatus = deriveCotisationStatus({
+    currentStatus: updated.status,
+    amount,
+    amountPaid,
+    dueDate:       updated.dueDate,
+    installments:  updated.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+  })
 
   return tx.cotisation.update({
     where:   { id: cotisationId },

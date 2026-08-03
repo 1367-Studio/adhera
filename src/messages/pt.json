@@ -2405,7 +2405,23 @@
       "notePlaceholder": "Informações adicionais…",
       "dueDate": "Data de vencimento",
       "paymentMethod": "Método de pagamento",
-      "statusLockedHint": "Para alterar este status, remova primeiro os pagamentos registrados no histórico de pagamentos."
+      "statusAuto": "Automático",
+      "statusAutoHint": "Determinado automaticamente pelos pagamentos e pelo vencimento — ainda é possível isentar ou cancelar a cotização.",
+      "currentStatusLabel": "Status atual:",
+      "exonereConfirmTitle": "Isentar esta cotização?",
+      "exonereConfirmDescription": "Os pagamentos já registrados serão excluídos. Esta ação não pode ser desfeita.",
+      "installments": {
+        "title": "Parcelamento",
+        "none": "Nenhuma parcela — a cotização usa a data de vencimento acima.",
+        "count": "Número de parcelas",
+        "generate": "Gerar parcelas",
+        "amountRequiredHint": "Preencha o valor da cotização acima para gerar as parcelas.",
+        "add": "Adicionar parcela",
+        "total": "Total das parcelas: {total} / {amount}",
+        "dueDateIgnoredHint": "Ignorada enquanto houver um parcelamento definido — o atraso é calculado a partir das parcelas abaixo.",
+        "lockedHint": "Já existem pagamentos registrados — remova-os primeiro para editar o parcelamento.",
+        "totalMismatch": "O total das parcelas ({total}) não corresponde ao valor da cotização ({amount})."
+      }
     },
     "view": {
       "title": "Mensalidades",
@@ -2443,7 +2459,9 @@
         "enAttente": "Pendente",
         "payees": "Pagas",
         "exonerees": "Isentas",
-        "partiellementPayees": "Parcialmente pagas"
+        "partiellementPayees": "Parcialmente pagas",
+        "enRetard": "Em atraso",
+        "annulees": "Canceladas"
       },
       "noResultsFor": "Nenhum resultado para \"{search}\"",
       "noCotisation": "Nenhuma mensalidade registrada",
@@ -2507,6 +2525,14 @@
         "recorded": "Pagamento registrado",
         "deleted": "Pagamento excluído"
       }
+    },
+    "statusTooltip": {
+      "enAttente": "Cotização não paga, ainda dentro do prazo.",
+      "partiellementPayee": "Pagamento em andamento conforme o parcelamento.",
+      "paye": "A cotização foi paga integralmente.",
+      "enRetard": "O prazo de pagamento foi ultrapassado.",
+      "exonere": "Nenhum pagamento é exigido.",
+      "annulee": "Esta cotização foi cancelada."
     }
   },
   "membres": {
@@ -2690,7 +2716,9 @@
         "enAttente": "Pendente",
         "paye": "Paga",
         "exonere": "Isenta",
-        "partiellementPayee": "Parcialmente paga"
+        "partiellementPayee": "Parcialmente paga",
+        "enRetard": "Em atraso",
+        "annulee": "Cancelada"
       },
       "loanStatus": {
         "demande": "Solicitação pendente",
@@ -2970,6 +2998,9 @@
       "statusValues": {
         "paye": "Paga",
         "exonere": "Isenta",
+        "partiellementPayee": "Parcialmente paga",
+        "enRetard": "Em atraso",
+        "annulee": "Cancelada",
         "paused": "Pausado",
         "done": "Concluído"
       },
@@ -3334,11 +3365,17 @@
         "enAttente": "Pendente",
         "paye": "Pago",
         "exonere": "Isento",
-        "partiellementPayee": "Parcialmente paga"
+        "partiellementPayee": "Parcialmente paga",
+        "enRetard": "Em atraso",
+        "annulee": "Cancelada"
       },
       "currentYearTitle": "Mensalidade {year} — Ano atual",
       "paidOn": "Pago em {date}",
       "payOnline": "Pagar online",
+      "payAmount": "Pagar {amount}",
+      "installmentsTitle": "Parcelamento",
+      "installmentCovered": "Paga",
+      "installmentPending": "Pendente",
       "history": "Histórico",
       "noHistory": "Nenhum histórico disponível.",
       "yearLabel": "Ano {year}",

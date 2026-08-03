@@ -12,8 +12,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const existing = await prisma.cotisation.findFirst({ where: { id, associationId, membre: { deletedAt: null } } })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
-  if (existing.status === "EXONERE") {
-    return NextResponse.json({ error: "Cette cotisation est exonérée" }, { status: 409 })
+  if (existing.status === "EXONERE" || existing.status === "ANNULEE") {
+    return NextResponse.json({ error: "Cette cotisation est exonérée ou annulée" }, { status: 409 })
   }
 
   const body   = await req.json()

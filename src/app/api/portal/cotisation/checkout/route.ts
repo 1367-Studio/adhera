@@ -3,14 +3,18 @@ import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { nextAmountDue } from "@/lib/cotisation-status"
 
 export const POST = withPortalAuth(async (req, ctx) => {
   const { cotisationId } = await req.json()
   if (!cotisationId) return NextResponse.json({ error: "cotisationId requis" }, { status: 422 })
 
   const cotisation = await prisma.cotisation.findFirst({
-    where: { id: cotisationId, membreId: ctx.membreId!, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
-    include: { association: { select: { stripeConnectId: true, name: true, slug: true } } },
+    where:   { id: cotisationId, membreId: ctx.membreId!, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] } },
+    include: {
+      association:  { select: { stripeConnectId: true, name: true, slug: true } },
+      installments: { orderBy: { dueDate: "asc" }, select: { amount: true, dueDate: true, order: true } },
+    },
   })
   if (!cotisation)
     return NextResponse.json({ error: "Cotisation introuvable ou déjà réglée" }, { status: 404 })
@@ -20,8 +24,18 @@ export const POST = withPortalAuth(async (req, ctx) => {
   if (!(await connectAccountChargesEnabled(cotisation.association.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
 
-  const remaining   = Number(cotisation.amount) - Number(cotisation.amountPaid)
-  const amountCents = Math.round(remaining * 100)
+  const amountPaid = Number(cotisation.amountPaid)
+  const amount     = Number(cotisation.amount)
+  // When the cotisation has an installment schedule, this charges only what's needed to
+  // catch up through the next unpaid installment — not the whole remaining balance — so a
+  // member can pay a parcelamento one échéance at a time instead of always being asked for
+  // everything left. Falls back to the full remaining balance when there's no schedule
+  // (unchanged behavior from before installments existed).
+  const amountDue   = nextAmountDue({
+    amount, amountPaid,
+    installments: cotisation.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+  })
+  const amountCents = Math.round(amountDue * 100)
   if (amountCents <= 0) {
     return NextResponse.json({ error: "Aucun solde restant à payer" }, { status: 409 })
   }
@@ -46,9 +60,11 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   const applicationFee = Math.round(amountCents * PLATFORM_FEE)
   const slug        = cotisation.association.slug
-  const productName = Number(cotisation.amountPaid) > 0
-    ? `${cotisation.association.name} — Cotisation ${cotisation.year} (solde restant)`
-    : `${cotisation.association.name} — Cotisation ${cotisation.year}`
+  const productName = cotisation.installments.length > 0
+    ? `${cotisation.association.name} — Cotisation ${cotisation.year} (échéance)`
+    : amountPaid > 0
+      ? `${cotisation.association.name} — Cotisation ${cotisation.year} (solde restant)`
+      : `${cotisation.association.name} — Cotisation ${cotisation.year}`
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",

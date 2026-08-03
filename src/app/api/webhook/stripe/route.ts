@@ -11,6 +11,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError } from "@/lib/cotisation-payments"
+import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import type Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 
@@ -692,12 +693,27 @@ export async function POST(req: Request) {
         // The Income row itself was already soft-cancelled by the generic reference-matched
         // update above (kept for the audit trail, like the don/order paths) — this just
         // brings amountPaid/status back in line with that, rather than deleting anything.
-        const { count } = await prisma.cotisation.updateMany({
-          where: { id: cotisationId, status: "PAYE" },
-          data:  { status: "EN_ATTENTE", paidAt: null, amountPaid: 0 },
+        // Status isn't simply reset to EN_ATTENTE: if the due date has since passed, the
+        // refunded cotisation should land on EN_RETARD, not silently look on-time again.
+        const cotisationForRefund = await prisma.cotisation.findFirst({
+          where:  { id: cotisationId, status: "PAYE" },
+          select: { amount: true, dueDate: true, installments: { select: { amount: true, dueDate: true, order: true } } },
         })
-        if (count > 0 && associationId) {
-          await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
+        if (cotisationForRefund) {
+          const refundedStatus = deriveCotisationStatus({
+            currentStatus: "EN_ATTENTE",
+            amount:        Number(cotisationForRefund.amount),
+            amountPaid:    0,
+            dueDate:       cotisationForRefund.dueDate,
+            installments:  cotisationForRefund.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+          })
+          await prisma.cotisation.update({
+            where: { id: cotisationId },
+            data:  { status: refundedStatus, paidAt: null, amountPaid: 0 },
+          })
+          if (associationId) {
+            await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
+          }
         }
       } else if (orderId) {
         const refundedTicket = await prisma.participation.findFirst({ where: { orderId }, select: { id: true } })

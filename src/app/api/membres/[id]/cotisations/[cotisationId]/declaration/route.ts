@@ -10,8 +10,10 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
   if (!FINANCE.includes(ctx.role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
+  // A cotisation that was PAYE and has since been cancelled can still have an already-issued
+  // fiscal document — re-downloading it must keep working even though status is now ANNULEE.
   const cotisation = await prisma.cotisation.findFirst({
-    where: { id: cotisationId, membreId: id, associationId: ctx.associationId, status: "PAYE" },
+    where: { id: cotisationId, membreId: id, associationId: ctx.associationId, OR: [{ status: "PAYE" }, { declarationNumber: { not: null } }] },
   })
   if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable ou non payée" }, { status: 404 })
   const { paidAt } = cotisation

@@ -2405,7 +2405,23 @@
       "notePlaceholder": "Informations supplémentaires…",
       "dueDate": "Date d'échéance",
       "paymentMethod": "Moyen de paiement",
-      "statusLockedHint": "Pour modifier ce statut, retirez d'abord les paiements enregistrés depuis l'historique des paiements."
+      "statusAuto": "Automatique",
+      "statusAutoHint": "Déterminé automatiquement par les paiements et l'échéance — vous pouvez toutefois exonérer ou annuler la cotisation.",
+      "currentStatusLabel": "Statut actuel :",
+      "exonereConfirmTitle": "Exonérer cette cotisation ?",
+      "exonereConfirmDescription": "Les paiements déjà enregistrés seront supprimés. Cette action ne peut pas être annulée.",
+      "installments": {
+        "title": "Échéances (parcelamento)",
+        "none": "Aucune échéance — la cotisation utilise la date d'échéance ci-dessus.",
+        "count": "Nombre d'échéances",
+        "generate": "Générer les échéances",
+        "amountRequiredHint": "Renseignez le montant de la cotisation ci-dessus pour générer les échéances.",
+        "add": "Ajouter une échéance",
+        "total": "Total des échéances : {total} / {amount}",
+        "dueDateIgnoredHint": "Ignorée tant qu'un échéancier est défini — le retard se calcule sur les échéances ci-dessous.",
+        "lockedHint": "Des paiements sont déjà enregistrés — supprimez-les d'abord pour modifier l'échéancier.",
+        "totalMismatch": "Le total des échéances ({total}) ne correspond pas au montant de la cotisation ({amount})."
+      }
     },
     "view": {
       "title": "Cotisations",
@@ -2443,7 +2459,9 @@
         "enAttente": "En attente",
         "payees": "Payées",
         "exonerees": "Exonérées",
-        "partiellementPayees": "Partiellement payées"
+        "partiellementPayees": "Partiellement payées",
+        "enRetard": "En retard",
+        "annulees": "Annulées"
       },
       "noResultsFor": "Aucun résultat pour « {search} »",
       "noCotisation": "Aucune cotisation enregistrée",
@@ -2507,6 +2525,14 @@
         "recorded": "Paiement enregistré",
         "deleted": "Paiement supprimé"
       }
+    },
+    "statusTooltip": {
+      "enAttente": "Cotisation non réglée, encore dans les délais.",
+      "partiellementPayee": "Paiement en cours selon l'échéancier.",
+      "paye": "La cotisation a été entièrement réglée.",
+      "enRetard": "La date limite de paiement est dépassée.",
+      "exonere": "Aucun paiement n'est demandé.",
+      "annulee": "Cette cotisation a été annulée."
     }
   },
   "membres": {
@@ -2690,7 +2716,9 @@
         "enAttente": "En attente",
         "paye": "Payée",
         "exonere": "Exonérée",
-        "partiellementPayee": "Partiellement payée"
+        "partiellementPayee": "Partiellement payée",
+        "enRetard": "En retard",
+        "annulee": "Annulée"
       },
       "loanStatus": {
         "demande": "Demande en attente",
@@ -2970,6 +2998,9 @@
       "statusValues": {
         "paye": "Payé",
         "exonere": "Exonéré",
+        "partiellementPayee": "Partiellement payée",
+        "enRetard": "En retard",
+        "annulee": "Annulée",
         "paused": "Pausé",
         "done": "Terminé"
       },
@@ -3334,11 +3365,17 @@
         "enAttente": "En attente",
         "paye": "Payé",
         "exonere": "Exonéré",
-        "partiellementPayee": "Partiellement payée"
+        "partiellementPayee": "Partiellement payée",
+        "enRetard": "En retard",
+        "annulee": "Annulée"
       },
       "currentYearTitle": "Cotisation {year} — Année en cours",
       "paidOn": "Payé le {date}",
       "payOnline": "Payer en ligne",
+      "payAmount": "Payer {amount}",
+      "installmentsTitle": "Échéancier",
+      "installmentCovered": "Réglée",
+      "installmentPending": "À venir",
       "history": "Historique",
       "noHistory": "Aucun historique disponible.",
       "yearLabel": "Année {year}",

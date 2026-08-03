@@ -7,35 +7,85 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { CheckCircleIcon, ClockIcon, CircleHalfIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, ClockIcon, CircleHalfIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { apiErrorMessage } from "@/lib/api-error"
 import { portalFetch } from "@/lib/portal-fetch"
 import { BASE_PATH } from "@/lib/env"
+import { installmentCoverage as sharedInstallmentCoverage } from "@/lib/cotisation-display"
+
+type Installment = { id: string; amount: string; dueDate: string }
 
 type Cotisation = {
   id:         string
   year:       number
   amount:     string
   amountPaid: string
-  status:     "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
+  status:     "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
   paidAt:     string | null
   note:       string | null
+  declarationNumber: string | null
+  installments: Installment[]
+  // Server-computed (src/lib/cotisation-status.ts's nextAmountDue) — the amount that would
+  // actually be charged right now, which is only the next unpaid échéance when a schedule
+  // exists, not necessarily the whole remaining balance.
+  amountDue:  number
+}
+
+const fmtEur = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+// Display-only — which échéances already look covered by payments received so far; the
+// server remains the only source of truth for what's actually charged at checkout.
+function installmentCoverage(installments: Installment[], amountPaid: number) {
+  return sharedInstallmentCoverage(installments.map(i => ({ ...i, amount: Number(i.amount) })), amountPaid)
+}
+
+// Shared between the current-year card and each history card — a past-year cotisation can
+// still have an unpaid/partially-paid installment schedule (e.g. EN_RETARD from a prior
+// year), and hiding it there while showing it for the current year would be an inconsistent,
+// confusing omission for exactly the cotisations most likely to need this context.
+function InstallmentSchedule({ installments, amountPaid, t }: {
+  installments: Installment[]
+  amountPaid:   number
+  t:            ReturnType<typeof useTranslations>
+}) {
+  if (installments.length === 0) return null
+  return (
+    <div className="space-y-1.5 rounded-lg border p-3">
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("installmentsTitle")}</p>
+      {installmentCoverage(installments, amountPaid).map(i => (
+        <div key={i.id} className="flex items-center justify-between text-sm">
+          <span>{format(new Date(i.dueDate), "d MMMM yyyy", { locale: fr })}</span>
+          <div className="flex items-center gap-2">
+            <span className="tabular-nums">{fmtEur(Number(i.amount))}</span>
+            <Badge variant={i.covered ? "default" : "secondary"} className="text-[10px]">
+              {i.covered ? t("installmentCovered") : t("installmentPending")}
+            </Badge>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 const statusIcon: Record<string, React.ReactNode> = {
   EN_ATTENTE:          <ClockIcon className="size-3.5 text-yellow-500" />,
   PARTIELLEMENT_PAYEE: <CircleHalfIcon className="size-3.5 text-amber-500" />,
   PAYE:                <CheckCircleIcon className="size-3.5 text-green-500" />,
+  EN_RETARD:           <WarningCircleIcon className="size-3.5 text-red-500" />,
   EXONERE:             <GiftIcon className="size-3.5 text-sky-500" />,
+  ANNULEE:             <XCircleIcon className="size-3.5 text-muted-foreground" />,
 }
-const statusVariant: Record<string, "default" | "secondary" | "outline"> = {
+const statusVariant: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   PAYE:                "default",
   EN_ATTENTE:          "secondary",
   PARTIELLEMENT_PAYEE: "outline",
+  EN_RETARD:           "destructive",
   EXONERE:             "outline",
+  ANNULEE:             "secondary",
 }
 
 function currentYear() {
@@ -53,11 +103,22 @@ export default function CotisationPortalPage() {
 function CotisationPortalPageInner() {
   const t             = useTranslations("portalMembre.cotisation")
   const tCommon       = useTranslations("common")
+  const tTooltip      = useTranslations("cotisations.statusTooltip")
   const statusLabel: Record<string, string> = {
     EN_ATTENTE:          t("status.enAttente"),
     PARTIELLEMENT_PAYEE: t("status.partiellementPayee"),
     PAYE:                t("status.paye"),
+    EN_RETARD:           t("status.enRetard"),
     EXONERE:             t("status.exonere"),
+    ANNULEE:             t("status.annulee"),
+  }
+  const statusTooltip: Record<string, string> = {
+    EN_ATTENTE:          tTooltip("enAttente"),
+    PARTIELLEMENT_PAYEE: tTooltip("partiellementPayee"),
+    PAYE:                tTooltip("paye"),
+    EN_RETARD:           tTooltip("enRetard"),
+    EXONERE:             tTooltip("exonere"),
+    ANNULEE:             tTooltip("annulee"),
   }
   const searchParams = useSearchParams()
   const [paymentEnabled, setPaymentEnabled] = useState(false)
@@ -90,7 +151,7 @@ function CotisationPortalPageInner() {
       const poll = async () => {
         attempts++
         const result = await refetch()
-        const stillPending = result.data?.some(c => c.year === currentYear() && (c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE"))
+        const stillPending = result.data?.some(c => c.year === currentYear() && (c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE" || c.status === "EN_RETARD"))
         if (stillPending && attempts < 5) setTimeout(poll, 1500)
       }
       poll()
@@ -185,11 +246,18 @@ function CotisationPortalPageInner() {
                 )}
               </div>
               <div className="flex items-center gap-2">
-              <Badge variant={statusVariant[thisYear.status]} className="gap-1.5">
-                {statusIcon[thisYear.status]}
-                {statusLabel[thisYear.status]}
-              </Badge>
-              {thisYear.status === "PAYE" && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger render={<span className="inline-flex" />}>
+                    <Badge variant={statusVariant[thisYear.status]} className="gap-1.5">
+                      {statusIcon[thisYear.status]}
+                      {statusLabel[thisYear.status]}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>{statusTooltip[thisYear.status]}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              {thisYear.declarationNumber && (
                 <Button
                 size="sm"
                 variant="outline"
@@ -201,7 +269,9 @@ function CotisationPortalPageInner() {
               </div>
             </div>
 
-            {(thisYear.status === "EN_ATTENTE" || thisYear.status === "PARTIELLEMENT_PAYEE") && paymentStatusLoaded && (
+            <InstallmentSchedule installments={thisYear.installments} amountPaid={Number(thisYear.amountPaid)} t={t} />
+
+            {(thisYear.status === "EN_ATTENTE" || thisYear.status === "PARTIELLEMENT_PAYEE" || thisYear.status === "EN_RETARD") && paymentStatusLoaded && (
               <div className="space-y-2">
                 {paymentEnabled && (
                   <Button
@@ -211,7 +281,7 @@ function CotisationPortalPageInner() {
                     className="gap-1.5"
                   >
                     <CreditCardIcon className="size-3.5" />
-                    {t("payOnline")}
+                    {t("payAmount", { amount: fmtEur(thisYear.amountDue) })}
                   </Button>
                 )}
                 <p className="text-xs text-muted-foreground">
@@ -232,7 +302,9 @@ function CotisationPortalPageInner() {
           </p>
         ) : (
           history.map(c => {
-            const owesSomething = c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE"
+            // ANNULEE deliberately excluded — a cancelled cotisation shouldn't prompt the
+            // member to pay it.
+            const owesSomething = c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE" || c.status === "EN_RETARD"
             return (
             <Card key={c.id}>
               <CardContent className="py-4 space-y-2">
@@ -255,11 +327,18 @@ function CotisationPortalPageInner() {
                     {c.note && <p className="text-xs text-muted-foreground italic mt-0.5">{c.note}</p>}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <Badge variant={statusVariant[c.status]} className="gap-1">
-                      {statusIcon[c.status]}
-                      {statusLabel[c.status]}
-                    </Badge>
-                    {c.status === "PAYE" && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger render={<span className="inline-flex" />}>
+                          <Badge variant={statusVariant[c.status]} className="gap-1">
+                            {statusIcon[c.status]}
+                            {statusLabel[c.status]}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>{statusTooltip[c.status]}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    {c.declarationNumber && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -276,11 +355,12 @@ function CotisationPortalPageInner() {
                         loading={checkoutMutation.isPending}
                       >
                         <CreditCardIcon className="size-3.5 mr-1" />
-                        {t("pay")}
+                        {t("payAmount", { amount: fmtEur(c.amountDue) })}
                       </Button>
                     )}
                   </div>
                 </div>
+                <InstallmentSchedule installments={c.installments} amountPaid={Number(c.amountPaid)} t={t} />
                 {owesSomething && paymentStatusLoaded && (
                   <p className="text-xs text-muted-foreground">
                     {paymentEnabled ? t("otherPaymentMethodsNotice") : t("offlinePaymentNotice")}

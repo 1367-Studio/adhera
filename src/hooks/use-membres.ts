@@ -36,8 +36,9 @@ export type MembreDetail = {
     id:     string
     year:   number
     amount: string
-    status: "EN_ATTENTE" | "PAYE" | "EXONERE"
+    status: "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
     paidAt: string | null
+    declarationNumber: string | null
   }[]
 
   participations: {
@@ -88,7 +89,7 @@ export type MembreDetail = {
     firstName: string
     lastName:  string
     adherentOverride: boolean | null
-    cotisations: { year: number; status: "EN_ATTENTE" | "PAYE" | "EXONERE" }[]
+    cotisations: { year: number; status: "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE" }[]
   } | null
 
   dependants: {

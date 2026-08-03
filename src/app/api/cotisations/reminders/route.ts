@@ -9,6 +9,7 @@ import { customEmail } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { writeActivityLog } from "@/lib/activity-log"
+import { nextAmountDue } from "@/lib/cotisation-status"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const EMAIL_CHUNK_SIZE = 100
@@ -47,15 +48,30 @@ export const POST = withAdminAuth(async (req, ctx) => {
       where:  { id: associationId },
       select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
     }),
-    // Scoped to this association and to members who still owe something (EN_ATTENTE or
-    // PARTIELLEMENT_PAYEE) — defense in depth, doesn't just trust that the client only ever
-    // sends ids that were actually selectable in the UI.
+    // Scoped to this association and to members who still owe something (EN_ATTENTE,
+    // PARTIELLEMENT_PAYEE, or EN_RETARD) — defense in depth, doesn't just trust that the
+    // client only ever sends ids that were actually selectable in the UI. Must stay in
+    // lockstep with cotisations-view.tsx's isSelectable/selectAllMatching.
     prisma.cotisation.findMany({
-      where:   { id: { in: cotisationIds }, associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
-      include: { membre: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } } },
+      where:   { id: { in: cotisationIds }, associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] } },
+      include: {
+        membre:       { select: { id: true, firstName: true, lastName: true, email: true, phone: true } },
+        installments: { select: { amount: true, dueDate: true, order: true } },
+      },
     }),
   ])
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
+  // What the reminder should actually ask for — the next unpaid échéance when the cotisation
+  // has an installment schedule, otherwise the full remaining balance. Using the cotisation's
+  // sticker `amount` here (as this used to) would ask an already-partially-paid or
+  // installment-based member for more than they actually still owe right now.
+  const amountDue = (c: { amount: unknown; amountPaid: unknown; installments: { amount: unknown; dueDate: Date; order: number }[] }) =>
+    nextAmountDue({
+      amount:       Number(c.amount),
+      amountPaid:   Number(c.amountPaid),
+      installments: c.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+    }).toFixed(2)
 
   // Ids the client asked for that this query didn't return at all — no longer EN_ATTENTE
   // (paid/exempted since the row was selected), deleted, or from another association.
@@ -79,7 +95,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       const vars = buildVars({
         prenom: c.membre.firstName, nom: c.membre.lastName, email: c.membre.email ?? "",
         association: assoc.name, slug: assoc.slug,
-        anneeCotisation: c.year, montantCotisation: c.amount.toString(),
+        anneeCotisation: c.year, montantCotisation: amountDue(c),
       })
       return {
         ...customEmail({
@@ -110,7 +126,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       const vars = buildVars({
         prenom: c.membre.firstName, nom: c.membre.lastName, email: c.membre.email ?? "",
         association: assoc.name, slug: assoc.slug,
-        anneeCotisation: c.year, montantCotisation: c.amount.toString(),
+        anneeCotisation: c.year, montantCotisation: amountDue(c),
       })
       return { to: c.membre.phone!, body: substituteVars(body, vars), membreId: c.membre.id }
     })

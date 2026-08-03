@@ -1,4 +1,9 @@
-export type CotisationStatusForAdherent = "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
+import type { CotisationStatus } from "@/lib/cotisation-status"
+
+// Widened to the full CotisationStatus union (not just the 4 values that actually ever drove
+// adherent status) so callers can pass a Cotisation row straight through without narrowing —
+// EN_RETARD/ANNULEE just never match ADHERENT_STATUSES below.
+export type CotisationStatusForAdherent = CotisationStatus
 
 const ADHERENT_STATUSES: readonly CotisationStatusForAdherent[] = ["PAYE", "EXONERE"]
 

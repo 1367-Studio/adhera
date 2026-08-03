@@ -134,8 +134,12 @@ export function FinanceCharts() {
   // EXONERE (amount 0) would otherwise divide by zero and render a blank bar despite
   // having real data — fall back to splitting by headcount instead.
   const cotisationDenom = cotisationTotal > 0 ? cotisationTotal : cotisationCount
+  // ANNULEE deliberately has no slot here — see finance-palette.ts's comment on why a 6th
+  // validated categorical hue wasn't feasible, and the server excludes it from this chart's
+  // data entirely (consistent with it being excluded from "collectable" amounts elsewhere).
   const cotisationColor: Record<string, string> = {
     PAYE: pal.payees, EN_ATTENTE: pal.enAttente, EXONERE: pal.exonerees,
+    PARTIELLEMENT_PAYEE: pal.partiellementPayee, EN_RETARD: pal.enRetard,
   }
   const paidAmount = data.cotisations.find(c => c.status === "PAYE")?.amount ?? 0
   const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
