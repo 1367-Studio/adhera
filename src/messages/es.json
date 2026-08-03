@@ -23,6 +23,35 @@
     "irreversibleAction": "Esta acción no se puede deshacer."
   },
   "auth": {
+    "layout": {
+      "imageAlt": "Inicio de sesión",
+      "eyebrow": "Plataforma de gestión asociativa",
+      "headingLine1": "Gestiona tu asociación.",
+      "headingLine2": "Fácilmente.",
+      "subtitle": "Miembros, cuotas, eventos y tesorería — todo en un solo lugar.",
+      "featureMembers": "Gestión de miembros y socios",
+      "featureCotisations": "Seguimiento de cuotas",
+      "featureEvents": "Eventos y asistencia",
+      "featureTreasury": "Tesorería simplificada",
+      "footerSuffix": "Datos alojados en Francia"
+    },
+    "login": {
+      "pageTitle": "Inicio de sesión",
+      "heading": "Inicio de sesión",
+      "subtitle": "Introduce tus credenciales para acceder a tu espacio.",
+      "suspended": "La suscripción de tu asociación está suspendida. Contacta con tu administrador para regularizar la situación.",
+      "noAccount": "¿Aún no tienes una cuenta?",
+      "createAccount": "Crear una cuenta",
+      "form": {
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "contact@association.fr",
+        "passwordLabel": "Contraseña",
+        "forgotPassword": "¿Olvidaste tu contraseña?",
+        "submit": "Iniciar sesión",
+        "or": "o",
+        "continueWithGoogle": "Continuar con Google"
+      }
+    },
     "register": {
       "pageTitle": "Crear una cuenta",
       "heading": "Crear una cuenta",
@@ -79,6 +108,46 @@
         "googleSignInFailed": "El inicio de sesión con Google falló. Inténtalo de nuevo o inicia sesión con tu contraseña.",
         "orSignInWithPassword": "O inicia sesión con tu correo y contraseña",
         "signIn": "Iniciar sesión"
+      }
+    },
+    "forgotPassword": {
+      "pageTitle": "Contraseña olvidada",
+      "heading": "¿Olvidaste tu contraseña?",
+      "subtitle": "Introduce tu correo electrónico para recibir un enlace de restablecimiento.",
+      "backToLogin": "Volver al inicio de sesión",
+      "form": {
+        "emailLabel": "Correo electrónico",
+        "emailPlaceholder": "contact@association.fr",
+        "emailRequired": "El correo electrónico es obligatorio.",
+        "emailInvalid": "Correo electrónico no válido.",
+        "submit": "Enviar enlace",
+        "sendError": "Error al enviar. Inténtalo de nuevo en unos instantes.",
+        "networkError": "Error de red. Inténtalo de nuevo."
+      },
+      "sent": {
+        "title": "Revisa tu bandeja de entrada",
+        "description": "Si existe una cuenta con <b>{email}</b>, recibirás un enlace de restablecimiento en breve.",
+        "checkSpam": "No olvides revisar tu carpeta de spam."
+      }
+    },
+    "resetPassword": {
+      "pageTitle": "Nueva contraseña",
+      "heading": "Nueva contraseña",
+      "subtitle": "Elige una contraseña segura para tu cuenta.",
+      "invalidLink": "Enlace no válido. Solicita un nuevo enlace de restablecimiento.",
+      "requestNewLink": "Solicitar un nuevo enlace",
+      "form": {
+        "newPasswordLabel": "Nueva contraseña",
+        "newPasswordPlaceholder": "Mín. 8 caracteres",
+        "confirmPasswordLabel": "Confirmar contraseña",
+        "passwordRequired": "La contraseña es obligatoria.",
+        "passwordMinLength": "Mín. 8 caracteres.",
+        "confirmRequired": "Confirma tu contraseña.",
+        "passwordMismatch": "Las contraseñas no coinciden.",
+        "submit": "Guardar nueva contraseña",
+        "successToast": "Contraseña actualizada. Ya puedes iniciar sesión.",
+        "genericErrorToast": "Error al restablecer la contraseña.",
+        "networkErrorToast": "Error de red. Inténtalo de nuevo."
       }
     }
   },
@@ -745,9 +814,19 @@
     "exercicesView": {
       "title": "Ejercicios contables",
       "description": "Gestione los períodos fiscales de la asociación.",
-      "columns": { "exercice": "Ejercicio", "status": "Estado" },
-      "status": { "ouvert": "Abierto", "cloture": "Cerrado" },
-      "actions": { "close": "Cerrar", "reopen": "Reabrir", "delete": "Eliminar" },
+      "columns": {
+        "exercice": "Ejercicio",
+        "status": "Estado"
+      },
+      "status": {
+        "ouvert": "Abierto",
+        "cloture": "Cerrado"
+      },
+      "actions": {
+        "close": "Cerrar",
+        "reopen": "Reabrir",
+        "delete": "Eliminar"
+      },
       "noExercices": "Ningún ejercicio contable registrado",
       "closeConfirmTitle": "¿Cerrar este ejercicio?",
       "closeConfirmWarning": "Ningún ingreso o gasto de este período podrá crearse o editarse hasta que se reabra.",
@@ -762,7 +841,14 @@
       "earlyClosureTitle": "Cierre anticipado",
       "earlyClosureDescription": "Este ejercicio no termina oficialmente hasta el {date}. Cerrarlo ahora bloqueará nuevos registros hasta el {date}. ¿Continuar?",
       "patternMismatchHint": "Las fechas no coinciden con el calendario fiscal establecido. Fechas corregidas: {start} – {end}.",
-      "toasts": { "closed": "Ejercicio cerrado", "reopened": "Ejercicio reaberto", "deleted": "Ejercicio eliminado", "created": "Ejercicio creado", "closedWithLinked": "Ejercicio cerrado — {count, plural, one {# registro vinculado} other {# registros vinculados}} automáticamente", "createdWithLinked": "Ejercicio creado — {count, plural, one {# registro vinculado} other {# registros vinculados}} automáticamente" }
+      "toasts": {
+        "closed": "Ejercicio cerrado",
+        "reopened": "Ejercicio reaberto",
+        "deleted": "Ejercicio eliminado",
+        "created": "Ejercicio creado",
+        "closedWithLinked": "Ejercicio cerrado — {count, plural, one {# registro vinculado} other {# registros vinculados}} automáticamente",
+        "createdWithLinked": "Ejercicio creado — {count, plural, one {# registro vinculado} other {# registros vinculados}} automáticamente"
+      }
     },
     "accountsView": {
       "title": "Cuentas bancarias",

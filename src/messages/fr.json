@@ -23,6 +23,35 @@
     "irreversibleAction": "Cette action est irréversible."
   },
   "auth": {
+    "layout": {
+      "imageAlt": "Connexion",
+      "eyebrow": "Plateforme de gestion associative",
+      "headingLine1": "Gérez votre association.",
+      "headingLine2": "Simplement.",
+      "subtitle": "Membres, cotisations, événements et trésorerie — tout en un seul endroit.",
+      "featureMembers": "Gestion des membres & adhérents",
+      "featureCotisations": "Suivi des cotisations",
+      "featureEvents": "Événements & présences",
+      "featureTreasury": "Trésorerie simplifiée",
+      "footerSuffix": "Données hébergées en France"
+    },
+    "login": {
+      "pageTitle": "Connexion",
+      "heading": "Connexion",
+      "subtitle": "Entrez vos identifiants pour accéder à votre espace.",
+      "suspended": "L'abonnement de votre association est suspendu. Contactez votre administrateur pour régulariser la situation.",
+      "noAccount": "Pas encore de compte ?",
+      "createAccount": "Créer un compte",
+      "form": {
+        "emailLabel": "Adresse email",
+        "emailPlaceholder": "contact@association.fr",
+        "passwordLabel": "Mot de passe",
+        "forgotPassword": "Mot de passe oublié ?",
+        "submit": "Se connecter",
+        "or": "ou",
+        "continueWithGoogle": "Continuer avec Google"
+      }
+    },
     "register": {
       "pageTitle": "Créer un compte",
       "heading": "Créer un compte",
@@ -79,6 +108,46 @@
         "googleSignInFailed": "La connexion avec Google a échoué. Réessayez ou connectez-vous avec votre mot de passe.",
         "orSignInWithPassword": "Ou connectez-vous avec votre email et mot de passe",
         "signIn": "Se connecter"
+      }
+    },
+    "forgotPassword": {
+      "pageTitle": "Mot de passe oublié",
+      "heading": "Mot de passe oublié ?",
+      "subtitle": "Entrez votre adresse email pour recevoir un lien de réinitialisation.",
+      "backToLogin": "Retour à la connexion",
+      "form": {
+        "emailLabel": "Adresse email",
+        "emailPlaceholder": "contact@association.fr",
+        "emailRequired": "Adresse email requise.",
+        "emailInvalid": "Adresse email invalide.",
+        "submit": "Envoyer le lien",
+        "sendError": "Erreur d'envoi. Veuillez réessayer dans quelques instants.",
+        "networkError": "Erreur réseau. Veuillez réessayer."
+      },
+      "sent": {
+        "title": "Vérifiez votre boite mail",
+        "description": "Si un compte existe avec <b>{email}</b>, vous recevrez un lien de réinitialisation dans quelques instants.",
+        "checkSpam": "Pensez à vérifier vos spams."
+      }
+    },
+    "resetPassword": {
+      "pageTitle": "Nouveau mot de passe",
+      "heading": "Nouveau mot de passe",
+      "subtitle": "Choisissez un mot de passe sécurisé pour votre compte.",
+      "invalidLink": "Lien invalide. Veuillez demander un nouveau lien de réinitialisation.",
+      "requestNewLink": "Demander un nouveau lien",
+      "form": {
+        "newPasswordLabel": "Nouveau mot de passe",
+        "newPasswordPlaceholder": "Min. 8 caractères",
+        "confirmPasswordLabel": "Confirmer le mot de passe",
+        "passwordRequired": "Mot de passe requis.",
+        "passwordMinLength": "Min. 8 caractères.",
+        "confirmRequired": "Confirmez le mot de passe.",
+        "passwordMismatch": "Les mots de passe ne correspondent pas.",
+        "submit": "Enregistrer le nouveau mot de passe",
+        "successToast": "Mot de passe modifié. Vous pouvez vous connecter.",
+        "genericErrorToast": "Erreur lors de la réinitialisation.",
+        "networkErrorToast": "Erreur réseau. Veuillez réessayer."
       }
     }
   },
@@ -745,9 +814,19 @@
     "exercicesView": {
       "title": "Exercices comptables",
       "description": "Gérez les périodes fiscales de l'association.",
-      "columns": { "exercice": "Exercice", "status": "Statut" },
-      "status": { "ouvert": "Ouvert", "cloture": "Clôturé" },
-      "actions": { "close": "Clôturer", "reopen": "Réouvrir", "delete": "Supprimer" },
+      "columns": {
+        "exercice": "Exercice",
+        "status": "Statut"
+      },
+      "status": {
+        "ouvert": "Ouvert",
+        "cloture": "Clôturé"
+      },
+      "actions": {
+        "close": "Clôturer",
+        "reopen": "Réouvrir",
+        "delete": "Supprimer"
+      },
       "noExercices": "Aucun exercice comptable enregistré",
       "closeConfirmTitle": "Clôturer cet exercice ?",
       "closeConfirmWarning": "Aucun revenu ni dépense de cette période ne pourra plus être créé ou modifié tant qu'elle ne sera pas réouverte.",
@@ -762,7 +841,14 @@
       "earlyClosureTitle": "Clôture anticipée",
       "earlyClosureDescription": "Cet exercice ne se termine officiellement que le {date}. Le clôturer maintenant bloquera tout nouvel enregistrement jusqu'au {date}. Continuer ?",
       "patternMismatchHint": "Les dates ne correspondent pas au calendrier fiscal établi. Dates corrigées : {start} – {end}.",
-      "toasts": { "closed": "Exercice clôturé", "reopened": "Exercice réouvert", "deleted": "Exercice supprimé", "created": "Exercice créé", "closedWithLinked": "Exercice clôturé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement", "createdWithLinked": "Exercice créé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement"}
+      "toasts": {
+        "closed": "Exercice clôturé",
+        "reopened": "Exercice réouvert",
+        "deleted": "Exercice supprimé",
+        "created": "Exercice créé",
+        "closedWithLinked": "Exercice clôturé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement",
+        "createdWithLinked": "Exercice créé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement"
+      }
     },
     "accountsView": {
       "title": "Comptes bancaires",

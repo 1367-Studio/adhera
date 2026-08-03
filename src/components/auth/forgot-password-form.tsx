@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { CircleNotchIcon, EnvelopeSimpleIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
@@ -10,6 +11,7 @@ import { toast } from "sonner"
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth.forgotPassword")
   const [email,      setEmail]      = useState("")
   const [loading,    setLoading]    = useState(false)
   const [submitted,  setSubmitted]  = useState(false)
@@ -17,8 +19,8 @@ export function ForgotPasswordForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!email.trim())         { setEmailError("Adresse email requise."); return }
-    if (!EMAIL_RE.test(email)) { setEmailError("Adresse email invalide."); return }
+    if (!email.trim())         { setEmailError(t("form.emailRequired")); return }
+    if (!EMAIL_RE.test(email)) { setEmailError(t("form.emailInvalid")); return }
     setEmailError("")
     setLoading(true)
 
@@ -29,12 +31,12 @@ export function ForgotPasswordForm() {
         body:    JSON.stringify({ email }),
       })
       if (res.status === 503) {
-        toast.error("Erreur d'envoi. Veuillez réessayer dans quelques instants.")
+        toast.error(t("form.sendError"))
         return
       }
       setSubmitted(true)
     } catch {
-      toast.error("Erreur réseau. Veuillez réessayer.")
+      toast.error(t("form.networkError"))
     } finally {
       setLoading(false)
     }
@@ -47,20 +49,21 @@ export function ForgotPasswordForm() {
           <EnvelopeSimpleIcon className="size-6 text-primary" />
         </div>
         <div className="space-y-1.5">
-          <p className="font-medium">Vérifiez votre boite mail</p>
+          <p className="font-medium">{t("sent.title")}</p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            Si un compte existe avec{" "}
-            <span className="font-medium text-foreground">{email}</span>,
-            vous recevrez un lien de réinitialisation dans quelques instants.
+            {t.rich("sent.description", {
+              email,
+              b: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            })}
           </p>
         </div>
-        <p className="text-xs text-muted-foreground">Pensez à vérifier vos spams.</p>
+        <p className="text-xs text-muted-foreground">{t("sent.checkSpam")}</p>
         <Link
           href="/login"
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
         >
           <ArrowLeftIcon className="size-3" />
-          Retour à la connexion
+          {t("backToLogin")}
         </Link>
       </div>
     )
@@ -69,9 +72,9 @@ export function ForgotPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <FormField
-        label="Adresse email"
+        label={t("form.emailLabel")}
         type="email"
-        placeholder="contact@association.fr"
+        placeholder={t("form.emailPlaceholder")}
         autoComplete="email"
         autoFocus
         leadingIcon={<EnvelopeSimpleIcon />}
@@ -82,7 +85,7 @@ export function ForgotPasswordForm() {
 
       <Button type="submit" className="w-full" disabled={loading}>
         {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Envoyer le lien
+        {t("form.submit")}
       </Button>
     </form>
   )

@@ -23,6 +23,35 @@
     "irreversibleAction": "This action cannot be undone."
   },
   "auth": {
+    "layout": {
+      "imageAlt": "Login",
+      "eyebrow": "Association management platform",
+      "headingLine1": "Manage your association.",
+      "headingLine2": "Simply.",
+      "subtitle": "Members, dues, events, and treasury — all in one place.",
+      "featureMembers": "Member & subscriber management",
+      "featureCotisations": "Dues tracking",
+      "featureEvents": "Events & attendance",
+      "featureTreasury": "Simplified treasury",
+      "footerSuffix": "Data hosted in France"
+    },
+    "login": {
+      "pageTitle": "Login",
+      "heading": "Login",
+      "subtitle": "Enter your credentials to access your space.",
+      "suspended": "Your association's subscription is suspended. Contact your administrator to resolve the situation.",
+      "noAccount": "Don't have an account yet?",
+      "createAccount": "Create an account",
+      "form": {
+        "emailLabel": "Email address",
+        "emailPlaceholder": "contact@association.fr",
+        "passwordLabel": "Password",
+        "forgotPassword": "Forgot your password?",
+        "submit": "Sign in",
+        "or": "or",
+        "continueWithGoogle": "Continue with Google"
+      }
+    },
     "register": {
       "pageTitle": "Create an account",
       "heading": "Create an account",
@@ -79,6 +108,46 @@
         "googleSignInFailed": "Google sign-in failed. Try again or sign in with your password.",
         "orSignInWithPassword": "Or sign in with your email and password",
         "signIn": "Sign in"
+      }
+    },
+    "forgotPassword": {
+      "pageTitle": "Forgot password",
+      "heading": "Forgot your password?",
+      "subtitle": "Enter your email address to receive a reset link.",
+      "backToLogin": "Back to sign in",
+      "form": {
+        "emailLabel": "Email address",
+        "emailPlaceholder": "contact@association.fr",
+        "emailRequired": "Email address required.",
+        "emailInvalid": "Invalid email address.",
+        "submit": "Send link",
+        "sendError": "Error sending. Please try again in a moment.",
+        "networkError": "Network error. Please try again."
+      },
+      "sent": {
+        "title": "Check your inbox",
+        "description": "If an account exists with <b>{email}</b>, you'll receive a reset link shortly.",
+        "checkSpam": "Don't forget to check your spam folder."
+      }
+    },
+    "resetPassword": {
+      "pageTitle": "New password",
+      "heading": "New password",
+      "subtitle": "Choose a secure password for your account.",
+      "invalidLink": "Invalid link. Please request a new reset link.",
+      "requestNewLink": "Request a new link",
+      "form": {
+        "newPasswordLabel": "New password",
+        "newPasswordPlaceholder": "Min. 8 characters",
+        "confirmPasswordLabel": "Confirm password",
+        "passwordRequired": "Password required.",
+        "passwordMinLength": "Min. 8 characters.",
+        "confirmRequired": "Confirm your password.",
+        "passwordMismatch": "Passwords do not match.",
+        "submit": "Save new password",
+        "successToast": "Password changed. You can now sign in.",
+        "genericErrorToast": "Error resetting password.",
+        "networkErrorToast": "Network error. Please try again."
       }
     }
   },
@@ -745,9 +814,19 @@
     "exercicesView": {
       "title": "Fiscal years",
       "description": "Manage the association's fiscal periods.",
-      "columns": { "exercice": "Fiscal year", "status": "Status" },
-      "status": { "ouvert": "Open", "cloture": "Closed" },
-      "actions": { "close": "Close", "reopen": "Reopen", "delete": "Delete" },
+      "columns": {
+        "exercice": "Fiscal year",
+        "status": "Status"
+      },
+      "status": {
+        "ouvert": "Open",
+        "cloture": "Closed"
+      },
+      "actions": {
+        "close": "Close",
+        "reopen": "Reopen",
+        "delete": "Delete"
+      },
       "noExercices": "No fiscal year recorded",
       "closeConfirmTitle": "Close this fiscal year?",
       "closeConfirmWarning": "No income or expense from this period can be created or edited until it's reopened.",
@@ -762,7 +841,14 @@
       "earlyClosureTitle": "Early closure",
       "earlyClosureDescription": "This fiscal year doesn't officially end until {date}. Closing it now will block new entries until {date}. Continue?",
       "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
-      "toasts": { "closed": "Fiscal year closed", "reopened": "Fiscal year reopened", "deleted": "Fiscal year deleted", "created": "Fiscal year created", "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically","createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically" }
+      "toasts": {
+        "closed": "Fiscal year closed",
+        "reopened": "Fiscal year reopened",
+        "deleted": "Fiscal year deleted",
+        "created": "Fiscal year created",
+        "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically",
+        "createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically"
+      }
     },
     "accountsView": {
       "title": "Bank accounts",
