@@ -22,13 +22,19 @@ const methodOptions: { value: Method; label: string }[] = [
 interface Props {
   cotisationId: string
   remaining: number
+  /** Pre-filled amount — the next unpaid échéance when the cotisation has an installment
+   *  schedule, otherwise the same as `remaining`. The admin can still type in any amount up
+   *  to `remaining` (e.g. to pay off several échéances or the whole balance at once); this
+   *  only saves the common case of "record this installment" from a manual recalculation. */
+  suggestedAmount?: number
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-export function CotisationPaymentModal({ cotisationId, remaining, open, onOpenChange }: Props) {
+export function CotisationPaymentModal({ cotisationId, remaining, suggestedAmount, open, onOpenChange }: Props) {
   const t = useTranslations()
-  const [amount, setAmount] = useState(remaining > 0 ? remaining : 0)
+  const initialAmount = suggestedAmount ?? remaining
+  const [amount, setAmount] = useState(initialAmount > 0 ? initialAmount : 0)
   const [method, setMethod] = useState<Method>("CB")
   const [paidAt, setPaidAt] = useState(new Date().toISOString().split("T")[0])
   const [note, setNote]     = useState("")

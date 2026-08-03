@@ -28,7 +28,9 @@ enum CotisationStatus {
   EN_ATTENTE
   PARTIELLEMENT_PAYEE
   PAYE
+  EN_RETARD
   EXONERE
+  ANNULEE
 }
 
 enum RsvpStatus {
@@ -549,13 +551,26 @@ model Cotisation {
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 
-  membre      Membre              @relation(fields: [membreId], references: [id])
-  association Association         @relation(fields: [associationId], references: [id])
-  payments    CotisationPayment[]
+  membre       Membre                  @relation(fields: [membreId], references: [id])
+  association  Association             @relation(fields: [associationId], references: [id])
+  payments     CotisationPayment[]
+  installments CotisationInstallment[]
 
   @@unique([membreId, year])
   @@unique([associationId, declarationNumber])
   @@index([associationId, status])
+}
+
+model CotisationInstallment {
+  id           String   @id @default(cuid())
+  cotisationId String
+  amount       Decimal  @db.Decimal(10, 2)
+  dueDate      DateTime
+  order        Int      @default(0)
+
+  cotisation Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+
+  @@index([cotisationId])
 }
 
 model CotisationPayment {
@@ -1071,7 +1086,7 @@ model ExerciceComptable {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association      Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   incomes          Income[]
   expenses         Expense[]
   bankTransactions BankTransaction[]

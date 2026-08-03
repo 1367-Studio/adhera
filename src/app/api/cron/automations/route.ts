@@ -8,6 +8,7 @@ import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { currentCotisationYear, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
+import { nextAmountDue } from "@/lib/cotisation-status"
 import type { TriggerType, MessageChannel } from "@prisma/client"
 
 const BATCH_SIZE = 100
@@ -115,12 +116,13 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     },
     include: {
       cotisations: {
-        // A partially-paid member still owes something — they should get the same
-        // "due"/"overdue" nudges as someone who hasn't paid anything yet, not go silent
-        // the moment a first installment is recorded.
-        where:   { status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
+        // A partially-paid or already-late member still owes something — they should get
+        // the same "due"/"overdue" nudges as someone who hasn't paid anything yet, not go
+        // silent the moment a first payment is recorded or the due date quietly passes.
+        where:   { status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] } },
         orderBy: { year: "desc" },
         take:    1,
+        include: { installments: { select: { amount: true, dueDate: true, order: true } } },
       },
     },
   })
@@ -166,10 +168,15 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
       association:       rule.association.name,
       slug:              rule.association.slug,
       anneeCotisation:   cotisation?.year,
-      // The remaining balance, not the cotisation's sticker amount — those diverge once a
-      // partial payment has been recorded, and the reminder should ask for what's actually
-      // still owed.
-      montantCotisation: cotisation ? (Number(cotisation.amount) - Number(cotisation.amountPaid)).toFixed(2) : undefined,
+      // The next amount actually due — the next unpaid échéance when the cotisation has an
+      // installment schedule, otherwise the full remaining balance. Either way, not the
+      // cotisation's sticker amount: that diverges once a partial payment has been recorded,
+      // and the reminder should ask for what's actually still owed right now.
+      montantCotisation: cotisation ? nextAmountDue({
+        amount:       Number(cotisation.amount),
+        amountPaid:   Number(cotisation.amountPaid),
+        installments: cotisation.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+      }).toFixed(2) : undefined,
     })
     return { membreId: membre.id, membre, vars }
   })

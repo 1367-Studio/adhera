@@ -31,8 +31,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
-    // A partially-paid cotisation still owes something — counts as pending here too.
-    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] }, year } }),
+    // A partially-paid or already-late cotisation still owes something — counts as pending
+    // here too (EN_RETARD is exactly "still pending, past due", not a separate bucket).
+    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year } }),
     prisma.cotisation.aggregate({
       where: { associationId, status: "PAYE", year },
       _sum: { amount: true },
@@ -43,9 +44,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // Finances; this just mirrors that here). Summed separately from cotisationsPayees
     // above (which uses the cotisation's full amount) rather than switching that one to sum
     // CotisationPayment directly, since cotisations marked PAYE before this feature existed
-    // have amountPaid=0 with no payment rows behind them at all.
+    // have amountPaid=0 with no payment rows behind them at all. Includes EN_RETARD too — a
+    // partially-paid cotisation whose due date has since passed still has real money
+    // collected against it; only its status changed, not what's actually been received.
     prisma.cotisation.aggregate({
-      where: { associationId, status: "PARTIELLEMENT_PAYEE", year },
+      where: { associationId, status: { in: ["PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year },
       _sum: { amountPaid: true },
     }),
     prisma.income.aggregate({

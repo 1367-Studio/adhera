@@ -78,6 +78,7 @@ function getStatusLabels(t: Translator): Record<string, string> {
     ACTIF: t("membres.form.status.actif"), INACTIF: t("membres.form.status.inactif"),
     PENDING: t("membres.form.status.pending"), SUSPENDU: t("membres.form.status.suspendu"),
     EN_ATTENTE: t("membres.form.status.pending"), PAYE: t("membres.activiteView.statusValues.paye"), EXONERE: t("membres.activiteView.statusValues.exonere"),
+    PARTIELLEMENT_PAYEE: t("membres.activiteView.statusValues.partiellementPayee"), EN_RETARD: t("membres.activiteView.statusValues.enRetard"), ANNULEE: t("membres.activiteView.statusValues.annulee"),
     ACTIVE: t("membres.form.status.actif"), PAUSED: t("membres.activiteView.statusValues.paused"), DONE: t("membres.activiteView.statusValues.done"),
   }
 }

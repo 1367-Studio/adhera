@@ -22,24 +22,31 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { clientNextAmountDue } from "@/lib/cotisation-display"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import { BASE_PATH } from "@/lib/env";
 import { ApiError } from "@/lib/api-error"
 
 type CotisationPayment = { id: string; amount: string; method: string; paidAt: string; note: string | null }
+type CotisationInstallment = { id: string; amount: string; dueDate: string }
+
+type CotisationStatus = "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
 
 type Cotisation = {
   id:                 string
   year:               number
   amount:             string
   amountPaid:         string
-  status:             "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
+  status:             CotisationStatus
   paidAt:             string | null
   dueDate:            string | null
   lastReminderSentAt: string | null
   note:               string | null
+  declarationNumber:  string | null
   membre:             { id: string; firstName: string; lastName: string; email: string | null }
   payments:           CotisationPayment[]
+  installments:       CotisationInstallment[]
 }
 
 type MembreOption = { id: string; firstName: string; lastName: string }
@@ -48,12 +55,14 @@ type Translator = ReturnType<typeof useTranslations>
 
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
-function getStatusBadge(t: Translator): Record<Cotisation["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+function getStatusBadge(t: Translator): Record<CotisationStatus, { label: string; tooltip: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
   return {
-    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          variant: "secondary" },
-    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), variant: "outline"   },
-    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               variant: "default"  },
-    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            variant: "outline"  },
+    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          tooltip: t("cotisations.statusTooltip.enAttente"),          variant: "secondary"   },
+    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), tooltip: t("cotisations.statusTooltip.partiellementPayee"), variant: "outline"     },
+    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               tooltip: t("cotisations.statusTooltip.paye"),               variant: "default"     },
+    EN_RETARD:           { label: t("membres.detail.cotisationStatus.enRetard"),           tooltip: t("cotisations.statusTooltip.enRetard"),           variant: "destructive" },
+    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            tooltip: t("cotisations.statusTooltip.exonere"),            variant: "outline"     },
+    ANNULEE:             { label: t("membres.detail.cotisationStatus.annulee"),            tooltip: t("cotisations.statusTooltip.annulee"),            variant: "secondary"   },
   }
 }
 
@@ -199,14 +208,15 @@ export function CotisationsView() {
     setAllMatchingSelected(false)
   }
 
-  // Fetches every EN_ATTENTE/PARTIELLEMENT_PAYEE cotisation matching the current year/search
-  // filters (ignoring the status filter itself — a reminder is only ever sent to members who
-  // still owe something, so "select all matching filters" always means that, capped at 500
-  // like GET /api/cotisations already is).
+  // Fetches every EN_ATTENTE/PARTIELLEMENT_PAYEE/EN_RETARD cotisation matching the current
+  // year/search filters (ignoring the status filter itself — a reminder is only ever sent to
+  // members who still owe something, so "select all matching filters" always means that,
+  // capped at 500 like GET /api/cotisations already is). Must stay in lockstep with
+  // isSelectable below and the reminders route's own server-side filter.
   async function selectAllMatching() {
     setSelectingAll(true)
     try {
-      const params = new URLSearchParams({ status: "EN_ATTENTE,PARTIELLEMENT_PAYEE" })
+      const params = new URLSearchParams({ status: "EN_ATTENTE,PARTIELLEMENT_PAYEE,EN_RETARD" })
       if (yearFilter) params.set("year", String(yearFilter))
       if (search)     params.set("search", search)
       const res = await fetch(`/api/cotisations?${params}`)
@@ -244,7 +254,9 @@ export function CotisationsView() {
     EN_ATTENTE:          t("cotisations.view.statusFilter.enAttente"),
     PARTIELLEMENT_PAYEE: t("cotisations.view.statusFilter.partiellementPayees"),
     PAYE:                t("cotisations.view.statusFilter.payees"),
-    EXONERE:    t("cotisations.view.statusFilter.exonerees"),
+    EN_RETARD:           t("cotisations.view.statusFilter.enRetard"),
+    EXONERE:             t("cotisations.view.statusFilter.exonerees"),
+    ANNULEE:             t("cotisations.view.statusFilter.annulees"),
   }
 
   const columns: Column<Cotisation>[] = [
@@ -277,7 +289,7 @@ export function CotisationsView() {
       header: t("cotisations.view.columns.remaining"),
       cell: (c) => {
         const remaining = Number(c.amount) - Number(c.amountPaid)
-        return remaining > 0 && c.status !== "EXONERE"
+        return remaining > 0 && c.status !== "EXONERE" && c.status !== "ANNULEE"
           ? <span className="tabular-nums">{fmt(remaining)}</span>
           : <span className="text-muted-foreground text-xs">—</span>
       },
@@ -297,7 +309,16 @@ export function CotisationsView() {
       header: t("cotisations.view.columns.status"),
       cell: (c) => {
         const s = statusBadge[c.status]
-        return <Badge variant={s.variant}>{s.label}</Badge>
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={<span className="inline-flex" />}>
+                <Badge variant={s.variant}>{s.label}</Badge>
+              </TooltipTrigger>
+              <TooltipContent>{s.tooltip}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )
       },
       className: "w-28",
     },
@@ -329,7 +350,7 @@ export function CotisationsView() {
       className: "w-10",
       cell: (c) => {
         const actions = [
-          ...(c.status !== "EXONERE" && Number(c.amountPaid) < Number(c.amount) ? [{
+          ...(c.status !== "EXONERE" && c.status !== "ANNULEE" && Number(c.amountPaid) < Number(c.amount) ? [{
             label:   t("cotisations.view.actions.recordPayment"),
             icon:    <MoneyIcon className="size-3.5" />,
             onClick: () => setPaymentTarget(c),
@@ -340,7 +361,10 @@ export function CotisationsView() {
             onClick: () => setPaymentsHistoryTarget(c),
           }] : []),
           { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c), separator: true },
-          ...(c.status === "PAYE" ? [{
+          // Gated on declarationNumber rather than status === "PAYE" — a cotisation that was
+          // PAYE and later cancelled can still have an already-issued fiscal document that
+          // shouldn't disappear just because ANNULEE isn't PAYE anymore.
+          ...(c.declarationNumber ? [{
             label:   t("cotisations.view.actions.declaration"),
             icon:    <DownloadSimpleIcon className="size-3.5" />,
             onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),
@@ -443,11 +467,13 @@ export function CotisationsView() {
             <SelectItem value="EN_ATTENTE">{t("cotisations.view.statusFilter.enAttente")}</SelectItem>
             <SelectItem value="PARTIELLEMENT_PAYEE">{t("cotisations.view.statusFilter.partiellementPayees")}</SelectItem>
             <SelectItem value="PAYE">{t("cotisations.view.statusFilter.payees")}</SelectItem>
+            <SelectItem value="EN_RETARD">{t("cotisations.view.statusFilter.enRetard")}</SelectItem>
             <SelectItem value="EXONERE">{t("cotisations.view.statusFilter.exonerees")}</SelectItem>
+            <SelectItem value="ANNULEE">{t("cotisations.view.statusFilter.annulees")}</SelectItem>
           </SelectContent>
         </Select>
 
-        {statusFilter !== "PAYE" && statusFilter !== "EXONERE" && (
+        {statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
           <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
             <input
               type="checkbox"
@@ -484,7 +510,7 @@ export function CotisationsView() {
           selectedIds:  new Set(selected.keys()),
           onToggle:     toggleOne,
           onToggleAll:  toggleAllOnPage,
-          isSelectable: (c) => c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE",
+          isSelectable: (c) => c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE" || c.status === "EN_RETARD",
         }}
         pagination={result ? {
           page:         result.page,
@@ -506,6 +532,11 @@ export function CotisationsView() {
         <CotisationPaymentModal
           cotisationId={paymentTarget.id}
           remaining={Number(paymentTarget.amount) - Number(paymentTarget.amountPaid)}
+          suggestedAmount={clientNextAmountDue(
+            Number(paymentTarget.amount),
+            Number(paymentTarget.amountPaid),
+            paymentTarget.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate })),
+          )}
           open={!!paymentTarget}
           onOpenChange={(open) => !open && setPaymentTarget(null)}
         />
@@ -543,14 +574,18 @@ export function CotisationsView() {
           membres={membres}
           editMode
           amountPaid={editTarget ? Number(editTarget.amountPaid) : 0}
+          currentStatus={editTarget?.status}
           defaultValues={editTarget ? {
-            membreId: editTarget.membre.id,
-            year:     editTarget.year,
-            amount:   parseFloat(editTarget.amount),
-            status:   editTarget.status,
-            paidAt:   editTarget.paidAt ? editTarget.paidAt.split("T")[0] : "",
-            dueDate:  editTarget.dueDate ? editTarget.dueDate.split("T")[0] : "",
-            note:     editTarget.note ?? "",
+            membreId:     editTarget.membre.id,
+            year:         editTarget.year,
+            amount:       parseFloat(editTarget.amount),
+            // Only EXONERE/ANNULEE are real manual overrides — any other current status
+            // (EN_ATTENTE/PARTIELLEMENT_PAYEE/PAYE/EN_RETARD) means "no override", so the
+            // form's status select shows "Automatique" for those (see CotisationForm).
+            status:       editTarget.status === "EXONERE" || editTarget.status === "ANNULEE" ? editTarget.status : null,
+            dueDate:      editTarget.dueDate ? editTarget.dueDate.split("T")[0] : "",
+            installments: editTarget.installments.map(i => ({ amount: parseFloat(i.amount), dueDate: i.dueDate.split("T")[0] })),
+            note:         editTarget.note ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

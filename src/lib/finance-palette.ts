@@ -41,6 +41,21 @@ export function usePalette() {
     // contrast on near-black and sits outside the categorical lightness band as a fill.
     exonerees:  dark ? "#3987e5" : "#0369a1", // blue
     sequential: dark ? "#3987e5" : "#0369a1", // blue, single hue for magnitude ranking
+    // Extends the cotisation breakdown to a 5th categorical slot (PARTIELLEMENT_PAYEE) —
+    // re-validated as a set with the 4 colors above: node scripts/validate_palette.js
+    // "#008300,#e11d48,#f59e0b,#0369a1,#7c3aed" --mode light --pairs all / dark equivalent
+    // below — ALL CHECKS PASS in both, including the stricter --pairs all (not just adjacent).
+    // A 6th slot for ANNULEE was attempted but no candidate hue cleared --pairs all against
+    // this set in both modes — see finance-charts.tsx, which excludes ANNULEE from this chart
+    // instead (consistent with it already being excluded from "collectable" amounts elsewhere
+    // in the cotisation feature, e.g. remaining-balance displays).
+    partiellementPayee: "#7c3aed",           // violet — identical step both modes
+    // EN_RETARD reuses `depenses`' exact value rather than a new hue — deliberately, not by
+    // oversight. It's a different named entity (a late cotisation, not an expense), but the
+    // cotisation and recettes/dépenses charts never render in the same legend/context, so the
+    // reuse causes no visual ambiguity, and finding a genuinely distinct 6th validated hue
+    // proved infeasible (see comment above).
+    enRetard:   dark ? "#f43f5e" : "#e11d48",
     axis:       "#898781",                   // muted ink — same both modes
     grid:       dark ? "#2c2c2a" : "#e1e0d9", // hairline gridline
     cursor:     dark ? "rgba(255,255,255,0.06)" : "rgba(11,11,11,0.05)",

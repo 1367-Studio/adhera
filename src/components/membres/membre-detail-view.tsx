@@ -25,6 +25,7 @@ import { MembreEmailLog } from "@/components/membres/membre-email-log"
 import { MembreSmsLog } from "@/components/membres/membre-sms-log"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { ChangeRoleModal } from "@/components/membres/membres-view"
 import { BackLink } from "@/components/ui/back-link"
@@ -85,12 +86,14 @@ function getStatusBadge(t: Translator): Record<string, { label: string; variant:
   }
 }
 
-function getCotisationStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "outline" }> {
+function getCotisationStatusBadge(t: Translator): Record<string, { label: string; tooltip: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
   return {
-    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          variant: "secondary" },
-    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), variant: "outline"   },
-    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               variant: "default"  },
-    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            variant: "outline"  },
+    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          tooltip: t("cotisations.statusTooltip.enAttente"),          variant: "secondary"   },
+    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), tooltip: t("cotisations.statusTooltip.partiellementPayee"), variant: "outline"     },
+    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               tooltip: t("cotisations.statusTooltip.paye"),               variant: "default"     },
+    EN_RETARD:           { label: t("membres.detail.cotisationStatus.enRetard"),           tooltip: t("cotisations.statusTooltip.enRetard"),           variant: "destructive" },
+    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            tooltip: t("cotisations.statusTooltip.exonere"),            variant: "outline"     },
+    ANNULEE:             { label: t("membres.detail.cotisationStatus.annulee"),            tooltip: t("cotisations.statusTooltip.annulee"),            variant: "secondary"   },
   }
 }
 
@@ -411,7 +414,7 @@ export function MembreDetailView() {
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCotisation")}</p>
           ) : (
             <div className="space-y-2">
-              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null }) => {
+              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null; declarationNumber: string | null }) => {
                 const s = cotisationStatusBadge[c.status]
                 return (
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
@@ -421,8 +424,15 @@ export function MembreDetailView() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(c.amount)}</span>
-                      <Badge variant={s.variant}>{s.label}</Badge>
-                      {c.status === "PAYE" && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger render={<span className="inline-flex" />}>
+                            <Badge variant={s.variant}>{s.label}</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>{s.tooltip}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      {c.declarationNumber && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -621,7 +631,7 @@ export function MembreDetailView() {
         <CotisationForm
           membres={[]}
           editMode
-          defaultValues={{ membreId: id, year: new Date().getFullYear(), status: "EN_ATTENTE" }}
+          defaultValues={{ membreId: id, year: new Date().getFullYear(), status: null }}
           onSubmit={handleCreateCotisation}
           onCancel={() => setCreateCotisationOpen(false)}
           loading={createCotisationMutation.isPending}

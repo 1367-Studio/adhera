@@ -2405,7 +2405,23 @@
       "notePlaceholder": "Additional information…",
       "dueDate": "Due date",
       "paymentMethod": "Payment method",
-      "statusLockedHint": "To change this status, first remove the recorded payments from the payment history."
+      "statusAuto": "Automatic",
+      "statusAutoHint": "Automatically determined by payments and the due date — you can still exempt or cancel the cotisation.",
+      "currentStatusLabel": "Current status:",
+      "exonereConfirmTitle": "Exempt this cotisation?",
+      "exonereConfirmDescription": "Payments already recorded will be deleted. This action cannot be undone.",
+      "installments": {
+        "title": "Installments",
+        "none": "No installments — the cotisation uses the due date above.",
+        "count": "Number of installments",
+        "generate": "Generate installments",
+        "amountRequiredHint": "Fill in the cotisation amount above to generate installments.",
+        "add": "Add an installment",
+        "total": "Installments total: {total} / {amount}",
+        "dueDateIgnoredHint": "Ignored while an installment schedule is set — lateness is computed from the installments below instead.",
+        "lockedHint": "Payments are already recorded — remove them first to edit the schedule.",
+        "totalMismatch": "The installments total ({total}) doesn't match the cotisation amount ({amount})."
+      }
     },
     "view": {
       "title": "Membership fees",
@@ -2443,7 +2459,9 @@
         "enAttente": "Pending",
         "payees": "Paid",
         "exonerees": "Exempt",
-        "partiellementPayees": "Partially paid"
+        "partiellementPayees": "Partially paid",
+        "enRetard": "Overdue",
+        "annulees": "Cancelled"
       },
       "noResultsFor": "No results for \"{search}\"",
       "noCotisation": "No membership fee recorded",
@@ -2507,6 +2525,14 @@
         "recorded": "Payment recorded",
         "deleted": "Payment deleted"
       }
+    },
+    "statusTooltip": {
+      "enAttente": "Cotisation not yet paid, still within the deadline.",
+      "partiellementPayee": "Payment in progress according to the schedule.",
+      "paye": "The cotisation has been paid in full.",
+      "enRetard": "The payment deadline has passed.",
+      "exonere": "No payment is required.",
+      "annulee": "This cotisation has been cancelled."
     }
   },
   "membres": {
@@ -2690,7 +2716,9 @@
         "enAttente": "Pending",
         "paye": "Paid",
         "exonere": "Exempt",
-        "partiellementPayee": "Partially paid"
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled"
       },
       "loanStatus": {
         "demande": "Pending request",
@@ -2970,6 +2998,9 @@
       "statusValues": {
         "paye": "Paid",
         "exonere": "Exempt",
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled",
         "paused": "Paused",
         "done": "Done"
       },
@@ -3334,11 +3365,17 @@
         "enAttente": "Pending",
         "paye": "Paid",
         "exonere": "Exempt",
-        "partiellementPayee": "Partially paid"
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled"
       },
       "currentYearTitle": "{year} dues — Current year",
       "paidOn": "Paid on {date}",
       "payOnline": "Pay online",
+      "payAmount": "Pay {amount}",
+      "installmentsTitle": "Payment schedule",
+      "installmentCovered": "Paid",
+      "installmentPending": "Upcoming",
       "history": "History",
       "noHistory": "No history available.",
       "yearLabel": "Year {year}",
