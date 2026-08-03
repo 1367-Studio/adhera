@@ -3,12 +3,30 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import type { ExerciceStatus } from "@prisma/client"
 
+const ONE_DAY_MS = 86_400_000
+
+// Exercice boundaries are always stored at UTC midnight (see expectedRangeForYear), but the
+// dates compared against them usually carry a real time-of-day — a Stripe webhook's
+// `new Date()`, a "pay now" default. Flooring to the calendar day before comparing keeps a
+// payment landing anywhere on an exercice's last day (not just exactly at midnight) inside it.
+export function dayFloorUTC(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()))
+}
+
+// Exclusive upper bound for an inclusive whole-day range ending at `endDate` — for filtering a
+// DB date column (which can't be floored to a calendar day inside a plain Prisma `where`)
+// against a fixed exercice range, e.g. `date: { gte: startDate, lt: exclusiveEndOfDay(endDate) }`.
+export function exclusiveEndOfDay(endDate: Date): Date {
+  return new Date(endDate.getTime() + ONE_DAY_MS)
+}
+
 export async function resolveExerciceForDate(
   associationId: string,
   date: Date,
 ): Promise<{ id: string; status: ExerciceStatus } | null> {
+  const day = dayFloorUTC(date)
   return prisma.exerciceComptable.findFirst({
-    where: { associationId, startDate: { lte: date }, endDate: { gte: date } },
+    where: { associationId, startDate: { lte: day }, endDate: { gte: day } },
     select: { id: true, status: true },
   })
 }
@@ -32,8 +50,6 @@ export interface ExerciceGap {
   gapEnd:   Date
   gapDays:  number
 }
-
-const ONE_DAY_MS = 86_400_000
 
 function gapBetween(afterEndOf: Date, beforeStartOf: Date): ExerciceGap | null {
   const gapStart = new Date(afterEndOf.getTime() + ONE_DAY_MS)
@@ -91,7 +107,8 @@ export interface ExerciceLookup {
 // import) that would otherwise hit the database once per row — fetch the association's
 // exercices a single time up front, then resolve each row's date against that list locally.
 export function findExerciceForDate(exercices: ExerciceLookup[], date: Date): ExerciceLookup | null {
-  return exercices.find(e => e.startDate <= date && date <= e.endDate) ?? null
+  const day = dayFloorUTC(date)
+  return exercices.find(e => e.startDate <= day && day <= e.endDate) ?? null
 }
 
 
@@ -117,9 +134,18 @@ export function derivePattern(founding: { startDate: Date; endDate: Date }): Exe
   }
 }
 
+// Clamps Feb 29 to Feb 28 on non-leap years instead of letting `Date.UTC` silently roll the
+// value over into March 1 — a founding exercice anchored on Feb 29 must not drift the whole
+// fiscal calendar by a day on every non-leap year.
+function dateForPattern(year: number, month: number, day: number): Date {
+  const isLeap = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+  const clampedDay = month === 2 && day === 29 && !isLeap ? 28 : day
+  return new Date(Date.UTC(year, month - 1, clampedDay))
+}
+
 export function expectedRangeForYear(pattern: ExercicePattern, startYear: number): { startDate: Date; endDate: Date } {
   return {
-    startDate: new Date(Date.UTC(startYear, pattern.startMonth - 1, pattern.startDay)),
-    endDate:   new Date(Date.UTC(startYear + (pattern.spansYearBoundary ? 1 : 0), pattern.endMonth - 1, pattern.endDay)),
+    startDate: dateForPattern(startYear, pattern.startMonth, pattern.startDay),
+    endDate:   dateForPattern(startYear + (pattern.spansYearBoundary ? 1 : 0), pattern.endMonth, pattern.endDay),
   }
 }

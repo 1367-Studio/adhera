@@ -24,6 +24,7 @@ export function ExercicesView() {
   const [gapWarning, setGapWarning]     = useState<GapWarning | null>(null)
   const [closeTarget, setCloseTarget]   = useState<Exercice | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Exercice | null>(null)
+  const [reopenTarget, setReopenTarget] = useState<Exercice | null>(null)
   const [earlyClosureWarning, setEarlyClosureWarning] = useState<{ target: Exercice; endDate: string } | null>(null)
 
 
@@ -32,7 +33,10 @@ export function ExercicesView() {
   const updateMutation = useUpdateExercice()
   const deleteMutation = useDeleteExercice()
 
-  const isFounding = exercices.length === 0
+  // Guarded by !isLoading — exercices defaults to [] while the query is still in flight, so
+  // without this an association that already has fiscal years would flash the "this defines
+  // your fiscal calendar forever" founding banner for a moment on every load.
+  const isFounding = !isLoading && exercices.length === 0
 
   const fmtDate  = (d: string) => new Date(d).toLocaleDateString("fr-FR", { timeZone: "UTC" })
   const fmtRange = (e: Exercice) => `${fmtDate(e.startDate)} – ${fmtDate(e.endDate)}`
@@ -104,10 +108,12 @@ export function ExercicesView() {
     }
   }
 
-  async function handleReopen(e: Exercice) {
+  async function handleReopen() {
+    if (!reopenTarget) return
     try {
-      await updateMutation.mutateAsync({ id: e.id, data: { status: "OUVERT" } })
+      await updateMutation.mutateAsync({ id: reopenTarget.id, data: { status: "OUVERT" } })
       toast.success(t("finances.exercicesView.toasts.reopened"))
+      setReopenTarget(null)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -195,7 +201,7 @@ export function ExercicesView() {
         <RowActions actions={[
           e.status === "OUVERT"
             ? { label: t("finances.exercicesView.actions.close"),  icon: <LockIcon className="size-3.5" />,     onClick: () => setCloseTarget(e) }
-            : { label: t("finances.exercicesView.actions.reopen"), icon: <LockOpenIcon className="size-3.5" />, onClick: () => handleReopen(e) },
+            : { label: t("finances.exercicesView.actions.reopen"), icon: <LockOpenIcon className="size-3.5" />, onClick: () => setReopenTarget(e) },
           { label: t("finances.exercicesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
         ]} />
       ),
@@ -260,10 +266,20 @@ export function ExercicesView() {
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
         title={t("finances.exercicesView.deleteConfirmTitle")}
-        description={deleteTarget?.label ?? ""}
+        description={deleteTarget ? `${deleteTarget.label} — ${t("finances.exercicesView.deleteConfirmWarning", { count: deleteTarget.recordCount })}` : ""}
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={!!reopenTarget}
+        onOpenChange={(o) => !o && setReopenTarget(null)}
+        title={t("finances.exercicesView.reopenConfirmTitle")}
+        description={reopenTarget ? `${reopenTarget.label} — ${t("finances.exercicesView.reopenConfirmDescription")}` : ""}
+        confirmLabel={t("finances.exercicesView.actions.reopen")}
+        loading={updateMutation.isPending}
+        onConfirm={handleReopen}
       />
     </div>
   )
