@@ -861,6 +861,9 @@
       "fromReceivedInvoiceBadge": "Desde una factura recibida",
       "fromReceivedInvoiceTooltip": "Generado automáticamente desde una factura recibida marcada como pagada — editable solo desde Proveedores",
       "viewReceipt": "Ver",
+      "attachReceipt": "Adjuntar",
+      "receiptAttached": "Comprobante adjuntado",
+      "uploadingReceipt": "Subiendo…",
       "actions": {
         "edit": "Editar",
         "delete": "Eliminar"
@@ -1930,6 +1933,8 @@
       "internalName": "Nombre interno",
       "internalNamePlaceholder": "Recordatorio de cuota anual",
       "category": "Categoría",
+      "isDefault": "Plantilla predeterminada",
+      "isDefaultHint": "Se usa automáticamente como mensaje sugerido para esta categoría (p. ej. recordatorios de cuota enviados desde la página de Cotizaciones).",
       "emailSubject": "Asunto del correo",
       "emailSubjectPlaceholder": "Recordatorio: su cuota de '{{annee_cotisation}}'",
       "variablesHint": "Variables — arrastre al asunto, cuerpo o SMS",
@@ -2397,6 +2402,10 @@
     },
     "view": {
       "title": "Cuotas",
+      "selectAllMatching": "Seleccionar todo (filtros activos)",
+      "selectedCount": "{count, plural, one {# seleccionada} other {# seleccionadas}}",
+      "deselectAll": "Deseleccionar",
+      "sendReminder": "Enviar recordatorio",
       "exportMembers": "Exportar miembros",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
@@ -2432,7 +2441,36 @@
         "created": "Cuota registrada",
         "updated": "Cuota actualizada",
         "deleted": "Cuota eliminada"
-      }
+      },
+      "selectAllTruncated": "Hay más de 500 cuotas que coinciden con los filtros — solo se seleccionaron las primeras 500."
+    },
+    "reminderModal": {
+      "title": "Enviar un recordatorio de cuota",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "smsModuleRequired": "Requiere el módulo SMS",
+      "recipients": "{count, plural, one {# destinatario} other {# destinatarios}}",
+      "noRecipient": "Ningún destinatario",
+      "removeRecipient": "Quitar este destinatario",
+      "subjectLabel": "Asunto",
+      "bodyLabel": "Mensaje",
+      "variablesNotice": "El mensaje se personaliza para cada destinatario — {{prenom}}, {{montant_cotisation}} y {{annee_cotisation}} se completan automáticamente al enviar.",
+      "sendNow": "Enviar ({count})",
+      "resultTitle": "Recordatorios enviados",
+      "sent": "Enviados",
+      "failed": "Fallidos",
+      "skippedNoEmail": "Sin email",
+      "skippedNoPhone": "Sin teléfono",
+      "toasts": {
+        "subjectRequired": "Indique el asunto",
+        "bodyRequired": "Indique el mensaje",
+        "templateLoadError": "No se pudo cargar la plantilla de recordatorio"
+      },
+      "continue": "Continuar",
+      "confirmTitle": "Confirmar el envío",
+      "confirmDescription": "Está a punto de enviar un recordatorio por {channel} a {count, plural, one {# destinatario} other {# destinatarios}}. Esta acción no se puede deshacer.",
+      "andOthers": " y {count} más",
+      "skippedInvalid": "{count, plural, one {# cuota ya no estaba pendiente en el momento del envío (ya pagada o eliminada) y fue omitida} other {# cuotas ya no estaban pendientes en el momento del envío (ya pagadas o eliminadas) y fueron omitidas}}"
     }
   },
   "membres": {

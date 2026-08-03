@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Table,
@@ -20,6 +21,17 @@ export interface Column<T> {
   hideInCard?: boolean
 }
 
+// Opt-in row selection (checkboxes) — entirely additive, existing callers that don't pass
+// `selection` render exactly as before. `isSelectable` lets a page restrict which rows can
+// be checked at all (e.g. only EN_ATTENTE cotisations for a bulk-reminder action) — those
+// rows render a disabled checkbox instead of just omitting it, so the column stays aligned.
+export interface DataTableSelection<T> {
+  selectedIds:   Set<string>
+  onToggle:      (id: string) => void
+  onToggleAll:   (ids: string[], checked: boolean) => void
+  isSelectable?: (row: T) => boolean
+}
+
 interface DataTableProps<T> {
   columns: Column<T>[]
   data: T[]
@@ -27,6 +39,7 @@ interface DataTableProps<T> {
   keyExtractor: (row: T) => string
   onRowClick?: (row: T) => void
   empty?: React.ReactNode
+  selection?: DataTableSelection<T>
   pagination?: {
     page: number
     totalPages: number
@@ -34,6 +47,39 @@ interface DataTableProps<T> {
     limit: number
     onPageChange: (page: number) => void
   }
+}
+
+function RowCheckbox({ checked, disabled, onChange, ariaLabel }: {
+  checked: boolean; disabled?: boolean; onChange: (checked: boolean) => void; ariaLabel: string
+}) {
+  return (
+    <input
+      type="checkbox"
+      checked={checked}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      onClick={(e) => e.stopPropagation()}
+      onChange={(e) => onChange(e.target.checked)}
+      className="size-4 shrink-0 cursor-pointer rounded border border-input accent-primary disabled:cursor-not-allowed disabled:opacity-40"
+    />
+  )
+}
+
+function HeaderCheckbox({ checked, indeterminate, onChange }: {
+  checked: boolean; indeterminate: boolean; onChange: (checked: boolean) => void
+}) {
+  const ref = useRef<HTMLInputElement>(null)
+  useEffect(() => { if (ref.current) ref.current.indeterminate = indeterminate }, [indeterminate])
+  return (
+    <input
+      ref={ref}
+      type="checkbox"
+      checked={checked}
+      aria-label="Tout sélectionner"
+      onChange={(e) => onChange(e.target.checked)}
+      className="size-4 shrink-0 cursor-pointer rounded border border-input accent-primary"
+    />
+  )
 }
 
 function isActionsCol<T>(col: Column<T>) {
@@ -95,7 +141,8 @@ function CardList<T>({
   keyExtractor,
   onRowClick,
   empty,
-}: Pick<DataTableProps<T>, "columns" | "data" | "keyExtractor" | "onRowClick" | "empty">) {
+  selection,
+}: Pick<DataTableProps<T>, "columns" | "data" | "keyExtractor" | "onRowClick" | "empty" | "selection">) {
   const primaryCol = columns.find((c) => !isActionsCol(c) && !c.hideInCard)
   const actionsCol = columns.find(isActionsCol)
   const detailCols = columns.filter((c) => c !== primaryCol && !isActionsCol(c) && !c.hideInCard)
@@ -111,10 +158,13 @@ function CardList<T>({
 
   return (
     <div className="md:hidden space-y-2">
-      {data.map((row) => (
+      {data.map((row) => {
+        const id = keyExtractor(row)
+        const canSelect = !selection || (selection.isSelectable?.(row) ?? true)
+        return (
         <div
-          key={keyExtractor(row)}
-          data-row-id={keyExtractor(row)}
+          key={id}
+          data-row-id={id}
           className={cn(
             "rounded-lg border bg-card p-4 space-y-3",
             isClickable && cn("cursor-pointer active:bg-accent/60 transition-colors", clickableRowFocusRing)
@@ -125,6 +175,16 @@ function CardList<T>({
           onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
         >
           <div className="flex items-start justify-between gap-2">
+            {selection && (
+              <div className="shrink-0 pt-0.5" onClick={(e) => e.stopPropagation()}>
+                <RowCheckbox
+                  checked={selection.selectedIds.has(id)}
+                  disabled={!canSelect}
+                  onChange={() => selection.onToggle(id)}
+                  ariaLabel={`Sélectionner la ligne ${id}`}
+                />
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               {primaryCol?.cell(row)}
             </div>
@@ -150,7 +210,8 @@ function CardList<T>({
             </div>
           )}
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
@@ -162,8 +223,11 @@ export function DataTable<T>({
   keyExtractor,
   onRowClick,
   empty,
+  selection,
   pagination,
 }: DataTableProps<T>) {
+  const colCount = columns.length + (selection ? 1 : 0)
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -172,6 +236,7 @@ export function DataTable<T>({
           <Table>
             <TableHeader>
               <TableRow>
+                {selection && <TableHead className="w-10" />}
                 {columns.map((col) => (
                   <TableHead key={col.key} className={col.className}>
                     {col.header}
@@ -182,6 +247,7 @@ export function DataTable<T>({
             <TableBody>
               {Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
+                  {selection && <TableCell className="w-10" />}
                   {columns.map((col) => (
                     <TableCell key={col.key}>
                       <Skeleton className="h-4 w-full" />
@@ -204,6 +270,7 @@ export function DataTable<T>({
           <Table>
             <TableHeader>
               <TableRow>
+                {selection && <TableHead className="w-10" />}
                 {columns.map((col) => (
                   <TableHead key={col.key} className={col.className}>
                     {col.header}
@@ -213,7 +280,7 @@ export function DataTable<T>({
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={colCount} className="h-32 text-center text-muted-foreground">
                   {empty ?? "Aucune donnée"}
                 </TableCell>
               </TableRow>
@@ -224,6 +291,14 @@ export function DataTable<T>({
     )
   }
 
+  // Only rows the caller allows (via isSelectable) count toward "select all" — a page mixing
+  // EN_ATTENTE and PAYE cotisations, say, shouldn't have the header checkbox stuck at
+  // "indeterminate" forever because it's silently counting rows that can never be checked.
+  const selectableIds  = selection ? data.filter(row => selection.isSelectable?.(row) ?? true).map(keyExtractor) : []
+  const selectedOnPage = selection ? selectableIds.filter(id => selection.selectedIds.has(id)) : []
+  const allSelected    = selection ? selectableIds.length > 0 && selectedOnPage.length === selectableIds.length : false
+  const someSelected   = selection ? selectedOnPage.length > 0 && !allSelected : false
+
   return (
     <div className="space-y-3">
       <CardList
@@ -232,12 +307,22 @@ export function DataTable<T>({
         keyExtractor={keyExtractor}
         onRowClick={onRowClick}
         empty={empty}
+        selection={selection}
       />
 
       <div data-slot="table-wrapper" className="hidden md:block overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
+              {selection && (
+                <TableHead className="w-10">
+                  <HeaderCheckbox
+                    checked={allSelected}
+                    indeterminate={someSelected}
+                    onChange={(checked) => selection.onToggleAll(selectableIds, checked)}
+                  />
+                </TableHead>
+              )}
               {columns.map((col) => (
                 <TableHead key={col.key} className={col.className}>
                   {col.header}
@@ -246,22 +331,36 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row) => (
+            {data.map((row) => {
+              const id = keyExtractor(row)
+              const canSelect = !selection || (selection.isSelectable?.(row) ?? true)
+              return (
               <TableRow
-                key={keyExtractor(row)}
-                data-row-id={keyExtractor(row)}
+                key={id}
+                data-row-id={id}
                 className={cn(onRowClick && cn("cursor-pointer", clickableRowFocusRing))}
                 tabIndex={onRowClick ? 0 : undefined}
                 onClick={() => { if (!hasTextSelection()) onRowClick?.(row) }}
                 onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
               >
+                {selection && (
+                  <TableCell className="w-10" onClick={(e) => e.stopPropagation()}>
+                    <RowCheckbox
+                      checked={selection.selectedIds.has(id)}
+                      disabled={!canSelect}
+                      onChange={() => selection.onToggle(id)}
+                      ariaLabel={`Sélectionner la ligne ${id}`}
+                    />
+                  </TableCell>
+                )}
                 {columns.map((col) => (
                   <TableCell key={col.key} className={col.className}>
                     {col.cell(row)}
                   </TableCell>
                 ))}
               </TableRow>
-            ))}
+              )
+            })}
           </TableBody>
         </Table>
       </div>

@@ -861,6 +861,9 @@
       "fromReceivedInvoiceBadge": "De uma fatura recebida",
       "fromReceivedInvoiceTooltip": "Gerada automaticamente a partir de uma fatura recebida marcada como paga — editável apenas em Fornecedores",
       "viewReceipt": "Ver",
+      "attachReceipt": "Anexar",
+      "receiptAttached": "Comprovante anexado",
+      "uploadingReceipt": "Enviando…",
       "actions": {
         "edit": "Editar",
         "delete": "Excluir"
@@ -1930,6 +1933,8 @@
       "internalName": "Nome interno",
       "internalNamePlaceholder": "Lembrete de mensalidade anual",
       "category": "Categoria",
+      "isDefault": "Modelo padrão",
+      "isDefaultHint": "Usado automaticamente como mensagem sugerida para esta categoria (ex.: lembretes de cotização enviados a partir da página de Cotizações).",
       "emailSubject": "Assunto do email",
       "emailSubjectPlaceholder": "Lembrete: sua mensalidade de '{{annee_cotisation}}'",
       "variablesHint": "Variáveis — arraste para o assunto, corpo ou SMS",
@@ -2397,6 +2402,10 @@
     },
     "view": {
       "title": "Mensalidades",
+      "selectAllMatching": "Selecionar tudo (filtros atuais)",
+      "selectedCount": "{count, plural, one {# selecionada} other {# selecionadas}}",
+      "deselectAll": "Desmarcar",
+      "sendReminder": "Enviar lembrete",
       "exportMembers": "Exportar membros",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
@@ -2432,7 +2441,36 @@
         "created": "Mensalidade registrada",
         "updated": "Mensalidade atualizada",
         "deleted": "Mensalidade excluída"
-      }
+      },
+      "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas."
+    },
+    "reminderModal": {
+      "title": "Enviar um lembrete de cotização",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "smsModuleRequired": "Requer o módulo SMS",
+      "recipients": "{count, plural, one {# destinatário} other {# destinatários}}",
+      "noRecipient": "Nenhum destinatário",
+      "removeRecipient": "Remover este destinatário",
+      "subjectLabel": "Assunto",
+      "bodyLabel": "Mensagem",
+      "variablesNotice": "A mensagem é personalizada para cada destinatário — {{prenom}}, {{montant_cotisation}} e {{annee_cotisation}} são preenchidos automaticamente no envio.",
+      "sendNow": "Enviar ({count})",
+      "resultTitle": "Lembretes enviados",
+      "sent": "Enviados",
+      "failed": "Falhas",
+      "skippedNoEmail": "Sem email",
+      "skippedNoPhone": "Sem telefone",
+      "toasts": {
+        "subjectRequired": "Informe o assunto",
+        "bodyRequired": "Informe a mensagem",
+        "templateLoadError": "Não foi possível carregar o modelo de lembrete"
+      },
+      "continue": "Continuar",
+      "confirmTitle": "Confirmar o envio",
+      "confirmDescription": "Você está prestes a enviar um lembrete por {channel} para {count, plural, one {# destinatário} other {# destinatários}}. Essa ação não pode ser desfeita.",
+      "andOthers": " e mais {count}",
+      "skippedInvalid": "{count, plural, one {# cotização não estava mais pendente no momento do envio (já paga ou excluída) e foi ignorada} other {# cotizações não estavam mais pendentes no momento do envio (já pagas ou excluídas) e foram ignoradas}}"
     }
   },
   "membres": {

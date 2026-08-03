@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -14,6 +14,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
+import { SendReminderModal } from "@/components/cotisations/send-reminder-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
@@ -59,6 +60,14 @@ export function CotisationsView() {
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Cotisation | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Cotisation | null>(null)
+  const [selected, setSelected]         = useState<Map<string, Cotisation>>(new Map())
+  // Tracks specifically "the last selection action was selectAllMatching()", separate from
+  // selected.size > 0 — a lone manually-checked row must not make the "select all matching
+  // filters" checkbox render as checked, which it would if that checkbox's state were just
+  // derived from "is anything selected at all".
+  const [allMatchingSelected, setAllMatchingSelected] = useState(false)
+  const [selectingAll, setSelectingAll] = useState(false)
+  const [reminderOpen, setReminderOpen] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -92,6 +101,14 @@ export function CotisationsView() {
     if (result && result.totalPages > 0 && page > result.totalPages) setPage(result.totalPages)
   }, [result, page])
 
+  // A selection made under one set of filters (e.g. year 2025) has no obvious relationship
+  // to a different filter (2024) — keeping it "alive" but invisible risks a reminder going
+  // out to people the admin can no longer see or double-check, so filters changing clears it.
+  useEffect(() => {
+    setSelected(new Map())
+    setAllMatchingSelected(false)
+  }, [yearFilter, statusFilter, search])
+
   const createMutation = useCreateCotisation()
   const updateMutation = useUpdateCotisation(editTarget?.id ?? "")
   const deleteMutation = useDeleteCotisation()
@@ -124,6 +141,63 @@ export function CotisationsView() {
       setDeleteTarget(null)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  function toggleOne(id: string) {
+    setAllMatchingSelected(false)
+    setSelected(prev => {
+      const next = new Map(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        const row = cotisations.find(c => c.id === id)
+        if (row) next.set(id, row)
+      }
+      return next
+    })
+  }
+
+  function toggleAllOnPage(ids: string[], checked: boolean) {
+    setAllMatchingSelected(false)
+    setSelected(prev => {
+      const next = new Map(prev)
+      for (const id of ids) {
+        if (checked) {
+          const row = cotisations.find(c => c.id === id)
+          if (row) next.set(id, row)
+        } else {
+          next.delete(id)
+        }
+      }
+      return next
+    })
+  }
+
+  function clearSelection() {
+    setSelected(new Map())
+    setAllMatchingSelected(false)
+  }
+
+  // Fetches every EN_ATTENTE cotisation matching the current year/search filters (ignoring
+  // the status filter itself — a reminder is only ever sent for EN_ATTENTE rows, so "select
+  // all matching filters" always means that, capped at 500 like GET /api/cotisations already is).
+  async function selectAllMatching() {
+    setSelectingAll(true)
+    try {
+      const params = new URLSearchParams({ status: "EN_ATTENTE" })
+      if (yearFilter) params.set("year", String(yearFilter))
+      if (search)     params.set("search", search)
+      const res = await fetch(`/api/cotisations?${params}`)
+      if (!res.ok) { toast.error(t("common.error")); return }
+      const all = await res.json() as Cotisation[]
+      if (all.length >= 500) toast.warning(t("cotisations.view.selectAllTruncated"))
+      setSelected(new Map(all.map(c => [c.id, c])))
+      setAllMatchingSelected(true)
+    } catch {
+      toast.error(t("common.networkError"))
+    } finally {
+      setSelectingAll(false)
     }
   }
 
@@ -296,7 +370,33 @@ export function CotisationsView() {
             <SelectItem value="EXONERE">{t("cotisations.view.statusFilter.exonerees")}</SelectItem>
           </SelectContent>
         </Select>
+
+        {statusFilter !== "PAYE" && statusFilter !== "EXONERE" && (
+          <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={allMatchingSelected}
+              disabled={selectingAll}
+              onChange={e => e.target.checked ? selectAllMatching() : clearSelection()}
+              className="size-4 shrink-0 cursor-pointer rounded border border-input accent-primary disabled:cursor-not-allowed"
+            />
+            {t("cotisations.view.selectAllMatching")}
+          </label>
+        )}
       </div>
+
+      {selected.size > 0 && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-2.5">
+          <p className="text-sm font-medium">{t("cotisations.view.selectedCount", { count: selected.size })}</p>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={clearSelection}>{t("cotisations.view.deselectAll")}</Button>
+            <Button size="sm" onClick={() => setReminderOpen(true)}>
+              <BellIcon className="mr-1.5 size-4" />
+              {t("cotisations.view.sendReminder")}
+            </Button>
+          </div>
+        </div>
+      )}
 
       <DataTable
         columns={columns}
@@ -304,6 +404,12 @@ export function CotisationsView() {
         loading={isLoading}
         keyExtractor={(c) => c.id}
         empty={search ? t("cotisations.view.noResultsFor", { search }) : t("cotisations.view.noCotisation")}
+        selection={{
+          selectedIds:  new Set(selected.keys()),
+          onToggle:     toggleOne,
+          onToggleAll:  toggleAllOnPage,
+          isSelectable: (c) => c.status === "EN_ATTENTE",
+        }}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,
@@ -311,6 +417,13 @@ export function CotisationsView() {
           limit:        result.limit,
           onPageChange: (p) => setPage(p),
         } : undefined}
+      />
+
+      <SendReminderModal
+        open={reminderOpen}
+        onOpenChange={setReminderOpen}
+        cotisations={Array.from(selected.values())}
+        onSent={() => { setReminderOpen(false); clearSelection() }}
       />
 
       {/* Create */}

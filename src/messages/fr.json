@@ -861,6 +861,9 @@
       "fromReceivedInvoiceBadge": "Depuis une facture reçue",
       "fromReceivedInvoiceTooltip": "Générée automatiquement depuis une facture reçue marquée payée — modifiable uniquement depuis Fournisseurs",
       "viewReceipt": "Voir",
+      "attachReceipt": "Joindre",
+      "receiptAttached": "Justificatif ajouté",
+      "uploadingReceipt": "Envoi…",
       "actions": {
         "edit": "Modifier",
         "delete": "Supprimer"
@@ -1930,6 +1933,8 @@
       "internalName": "Nom interne",
       "internalNamePlaceholder": "Rappel cotisation annuelle",
       "category": "Catégorie",
+      "isDefault": "Modèle par défaut",
+      "isDefaultHint": "Utilisé automatiquement comme message suggéré pour cette catégorie (ex. rappels de cotisation envoyés depuis la page Cotisations).",
       "emailSubject": "Objet de l'email",
       "emailSubjectPlaceholder": "Rappel : votre cotisation '{{annee_cotisation}}'",
       "variablesHint": "Variables — glissez dans l'objet, le corps ou le SMS",
@@ -2397,6 +2402,10 @@
     },
     "view": {
       "title": "Cotisations",
+      "selectAllMatching": "Tout sélectionner (filtres actifs)",
+      "selectedCount": "{count, plural, one {# sélectionnée} other {# sélectionnées}}",
+      "deselectAll": "Désélectionner",
+      "sendReminder": "Envoyer un rappel",
       "exportMembers": "Exporter les membres",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
@@ -2432,7 +2441,36 @@
         "created": "Cotisation enregistrée",
         "updated": "Cotisation mise à jour",
         "deleted": "Cotisation supprimée"
-      }
+      },
+      "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées."
+    },
+    "reminderModal": {
+      "title": "Envoyer un rappel de cotisation",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "smsModuleRequired": "Nécessite le module SMS",
+      "recipients": "{count, plural, one {# destinataire} other {# destinataires}}",
+      "noRecipient": "Aucun destinataire",
+      "removeRecipient": "Retirer ce destinataire",
+      "subjectLabel": "Objet",
+      "bodyLabel": "Message",
+      "variablesNotice": "Le message est personnalisé pour chaque destinataire — {{prenom}}, {{montant_cotisation}} et {{annee_cotisation}} sont remplacés automatiquement à l'envoi.",
+      "sendNow": "Envoyer ({count})",
+      "resultTitle": "Rappels envoyés",
+      "sent": "Envoyés",
+      "failed": "Échecs",
+      "skippedNoEmail": "Sans email",
+      "skippedNoPhone": "Sans téléphone",
+      "toasts": {
+        "subjectRequired": "Veuillez renseigner l'objet",
+        "bodyRequired": "Veuillez renseigner le message",
+        "templateLoadError": "Impossible de charger le modèle de rappel"
+      },
+      "continue": "Continuer",
+      "confirmTitle": "Confirmer l'envoi",
+      "confirmDescription": "Vous êtes sur le point d'envoyer un rappel par {channel} à {count, plural, one {# destinataire} other {# destinataires}}. Cette action ne peut pas être annulée.",
+      "andOthers": " et {count} autre(s)",
+      "skippedInvalid": "{count, plural, one {# cotisation n'était plus en attente au moment de l'envoi (déjà payée ou supprimée) et a été ignorée} other {# cotisations n'étaient plus en attente au moment de l'envoi (déjà payées ou supprimées) et ont été ignorées}}"
     }
   },
   "membres": {
