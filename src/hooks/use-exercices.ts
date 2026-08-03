@@ -6,12 +6,13 @@ const QK = ["exercices"]
 export type ExerciceStatus = "OUVERT" | "CLOTURE"
 
 export type Exercice = {
-  id:        string
-  label:     string
-  startDate: string
-  endDate:   string
-  status:    ExerciceStatus
-  closedAt:  string | null
+  id:          string
+  label:       string
+  startDate:   string
+  endDate:     string
+  status:      ExerciceStatus
+  closedAt:    string | null
+  recordCount: number
 }
 
 export type ExerciceInput = {
