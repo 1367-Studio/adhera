@@ -1334,7 +1334,8 @@
         "created": "Survey created",
         "titleRequired": "The title is required",
         "atLeastOneQuestion": "Add at least one question",
-        "atLeastOneMember": "Select at least one member"
+        "atLeastOneMember": "Select at least one member",
+        "deadlinePast": "The deadline cannot be in the past"
       }
     }
   },
@@ -2398,7 +2399,10 @@
       "amount": "Amount",
       "paidAt": "Payment date",
       "note": "Note",
-      "notePlaceholder": "Additional information…"
+      "notePlaceholder": "Additional information…",
+      "dueDate": "Due date",
+      "paymentMethod": "Payment method",
+      "statusLockedHint": "To change this status, first remove the recorded payments from the payment history."
     },
     "view": {
       "title": "Membership fees",
@@ -2411,17 +2415,23 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# membership fee} other {# membership fees}}",
       "totalCollected": " · {amount} collected",
+      "exercise": "Fiscal year {year}",
       "columns": {
         "member": "Member",
-        "year": "Year",
         "amount": "Amount",
+        "remaining": "Remaining",
         "status": "Status",
-        "paidAt": "Paid on"
+        "paidAt": "Paid on",
+        "dueDate": "Due date",
+        "paymentMethod": "Payment method",
+        "lastReminder": "Last reminder"
       },
       "actions": {
         "edit": "Edit",
         "declaration": "Receipt",
-        "delete": "Delete"
+        "delete": "Delete",
+        "recordPayment": "Record a payment",
+        "paymentHistory": "Payment history"
       },
       "searchPlaceholder": "Search for a member…",
       "allStatuses": "All statuses",
@@ -2429,7 +2439,8 @@
       "statusFilter": {
         "enAttente": "Pending",
         "payees": "Paid",
-        "exonerees": "Exempt"
+        "exonerees": "Exempt",
+        "partiellementPayees": "Partially paid"
       },
       "noResultsFor": "No results for \"{search}\"",
       "noCotisation": "No membership fee recorded",
@@ -2440,9 +2451,11 @@
       "toasts": {
         "created": "Membership fee recorded",
         "updated": "Membership fee updated",
-        "deleted": "Membership fee deleted"
+        "deleted": "Membership fee deleted",
+        "confirm": "Confirm"
       },
-      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected."
+      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
+      "remaining": "{amount} remaining"
     },
     "reminderModal": {
       "title": "Send a cotisation reminder",
@@ -2454,7 +2467,7 @@
       "removeRecipient": "Remove this recipient",
       "subjectLabel": "Subject",
       "bodyLabel": "Message",
-      "variablesNotice": "The message is personalized for each recipient — {{prenom}}, {{montant_cotisation}} and {{annee_cotisation}} are filled in automatically when sending.",
+      "variablesNotice": "The message is personalized for each recipient — '{{prenom}}', '{{montant_cotisation}}' and '{{annee_cotisation}}' are filled in automatically when sending.",
       "sendNow": "Send ({count})",
       "resultTitle": "Reminders sent",
       "sent": "Sent",
@@ -2471,6 +2484,26 @@
       "confirmDescription": "You're about to send a {channel} reminder to {count, plural, one {# recipient} other {# recipients}}. This action cannot be undone.",
       "andOthers": " and {count} more",
       "skippedInvalid": "{count, plural, one {# cotisation was no longer pending by the time it was sent (already paid or deleted) and was skipped} other {# cotisations were no longer pending by the time they were sent (already paid or deleted) and were skipped}}"
+    },
+    "payment": {
+      "title": "Record a payment",
+      "amount": "Amount",
+      "remainingBalance": "Remaining balance: {amount}",
+      "method": "Payment method",
+      "date": "Payment date",
+      "note": "Note",
+      "notePlaceholder": "Reference, remark…",
+      "historyTitle": "Payment history",
+      "noPayments": "No payment recorded",
+      "deleteConfirmTitle": "Delete this payment?",
+      "deleteConfirmDescription": "The {amount} payment will be removed and the dues balance recalculated.",
+      "deleteTooltip": "Delete this payment",
+      "toasts": {
+        "amountMustBePositive": "The amount must be greater than 0",
+        "amountExceedsBalance": "The amount exceeds the remaining balance ({amount})",
+        "recorded": "Payment recorded",
+        "deleted": "Payment deleted"
+      }
     }
   },
   "membres": {
@@ -2647,12 +2680,14 @@
         "reunions": "Meetings",
         "materiel": "Equipment",
         "historique": "History",
-        "emails": "Emails"
+        "emails": "Emails",
+        "sms": "SMS"
       },
       "cotisationStatus": {
         "enAttente": "Pending",
         "paye": "Paid",
-        "exonere": "Exempt"
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid"
       },
       "loanStatus": {
         "demande": "Pending request",
@@ -2752,7 +2787,15 @@
       "noMemberFound": "No member found",
       "selectedCount": "{count, plural, one {# member selected} other {# members selected}}",
       "noMemberSelected": "No member selected",
+      "externalEmailsLabel": "External emails",
+      "externalEmailsPlaceholder": "email@example.com",
+      "externalEmailsHint": "Combine with the members above, or use “Manual selection” without checking anyone to send only to these emails.",
+      "externalMemberConflictChipTitle": "Already a member: {name}",
+      "externalMemberConflictWarning": "Already belong to existing members: {list} — this send won't show up in their history and won't have their name filled in. Consider picking them from the list instead of typing them.",
+      "unresolvedVarsWarning": "These variables won't be filled in for this send (they'll appear as plain text): {vars}",
+      "unknownVarsWarning": "These variables don't exist and will never be filled in — check for typos: {vars}",
       "templateSectionLabel": "Template",
+      "templateContextWarning": "This template uses dues/event variables that won't be filled in for a manual send.",
       "deselectTemplate": "Deselect",
       "noTemplateCreated": "No template created.",
       "createTemplateLink": "Create a template",
@@ -2777,9 +2820,15 @@
       "templateNamePlaceholder": "e.g. Annual dues reminder…",
       "recipientsOfType": "{count, plural, one {# member} other {# members}} of type “{type}”",
       "recipientsActive": "{count, plural, one {# active member} other {# active members}}",
+      "externalOnlyCount": "{count, plural, one {# external email} other {# external emails}}",
+      "recipientsWithExternal": "{members} + {count, plural, one {# external email} other {# external emails}}",
       "toasts": {
         "selectType": "Select a member type",
-        "selectMember": "Select at least one member",
+        "selectMember": "Select at least one member or add an external email",
+        "invalidExternalEmail": "Invalid email address",
+        "pasteInvalidSkipped": "{count, plural, one {# pasted address isn't valid and was skipped} other {# pasted addresses aren't valid and were skipped}}",
+        "externalEmailLimitReached": "Limit of {max} external emails reached",
+        "duplicateExternalSkipped": "{count, plural, one {# external email was already among the selected recipients and was skipped} other {# external emails were already among the selected recipients and were skipped}}",
         "subjectRequired": "Enter a subject for the message",
         "bodyRequired": "Write the message content",
         "noRecipientWithEmail": "No recipient with an email address in this selection",
@@ -2929,6 +2978,14 @@
       "detailsPresent": "Present",
       "detailsQuantityLabel": "Qty: {qty}",
       "automationSkippedNoContact": "{skipped} / {total, plural, one {# birthday} other {# birthdays}} today skipped — member with no reachable email or phone.",
+      "bulkSend": {
+        "modeAll": "all members",
+        "modeType": "by type",
+        "modeManual": "manual selection",
+        "summary": "{sent, plural, one {# sent} other {# sent}}",
+        "failedSuffix": "{failed, plural, one {# failed} other {# failed}}",
+        "externalEmails": "External emails: {emails}"
+      },
       "actions": {
         "membreCreated": "Member added",
         "membreUpdated": "Member updated",
@@ -3148,6 +3205,7 @@
       "title": "Surveys",
       "subtitle": "Questionnaires to complete for your association.",
       "noSurveys": "No active survey at the moment.",
+      "loadError": "Unable to load surveys. Please try again later.",
       "answered": "Answered",
       "toComplete": "To complete",
       "anonymous": "Anonymous",
@@ -3272,7 +3330,8 @@
       "status": {
         "enAttente": "Pending",
         "paye": "Paid",
-        "exonere": "Exempt"
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid"
       },
       "currentYearTitle": "{year} dues — Current year",
       "paidOn": "Paid on {date}",
@@ -3287,7 +3346,10 @@
         "paymentDone": "Payment successful!",
         "paymentCancelled": "Payment cancelled.",
         "paymentError": "Error during payment"
-      }
+      },
+      "remaining": "{amount} remaining",
+      "otherPaymentMethodsNotice": "You can also pay this due another way (check, cash, bank transfer) directly with your association — the payment will be recorded by a manager.",
+      "offlinePaymentNotice": "Contact your association to pay this due (check, cash, bank transfer) — the payment will be recorded by a manager."
     },
     "communications": {
       "title": "My communications",

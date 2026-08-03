@@ -1334,7 +1334,8 @@
         "created": "Enquete criada",
         "titleRequired": "O título é obrigatório",
         "atLeastOneQuestion": "Adicione pelo menos uma pergunta",
-        "atLeastOneMember": "Selecione pelo menos um membro"
+        "atLeastOneMember": "Selecione pelo menos um membro",
+        "deadlinePast": "O prazo não pode ser no passado"
       }
     }
   },
@@ -2398,7 +2399,10 @@
       "amount": "Valor",
       "paidAt": "Data de pagamento",
       "note": "Observação",
-      "notePlaceholder": "Informações adicionais…"
+      "notePlaceholder": "Informações adicionais…",
+      "dueDate": "Data de vencimento",
+      "paymentMethod": "Método de pagamento",
+      "statusLockedHint": "Para alterar este status, remova primeiro os pagamentos registrados no histórico de pagamentos."
     },
     "view": {
       "title": "Mensalidades",
@@ -2411,17 +2415,23 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# mensalidade} other {# mensalidades}}",
       "totalCollected": " · {amount} arrecadado",
+      "exercise": "Exercício {year}",
       "columns": {
         "member": "Membro",
-        "year": "Ano",
         "amount": "Valor",
+        "remaining": "Restante",
         "status": "Status",
-        "paidAt": "Pago em"
+        "paidAt": "Pago em",
+        "dueDate": "Vencimento",
+        "paymentMethod": "Método de pagamento",
+        "lastReminder": "Último lembrete"
       },
       "actions": {
         "edit": "Editar",
         "declaration": "Recibo",
-        "delete": "Excluir"
+        "delete": "Excluir",
+        "recordPayment": "Registrar pagamento",
+        "paymentHistory": "Histórico de pagamentos"
       },
       "searchPlaceholder": "Pesquisar um membro…",
       "allStatuses": "Todos os status",
@@ -2429,7 +2439,8 @@
       "statusFilter": {
         "enAttente": "Pendente",
         "payees": "Pagas",
-        "exonerees": "Isentas"
+        "exonerees": "Isentas",
+        "partiellementPayees": "Parcialmente pagas"
       },
       "noResultsFor": "Nenhum resultado para \"{search}\"",
       "noCotisation": "Nenhuma mensalidade registrada",
@@ -2440,9 +2451,11 @@
       "toasts": {
         "created": "Mensalidade registrada",
         "updated": "Mensalidade atualizada",
-        "deleted": "Mensalidade excluída"
+        "deleted": "Mensalidade excluída",
+        "confirm": "Confirmar"
       },
-      "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas."
+      "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas.",
+      "remaining": "Restam {amount}"
     },
     "reminderModal": {
       "title": "Enviar um lembrete de cotização",
@@ -2454,7 +2467,7 @@
       "removeRecipient": "Remover este destinatário",
       "subjectLabel": "Assunto",
       "bodyLabel": "Mensagem",
-      "variablesNotice": "A mensagem é personalizada para cada destinatário — {{prenom}}, {{montant_cotisation}} e {{annee_cotisation}} são preenchidos automaticamente no envio.",
+      "variablesNotice": "A mensagem é personalizada para cada destinatário — '{{prenom}}', '{{montant_cotisation}}' e '{{annee_cotisation}}' são preenchidos automaticamente no envio.",
       "sendNow": "Enviar ({count})",
       "resultTitle": "Lembretes enviados",
       "sent": "Enviados",
@@ -2471,6 +2484,26 @@
       "confirmDescription": "Você está prestes a enviar um lembrete por {channel} para {count, plural, one {# destinatário} other {# destinatários}}. Essa ação não pode ser desfeita.",
       "andOthers": " e mais {count}",
       "skippedInvalid": "{count, plural, one {# cotização não estava mais pendente no momento do envio (já paga ou excluída) e foi ignorada} other {# cotizações não estavam mais pendentes no momento do envio (já pagas ou excluídas) e foram ignoradas}}"
+    },
+    "payment": {
+      "title": "Registrar pagamento",
+      "amount": "Valor",
+      "remainingBalance": "Saldo restante: {amount}",
+      "method": "Método de pagamento",
+      "date": "Data do pagamento",
+      "note": "Observação",
+      "notePlaceholder": "Referência, observação…",
+      "historyTitle": "Histórico de pagamentos",
+      "noPayments": "Nenhum pagamento registrado",
+      "deleteConfirmTitle": "Excluir este pagamento?",
+      "deleteConfirmDescription": "O pagamento de {amount} será removido e o saldo da cotização recalculado.",
+      "deleteTooltip": "Excluir este pagamento",
+      "toasts": {
+        "amountMustBePositive": "O valor deve ser maior que 0",
+        "amountExceedsBalance": "O valor excede o saldo restante ({amount})",
+        "recorded": "Pagamento registrado",
+        "deleted": "Pagamento excluído"
+      }
     }
   },
   "membres": {
@@ -2647,12 +2680,14 @@
         "reunions": "Reuniões",
         "materiel": "Material",
         "historique": "Histórico",
-        "emails": "Emails"
+        "emails": "Emails",
+        "sms": "SMS"
       },
       "cotisationStatus": {
         "enAttente": "Pendente",
         "paye": "Paga",
-        "exonere": "Isenta"
+        "exonere": "Isenta",
+        "partiellementPayee": "Parcialmente paga"
       },
       "loanStatus": {
         "demande": "Solicitação pendente",
@@ -2752,7 +2787,15 @@
       "noMemberFound": "Nenhum membro encontrado",
       "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
       "noMemberSelected": "Nenhum membro selecionado",
+      "externalEmailsLabel": "Emails externos",
+      "externalEmailsPlaceholder": "email@exemplo.com",
+      "externalEmailsHint": "Combine com os membros acima, ou use « Seleção manual » sem marcar ninguém para enviar só para estes emails.",
+      "externalMemberConflictChipTitle": "Já é membro: {name}",
+      "externalMemberConflictWarning": "Já são de membros cadastrados: {list} — o envio não ficará no histórico deles nem terá o nome preenchido. Considere selecioná-los na lista em vez de digitar.",
+      "unresolvedVarsWarning": "Estas variáveis não serão substituídas neste envio (aparecerão como texto): {vars}",
+      "unknownVarsWarning": "Estas variáveis não existem e nunca serão substituídas — verifique se não é erro de digitação: {vars}",
       "templateSectionLabel": "Modelo",
+      "templateContextWarning": "Este modelo usa variáveis de mensalidade/evento que não serão preenchidas num envio manual.",
       "deselectTemplate": "Desmarcar",
       "noTemplateCreated": "Nenhum modelo criado.",
       "createTemplateLink": "Criar um modelo",
@@ -2777,9 +2820,15 @@
       "templateNamePlaceholder": "ex. Lembrete de mensalidade anual…",
       "recipientsOfType": "{count, plural, one {# membro} other {# membros}} do tipo « {type} »",
       "recipientsActive": "{count, plural, one {# membro ativo} other {# membros ativos}}",
+      "externalOnlyCount": "{count, plural, one {# email externo} other {# emails externos}}",
+      "recipientsWithExternal": "{members} + {count, plural, one {# email externo} other {# emails externos}}",
       "toasts": {
         "selectType": "Selecione um tipo de membro",
-        "selectMember": "Selecione pelo menos um membro",
+        "selectMember": "Selecione ao menos um membro ou adicione um email externo",
+        "invalidExternalEmail": "Endereço de email inválido",
+        "pasteInvalidSkipped": "{count, plural, one {# endereço colado não é válido e foi ignorado} other {# endereços colados não são válidos e foram ignorados}}",
+        "externalEmailLimitReached": "Limite de {max} emails externos atingido",
+        "duplicateExternalSkipped": "{count, plural, one {# email externo já estava entre os destinatários selecionados e foi ignorado} other {# emails externos já estavam entre os destinatários selecionados e foram ignorados}}",
         "subjectRequired": "Informe o assunto da mensagem",
         "bodyRequired": "Redija o conteúdo da mensagem",
         "noRecipientWithEmail": "Nenhum destinatário com endereço de email nesta seleção",
@@ -2929,6 +2978,14 @@
       "detailsPresent": "Presente",
       "detailsQuantityLabel": "Qtd.: {qty}",
       "automationSkippedNoContact": "{skipped} / {total, plural, one {# aniversário} other {# aniversários}} de hoje {skipped, plural, one {ignorado} other {ignorados}} — membro sem email/telefone disponível.",
+      "bulkSend": {
+        "modeAll": "todos os membros",
+        "modeType": "por tipo",
+        "modeManual": "seleção manual",
+        "summary": "{sent, plural, one {# enviado} other {# enviados}}",
+        "failedSuffix": "{failed, plural, one {# falhou} other {# falharam}}",
+        "externalEmails": "Emails externos: {emails}"
+      },
       "actions": {
         "membreCreated": "Membro adicionado",
         "membreUpdated": "Membro atualizado",
@@ -3148,6 +3205,7 @@
       "title": "Enquetes",
       "subtitle": "Questionários a preencher da sua associação.",
       "noSurveys": "Nenhuma enquete ativa no momento.",
+      "loadError": "Não foi possível carregar as enquetes. Tente novamente mais tarde.",
       "answered": "Respondido",
       "toComplete": "A preencher",
       "anonymous": "Anônimo",
@@ -3272,7 +3330,8 @@
       "status": {
         "enAttente": "Pendente",
         "paye": "Pago",
-        "exonere": "Isento"
+        "exonere": "Isento",
+        "partiellementPayee": "Parcialmente paga"
       },
       "currentYearTitle": "Mensalidade {year} — Ano atual",
       "paidOn": "Pago em {date}",
@@ -3287,7 +3346,10 @@
         "paymentDone": "Pagamento realizado!",
         "paymentCancelled": "Pagamento cancelado.",
         "paymentError": "Erro ao processar o pagamento"
-      }
+      },
+      "remaining": "Restam {amount}",
+      "otherPaymentMethodsNotice": "Você também pode pagar essa cotisation de outra forma (cheque, dinheiro, transferência) diretamente com a associação — o pagamento será registrado por um gestor.",
+      "offlinePaymentNotice": "Entre em contato com a associação para pagar essa cotisation (cheque, dinheiro, transferência) — o pagamento será registrado por um gestor."
     },
     "communications": {
       "title": "Minhas comunicações",

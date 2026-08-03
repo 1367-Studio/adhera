@@ -26,6 +26,7 @@ enum MembreStatus {
 
 enum CotisationStatus {
   EN_ATTENTE
+  PARTIELLEMENT_PAYEE
   PAYE
   EXONERE
 }
@@ -365,25 +366,26 @@ model Association {
   factures            Facture[]
   facturesRecues      FactureRecue[]
   emailMessages       EmailMessage[]
+  smsMessages         SmsMessage[]
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String
-  name          String?
-  passwordHash  String
-  role          UserRole  @default(MEMBRE)
-  active        Boolean   @default(true)
-  locale        String    @default("fr")
+  id              String    @id @default(cuid())
+  email           String
+  name            String?
+  passwordHash    String
+  role            UserRole  @default(MEMBRE)
+  active          Boolean   @default(true)
+  locale          String    @default("fr")
   // Ordered array of DashboardWidgetId strings (see src/lib/dashboard-widgets.ts) —
   // null means "never customized", resolved to the default order in app code via
   // parseDashboardLayout(), same shape as Association.modules falling back to
   // DEFAULT_MODULES via parseModules().
   dashboardLayout Json?
-  associationId String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  associationId   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   // Set once, at signup, when the account is created via /register (see
   // src/lib/consent.ts and src/app/api/register/route.ts) — null for accounts created
@@ -419,33 +421,33 @@ model MembreType {
 }
 
 model Membre {
-  id            String       @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String?
-  phone         String?
-  birthDate     DateTime?
-  address       String?
-  civilite      Civilite?
-  groupeSanguin GroupeSanguin?
-  sexe          Sexe?
-  allergies     String?
-  photoUrl      String?
-  possedeTshirt Boolean?
-  tailleTshirt  TailleTshirt?
-  status        MembreStatus @default(ACTIF)
+  id               String         @id @default(cuid())
+  firstName        String
+  lastName         String
+  email            String?
+  phone            String?
+  birthDate        DateTime?
+  address          String?
+  civilite         Civilite?
+  groupeSanguin    GroupeSanguin?
+  sexe             Sexe?
+  allergies        String?
+  photoUrl         String?
+  possedeTshirt    Boolean?
+  tailleTshirt     TailleTshirt?
+  status           MembreStatus   @default(ACTIF)
   // Tri-state manual override of "adhérent" status: null = automatic (computed from the
   // current-year Cotisation, see src/lib/membre-adherent.ts), true = force adhérent, false =
   // force bénévole. Defaults to null so a new member is not automatically an adhérent.
   adherentOverride Boolean?
-  typeId        String?
-  responsableId String?
-  associationId String
-  userId        String?      @unique
-  joinedAt      DateTime     @default(now())
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  deletedAt     DateTime?
+  typeId           String?
+  responsableId    String?
+  associationId    String
+  userId           String?        @unique
+  joinedAt         DateTime       @default(now())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
 
   // Set on the public membership-request form (src/components/site/sections/site-
   // membership-section.tsx), which creates a PENDING Membre with no User/password yet —
@@ -473,6 +475,7 @@ model Membre {
   meetingsAsParticipant MeetingParticipant[]
   incomes               Income[]
   emailMessages         EmailMessage[]
+  smsMessages           SmsMessage[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -533,22 +536,41 @@ model Cotisation {
   membreId            String
   associationId       String
   amount              Decimal          @db.Decimal(10, 2)
+  amountPaid          Decimal          @default(0) @db.Decimal(10, 2)
   year                Int
   paidAt              DateTime?
+  dueDate             DateTime?
   status              CotisationStatus @default(EN_ATTENTE)
   note                String?
   stripeSessionId     String?
   declarationNumber   String?
   declarationIssuedAt DateTime?
+  lastReminderSentAt  DateTime?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 
-  membre      Membre      @relation(fields: [membreId], references: [id])
-  association Association @relation(fields: [associationId], references: [id])
+  membre      Membre              @relation(fields: [membreId], references: [id])
+  association Association         @relation(fields: [associationId], references: [id])
+  payments    CotisationPayment[]
 
   @@unique([membreId, year])
-  @@index([associationId, status])
   @@unique([associationId, declarationNumber])
+  @@index([associationId, status])
+}
+
+model CotisationPayment {
+  id           String   @id @default(cuid())
+  cotisationId String
+  amount       Decimal  @db.Decimal(10, 2)
+  method       String
+  paidAt       DateTime @default(now())
+  note         String?
+  createdAt    DateTime @default(now())
+
+  cotisation Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+  income     Income?
+
+  @@index([cotisationId, paidAt])
 }
 
 model Don {
@@ -581,14 +603,14 @@ model Don {
 }
 
 model Notification {
-  id        String             @id @default(cuid())
+  id        String            @id @default(cuid())
   userId    String
   title     String
   body      String?
   link      String?
-  scope     NotificationScope  @default(MEMBRE)
-  read      Boolean            @default(false)
-  createdAt DateTime           @default(now())
+  scope     NotificationScope @default(MEMBRE)
+  read      Boolean           @default(false)
+  createdAt DateTime          @default(now())
 
   user User @relation(fields: [userId], references: [id])
 
@@ -864,6 +886,40 @@ model EmailMessage {
   @@index([source, sourceId])
 }
 
+enum SmsStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  UNDELIVERED
+  FAILED
+}
+
+model SmsMessage {
+  id            String    @id @default(cuid())
+  associationId String
+  membreId      String?
+  twilioSid     String?   @unique
+  to            String
+  body          String    @db.Text
+  // "BULK_MESSAGE" | "AUTOMATION" | "COTISATION_REMINDER" — String not enum, same
+  // convention as EmailMessage.source (new sources shouldn't need a migration).
+  source        String
+  sourceId      String?
+  status        SmsStatus @default(QUEUED)
+  errorMessage  String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failedAt      DateTime?
+  createdAt     DateTime  @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, membreId, createdAt(sort: Desc)])
+  @@index([source, sourceId])
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
@@ -1090,30 +1146,32 @@ model FinanceCategory {
 }
 
 model Income {
-  id                String       @id @default(cuid())
-  associationId     String
-  exerciceId        String?
-  memberId          String?
-  participationId   String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
-  facturePaymentId  String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
-  amount            Decimal      @db.Decimal(10, 2)
-  categoryId        String?
-  paymentMethod     String?
-  date              DateTime
-  description       String?
-  source            IncomeSource @default(MANUAL)
-  status            IncomeStatus @default(PENDING)
-  reference         String?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  id                  String       @id @default(cuid())
+  associationId       String
+  exerciceId          String?
+  memberId            String?
+  participationId     String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
+  facturePaymentId    String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
+  cotisationPaymentId String?      @unique // set when this row was auto-created from a CotisationPayment — see CotisationPayment.income
+  amount              Decimal      @db.Decimal(10, 2)
+  categoryId          String?
+  paymentMethod       String?
+  date                DateTime
+  description         String?
+  source              IncomeSource @default(MANUAL)
+  status              IncomeStatus @default(PENDING)
+  reference           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 
-  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
-  membre          Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  participation   Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
-  facturePayment  FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
-  category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  reconciliations BankReconciliation[]
+  association       Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice          ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  membre            Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  participation     Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  facturePayment    FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
+  cotisationPayment CotisationPayment?   @relation(fields: [cotisationPaymentId], references: [id], onDelete: SetNull)
+  category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations   BankReconciliation[]
 
   @@index([associationId, status])
   @@index([associationId, date])

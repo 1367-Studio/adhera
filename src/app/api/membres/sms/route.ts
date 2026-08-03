@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { sendSmsBatch } from "@/lib/sms"
 import { writeActivityLog } from "@/lib/activity-log"
+import { buildVars, substituteVars } from "@/lib/automation"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -24,6 +25,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const { body, recipientIds, typeId } = parsed.data
 
+  const assoc = await prisma.association.findUnique({
+    where:  { id: ctx.associationId },
+    select: { name: true, slug: true },
+  })
+  if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
   const membres = await prisma.membre.findMany({
     where: {
       associationId: ctx.associationId,
@@ -38,14 +45,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.phone)
-  const jobs = recipients.map(m => ({ to: m.phone!, body }))
+  const jobs = recipients.map(m => {
+    const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: "", association: assoc.name, slug: assoc.slug })
+    return { to: m.phone!, body: substituteVars(body, vars), membreId: m.id }
+  })
   if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
 
-  const results = await sendSmsBatch(jobs, ctx.associationId)
-  const sent    = results.filter(Boolean).length
+  const results = await sendSmsBatch(jobs, ctx.associationId, { source: "BULK_MESSAGE" })
+  const sent    = results.filter(r => r.ok).length
   const failedMembers = recipients
-    .filter((_, i) => !results[i])
-    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
+    .map((m, i) => ({ id: m.id, name: `${m.firstName} ${m.lastName}`, reason: results[i].reason, ok: results[i].ok }))
+    .filter(m => !m.ok)
+    .map(({ id, name, reason }) => ({ id, name, reason }))
   const failed  = failedMembers.length
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"

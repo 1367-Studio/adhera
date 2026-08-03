@@ -1334,7 +1334,8 @@
         "created": "Sondage créé",
         "titleRequired": "Le titre est obligatoire",
         "atLeastOneQuestion": "Ajoutez au moins une question",
-        "atLeastOneMember": "Sélectionnez au moins un membre"
+        "atLeastOneMember": "Sélectionnez au moins un membre",
+        "deadlinePast": "La date limite ne peut pas être dans le passé"
       }
     }
   },
@@ -1492,7 +1493,7 @@
       "record": "Enregistrer",
       "stopRecordingTooltip": "Arrêter l'enregistrement de la réunion",
       "startRecordingTooltip": "Démarrer l'enregistrement (visible par les participants)",
-      "end": "Encerrer",
+      "end": "Clôturer",
       "ending": "Finalisation de la réunion…",
       "recordingBanner": "Cette réunion est enregistrée",
       "recordingBannerTranscribable": " et pourra être transcrite",
@@ -2398,7 +2399,10 @@
       "amount": "Montant",
       "paidAt": "Date de paiement",
       "note": "Note",
-      "notePlaceholder": "Informations supplémentaires…"
+      "notePlaceholder": "Informations supplémentaires…",
+      "dueDate": "Date d'échéance",
+      "paymentMethod": "Moyen de paiement",
+      "statusLockedHint": "Pour modifier ce statut, retirez d'abord les paiements enregistrés depuis l'historique des paiements."
     },
     "view": {
       "title": "Cotisations",
@@ -2411,17 +2415,23 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
       "totalCollected": " · {amount} encaissé",
+      "exercise": "Exercice {year}",
       "columns": {
         "member": "Membre",
-        "year": "Année",
         "amount": "Montant",
+        "remaining": "Reste à payer",
         "status": "Statut",
-        "paidAt": "Payé le"
+        "paidAt": "Payé le",
+        "dueDate": "Échéance",
+        "paymentMethod": "Méthode de paiement",
+        "lastReminder": "Dernière relance"
       },
       "actions": {
         "edit": "Modifier",
         "declaration": "Déclaration",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "recordPayment": "Enregistrer un paiement",
+        "paymentHistory": "Historique des paiements"
       },
       "searchPlaceholder": "Rechercher un membre…",
       "allStatuses": "Tous les statuts",
@@ -2429,7 +2439,8 @@
       "statusFilter": {
         "enAttente": "En attente",
         "payees": "Payées",
-        "exonerees": "Exonérées"
+        "exonerees": "Exonérées",
+        "partiellementPayees": "Partiellement payées"
       },
       "noResultsFor": "Aucun résultat pour « {search} »",
       "noCotisation": "Aucune cotisation enregistrée",
@@ -2440,9 +2451,11 @@
       "toasts": {
         "created": "Cotisation enregistrée",
         "updated": "Cotisation mise à jour",
-        "deleted": "Cotisation supprimée"
+        "deleted": "Cotisation supprimée",
+        "confirm": "Confirmer"
       },
-      "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées."
+      "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées.",
+      "remaining": "Reste {amount}"
     },
     "reminderModal": {
       "title": "Envoyer un rappel de cotisation",
@@ -2454,7 +2467,7 @@
       "removeRecipient": "Retirer ce destinataire",
       "subjectLabel": "Objet",
       "bodyLabel": "Message",
-      "variablesNotice": "Le message est personnalisé pour chaque destinataire — {{prenom}}, {{montant_cotisation}} et {{annee_cotisation}} sont remplacés automatiquement à l'envoi.",
+      "variablesNotice": "Le message est personnalisé pour chaque destinataire — '{{prenom}}', '{{montant_cotisation}}' et '{{annee_cotisation}}' sont remplacés automatiquement à l'envoi.",
       "sendNow": "Envoyer ({count})",
       "resultTitle": "Rappels envoyés",
       "sent": "Envoyés",
@@ -2471,6 +2484,26 @@
       "confirmDescription": "Vous êtes sur le point d'envoyer un rappel par {channel} à {count, plural, one {# destinataire} other {# destinataires}}. Cette action ne peut pas être annulée.",
       "andOthers": " et {count} autre(s)",
       "skippedInvalid": "{count, plural, one {# cotisation n'était plus en attente au moment de l'envoi (déjà payée ou supprimée) et a été ignorée} other {# cotisations n'étaient plus en attente au moment de l'envoi (déjà payées ou supprimées) et ont été ignorées}}"
+    },
+    "payment": {
+      "title": "Enregistrer un paiement",
+      "amount": "Montant",
+      "remainingBalance": "Solde restant dû : {amount}",
+      "method": "Moyen de paiement",
+      "date": "Date du paiement",
+      "note": "Note",
+      "notePlaceholder": "Référence, remarque…",
+      "historyTitle": "Historique des paiements",
+      "noPayments": "Aucun paiement enregistré",
+      "deleteConfirmTitle": "Supprimer ce paiement ?",
+      "deleteConfirmDescription": "Le paiement de {amount} sera retiré et le solde de la cotisation recalculé.",
+      "deleteTooltip": "Supprimer ce paiement",
+      "toasts": {
+        "amountMustBePositive": "Le montant doit être supérieur à 0",
+        "amountExceedsBalance": "Le montant dépasse le solde restant dû ({amount})",
+        "recorded": "Paiement enregistré",
+        "deleted": "Paiement supprimé"
+      }
     }
   },
   "membres": {
@@ -2647,12 +2680,14 @@
         "reunions": "Réunions",
         "materiel": "Matériel",
         "historique": "Historique",
-        "emails": "Emails"
+        "emails": "Emails",
+        "sms": "SMS"
       },
       "cotisationStatus": {
         "enAttente": "En attente",
         "paye": "Payée",
-        "exonere": "Exonérée"
+        "exonere": "Exonérée",
+        "partiellementPayee": "Partiellement payée"
       },
       "loanStatus": {
         "demande": "Demande en attente",
@@ -2752,7 +2787,15 @@
       "noMemberFound": "Aucun membre trouvé",
       "selectedCount": "{count, plural, one {# membre sélectionné} other {# membres sélectionnés}}",
       "noMemberSelected": "Aucun membre sélectionné",
+      "externalEmailsLabel": "Emails externes",
+      "externalEmailsPlaceholder": "email@exemple.com",
+      "externalEmailsHint": "Combinez avec les membres ci-dessus, ou utilisez « Sélection manuelle » sans en cocher aucun pour envoyer uniquement à ces emails.",
+      "externalMemberConflictChipTitle": "Déjà membre : {name}",
+      "externalMemberConflictWarning": "Appartiennent déjà à des membres existants : {list} — cet envoi n'apparaîtra pas dans leur historique et n'aura pas leur nom rempli. Préférez les sélectionner dans la liste plutôt que de les saisir.",
+      "unresolvedVarsWarning": "Ces variables ne seront pas remplacées pour cet envoi (elles apparaîtront telles quelles) : {vars}",
+      "unknownVarsWarning": "Ces variables n'existent pas et ne seront jamais remplacées — vérifiez qu'il ne s'agit pas d'une faute de frappe : {vars}",
       "templateSectionLabel": "Modèle",
+      "templateContextWarning": "Ce modèle utilise des variables de cotisation/événement qui ne seront pas remplies pour un envoi manuel.",
       "deselectTemplate": "Désélectionner",
       "noTemplateCreated": "Aucun modèle créé.",
       "createTemplateLink": "Créer un modèle",
@@ -2777,9 +2820,15 @@
       "templateNamePlaceholder": "ex. Rappel cotisation annuel…",
       "recipientsOfType": "{count, plural, one {# membre} other {# membres}} de type « {type} »",
       "recipientsActive": "{count, plural, one {# membre actif} other {# membres actifs}}",
+      "externalOnlyCount": "{count, plural, one {# email externe} other {# emails externes}}",
+      "recipientsWithExternal": "{members} + {count, plural, one {# email externe} other {# emails externes}}",
       "toasts": {
         "selectType": "Sélectionnez un type de membre",
-        "selectMember": "Sélectionnez au moins un membre",
+        "selectMember": "Sélectionnez au moins un membre ou ajoutez un email externe",
+        "invalidExternalEmail": "Adresse email invalide",
+        "pasteInvalidSkipped": "{count, plural, one {# adresse collée n'est pas valide et a été ignorée} other {# adresses collées ne sont pas valides et ont été ignorées}}",
+        "externalEmailLimitReached": "Limite de {max} emails externes atteinte",
+        "duplicateExternalSkipped": "{count, plural, one {# email externe figurait déjà parmi les destinataires sélectionnés et a été ignoré} other {# emails externes figuraient déjà parmi les destinataires sélectionnés et ont été ignorés}}",
         "subjectRequired": "Renseignez l'objet du message",
         "bodyRequired": "Rédigez le contenu du message",
         "noRecipientWithEmail": "Aucun destinataire avec une adresse email dans cette sélection",
@@ -2929,6 +2978,14 @@
       "detailsPresent": "Présent",
       "detailsQuantityLabel": "Qté : {qty}",
       "automationSkippedNoContact": "{skipped} / {total, plural, one {# anniversaire} other {# anniversaires}} du jour {skipped, plural, one {ignoré} other {ignorés}} — membre sans email/téléphone joignable.",
+      "bulkSend": {
+        "modeAll": "tous les membres",
+        "modeType": "par type",
+        "modeManual": "sélection manuelle",
+        "summary": "{sent, plural, one {# envoyé} other {# envoyés}}",
+        "failedSuffix": "{failed, plural, one {# échec} other {# échecs}}",
+        "externalEmails": "Emails externes : {emails}"
+      },
       "actions": {
         "membreCreated": "Membre ajouté",
         "membreUpdated": "Membre modifié",
@@ -3148,6 +3205,7 @@
       "title": "Sondages",
       "subtitle": "Questionnaires à compléter de votre association.",
       "noSurveys": "Aucun sondage actif pour le moment.",
+      "loadError": "Impossible de charger les sondages. Réessayez plus tard.",
       "answered": "Répondu",
       "toComplete": "À compléter",
       "anonymous": "Anonyme",
@@ -3272,7 +3330,8 @@
       "status": {
         "enAttente": "En attente",
         "paye": "Payé",
-        "exonere": "Exonéré"
+        "exonere": "Exonéré",
+        "partiellementPayee": "Partiellement payée"
       },
       "currentYearTitle": "Cotisation {year} — Année en cours",
       "paidOn": "Payé le {date}",
@@ -3287,7 +3346,10 @@
         "paymentDone": "Paiement effectué !",
         "paymentCancelled": "Paiement annulé.",
         "paymentError": "Erreur lors du paiement"
-      }
+      },
+      "remaining": "Reste {amount}",
+      "otherPaymentMethodsNotice": "Vous pouvez aussi régler cette cotisation par un autre moyen (chèque, espèces, virement) directement auprès de votre association — le paiement sera enregistré par un gestionnaire.",
+      "offlinePaymentNotice": "Contactez votre association pour régler cette cotisation (chèque, espèces, virement) — le paiement sera enregistré par un gestionnaire."
     },
     "communications": {
       "title": "Mes communications",

@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 type Params = { id: string }
 
 export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
-  const now = new Date()
   const sondage = await prisma.sondage.findFirst({
     where: {
       id,
       associationId: ctx.associationId,
       status:        "ACTIF",
-      OR: [{ deadline: null }, { deadline: { gte: now } }],
+      OR: [{ deadline: null }, { deadline: { gte: startOfTodayUTC() } }],
     },
     include: {
       questions: { orderBy: { order: "asc" } },

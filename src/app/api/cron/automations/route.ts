@@ -115,7 +115,10 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
     },
     include: {
       cotisations: {
-        where:   { status: "EN_ATTENTE" },
+        // A partially-paid member still owes something — they should get the same
+        // "due"/"overdue" nudges as someone who hasn't paid anything yet, not go silent
+        // the moment a first installment is recorded.
+        where:   { status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE"] } },
         orderBy: { year: "desc" },
         take:    1,
       },
@@ -163,7 +166,10 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
       association:       rule.association.name,
       slug:              rule.association.slug,
       anneeCotisation:   cotisation?.year,
-      montantCotisation: cotisation ? cotisation.amount.toString() : undefined,
+      // The remaining balance, not the cotisation's sticker amount — those diverge once a
+      // partial payment has been recorded, and the reminder should ask for what's actually
+      // still owed.
+      montantCotisation: cotisation ? (Number(cotisation.amount) - Number(cotisation.amountPaid)).toFixed(2) : undefined,
     })
     return { membreId: membre.id, membre, vars }
   })
@@ -214,8 +220,12 @@ async function processRule(rule: RuleWithRelations, now: Date): Promise<number> 
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
-      const succeeded = chunk.filter((_, idx) => results[idx])
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
           data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId })),
@@ -339,8 +349,12 @@ async function processBirthday(
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
-      const succeeded = chunk.filter((_, idx) => results[idx])
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
           data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId })),
@@ -467,8 +481,12 @@ async function processAdherentLapsed(
 
     for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
       const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-      const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
-      const succeeded = chunk.filter((_, idx) => results[idx])
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
       if (succeeded.length > 0) {
         await prisma.automationLog.createMany({
           data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId })),
@@ -589,8 +607,12 @@ async function processEventReminder(
 
       for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
         const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
-        const results = await sendSmsBatch(chunk.map(j => ({ to: j.to, body: j.body })), rule.associationId)
-        const succeeded = chunk.filter((_, idx) => results[idx])
+        const results = await sendSmsBatch(
+          chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId ?? undefined })),
+          rule.associationId,
+          { source: "AUTOMATION", sourceId: rule.id },
+        )
+        const succeeded = chunk.filter((_, idx) => results[idx].ok)
         if (succeeded.length > 0) {
           await prisma.automationLog.createMany({
             data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, participationId: j.participationId, eventId: event.id })),

@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { startOfTodayUTC } from "@/lib/date-boundaries"
 
 type Params = { id: string }
 
@@ -14,13 +15,12 @@ const schema = z.object({
 })
 
 export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
-  const now = new Date()
   const sondage = await prisma.sondage.findFirst({
     where: {
       id,
       associationId: ctx.associationId,
       status:        "ACTIF",
-      OR: [{ deadline: null }, { deadline: { gte: now } }],
+      OR: [{ deadline: null }, { deadline: { gte: startOfTodayUTC() } }],
     },
     include: { questions: true },
   })

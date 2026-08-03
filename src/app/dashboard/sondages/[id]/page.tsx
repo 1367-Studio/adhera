@@ -23,6 +23,11 @@ import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
 
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 type Sondage = {
   id:           string
   title:        string
@@ -258,6 +263,7 @@ export default function SondageDetailPage() {
     e.preventDefault()
     if (!title.trim()) { toast.error("Le titre est obligatoire"); return }
     if (questions.length === 0) { toast.error("Ajoutez au moins une question"); return }
+    if (deadline && deadline < todayStr()) { toast.error("La date limite ne peut pas être dans le passé"); return }
     if (recipientMode === "SELECTED" && recipientIds.length === 0) {
       toast.error("Sélectionnez au moins un destinataire")
       return
@@ -364,6 +370,7 @@ export default function SondageDetailPage() {
                     <Input
                       id="deadline"
                       type="date"
+                      min={todayStr()}
                       value={deadline}
                       onChange={e => setDeadline(e.target.value)}
                       disabled={!editable}

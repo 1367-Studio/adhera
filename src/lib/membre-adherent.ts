@@ -1,4 +1,4 @@
-export type CotisationStatusForAdherent = "EN_ATTENTE" | "PAYE" | "EXONERE"
+export type CotisationStatusForAdherent = "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
 
 const ADHERENT_STATUSES: readonly CotisationStatusForAdherent[] = ["PAYE", "EXONERE"]
 

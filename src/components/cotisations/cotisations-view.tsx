@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -15,6 +15,8 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { SendReminderModal } from "@/components/cotisations/send-reminder-modal"
+import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
+import { CotisationPaymentsModal } from "@/components/cotisations/cotisation-payments-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
@@ -22,26 +24,36 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import { BASE_PATH } from "@/lib/env";
+import { ApiError } from "@/lib/api-error"
+
+type CotisationPayment = { id: string; amount: string; method: string; paidAt: string; note: string | null }
 
 type Cotisation = {
-  id:     string
-  year:   number
-  amount: string
-  status: "EN_ATTENTE" | "PAYE" | "EXONERE"
-  paidAt: string | null
-  note:   string | null
-  membre: { id: string; firstName: string; lastName: string; email: string | null }
+  id:                 string
+  year:               number
+  amount:             string
+  amountPaid:         string
+  status:             "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EXONERE"
+  paidAt:             string | null
+  dueDate:            string | null
+  lastReminderSentAt: string | null
+  note:               string | null
+  membre:             { id: string; firstName: string; lastName: string; email: string | null }
+  payments:           CotisationPayment[]
 }
 
 type MembreOption = { id: string; firstName: string; lastName: string }
 
 type Translator = ReturnType<typeof useTranslations>
 
+const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
 function getStatusBadge(t: Translator): Record<Cotisation["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
   return {
-    EN_ATTENTE: { label: t("membres.detail.cotisationStatus.enAttente"), variant: "secondary" },
-    PAYE:       { label: t("membres.detail.cotisationStatus.paye"),      variant: "default"   },
-    EXONERE:    { label: t("membres.detail.cotisationStatus.exonere"),   variant: "outline"   },
+    EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          variant: "secondary" },
+    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), variant: "outline"   },
+    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               variant: "default"  },
+    EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            variant: "outline"  },
   }
 }
 
@@ -68,6 +80,8 @@ export function CotisationsView() {
   const [allMatchingSelected, setAllMatchingSelected] = useState(false)
   const [selectingAll, setSelectingAll] = useState(false)
   const [reminderOpen, setReminderOpen] = useState(false)
+  const [paymentTarget, setPaymentTarget] = useState<Cotisation | null>(null)
+  const [paymentsHistoryTarget, setPaymentsHistoryTarget] = useState<Cotisation | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -133,13 +147,19 @@ export function CotisationsView() {
     }
   }
 
-  async function handleDelete() {
+  async function handleDelete(force?: boolean) {
     if (!deleteTarget) return
     try {
-      await deleteMutation.mutateAsync(deleteTarget.id)
+      await deleteMutation.mutateAsync({ id: deleteTarget.id, force })
       toast.success(t("cotisations.view.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
+      if (err instanceof ApiError && err.code === "REQUIRES_CONFIRMATION") {
+        toast.error(err.message, {
+          action: { label: t("cotisations.view.toasts.confirm"), onClick: () => handleDelete(true) },
+        })
+        return
+      }
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
@@ -179,13 +199,14 @@ export function CotisationsView() {
     setAllMatchingSelected(false)
   }
 
-  // Fetches every EN_ATTENTE cotisation matching the current year/search filters (ignoring
-  // the status filter itself — a reminder is only ever sent for EN_ATTENTE rows, so "select
-  // all matching filters" always means that, capped at 500 like GET /api/cotisations already is).
+  // Fetches every EN_ATTENTE/PARTIELLEMENT_PAYEE cotisation matching the current year/search
+  // filters (ignoring the status filter itself — a reminder is only ever sent to members who
+  // still owe something, so "select all matching filters" always means that, capped at 500
+  // like GET /api/cotisations already is).
   async function selectAllMatching() {
     setSelectingAll(true)
     try {
-      const params = new URLSearchParams({ status: "EN_ATTENTE" })
+      const params = new URLSearchParams({ status: "EN_ATTENTE,PARTIELLEMENT_PAYEE" })
       if (yearFilter) params.set("year", String(yearFilter))
       if (search)     params.set("search", search)
       const res = await fetch(`/api/cotisations?${params}`)
@@ -218,6 +239,13 @@ export function CotisationsView() {
   }
 
   const statusBadge = getStatusBadge(t)
+  const statusFilterLabel: Record<string, string> = {
+    all:                 t("cotisations.view.all"),
+    EN_ATTENTE:          t("cotisations.view.statusFilter.enAttente"),
+    PARTIELLEMENT_PAYEE: t("cotisations.view.statusFilter.partiellementPayees"),
+    PAYE:                t("cotisations.view.statusFilter.payees"),
+    EXONERE:    t("cotisations.view.statusFilter.exonerees"),
+  }
 
   const columns: Column<Cotisation>[] = [
     {
@@ -231,27 +259,27 @@ export function CotisationsView() {
       ),
     },
     {
-      key: "year",
-      header: t("cotisations.view.columns.year"),
-      cell: (c) => <span className="font-mono text-sm">{c.year}</span>,
-      className: "w-20",
+      key: "dueDate",
+      header: t("cotisations.view.columns.dueDate"),
+      cell: (c) => c.dueDate
+        ? format(new Date(c.dueDate), "dd/MM/yyyy", { locale: fr })
+        : <span className="text-muted-foreground text-xs">—</span>,
+      hideInCard: true,
     },
     {
       key: "amount",
       header: t("cotisations.view.columns.amount"),
-      cell: (c) => (
-        <span className="font-medium tabular-nums">
-          {parseFloat(c.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-        </span>
-      ),
+      cell: (c) => <span className="font-medium tabular-nums">{fmt(c.amount)}</span>,
       className: "w-28",
     },
     {
-      key: "status",
-      header: t("cotisations.view.columns.status"),
+      key: "remaining",
+      header: t("cotisations.view.columns.remaining"),
       cell: (c) => {
-        const s = statusBadge[c.status]
-        return <Badge variant={s.variant}>{s.label}</Badge>
+        const remaining = Number(c.amount) - Number(c.amountPaid)
+        return remaining > 0 && c.status !== "EXONERE"
+          ? <span className="tabular-nums">{fmt(remaining)}</span>
+          : <span className="text-muted-foreground text-xs">—</span>
       },
       className: "w-28",
     },
@@ -265,12 +293,53 @@ export function CotisationsView() {
       hideInCard: true,
     },
     {
+      key: "status",
+      header: t("cotisations.view.columns.status"),
+      cell: (c) => {
+        const s = statusBadge[c.status]
+        return <Badge variant={s.variant}>{s.label}</Badge>
+      },
+      className: "w-28",
+    },
+    {
+      key: "paymentMethods",
+      header: t("cotisations.view.columns.paymentMethod"),
+      className: "max-w-32",
+      cell: (c) => {
+        const methods = [...new Set(c.payments.map(p => p.method))]
+        const label = methods.join(" + ")
+        return methods.length
+          ? <span className="block truncate text-sm" title={label}>{label}</span>
+          : <span className="text-muted-foreground text-xs">—</span>
+      },
+      hideInCard: true,
+    },
+    {
+      key: "lastReminderSentAt",
+      header: t("cotisations.view.columns.lastReminder"),
+      cell: (c) => c.lastReminderSentAt
+        ? format(new Date(c.lastReminderSentAt), "dd/MM/yyyy", { locale: fr })
+        : <span className="text-muted-foreground text-xs">—</span>,
+      className: "w-28",
+      hideInCard: true,
+    },
+    {
       key: "actions",
       header: "",
       className: "w-10",
       cell: (c) => {
         const actions = [
-          { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c) },
+          ...(c.status !== "EXONERE" && Number(c.amountPaid) < Number(c.amount) ? [{
+            label:   t("cotisations.view.actions.recordPayment"),
+            icon:    <MoneyIcon className="size-3.5" />,
+            onClick: () => setPaymentTarget(c),
+          }] : []),
+          ...(c.payments.length > 0 ? [{
+            label:   t("cotisations.view.actions.paymentHistory"),
+            icon:    <ClockCounterClockwiseIcon className="size-3.5" />,
+            onClick: () => setPaymentsHistoryTarget(c),
+          }] : []),
+          { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c), separator: true },
           ...(c.status === "PAYE" ? [{
             label:   t("cotisations.view.actions.declaration"),
             icon:    <DownloadSimpleIcon className="size-3.5" />,
@@ -345,12 +414,12 @@ export function CotisationsView() {
           value={String(yearFilter)}
           onValueChange={v => { if (v !== null) { setYearFilter(parseInt(v)); setPage(1) } }}
         >
-          <SelectTrigger className="w-28">
-            <SelectValue />
+          <SelectTrigger className="w-36">
+            <SelectValue>{t("cotisations.view.exercise", { year: yearFilter })}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {yearOptions.map(y => (
-              <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+              <SelectItem key={y} value={String(y)}>{t("cotisations.view.exercise", { year: y })}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -361,11 +430,18 @@ export function CotisationsView() {
           onValueChange={v => { setStatusFilter(v === "all" || v === null ? "" : v); setPage(1) }}
         >
           <SelectTrigger className="w-36">
-            <SelectValue placeholder={t("cotisations.view.allStatuses")} />
+            {/* base-ui's SelectValue only auto-resolves a label when Select.Root is given an
+                `items` prop — without it, it falls back to the raw value ("EN_ATTENTE" etc).
+                Passing explicit children here is the documented workaround (see the
+                valueMode Select in import-wizard.tsx for the same pattern). */}
+            <SelectValue placeholder={t("cotisations.view.allStatuses")}>
+              {statusFilterLabel[statusFilter || "all"]}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("cotisations.view.all")}</SelectItem>
             <SelectItem value="EN_ATTENTE">{t("cotisations.view.statusFilter.enAttente")}</SelectItem>
+            <SelectItem value="PARTIELLEMENT_PAYEE">{t("cotisations.view.statusFilter.partiellementPayees")}</SelectItem>
             <SelectItem value="PAYE">{t("cotisations.view.statusFilter.payees")}</SelectItem>
             <SelectItem value="EXONERE">{t("cotisations.view.statusFilter.exonerees")}</SelectItem>
           </SelectContent>
@@ -408,7 +484,7 @@ export function CotisationsView() {
           selectedIds:  new Set(selected.keys()),
           onToggle:     toggleOne,
           onToggleAll:  toggleAllOnPage,
-          isSelectable: (c) => c.status === "EN_ATTENTE",
+          isSelectable: (c) => c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE",
         }}
         pagination={result ? {
           page:         result.page,
@@ -425,6 +501,24 @@ export function CotisationsView() {
         cotisations={Array.from(selected.values())}
         onSent={() => { setReminderOpen(false); clearSelection() }}
       />
+
+      {paymentTarget && (
+        <CotisationPaymentModal
+          cotisationId={paymentTarget.id}
+          remaining={Number(paymentTarget.amount) - Number(paymentTarget.amountPaid)}
+          open={!!paymentTarget}
+          onOpenChange={(open) => !open && setPaymentTarget(null)}
+        />
+      )}
+
+      {paymentsHistoryTarget && (
+        <CotisationPaymentsModal
+          cotisationId={paymentsHistoryTarget.id}
+          payments={paymentsHistoryTarget.payments}
+          open={!!paymentsHistoryTarget}
+          onOpenChange={(open) => !open && setPaymentsHistoryTarget(null)}
+        />
+      )}
 
       {/* Create */}
       <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("cotisations.view.addTitle")} size="lg" dismissable={false}>
@@ -448,12 +542,14 @@ export function CotisationsView() {
         <CotisationForm
           membres={membres}
           editMode
+          amountPaid={editTarget ? Number(editTarget.amountPaid) : 0}
           defaultValues={editTarget ? {
             membreId: editTarget.membre.id,
             year:     editTarget.year,
             amount:   parseFloat(editTarget.amount),
             status:   editTarget.status,
             paidAt:   editTarget.paidAt ? editTarget.paidAt.split("T")[0] : "",
+            dueDate:  editTarget.dueDate ? editTarget.dueDate.split("T")[0] : "",
             note:     editTarget.note ?? "",
           } : undefined}
           onSubmit={handleUpdate}

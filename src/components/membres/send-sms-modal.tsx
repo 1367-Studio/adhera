@@ -260,17 +260,19 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
 
+      const names: string[] = (data.failedMembers ?? []).map((m: { name: string; reason?: string }) =>
+        m.reason ? `${m.name} (${m.reason})` : m.name)
+      const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? t("membres.sms.toasts.andOthers", { count: names.length - 5 }) : "")
+
       if (data.sent === 0) {
         toast.error(data.failed > 0
-          ? t("membres.sms.toasts.noSmsSentWithFailures", { count: data.failed })
+          ? t("membres.sms.toasts.noSmsSentWithFailures", { count: data.failed }) + (preview ? ` : ${preview}` : "")
           : t("membres.sms.toasts.noSmsSent"))
         return
       }
 
       toast.success(t("membres.sms.toasts.smsSent", { count: data.sent }))
       if (data.failed > 0) {
-        const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
-        const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? t("membres.sms.toasts.andOthers", { count: names.length - 5 }) : "")
         toast.warning(
           t("membres.sms.toasts.sendFailures", { count: data.failed, preview: preview ? ` : ${preview}` : "" }),
         )
