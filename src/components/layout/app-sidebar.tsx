@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
+import { useQueryClient } from "@tanstack/react-query"
+import { useSupportTickets } from "@/hooks/use-support-tickets"
+import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-listener"
 import {
   SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
   EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
   ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
-  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon,
+  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -61,6 +64,9 @@ const navigationItems: NavItem[] = [
   { key: "reunions",      href: "/dashboard/reunions",     icon: VideoCameraIcon,   roles: MANAGERS, moduleKey: "reunions",   categoryKey: "communication" },
   { key: "sondages",      href: "/dashboard/sondages",     icon: ClipboardTextIcon, roles: MANAGERS, moduleKey: "sondages",   categoryKey: "communication" },
   { key: "actualites",    href: "/dashboard/actualites",   icon: NewspaperIcon,     roles: MANAGERS, moduleKey: "actualites", categoryKey: "communication" },
+  // No moduleKey — support isn't a toggleable module, every subscriber gets a channel to
+  // reach the platform team. ADMIN-only per the client's own scoping of this feature.
+  { key: "suporte",       href: "/dashboard/suporte",      icon: LifebuoyIcon,      roles: ["ADMIN"] as UserRole[], categoryKey: "communication" },
 
   { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon,      roles: FINANCE, moduleKey: "finances",     categoryKey: "finances" },
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
@@ -98,8 +104,18 @@ export function AppSidebar() {
   const branding  = useBranding()
   const pathname  = usePathname()
   const { isMobile, setOpenMobile, setOpen, state } = useSidebar()
+  const qc = useQueryClient()
 
   const userRole = role as UserRole
+
+  // Gated to ADMIN — the API itself is ADMIN-only (see /api/support-tickets), so firing this
+  // for any other role would just be a wasted request that always 403s. Mirrors the same
+  // unread-badge treatment already on the backoffice sidebar (src/components/backoffice/
+  // backoffice-sidebar.tsx) — an association admin deserves the same at-a-glance cue that a
+  // staff reply is waiting, not just the generic notification bell.
+  const { data: supportTickets = [] } = useSupportTickets({ enabled: userRole === "ADMIN" })
+  const supportUnreadCount = supportTickets.filter(ticket => ticket.unread).length
+  useSupportTicketMessageListener(() => { qc.invalidateQueries({ queryKey: ["support-tickets"] }) })
   const visible  = navigationItems.filter(item => {
     if (!item.roles.includes(userRole)) return false
     if (item.moduleKey && !modules[item.moduleKey]) return false
@@ -283,6 +299,11 @@ export function AppSidebar() {
                               <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
                                 <item.icon />
                                 {t(item.key)}
+                                {item.key === "suporte" && supportUnreadCount > 0 && (
+                                  <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                                    {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
+                                  </span>
+                                )}
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
@@ -296,7 +317,12 @@ export function AppSidebar() {
                           >
                             <cat.icon />
                             <span>{t(`categories.${cat.key}`)}</span>
-                            <CaretRightIcon className={cn("ml-auto size-3.5 transition-transform", isOpen && "rotate-90")} />
+                            <span className="ml-auto flex items-center gap-1.5">
+                              {cat.key === "communication" && supportUnreadCount > 0 && !isOpen && (
+                                <span className="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden />
+                              )}
+                              <CaretRightIcon className={cn("size-3.5 transition-transform", isOpen && "rotate-90")} />
+                            </span>
                           </SidebarMenuButton>
                           {isOpen && (
                             <SidebarMenuSub>
@@ -309,6 +335,11 @@ export function AppSidebar() {
                                   >
                                     <item.icon />
                                     <span>{t(item.key)}</span>
+                                    {item.key === "suporte" && supportUnreadCount > 0 && (
+                                      <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                                        {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
+                                      </span>
+                                    )}
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
                               ))}

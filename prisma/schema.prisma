@@ -159,6 +159,11 @@ enum NotificationScope {
   GESTION
 }
 
+enum SupportTicketStatus {
+  OUVERT
+  FERME
+}
+
 enum ExerciceStatus {
   OUVERT
   CLOTURE
@@ -369,6 +374,7 @@ model Association {
   facturesRecues      FactureRecue[]
   emailMessages       EmailMessage[]
   smsMessages         SmsMessage[]
+  supportTickets      SupportTicket[]
 }
 
 model User {
@@ -398,10 +404,12 @@ model User {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association         Association?         @relation(fields: [associationId], references: [id])
-  notifications       Notification[]
-  membre              Membre?
-  passwordResetTokens PasswordResetToken[]
+  association           Association?           @relation(fields: [associationId], references: [id])
+  notifications         Notification[]
+  membre                Membre?
+  passwordResetTokens   PasswordResetToken[]
+  supportTickets        SupportTicket[]
+  supportTicketMessages SupportTicketMessage[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -631,6 +639,48 @@ model Notification {
 
   @@index([userId, read])
   @@index([userId, scope, read])
+}
+
+// Two-way support channel between an association's own ADMIN and the platform's SUPER_ADMIN
+// team — see src/lib/support-tickets.ts. `readByStaffAt`/`readByAssociationAt` are single
+// shared timestamps rather than a per-user read table: only one ADMIN can ever write from
+// the association side (see SupportTicketMessage.authorId), and every SUPER_ADMIN shares one
+// "has staff looked at this" state, so there's no real many-to-many read state to track.
+model SupportTicket {
+  id                    String              @id @default(cuid())
+  associationId         String
+  authorId              String
+  subject               String
+  status                SupportTicketStatus @default(OUVERT)
+  // Denormalized off the latest SupportTicketMessage so the inbox can sort/filter without a
+  // join, and so unread state is a plain timestamp comparison — see deriveTicketUnread in
+  // src/lib/support-tickets.ts.
+  lastMessageAt         DateTime            @default(now())
+  lastMessageAuthorRole UserRole
+  readByStaffAt         DateTime?
+  readByAssociationAt   DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  author      User                   @relation(fields: [authorId], references: [id])
+  messages    SupportTicketMessage[]
+
+  @@index([associationId, status])
+  @@index([status, lastMessageAt])
+}
+
+model SupportTicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId, createdAt])
 }
 
 model Actualite {
