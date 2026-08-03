@@ -32,6 +32,20 @@ function installmentsUnchanged(
   })
 }
 
+// Fetches a single cotisation with full detail — used e.g. when the "create" flow discovers a
+// cancelled cotisation already occupies the (membre, year) slot (see POST /api/cotisations'
+// CANCELLED_EXISTS case) and needs to load it into the edit form instead of failing silently.
+export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
+  const { associationId } = ctx
+
+  const cotisation = await prisma.cotisation.findFirst({
+    where:   { id, associationId, membre: { deletedAt: null } },
+    include: cotisationInclude,
+  })
+  if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
+  return NextResponse.json(cotisation)
+}, { roles: MANAGERS, module: "cotisations" })
+
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 

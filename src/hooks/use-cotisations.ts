@@ -23,7 +23,9 @@ async function createCotisation(data: CotisationInput) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la création"))
+  // ApiError (not a plain Error) — the CANCELLED_EXISTS case needs its `code` and the
+  // existing cotisation's id (in `details`) to offer "edit it instead" in the UI.
+  if (!res.ok) throw await apiError(res, "Erreur lors de la création")
   return res.json()
 }
 

@@ -2473,7 +2473,8 @@
         "created": "Cuota registrada",
         "updated": "Cuota actualizada",
         "deleted": "Cuota eliminada",
-        "confirm": "Confirmar"
+        "confirm": "Confirmar",
+        "editCancelled": "Editar la cuota cancelada"
       },
       "selectAllTruncated": "Hay más de 500 cuotas que coinciden con los filtros — solo se seleccionaron las primeras 500.",
       "remaining": "Quedan {amount}"
@@ -2747,10 +2748,12 @@
       "returnedOn": " · Devuelto el {date}",
       "showingRecentLoans": "Mostrando los {count} préstamos más recientes de {total} en total.",
       "addCotisationTitle": "Añadir una cuota",
+      "editCotisationTitle": "Editar la cuota",
       "deleteConfirmWithDependants": "Este miembro será archivado y ya no podrá acceder a la asociación. También será retirado como responsable legal de {count} miembro(s): {names}.",
       "toasts": {
         "accessCreated": "Acceso creado — se envió un correo",
-        "cotisationAdded": "Cuota añadida"
+        "cotisationAdded": "Cuota añadida",
+        "cotisationUpdated": "Cuota actualizada"
       }
     },
     "sms": {

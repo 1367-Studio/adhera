@@ -136,12 +136,35 @@ export function CotisationsView() {
   const updateMutation = useUpdateCotisation(editTarget?.id ?? "")
   const deleteMutation = useDeleteCotisation()
 
+  // A cotisation exists per (membre, year) forever, regardless of status — cancelling one
+  // doesn't free its year (see POST /api/cotisations). Rather than just reporting "already
+  // exists," offer to open that cancelled cotisation for editing instead of leaving the admin
+  // stuck. It's not necessarily in the currently-loaded/filtered list, so fetched directly.
+  async function openCancelledForEdit(cotisationId: string) {
+    try {
+      const res = await fetch(`/api/cotisations/${cotisationId}`)
+      if (!res.ok) { toast.error(t("common.error")); return }
+      const cotisation = await res.json() as Cotisation
+      setCreateOpen(false)
+      setEditTarget(cotisation)
+    } catch {
+      toast.error(t("common.networkError"))
+    }
+  }
+
   async function handleCreate(data: CotisationInput) {
     try {
       await createMutation.mutateAsync(data)
       toast.success(t("cotisations.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
+      if (err instanceof ApiError && err.code === "CANCELLED_EXISTS" && typeof err.details?.cotisationId === "string") {
+        const cotisationId = err.details.cotisationId
+        toast.error(err.message, {
+          action: { label: t("cotisations.view.toasts.editCancelled"), onClick: () => openCancelledForEdit(cotisationId) },
+        })
+        return
+      }
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }

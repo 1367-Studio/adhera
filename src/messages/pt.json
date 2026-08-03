@@ -2473,7 +2473,8 @@
         "created": "Mensalidade registrada",
         "updated": "Mensalidade atualizada",
         "deleted": "Mensalidade excluída",
-        "confirm": "Confirmar"
+        "confirm": "Confirmar",
+        "editCancelled": "Editar a cotização cancelada"
       },
       "selectAllTruncated": "Mais de 500 cotizações correspondem aos filtros — apenas as primeiras 500 foram selecionadas.",
       "remaining": "Restam {amount}"
@@ -2747,10 +2748,12 @@
       "returnedOn": " · Devolvido em {date}",
       "showingRecentLoans": "Exibindo os {count} empréstimos mais recentes de {total} no total.",
       "addCotisationTitle": "Adicionar mensalidade",
+      "editCotisationTitle": "Editar cotização",
       "deleteConfirmWithDependants": "Este membro será arquivado e não poderá mais acessar a associação. Também será removido como responsável legal de {count} membro(s): {names}.",
       "toasts": {
         "accessCreated": "Acesso criado — um email foi enviado",
-        "cotisationAdded": "Mensalidade adicionada"
+        "cotisationAdded": "Mensalidade adicionada",
+        "cotisationUpdated": "Cotização atualizada"
       }
     },
     "sms": {

@@ -66,12 +66,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
+  // One row per (membre, year) — unconditional at the DB level (@@unique in schema.prisma),
+  // regardless of status. A cancelled cotisation still occupies its year, so this check (and
+  // the client-side handling of it) must account for that instead of just reporting "already
+  // exists": the fix is to edit that existing row back to life, not to create a second one.
   const existing = await prisma.cotisation.findUnique({
     where: { membreId_year: { membreId: parsed.data.membreId, year: parsed.data.year } },
   })
   if (existing) {
     return NextResponse.json(
-      { error: `Une cotisation pour ${parsed.data.year} existe déjà pour ce membre.` },
+      existing.status === "ANNULEE"
+        ? { error: `Une cotisation ${parsed.data.year} annulée existe déjà pour ce membre — modifiez-la plutôt que d'en créer une nouvelle.`, code: "CANCELLED_EXISTS", cotisationId: existing.id }
+        : { error: `Une cotisation pour ${parsed.data.year} existe déjà pour ce membre.` },
       { status: 409 },
     )
   }
