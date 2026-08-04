@@ -28,6 +28,15 @@ type MeetingParticipant = {
   membre: { id: string; firstName: string; lastName: string; status: "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU" | null }
 }
 
+type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
+}
+
 type Meeting = {
   id:           string
   title:        string
@@ -38,10 +47,9 @@ type Meeting = {
   endedAt:      string | null
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
 }
 
 type Translator = ReturnType<typeof useTranslations>
@@ -359,7 +367,7 @@ export default function ReunionDetailPage() {
   const transcriptDirty  = transcript !== (meeting.transcript ?? "")
   const canJoin          = (meeting.status === "SCHEDULED" || meeting.status === "LIVE") && modules.reunions
   const isTranscribing   = transcribeRecording.isPending || transcribeUpload.isPending
-  const hasRecording     = !!meeting.recordingKey && meeting.status === "ENDED"
+  const hasRecording     = meeting.recordings.length > 0 && meeting.status === "ENDED"
   const canTranscribe    = modules.reunions
   const canSummarize     = modules.reunions
 
@@ -502,12 +510,13 @@ export default function ReunionDetailPage() {
                 {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
               </span>
             </span>
-            {meeting.egressId && (
+            {meeting.recordings.some(r => !r.endedAt) && (
               <span className="flex items-center gap-1.5 text-red-500">
                 <CircleIcon className="size-2 fill-current animate-pulse" />
                 {t("reunions.detail.recordingInProgress")}
               </span>
             )}
+
             {hasRecording && (
               <span className="flex items-center gap-1.5 text-green-600">
                 <CircleIcon className="size-2 fill-current" />

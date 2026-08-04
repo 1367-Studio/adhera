@@ -58,23 +58,28 @@ async function endMeetingByRoomName(roomName: string) {
   const meeting = await prisma.meeting.findUnique({ where: { roomName } })
   if (!meeting || meeting.status === "ENDED") return
 
-  if (meeting.egressId) {
+  const openRecordings = await prisma.meetingRecording.findMany({ where: { meetingId: meeting.id, endedAt: null } })
+  if (openRecordings.length > 0) {
     try {
       const livekit = await getLiveKitConfigForRoom(roomName)
       if (livekit) {
         const egressClient = new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
-        await egressClient.stopEgress(meeting.egressId)
+        await Promise.all(openRecordings.map(r => egressClient.stopEgress(r.egressId).catch(() => {})))
       }
     } catch {
       // Egress may have already stopped
     }
+    await prisma.meetingRecording.updateMany({
+      where: { id: { in: openRecordings.map(r => r.id) } },
+      data:  { endedAt: new Date() },
+    })
   }
 
   // room_finished means LiveKit already tore the room down itself — no deleteRoom needed here.
 
   const { count } = await prisma.meeting.updateMany({
     where: { id: meeting.id, status: { not: "ENDED" } },
-    data:  { egressId: null, status: "ENDED", endedAt: new Date() },
+    data:  { status: "ENDED", endedAt: new Date() },
   })
 
   if (count > 0) {
