@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -88,8 +88,6 @@ export const POST = withPortalAuth(async (req, ctx) => {
     },
   })
 
-  const applicationFee = Math.round(commande.totalAmount * PLATFORM_FEE)
-
   let checkoutSession: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>
   try {
     checkoutSession = await stripe.checkout.sessions.create({
@@ -103,9 +101,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
         quantity: item.quantity,
       })),
       payment_intent_data: {
-        application_fee_amount: applicationFee,
-        transfer_data:          { destination: assoc.stripeConnectId! },
-        metadata:               { commandeId: commande.id, associationId: assoc.id },
+        transfer_data: { destination: assoc.stripeConnectId! },
+        metadata:      { commandeId: commande.id, associationId: assoc.id },
       },
       metadata:    { commandeId: commande.id },
       success_url: `${APP_URL}/portal/${assoc.slug}/boutique/commandes?payment=success`,

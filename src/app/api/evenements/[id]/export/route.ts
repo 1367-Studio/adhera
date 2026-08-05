@@ -22,7 +22,10 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const fmt    = new URL(req.url).searchParams.get("format") ?? "csv"
 
-  const evenement = await prisma.evenement.findFirst({ where: { id, associationId } })
+  const evenement = await prisma.evenement.findFirst({
+    where:   { id, associationId },
+    include: { customFields: { orderBy: { order: "asc" } } },
+  })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   // Same reasoning as /participations: active members are listed even without a ticket
@@ -37,7 +40,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }),
     prisma.participation.findMany({
       where:  { evenementId: id },
-      select: { membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true },
+      select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true },
     }),
   ])
 
@@ -55,23 +58,39 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       .map(p => ({ firstName: p.firstName, lastName: p.lastName, email: p.email, p })),
   ]
 
+  // One column per custom field configured on this event — active members never fill
+  // these (they're only asked on the public registration form), so their cells stay
+  // blank, same as Téléphone/Adresse below.
+  const customFieldColumns = Object.fromEntries(
+    evenement.customFields.map(f => [f.label, (p?: { answers: unknown }) => {
+      const answers = p?.answers as Record<string, string> | null
+      return sanitizeCell(answers?.[f.id] ?? "")
+    }]),
+  )
+
   const rows = allRows.map((m, i) => {
     const p = m.p
     const base = {
-      "#":     i + 1,
-      Nom:     sanitizeCell(m.lastName),
-      Prénom:  sanitizeCell(m.firstName),
-      Email:   sanitizeCell(m.email ?? ""),
-      Présent: p?.present ? "Oui" : "Non",
+      "#":       i + 1,
+      Nom:       sanitizeCell(m.lastName),
+      Prénom:    sanitizeCell(m.firstName),
+      Email:     sanitizeCell(m.email ?? ""),
+      Téléphone: sanitizeCell(p?.phone ?? ""),
+      Adresse:   sanitizeCell(p?.address ?? ""),
+      Présent:   p?.present ? "Oui" : "Non",
     }
+    const customValues = Object.fromEntries(
+      Object.entries(customFieldColumns).map(([label, get]) => [label, get(p)]),
+    )
     if (hasFee) {
       return {
         ...base,
         Paiement: p?.ticketPaidAt ? "Payé" : p?.rsvp === "CONFIRME" ? "Réservé" : "",
         RSVP:     "",
+        ...customValues,
       }
     }
-    return { ...base, RSVP: p?.rsvp ? (RSVP_LABELS[p.rsvp] ?? "") : "" }
+    return { ...base, RSVP: p?.rsvp ? (RSVP_LABELS[p.rsvp] ?? "") : "", ...customValues }
   })
 
   if (fmt === "xlsx") {
@@ -79,9 +98,14 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const wb = utils.book_new()
     utils.book_append_sheet(wb, ws, "Présences")
 
-    ws["!cols"] = hasFee
-      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 }]
-      : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
+    // Fixed widths for the always-present columns (#, Nom, Prénom, Email, Téléphone,
+    // Adresse, Présent, + Paiement/RSVP), then a generic width for however many custom
+    // field columns this event happens to have — their count varies per event, so an
+    // exact hardcoded array (like before) would silently mis-align as soon as it did.
+    const fixedCols = hasFee
+      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 }]
+      : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
+    ws["!cols"] = [...fixedCols, ...evenement.customFields.map(() => ({ wch: 20 }))]
 
     const buf = write(wb, { type: "buffer", bookType: "xlsx" })
     return new NextResponse(buf, {
@@ -92,7 +116,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     })
   }
 
-  const header = Object.keys(rows[0] ?? { "#": "", Nom: "", Prénom: "", Email: "", Présent: "", RSVP: "" }).join(",") + "\n"
+  const header = Object.keys(rows[0] ?? { "#": "", Nom: "", Prénom: "", Email: "", Téléphone: "", Adresse: "", Présent: "", RSVP: "" }).join(",") + "\n"
   const csv    = header + rows.map(r =>
     Object.values(r).map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
   ).join("\n")

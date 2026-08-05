@@ -1166,6 +1166,7 @@
       "actions": {
         "presences": "Attendance",
         "edit": "Edit",
+        "customFields": "Custom fields",
         "delete": "Delete"
       },
       "searchPlaceholder": "Search for an event…",
@@ -1180,6 +1181,21 @@
         "updated": "Event updated",
         "deleted": "Event deleted"
       }
+    },
+    "customFields": {
+      "modalTitle": "Custom fields — {title}",
+      "description": "Add extra fields to this event's public registration form.",
+      "noFields": "No custom fields yet.",
+      "fieldLabel": "Field label",
+      "fieldLabelPlaceholder": "E.g. T-shirt size",
+      "fieldType": "Type",
+      "typeText": "Text",
+      "typeNumber": "Number",
+      "fieldRequired": "Required",
+      "removeField": "Remove this field",
+      "addField": "Add a field",
+      "labelRequiredError": "Every field needs a label.",
+      "saved": "Custom fields saved"
     },
     "calendar": {
       "days": {
@@ -1247,6 +1263,9 @@
         "guestBadge": "Guest",
         "paidBadge": "Paid",
         "cancelPaymentTooltip": "Cancel this cash payment",
+        "infoTooltip": "View registration details",
+        "infoPhone": "Phone",
+        "infoAddress": "Address",
         "reservedBadge": "Reserved",
         "markPaid": "Mark as paid",
         "editTitle": "Edit",
