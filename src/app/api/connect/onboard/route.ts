@@ -81,14 +81,25 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   // Idempotent — safe to request on every visit, including accounts onboarded before
   // MB WAY support was added here. Requesting doesn't activate it immediately; Stripe
-  // may need extra verification, which the account_update link below then surfaces.
-  await stripe.accounts.update(connectId, {
-    capabilities: { mb_way_payments: { requested: true } },
-  }).catch((err) => {
+  // may need extra verification, which the account_onboarding link below then surfaces —
+  // this request can itself introduce new `currently_due` requirements on an account that
+  // had already finished its original onboarding (details_submitted: true), which is why
+  // linkType below can't rely on detailsSubmitted alone.
+  let currentlyDue: string[] = []
+  try {
+    const updated = await stripe.accounts.update(connectId, {
+      capabilities: { mb_way_payments: { requested: true } },
+    })
+    currentlyDue = updated.requirements?.currently_due ?? []
+  } catch (err) {
     console.error("[stripe-connect] failed to request mb_way_payments capability for", connectId, err)
-  })
+  }
 
-  const linkType = detailsSubmitted ? "account_update" : "account_onboarding"
+  // Stripe rejects `account_update` type Account Links ("Valid types for this account are
+  // [account_onboarding]") whenever the account still has anything currently_due — which
+  // can be true even with detailsSubmitted, e.g. right after the mb_way_payments request
+  // above adds a new requirement that was never part of the original onboarding flow.
+  const linkType = detailsSubmitted && currentlyDue.length === 0 ? "account_update" : "account_onboarding"
 
   const accountLink = await stripe.accountLinks.create({
     account:     connectId,
