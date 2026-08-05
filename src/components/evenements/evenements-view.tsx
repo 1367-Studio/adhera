@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -17,6 +17,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { EvenementForm } from "@/components/evenements/evenement-form"
+import { EvenementCustomFieldsEditor } from "@/components/evenements/evenement-custom-fields-editor"
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
@@ -70,6 +71,7 @@ export function EvenementsView() {
   const [createDate, setCreateDate]       = useState<string | undefined>()
   const [editTarget, setEditTarget]       = useState<Evenement | null>(null)
   const [deleteTarget, setDeleteTarget]   = useState<Evenement | null>(null)
+  const [customFieldsTarget, setCustomFieldsTarget] = useState<Evenement | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function openCreate(date?: Date) {
@@ -216,6 +218,7 @@ export function EvenementsView() {
         <RowActions actions={[
           { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
           { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
+          { label: t("evenements.view.actions.customFields"), icon: <ListChecksIcon className="size-3.5" />, onClick: () => setCustomFieldsTarget(e) },
           { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
         ]} />
       ),
@@ -329,6 +332,22 @@ export function EvenementsView() {
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
         />
+      </Modal>
+
+      {/* Custom fields */}
+      <Modal
+        open={!!customFieldsTarget}
+        onOpenChange={(open) => !open && setCustomFieldsTarget(null)}
+        title={t("evenements.customFields.modalTitle", { title: customFieldsTarget?.title ?? "" })}
+        size="lg"
+        dismissable={false}
+      >
+        {customFieldsTarget && (
+          <EvenementCustomFieldsEditor
+            evenementId={customFieldsTarget.id}
+            onClose={() => setCustomFieldsTarget(null)}
+          />
+        )}
       </Modal>
 
       {/* Delete */}

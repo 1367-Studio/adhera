@@ -1,3 +1,4 @@
+import Link from "next/link"
 import type { EventsSection } from "@/types/site-config"
 import { CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -23,9 +24,10 @@ type Props = {
   section: EventsSection
   events:  PublicEvent[]
   color:   string
+  slug:    string
 }
 
-export function SiteEventsSection({ section, events, color }: Props) {
+export function SiteEventsSection({ section, events, color, slug }: Props) {
   const displayed = events.slice(0, section.limit ?? 6)
 
   return (
@@ -38,7 +40,11 @@ export function SiteEventsSection({ section, events, color }: Props) {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {displayed.map(event => (
-              <div key={event.id} className="bg-white rounded-xl border border-gray-100 p-5 space-y-3 hover:shadow-sm transition-shadow">
+              <Link
+                key={event.id}
+                href={`/${slug}/evenements/${event.id}`}
+                className="block bg-white rounded-xl border border-gray-100 p-5 space-y-3 hover:shadow-sm transition-shadow"
+              >
                 <div
                   className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white"
                   style={{ background: color }}
@@ -71,7 +77,7 @@ export function SiteEventsSection({ section, events, color }: Props) {
                 {event.price && Number(event.price) > 0 && (
                   <p className="text-sm font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
                 )}
-              </div>
+              </Link>
             ))}
           </div>
         )}

@@ -24,7 +24,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     }),
     prisma.participation.findMany({
       where:  { evenementId },
-      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
+      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
     }),
   ])
 
@@ -40,6 +40,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         firstName:       m.firstName,
         lastName:        m.lastName,
         email:           p?.email ?? null,
+        phone:           p?.phone ?? null,
+        address:         p?.address ?? null,
+        answers:         p?.answers ?? null,
         present:         p?.present ?? false,
         rsvp:            p?.rsvp ?? null,
         ticketPaidAt:    p?.ticketPaidAt ?? null,
@@ -55,6 +58,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         firstName:       p.firstName,
         lastName:        p.lastName,
         email:           p.email,
+        phone:           p.phone,
+        address:         p.address,
+        answers:         p.answers,
         present:         p.present,
         rsvp:            p.rsvp,
         ticketPaidAt:    p.ticketPaidAt,

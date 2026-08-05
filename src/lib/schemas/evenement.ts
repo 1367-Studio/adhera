@@ -21,3 +21,16 @@ export const evenementUpdateSchema = evenementBase.partial()
 
 export type EvenementInput       = z.infer<typeof evenementSchema>
 export type EvenementUpdateInput = z.infer<typeof evenementUpdateSchema>
+
+const evenementCustomFieldSchema = z.object({
+  id:       z.string().optional(), // absent = nouveau champ
+  type:     z.enum(["TEXT", "NUMBER"]),
+  label:    z.string().trim().min(1).max(100),
+  required: z.boolean().optional().default(false),
+})
+
+// PUT remplace toujours la liste entière — plus simple qu'un diff add/remove/reorder,
+// et ce n'est éditable que par un admin sur un formulaire de quelques champs.
+export const evenementCustomFieldsSchema = z.array(evenementCustomFieldSchema).max(20)
+
+export type EvenementCustomFieldInput = z.infer<typeof evenementCustomFieldSchema>

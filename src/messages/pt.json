@@ -1166,6 +1166,7 @@
       "actions": {
         "presences": "Presenças",
         "edit": "Editar",
+        "customFields": "Campos personalizados",
         "delete": "Excluir"
       },
       "searchPlaceholder": "Pesquisar um evento…",
@@ -1180,6 +1181,21 @@
         "updated": "Evento atualizado",
         "deleted": "Evento excluído"
       }
+    },
+    "customFields": {
+      "modalTitle": "Campos personalizados — {title}",
+      "description": "Adicione campos extras ao formulário público de inscrição deste evento.",
+      "noFields": "Nenhum campo personalizado ainda.",
+      "fieldLabel": "Nome do campo",
+      "fieldLabelPlaceholder": "Ex: Tamanho da camiseta",
+      "fieldType": "Tipo",
+      "typeText": "Texto",
+      "typeNumber": "Número",
+      "fieldRequired": "Obrigatório",
+      "removeField": "Remover este campo",
+      "addField": "Adicionar campo",
+      "labelRequiredError": "Todo campo precisa de um nome.",
+      "saved": "Campos personalizados salvos"
     },
     "calendar": {
       "days": {
@@ -1247,6 +1263,9 @@
         "guestBadge": "Convidado",
         "paidBadge": "Pago",
         "cancelPaymentTooltip": "Cancelar este pagamento em dinheiro",
+        "infoTooltip": "Ver informações da inscrição",
+        "infoPhone": "Telefone",
+        "infoAddress": "Endereço",
         "reservedBadge": "Reservado",
         "markPaid": "Marcar como pago",
         "editTitle": "Editar",

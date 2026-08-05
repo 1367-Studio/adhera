@@ -44,8 +44,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
       country:       "FR",
       business_type: "non_profit",
       capabilities:  {
-        card_payments: { requested: true },
-        transfers:     { requested: true },
+        card_payments:   { requested: true },
+        transfers:       { requested: true },
+        // Lets EUR checkouts (dons, cotisations, billets d'événement) offer MB WAY —
+        // FR is on Stripe's list of eligible business-account countries for it, so this
+        // doesn't depend on the association itself being domiciled in Portugal.
+        mb_way_payments: { requested: true },
       },
       business_profile: { name: assoc.name },
     })
@@ -74,6 +78,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
       throw err
     }
   }
+
+  // Idempotent — safe to request on every visit, including accounts onboarded before
+  // MB WAY support was added here. Requesting doesn't activate it immediately; Stripe
+  // may need extra verification, which the account_update link below then surfaces.
+  await stripe.accounts.update(connectId, {
+    capabilities: { mb_way_payments: { requested: true } },
+  }).catch((err) => {
+    console.error("[stripe-connect] failed to request mb_way_payments capability for", connectId, err)
+  })
 
   const linkType = detailsSubmitted ? "account_update" : "account_onboarding"
 

@@ -312,6 +312,48 @@ export function useDeleteGuest(evenementId: string) {
   })
 }
 
+export type EvenementCustomField = {
+  id:       string
+  type:     "TEXT" | "NUMBER"
+  label:    string
+  required: boolean
+  order:    number
+}
+export type EvenementCustomFieldDraft = Omit<EvenementCustomField, "id" | "order"> & { id?: string }
+
+async function fetchCustomFields(evenementId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/custom-fields`)
+  if (!res.ok) throw new Error("Erreur lors du chargement des champs")
+  return res.json() as Promise<EvenementCustomField[]>
+}
+
+async function saveCustomFields(evenementId: string, fields: EvenementCustomFieldDraft[]) {
+  const res = await fetch(`/api/evenements/${evenementId}/custom-fields`, {
+    method:  "PUT",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(fields),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<EvenementCustomField[]>
+}
+
+export function useEvenementCustomFields(evenementId: string) {
+  return useQuery({
+    queryKey: [...QK, evenementId, "custom-fields"],
+    queryFn:  () => fetchCustomFields(evenementId),
+    enabled:  !!evenementId,
+    staleTime: 0,
+  })
+}
+
+export function useSaveEvenementCustomFields(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (fields: EvenementCustomFieldDraft[]) => saveCustomFields(evenementId, fields),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: [...QK, evenementId, "custom-fields"] }),
+  })
+}
+
 export function useGenerateQr(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({

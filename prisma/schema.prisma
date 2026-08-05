@@ -508,11 +508,32 @@ model Evenement {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  association    Association     @relation(fields: [associationId], references: [id])
+  association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
+  customFields   EvenementCustomField[]
 
   @@index([associationId, date])
+}
+
+enum EvenementFieldType {
+  TEXT
+  NUMBER
+}
+
+// Admin-defined extra fields on an event's public registration form (name/type/order),
+// answered per Participation via Participation.answers — see that field's comment.
+model EvenementCustomField {
+  id          String             @id @default(cuid())
+  evenementId String
+  type        EvenementFieldType
+  label       String
+  required    Boolean            @default(false)
+  order       Int
+
+  evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+
+  @@index([evenementId])
 }
 
 model Participation {
@@ -522,6 +543,11 @@ model Participation {
   firstName       String // capturé sur la ligne — pas de join Membre pour l'affichage
   lastName        String
   email           String?
+  phone           String?
+  address         String?
+  // Réponses aux EvenementCustomField de cet événement, keyed by field id (ex: {"clxyz...": "42"})
+  // — un JSON simple suffit ici, personne n'agrège ces réponses entre participants comme un sondage.
+  answers         Json?
   present         Boolean     @default(false)
   rsvp            RsvpStatus?
   rsvpAt          DateTime?

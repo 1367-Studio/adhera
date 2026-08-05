@@ -45,10 +45,6 @@ export function tierForPriceId(priceId: string): PlanTier | null {
   return PRICE_ID_TO_TIER[priceId] ?? null
 }
 
-// Platform commission on Connect destination charges (cotisations, dons, tickets,
-// boutique) — single source so every checkout route computes the same fee.
-export const PLATFORM_FEE = 0.015
-
 export function toSubscriptionStatus(status: Stripe.Subscription.Status) {
   if (status === "trialing") return "TRIAL"     as const
   if (status === "active")   return "ACTIVE"    as const
