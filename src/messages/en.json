@@ -2469,14 +2469,14 @@
         "updated": "Stripe account updated",
         "notFinalized": "The Stripe connection wasn't completed. Try again if needed."
       },
-      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account. A 1.5% commission is charged by the platform.",
+      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account.",
       "editAccount": "Edit account",
       "dashboardButton": "Stripe dashboard",
       "pendingText": "Your account is being verified by Stripe. You'll receive a confirmation email.",
       "completeOnboarding": "Complete sign-up",
       "invalidText": "The connection to your Stripe account was lost (account deleted or access revoked). Online payment is disabled until reconnected.",
       "reconnect": "Reconnect Stripe",
-      "connectText": "Connect a Stripe account to enable online membership fee payments. A 1.5% commission will be charged by the platform.",
+      "connectText": "Connect a Stripe account to enable online membership fee payments.",
       "connect": "Connect Stripe"
     },
     "suspended": {

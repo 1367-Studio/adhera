@@ -2469,14 +2469,14 @@
         "updated": "Conta Stripe atualizada",
         "notFinalized": "A conexão Stripe não foi concluída. Tente novamente se necessário."
       },
-      "enabledText": "Seus membros podem pagar a mensalidade online. Os valores são depositados diretamente na sua conta Stripe. Uma comissão de 1,5% é cobrada pela plataforma.",
+      "enabledText": "Seus membros podem pagar a mensalidade online. Os valores são depositados diretamente na sua conta Stripe.",
       "editAccount": "Editar conta",
       "dashboardButton": "Painel Stripe",
       "pendingText": "Sua conta está sendo verificada pela Stripe. Você receberá um e-mail de confirmação.",
       "completeOnboarding": "Concluir cadastro",
       "invalidText": "A conexão com sua conta Stripe foi perdida (conta excluída ou acesso revogado). O pagamento online está desativado até a reconexão.",
       "reconnect": "Reconectar Stripe",
-      "connectText": "Conecte uma conta Stripe para ativar o pagamento online das mensalidades. Uma comissão de 1,5% será cobrada pela plataforma.",
+      "connectText": "Conecte uma conta Stripe para ativar o pagamento online das mensalidades.",
       "connect": "Conectar Stripe"
     },
     "suspended": {
