@@ -1445,6 +1445,12 @@
         "atLeastOneMember": "Seleccione al menos un miembro",
         "deadlinePast": "La fecha límite no puede estar en el pasado"
       }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitación enviada por correo} other {# invitaciones enviadas por correo}}",
+        "invitationsFailed": "{count, plural, one {# invitación no pudo enviarse — ver la pestaña Envíos} other {# invitaciones no pudieron enviarse — ver la pestaña Envíos}}"
+      }
     }
   },
   "reunions": {
@@ -2630,7 +2636,12 @@
       "toasts": {
         "subjectRequired": "Indique el asunto",
         "bodyRequired": "Indique el mensaje",
-        "templateLoadError": "No se pudo cargar la plantilla de recordatorio"
+        "templateLoadError": "No se pudo cargar la plantilla de recordatorio",
+        "queued": "{count, plural, one {Enviando a # destinatario…} other {Enviando a # destinatarios…}}",
+        "reminderSent": "{count, plural, one {Recordatorio enviado a # destinatario} other {Recordatorios enviados a # destinatarios}}",
+        "noReminderSent": "Ningún recordatorio enviado",
+        "noReminderSentWithFailures": "Ningún recordatorio enviado — {count, plural, one {# fallo} other {# fallos}}",
+        "sendFailures": "{count, plural, one {# envío fallido} other {# envíos fallidos}}"
       },
       "continue": "Continuar",
       "confirmTitle": "Confirmar el envío",
@@ -2925,6 +2936,7 @@
         "selectType": "Seleccione un tipo de miembro",
         "selectMember": "Seleccione al menos un miembro",
         "writeMessage": "Escriba el mensaje de SMS",
+        "queued": "{count, plural, one {Enviando a # miembro…} other {Enviando a # miembros…}}",
         "noPhoneRecipient": "Ningún destinatario con número de teléfono en esta selección",
         "cannotVerifyCount": "No se pudo verificar el número de destinatarios",
         "noSmsSent": "Ningún SMS enviado",
@@ -2997,6 +3009,7 @@
         "subjectRequired": "Indique el asunto del mensaje",
         "bodyRequired": "Redacte el contenido del mensaje",
         "noRecipientWithEmail": "Ningún destinatario con una dirección de correo en esta selección",
+        "queued": "{count, plural, one {Enviando a # destinatario…} other {Enviando a # destinatarios…}}",
         "cannotVerifyCount": "No se pudo verificar el número de destinatarios",
         "templateSaved": "Plantilla « {name} » guardada",
         "noEmailSent": "Ningún correo enviado",

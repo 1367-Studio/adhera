@@ -1445,6 +1445,12 @@
         "atLeastOneMember": "Selecione pelo menos um membro",
         "deadlinePast": "O prazo não pode ser no passado"
       }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# convite enviado por email} other {# convites enviados por email}}",
+        "invitationsFailed": "{count, plural, one {# convite não pôde ser enviado — veja a aba Envios} other {# convites não puderam ser enviados — veja a aba Envios}}"
+      }
     }
   },
   "reunions": {
@@ -2630,7 +2636,12 @@
       "toasts": {
         "subjectRequired": "Informe o assunto",
         "bodyRequired": "Informe a mensagem",
-        "templateLoadError": "Não foi possível carregar o modelo de lembrete"
+        "templateLoadError": "Não foi possível carregar o modelo de lembrete",
+        "queued": "{count, plural, one {Enviando para # destinatário…} other {Enviando para # destinatários…}}",
+        "reminderSent": "{count, plural, one {Lembrete enviado a # destinatário} other {Lembretes enviados a # destinatários}}",
+        "noReminderSent": "Nenhum lembrete enviado",
+        "noReminderSentWithFailures": "Nenhum lembrete enviado — {count, plural, one {# falha} other {# falhas}}",
+        "sendFailures": "{count, plural, one {# envio falhou} other {# envios falharam}}"
       },
       "continue": "Continuar",
       "confirmTitle": "Confirmar o envio",
@@ -2925,6 +2936,7 @@
         "selectType": "Selecione um tipo de membro",
         "selectMember": "Selecione pelo menos um membro",
         "writeMessage": "Escreva a mensagem de SMS",
+        "queued": "{count, plural, one {Enviando para # membro…} other {Enviando para # membros…}}",
         "noPhoneRecipient": "Nenhum destinatário com número de telefone nesta seleção",
         "cannotVerifyCount": "Não foi possível verificar o número de destinatários",
         "noSmsSent": "Nenhum SMS enviado",
@@ -2997,6 +3009,7 @@
         "subjectRequired": "Informe o assunto da mensagem",
         "bodyRequired": "Redija o conteúdo da mensagem",
         "noRecipientWithEmail": "Nenhum destinatário com endereço de email nesta seleção",
+        "queued": "{count, plural, one {Enviando para # destinatário…} other {Enviando para # destinatários…}}",
         "cannotVerifyCount": "Não foi possível verificar o número de destinatários",
         "templateSaved": "Modelo « {name} » salvo",
         "noEmailSent": "Nenhum email enviado",

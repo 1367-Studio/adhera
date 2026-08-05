@@ -1445,6 +1445,12 @@
         "atLeastOneMember": "Select at least one member",
         "deadlinePast": "The deadline cannot be in the past"
       }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitation sent by email} other {# invitations sent by email}}",
+        "invitationsFailed": "{count, plural, one {# invitation could not be sent — see the Sends tab} other {# invitations could not be sent — see the Sends tab}}"
+      }
     }
   },
   "reunions": {
@@ -2630,7 +2636,12 @@
       "toasts": {
         "subjectRequired": "Please enter a subject",
         "bodyRequired": "Please enter a message",
-        "templateLoadError": "Unable to load the reminder template"
+        "templateLoadError": "Unable to load the reminder template",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
+        "reminderSent": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+        "noReminderSent": "No reminder sent",
+        "noReminderSentWithFailures": "No reminder sent — {count, plural, one {# failure} other {# failures}}",
+        "sendFailures": "{count, plural, one {# send failed} other {# sends failed}}"
       },
       "continue": "Continue",
       "confirmTitle": "Confirm sending",
@@ -2925,6 +2936,7 @@
         "selectType": "Select a member type",
         "selectMember": "Select at least one member",
         "writeMessage": "Write the SMS message",
+        "queued": "{count, plural, one {Sending to # member…} other {Sending to # members…}}",
         "noPhoneRecipient": "No recipient with a phone number in this selection",
         "cannotVerifyCount": "Unable to check the number of recipients",
         "noSmsSent": "No SMS sent",
@@ -2997,6 +3009,7 @@
         "subjectRequired": "Enter a subject for the message",
         "bodyRequired": "Write the message content",
         "noRecipientWithEmail": "No recipient with an email address in this selection",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
         "cannotVerifyCount": "Unable to verify the number of recipients",
         "templateSaved": "Template “{name}” saved",
         "noEmailSent": "No email sent",

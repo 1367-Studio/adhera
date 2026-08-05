@@ -3,19 +3,18 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { EnvelopeSimpleIcon, DeviceMobileIcon, PaperPlaneTiltIcon, XIcon, CheckCircleIcon, WarningIcon, CaretRightIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { EnvelopeSimpleIcon, DeviceMobileIcon, PaperPlaneTiltIcon, XIcon, WarningIcon, CaretRightIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { useModules } from "@/lib/user-context"
+import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
 import { cn } from "@/lib/utils"
 
 type ReminderCotisation = { id: string; year: number; amount: string; membre: { id: string; firstName: string; lastName: string } }
 
 type Channel = "EMAIL" | "SMS"
-
-type SendResult = { sent: number; failed: number; skippedNoContact: number; skippedInvalid: number }
 
 interface SendReminderModalProps {
   open:         boolean
@@ -53,7 +52,6 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
   const [smsBody,      setSmsBody]      = useState("")
   const [loadingTemplate, setLoadingTemplate] = useState(false)
   const [sending,      setSending]      = useState(false)
-  const [result,       setResult]       = useState<SendResult | null>(null)
 
   const recipients = cotisations.filter(c => !removedIds.has(c.id))
 
@@ -62,7 +60,6 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
     setStep("compose")
     setChannel("EMAIL")
     setRemovedIds(new Set())
-    setResult(null)
     setLoadingTemplate(true)
     fetch("/api/message-templates/cotisation-default")
       .then(res => {
@@ -112,7 +109,14 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
-      setResult({ sent: data.sent, failed: data.failed, skippedNoContact: data.skippedNoContact, skippedInvalid: data.skippedInvalid })
+
+      // The actual send now runs in the background (Inngest) — this response just confirms
+      // it was queued. registerPendingBulkSend + useBulkSendListener (mounted in AppSidebar)
+      // deliver the real sent/failed toast once the send finishes, even if this modal has
+      // long since closed.
+      registerPendingBulkSend(data.jobId)
+      toast.info(t("cotisations.reminderModal.toasts.queued", { count: data.totalRecipients }))
+      onSent()
     } catch {
       toast.error(t("common.networkError"))
     } finally {
@@ -133,38 +137,7 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
       size="lg"
       dismissable={!sending}
     >
-      {result ? (
-        <div className="space-y-5">
-          <div className="rounded-xl border bg-muted/30 p-6 text-center space-y-3">
-            <CheckCircleIcon className="size-10 mx-auto text-green-600 dark:text-green-400" />
-            <p className="font-semibold">{t("cotisations.reminderModal.resultTitle")}</p>
-            <div className="grid grid-cols-3 gap-3 pt-2">
-              <div>
-                <p className="text-2xl font-bold">{result.sent}</p>
-                <p className="text-xs text-muted-foreground">{t("cotisations.reminderModal.sent")}</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-destructive">{result.failed}</p>
-                <p className="text-xs text-muted-foreground">{t("cotisations.reminderModal.failed")}</p>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-muted-foreground">{result.skippedNoContact}</p>
-                <p className="text-xs text-muted-foreground">
-                  {channel === "EMAIL" ? t("cotisations.reminderModal.skippedNoEmail") : t("cotisations.reminderModal.skippedNoPhone")}
-                </p>
-              </div>
-            </div>
-            {result.skippedInvalid > 0 && (
-              <p className="text-xs text-muted-foreground pt-1">
-                {t("cotisations.reminderModal.skippedInvalid", { count: result.skippedInvalid })}
-              </p>
-            )}
-          </div>
-          <div className="flex justify-end">
-            <Button onClick={onSent}>{t("common.close")}</Button>
-          </div>
-        </div>
-      ) : step === "confirm" ? (
+      {step === "confirm" ? (
         <div className="space-y-5">
           <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
             <WarningIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
