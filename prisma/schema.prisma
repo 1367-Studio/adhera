@@ -663,11 +663,18 @@ model Notification {
   scope     NotificationScope @default(MEMBRE)
   read      Boolean           @default(false)
   createdAt DateTime          @default(now())
+  // High-volume, repeatable events (e.g. one sondage response after another) reuse the
+  // same unread row instead of creating a new one each time — see notifyAdminsOfResponse
+  // in src/app/api/portal/sondages/[id]/repondre/route.ts. Left null for every other
+  // notification type, which still gets one row per event as before.
+  groupKey  String?
+  count     Int               @default(1)
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, read])
   @@index([userId, scope, read])
+  @@index([userId, groupKey, read])
 }
 
 // Two-way support channel between an association's own ADMIN and the platform's SUPER_ADMIN

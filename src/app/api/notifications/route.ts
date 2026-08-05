@@ -14,6 +14,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     where:   { userId, scope },
     orderBy: { createdAt: "desc" },
     take:    50,
+    select:  { id: true, title: true, body: true, link: true, scope: true, read: true, createdAt: true },
   })
   return NextResponse.json(notifications)
 })
