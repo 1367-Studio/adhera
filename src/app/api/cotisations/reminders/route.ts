@@ -1,18 +1,14 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
-import { sendEmailBatch } from "@/lib/mail"
-import { sendSmsBatch } from "@/lib/sms"
-import { customEmail } from "@/lib/email"
-import { substituteVars, buildVars } from "@/lib/automation"
+import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
-import { writeActivityLog } from "@/lib/activity-log"
 import { nextAmountDue } from "@/lib/cotisation-status"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const EMAIL_CHUNK_SIZE = 100
 
 const schema = z.object({
   cotisationIds: z.array(z.string()).min(1).max(500),
@@ -20,8 +16,6 @@ const schema = z.object({
   subject:       z.string().max(200).optional(),
   body:          z.string().min(1),
 })
-
-type ReminderResult = { cotisationId: string; membreId: string; status: "SENT" | "FAILED" }
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -84,82 +78,36 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const skippedNoContact = cotisations.length - eligible.length
 
   if (eligible.length === 0) {
-    return NextResponse.json({ sent: 0, failed: 0, skippedNoContact, skippedInvalid, results: [] as ReminderResult[] })
+    return NextResponse.json({ jobId: null, totalRecipients: 0, skippedNoContact, skippedInvalid })
   }
 
-  const results: ReminderResult[] = []
+  const branding = channel === "EMAIL" ? resolveDocumentBranding(assoc) : undefined
+  const jobId    = randomUUID()
 
-  if (channel === "EMAIL") {
-    const branding = resolveDocumentBranding(assoc)
-    const payloads = eligible.map(c => {
-      const vars = buildVars({
-        prenom: c.membre.firstName, nom: c.membre.lastName, email: c.membre.email ?? "",
-        association: assoc.name, slug: assoc.slug,
-        anneeCotisation: c.year, montantCotisation: amountDue(c),
-      })
-      return {
-        ...customEmail({
-          associationName: assoc.name,
-          subject:         substituteVars(subject!, vars),
-          bodyHtml:        substituteVars(body, vars),
-          recipientEmail:  c.membre.email!,
-          branding,
-        }),
-        context: { associationId, membreId: c.membre.id, source: "COTISATION_REMINDER", sourceId: c.id },
-      }
-    })
-
-    // sendEmailBatch (not sendEmailBulk) — its result array stays in input order with one
-    // entry per payload, so two selected cotisations belonging to the same member (same
-    // email, different year/amount) don't collide the way summing sendEmailBulk's
-    // aggregate `failedRecipients` by address would.
-    for (let i = 0; i < payloads.length; i += EMAIL_CHUNK_SIZE) {
-      const chunk   = payloads.slice(i, i + EMAIL_CHUNK_SIZE)
-      const cotChunk = eligible.slice(i, i + EMAIL_CHUNK_SIZE)
-      const chunkResults = await sendEmailBatch(chunk)
-      chunkResults.forEach((r, j) => {
-        results.push({ cotisationId: cotChunk[j].id, membreId: cotChunk[j].membre.id, status: r.ok ? "SENT" : "FAILED" })
-      })
-    }
-  } else {
-    const jobs = eligible.map(c => {
-      const vars = buildVars({
-        prenom: c.membre.firstName, nom: c.membre.lastName, email: c.membre.email ?? "",
-        association: assoc.name, slug: assoc.slug,
-        anneeCotisation: c.year, montantCotisation: amountDue(c),
-      })
-      return { to: c.membre.phone!, body: substituteVars(body, vars), membreId: c.membre.id }
-    })
-    const outcomes = await sendSmsBatch(jobs, associationId, { source: "COTISATION_REMINDER" })
-    eligible.forEach((c, i) => {
-      results.push({ cotisationId: c.id, membreId: c.membre.id, status: outcomes[i].ok ? "SENT" : "FAILED" })
-    })
-  }
-
-  const sentIds = results.filter(r => r.status === "SENT").map(r => r.cotisationId)
-  const sent    = sentIds.length
-  const failed  = results.length - sent
-
-  if (sentIds.length > 0) {
-    await prisma.cotisation.updateMany({ where: { id: { in: sentIds } }, data: { lastReminderSentAt: new Date() } })
-  }
-
-  const cotisationById = new Map(cotisations.map(c => [c.id, c]))
-  // One entry per cotisation — this is what makes it show up on the member's own ficha
-  // (Historique tab already matches on entity: "Cotisation", entityId: <this id>, see
-  // src/app/api/membres/[id]/logs/route.ts).
-  await Promise.all(results.map(r => {
-    const c = cotisationById.get(r.cotisationId)
-    return writeActivityLog({
+  await inngest.send({
+    name: "bulk/cotisation-reminders.requested",
+    data: {
+      jobId,
       associationId,
-      actorId:  userId,
-      action:   "COTISATION_REMINDER_SENT",
-      entity:   "Cotisation",
-      entityId: r.cotisationId,
-      label:    c ? `${c.membre.firstName} ${c.membre.lastName} — ${c.year}` : undefined,
-      metadata: { channel, status: r.status },
-    })
-  }))
+      actorId: userId,
+      channel,
+      subject,
+      body,
+      associationName: assoc.name,
+      slug:             assoc.slug,
+      branding,
+      targets: eligible.map(c => ({
+        cotisationId:      c.id,
+        membreId:          c.membre.id,
+        firstName:         c.membre.firstName,
+        lastName:          c.membre.lastName,
+        email:             c.membre.email,
+        phone:             c.membre.phone,
+        year:              c.year,
+        montantCotisation: amountDue(c),
+      })),
+    },
+  })
 
-  return NextResponse.json({ sent, failed, skippedNoContact, skippedInvalid, results })
+  return NextResponse.json({ jobId, totalRecipients: eligible.length, skippedNoContact, skippedInvalid })
 }, { roles: MANAGERS, module: "cotisations" })

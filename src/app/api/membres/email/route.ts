@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { sendEmailBulk } from "@/lib/mail"
-import { customEmail } from "@/lib/email"
-import { writeActivityLog } from "@/lib/activity-log"
+import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
-import { buildVars, substituteVars } from "@/lib/automation"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -63,66 +61,34 @@ export const POST = withAdminAuth(async (req, ctx) => {
     .filter(e => !memberEmailSet.has(e))
   const skippedDuplicateExternalCount = externalEmails.length - uniqueExternalEmails.length
 
-  const memberPayloads = recipients.map(m => {
-    const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: m.email!, association: assoc.name, slug: assoc.slug })
-    return {
-      ...customEmail({
-        associationName: assoc.name,
-        subject:         substituteVars(subject, vars),
-        bodyHtml:        substituteVars(bodyHtml, vars),
-        recipientEmail:  m.email!,
-        branding,
-      }),
-      context: { associationId: ctx.associationId, membreId: m.id, source: "BULK_MESSAGE" },
-    }
-  })
-
-  // External recipients have no Membre record — name variables ({{prenom}}, {{nom}}, {{nom_complet}})
-  // resolve to empty strings for them. The compose UI warns about this before sending.
-  const externalPayloads = uniqueExternalEmails.map(email => {
-    const vars = buildVars({ prenom: "", nom: "", email, association: assoc.name, slug: assoc.slug })
-    return {
-      ...customEmail({
-        associationName: assoc.name,
-        subject:         substituteVars(subject, vars),
-        bodyHtml:        substituteVars(bodyHtml, vars),
-        recipientEmail:  email,
-        branding,
-      }),
-      context: { associationId: ctx.associationId, source: "BULK_MESSAGE" },
-    }
-  })
-
-  const { sent, failed, failedRecipients } = await sendEmailBulk([...memberPayloads, ...externalPayloads])
-  const failedEmails = new Set(failedRecipients)
-  const failedMembers = recipients
-    .filter(m => failedEmails.has(m.email!))
-    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
-  const failedExternal = uniqueExternalEmails
-    .filter(email => failedEmails.has(email))
-    .map(email => ({ id: email, name: email }))
-
   const recipientMode = recipientIds !== undefined ? "manual" : typeId ? "type" : "all"
-  await writeActivityLog({
-    associationId: ctx.associationId,
-    actorId:       ctx.userId,
-    action:        "EMAIL_SENT_BULK",
-    entity:        "Membre",
-    label:         subject,
-    metadata:      {
-      sent,
-      failed,
-      recipientMode,
-      ...(typeId                    ? { typeId }                                     : {}),
-      ...(recipientIds              ? { recipientCount: recipientIds.length }         : {}),
-      ...(uniqueExternalEmails.length ? { externalEmailCount: uniqueExternalEmails.length, externalEmails: uniqueExternalEmails } : {}),
+  const jobId = randomUUID()
+
+  await inngest.send({
+    name: "bulk/membres-email.requested",
+    data: {
+      jobId,
+      associationId: ctx.associationId,
+      actorId:       ctx.userId,
+      subject,
+      bodyHtml,
+      branding,
+      associationName: assoc.name,
+      slug:             assoc.slug,
+      members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, lastName: m.lastName, email: m.email! })),
+      externalEmails:   uniqueExternalEmails,
+      activityMeta: {
+        recipientMode,
+        ...(typeId                      ? { typeId }                                                                       : {}),
+        ...(recipientIds                ? { recipientCount: recipientIds.length }                                          : {}),
+        ...(uniqueExternalEmails.length ? { externalEmailCount: uniqueExternalEmails.length, externalEmails: uniqueExternalEmails } : {}),
+      },
     },
   })
 
   return NextResponse.json({
-    sent,
-    failed,
-    failedMembers: [...failedMembers, ...failedExternal],
+    jobId,
+    totalRecipients: recipients.length + uniqueExternalEmails.length,
     skippedDuplicateExternalCount,
   })
 }, { module: "messages" })

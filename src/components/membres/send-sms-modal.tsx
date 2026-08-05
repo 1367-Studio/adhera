@@ -8,6 +8,7 @@ import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
+import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
 import { cn } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -260,23 +261,12 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
 
-      const names: string[] = (data.failedMembers ?? []).map((m: { name: string; reason?: string }) =>
-        m.reason ? `${m.name} (${m.reason})` : m.name)
-      const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? t("membres.sms.toasts.andOthers", { count: names.length - 5 }) : "")
-
-      if (data.sent === 0) {
-        toast.error(data.failed > 0
-          ? t("membres.sms.toasts.noSmsSentWithFailures", { count: data.failed }) + (preview ? ` : ${preview}` : "")
-          : t("membres.sms.toasts.noSmsSent"))
-        return
-      }
-
-      toast.success(t("membres.sms.toasts.smsSent", { count: data.sent }))
-      if (data.failed > 0) {
-        toast.warning(
-          t("membres.sms.toasts.sendFailures", { count: data.failed, preview: preview ? ` : ${preview}` : "" }),
-        )
-      }
+      // The actual send now runs in the background (Inngest) — this response just confirms
+      // it was queued. registerPendingBulkSend + useBulkSendListener (mounted in AppSidebar)
+      // deliver the real sent/failed toast once the send finishes, even if this modal has
+      // long since closed.
+      registerPendingBulkSend(data.jobId)
+      toast.info(t("membres.sms.toasts.queued", { count: data.totalRecipients }))
       onOpenChange(false)
     } catch {
       toast.error(t("membres.sms.toasts.networkError"))

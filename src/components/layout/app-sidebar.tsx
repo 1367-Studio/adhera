@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl"
 import { useQueryClient } from "@tanstack/react-query"
 import { useSupportTickets } from "@/hooks/use-support-tickets"
 import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-listener"
+import { useBulkSendListener } from "@/hooks/use-bulk-send-listener"
 import {
   SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
   EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
@@ -116,6 +117,7 @@ export function AppSidebar() {
   const { data: supportTickets = [] } = useSupportTickets({ enabled: userRole === "ADMIN" })
   const supportUnreadCount = supportTickets.filter(ticket => ticket.unread).length
   useSupportTicketMessageListener(() => { qc.invalidateQueries({ queryKey: ["support-tickets"] }) })
+  useBulkSendListener()
   const visible  = navigationItems.filter(item => {
     if (!item.roles.includes(userRole)) return false
     if (item.moduleKey && !modules[item.moduleKey]) return false
