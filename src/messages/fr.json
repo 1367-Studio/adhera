@@ -2469,14 +2469,14 @@
         "updated": "Compte Stripe mis à jour",
         "notFinalized": "La connexion Stripe n'a pas été finalisée. Réessayez si nécessaire."
       },
-      "enabledText": "Vos membres peuvent payer leur cotisation en ligne. Les fonds sont versés directement sur votre compte Stripe. Une commission de 1,5 % est prélevée par la plateforme.",
+      "enabledText": "Vos membres peuvent payer leur cotisation en ligne. Les fonds sont versés directement sur votre compte Stripe.",
       "editAccount": "Modifier le compte",
       "dashboardButton": "Dashboard Stripe",
       "pendingText": "Votre compte est en cours de vérification par Stripe. Vous recevrez un email de confirmation.",
       "completeOnboarding": "Compléter l'inscription",
       "invalidText": "La connexion à votre compte Stripe a été perdue (compte supprimé ou accès révoqué). Le paiement en ligne est désactivé jusqu'à reconnexion.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Connectez un compte Stripe pour activer le paiement en ligne des cotisations. Une commission de 1,5 % sera prélevée par la plateforme.",
+      "connectText": "Connectez un compte Stripe pour activer le paiement en ligne des cotisations.",
       "connect": "Connecter Stripe"
     },
     "suspended": {

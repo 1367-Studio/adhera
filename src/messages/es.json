@@ -2469,14 +2469,14 @@
         "updated": "Cuenta Stripe actualizada",
         "notFinalized": "La conexión con Stripe no se finalizó. Vuelva a intentarlo si es necesario."
       },
-      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe. La plataforma cobra una comisión del 1,5%.",
+      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe.",
       "editAccount": "Editar cuenta",
       "dashboardButton": "Panel de Stripe",
       "pendingText": "Su cuenta está siendo verificada por Stripe. Recibirá un correo de confirmación.",
       "completeOnboarding": "Completar el registro",
       "invalidText": "Se perdió la conexión con su cuenta Stripe (cuenta eliminada o acceso revocado). El pago en línea está desactivado hasta la reconexión.",
       "reconnect": "Reconectar Stripe",
-      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas. La plataforma cobrará una comisión del 1,5%.",
+      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas.",
       "connect": "Conectar Stripe"
     },
     "suspended": {
