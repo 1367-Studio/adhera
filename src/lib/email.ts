@@ -557,6 +557,29 @@ export function ticketPurchaseEmail(p: {
   }
 }
 
+export function cancellationConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  refunded:        boolean
+  amount?:         number
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount != null ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Inscription annulée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » a bien été annulée.
+    </p>
+    ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
+  return {
+    to:      p.email,
+    subject: `Annulation confirmée — ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function meetingInviteEmail(p: {
   firstName:       string
   email:           string

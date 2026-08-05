@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { sendEmail } from "@/lib/mail"
+import { cancellationConfirmationEmail } from "@/lib/email"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
@@ -16,14 +19,27 @@ class TicketAlreadyClaimedError extends Error {}
 async function findByToken(token: string) {
   return prisma.participation.findUnique({
     where:  { cancelToken: token },
-    include: { evenement: { select: { title: true, date: true, associationId: true, price: true } } },
+    include: {
+      evenement: {
+        select: {
+          title: true, date: true, price: true, associationId: true,
+          association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+        },
+      },
+    },
   })
 }
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
+  // Purely informational and gated by a 160-bit token already, but rate-limited anyway
+  // for consistency with every other public endpoint in this app.
+  if (!(await rateLimit(`cancel-ticket-info:${requestIp(req)}`, 30, 10 * 60_000))) {
+    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
+  }
+
   const { token } = await params
   const participation = await findByToken(token)
   if (!participation) return NextResponse.json({ error: "Lien invalide" }, { status: 404 })
@@ -71,6 +87,16 @@ export async function POST(
       associationId, action: "PARTICIPATION_PUBLIC_CANCELLED", entity: "Participation", entityId: participation.id,
       label: `${participation.firstName} ${participation.lastName} — ${participation.evenement.title}`,
     })
+    if (participation.email) {
+      sendEmail(cancellationConfirmationEmail({
+        firstName:       participation.firstName,
+        email:           participation.email,
+        associationName: participation.evenement.association.name,
+        eventTitle:      participation.evenement.title,
+        refunded:        false,
+        branding:        resolveDocumentBranding(participation.evenement.association),
+      }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(() => {})
+    }
     return NextResponse.json({ ok: true, refunded: false })
   }
 
@@ -152,6 +178,18 @@ export async function POST(
     associationId, action: "TICKET_REFUNDED", entity: "Participation", entityId: participation.id,
     label: `${participation.firstName} ${participation.lastName} — ${participation.evenement.title}`,
   })
+
+  if (participation.email) {
+    sendEmail(cancellationConfirmationEmail({
+      firstName:       participation.firstName,
+      email:           participation.email,
+      associationName: participation.evenement.association.name,
+      eventTitle:      participation.evenement.title,
+      refunded:        true,
+      amount:          refundAmountCents / 100,
+      branding:        resolveDocumentBranding(participation.evenement.association),
+    }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(() => {})
+  }
 
   return NextResponse.json({ ok: true, refunded: true })
 }

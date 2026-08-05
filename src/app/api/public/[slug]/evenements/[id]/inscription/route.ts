@@ -99,16 +99,23 @@ export async function POST(
   const existing = email
     ? await prisma.participation.findFirst({
         where:  { evenementId: id, email: { equals: email, mode: "insensitive" } },
-        select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true },
+        select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true },
       })
     : null
 
-  if (existing && (!isPaid || existing.ticketPaidAt)) {
+  // A cancelled registration (via /annulation) leaves the row in place with both
+  // ticketPaidAt and rsvp cleared — it must NOT count as "already registered" here, or
+  // cancelling a free RSVP would permanently lock that email out of ever re-registering.
+  // An abandoned-but-never-cancelled paid checkout still has rsvp CONFIRME (the seat hold)
+  // with ticketPaidAt null — that case still falls through to the resume/reuse path below,
+  // unchanged from before.
+  if (existing && (existing.ticketPaidAt || (!isPaid && existing.rsvp === "CONFIRME"))) {
     return NextResponse.json({ error: "Vous êtes déjà inscrit(e) à cet événement avec cette adresse e-mail." }, { status: 409 })
   }
 
-  // existing here (if any) is necessarily a paid event's abandoned/in-progress checkout —
-  // reuse that same row instead of minting a second one that would double-count capacity.
+  // existing here (if any) is either a paid event's abandoned/in-progress checkout or a
+  // previously-cancelled registration being resumed — reuse that same row instead of
+  // minting a second one that would double-count capacity.
   const orderId    = existing?.orderId ?? randomUUID()
   // Only used when actually creating a new row below — an existing/reused row already
   // has its own token from when it was first created, untouched by this update.
@@ -117,37 +124,44 @@ export async function POST(
   let participationId: string
   try {
     participationId = await prisma.$transaction(async (tx) => {
+      if (evenement.capacity != null) {
+        // Serialize concurrent registrations for this event, same lock used by the
+        // portal ticket checkout — without it, two public visitors racing for the last
+        // spot (or the same visitor re-registering after a cancellation right as it
+        // fills up) could both pass the occupancy check below.
+        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
+      }
+
+      let pid: string
       if (existing) {
         await tx.participation.update({
           where: { id: existing.id },
           data:  { firstName, lastName, phone: phone || null, address: address || null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date() },
         })
-        return existing.id
+        pid = existing.id
+      } else {
+        const created = await tx.participation.create({
+          data: {
+            evenementId: id,
+            orderId,
+            firstName, lastName,
+            email:   email || null,
+            phone:   phone || null,
+            address: address || null,
+            answers: cleanAnswers,
+            rsvp:    "CONFIRME",
+            rsvpAt:  new Date(),
+            cancelToken,
+          },
+          select: { id: true },
+        })
+        pid = created.id
       }
 
-      if (evenement.capacity != null) {
-        // Serialize concurrent registrations for this event, same lock used by the
-        // portal ticket checkout — without it, two public visitors racing for the last
-        // spot could both pass the occupancy check below.
-        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
-      }
-
-      const created = await tx.participation.create({
-        data: {
-          evenementId: id,
-          orderId,
-          firstName, lastName,
-          email:   email || null,
-          phone:   phone || null,
-          address: address || null,
-          answers: cleanAnswers,
-          rsvp:    "CONFIRME",
-          rsvpAt:  new Date(),
-          cancelToken,
-        },
-        select: { id: true },
-      })
-
+      // Applies whether this seat is brand new or a reused/resumed row — a resumed row
+      // that was never actually freed (still rsvp CONFIRME going in) is already counted
+      // in `occupied` by itself, so this is a no-op for it; a genuinely re-activated
+      // (previously cancelled) seat is what this is here to catch.
       if (evenement.capacity != null) {
         const occupied = await tx.participation.count({
           where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
@@ -155,7 +169,7 @@ export async function POST(
         if (occupied > evenement.capacity) throw new EventFullError()
       }
 
-      return created.id
+      return pid
     })
   } catch (err) {
     if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
