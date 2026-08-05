@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { randomUUID } from "crypto"
+import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
@@ -109,7 +109,10 @@ export async function POST(
 
   // existing here (if any) is necessarily a paid event's abandoned/in-progress checkout —
   // reuse that same row instead of minting a second one that would double-count capacity.
-  const orderId = existing?.orderId ?? randomUUID()
+  const orderId    = existing?.orderId ?? randomUUID()
+  // Only used when actually creating a new row below — an existing/reused row already
+  // has its own token from when it was first created, untouched by this update.
+  const cancelToken = randomBytes(20).toString("hex")
 
   let participationId: string
   try {
@@ -140,6 +143,7 @@ export async function POST(
           answers: cleanAnswers,
           rsvp:    "CONFIRME",
           rsvpAt:  new Date(),
+          cancelToken,
         },
         select: { id: true },
       })
@@ -173,6 +177,7 @@ export async function POST(
         eventDate:       evenement.date,
         eventLocation:   evenement.location,
         portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+        cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
         branding:        resolveDocumentBranding(assoc),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
     }

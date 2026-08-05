@@ -401,6 +401,13 @@ export async function POST(req: Request) {
           if (buyerTicket.email && evenement.association) {
             const assoc = evenement.association
             const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${assoc.slug}/evenements`
+            // Only guest/public tickets (no membreId) get a cancel link — a member's own
+            // ticket is already cancellable from the authenticated portal, and a multi-seat
+            // order bought there can include companions this simple token-based flow (built
+            // for the single-seat public registration form) isn't designed to handle.
+            const cancelUrl = !buyerTicket.membreId && buyerTicket.cancelToken
+              ? `${process.env.NEXTAUTH_URL ?? ""}/annulation/${buyerTicket.cancelToken}`
+              : undefined
             sendEmail(ticketPurchaseEmail({
               firstName:       buyerTicket.firstName,
               email:           buyerTicket.email,
@@ -412,6 +419,7 @@ export async function POST(req: Request) {
               quantity,
               paidAt,
               portalUrl,
+              cancelUrl,
               branding:        resolveDocumentBranding(assoc),
             }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
           }
