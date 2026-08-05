@@ -176,6 +176,8 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     RSVP_UPDATED:             { label: t("membres.activiteView.actions.rsvpUpdated"),     color: VIO    },
     PARTICIPATION_GUEST_UPDATED: { label: t("membres.activiteView.actions.participationGuestUpdated"),   color: VIO_L  },
     PARTICIPATION_GUEST_REMOVED: { label: t("membres.activiteView.actions.participationGuestRemoved"),    color: DEL    },
+    PARTICIPATION_PUBLIC_CREATED:   { label: t("membres.activiteView.actions.participationPublicCreated"),   color: VIO_L },
+    PARTICIPATION_PUBLIC_CANCELLED: { label: t("membres.activiteView.actions.participationPublicCancelled"), color: DEL   },
     TICKET_CHECKOUT_STARTED:  { label: t("membres.activiteView.actions.ticketCheckoutStarted"),     color: VIO_L  },
     TICKET_PAID:              { label: t("membres.activiteView.actions.ticketPaid"),         color: EME    },
     TICKET_PAYMENT_CANCELLED: { label: t("membres.activiteView.actions.ticketPaymentCancelled"),     color: DEL    },

@@ -3178,6 +3178,8 @@
         "rsvpUpdated": "RSVP updated",
         "participationGuestUpdated": "Guest updated",
         "participationGuestRemoved": "Guest removed",
+        "participationPublicCreated": "Public registration received",
+        "participationPublicCancelled": "Public registration cancelled",
         "ticketCheckoutStarted": "Payment started",
         "ticketPaid": "Ticket paid",
         "ticketPaymentCancelled": "Payment cancelled",

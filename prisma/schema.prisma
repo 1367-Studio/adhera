@@ -555,6 +555,9 @@ model Participation {
   amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
   orderId         String? // regroupe les places d'une même réservation/paiement
   stripeSessionId String?
+  // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
+  // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
+  cancelToken     String?     @unique
   createdAt       DateTime    @default(now())
 
   membre         Membre?         @relation(fields: [membreId], references: [id])

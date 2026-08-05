@@ -3178,6 +3178,8 @@
         "rsvpUpdated": "RSVP actualizado",
         "participationGuestUpdated": "Invitado modificado",
         "participationGuestRemoved": "Invitado eliminado",
+        "participationPublicCreated": "Inscripción pública recibida",
+        "participationPublicCancelled": "Inscripción pública anulada",
         "ticketCheckoutStarted": "Pago iniciado",
         "ticketPaid": "Entrada pagada",
         "ticketPaymentCancelled": "Pago cancelado",
