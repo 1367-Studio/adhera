@@ -8,7 +8,7 @@ import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon, FileTextIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
@@ -19,6 +19,8 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
+
 import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type MeetingParticipant = {
@@ -385,6 +387,17 @@ export default function ReunionDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{meeting.description}</p>
           )}
         </div>
+        {canManage && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => window.open(`${BASE_PATH}/api/meetings/${id}/transcript-pdf`, "_blank")}
+            disabled={!meeting.transcript?.trim()}
+          >
+            <FileTextIcon className="size-4 mr-1.5" />
+            <span className="hidden sm:inline">{t("reunions.detail.exportMinutes.prefix")}</span>{t("reunions.detail.exportMinutes.suffix")}
+          </Button>
+        )}
         {canManage && (
           <Button size="sm" variant="outline" onClick={handleExportPdf}>
             <DownloadSimpleIcon className="size-4 mr-1.5" />

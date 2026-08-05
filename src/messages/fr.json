@@ -804,7 +804,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "Ce premier exercice fixe définitivement le calendrier fiscal de l'association — tous les suivants devront suivre le même motif de dates.",
+      "foundingWarning": "Ce premier exercice fixe définitivement le calendrier comptable de l'association. Tous les exercices suivants devront respecter les mêmes dates de début et de fin.",
       "label": "Libellé",
       "labelPlaceholder": "Ex : Exercice 2026",
       "startDate": "Date de début",
@@ -1505,6 +1505,10 @@
       "exportAttendance": {
         "prefix": "Feuille de ",
         "suffix": "présence"
+      },
+      "exportMinutes": {
+        "prefix": "Exporter le ",
+        "suffix": "compte-rendu"
       },
       "toasts": {
         "transcriptSaved": "Transcription sauvegardée",

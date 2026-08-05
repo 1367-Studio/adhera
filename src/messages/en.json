@@ -804,7 +804,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "This first fiscal year permanently sets the association's fiscal calendar — every following one must follow the same date pattern.",
+      "foundingWarning": "This first fiscal year definitively establishes the association's accounting calendar. All subsequent fiscal years must follow the same start and end dates.",
       "label": "Label",
       "labelPlaceholder": "E.g.: Fiscal year 2026",
       "startDate": "Start date",
@@ -1505,6 +1505,10 @@
       "exportAttendance": {
         "prefix": "Attendance ",
         "suffix": "sheet"
+      },
+      "exportMinutes": {
+        "prefix": "Meeting ",
+        "suffix": "minutes"
       },
       "toasts": {
         "transcriptSaved": "Transcript saved",

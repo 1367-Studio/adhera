@@ -804,7 +804,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "Este primeiro exercício define permanentemente o calendário fiscal da associação — todos os seguintes deverão seguir o mesmo padrão de datas.",
+      "foundingWarning": "Este primeiro ano fiscal estabelece definitivamente o calendário contábil da associação. Todos os anos fiscais subsequentes devem seguir as mesmas datas de início e término.",
       "label": "Rótulo",
       "labelPlaceholder": "Ex: Exercício 2026",
       "startDate": "Data de início",
@@ -1505,6 +1505,10 @@
       "exportAttendance": {
         "prefix": "Lista de ",
         "suffix": "presença"
+      },
+      "exportMinutes": {
+        "prefix": "Exportar a ",
+        "suffix": "ata"
       },
       "toasts": {
         "transcriptSaved": "Transcrição salva",
