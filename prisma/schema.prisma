@@ -1093,6 +1093,8 @@ model Meeting {
   createdById      String
   transcript       String?
   summary          String?
+  shareToken       String?       @unique
+  shareExpiresAt   DateTime?
   // Snapshot of whichever LiveKit account (platform or the association's own) actually
   // created this meeting's room, pinned on first use — later changes to the association's
   // LiveKit settings must not point an in-progress/already-created meeting at a different

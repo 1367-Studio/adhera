@@ -202,6 +202,16 @@
       "genericError": "Ocorreu um erro.",
       "retry": "Tentar novamente"
     },
+    "meetingShare": {
+      "label": "Ata de reunião",
+      "download": "Baixar o PDF",
+      "expiredTitle": "Link expirado",
+      "expiredDescription": "Esse link de compartilhamento não é mais válido. Peça um novo link à associação.",
+      "invalidTitle": "Link inválido",
+      "invalidDescription": "Esse link de compartilhamento não foi encontrado ou foi revogado.",
+      "errorTitle": "Ocorreu um erro",
+      "genericError": "Ocorreu um erro. Tente novamente."
+    },
     "sidebar": {
       "actualites": "Notícias",
       "evenements": "Eventos",
@@ -1509,6 +1519,15 @@
       "exportMinutes": {
         "prefix": "Exportar a ",
         "suffix": "ata"
+      },
+      "share": {
+        "heading": "Compartilhar",
+        "expiresOn": "Expira em {date}",
+        "copyLink": "Copiar link",
+        "revoke": "Revogar",
+        "generateLink": "Gerar link",
+        "sendEmail": "Enviar por e-mail",
+        "toasts": { "linkCopied": "Link copiado", "emailSent": "E-mail enviado" }
       },
       "toasts": {
         "transcriptSaved": "Transcrição salva",

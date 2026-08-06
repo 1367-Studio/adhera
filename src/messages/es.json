@@ -202,6 +202,16 @@
       "genericError": "Se produjo un error.",
       "retry": "Reintentar"
     },
+    "meetingShare": {
+      "label": "Acta de la reunión",
+      "download": "Descargar el PDF",
+      "expiredTitle": "Enlace caducado",
+      "expiredDescription": "Este enlace de uso compartido ya no es válido. Solicita uno nuevo a la asociación.",
+      "invalidTitle": "Enlace inválido",
+      "invalidDescription": "Este enlace no se encontró o ha sido revocado.",
+      "errorTitle": "Ocurrió un error",
+      "genericError": "Ocurrió un error. Inténtalo de nuevo."
+    },
     "sidebar": {
       "actualites": "Noticias",
       "evenements": "Eventos",
@@ -1509,6 +1519,15 @@
       "exportMinutes": {
         "prefix": "Exportar el ",
         "suffix": "acta"
+      },
+      "share": {
+        "heading": "Compartir",
+        "expiresOn": "Expira el {date}",
+        "copyLink": "Copiar enlace",
+        "revoke": "Revocar",
+        "generateLink": "Generar enlace",
+        "sendEmail": "Enviar por correo",
+        "toasts": { "linkCopied": "Enlace copiado", "emailSent": "Correo enviado" }
       },
       "toasts": {
         "transcriptSaved": "Transcripción guardada",
