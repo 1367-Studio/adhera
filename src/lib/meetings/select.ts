@@ -15,9 +15,20 @@ export const MEETING_SAFE_SELECT = {
   createdById: true,
   transcript: true,
   summary: true,
-  egressId: true,
-  recordingKey: true,
   createdAt: true,
+  shareToken: true,
+  shareExpiresAt: true,
+  recordings: {
+    select: {
+      id:           true,
+      identity:     true,
+      displayName:  true,
+      recordingKey: true,
+      startedAt:    true,
+      endedAt:      true,
+    },
+    orderBy: { startedAt: "asc" },
+  },
 } satisfies Prisma.MeetingSelect
 
 export const MEETING_WITH_PARTICIPANTS_SELECT = {

@@ -52,3 +52,30 @@ export function requestIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for")
   return forwarded?.split(",")[0]?.trim() || "unknown"
 }
+
+// Reads the current count in a fixed window without incrementing it — used to check whether
+// a variable-cost operation (e.g. N audio-seconds) fits inside what's left of the budget
+// *before* spending it. Unlike rateLimit()/INCR, this never creates or extends the window on
+// its own — a key that doesn't exist yet just reads as 0 usage so far.
+export async function rateLimitPeek(key: string): Promise<number> {
+  try {
+    return (await redis.get<number>(`${KEY_PREFIX}${key}`)) ?? 0
+  } catch (err) {
+    console.error("[rate-limit] Redis call failed, assuming 0 usage:", err)
+    return 0
+  }
+}
+
+// Adds `amount` to a fixed-window counter, creating the window (with its expiry) on first
+// use — the "spend" half of the peek-then-spend pattern above. Callers are expected to have
+// already checked rateLimitPeek() before calling this; it doesn't enforce a limit itself.
+export async function consumeQuota(key: string, amount: number, windowMs: number): Promise<void> {
+  try {
+    await redis.pipeline()
+      .incrby(`${KEY_PREFIX}${key}`, amount)
+      .pexpire(`${KEY_PREFIX}${key}`, windowMs, "NX")
+      .exec()
+  } catch (err) {
+    console.error("[rate-limit] Redis call failed while consuming quota:", err)
+  }
+}

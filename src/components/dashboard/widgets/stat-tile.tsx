@@ -20,7 +20,7 @@ export function StatTile({ label, value, icon: Icon, href, accent, alert, isLoad
   return (
     <Link
       href={href}
-      className="group rounded-xl border bg-card p-5 flex flex-col gap-3 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+      className="group rounded-xl border bg-card p-5 flex flex-col gap-3"
     >
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>

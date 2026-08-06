@@ -202,6 +202,16 @@
       "genericError": "An error occurred.",
       "retry": "Retry"
     },
+    "meetingShare": {
+      "label": "Meeting minutes",
+      "download": "Download PDF",
+      "expiredTitle": "Link expired",
+      "expiredDescription": "This share link is no longer valid. Ask the association for a new one.",
+      "invalidTitle": "Invalid link",
+      "invalidDescription": "This share link was not found or has been revoked.",
+      "errorTitle": "Something went wrong",
+      "genericError": "Something went wrong. Please try again."
+    },
     "sidebar": {
       "actualites": "News",
       "evenements": "Events",
@@ -1530,6 +1540,19 @@
       "exportAttendance": {
         "prefix": "Attendance ",
         "suffix": "sheet"
+      },
+      "exportMinutes": {
+        "prefix": "Meeting ",
+        "suffix": "minutes"
+      },
+      "share": {
+        "heading": "Share",
+        "expiresOn": "Expires on {date}",
+        "copyLink": "Copy link",
+        "revoke": "Revoke",
+        "generateLink": "Generate a link",
+        "sendEmail": "Send by email",
+        "toasts": { "linkCopied": "Link copied", "emailSent": "Email sent" }
       },
       "toasts": {
         "transcriptSaved": "Transcript saved",

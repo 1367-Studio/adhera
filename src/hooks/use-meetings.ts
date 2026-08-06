@@ -11,6 +11,15 @@ export type MeetingParticipant = {
   membre: { id: string; firstName: string; lastName: string }
 }
 
+export type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
+}
+
 export type Meeting = {
   id: string
   title: string
@@ -24,10 +33,9 @@ export type Meeting = {
   createdById: string
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
 }
 
 async function fetchMeetings() {
@@ -184,5 +192,48 @@ export function useMeetingToken(meetingId: string | null, endpoint = "/api/meeti
     // 5min gcTime window just replays the previous attempt's cached error/toast instantly,
     // never actually hitting the network again.
     refetchOnMount: "always",
+  })
+}
+
+async function generateShareLink(meetingId: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/share-link`, { method: "POST" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<{ shareToken: string; shareExpiresAt: string }>
+}
+
+async function revokeShareLink(meetingId: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/share-link`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+}
+
+async function sendMeetingMinutesEmail(meetingId: string, to: string, message: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/transcript-pdf/send-email`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ to, message }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'envoi de l'e-mail"))
+  return res.json()
+}
+
+export function useGenerateMeetingShareLink(meetingId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => generateShareLink(meetingId),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ["meeting", meetingId] }),
+  })
+}
+
+export function useRevokeMeetingShareLink(meetingId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => revokeShareLink(meetingId),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ["meeting", meetingId] }),
+  })
+}
+
+export function useSendMeetingMinutesEmail(meetingId: string) {
+  return useMutation({
+    mutationFn: ({ to, message }: { to: string; message: string }) => sendMeetingMinutesEmail(meetingId, to, message),
   })
 }

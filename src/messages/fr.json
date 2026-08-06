@@ -202,6 +202,16 @@
       "genericError": "Une erreur est survenue.",
       "retry": "Réessayer"
     },
+    "meetingShare": {
+      "label": "Compte-rendu de réunion",
+      "download": "Télécharger le PDF",
+      "expiredTitle": "Lien expiré",
+      "expiredDescription": "Ce lien de partage n'est plus valide. Demandez un nouveau lien à l'association.",
+      "invalidTitle": "Lien invalide",
+      "invalidDescription": "Ce lien de partage est introuvable ou a été révoqué.",
+      "errorTitle": "Une erreur est survenue",
+      "genericError": "Une erreur est survenue. Réessayez."
+    },
     "sidebar": {
       "actualites": "Actualités",
       "evenements": "Événements",
@@ -1530,6 +1540,19 @@
       "exportAttendance": {
         "prefix": "Feuille de ",
         "suffix": "présence"
+      },
+      "exportMinutes": {
+        "prefix": "Exporter le ",
+        "suffix": "compte-rendu"
+      },
+      "share": {
+        "heading": "Partager",
+        "expiresOn": "Expire le {date}",
+        "copyLink": "Copier le lien",
+        "revoke": "Révoquer",
+        "generateLink": "Générer un lien",
+        "sendEmail": "Envoyer par e-mail",
+        "toasts": { "linkCopied": "Lien copié", "emailSent": "E-mail envoyé" }
       },
       "toasts": {
         "transcriptSaved": "Transcription sauvegardée",

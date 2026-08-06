@@ -8,17 +8,20 @@ import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon, FileTextIcon, LinkIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
-import { useMeetingEndedListener } from "@/hooks/use-meetings"
+import { useMeetingEndedListener, useGenerateMeetingShareLink, useRevokeMeetingShareLink, useSendMeetingMinutesEmail } from "@/hooks/use-meetings"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
+import { SendEmailModal } from "@/components/ui/send-email-modal"
+
 import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type MeetingParticipant = {
@@ -26,6 +29,15 @@ type MeetingParticipant = {
   // status is redacted to null by the API for non-managers (see redactParticipantStatus in
   // src/lib/meetings/select.ts) — only managers can see it or export the attendance PDF.
   membre: { id: string; firstName: string; lastName: string; status: "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU" | null }
+}
+
+type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
 }
 
 type Meeting = {
@@ -38,10 +50,11 @@ type Meeting = {
   endedAt:      string | null
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
+  shareToken:      string | null
+  shareExpiresAt:  string | null
 }
 
 type Translator = ReturnType<typeof useTranslations>
@@ -66,12 +79,27 @@ export default function ReunionDetailPage() {
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
-  const canManage = isManager(useCurrentUser().role)
+  const currentUser = useCurrentUser()
+  const canManage   = isManager(currentUser.role)
   const STATUS_LABELS = getStatusLabels(t)
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
   const [awaitingRefresh, setAwaitingRefresh] = useState(false)
+  const [emailModalOpen, setEmailModalOpen] = useState(false)
+  const generateShareLink = useGenerateMeetingShareLink(id)
+  const revokeShareLink   = useRevokeMeetingShareLink(id)
+  const sendMinutesEmail  = useSendMeetingMinutesEmail(id)
+
+  async function handleSendMinutesEmail(to: string, message: string) {
+    try {
+      await sendMinutesEmail.mutateAsync({ to, message })
+      toast.success(t("reunions.detail.share.toasts.emailSent"))
+      setEmailModalOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
 
   const { data: meeting, isLoading, isFetching, isError } = useQuery<Meeting>({
     queryKey:  ["meeting", id],
@@ -359,7 +387,7 @@ export default function ReunionDetailPage() {
   const transcriptDirty  = transcript !== (meeting.transcript ?? "")
   const canJoin          = (meeting.status === "SCHEDULED" || meeting.status === "LIVE") && modules.reunions
   const isTranscribing   = transcribeRecording.isPending || transcribeUpload.isPending
-  const hasRecording     = !!meeting.recordingKey && meeting.status === "ENDED"
+  const hasRecording     = meeting.recordings.length > 0 && meeting.status === "ENDED"
   const canTranscribe    = modules.reunions
   const canSummarize     = modules.reunions
 
@@ -377,6 +405,17 @@ export default function ReunionDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{meeting.description}</p>
           )}
         </div>
+        {canManage && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => window.open(`${BASE_PATH}/api/meetings/${id}/transcript-pdf`, "_blank")}
+            disabled={!meeting.transcript?.trim()}
+          >
+            <FileTextIcon className="size-4 mr-1.5" />
+            <span className="hidden sm:inline">{t("reunions.detail.exportMinutes.prefix")}</span>{t("reunions.detail.exportMinutes.suffix")}
+          </Button>
+        )}
         {canManage && (
           <Button size="sm" variant="outline" onClick={handleExportPdf}>
             <DownloadSimpleIcon className="size-4 mr-1.5" />
@@ -502,12 +541,13 @@ export default function ReunionDetailPage() {
                 {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
               </span>
             </span>
-            {meeting.egressId && (
+            {meeting.recordings.some(r => !r.endedAt) && (
               <span className="flex items-center gap-1.5 text-red-500">
                 <CircleIcon className="size-2 fill-current animate-pulse" />
                 {t("reunions.detail.recordingInProgress")}
               </span>
             )}
+
             {hasRecording && (
               <span className="flex items-center gap-1.5 text-green-600">
                 <CircleIcon className="size-2 fill-current" />
@@ -547,6 +587,73 @@ export default function ReunionDetailPage() {
                 </div>
               )}
             </div>
+          )}
+          {canManage && (
+            <div className="space-y-2">
+              <Label>{t("reunions.detail.share.heading")}</Label>
+              <div className="rounded-xl border bg-card p-4 space-y-3">
+                {meeting.shareToken && meeting.shareExpiresAt && new Date(meeting.shareExpiresAt) > new Date() ? (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reunions.detail.share.expiresOn", { date: format(new Date(meeting.shareExpiresAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const url = `${window.location.origin}${BASE_PATH}/compte-rendu/${currentUser.associationSlug}/${meeting.shareToken}`
+                          navigator.clipboard.writeText(url)
+                          toast.success(t("reunions.detail.share.toasts.linkCopied"))
+                        }}
+                      >
+                        <LinkIcon className="size-3.5 mr-1.5" />
+                        {t("reunions.detail.share.copyLink")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => revokeShareLink.mutate()}
+                        loading={revokeShareLink.isPending}
+                      >
+                        {t("reunions.detail.share.revoke")}
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={() => generateShareLink.mutate()}
+                    loading={generateShareLink.isPending}
+                    disabled={!meeting.transcript?.trim()}>
+                    <LinkIcon className="size-3.5 mr-1.5" />
+                    {t("reunions.detail.share.generateLink")}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setEmailModalOpen(true)} disabled={!meeting.transcript?.trim()}>
+                  <EnvelopeSimpleIcon className="size-3.5 mr-1.5" />
+                  {t("reunions.detail.share.sendEmail")}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {emailModalOpen && (
+            <SendEmailModal
+              documentLabel={meeting.title}
+              defaultTo=""
+              open={emailModalOpen}
+              onOpenChange={setEmailModalOpen}
+              onSend={handleSendMinutesEmail}
+              loading={sendMinutesEmail.isPending}
+            />
           )}
         </div>
       </div>

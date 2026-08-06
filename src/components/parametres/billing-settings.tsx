@@ -173,7 +173,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
               </Button>
 
               {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (
-                <Button size="sm" variant="ghost" onClick={() => setCancelDialogOpen(true)}>
+                <Button size="sm" variant="outline" onClick={() => setCancelDialogOpen(true)}>
                   {t("cancelPlan")}
                 </Button>
               )}
