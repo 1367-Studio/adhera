@@ -11,6 +11,15 @@ export type MeetingParticipant = {
   membre: { id: string; firstName: string; lastName: string }
 }
 
+export type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
+}
+
 export type Meeting = {
   id: string
   title: string
@@ -24,10 +33,9 @@ export type Meeting = {
   createdById: string
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
 }
 
 async function fetchMeetings() {
