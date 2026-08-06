@@ -33,6 +33,9 @@ type PresenceRow = {
   firstName:       string
   lastName:        string
   email:           string | null
+  phone:           string | null
+  address:         string | null
+  answers:         Record<string, string> | null
   participationId: string | null
   present:         boolean
   rsvp:            string | null
@@ -49,6 +52,12 @@ function rowKey(row: PresenceRow): string {
   return row.participationId ?? row.membreId!
 }
 
+function hasExtraInfo(row: PresenceRow): boolean {
+  return !!(row.phone || row.address || (row.answers && Object.keys(row.answers).length > 0))
+}
+
+type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
+
 type Evenement = {
   id:          string
   title:       string
@@ -59,6 +68,7 @@ type Evenement = {
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
+  customFields: CustomField[]
 }
 
 // Mirrors the grace window enforced server-side in /api/portal/check-in/[token] —
@@ -112,6 +122,7 @@ export default function PresencesPage() {
   const [editLastName,  setEditLastName]  = useState("")
   const [editEmail,     setEditEmail]     = useState("")
   const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
+  const [infoTarget, setInfoTarget]     = useState<PresenceRow | null>(null)
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -385,6 +396,21 @@ export default function PresencesPage() {
     y += 5
 
     // ── Table ───────────────────────────────────────────────────────────────
+    // Compact "Infos" column — only added when at least one row actually has phone/
+    // address/custom-field data, so an ordinary members-only event's PDF isn't padded
+    // with an empty column no one asked for.
+    const showInfoCol = typed.some(hasExtraInfo)
+    const contactLine = (r: PresenceRow) => {
+      const parts: string[] = []
+      if (r.phone) parts.push(r.phone)
+      if (r.address) parts.push(r.address)
+      for (const f of ev?.customFields ?? []) {
+        const v = r.answers?.[f.id]
+        if (v) parts.push(`${f.label}: ${v}`)
+      }
+      return parts.join(" · ")
+    }
+
     const commonTableOpts = {
       margin:             { left: M, right: M },
       headStyles:         { fillColor: headerRgb, textColor: [255, 255, 255] as [number, number, number], fontStyle: "bold" as const, fontSize: 8 },
@@ -397,12 +423,13 @@ export default function PresencesPage() {
       autoTable(doc, {
         ...commonTableOpts,
         startY:       y,
-        head:         [["#", "Membre", "Présent", "Paiement"]],
+        head:         [["#", "Membre", "Présent", "Paiement", ...(showInfoCol ? ["Infos"] : [])]],
         body:         typed.map((r, i) => [
           i + 1,
           `${r.lastName} ${r.firstName}`,
           r.present ? "Oui" : "",
           r.ticketPaidAt ? "Payé" : r.rsvp === "CONFIRME" ? "Réservé" : "—",
+          ...(showInfoCol ? [contactLine(r)] : []),
         ]),
         columnStyles: {
           0: { cellWidth: 10, halign: "center" },
@@ -426,12 +453,13 @@ export default function PresencesPage() {
       autoTable(doc, {
         ...commonTableOpts,
         startY:       y,
-        head:         [["#", "Membre", "Présent", "RSVP"]],
+        head:         [["#", "Membre", "Présent", "RSVP", ...(showInfoCol ? ["Infos"] : [])]],
         body:         typed.map((r, i) => [
           i + 1,
           `${r.lastName} ${r.firstName}`,
           r.present ? "Oui" : "",
           r.rsvp ? (RSVP_LABELS[r.rsvp]?.label ?? "—") : "—",
+          ...(showInfoCol ? [contactLine(r)] : []),
         ]),
         columnStyles: {
           0: { cellWidth: 10, halign: "center" },
@@ -807,6 +835,23 @@ export default function PresencesPage() {
                     )
                   )}
 
+                  {hasExtraInfo(row) && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger render={<span />}>
+                          <button
+                            type="button"
+                            onClick={() => setInfoTarget(row)}
+                            className="flex items-center justify-center size-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                          >
+                            <InfoIcon className="size-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("evenements.presences.list.infoTooltip")}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+
                   {row.isGuest && !isPast && (
                     <div className="flex items-center gap-1 shrink-0">
                       <button
@@ -885,6 +930,37 @@ export default function PresencesPage() {
             />
           </div>
         </div>
+      </Modal>
+
+      {/* Registration details (phone/address/custom field answers) */}
+      <Modal
+        open={!!infoTarget}
+        onOpenChange={(open) => !open && setInfoTarget(null)}
+        title={infoTarget ? `${infoTarget.lastName} ${infoTarget.firstName}` : ""}
+        size="sm"
+      >
+        {infoTarget && (
+          <div className="space-y-3 py-2 text-sm">
+            {infoTarget.phone && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("evenements.presences.list.infoPhone")}</p>
+                <p>{infoTarget.phone}</p>
+              </div>
+            )}
+            {infoTarget.address && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("evenements.presences.list.infoAddress")}</p>
+                <p>{infoTarget.address}</p>
+              </div>
+            )}
+            {ev.customFields.filter(f => infoTarget.answers?.[f.id]).map(f => (
+              <div key={f.id}>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{f.label}</p>
+                <p>{infoTarget.answers![f.id]}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </Modal>
 
       {/* Revoke confirmation */}

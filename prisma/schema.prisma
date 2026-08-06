@@ -508,11 +508,32 @@ model Evenement {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  association    Association     @relation(fields: [associationId], references: [id])
+  association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
+  customFields   EvenementCustomField[]
 
   @@index([associationId, date])
+}
+
+enum EvenementFieldType {
+  TEXT
+  NUMBER
+}
+
+// Admin-defined extra fields on an event's public registration form (name/type/order),
+// answered per Participation via Participation.answers — see that field's comment.
+model EvenementCustomField {
+  id          String             @id @default(cuid())
+  evenementId String
+  type        EvenementFieldType
+  label       String
+  required    Boolean            @default(false)
+  order       Int
+
+  evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+
+  @@index([evenementId])
 }
 
 model Participation {
@@ -522,6 +543,11 @@ model Participation {
   firstName       String // capturé sur la ligne — pas de join Membre pour l'affichage
   lastName        String
   email           String?
+  phone           String?
+  address         String?
+  // Réponses aux EvenementCustomField de cet événement, keyed by field id (ex: {"clxyz...": "42"})
+  // — un JSON simple suffit ici, personne n'agrège ces réponses entre participants comme un sondage.
+  answers         Json?
   present         Boolean     @default(false)
   rsvp            RsvpStatus?
   rsvpAt          DateTime?
@@ -529,6 +555,9 @@ model Participation {
   amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
   orderId         String? // regroupe les places d'une même réservation/paiement
   stripeSessionId String?
+  // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
+  // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
+  cancelToken     String?     @unique
   createdAt       DateTime    @default(now())
 
   membre         Membre?         @relation(fields: [membreId], references: [id])
@@ -634,11 +663,18 @@ model Notification {
   scope     NotificationScope @default(MEMBRE)
   read      Boolean           @default(false)
   createdAt DateTime          @default(now())
+  // High-volume, repeatable events (e.g. one sondage response after another) reuse the
+  // same unread row instead of creating a new one each time — see notifyAdminsOfResponse
+  // in src/app/api/portal/sondages/[id]/repondre/route.ts. Left null for every other
+  // notification type, which still gets one row per event as before.
+  groupKey  String?
+  count     Int               @default(1)
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, read])
   @@index([userId, scope, read])
+  @@index([userId, groupKey, read])
 }
 
 // Two-way support channel between an association's own ADMIN and the platform's SUPER_ADMIN

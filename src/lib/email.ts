@@ -182,6 +182,9 @@ export function rsvpConfirmationEmail(p: {
   eventDate:       Date
   eventLocation:   string | null
   portalUrl:       string
+  // Only set for public/guest registrations (no portal account to cancel from) — see
+  // src/app/api/public/cancel-ticket/[token]/route.ts.
+  cancelUrl?:      string
   branding?:       EmailBranding
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -205,7 +208,8 @@ export function rsvpConfirmationEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler ma participation</a>.</p>` : ""}`
   return {
     to:      p.email,
     subject: `Confirmation — ${p.eventTitle}`,
@@ -507,6 +511,9 @@ export function ticketPurchaseEmail(p: {
   quantity:        number
   paidAt:          Date
   portalUrl:       string
+  // Only set for public/guest tickets (no portal account to cancel from) — see
+  // src/app/api/public/cancel-ticket/[token]/route.ts.
+  cancelUrl?:      string
   branding?:       EmailBranding
 }) {
   const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -541,10 +548,34 @@ export function ticketPurchaseEmail(p: {
       </td></tr>
     </table>
     <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
-    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler et être remboursé</a>.</p>` : ""}`
   return {
     to:      p.email,
     subject: `Billet confirmé — ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+export function cancellationConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  refunded:        boolean
+  amount?:         number
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount != null ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Inscription annulée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » a bien été annulée.
+    </p>
+    ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
+  return {
+    to:      p.email,
+    subject: `Annulation confirmée — ${p.eventTitle}`,
     html:    layout(p.associationName, content, p.branding),
   }
 }

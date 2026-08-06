@@ -1176,6 +1176,7 @@
       "actions": {
         "presences": "Présences",
         "edit": "Modifier",
+        "customFields": "Champs personnalisés",
         "delete": "Supprimer"
       },
       "searchPlaceholder": "Rechercher un événement…",
@@ -1190,6 +1191,21 @@
         "updated": "Événement mis à jour",
         "deleted": "Événement supprimé"
       }
+    },
+    "customFields": {
+      "modalTitle": "Champs personnalisés — {title}",
+      "description": "Ajoutez des champs supplémentaires au formulaire d'inscription public de cet événement.",
+      "noFields": "Aucun champ personnalisé pour l'instant.",
+      "fieldLabel": "Intitulé du champ",
+      "fieldLabelPlaceholder": "Ex : Taille du t-shirt",
+      "fieldType": "Type",
+      "typeText": "Texte",
+      "typeNumber": "Nombre",
+      "fieldRequired": "Obligatoire",
+      "removeField": "Supprimer ce champ",
+      "addField": "Ajouter un champ",
+      "labelRequiredError": "Chaque champ doit avoir un intitulé.",
+      "saved": "Champs personnalisés enregistrés"
     },
     "calendar": {
       "days": {
@@ -1257,6 +1273,9 @@
         "guestBadge": "Invité",
         "paidBadge": "Payé",
         "cancelPaymentTooltip": "Annuler ce paiement en espèces",
+        "infoTooltip": "Voir les informations d'inscription",
+        "infoPhone": "Téléphone",
+        "infoAddress": "Adresse",
         "reservedBadge": "Réservé",
         "markPaid": "Marquer payé",
         "editTitle": "Modifier",
@@ -1435,6 +1454,12 @@
         "atLeastOneQuestion": "Ajoutez au moins une question",
         "atLeastOneMember": "Sélectionnez au moins un membre",
         "deadlinePast": "La date limite ne peut pas être dans le passé"
+      }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitation envoyée par e-mail} other {# invitations envoyées par e-mail}}",
+        "invitationsFailed": "{count, plural, one {# invitation n'a pas pu être envoyée — voir l'onglet Envois} other {# invitations n'ont pas pu être envoyées — voir l'onglet Envois}}"
       }
     }
   },
@@ -2473,14 +2498,14 @@
         "updated": "Compte Stripe mis à jour",
         "notFinalized": "La connexion Stripe n'a pas été finalisée. Réessayez si nécessaire."
       },
-      "enabledText": "Vos membres peuvent payer leur cotisation en ligne. Les fonds sont versés directement sur votre compte Stripe. Une commission de 1,5 % est prélevée par la plateforme.",
+      "enabledText": "Vos membres peuvent payer leur cotisation en ligne. Les fonds sont versés directement sur votre compte Stripe.",
       "editAccount": "Modifier le compte",
       "dashboardButton": "Dashboard Stripe",
       "pendingText": "Votre compte est en cours de vérification par Stripe. Vous recevrez un email de confirmation.",
       "completeOnboarding": "Compléter l'inscription",
       "invalidText": "La connexion à votre compte Stripe a été perdue (compte supprimé ou accès révoqué). Le paiement en ligne est désactivé jusqu'à reconnexion.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Connectez un compte Stripe pour activer le paiement en ligne des cotisations. Une commission de 1,5 % sera prélevée par la plateforme.",
+      "connectText": "Connectez un compte Stripe pour activer le paiement en ligne des cotisations.",
       "connect": "Connecter Stripe"
     },
     "suspended": {
@@ -2634,7 +2659,12 @@
       "toasts": {
         "subjectRequired": "Veuillez renseigner l'objet",
         "bodyRequired": "Veuillez renseigner le message",
-        "templateLoadError": "Impossible de charger le modèle de rappel"
+        "templateLoadError": "Impossible de charger le modèle de rappel",
+        "queued": "{count, plural, one {Envoi en cours pour # destinataire…} other {Envoi en cours pour # destinataires…}}",
+        "reminderSent": "{count, plural, one {Rappel envoyé à # destinataire} other {Rappels envoyés à # destinataires}}",
+        "noReminderSent": "Aucun rappel envoyé",
+        "noReminderSentWithFailures": "Aucun rappel envoyé — {count, plural, one {# échec} other {# échecs}}",
+        "sendFailures": "{count, plural, one {# envoi échoué} other {# envois échoués}}"
       },
       "continue": "Continuer",
       "confirmTitle": "Confirmer l'envoi",
@@ -2929,6 +2959,7 @@
         "selectType": "Sélectionnez un type de membre",
         "selectMember": "Sélectionnez au moins un membre",
         "writeMessage": "Rédigez le message SMS",
+        "queued": "{count, plural, one {Envoi en cours pour # membre…} other {Envoi en cours pour # membres…}}",
         "noPhoneRecipient": "Aucun destinataire avec un numéro de téléphone dans cette sélection",
         "cannotVerifyCount": "Impossible de vérifier le nombre de destinataires",
         "noSmsSent": "Aucun SMS envoyé",
@@ -3001,6 +3032,7 @@
         "subjectRequired": "Renseignez l'objet du message",
         "bodyRequired": "Rédigez le contenu du message",
         "noRecipientWithEmail": "Aucun destinataire avec une adresse email dans cette sélection",
+        "queued": "{count, plural, one {Envoi en cours pour # destinataire…} other {Envoi en cours pour # destinataires…}}",
         "cannotVerifyCount": "Impossible de vérifier le nombre de destinataires",
         "templateSaved": "Modèle « {name} » enregistré",
         "noEmailSent": "Aucun email envoyé",
@@ -3182,6 +3214,8 @@
         "rsvpUpdated": "RSVP mis à jour",
         "participationGuestUpdated": "Invité modifié",
         "participationGuestRemoved": "Invité retiré",
+        "participationPublicCreated": "Inscription publique reçue",
+        "participationPublicCancelled": "Inscription publique annulée",
         "ticketCheckoutStarted": "Paiement initié",
         "ticketPaid": "Ticket payé",
         "ticketPaymentCancelled": "Paiement annulé",
@@ -3578,7 +3612,8 @@
       "attachmentsNotice": " Les pièces jointes ne sont pas affichées ici.",
       "contentUnavailable": "Contenu non disponible pour cet envoi.",
       "countOfTotal": "{shown} de {total, plural, one {# e-mail} other {# e-mails}}",
-      "seeMore": "Voir plus"
+      "seeMore": "Voir plus",
+      "openSondage": "Répondre au sondage"
     },
     "profil": {
       "notFound": "Profil introuvable.",

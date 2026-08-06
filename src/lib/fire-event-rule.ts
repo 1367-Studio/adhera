@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma/client"
-import { sendEmail } from "@/lib/mail"
-import { sendSms } from "@/lib/sms"
+import { inngest } from "@/lib/inngest"
 import { customEmail } from "@/lib/email"
 import { parseModules } from "@/lib/modules"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
@@ -51,25 +50,40 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
   let dispatched = false
 
   if ((channel === "EMAIL" || channel === "BOTH") && membre.email) {
-    sendEmail(customEmail({
-      associationName: association.name,
-      subject:         substituteVars(rule.template.subject, vars),
-      bodyHtml:        substituteVars(rule.template.body, vars),
-      recipientEmail:  membre.email,
-      branding:        resolveDocumentBranding(association),
-    }), { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
+    await inngest.send({
+      name: "automation/event-rule.email-requested",
+      data: {
+        payload: customEmail({
+          associationName: association.name,
+          subject:         substituteVars(rule.template.subject, vars),
+          bodyHtml:        substituteVars(rule.template.body, vars),
+          recipientEmail:  membre.email,
+          branding:        resolveDocumentBranding(association),
+        }),
+        context: { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id },
+      },
+    }).catch(() => {})
     dispatched = true
   }
 
   if ((channel === "SMS" || channel === "BOTH") && mods.sms && rule.template.smsBody && membre.phone) {
-    sendSms(membre.phone, substituteVars(rule.template.smsBody, vars), associationId, { membreId: membre.id, source: "AUTOMATION", sourceId: rule.id }).catch(() => {})
+    await inngest.send({
+      name: "automation/event-rule.sms-requested",
+      data: {
+        to:            membre.phone,
+        body:          substituteVars(rule.template.smsBody, vars),
+        associationId,
+        context:       { membreId: membre.id, source: "AUTOMATION", sourceId: rule.id },
+      },
+    }).catch(() => {})
     dispatched = true
   }
 
-  // "dispatched" means attempted, not confirmed — both sends above are fire-and-forget,
-  // so this AutomationLog row (and its subject line) exists whether the send actually
-  // went through or not. The real per-message outcome — including failures — lives in
-  // EmailMessage/SmsMessage, keyed by this same source/sourceId ("AUTOMATION"/rule.id).
+  // "dispatched" means handed off, not confirmed — the actual send now happens in an
+  // Inngest function (with its own retries), so this AutomationLog row (and its subject
+  // line) exists whether that send actually goes through or not. The real per-message
+  // outcome — including failures — lives in EmailMessage/SmsMessage, keyed by this same
+  // source/sourceId ("AUTOMATION"/rule.id).
   if (dispatched) {
     await prisma.automationLog.create({
       data: {

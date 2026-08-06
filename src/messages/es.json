@@ -814,7 +814,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "Este primer ejercicio fiscal establece definitivamente el calendario contable de la asociación. Todos los ejercicios fiscales subsiguientes deberán tener las mismas fechas de inicio y finalización.",
+      "foundingWarning": "Este primer ejercicio fija permanentemente el calendario contable de la asociación. Todos los ejercicios siguientes deberán respetar las mismas fechas de inicio y fin.",
       "label": "Etiqueta",
       "labelPlaceholder": "Ej: Ejercicio 2026",
       "startDate": "Fecha de inicio",
@@ -1176,6 +1176,7 @@
       "actions": {
         "presences": "Asistencia",
         "edit": "Editar",
+        "customFields": "Campos personalizados",
         "delete": "Eliminar"
       },
       "searchPlaceholder": "Buscar un evento…",
@@ -1190,6 +1191,21 @@
         "updated": "Evento actualizado",
         "deleted": "Evento eliminado"
       }
+    },
+    "customFields": {
+      "modalTitle": "Campos personalizados — {title}",
+      "description": "Añade campos adicionales al formulario público de inscripción de este evento.",
+      "noFields": "Aún no hay campos personalizados.",
+      "fieldLabel": "Etiqueta del campo",
+      "fieldLabelPlaceholder": "Ej.: Talla de camiseta",
+      "fieldType": "Tipo",
+      "typeText": "Texto",
+      "typeNumber": "Número",
+      "fieldRequired": "Obligatorio",
+      "removeField": "Eliminar este campo",
+      "addField": "Añadir un campo",
+      "labelRequiredError": "Cada campo debe tener una etiqueta.",
+      "saved": "Campos personalizados guardados"
     },
     "calendar": {
       "days": {
@@ -1257,6 +1273,9 @@
         "guestBadge": "Invitado",
         "paidBadge": "Pagado",
         "cancelPaymentTooltip": "Cancelar este pago en efectivo",
+        "infoTooltip": "Ver información de la inscripción",
+        "infoPhone": "Teléfono",
+        "infoAddress": "Dirección",
         "reservedBadge": "Reservado",
         "markPaid": "Marcar como pagado",
         "editTitle": "Editar",
@@ -1435,6 +1454,12 @@
         "atLeastOneQuestion": "Añada al menos una pregunta",
         "atLeastOneMember": "Seleccione al menos un miembro",
         "deadlinePast": "La fecha límite no puede estar en el pasado"
+      }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitación enviada por correo} other {# invitaciones enviadas por correo}}",
+        "invitationsFailed": "{count, plural, one {# invitación no pudo enviarse — ver la pestaña Envíos} other {# invitaciones no pudieron enviarse — ver la pestaña Envíos}}"
       }
     }
   },
@@ -2473,14 +2498,14 @@
         "updated": "Cuenta Stripe actualizada",
         "notFinalized": "La conexión con Stripe no se finalizó. Vuelva a intentarlo si es necesario."
       },
-      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe. La plataforma cobra una comisión del 1,5%.",
+      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe.",
       "editAccount": "Editar cuenta",
       "dashboardButton": "Panel de Stripe",
       "pendingText": "Su cuenta está siendo verificada por Stripe. Recibirá un correo de confirmación.",
       "completeOnboarding": "Completar el registro",
       "invalidText": "Se perdió la conexión con su cuenta Stripe (cuenta eliminada o acceso revocado). El pago en línea está desactivado hasta la reconexión.",
       "reconnect": "Reconectar Stripe",
-      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas. La plataforma cobrará una comisión del 1,5%.",
+      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas.",
       "connect": "Conectar Stripe"
     },
     "suspended": {
@@ -2634,7 +2659,12 @@
       "toasts": {
         "subjectRequired": "Indique el asunto",
         "bodyRequired": "Indique el mensaje",
-        "templateLoadError": "No se pudo cargar la plantilla de recordatorio"
+        "templateLoadError": "No se pudo cargar la plantilla de recordatorio",
+        "queued": "{count, plural, one {Enviando a # destinatario…} other {Enviando a # destinatarios…}}",
+        "reminderSent": "{count, plural, one {Recordatorio enviado a # destinatario} other {Recordatorios enviados a # destinatarios}}",
+        "noReminderSent": "Ningún recordatorio enviado",
+        "noReminderSentWithFailures": "Ningún recordatorio enviado — {count, plural, one {# fallo} other {# fallos}}",
+        "sendFailures": "{count, plural, one {# envío fallido} other {# envíos fallidos}}"
       },
       "continue": "Continuar",
       "confirmTitle": "Confirmar el envío",
@@ -2929,6 +2959,7 @@
         "selectType": "Seleccione un tipo de miembro",
         "selectMember": "Seleccione al menos un miembro",
         "writeMessage": "Escriba el mensaje de SMS",
+        "queued": "{count, plural, one {Enviando a # miembro…} other {Enviando a # miembros…}}",
         "noPhoneRecipient": "Ningún destinatario con número de teléfono en esta selección",
         "cannotVerifyCount": "No se pudo verificar el número de destinatarios",
         "noSmsSent": "Ningún SMS enviado",
@@ -3001,6 +3032,7 @@
         "subjectRequired": "Indique el asunto del mensaje",
         "bodyRequired": "Redacte el contenido del mensaje",
         "noRecipientWithEmail": "Ningún destinatario con una dirección de correo en esta selección",
+        "queued": "{count, plural, one {Enviando a # destinatario…} other {Enviando a # destinatarios…}}",
         "cannotVerifyCount": "No se pudo verificar el número de destinatarios",
         "templateSaved": "Plantilla « {name} » guardada",
         "noEmailSent": "Ningún correo enviado",
@@ -3182,6 +3214,8 @@
         "rsvpUpdated": "RSVP actualizado",
         "participationGuestUpdated": "Invitado modificado",
         "participationGuestRemoved": "Invitado eliminado",
+        "participationPublicCreated": "Inscripción pública recibida",
+        "participationPublicCancelled": "Inscripción pública anulada",
         "ticketCheckoutStarted": "Pago iniciado",
         "ticketPaid": "Entrada pagada",
         "ticketPaymentCancelled": "Pago cancelado",
@@ -3578,7 +3612,8 @@
       "attachmentsNotice": " Los archivos adjuntos no se muestran aquí.",
       "contentUnavailable": "Contenido no disponible para este envío.",
       "countOfTotal": "{shown} de {total, plural, one {# correo} other {# correos}}",
-      "seeMore": "Ver más"
+      "seeMore": "Ver más",
+      "openSondage": "Responder la encuesta"
     },
     "profil": {
       "notFound": "Perfil no encontrado.",

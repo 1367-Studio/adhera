@@ -49,7 +49,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     entity:        "Sondage",
     entityId:      id,
     label:         sondage.title,
-    metadata:      { emailsSent: result.emailsSent, emailsFailed: result.emailsFailed, skippedNoEmail: result.skippedNoEmail, skippedNoAccess: result.skippedNoAccess },
+    metadata:      { skippedNoEmail: result.skippedNoEmail, skippedNoAccess: result.skippedNoAccess },
   })
 
   return NextResponse.json({ ok: true, ...result })

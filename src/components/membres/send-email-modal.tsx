@@ -13,6 +13,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
 import { useMessageTemplates, useCreateTemplate, type MessageTemplate } from "@/hooks/use-message-templates"
+import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
 import { cn } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -451,23 +452,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
-      if (data.sent === 0) {
-        toast.error(data.failed > 0
-          ? t("membres.email.toasts.noEmailSentWithFailures", { count: data.failed })
-          : t("membres.email.toasts.noEmailSent"))
-      } else {
-        // "Envoyé" here only means Resend accepted the request — it doesn't guarantee
-        // the message was actually delivered (bounces/erreurs surface later, async, via
-        // webhook). The real per-recipient outcome is visible in each member's Emails tab.
-        toast.success(t("membres.email.toasts.emailSent", { count: data.sent }))
-        if (data.failed > 0) {
-          const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
-          const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? t("membres.email.toasts.andOthers", { count: names.length - 5 }) : "")
-          toast.warning(
-            t("membres.email.toasts.sendFailures", { count: data.failed, preview: preview ? ` : ${preview}` : "" }),
-          )
-        }
-      }
+
+      // The actual send now runs in the background (Inngest) — this response just confirms
+      // it was queued. registerPendingBulkSend + useBulkSendListener (mounted in AppSidebar)
+      // deliver the real sent/failed toast once the send finishes, even if this modal has
+      // long since closed.
+      registerPendingBulkSend(data.jobId)
+      toast.info(t("membres.email.toasts.queued", { count: data.totalRecipients }))
       if (data.skippedDuplicateExternalCount > 0) {
         toast.info(t("membres.email.toasts.duplicateExternalSkipped", { count: data.skippedDuplicateExternalCount }))
       }

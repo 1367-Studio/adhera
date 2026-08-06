@@ -814,7 +814,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "This first fiscal year definitively establishes the association's accounting calendar. All subsequent fiscal years must follow the same start and end dates.",
+      "foundingWarning": "This first fiscal year permanently sets the association's accounting calendar. Every following fiscal year will have to use the same start and end dates.",
       "label": "Label",
       "labelPlaceholder": "E.g.: Fiscal year 2026",
       "startDate": "Start date",
@@ -1176,6 +1176,7 @@
       "actions": {
         "presences": "Attendance",
         "edit": "Edit",
+        "customFields": "Custom fields",
         "delete": "Delete"
       },
       "searchPlaceholder": "Search for an event…",
@@ -1190,6 +1191,21 @@
         "updated": "Event updated",
         "deleted": "Event deleted"
       }
+    },
+    "customFields": {
+      "modalTitle": "Custom fields — {title}",
+      "description": "Add extra fields to this event's public registration form.",
+      "noFields": "No custom fields yet.",
+      "fieldLabel": "Field label",
+      "fieldLabelPlaceholder": "E.g. T-shirt size",
+      "fieldType": "Type",
+      "typeText": "Text",
+      "typeNumber": "Number",
+      "fieldRequired": "Required",
+      "removeField": "Remove this field",
+      "addField": "Add a field",
+      "labelRequiredError": "Every field needs a label.",
+      "saved": "Custom fields saved"
     },
     "calendar": {
       "days": {
@@ -1257,6 +1273,9 @@
         "guestBadge": "Guest",
         "paidBadge": "Paid",
         "cancelPaymentTooltip": "Cancel this cash payment",
+        "infoTooltip": "View registration details",
+        "infoPhone": "Phone",
+        "infoAddress": "Address",
         "reservedBadge": "Reserved",
         "markPaid": "Mark as paid",
         "editTitle": "Edit",
@@ -1435,6 +1454,12 @@
         "atLeastOneQuestion": "Add at least one question",
         "atLeastOneMember": "Select at least one member",
         "deadlinePast": "The deadline cannot be in the past"
+      }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitation sent by email} other {# invitations sent by email}}",
+        "invitationsFailed": "{count, plural, one {# invitation could not be sent — see the Sends tab} other {# invitations could not be sent — see the Sends tab}}"
       }
     }
   },
@@ -2473,14 +2498,14 @@
         "updated": "Stripe account updated",
         "notFinalized": "The Stripe connection wasn't completed. Try again if needed."
       },
-      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account. A 1.5% commission is charged by the platform.",
+      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account.",
       "editAccount": "Edit account",
       "dashboardButton": "Stripe dashboard",
       "pendingText": "Your account is being verified by Stripe. You'll receive a confirmation email.",
       "completeOnboarding": "Complete sign-up",
       "invalidText": "The connection to your Stripe account was lost (account deleted or access revoked). Online payment is disabled until reconnected.",
       "reconnect": "Reconnect Stripe",
-      "connectText": "Connect a Stripe account to enable online membership fee payments. A 1.5% commission will be charged by the platform.",
+      "connectText": "Connect a Stripe account to enable online membership fee payments.",
       "connect": "Connect Stripe"
     },
     "suspended": {
@@ -2634,7 +2659,12 @@
       "toasts": {
         "subjectRequired": "Please enter a subject",
         "bodyRequired": "Please enter a message",
-        "templateLoadError": "Unable to load the reminder template"
+        "templateLoadError": "Unable to load the reminder template",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
+        "reminderSent": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+        "noReminderSent": "No reminder sent",
+        "noReminderSentWithFailures": "No reminder sent — {count, plural, one {# failure} other {# failures}}",
+        "sendFailures": "{count, plural, one {# send failed} other {# sends failed}}"
       },
       "continue": "Continue",
       "confirmTitle": "Confirm sending",
@@ -2929,6 +2959,7 @@
         "selectType": "Select a member type",
         "selectMember": "Select at least one member",
         "writeMessage": "Write the SMS message",
+        "queued": "{count, plural, one {Sending to # member…} other {Sending to # members…}}",
         "noPhoneRecipient": "No recipient with a phone number in this selection",
         "cannotVerifyCount": "Unable to check the number of recipients",
         "noSmsSent": "No SMS sent",
@@ -3001,6 +3032,7 @@
         "subjectRequired": "Enter a subject for the message",
         "bodyRequired": "Write the message content",
         "noRecipientWithEmail": "No recipient with an email address in this selection",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
         "cannotVerifyCount": "Unable to verify the number of recipients",
         "templateSaved": "Template “{name}” saved",
         "noEmailSent": "No email sent",
@@ -3182,6 +3214,8 @@
         "rsvpUpdated": "RSVP updated",
         "participationGuestUpdated": "Guest updated",
         "participationGuestRemoved": "Guest removed",
+        "participationPublicCreated": "Public registration received",
+        "participationPublicCancelled": "Public registration cancelled",
         "ticketCheckoutStarted": "Payment started",
         "ticketPaid": "Ticket paid",
         "ticketPaymentCancelled": "Payment cancelled",
@@ -3578,7 +3612,8 @@
       "attachmentsNotice": " Attachments are not shown here.",
       "contentUnavailable": "Content not available for this send.",
       "countOfTotal": "{shown} of {total, plural, one {# email} other {# emails}}",
-      "seeMore": "See more"
+      "seeMore": "See more",
+      "openSondage": "Answer the survey"
     },
     "profil": {
       "notFound": "Profile not found.",
