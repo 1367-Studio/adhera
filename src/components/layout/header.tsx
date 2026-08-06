@@ -19,7 +19,8 @@ import { UserMenu } from "@/components/layout/user-menu"
 import { NotificationBell } from "@/components/layout/notification-bell"
 import { HelpButton } from "@/components/layout/help-button"
 import { UserIcon, SquaresFourIcon } from "@phosphor-icons/react/dist/ssr"
-import { isManager } from "@/lib/user-context"
+import { isManager, useModules } from "@/lib/user-context"
+import { firstEnabledPortalPath } from "@/lib/modules"
 import { useNotifications } from "@/hooks/use-notifications"
 import { cn } from "@/lib/utils"
 
@@ -55,6 +56,7 @@ interface HeaderProps {
 
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const t = useTranslations("layout.header")
+  const modules  = useModules()
   const inPortal = pathname.includes("/portal/")
   // Bell only shows the current context's notifications (src/components/layout/notification-bell.tsx),
   // so unread items in the other one would otherwise go unnoticed until the user happens to
@@ -66,7 +68,7 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   return (
     <div className="flex shrink-0 items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
       <Link
-        href={`/portal/${slug}/actualites`}
+        href={`/portal/${slug}/${firstEnabledPortalPath(modules)}`}
         title={t("myPortal")}
         className={cn(
           "relative flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
@@ -95,6 +97,7 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
 
 export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug }: HeaderProps) {
   const t = useTranslations()
+  const modules = useModules()
   const routeLabels = getRouteLabels(t)
   const pathname = usePathname()
   const looksLikeId = (s: string) => /^[a-z0-9]{20,}$/i.test(s) || /^[0-9a-f-]{36}$/i.test(s)
@@ -119,7 +122,9 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
             if (looksLikeId(segment)) return null
             const isLast = i === segments.length - 1
             const label  = routeLabels[segment] ?? segment
-            const href   = "/" + segments.slice(0, i + 1).join("/")
+            const href   = i === 0 && segment === "portal" && associationSlug
+              ? `/portal/${associationSlug}/${firstEnabledPortalPath(modules)}`
+              : "/" + segments.slice(0, i + 1).join("/")
 
             return (
               <span key={segment} className="flex items-center gap-1.5">
