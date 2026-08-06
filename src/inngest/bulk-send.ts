@@ -13,6 +13,49 @@ function notifyBulkSendCompleted(associationId: string, payload: Record<string, 
   return pusherServer.trigger(`private-association-${associationId}`, "bulk-send-completed", payload).catch(() => {})
 }
 
+// Only members with an activated portal account (Membre.userId set) can receive an
+// in-app bell notification — others still get the actual email itself, just no bell entry.
+//
+// Grouped under one groupKey per association (like notifyAdminsOfResponse's sondage grouping)
+// so a member who doesn't check the bell for a while gets one row that accumulates
+// ("3 nouveaux messages" / last subject) instead of one unread row per newsletter piling up
+// forever — the exact bell-flooding scenario that pattern was built to avoid.
+async function notifyMembersOfMessage(associationId: string, memberIds: string[], subject: string, link: string) {
+  if (!memberIds.length) return
+  const recipients = await prisma.membre.findMany({
+    where:  { id: { in: memberIds }, userId: { not: null } },
+    select: { userId: true },
+  })
+  if (!recipients.length) return
+
+  const groupKey = `bulk-message:${associationId}`
+
+  await Promise.all(recipients.map(async (r) => {
+    const userId   = r.userId!
+    const existing = await prisma.notification.findFirst({
+      where:  { userId, groupKey, read: false },
+      select: { id: true, count: true },
+    })
+    if (existing) {
+      const count = existing.count + 1
+      await prisma.notification.update({
+        where: { id: existing.id },
+        data: {
+          count,
+          title:     `${count} nouveaux messages`,
+          body:      `Dernier : ${subject}`,
+          createdAt: new Date(),
+        },
+      })
+    } else {
+      await prisma.notification.create({
+        data: { userId, groupKey, count: 1, title: "Nouveau message", body: subject, link, scope: "MEMBRE" },
+      })
+    }
+  }))
+  await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+}
+
 // ── Bulk member email (src/app/api/membres/email/route.ts) ────────────────────
 
 type MembresEmailMember = { id: string; firstName: string; lastName: string; email: string }
@@ -27,7 +70,7 @@ export const bulkSendMembresEmail = inngest.createFunction(
       activityMeta: { recipientMode: string; typeId?: string; recipientCount?: number; externalEmailCount?: number; externalEmails?: string[] }
     }
 
-    const { sent, failed, failedNames } = await step.run("send", async () => {
+    const { sent, failed, failedNames, deliveredMemberIds } = await step.run("send", async () => {
       const memberPayloads = members.map(m => {
         const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: m.email, association: associationName, slug })
         return {
@@ -49,7 +92,8 @@ export const bulkSendMembresEmail = inngest.createFunction(
         ...members.filter(m => failedEmails.has(m.email)).map(m => `${m.firstName} ${m.lastName}`),
         ...externalEmails.filter(email => failedEmails.has(email)),
       ]
-      return { sent: result.sent, failed: result.failed, failedNames }
+      const deliveredMemberIds = members.filter(m => !failedEmails.has(m.email)).map(m => m.id)
+      return { sent: result.sent, failed: result.failed, failedNames, deliveredMemberIds }
     })
 
     await step.run("log-activity", () => writeActivityLog({
@@ -60,6 +104,10 @@ export const bulkSendMembresEmail = inngest.createFunction(
       label:    subject,
       metadata: { sent, failed, ...activityMeta },
     }))
+
+    await step.run("notify-members", () => notifyMembersOfMessage(
+      associationId, deliveredMemberIds, subject, `/portal/${slug}/communications`,
+    ))
 
     await step.run("notify", () => notifyBulkSendCompleted(associationId, {
       jobId, kind: "membres-email", sent, failed, failedNames: failedNames.slice(0, 5),
@@ -97,6 +145,10 @@ export const bulkSendMembresSms = inngest.createFunction(
       return { sent, failed: results.length - sent, failedNames }
     })
 
+    // No in-app bell notification here (unlike the email variant below): the member portal
+    // has no SMS history view at all (only /api/portal/emails backs the communications page),
+    // so a notification link would dead-end — the SMS itself is already the full message,
+    // delivered directly to their phone.
     if (sent > 0) {
       await step.run("log-activity", () => writeActivityLog({
         associationId,
