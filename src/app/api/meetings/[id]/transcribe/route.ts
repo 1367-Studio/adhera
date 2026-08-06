@@ -5,12 +5,27 @@ import { r2 } from "@/lib/r2"
 import { makeGroqClient, platformClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { rateLimit } from "@/lib/rate-limit"
+import { rateLimit, rateLimitPeek, consumeQuota } from "@/lib/rate-limit"
 import type OpenAI from "openai"
 import type { MeetingRecording } from "@prisma/client"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const MAX_BYTES = 25 * 1024 * 1024
+
+// Groq's whisper-large-v3 free tier caps ASD (audio-seconds/day) at 28,800 (8h), shared
+// across every association riding the platform's key — see console.groq.com/docs/rate-limits.
+// Per-participant recording (see egress/route.ts) means a single meeting can burn through a
+// large slice of that in one go (a 1h meeting with 5 participants = 18,000s = 63% of the
+// whole platform's daily budget), so these two replace the old click-counting limits, which
+// counted "how many times the button was pressed" instead of the audio actually sent.
+const ASSOC_ASD_LIMIT_SECONDS    = 6_000   // 1h40 (1,67h) per association
+const PLATFORM_ASD_LIMIT_SECONDS = 24_000  // ~17% headroom under Groq's real 28,800/day cap
+const ASD_WINDOW_MS = 24 * 60 * 60_000
+
+// Stays under Groq's 20-requests/minute cap even for a large meeting — each batch is awaited
+// in full before the next one starts, so calls spread out over time instead of all firing at
+// once (which, with per-participant recording, a meeting past ~20 people would hit today).
+const TRANSCRIBE_BATCH_SIZE = 15
 
 type TimedLine = { speaker: string; time: Date; text: string; failed?: boolean }
 
@@ -77,6 +92,28 @@ function formatTranscript(lines: TimedLine[]): string {
     .join("\n")
 }
 
+// A recording still "open" (endedAt null — shouldn't normally happen here, transcription
+// only runs after the meeting ends) is treated as running until now, so it's never
+// undercounted against the ASD budget.
+function recordingDurationSeconds(recording: MeetingRecording): number {
+  const end = recording.endedAt ?? new Date()
+  return Math.max(0, Math.round((end.getTime() - recording.startedAt.getTime()) / 1000))
+}
+
+// Runs `fn` over `items` in fixed-size batches, awaiting each batch fully before starting
+// the next — keeps concurrent requests under Groq's per-minute cap instead of firing
+// everything at once (see TRANSCRIBE_BATCH_SIZE).
+async function transcribeInBatches(
+  recordings: (MeetingRecording & { recordingKey: string })[],
+  client: OpenAI,
+): Promise<PromiseSettledResult<TimedLine[]>[]> {
+  const results: PromiseSettledResult<TimedLine[]>[] = []
+  for (let i = 0; i < recordings.length; i += TRANSCRIBE_BATCH_SIZE) {
+    const batch = recordings.slice(i, i + TRANSCRIBE_BATCH_SIZE)
+    results.push(...await Promise.allSettled(batch.map(r => transcribeRecording(client, r))))
+  }
+  return results
+}
 
 // POST — transcribe via Groq Whisper. Two modes:
 //  - multipart audio upload: a single external file (e.g. recorded outside the app) — no
@@ -101,27 +138,6 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // it falls back to the platform's Groq key here specifically, same as having no key at all.
   const ownGroqKey = assoc?.aiApiKey && (assoc.aiProvider ?? "groq") === "groq" ? assoc.aiApiKey : null
 
-  // Groq's whole free tier for Whisper is 2,000 requests/day, shared across every
-  // association riding the platform key — a per-association limit alone doesn't protect
-  // that shared budget. The platform-wide bucket below is what actually keeps the account
-  // under Groq's cap; the per-association one just stops a single runaway caller from
-  // eating the whole platform budget alone.
-  // NB: since per-participant recording, one click here can now fan out into one Whisper
-  // call per participant instead of one — these limits are per *click*, not per audio file,
-  // so a bigger meeting eats more of the shared budget per use than it used to. Revisit the
-  // numbers below if the platform bucket starts running dry in practice.
-  if (!ownGroqKey) {
-    if (!(await rateLimit(`ai-transcribe:${associationId}`, 3, 60 * 60_000))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
-    }
-    if (!(await rateLimit("ai-transcribe:platform", 100, 24 * 60 * 60_000))) {
-      return NextResponse.json(
-        { error: "Le quota de transcription de la plateforme est atteint pour aujourd'hui. Réessayez demain, ou configurez votre propre clé Groq dans Paramètres → IA." },
-        { status: 429 },
-      )
-    }
-  }
-
   const client = ownGroqKey ? makeGroqClient(ownGroqKey) : platformClient
   if (!client) {
     return NextResponse.json({ error: "Aucune clé API IA configurée." }, { status: 503 })
@@ -133,7 +149,13 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     let transcript: string
 
     if (contentType.includes("multipart/form-data")) {
-      // Direct file upload — a single external audio file, no per-speaker attribution.
+      // Direct file upload — a single external audio file, no per-speaker attribution, and
+      // no known duration ahead of time (no audio parsing here) — so it's guarded by a plain
+      // click limit rather than the ASD budget below, on top of the existing size cap.
+      if (!ownGroqKey && !(await rateLimit(`ai-transcribe-upload:${associationId}`, 10, 60 * 60_000))) {
+        return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+      }
+
       const formData = await req.formData()
       const file = formData.get("audio") as File | null
       if (!file) return NextResponse.json({ error: "Fichier audio requis" }, { status: 422 })
@@ -159,11 +181,36 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         return NextResponse.json({ error: "Aucun enregistrement disponible." }, { status: 422 })
       }
 
+      const totalSeconds = recordings.reduce((sum, r) => sum + recordingDurationSeconds(r), 0)
+
+      if (!ownGroqKey) {
+        const [assocUsed, platformUsed] = await Promise.all([
+          rateLimitPeek(`ai-transcribe-asd:${associationId}`),
+          rateLimitPeek("ai-transcribe-asd:platform"),
+        ])
+        if (assocUsed + totalSeconds > ASSOC_ASD_LIMIT_SECONDS) {
+          return NextResponse.json(
+            { error: "Quota de transcription IA atteint pour votre association aujourd'hui. Réessayez demain, ou configurez votre propre clé Groq dans Paramètres → IA." },
+            { status: 429 },
+          )
+        }
+        if (platformUsed + totalSeconds > PLATFORM_ASD_LIMIT_SECONDS) {
+          return NextResponse.json(
+            { error: "Le quota de transcription de la plateforme est atteint pour aujourd'hui. Réessayez demain, ou configurez votre propre clé Groq dans Paramètres → IA." },
+            { status: 429 },
+          )
+        }
+        await Promise.all([
+          consumeQuota(`ai-transcribe-asd:${associationId}`, totalSeconds, ASD_WINDOW_MS),
+          consumeQuota("ai-transcribe-asd:platform", totalSeconds, ASD_WINDOW_MS),
+        ])
+      }
+
       // Best-effort: a recording that's still finalizing (or that Whisper rejects) doesn't
       // block transcribing everyone else's — but instead of silently dropping it, a marker
       // line goes in at that recording's start time so the gap is visible in the transcript
       // instead of just... missing, with no trace that person was even there.
-      const settled = await Promise.allSettled(recordings.map(r => transcribeRecording(client, r)))
+      const settled = await transcribeInBatches(recordings, client)
       const lines = settled.flatMap((result, i) =>
         result.status === "fulfilled" ? result.value : [failedRecordingLine(recordings[i])],
       )
@@ -177,7 +224,6 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       }
 
       transcript = formatTranscript(lines)
-
     }
 
     await prisma.meeting.update({
