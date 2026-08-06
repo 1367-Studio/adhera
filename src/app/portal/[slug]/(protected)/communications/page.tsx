@@ -2,10 +2,11 @@
 
 import { useMemo, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useParams, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { EnvelopeSimpleIcon, CircleNotchIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { EnvelopeSimpleIcon, CircleNotchIcon, CaretDownIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { portalFetch } from "@/lib/portal-fetch"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,6 +19,7 @@ type EmailRow = {
   id:           string
   subject:      string
   source:       string
+  sourceId:     string | null
   status:       EmailStatus
   sentAt:       string | null
   deliveredAt:  string | null
@@ -39,8 +41,17 @@ type PageResult = {
 type TimelineKey = "createdAt" | "sentAt" | "deliveredAt" | "openedAt" | "clickedAt" | "bouncedAt" | "complainedAt"
 
 function EmailRowItem({ e }: { e: EmailRow }) {
-  const t = useTranslations("portalMembre.communications")
+  const t        = useTranslations("portalMembre.communications")
+  const { slug } = useParams<{ slug: string }>()
+  const router   = useRouter()
   const [open, setOpen] = useState(false)
+
+  // The stored HTML preview below has all hrefs stripped by sanitizeEmailPreviewHtml (a
+  // deliberate security measure — arbitrary stored email markup must never become a live,
+  // clickable link in the portal), which silently kills the "Répondre au sondage" button
+  // baked into that HTML. This CTA is the app-controlled replacement: it points straight at
+  // the still-live sondage via sourceId rather than trusting anything from the email body.
+  const sondageHref = e.source === "SONDAGE" && e.sourceId ? `/portal/${slug}/sondages/${e.sourceId}` : null
 
   const STATUS_BADGE: Record<EmailStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
     QUEUED:     { label: t("statusBadge.queued"),     variant: "outline"     },
@@ -111,13 +122,13 @@ function EmailRowItem({ e }: { e: EmailRow }) {
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-left hover:bg-muted/30 transition-colors"
-      >
-        <div className="flex items-start gap-2.5 min-w-0">
+      <div className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-muted/30 transition-colors">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          aria-expanded={open}
+          className="flex items-start gap-2.5 min-w-0 flex-1 text-left"
+        >
           <EnvelopeSimpleIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
           <div className="min-w-0">
             <p className="font-medium truncate">{e.subject}</p>
@@ -125,12 +136,36 @@ function EmailRowItem({ e }: { e: EmailRow }) {
               {SOURCE_LABEL[e.source] ?? e.source} · {format(new Date(e.createdAt), "d MMM yyyy, HH:mm", { locale: fr })}
             </p>
           </div>
-        </div>
+        </button>
         <div className="flex items-center gap-2 shrink-0">
           <Badge variant={STATUS_BADGE[e.status].variant}>{STATUS_BADGE[e.status].label}</Badge>
-          <CaretDownIcon className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+          {sondageHref && (
+            // Label collapses to icon-only below sm: this row is one of the few with a
+            // CTA long enough (badge + button text + caret) to squeeze the truncated
+            // subject down to a few characters on a phone-width viewport, which this
+            // page is opened on far more than the admin dashboard is.
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs gap-1 px-2 sm:px-2.5"
+              aria-label={t("openSondage")}
+              onClick={() => router.push(sondageHref)}
+            >
+              <span className="hidden sm:inline">{t("openSondage")}</span>
+              <CaretRightIcon className="size-3.5" />
+            </Button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(v => !v)}
+            aria-expanded={open}
+            aria-label={t("content")}
+            className="p-2 -m-2 rounded-md hover:bg-muted/50"
+          >
+            <CaretDownIcon className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+          </button>
         </div>
-      </button>
+      </div>
 
       {open && (
         <div className="border-t px-4 py-3 space-y-3">
