@@ -3589,7 +3589,8 @@
       "attachmentsNotice": " Attachments are not shown here.",
       "contentUnavailable": "Content not available for this send.",
       "countOfTotal": "{shown} of {total, plural, one {# email} other {# emails}}",
-      "seeMore": "See more"
+      "seeMore": "See more",
+      "openSondage": "Answer the survey"
     },
     "profil": {
       "notFound": "Profile not found.",

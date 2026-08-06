@@ -3589,7 +3589,8 @@
       "attachmentsNotice": " Les pièces jointes ne sont pas affichées ici.",
       "contentUnavailable": "Contenu non disponible pour cet envoi.",
       "countOfTotal": "{shown} de {total, plural, one {# e-mail} other {# e-mails}}",
-      "seeMore": "Voir plus"
+      "seeMore": "Voir plus",
+      "openSondage": "Répondre au sondage"
     },
     "profil": {
       "notFound": "Profil introuvable.",

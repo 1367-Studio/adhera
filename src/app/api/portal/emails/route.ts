@@ -24,7 +24,7 @@ export const GET = withPortalAuth(async (req, ctx) => {
       // here on purpose too — fetched on demand by emails/[emailId]/route.ts when a row
       // opens, same reasoning as the admin's membre-email-log.
       select: {
-        id: true, subject: true, source: true, status: true,
+        id: true, subject: true, source: true, sourceId: true, status: true,
         sentAt: true, deliveredAt: true, openedAt: true, clickedAt: true, bouncedAt: true, complainedAt: true, createdAt: true,
         hasAttachments: true,
       },

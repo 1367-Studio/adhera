@@ -3589,7 +3589,8 @@
       "attachmentsNotice": " Os anexos não são exibidos aqui.",
       "contentUnavailable": "Conteúdo não disponível para este envio.",
       "countOfTotal": "{shown} de {total, plural, one {# e-mail} other {# e-mails}}",
-      "seeMore": "Ver mais"
+      "seeMore": "Ver mais",
+      "openSondage": "Responder à enquete"
     },
     "profil": {
       "notFound": "Perfil não encontrado.",
