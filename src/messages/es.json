@@ -804,7 +804,7 @@
       }
     },
     "exerciceForm": {
-      "foundingWarning": "Este primer ejercicio fija permanentemente el calendario fiscal de la asociación — todos los siguientes deberán seguir el mismo patrón de fechas.",
+      "foundingWarning": "Este primer ejercicio fija permanentemente el calendario contable de la asociación. Todos los ejercicios siguientes deberán respetar las mismas fechas de inicio y fin.",
       "label": "Etiqueta",
       "labelPlaceholder": "Ej: Ejercicio 2026",
       "startDate": "Fecha de inicio",
