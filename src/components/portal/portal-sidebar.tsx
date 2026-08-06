@@ -10,7 +10,7 @@ import {
   SidebarRail, useSidebar,
 } from "@/components/ui/sidebar"
 import { useModules, useBranding } from "@/lib/user-context"
-import type { AssocModules } from "@/lib/modules"
+import { PORTAL_NAV_ORDER } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
 import { BrandLogo } from "@/components/layout/brand-logo"
 import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
@@ -26,20 +26,22 @@ export function PortalSidebar({ slug }: { slug: string }) {
   const modules  = useModules()
   const branding = useBranding()
 
-  const allNavItems: Array<{ href: string; label: string; icon: React.ElementType; moduleKey?: keyof AssocModules }> = [
-    { href: `/portal/${slug}/actualites`, label: t("actualites"),    icon: NewspaperIcon, moduleKey: "actualites"  },
-    { href: `/portal/${slug}/evenements`, label: t("evenements"),    icon: CalendarBlankIcon,  moduleKey: "evenements"  },
-    { href: `/portal/${slug}/materiel`,   label: t("materiel"),      icon: PackageIcon,   moduleKey: "materiel"    },
-    { href: `/portal/${slug}/cotisation`, label: t("cotisation"), icon: CoinsIcon,          moduleKey: "cotisations" },
-    { href: `/portal/${slug}/dons`,       label: t("dons"),      icon: HandshakeIcon,  moduleKey: "dons"      },
-    { href: `/portal/${slug}/sondages`,  label: t("sondages"),      icon: ClipboardTextIcon,   moduleKey: "sondages"  },
-    { href: `/portal/${slug}/boutique`,  label: t("boutique"),      icon: ShoppingBagIcon,     moduleKey: "boutique"  },
-    { href: `/portal/${slug}/reunions`,  label: t("reunions"),      icon: VideoCameraIcon,           moduleKey: "reunions"  },
-    { href: `/portal/${slug}/communications`, label: t("communications"), icon: EnvelopeSimpleIcon },
-    { href: `/portal/${slug}/profil`,    label: t("profil"),    icon: UserIcon },
-  ]
+  const navMeta: Record<string, { label: string; icon: React.ElementType }> = {
+    actualites:     { label: t("actualites"),     icon: NewspaperIcon },
+    evenements:     { label: t("evenements"),     icon: CalendarBlankIcon },
+    materiel:       { label: t("materiel"),       icon: PackageIcon },
+    cotisation:     { label: t("cotisation"),     icon: CoinsIcon },
+    dons:           { label: t("dons"),           icon: HandshakeIcon },
+    sondages:       { label: t("sondages"),       icon: ClipboardTextIcon },
+    boutique:       { label: t("boutique"),       icon: ShoppingBagIcon },
+    reunions:       { label: t("reunions"),       icon: VideoCameraIcon },
+    communications: { label: t("communications"), icon: EnvelopeSimpleIcon },
+    profil:         { label: t("profil"),         icon: UserIcon },
+  }
 
-  const navItems = allNavItems.filter(item => !item.moduleKey || modules[item.moduleKey])
+  const navItems = PORTAL_NAV_ORDER
+    .filter(item => !item.moduleKey || modules[item.moduleKey])
+    .map(item => ({ href: `/portal/${slug}/${item.path}`, ...navMeta[item.path] }))
 
   return (
     <Sidebar collapsible="icon" variant="inset">

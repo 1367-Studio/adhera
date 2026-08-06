@@ -18,7 +18,7 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
   const slug        = (formData.get("slug")        as string | null)?.trim() || null
   const callbackUrl = (formData.get("callbackUrl") as string | null)?.trim() || null
 
-  const defaultRedirect = slug ? `/portal/${slug}/actualites` : "/dashboard"
+  const defaultRedirect = slug ? `/portal/${slug}` : "/dashboard"
 
   try {
     await signIn("credentials", { email, password, ...(slug ? { slug } : {}), redirectTo: `${BASE_PATH}${callbackUrl ?? defaultRedirect}` })
@@ -55,5 +55,5 @@ export async function signInWithGooglePortal(slug: string, callbackUrl?: string)
     maxAge:   600,
     path:     "/",
   })
-  await signIn("google", { redirectTo: `${BASE_PATH}${callbackUrl ?? `/portal/${slug}/actualites`}` })
+  await signIn("google", { redirectTo: `${BASE_PATH}${callbackUrl ?? `/portal/${slug}`}` })
 }
