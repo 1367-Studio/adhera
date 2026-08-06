@@ -16,6 +16,8 @@ export const MEETING_SAFE_SELECT = {
   transcript: true,
   summary: true,
   createdAt: true,
+  shareToken: true,
+  shareExpiresAt: true,
   recordings: {
     select: {
       id:           true,
