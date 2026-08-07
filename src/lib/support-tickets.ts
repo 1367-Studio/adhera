@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { supportTicketStaffEmail, supportTicketReplyEmail } from "@/lib/email"
-import { APP_URL, BASE_PATH } from "@/lib/env"
+import { APP_URL } from "@/lib/env"
 
 type UnreadSide = "STAFF" | "ASSOCIATION"
 
@@ -53,8 +53,8 @@ type NotifyParams = {
 // member who typed a given reply, since only the association-side person is a stable,
 // singular recipient/subject to address in copy.
 export async function notifySupportMessage(p: NotifyParams) {
-  const dashboardUrl  = `${APP_URL}${BASE_PATH}/dashboard/suporte/${p.ticket.id}`
-  const backofficeUrl = `${APP_URL}${BASE_PATH}/backoffice/support/${p.ticket.id}`
+  const dashboardUrl  = `${APP_URL}/dashboard/suporte/${p.ticket.id}`
+  const backofficeUrl = `${APP_URL}/backoffice/support/${p.ticket.id}`
   const authorName    = p.ticket.author.name ?? p.ticket.author.email
 
   // The association's own private channel always gets pinged — it's how a second open tab
