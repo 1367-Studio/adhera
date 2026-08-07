@@ -117,19 +117,20 @@ function EmailRowItem({ e }: { e: EmailRow }) {
 
   const sanitizedHtml = useMemo(() => {
     if (!content?.html) return null
-    const html = sanitizeEmailPreviewHtml(content.html)
-    if (!sondageHref) return html
-    // When an app-controlled CTA (sondageHref) is already shown outside the iframe, hide the
-    // matching button baked into the email HTML instead of leaving a dead, href-less button
-    // that looks clickable but silently does nothing. Parsed via DOMParser rather than a
-    // string replace on "</head>" — sanitizeEmailPreviewHtml's output isn't guaranteed to keep
-    // that exact literal, and DOMParser always yields a real <head> to append into.
-    const doc = new DOMParser().parseFromString(html, "text/html")
-    const style = doc.createElement("style")
-    style.textContent = ".email-cta-btn{display:none}"
-    doc.head.appendChild(style)
-    return doc.documentElement.outerHTML
-  }, [content, sondageHref])
+    let raw = content.html
+    if (sondageHref) {
+      // When an app-controlled CTA (sondageHref) is already shown outside the iframe, remove
+      // the matching button baked into the raw email HTML instead of leaving a dead, href-less
+      // button that looks clickable but silently does nothing. Matched by href (which points at
+      // this same sondage) rather than a marker class, so it also works for emails that were
+      // sent and stored before any such marker existed.
+      const doc  = new DOMParser().parseFromString(raw, "text/html")
+      const dead = doc.querySelector(`a[href*="/sondages/${e.sourceId}"]`)
+      dead?.closest("table")?.remove()
+      raw = doc.documentElement.outerHTML
+    }
+    return sanitizeEmailPreviewHtml(raw)
+  }, [content, sondageHref, e.sourceId])
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
