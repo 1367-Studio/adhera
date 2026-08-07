@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { TextareaField } from "@/components/ui/textarea-field"
+import { FaqSection } from "@/components/support/faq-section"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
 import { SUPPORT_TICKET_SUBJECT_MAX_LENGTH, SUPPORT_TICKET_BODY_MAX_LENGTH } from "@/lib/support-tickets-limits"
@@ -53,7 +54,8 @@ export function SupportTicketsView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="py-4">
+      <FaqSection />
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
