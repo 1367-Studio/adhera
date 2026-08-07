@@ -81,9 +81,16 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
 </html>`
 }
 
-function btn(label: string, url: string, accent = "#000"): string {
+// previewClass, when passed, marks this button for sanitizeEmailPreviewHtml's iframe preview
+// in the portal: since that preview strips all hrefs, a template whose portal row ships an
+// app-controlled replacement CTA (currently only sondageInvitationEmail) can hide this
+// dead-looking button rather than show one that visually invites a click but does nothing.
+// Opt-in per call site (not a class applied to every btn() call) so templates without a
+// replacement CTA never risk losing their only link.
+function btn(label: string, url: string, accent = "#000", previewClass?: string): string {
   const textColor = isLightColor(accent) ? "#18181b" : "#fff"
-  return `<table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+  const classAttr = previewClass ? ` class="${previewClass}"` : ""
+  return `<table cellpadding="0" cellspacing="0"${classAttr} style="margin:0 0 24px;">
     <tr><td style="border-radius:6px;background:${accent};">
       <a href="${url}" style="display:inline-block;padding:12px 28px;color:${textColor};font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
     </td></tr>
@@ -244,7 +251,7 @@ export function sondageInvitationEmail(p: {
         <span style="font-size:14px;">${deadlineStr}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Répondre au sondage", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Répondre au sondage", p.portalUrl, p.branding?.primaryColor || undefined, "email-cta-btn")}`
   return {
     to:      p.email,
     subject: `Sondage — ${p.sondageTitle}`,
