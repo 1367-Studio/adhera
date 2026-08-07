@@ -115,10 +115,22 @@ function EmailRowItem({ e }: { e: EmailRow }) {
     staleTime: Infinity,
   })
 
-  const sanitizedHtml = useMemo(
-    () => (content?.html ? sanitizeEmailPreviewHtml(content.html) : null),
-    [content],
-  )
+  const sanitizedHtml = useMemo(() => {
+    if (!content?.html) return null
+    let raw = content.html
+    if (sondageHref) {
+      // When an app-controlled CTA (sondageHref) is already shown outside the iframe, remove
+      // the matching button baked into the raw email HTML instead of leaving a dead, href-less
+      // button that looks clickable but silently does nothing. Matched by href (which points at
+      // this same sondage) rather than a marker class, so it also works for emails that were
+      // sent and stored before any such marker existed.
+      const doc  = new DOMParser().parseFromString(raw, "text/html")
+      const dead = doc.querySelector(`a[href*="/sondages/${e.sourceId}"]`)
+      dead?.closest("table")?.remove()
+      raw = doc.documentElement.outerHTML
+    }
+    return sanitizeEmailPreviewHtml(raw)
+  }, [content, sondageHref, e.sourceId])
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
@@ -146,8 +158,11 @@ function EmailRowItem({ e }: { e: EmailRow }) {
             // page is opened on far more than the admin dashboard is.
             <Button
               size="sm"
-              variant="outline"
-              className="h-7 text-xs gap-1 px-2 sm:px-2.5"
+              // orange-700 (not the -500 used for "incerto" status badges elsewhere) so
+              // this reads as a solid CTA rather than the muted/pastel orange this app
+              // otherwise uses for "pending/uncertain" — and it holds ~5:1 contrast with
+              // white text, where -500 only manages ~2.8:1.
+              className="h-7 text-xs gap-1 px-2 sm:px-2.5 bg-orange-700 text-white hover:bg-orange-800"
               aria-label={t("openSondage")}
               onClick={() => router.push(sondageHref)}
             >

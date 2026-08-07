@@ -20,6 +20,7 @@ export async function proxy(request: NextRequest) {
   const isPortalPublic   = /^\/portal\/[^/]+\/(login|register)/.test(pathname)
   const portalMatch      = pathname.match(/^\/portal\/([^/]+)/)
   const isDashboard      = pathname.startsWith("/dashboard")
+  const isBackoffice     = pathname.startsWith("/backoffice")
   const isAdminLogin     = pathname === "/login"
   const standbyPath      = "/dashboard/abonnement-suspendu"
   // The reactivation checkout page is reached FROM the standby screen and must stay
@@ -44,12 +45,25 @@ export async function proxy(request: NextRequest) {
 
   // Dashboard — redirect to admin login
   if (isDashboard) {
-    if (!isLoggedIn) return NextResponse.redirect(new URL(`${BASE_PATH}/login`, request.url))
+    if (!isLoggedIn) {
+      const loginUrl = new URL(`${BASE_PATH}/login`, request.url)
+      loginUrl.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(loginUrl)
+    }
     // Locked admins (suspended or cancelled) stay logged in, but every dashboard page
     // except the standby screen itself redirects there until they reactivate.
     if (isLocked && !isStandbyPage) {
       return NextResponse.redirect(new URL(`${BASE_PATH}${standbyPath}`, request.url))
     }
+  }
+
+  // Backoffice — same deep-link-preserving redirect as the dashboard, so a signed-out
+  // SUPER_ADMIN clicking a ticket notification email link lands back on that ticket
+  // after logging in instead of on the backoffice root.
+  if (isBackoffice && !isLoggedIn) {
+    const loginUrl = new URL(`${BASE_PATH}/login`, request.url)
+    loginUrl.searchParams.set("callbackUrl", pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   // Already logged in on admin login page → go to dashboard
