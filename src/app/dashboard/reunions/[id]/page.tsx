@@ -3,24 +3,41 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useModules } from "@/lib/user-context"
+import { useTranslations } from "next-intl"
+import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UsersIcon, CalendarBlankIcon, ClockIcon, SparkleIcon, FloppyDiskIcon, VideoCameraIcon, PlayIcon, FileAudioIcon, CircleNotchIcon, CircleIcon, DownloadSimpleIcon, FileTextIcon, LinkIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
-import { useMeetingEndedListener } from "@/hooks/use-meetings"
+import { useMeetingEndedListener, useGenerateMeetingShareLink, useRevokeMeetingShareLink, useSendMeetingMinutesEmail } from "@/hooks/use-meetings"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
+import { APP_NAME } from "@/config/brand"
+import { BASE_PATH } from "@/lib/env"
+import { SendEmailModal } from "@/components/ui/send-email-modal"
+
+import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type MeetingParticipant = {
   id:     string
-  membre: { id: string; firstName: string; lastName: string }
+  // status is redacted to null by the API for non-managers (see redactParticipantStatus in
+  // src/lib/meetings/select.ts) — only managers can see it or export the attendance PDF.
+  membre: { id: string; firstName: string; lastName: string; status: "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU" | null }
+}
+
+type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
 }
 
 type Meeting = {
@@ -33,14 +50,22 @@ type Meeting = {
   endedAt:      string | null
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
+  shareToken:      string | null
+  shareExpiresAt:  string | null
 }
 
-const STATUS_LABELS: Record<Meeting["status"], string> = {
-  SCHEDULED: "Planifiée", LIVE: "En cours", ENDED: "Terminée", CANCELLED: "Annulée",
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusLabels(t: Translator): Record<Meeting["status"], string> {
+  return {
+    SCHEDULED: t("reunions.detail.status.scheduled"),
+    LIVE:      t("reunions.detail.status.live"),
+    ENDED:     t("reunions.detail.status.ended"),
+    CANCELLED: t("reunions.detail.status.cancelled"),
+  }
 }
 const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "destructive" | "outline"> = {
   SCHEDULED: "secondary", LIVE: "default", ENDED: "outline", CANCELLED: "destructive",
@@ -49,19 +74,51 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
 const AUDIO_ACCEPT = ".mp3,.mp4,.mpeg,.mpga,.m4a,.wav,.webm,.ogg,.flac"
 
 export default function ReunionDetailPage() {
+  const t       = useTranslations()
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
+  const currentUser = useCurrentUser()
+  const canManage   = isManager(currentUser.role)
+  const STATUS_LABELS = getStatusLabels(t)
 
   const [transcript, setTranscript] = useState("")
   const [inRoom,     setInRoom]     = useState(false)
   const [awaitingRefresh, setAwaitingRefresh] = useState(false)
+  const [emailModalOpen, setEmailModalOpen] = useState(false)
+  const generateShareLink = useGenerateMeetingShareLink(id)
+  const revokeShareLink   = useRevokeMeetingShareLink(id)
+  const sendMinutesEmail  = useSendMeetingMinutesEmail(id)
+
+  async function handleSendMinutesEmail(to: string, message: string) {
+    try {
+      await sendMinutesEmail.mutateAsync({ to, message })
+      toast.success(t("reunions.detail.share.toasts.emailSent"))
+      setEmailModalOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
 
   const { data: meeting, isLoading, isFetching, isError } = useQuery<Meeting>({
     queryKey:  ["meeting", id],
     queryFn:   () => fetch(`/api/meetings/${id}`).then(r => r.json()),
     staleTime: 0,
+  })
+
+  // Logo/couleur pour le PDF de feuille de présence (handleExportPdf) — même règle
+  // Pro-only que les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
+  const { data: assoc } = useQuery<{
+    name: string
+    plan: "ESSENTIAL" | "PRO"
+    customBrandingEnabled: boolean | null
+    logoUrl: string | null
+    primaryColor: string | null
+  }>({
+    queryKey: ["association"],
+    queryFn:  () => fetch("/api/association").then(r => r.json()),
+    enabled:  canManage,
   })
 
   // Cross-tab: this meeting being auto-closed by the LiveKit webhook (or ended from another
@@ -75,7 +132,7 @@ export default function ReunionDetailPage() {
   // invalidated query settles, instead of flashing a stale "Rejoindre".
   useEffect(() => {
     if (awaitingRefresh && !isFetching) {
-      if (isError) toast.error("Impossible d'actualiser le statut de la réunion.")
+      if (isError) toast.error(t("reunions.view.toasts.refreshError"))
       setAwaitingRefresh(false)
     }
   }, [isFetching, isError, awaitingRefresh])
@@ -100,9 +157,9 @@ export default function ReunionDetailPage() {
       }).then(r => r.json()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription sauvegardée")
+      toast.success(t("reunions.detail.toasts.transcriptSaved"))
     },
-    onError: () => toast.error("Erreur lors de la sauvegarde"),
+    onError: () => toast.error(t("reunions.detail.toasts.transcriptSaveError")),
   })
 
   const transcribeRecording = useMutation({
@@ -110,16 +167,16 @@ export default function ReunionDetailPage() {
       const res = await fetch(`/api/meetings/${id}/transcribe`, { method: "POST" })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur transcription")
+        throw new Error(d.error ?? t("reunions.detail.toasts.transcribeError"))
       }
       return res.json() as Promise<{ transcript: string }>
     },
     onSuccess: (data) => {
       setTranscript(data.transcript)
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription générée par Whisper")
+      toast.success(t("reunions.detail.toasts.transcriptGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur Whisper"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.whisperError")),
   })
 
   const transcribeUpload = useMutation({
@@ -132,16 +189,16 @@ export default function ReunionDetailPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur transcription")
+        throw new Error(d.error ?? t("reunions.detail.toasts.transcribeError"))
       }
       return res.json() as Promise<{ transcript: string }>
     },
     onSuccess: (data) => {
       setTranscript(data.transcript)
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Transcription générée par Whisper")
+      toast.success(t("reunions.detail.toasts.transcriptGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur Whisper"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.whisperError")),
   })
 
   const summarize = useMutation({
@@ -156,16 +213,143 @@ export default function ReunionDetailPage() {
       const res = await fetch(`/api/meetings/${id}/summarize`, { method: "POST" })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur IA")
+        throw new Error(d.error ?? t("reunions.detail.toasts.aiError"))
       }
       return res.json() as Promise<{ summary: string }>
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["meeting", id] })
-      toast.success("Résumé généré")
+      toast.success(t("reunions.detail.toasts.summaryGenerated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur IA"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("reunions.detail.toasts.aiError")),
   })
+
+  async function handleExportPdf() {
+    if (!meeting) return
+    if (meeting.participants.length === 0) {
+      toast.error(t("reunions.detail.toasts.noParticipantsToExport"))
+      return
+    }
+    const { default: jsPDF }     = await import("jspdf")
+    const { default: autoTable } = await import("jspdf-autotable")
+
+    const doc   = new jsPDF({ unit: "mm", format: "a4" })
+    const W     = 210
+    const M     = 14
+    const ZINC  = [113, 113, 122] as [number, number, number]
+    const BLACK = [24,  24,  27 ] as [number, number, number]
+    const title = meeting.title
+    const today = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+
+    const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
+    const headerRgb: [number, number, number] =
+      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
+
+    // Custom brand colors are freely picked (plain <input type="color">), so a light/pale
+    // one would make the fixed white header text unreadable — pick dark text on light fills.
+    const [hr, hg, hb] = headerRgb
+    const headerLuminance = (hr * 299 + hg * 587 + hb * 114) / 1000
+    const headerTextRgb: [number, number, number] = headerLuminance > 150 ? BLACK : [255, 255, 255]
+
+    // ── Header bar ─────────────────────────────────────────────────────────
+    const headerH = 30
+    doc.setFillColor(...headerRgb)
+    doc.rect(0, 0, W, headerH, "F")
+    doc.setTextColor(...headerTextRgb)
+
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9)
+    const rightLabelW = doc.getTextWidth("Feuille de présence")
+    // Space left of the right-aligned "Feuille de présence" label — caps both the logo and
+    // the fallback name so neither overlaps it (see document-pdf.ts for the same maxW pattern).
+    const availW = (W - M) - M - rightLabelW - 6
+
+    doc.setFontSize(10)
+    doc.setFont("helvetica", "bold")
+    if (logo) {
+      const maxLogoH = 20
+      const logoH = Math.min(maxLogoH, availW * (logo.height / logo.width))
+      const logoW = logo.width * (logoH / logo.height)
+      doc.addImage(logo.dataUrl, logo.format, M, (headerH - logoH) / 2, logoW, logoH)
+    } else {
+      const fullName = (canBrand ? assoc!.name : APP_NAME).toUpperCase()
+      let name = fullName
+      while (name.length > 1 && doc.getTextWidth(`${name}…`) > availW) name = name.slice(0, -1)
+      doc.text(name.length < fullName.length ? `${name}…` : name, M, headerH / 2 + 3)
+    }
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(9)
+    doc.text("Feuille de présence", W - M, headerH / 2 + 3, { align: "right" })
+
+    // ── Meeting title + meta ─────────────────────────────────────────────────
+    let y = headerH + 12
+    doc.setTextColor(...BLACK)
+    doc.setFontSize(16)
+    doc.setFont("helvetica", "bold")
+    doc.text(title, M, y)
+    y += 7
+
+    doc.setFontSize(8.5)
+    doc.setFont("helvetica", "normal")
+    doc.setTextColor(...ZINC)
+    const meetingDate = meeting.scheduledAt ?? meeting.startedAt
+    doc.text(
+      meetingDate ? format(new Date(meetingDate), "EEEE dd MMMM yyyy · HH'h'mm", { locale: fr }) : "Date non définie",
+      M, y,
+    )
+    doc.text(`Généré le ${today}`, W - M, y, { align: "right" })
+    y += 10
+
+    // ── Separator ───────────────────────────────────────────────────────────
+    doc.setDrawColor(228, 228, 231)
+    doc.line(M, y, W - M, y)
+    y += 5
+
+    // ── Table ───────────────────────────────────────────────────────────────
+    autoTable(doc, {
+      margin:             { left: M, right: M },
+      startY:             y,
+      head:               [["#", "Nom", "Prénom", "Adhérent actif", "Signature"]],
+      body:               meeting.participants.map((p, i) => [
+        i + 1,
+        p.membre.lastName,
+        p.membre.firstName,
+        p.membre.status === "ACTIF" ? "Oui" : "Non",
+        "",
+      ]),
+      headStyles:         { fillColor: headerRgb, textColor: headerTextRgb, fontStyle: "bold" as const, fontSize: 8 },
+      bodyStyles:         { fontSize: 8.5, textColor: BLACK, minCellHeight: 12 },
+      alternateRowStyles: { fillColor: [250, 250, 250] as [number, number, number] },
+      styles:             { cellPadding: 3, lineColor: [228, 228, 231] as [number, number, number], lineWidth: 0.1 },
+      columnStyles: {
+        0: { cellWidth: 10, halign: "center" },
+        3: { cellWidth: 30, halign: "center" },
+        4: { cellWidth: 50 },
+      },
+      didParseCell: (data) => {
+        if (data.section !== "body") return
+        if (data.column.index === 3) {
+          data.cell.styles.textColor = data.cell.raw === "Oui" ? [22, 163, 74] : ZINC
+        }
+      },
+    })
+
+    // ── Per-page footer ─────────────────────────────────────────────────────
+    const pageCount = doc.getNumberOfPages()
+    for (let p = 1; p <= pageCount; p++) {
+      doc.setPage(p)
+      doc.setDrawColor(228, 228, 231)
+      doc.line(M, 287, W - M, 287)
+      doc.setFontSize(7.5)
+      doc.setFont("helvetica", "normal")
+      doc.setTextColor(...ZINC)
+      doc.text(`Page ${p} / ${pageCount}`, M, 292)
+      doc.text(`Généré par ${APP_NAME}`, W - M, 292, { align: "right" })
+    }
+
+    doc.save(`feuille_presence_${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf`)
+  }
 
   if (inRoom && meeting) {
     return (
@@ -193,9 +377,9 @@ export default function ReunionDetailPage() {
   if (!meeting) {
     return (
       <DetailNotFound
-        message="Cette réunion est introuvable ou a été supprimée."
+        message={t("reunions.detail.notFound.message")}
         backHref="/dashboard/reunions"
-        backLabel="Retour à la liste"
+        backLabel={t("reunions.detail.notFound.backLabel")}
       />
     )
   }
@@ -203,15 +387,15 @@ export default function ReunionDetailPage() {
   const transcriptDirty  = transcript !== (meeting.transcript ?? "")
   const canJoin          = (meeting.status === "SCHEDULED" || meeting.status === "LIVE") && modules.reunions
   const isTranscribing   = transcribeRecording.isPending || transcribeUpload.isPending
-  const hasRecording     = !!meeting.recordingKey && meeting.status === "ENDED"
+  const hasRecording     = meeting.recordings.length > 0 && meeting.status === "ENDED"
   const canTranscribe    = modules.reunions
   const canSummarize     = modules.reunions
 
   return (
     <div className="flex flex-col gap-6 h-full mt-4">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <BackLink href="/dashboard/reunions" iconOnly>Réunions</BackLink>
+      <div className="flex items-center gap-3 flex-wrap">
+        <BackLink href="/dashboard/reunions" iconOnly>{t("reunions.detail.backToList")}</BackLink>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl font-bold truncate">{meeting.title}</h1>
@@ -221,10 +405,27 @@ export default function ReunionDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{meeting.description}</p>
           )}
         </div>
+        {canManage && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => window.open(`${BASE_PATH}/api/meetings/${id}/transcript-pdf`, "_blank")}
+            disabled={!meeting.transcript?.trim()}
+          >
+            <FileTextIcon className="size-4 mr-1.5" />
+            <span className="hidden sm:inline">{t("reunions.detail.exportMinutes.prefix")}</span>{t("reunions.detail.exportMinutes.suffix")}
+          </Button>
+        )}
+        {canManage && (
+          <Button size="sm" variant="outline" onClick={handleExportPdf}>
+            <DownloadSimpleIcon className="size-4 mr-1.5" />
+            <span className="hidden sm:inline">{t("reunions.detail.exportAttendance.prefix")}</span>{t("reunions.detail.exportAttendance.suffix")}
+          </Button>
+        )}
         {canJoin && (
           <Button size="sm" onClick={() => setInRoom(true)} loading={awaitingRefresh} disabled={awaitingRefresh}>
             <PlayIcon className="size-4 mr-1.5" />
-            {meeting.status === "LIVE" ? "Rejoindre" : "Démarrer"}
+            {meeting.status === "LIVE" ? t("reunions.view.join") : t("reunions.view.start")}
           </Button>
         )}
       </div>
@@ -235,7 +436,7 @@ export default function ReunionDetailPage() {
         {/* Left — Transcript (2/3) */}
         <div className="lg:col-span-2 space-y-3 flex flex-col">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <Label>Transcription</Label>
+            <Label>{t("reunions.view.transcription")}</Label>
             <div className="flex flex-wrap items-center gap-2">
               {canTranscribe && hasRecording && (
                 <Button
@@ -247,7 +448,7 @@ export default function ReunionDetailPage() {
                   {transcribeRecording.isPending
                     ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                     : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                  {transcribeRecording.isPending ? "Transcription…" : "Transcrire l'enregistrement"}
+                  {transcribeRecording.isPending ? t("reunions.detail.transcribing") : t("reunions.detail.transcribeRecording")}
                 </Button>
               )}
 
@@ -273,7 +474,7 @@ export default function ReunionDetailPage() {
                     {transcribeUpload.isPending
                       ? <CircleNotchIcon className="size-3.5 mr-1.5 animate-spin" />
                       : <FileAudioIcon className="size-3.5 mr-1.5" />}
-                    {transcribeUpload.isPending ? "Transcription…" : "Importer un audio"}
+                    {transcribeUpload.isPending ? t("reunions.detail.transcribing") : t("reunions.detail.uploadAudio")}
                   </Button>
                 </>
               )}
@@ -286,7 +487,7 @@ export default function ReunionDetailPage() {
                   loading={saveTranscript.isPending}
                 >
                   <FloppyDiskIcon className="size-3.5 mr-1.5" />
-                  Sauvegarder
+                  {t("reunions.detail.saveTranscript")}
                 </Button>
               )}
             </div>
@@ -295,18 +496,18 @@ export default function ReunionDetailPage() {
           {isTranscribing && (
             <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
               <CircleNotchIcon className="size-4 animate-spin shrink-0" />
-              Whisper transcrit l'audio… Cela peut prendre quelques instants.
+              {t("reunions.detail.whisperTranscribing")}
             </div>
           )}
 
           <Textarea
             value={transcript}
             onChange={e => setTranscript(e.target.value)}
-            placeholder="La transcription apparaîtra ici après la réunion. Vous pouvez aussi importer un fichier audio ou saisir le texte manuellement."
+            placeholder={t("reunions.detail.transcriptPlaceholder")}
             className="font-mono text-xs resize-none flex-1 min-h-[300px]"
           />
           <p className="text-[11px] text-muted-foreground">
-            Formats acceptés : MP3, M4A, WAV, WebM, OGG, FLAC · Max 25 Mo · Détection automatique de la langue (français, portugais, anglais…)
+            {t("reunions.detail.acceptedFormats")}
           </p>
         </div>
 
@@ -318,38 +519,39 @@ export default function ReunionDetailPage() {
             {meeting.scheduledAt && (
               <span className="flex items-center gap-1.5">
                 <CalendarBlankIcon className="size-4 shrink-0" />
-                Planifiée le {format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.scheduledOn", { date: format(new Date(meeting.scheduledAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             {meeting.startedAt && (
               <span className="flex items-center gap-1.5">
                 <VideoCameraIcon className="size-4 shrink-0" />
-                Démarrée le {format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.startedOn", { date: format(new Date(meeting.startedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             {meeting.endedAt && (
               <span className="flex items-center gap-1.5">
                 <ClockIcon className="size-4 shrink-0" />
-                Terminée le {format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+                {t("reunions.detail.endedOn", { date: format(new Date(meeting.endedAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
               </span>
             )}
             <span className="flex items-start gap-1.5">
               <UsersIcon className="size-4 shrink-0 mt-0.5" />
               <span>
-                {meeting.participants.length} participant{meeting.participants.length !== 1 ? "s" : ""} :{" "}
+                {t("reunions.view.participantsCount", { count: meeting.participants.length })} :{" "}
                 {meeting.participants.map(p => `${p.membre.firstName} ${p.membre.lastName}`).join(", ")}
               </span>
             </span>
-            {meeting.egressId && (
+            {meeting.recordings.some(r => !r.endedAt) && (
               <span className="flex items-center gap-1.5 text-red-500">
                 <CircleIcon className="size-2 fill-current animate-pulse" />
-                Enregistrement en cours
+                {t("reunions.detail.recordingInProgress")}
               </span>
             )}
+
             {hasRecording && (
               <span className="flex items-center gap-1.5 text-green-600">
                 <CircleIcon className="size-2 fill-current" />
-                Enregistrement disponible
+                {t("reunions.detail.recordingAvailable")}
               </span>
             )}
           </div>
@@ -358,7 +560,7 @@ export default function ReunionDetailPage() {
           {canSummarize && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Compte-rendu IA</Label>
+                <Label>{t("reunions.detail.aiSummary")}</Label>
                 <Button
                   size="sm"
                   onClick={() => summarize.mutate()}
@@ -366,7 +568,7 @@ export default function ReunionDetailPage() {
                   disabled={!transcript.trim()}
                 >
                   <SparkleIcon className="size-3.5 mr-1.5" />
-                  {meeting.summary ? "Regénérer" : "Générer"}
+                  {meeting.summary ? t("reunions.detail.regenerate") : t("reunions.detail.generate")}
                 </Button>
               </div>
 
@@ -379,12 +581,79 @@ export default function ReunionDetailPage() {
                   <SparkleIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">
                     {transcript.trim()
-                      ? "Cliquez sur « Générer » pour créer le compte-rendu."
-                      : "La transcription est nécessaire pour générer le résumé."}
+                      ? t("reunions.detail.generateSummaryHint")
+                      : t("reunions.detail.transcriptRequiredHint")}
                   </p>
                 </div>
               )}
             </div>
+          )}
+          {canManage && (
+            <div className="space-y-2">
+              <Label>{t("reunions.detail.share.heading")}</Label>
+              <div className="rounded-xl border bg-card p-4 space-y-3">
+                {meeting.shareToken && meeting.shareExpiresAt && new Date(meeting.shareExpiresAt) > new Date() ? (
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      {t("reunions.detail.share.expiresOn", { date: format(new Date(meeting.shareExpiresAt), "d MMM yyyy 'à' HH'h'mm", { locale: fr }) })}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          const url = `${window.location.origin}${BASE_PATH}/compte-rendu/${currentUser.associationSlug}/${meeting.shareToken}`
+                          navigator.clipboard.writeText(url)
+                          toast.success(t("reunions.detail.share.toasts.linkCopied"))
+                        }}
+                      >
+                        <LinkIcon className="size-3.5 mr-1.5" />
+                        {t("reunions.detail.share.copyLink")}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => revokeShareLink.mutate()}
+                        loading={revokeShareLink.isPending}
+                      >
+                        {t("reunions.detail.share.revoke")}
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <Button
+                    size="sm"
+                    className="w-full"
+                    onClick={() => generateShareLink.mutate()}
+                    loading={generateShareLink.isPending}
+                    disabled={!meeting.transcript?.trim()}>
+                    <LinkIcon className="size-3.5 mr-1.5" />
+                    {t("reunions.detail.share.generateLink")}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setEmailModalOpen(true)} disabled={!meeting.transcript?.trim()}>
+                  <EnvelopeSimpleIcon className="size-3.5 mr-1.5" />
+                  {t("reunions.detail.share.sendEmail")}
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {emailModalOpen && (
+            <SendEmailModal
+              documentLabel={meeting.title}
+              defaultTo=""
+              open={emailModalOpen}
+              onOpenChange={setEmailModalOpen}
+              onSend={handleSendMinutesEmail}
+              loading={sendMinutesEmail.isPending}
+            />
           )}
         </div>
       </div>

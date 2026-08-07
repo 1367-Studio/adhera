@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useMembreTypes, useCreateMembreType, useUpdateMembreType, useDeleteMembreType,
@@ -27,6 +28,8 @@ function TypeForm({
   onCancel: () => void
   loading?: boolean
 }) {
+  const t = useTranslations("parametres.membreTypes")
+  const tCommon = useTranslations("common")
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<MembreTypeInput>({
     resolver:      zodResolver(membreTypeSchema),
     defaultValues: { color: "gray", ...defaultValues },
@@ -40,9 +43,9 @@ function TypeForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-1">
       <div>
         <FormField
-          label="Nom"
+          label={t("name")}
           required
-          placeholder="Membre actif"
+          placeholder={t("namePlaceholder")}
           maxLength={NAME_MAX}
           error={errors.name?.message}
           {...register("name")}
@@ -51,8 +54,8 @@ function TypeForm({
       </div>
       <div>
         <FormField
-          label="Description"
-          placeholder="Membres à jour de leur cotisation annuelle"
+          label={t("description")}
+          placeholder={t("descriptionPlaceholder")}
           maxLength={DESCRIPTION_MAX}
           error={errors.description?.message}
           {...register("description")}
@@ -64,7 +67,7 @@ function TypeForm({
 
       {/* Color picker */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-foreground">Couleur</label>
+        <label className="block text-sm font-medium text-foreground">{t("color")}</label>
         <div className="flex flex-wrap gap-2">
           {MEMBRE_TYPE_COLORS.map(color => {
             const { dot } = getTypeColor(color)
@@ -84,16 +87,16 @@ function TypeForm({
           })}
         </div>
         {selectedColor && (
-          <MembreTypeBadge name={watch("name") || "Aperçu"} color={selectedColor} />
+          <MembreTypeBadge name={watch("name") || t("preview")} color={selectedColor} />
         )}
       </div>
 
       <div className="flex justify-end gap-2 pt-1">
         <Button type="button" variant="outline" size="sm" onClick={onCancel} disabled={loading}>
-          Annuler
+          {tCommon("cancel")}
         </Button>
         <Button type="submit" size="sm" loading={loading}>
-          Enregistrer
+          {tCommon("save")}
         </Button>
       </div>
     </form>
@@ -101,6 +104,8 @@ function TypeForm({
 }
 
 export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
+  const t = useTranslations("parametres.membreTypes")
+  const tCommon = useTranslations("common")
   const { data: types = [], isLoading } = useMembreTypes()
   const createMutation  = useCreateMembreType()
   const deleteMutation  = useDeleteMembreType()
@@ -112,10 +117,10 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
   async function handleCreate(data: MembreTypeInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success(`Type « ${data.name} » créé`)
+      toast.success(t("toasts.created", { name: data.name }))
       setCreating(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
     }
   }
 
@@ -123,10 +128,10 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success(`Type « ${deleteTarget.name} » supprimé`)
+      toast.success(t("toasts.deleted", { name: deleteTarget.name }))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
     }
   }
 
@@ -134,14 +139,14 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
     <div className="rounded-xl border bg-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold">Types de membres</h3>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Catégories attribuées aux membres de votre association
+            {t("subtitle")}
           </p>
         </div>
         {canEdit && !creating && !editTarget && (
           <Button size="sm" variant="outline" onClick={() => setCreating(true)}>
-            <PlusIcon className="size-3.5 mr-1" /> Ajouter
+            <PlusIcon className="size-3.5 mr-1" /> {t("add")}
           </Button>
         )}
       </div>
@@ -164,41 +169,41 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
         </div>
       ) : types.length === 0 && !creating ? (
         <p className="text-sm text-muted-foreground text-center py-4 border rounded-lg border-dashed">
-          Aucun type créé
+          {t("noTypes")}
         </p>
       ) : (
         <ul className="space-y-2">
-          {types.map(t => (
-            <li key={t.id}>
-              {editTarget?.id === t.id ? (
+          {types.map(type => (
+            <li key={type.id}>
+              {editTarget?.id === type.id ? (
                 <div className="rounded-lg border bg-muted/20 p-4">
                   <EditTypeForm
-                    type={t}
+                    type={type}
                     onDone={() => setEditTarget(null)}
                   />
                 </div>
               ) : (
                 <div className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <MembreTypeBadge name={t.name} color={t.color} />
-                    {t.description && (
-                      <span className="text-xs text-muted-foreground truncate">{t.description}</span>
+                    <MembreTypeBadge name={type.name} color={type.color} />
+                    {type.description && (
+                      <span className="text-xs text-muted-foreground truncate">{type.description}</span>
                     )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs text-muted-foreground">{t._count.membres} membre{t._count.membres !== 1 ? "s" : ""}</span>
+                    <span className="text-xs text-muted-foreground">{t("membersCount", { count: type._count.membres })}</span>
                     {canEdit && (
                       <>
                         <button
                           type="button"
-                          onClick={() => setEditTarget(t)}
+                          onClick={() => setEditTarget(type)}
                           className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                           <PencilSimpleIcon className="size-3.5" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setDeleteTarget(t)}
+                          onClick={() => setDeleteTarget(type)}
                           className="text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <TrashIcon className="size-3.5" />
@@ -216,13 +221,13 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={open => !open && setDeleteTarget(null)}
-        title={`Supprimer « ${deleteTarget?.name} » ?`}
+        title={t("deleteConfirmTitle", { name: deleteTarget?.name ?? "" })}
         description={
           deleteTarget?._count.membres
-            ? `Ce type est utilisé par ${deleteTarget._count.membres} membre(s). Réattribuez-les avant de supprimer.`
-            : "Ce type sera supprimé définitivement."
+            ? t("deleteConfirmInUse", { count: deleteTarget._count.membres })
+            : t("deleteConfirmSimple")
         }
-        confirmLabel="Supprimer"
+        confirmLabel={tCommon("delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
@@ -231,15 +236,17 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
 }
 
 function EditTypeForm({ type, onDone }: { type: MembreType; onDone: () => void }) {
+  const t = useTranslations("parametres.membreTypes")
+  const tCommon = useTranslations("common")
   const updateMutation = useUpdateMembreType(type.id)
 
   async function handleUpdate(data: MembreTypeInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Type mis à jour")
+      toast.success(t("toasts.updated"))
       onDone()
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
     }
   }
 

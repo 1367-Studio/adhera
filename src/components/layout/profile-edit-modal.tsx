@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -27,6 +28,8 @@ function splitName(full: string | null | undefined): [string, string] {
 }
 
 export function ProfileEditModal({ user, onClose, onSaved }: Props) {
+  const t = useTranslations("layout.profileEditModal")
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const [first, last] = splitName(user.name)
 
@@ -42,10 +45,10 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
 
   function validate(): boolean {
     const e: Errors = {}
-    if (!firstName.trim()) e.firstName = "Prénom obligatoire."
-    if (!lastName.trim())  e.lastName  = "Nom obligatoire."
-    if (!email.trim())     e.email     = "E-mail obligatoire."
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) e.email = "E-mail invalide."
+    if (!firstName.trim()) e.firstName = t("firstNameRequired")
+    if (!lastName.trim())  e.lastName  = t("lastNameRequired")
+    if (!email.trim())     e.email     = t("emailRequired")
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) e.email = t("emailInvalid")
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -60,17 +63,17 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
         body: JSON.stringify({ name, email }),
       })
       if (res.ok) {
-        toast.success("Profil mis à jour. Le nom dans l'en-tête sera mis à jour à la prochaine connexion.")
+        toast.success(t("toastSuccess"))
         router.refresh()
         onSaved()
       } else {
         const data = await res.json().catch(() => ({}))
         if (data.field === "name") setErrors({ firstName: data.error })
         else if (data.field)       setErrors({ [data.field]: data.error })
-        else toast.error(data.error ?? "Erreur lors de la sauvegarde.")
+        else toast.error(data.error ?? t("toastError"))
       }
     } catch {
-      toast.error("Erreur de connexion. Veuillez réessayer.")
+      toast.error(t("toastNetworkError"))
     } finally {
       setSaving(false)
     }
@@ -84,7 +87,7 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
-        <DialogHeader><DialogTitle>Modifier le profil</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("title")}</DialogTitle></DialogHeader>
 
         <form
           className="space-y-4 py-1"
@@ -92,7 +95,7 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
         >
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label htmlFor="p-first">Prénom</Label>
+              <Label htmlFor="p-first">{t("firstNameLabel")}</Label>
               <Input
                 id="p-first" value={firstName} autoFocus
                 onChange={(e) => { setFirstName(e.target.value); clearError("firstName") }}
@@ -103,7 +106,7 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="p-last">Nom</Label>
+              <Label htmlFor="p-last">{t("lastNameLabel")}</Label>
               <Input
                 id="p-last" value={lastName}
                 onChange={(e) => { setLastName(e.target.value); clearError("lastName") }}
@@ -115,7 +118,7 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="p-email">E-mail</Label>
+            <Label htmlFor="p-email">{t("emailLabel")}</Label>
             <Input
               id="p-email" type="email" value={email}
               onChange={(e) => { setEmail(e.target.value); clearError("email") }}
@@ -129,9 +132,9 @@ export function ProfileEditModal({ user, onClose, onSaved }: Props) {
         </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose} loading={saving}>Annuler</Button>
+          <Button variant="outline" onClick={onClose} loading={saving}>{tCommon("cancel")}</Button>
           <Button onClick={handleSave} disabled={saving || !isDirty}>
-            Enregistrer
+            {tCommon("save")}
           </Button>
         </DialogFooter>
       </DialogContent>

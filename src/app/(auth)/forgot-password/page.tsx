@@ -1,11 +1,15 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
+import { getTranslations } from "next-intl/server"
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
 
-export const metadata: Metadata = { title: "Mot de passe oublié" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.forgotPassword")
+  return { title: t("pageTitle") }
+}
 
 export default async function ForgotPasswordPage({
   searchParams,
@@ -14,6 +18,7 @@ export default async function ForgotPasswordPage({
 }) {
   const { callbackUrl } = await searchParams
   const backHref = callbackUrl ?? "/login"
+  const t = await getTranslations("auth.forgotPassword")
 
   return (
     <div className="w-full max-w-sm">
@@ -24,9 +29,9 @@ export default async function ForgotPasswordPage({
 
       <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">
         <div className="space-y-1.5">
-          <h1 className="text-xl font-semibold tracking-tight">Mot de passe oublié ?</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">
-            Entrez votre adresse email pour recevoir un lien de réinitialisation.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -37,7 +42,7 @@ export default async function ForgotPasswordPage({
           className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeftIcon className="size-3.5" />
-          Retour à la connexion
+          {t("backToLogin")}
         </Link>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { format } from "date-fns"
 import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -38,6 +39,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     prisma.membre.findMany({
       where:   { associationId, deletedAt: null },
       orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+      include: { cotisations: membreAdherentCotisationSelect(), responsable: membreAdherentResponsableSelect() },
     }),
     prisma.cotisation.findMany({
       where:   { associationId },
@@ -117,7 +119,8 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     Email:    sanitizeCell(m.email),
     Téléphone: sanitizeCell(m.phone),
     Statut:   m.status,
-    "Adhésion depuis": fmtDate(m.joinedAt),
+    "Membre depuis": fmtDate(m.joinedAt),
+    "Statut adhésion": isMembreAdherent(m) ? "Adhérent" : "Bénévole",
   }))), "Membres")
 
   utils.book_append_sheet(wb, utils.json_to_sheet(cotisations.map(c => ({

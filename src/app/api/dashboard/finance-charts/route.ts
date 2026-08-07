@@ -4,9 +4,11 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { fetchModules } from "@/lib/auth/require-module"
 
 const COTISATION_LABELS: Record<string, string> = {
-  PAYE:       "Payées",
-  EN_ATTENTE: "En attente",
-  EXONERE:    "Exonérées",
+  PAYE:                "Payées",
+  EN_ATTENTE:          "En attente",
+  PARTIELLEMENT_PAYEE: "Partiellement payées",
+  EN_RETARD:           "En retard",
+  EXONERE:             "Exonérées",
 }
 
 function monthLabel(d: Date): string {
@@ -24,10 +26,13 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
 
   const [cotisationsByStatus, incomeByCategory, monthlyIncomes, monthlyExpenses] = await Promise.all([
+    // ANNULEE excluded — it was never really "collectable" for this year (consistent with
+    // it being excluded from remaining-balance/pay-now displays elsewhere), and there's no
+    // 6th validated categorical hue for it to render as here anyway (see finance-palette.ts).
     modules.cotisations
       ? prisma.cotisation.groupBy({
           by: ["status"],
-          where: { associationId, year },
+          where: { associationId, year, status: { not: "ANNULEE" } },
           _count: { _all: true },
           _sum:   { amount: true },
         })

@@ -21,17 +21,35 @@ export const GET = withAdminAuth(async (req, ctx) => {
     evenementsMois,
     cotisationsEnAttente,
     cotisationsPayees,
+    cotisationsPartielles,
     totalIncomes,
     totalExpenses,
     prochainEvenement,
     commandesEnAttente,
+    materielEnRetardCount,
+    materielEmpruntsListe,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
-    prisma.cotisation.count({ where: { associationId, status: "EN_ATTENTE", year } }),
+    // A partially-paid or already-late cotisation still owes something — counts as pending
+    // here too (EN_RETARD is exactly "still pending, past due", not a separate bucket).
+    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year } }),
     prisma.cotisation.aggregate({
       where: { associationId, status: "PAYE", year },
       _sum: { amount: true },
+    }),
+    // Money actually collected on cotisations that aren't fully settled yet — without this,
+    // partial payments wouldn't count as "encaissé" until the balance is paid off in full,
+    // understating real cash received (the Income rows behind them are already correct in
+    // Finances; this just mirrors that here). Summed separately from cotisationsPayees
+    // above (which uses the cotisation's full amount) rather than switching that one to sum
+    // CotisationPayment directly, since cotisations marked PAYE before this feature existed
+    // have amountPaid=0 with no payment rows behind them at all. Includes EN_RETARD too — a
+    // partially-paid cotisation whose due date has since passed still has real money
+    // collected against it; only its status changed, not what's actually been received.
+    prisma.cotisation.aggregate({
+      where: { associationId, status: { in: ["PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year },
+      _sum: { amountPaid: true },
     }),
     prisma.income.aggregate({
       where: { associationId, status: "PAID" },
@@ -59,6 +77,40 @@ export const GET = withAdminAuth(async (req, ctx) => {
         createdAt:   true,
         guestName:   true,
         membre:      { select: { firstName: true, lastName: true } },
+      },
+    }),
+    // Same "overdue" definition as the per-item badge on the matériel page itself
+    // (src/app/api/materiel/route.ts) — a CONFIRME loan, not yet returned, past its due
+    // date. Counted separately from the findMany below (which covers every active loan,
+    // not just overdue ones) so the card can still flag how many need action.
+    prisma.materialLoan.count({
+      where: {
+        material:         { associationId },
+        status:           "CONFIRME",
+        returnedAt:       null,
+        expectedReturnAt: { lt: now },
+      },
+    }),
+    // Every active loan (borrowed and not yet returned), not just overdue ones — the
+    // client asked to see what's currently on loan, not only what's late. Oldest due
+    // date first: overdue loans (due date in the past) sort ahead of loans still on
+    // track this way, with undated loans last since they're not time-pressured at all.
+    // Capped at 5 like the other dashboard lists since this is a glanceable summary,
+    // not the full matériel page.
+    prisma.materialLoan.findMany({
+      where: {
+        material:   { associationId },
+        status:     "CONFIRME",
+        returnedAt: null,
+      },
+      orderBy: { expectedReturnAt: { sort: "asc", nulls: "last" } },
+      take:    5,
+      select: {
+        id:               true,
+        expectedReturnAt: true,
+        borrowerName:     true,
+        material:         { select: { name: true } },
+        membre:           { select: { firstName: true, lastName: true } },
       },
     }),
   ])
@@ -93,7 +145,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ]
 
   const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
-  const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0)
+  const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0) + Number(cotisationsPartielles._sum.amountPaid ?? 0)
 
   return NextResponse.json({
     membresActifs,
@@ -103,5 +155,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
     solde,
     prochainEvenement,
     ventesRecentes,
+    materielEnRetardCount,
+    materielEmpruntsListe: materielEmpruntsListe.map(l => ({
+      id:               l.id,
+      materialName:     l.material.name,
+      borrowerName:     l.membre ? `${l.membre.firstName} ${l.membre.lastName}` : (l.borrowerName ?? "—"),
+      expectedReturnAt: l.expectedReturnAt,
+      isOverdue:        !!l.expectedReturnAt && l.expectedReturnAt < now,
+    })),
   })
 })

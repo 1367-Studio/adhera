@@ -47,10 +47,11 @@ function Button({
   variant = "default",
   size = "default",
   loading,
+  loadingClassName,
   disabled,
   children,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { loading?: boolean }) {
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { loading?: boolean; loadingClassName?: string }) {
   const isIcon = ICON_SIZES.has(size ?? "default")
   return (
     <ButtonPrimitive
@@ -60,10 +61,10 @@ function Button({
       {...props}
     >
       {isIcon ? (
-        loading ? <CircleNotchIcon className="size-4 animate-spin" /> : children
+        loading ? <CircleNotchIcon className={cn("size-4 animate-spin", loadingClassName)} /> : children
       ) : (
         <>
-          {loading && <CircleNotchIcon className="size-4 animate-spin" />}
+          {loading && <CircleNotchIcon className={cn("size-4 animate-spin", loadingClassName)} />}
           {children}
         </>
       )}

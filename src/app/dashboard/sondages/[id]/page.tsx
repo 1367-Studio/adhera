@@ -20,8 +20,14 @@ import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
+import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
+
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
 
 type Sondage = {
   id:           string
@@ -44,15 +50,13 @@ type Sondage = {
   _count:       { reponses: number }
 }
 
-type InviteResult = { emailsSent: number; emailsFailed: number; skippedNoEmail: number; skippedNoAccess: number }
+type InviteResult = { jobId: string | null; notified: number; skippedNoEmail: number; skippedNoAccess: number }
 
+// emailsSent/emailsFailed aren't known yet at this point — the actual send now runs in the
+// background (Inngest). registerPendingBulkSend + useBulkSendListener (mounted in
+// AppSidebar) show that part of the toast once the send finishes, using the jobId below.
 function notifyInviteResult(result: InviteResult) {
-  if (result.emailsSent > 0) {
-    toast.info(`${result.emailsSent} invitation${result.emailsSent > 1 ? "s" : ""} envoyée${result.emailsSent > 1 ? "s" : ""} par e-mail`)
-  }
-  if (result.emailsFailed > 0) {
-    toast.warning(`${result.emailsFailed} invitation${result.emailsFailed > 1 ? "s" : ""} n'${result.emailsFailed > 1 ? "ont" : "a"} pas pu être envoyée${result.emailsFailed > 1 ? "s" : ""} — voir l'onglet Envois`)
-  }
+  registerPendingBulkSend(result.jobId)
   if (result.skippedNoEmail > 0) {
     toast.warning(`${result.skippedNoEmail} membre${result.skippedNoEmail > 1 ? "s" : ""} sans adresse e-mail n'${result.skippedNoEmail > 1 ? "ont" : "a"} reçu aucune invitation`)
   }
@@ -258,6 +262,7 @@ export default function SondageDetailPage() {
     e.preventDefault()
     if (!title.trim()) { toast.error("Le titre est obligatoire"); return }
     if (questions.length === 0) { toast.error("Ajoutez au moins une question"); return }
+    if (deadline && deadline < todayStr()) { toast.error("La date limite ne peut pas être dans le passé"); return }
     if (recipientMode === "SELECTED" && recipientIds.length === 0) {
       toast.error("Sélectionnez au moins un destinataire")
       return
@@ -364,6 +369,7 @@ export default function SondageDetailPage() {
                     <Input
                       id="deadline"
                       type="date"
+                      min={todayStr()}
                       value={deadline}
                       onChange={e => setDeadline(e.target.value)}
                       disabled={!editable}

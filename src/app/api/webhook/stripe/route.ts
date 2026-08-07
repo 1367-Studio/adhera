@@ -3,14 +3,17 @@ import { Prisma } from "@prisma/client"
 import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, getPricingInfo } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { paymentConfirmationEmail, donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
+import { donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError } from "@/lib/cotisation-payments"
+import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import type Stripe from "stripe"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
 
 export const dynamic = "force-dynamic"
 
@@ -58,6 +61,12 @@ export async function POST(req: Request) {
         const buyerLabel = commande?.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
 
         if (commande && commande.status === "PENDING") {
+          // Best-effort: link to whichever exercice covers today's date, but never block —
+          // the payment already happened on Stripe's side, there's no user to show an error
+          // to, and the early-closure rule on exercice closing means this can basically only
+          // land in an open period anyway (see PATCH /finances/exercices/[id]).
+          const exercice = await resolveExerciceForDate(commande.associationId, paidAt)
+
           // One Income row per accounting category — a mixed-category order posts
           // several partial rows instead of forcing one row into a single category. Grouped
           // by the category snapshot taken when the item was ordered, not the product's
@@ -97,6 +106,7 @@ export async function POST(req: Request) {
                   await tx.income.create({
                     data: {
                       associationId: commande.associationId,
+                      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
                       memberId:      commande.membreId ?? undefined,
                       amount:        group.amount / 100,
                       categoryId:    categoryId ?? undefined,
@@ -191,6 +201,7 @@ export async function POST(req: Request) {
                 title:  "Nouvelle commande boutique",
                 body:   `${memberName} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
                 link:   `/dashboard/boutique`,
+                scope:  "GESTION",
               })),
               skipDuplicates: true,
             })
@@ -216,65 +227,106 @@ export async function POST(req: Request) {
       } else if (cotisationId) {
         const paidAt = new Date()
         // Atomic conditional update: only the first of any concurrent/duplicate webhook
-        // deliveries for this cotisation will match and flip the status, preventing a
-        // duplicate Income row from a race between two "PAYE" transitions.
+        // deliveries for this cotisation will match, preventing a duplicate payment/Income
+        // row from a race between two "PAYE" transitions. Re-sets stripeSessionId to its
+        // already-current value — a no-op in effect, just a field the update needs to touch.
         const { count } = await prisma.cotisation.updateMany({
           where: { id: cotisationId, status: { not: "PAYE" } },
-          data:  { status: "PAYE", paidAt },
+          data:  { stripeSessionId: sess.id },
         })
         if (count === 0) break
 
-        const cotisation = await prisma.cotisation.findUnique({
-          where:   { id: cotisationId },
-          include: {
-            membre:      { select: { firstName: true, lastName: true, email: true } },
-            association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
-          },
+        const existingCotisation = await prisma.cotisation.findUnique({
+          where:  { id: cotisationId },
+          select: { associationId: true, amount: true },
         })
-        if (!cotisation) break
+        if (!existingCotisation) break
 
         // Use what Stripe actually charged (locked in at checkout session creation), not
         // the cotisation's current `amount` — an admin could have edited the price while
         // the checkout session was still open, which would otherwise record an Income
         // that doesn't match the real payment.
-        const chargedAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(cotisation.amount)
+        const chargedAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(existingCotisation.amount)
 
-        if (cotisation.amount != null) {
-          await prisma.income.create({
-            data: {
-              associationId: cotisation.associationId,
-              memberId:      cotisation.membreId,
-              amount:        chargedAmount,
-              description:   `Cotisation ${cotisation.year} — ${cotisation.membre.firstName} ${cotisation.membre.lastName}`,
-              paymentMethod: "STRIPE",
-              source:        "STRIPE",
-              status:        "PAID",
-              date:          paidAt,
-              reference:     paymentIntentId,
-            },
-          })
-        }
+        // Best-effort exercice link — never blocks, same reasoning as the boutique branch above.
+        const exercice = await resolveExerciceForDate(existingCotisation.associationId, paidAt)
 
-        if (cotisation.membre.email) {
-          sendEmail(paymentConfirmationEmail({
-            firstName:       cotisation.membre.firstName,
-            email:           cotisation.membre.email,
-            associationName: cotisation.association.name,
-            amount:          chargedAmount,
-            period:          String(cotisation.year),
+        try {
+          const cotisation = await prisma.$transaction((tx) => recordCotisationPayment(tx, {
+            associationId: existingCotisation.associationId,
+            cotisationId,
+            amount:        chargedAmount,
+            method:        "En ligne",
             paidAt,
-            branding:        resolveDocumentBranding(cotisation.association),
-          }), { associationId: cotisation.associationId, membreId: cotisation.membreId, source: "TRANSACTION", sourceId: cotisationId }).catch(() => {})
-        }
+            source:        "STRIPE",
+            reference:     paymentIntentId,
+            exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+          }))
 
-        await writeActivityLog({
-          associationId: cotisation.associationId,
-          action:        "COTISATION_PAID",
-          entity:        "Cotisation",
-          entityId:      cotisationId,
-          label:         `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`,
-          metadata:      { amount: Number(cotisation.amount) },
-        })
+          await sendCotisationPaymentConfirmation(cotisation, chargedAmount)
+
+          await writeActivityLog({
+            associationId: cotisation.associationId,
+            action:        "COTISATION_PAID",
+            entity:        "Cotisation",
+            entityId:      cotisationId,
+            label:         `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`,
+            metadata:      { amount: chargedAmount },
+          })
+        } catch (err) {
+          if (err instanceof CotisationOverpaymentError) {
+            // Stripe already captured the charge — there's no "reject" available at this
+            // point, only a rare race (an admin recorded a manual payment while this
+            // checkout session was still open for the old, larger remaining balance).
+            // recordCotisationPayment's transaction rolled back entirely on the throw, so
+            // without this the money would be captured by Stripe but show up nowhere in the
+            // app at all. Recorded as a plain Income (not linked to a CotisationPayment,
+            // since crediting it there would just push amountPaid past the total again) so
+            // it's at least visible for reconciliation, and flagged to finance-role admins
+            // as an active notification rather than left buried in the activity log — real
+            // money moved and someone needs to follow up with the member.
+            await prisma.income.create({
+              data: {
+                associationId: existingCotisation.associationId,
+                amount:        chargedAmount,
+                description:   `Cotisation ${cotisationId} — payée en trop via Stripe, à vérifier`,
+                source:        "STRIPE",
+                status:        "PAID",
+                date:          paidAt,
+                reference:     paymentIntentId,
+              },
+            })
+
+            await writeActivityLog({
+              associationId: existingCotisation.associationId,
+              action:        "COTISATION_PAYMENT_OVERPAID_STRIPE",
+              entity:        "Cotisation",
+              entityId:      cotisationId,
+              metadata:      { chargedAmount, remainingAtCapture: err.remaining, paymentIntentId },
+            })
+
+            const admins = await prisma.user.findMany({
+              where:  { associationId: existingCotisation.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+              select: { id: true },
+            })
+            if (admins.length) {
+              const amountLabel = chargedAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+              await prisma.notification.createMany({
+                data: admins.map(a => ({
+                  userId: a.id,
+                  title:  "Cotisation payée en trop",
+                  body:   `Un paiement Stripe de ${amountLabel} a été reçu pour une cotisation déjà réglée entre-temps (probablement un paiement manuel enregistré pendant que le membre payait en ligne). Vérifiez et contactez le membre si besoin.`,
+                  link:   "/dashboard/cotisations",
+                  scope:  "GESTION",
+                })),
+                skipDuplicates: true,
+              })
+              await pusherServer.trigger(`private-association-${existingCotisation.associationId}`, "new-notification", {}).catch(() => {})
+            }
+            break
+          }
+          throw err
+        }
       } else if (orderId) {
         const paidAt = new Date()
         // Atomic conditional update: only the first of any concurrent/duplicate webhook
@@ -316,6 +368,9 @@ export async function POST(req: Request) {
           const totalAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(evenement.price!) * quantity
           const unitAmount  = totalAmount / quantity
 
+          // Best-effort exercice link — never blocks, same reasoning as the other branches.
+          const exercice = await resolveExerciceForDate(evenement.associationId, paidAt)
+
           await prisma.participation.updateMany({ where: { orderId }, data: { amount: unitAmount } })
 
           // One Income row per seat (not a single lump sum) so cancelling a single
@@ -323,6 +378,7 @@ export async function POST(req: Request) {
           await prisma.income.createMany({
             data: tickets.map(t => ({
               associationId:   evenement.associationId,
+              exerciceId:      exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:        t.membreId,
               participationId: t.id,
               amount:          unitAmount,
@@ -345,6 +401,13 @@ export async function POST(req: Request) {
           if (buyerTicket.email && evenement.association) {
             const assoc = evenement.association
             const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${assoc.slug}/evenements`
+            // Only guest/public tickets (no membreId) get a cancel link — a member's own
+            // ticket is already cancellable from the authenticated portal, and a multi-seat
+            // order bought there can include companions this simple token-based flow (built
+            // for the single-seat public registration form) isn't designed to handle.
+            const cancelUrl = !buyerTicket.membreId && buyerTicket.cancelToken
+              ? `${process.env.NEXTAUTH_URL ?? ""}/annulation/${buyerTicket.cancelToken}`
+              : undefined
             sendEmail(ticketPurchaseEmail({
               firstName:       buyerTicket.firstName,
               email:           buyerTicket.email,
@@ -356,6 +419,7 @@ export async function POST(req: Request) {
               quantity,
               paidAt,
               portalUrl,
+              cancelUrl,
               branding:        resolveDocumentBranding(assoc),
             }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
           }
@@ -378,9 +442,13 @@ export async function POST(req: Request) {
         })
         if (!don) break
 
+        // Best-effort exercice link — never blocks, same reasoning as the other branches.
+        const exercice = await resolveExerciceForDate(don.associationId, paidAt)
+
         await prisma.income.create({
           data: {
             associationId: don.associationId,
+            exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
             amount:        don.amount,
             // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
             // comptabilité interne — l'association doit toujours savoir qui a donné.
@@ -426,6 +494,7 @@ export async function POST(req: Request) {
                       title:  "Échec de génération d'un reçu fiscal",
                       body:   `Le reçu fiscal pour le don de ${donorLabel} n'a pas pu être généré automatiquement — téléchargez-le et renvoyez-le manuellement.`,
                       link:   "/dashboard/dons",
+                      scope:  "GESTION",
                     })),
                     skipDuplicates: true,
                   })
@@ -605,6 +674,7 @@ export async function POST(req: Request) {
                 title:  "Remboursement partiel reçu",
                 body,
                 link:   "/dashboard/tresorerie",
+                scope:  "GESTION",
               })),
               skipDuplicates: true,
             })
@@ -628,12 +698,30 @@ export async function POST(req: Request) {
           await writeActivityLog({ associationId, action: "DON_REFUNDED", entity: "Don", entityId: donId })
         }
       } else if (cotisationId) {
-        const { count } = await prisma.cotisation.updateMany({
-          where: { id: cotisationId, status: "PAYE" },
-          data:  { status: "EN_ATTENTE", paidAt: null },
+        // The Income row itself was already soft-cancelled by the generic reference-matched
+        // update above (kept for the audit trail, like the don/order paths) — this just
+        // brings amountPaid/status back in line with that, rather than deleting anything.
+        // Status isn't simply reset to EN_ATTENTE: if the due date has since passed, the
+        // refunded cotisation should land on EN_RETARD, not silently look on-time again.
+        const cotisationForRefund = await prisma.cotisation.findFirst({
+          where:  { id: cotisationId, status: "PAYE" },
+          select: { amount: true, dueDate: true, installments: { select: { amount: true, dueDate: true, order: true } } },
         })
-        if (count > 0 && associationId) {
-          await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
+        if (cotisationForRefund) {
+          const refundedStatus = deriveCotisationStatus({
+            currentStatus: "EN_ATTENTE",
+            amount:        Number(cotisationForRefund.amount),
+            amountPaid:    0,
+            dueDate:       cotisationForRefund.dueDate,
+            installments:  cotisationForRefund.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
+          })
+          await prisma.cotisation.update({
+            where: { id: cotisationId },
+            data:  { status: refundedStatus, paidAt: null, amountPaid: 0 },
+          })
+          if (associationId) {
+            await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
+          }
         }
       } else if (orderId) {
         const refundedTicket = await prisma.participation.findFirst({ where: { orderId }, select: { id: true } })
@@ -745,6 +833,7 @@ export async function POST(req: Request) {
                   title:  "Formule en dessous du nombre de membres",
                   body:   `Votre formule ${tierLabel} limite à ${newLimit} membres actifs, mais votre association en compte ${activeCount}. Vous ne pourrez pas ajouter de nouveaux membres tant que vous n'aurez pas repris une formule supérieure.`,
                   link:   "/dashboard/parametres?tab=abonnement",
+                  scope:  "GESTION",
                 })),
               })
               await pusherServer.trigger(`private-association-${assoc.id}`, "new-notification", {}).catch(() => {})
@@ -837,6 +926,7 @@ export async function POST(req: Request) {
           title:  "Échec de paiement",
           body:   "Le prélèvement de votre abonnement a échoué. Mettez à jour votre moyen de paiement.",
           link:   "/dashboard/parametres",
+          scope:  "GESTION",
         })),
         skipDuplicates: true,
       })

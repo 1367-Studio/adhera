@@ -15,6 +15,7 @@ import {
 } from "@livekit/components-react"
 import { Track } from "livekit-client"
 import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -37,6 +38,7 @@ function initials(name: string) {
 }
 
 function VideoGrid() {
+  const t = useTranslations()
   const tracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: true }],
     { onlySubscribed: false },
@@ -47,7 +49,7 @@ function VideoGrid() {
       <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <UsersIcon className="size-10 opacity-30" />
-          <p className="text-sm">En attente de participants…</p>
+          <p className="text-sm">{t("reunions.meetingRoom.waitingForParticipants")}</p>
         </div>
       </div>
     )
@@ -97,6 +99,7 @@ function VideoGrid() {
 }
 
 function ChatPanel({ onClose }: { onClose: () => void }) {
+  const t = useTranslations()
   const { chatMessages, send, isSending } = useChat()
   const [text, setText] = useState("")
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -113,19 +116,19 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
       await send(msg)
     } catch {
       setText(msg)
-      toast.error("Impossible d'envoyer le message.")
+      toast.error(t("reunions.meetingRoom.toasts.sendMessageError"))
     }
   }
 
   return (
     <div className="flex flex-col w-72 border-l bg-card shrink-0">
       <div className="px-3 py-2 border-b flex items-center justify-between">
-        <span className="text-xs font-medium text-muted-foreground">Chat</span>
+        <span className="text-xs font-medium text-muted-foreground">{t("reunions.meetingRoom.chat")}</span>
         <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xs">✕</button>
       </div>
       <div className="flex-1 overflow-y-auto p-3 space-y-3 min-h-0">
         {chatMessages.length === 0 && (
-          <p className="text-xs text-muted-foreground text-center pt-4">Aucun message pour le moment.</p>
+          <p className="text-xs text-muted-foreground text-center pt-4">{t("reunions.meetingRoom.noMessages")}</p>
         )}
         {chatMessages.map((msg, i) => (
           <div key={msg.id ?? i} className="space-y-0.5">
@@ -140,7 +143,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend() } }}
-          placeholder="Message…"
+          placeholder={t("reunions.meetingRoom.messagePlaceholder")}
           className="flex-1 text-xs rounded-lg border bg-background px-2.5 py-1.5 outline-none focus:ring-1 focus:ring-ring"
         />
         <button
@@ -176,6 +179,7 @@ function Controls({
   ending:            boolean
   onEndingChange:    (v: boolean) => void
 }) {
+  const t = useTranslations()
   const { isMicrophoneEnabled, isCameraEnabled } = useLocalParticipant()
   const room               = useRoomContext()
   const [toggling, setToggling] = useState(false)
@@ -190,13 +194,13 @@ function Controls({
       // of only at their next join.
       if (recording) {
         const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "DELETE" })
-        if (!res.ok) toast.error("Impossible d'arrêter l'enregistrement.")
+        if (!res.ok) toast.error(t("reunions.meetingRoom.toasts.stopRecordingError"))
       } else {
         const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "POST" })
-        if (!res.ok) toast.error("Impossible de démarrer l'enregistrement.")
+        if (!res.ok) toast.error(t("reunions.meetingRoom.toasts.startRecordingError"))
       }
     } catch {
-      toast.error("Erreur lors de la gestion de l'enregistrement.")
+      toast.error(t("reunions.meetingRoom.toasts.recordingError"))
     } finally {
       setToggling(false)
     }
@@ -214,7 +218,7 @@ function Controls({
     } catch {
       // Timed out or failed server-side: don't pretend it worked — surface the error and
       // hand control back so the admin can retry or fall back to "Quitter" themselves.
-      toast.error("Impossible de finaliser la réunion. Réessayez.")
+      toast.error(t("reunions.meetingRoom.toasts.endMeetingError"))
       onEndingChange(false)
     } finally {
       clearTimeout(timeout)
@@ -246,14 +250,14 @@ function Controls({
               }
             >
               {recording
-                ? <><SquareIcon className="size-3 animate-pulse" /> Enregistrement</>
-                : <><CircleIcon className="size-2 fill-current" /> Enregistrer</>
+                ? <><SquareIcon className="size-3 animate-pulse" /> {t("reunions.meetingRoom.recording")}</>
+                : <><CircleIcon className="size-2 fill-current" /> {t("reunions.meetingRoom.record")}</>
               }
             </TooltipTrigger>
             <TooltipContent>
               {recording
-                ? "Arrêter l'enregistrement de la réunion"
-                : "Démarrer l'enregistrement (visible par les participants)"}
+                ? t("reunions.meetingRoom.stopRecordingTooltip")
+                : t("reunions.meetingRoom.startRecordingTooltip")}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -312,7 +316,7 @@ function Controls({
         disabled={ending}
       >
         <PhoneSlashIcon className="size-4 mr-2" />
-        Quitter
+        {t("reunions.view.leave")}
       </Button>
 
       {isAdmin && (
@@ -324,7 +328,7 @@ function Controls({
           disabled={ending}
         >
           <PhoneSlashIcon className="size-4 mr-2" />
-          Encerrer
+          {t("reunions.meetingRoom.end")}
         </Button>
       )}
     </div>
@@ -340,6 +344,7 @@ function RoomInner({
   isAdmin:   boolean
   onLeave:   (opts?: LeaveOpts) => void
 }) {
+  const t = useTranslations()
   const [chatOpen,     setChatOpen]     = useState(false)
   const [unreadCount,  setUnreadCount]  = useState(0)
   const [ending,       setEnding]       = useState(false)
@@ -379,14 +384,14 @@ function RoomInner({
       {ending && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
           <CircleNotchIcon className="size-8 animate-spin text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">Finalisation de la réunion…</p>
+          <p className="text-sm text-muted-foreground">{t("reunions.meetingRoom.ending")}</p>
         </div>
       )}
       <div className="flex flex-col flex-1 min-w-0">
         {recording && (
           <div className="flex items-center justify-center gap-1.5 bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-600 shrink-0">
             <CircleIcon className="size-2 fill-current animate-pulse" />
-            Cette réunion est enregistrée{!isAdmin ? " et pourra être transcrite" : ""}
+            {t("reunions.meetingRoom.recordingBanner")}{!isAdmin ? t("reunions.meetingRoom.recordingBannerTranscribable") : ""}
           </div>
         )}
         <div className="flex-1 p-2 min-h-0 overflow-hidden">
@@ -411,8 +416,16 @@ function RoomInner({
 }
 
 export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false }: Props) {
+  const t = useTranslations()
   const { data, isLoading, error } = useMeetingToken(meetingId, tokenEndpoint)
   const [kickedOut, setKickedOut] = useState(false)
+
+  // The inline error text below sits inside the pane that just replaced the whole list —
+  // easy to miss if attention isn't already there. A toast makes a real join failure (e.g.
+  // "LiveKit non configuré.") impossible to mistake for the button silently doing nothing.
+  useEffect(() => {
+    if (error) toast.error(error.message)
+  }, [error])
 
   const handleDisconnected = useCallback(() => {
     // Reason unknown at this layer (could be the meeting truly ending elsewhere, or just a
@@ -437,7 +450,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
   if (error || !data) {
     return (
       <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
-        <p className="text-sm text-destructive">Impossible de rejoindre la réunion.</p>
+        <p className="text-sm text-destructive">{error?.message ?? t("reunions.meetingRoom.joinError")}</p>
       </div>
     )
   }
@@ -446,8 +459,8 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
     return (
       <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium">La réunion a été clôturée par l&apos;administrateur.</p>
-          <p className="text-xs text-muted-foreground">Vous allez être redirigé…</p>
+          <p className="text-sm font-medium">{t("reunions.meetingRoom.kickedOutTitle")}</p>
+          <p className="text-xs text-muted-foreground">{t("reunions.meetingRoom.kickedOutSubtitle")}</p>
         </div>
       </div>
     )

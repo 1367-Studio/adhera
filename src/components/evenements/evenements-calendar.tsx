@@ -7,6 +7,7 @@ import {
   addMonths, subMonths,
 } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 import { CaretLeftIcon, CaretRightIcon, MapPinIcon, UsersIcon, PlusIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { RowActions } from "@/components/ui/row-actions"
 import { PriceBadge } from "@/components/ui/price-badge"
@@ -15,7 +16,6 @@ import { useEvenementsByMonth, type CalendarEvenement } from "@/hooks/use-evenem
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-const DAY_HEADERS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
 const MAX_VISIBLE  = 3
 
 const EVENT_COLORS = [
@@ -39,6 +39,12 @@ interface EvenementsCalendarProps {
 }
 
 export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClick }: EvenementsCalendarProps) {
+  const t = useTranslations()
+  const dayHeaders = [
+    t("evenements.calendar.days.mon"), t("evenements.calendar.days.tue"), t("evenements.calendar.days.wed"),
+    t("evenements.calendar.days.thu"), t("evenements.calendar.days.fri"), t("evenements.calendar.days.sat"),
+    t("evenements.calendar.days.sun"),
+  ]
   const [current,   setCurrent]   = useState(() => new Date())
   const [selected,  setSelected]  = useState<Date | null>(null)
   const [direction, setDirection] = useState<"left" | "right">("right")
@@ -97,9 +103,9 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger render={<Button variant="outline" size="sm" onClick={goToday} />}>
-              Aujourd&apos;hui
+              {t("evenements.calendar.today")}
             </TooltipTrigger>
-            <TooltipContent>Revenir au mois actuel</TooltipContent>
+            <TooltipContent>{t("evenements.calendar.todayTooltip")}</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -107,7 +113,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
       <div className="rounded-xl border overflow-hidden">
         {/* Day headers — static, no animation */}
         <div className="grid grid-cols-7 border-b bg-muted/30">
-          {DAY_HEADERS.map(d => (
+          {dayHeaders.map(d => (
             <div key={d} className="py-2 text-center text-xs font-medium text-muted-foreground">
               {d}
             </div>
@@ -184,7 +190,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                       ))}
                       {overflow > 0 && (
                         <p className="px-1 text-[11px] text-muted-foreground font-medium animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
-                          +{overflow} autre{overflow > 1 ? "s" : ""}
+                          {t("evenements.calendar.othersCount", { count: overflow })}
                         </p>
                       )}
                     </>
@@ -208,12 +214,12 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
               {format(selected, "EEEE d MMMM yyyy", { locale: fr })}
             </h3>
             <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => onCreateClick(selected)}>
-              <PlusIcon className="size-3 mr-1" /> Créer ici
+              <PlusIcon className="size-3 mr-1" /> {t("evenements.calendar.createHere")}
             </Button>
           </div>
 
           {selectedEvents.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun événement ce jour.</p>
+            <p className="text-sm text-muted-foreground">{t("evenements.calendar.noEventThisDay")}</p>
           ) : (
             <div className="space-y-2">
               {selectedEvents.map((ev, idx) => (
@@ -247,8 +253,8 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                         </span>
                       )}
                       <RowActions actions={[
-                        { label: "Présences", icon: <UsersIcon className="size-3.5" />,  onClick: () => onPresencesClick(ev) },
-                        { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => onEditClick(ev), separator: true },
+                        { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => onPresencesClick(ev) },
+                        { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => onEditClick(ev), separator: true },
                       ]} />
                     </div>
                   </div>

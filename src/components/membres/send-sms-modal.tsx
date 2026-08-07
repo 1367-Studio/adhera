@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PaperPlaneTiltIcon, WarningIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, DeviceMobileIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
+import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
 import { cn } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -27,6 +29,7 @@ type RecipientMode = "all" | "type" | "manual"
 // ── SMS char counter ───────────────────────────────────────────────────────────
 
 function SmsCounter({ text }: { text: string }) {
+  const t = useTranslations()
   const len = text.length
   // Multi-segment SMS uses 153 chars/segment (7 bytes reserved for UDH concat header)
   const segments  = len === 0 ? 1 : len <= 160 ? 1 : Math.ceil(len / 153)
@@ -37,8 +40,8 @@ function SmsCounter({ text }: { text: string }) {
       "text-xs text-right mt-1",
       remaining < 20 ? "text-amber-500" : "text-muted-foreground",
     )}>
-      {remaining} caractère{remaining !== 1 ? "s" : ""} restant{remaining !== 1 ? "s" : ""}
-      {segments > 1 && <span className="ml-2 text-amber-500">· {segments} SMS</span>}
+      {t("membres.sms.charsRemaining", { count: remaining })}
+      {segments > 1 && <span className="ml-2 text-amber-500">{t("membres.sms.segmentsCount", { count: segments })}</span>}
     </p>
   )
 }
@@ -56,6 +59,7 @@ function MemberPickList({
   onToggle:    (id: string) => void
   truncated:   boolean
 }) {
+  const t = useTranslations()
   const [search, setSearch] = useState("")
 
   const filtered = search.trim()
@@ -80,7 +84,7 @@ function MemberPickList({
       {truncated && (
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
           <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
-          <span>Seuls les 500 premiers membres sont affichés. Pour cibler plus de membres, utilisez le mode « Tous les membres » ou « Par type ».</span>
+          <span>{t("membres.sms.truncatedNotice")}</span>
         </div>
       )}
       <div className="rounded-lg border overflow-hidden">
@@ -89,22 +93,22 @@ function MemberPickList({
             <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
             <input
               type="text"
-              placeholder="Rechercher…"
+              placeholder={t("membres.sms.searchPlaceholder")}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full rounded-md border border-input bg-background pl-8 pr-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
           <div className="flex items-center justify-between px-0.5">
-            <span className="text-xs text-muted-foreground">{filtered.length} membre{filtered.length > 1 ? "s" : ""}</span>
+            <span className="text-xs text-muted-foreground">{t("membres.sms.membersCount", { count: filtered.length })}</span>
             <button type="button" onClick={toggleFiltered} className="text-xs text-primary hover:underline">
-              {allFilteredSelected ? "Désélectionner tout" : "Sélectionner tout"}
+              {allFilteredSelected ? t("membres.sms.deselectAll") : t("membres.sms.selectAll")}
             </button>
           </div>
         </div>
         <div className="max-h-48 overflow-y-auto divide-y">
           {filtered.length === 0 ? (
-            <p className="text-center text-xs text-muted-foreground py-6">Aucun membre trouvé</p>
+            <p className="text-center text-xs text-muted-foreground py-6">{t("membres.sms.noMemberFound")}</p>
           ) : (
             filtered.map(m => {
               const isSelected = selectedIds.includes(m.id)
@@ -140,8 +144,8 @@ function MemberPickList({
         </div>
         <div className="px-3 py-2 border-t bg-muted/30 text-xs text-muted-foreground">
           {selectedIds.length > 0
-            ? `${selectedIds.length} membre${selectedIds.length > 1 ? "s" : ""} sélectionné${selectedIds.length > 1 ? "s" : ""}`
-            : "Aucun membre sélectionné"}
+            ? t("membres.sms.selectedCount", { count: selectedIds.length })
+            : t("membres.sms.noMemberSelected")}
         </div>
       </div>
     </div>
@@ -156,6 +160,7 @@ interface SendSmsModalProps {
 }
 
 export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
+  const t = useTranslations()
   const [step,              setStep]              = useState<"compose" | "confirm">("compose")
   const [recipientMode,     setRecipientMode]     = useState<RecipientMode>("all")
   const [selectedTypeId,    setSelectedTypeId]    = useState<string>("")
@@ -197,20 +202,20 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
   const membresWithPhone = allMembres.filter(m => m.phone)
   const listTruncated    = allMembres.length >= 500
 
-  const selectedType     = types.find(t => t.id === selectedTypeId)
+  const selectedType     = types.find(type => type.id === selectedTypeId)
   const selectedTypeName = selectedType?.name ?? ""
 
   async function handleContinue() {
     if (recipientMode === "type" && !selectedTypeId) {
-      toast.error("Sélectionnez un type de membre")
+      toast.error(t("membres.sms.toasts.selectType"))
       return
     }
     if (recipientMode === "manual" && selectedMemberIds.length === 0) {
-      toast.error("Sélectionnez au moins un membre")
+      toast.error(t("membres.sms.toasts.selectMember"))
       return
     }
     if (!body.trim()) {
-      toast.error("Rédigez le message SMS")
+      toast.error(t("membres.sms.toasts.writeMessage"))
       return
     }
 
@@ -228,14 +233,14 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
       const count = d.count ?? 0
 
       if (count === 0) {
-        toast.error("Aucun destinataire avec un numéro de téléphone dans cette sélection")
+        toast.error(t("membres.sms.toasts.noPhoneRecipient"))
         return
       }
 
       setRecipientCount(count)
       setStep("confirm")
     } catch {
-      toast.error("Impossible de vérifier le nombre de destinataires")
+      toast.error(t("membres.sms.toasts.cannotVerifyCount"))
     } finally {
       setCountLoading(false)
     }
@@ -254,24 +259,17 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
         body:    JSON.stringify(payload),
       })
       const data = await res.json()
-      if (!res.ok) { toast.error(data.error ?? "Erreur"); return }
+      if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
 
-      if (data.sent === 0) {
-        toast.error(`Aucun SMS envoyé${data.failed > 0 ? ` — ${data.failed} échec${data.failed !== 1 ? "s" : ""}` : ""}`)
-        return
-      }
-
-      toast.success(`SMS envoyé à ${data.sent} membre${data.sent !== 1 ? "s" : ""}`)
-      if (data.failed > 0) {
-        const names: string[] = (data.failedMembers ?? []).map((m: { name: string }) => m.name)
-        const preview = names.slice(0, 5).join(", ") + (names.length > 5 ? ` et ${names.length - 5} autre(s)` : "")
-        toast.warning(
-          `${data.failed} envoi${data.failed !== 1 ? "s" : ""} échoué${data.failed !== 1 ? "s" : ""}${preview ? ` : ${preview}` : ""}`,
-        )
-      }
+      // The actual send now runs in the background (Inngest) — this response just confirms
+      // it was queued. registerPendingBulkSend + useBulkSendListener (mounted in AppSidebar)
+      // deliver the real sent/failed toast once the send finishes, even if this modal has
+      // long since closed.
+      registerPendingBulkSend(data.jobId)
+      toast.info(t("membres.sms.toasts.queued", { count: data.totalRecipients }))
       onOpenChange(false)
     } catch {
-      toast.error("Erreur réseau")
+      toast.error(t("membres.sms.toasts.networkError"))
     } finally {
       setSending(false)
     }
@@ -285,19 +283,19 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
 
   const recipientSummary =
     recipientMode === "manual"
-      ? `${selectedMemberIds.length} membre${selectedMemberIds.length > 1 ? "s" : ""} sélectionné${selectedMemberIds.length > 1 ? "s" : ""}`
+      ? t("membres.sms.selectedCount", { count: selectedMemberIds.length })
       : recipientMode === "type" && selectedTypeId
         ? selectedTypeName
-          ? `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} de type « ${selectedTypeName} »`
-          : `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} (type sélectionné)`
-        : `${recipientCount} membre${(recipientCount ?? 0) > 1 ? "s" : ""} actif${(recipientCount ?? 0) > 1 ? "s" : ""}`
+          ? t("membres.sms.recipientsOfType", { count: recipientCount ?? 0, type: selectedTypeName })
+          : t("membres.sms.recipientsTypeSelected", { count: recipientCount ?? 0 })
+        : t("membres.sms.recipientsActive", { count: recipientCount ?? 0 })
 
   return (
     <>
       <Modal
         open={open}
         onOpenChange={handleClose}
-        title="Envoyer un SMS"
+        title={t("membres.sms.title")}
         size="md"
         dismissable={!sending}
       >
@@ -306,12 +304,12 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
 
             {/* ── Recipients ── */}
             <div className="space-y-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Destinataires</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.sms.recipients")}</p>
               <div className="grid grid-cols-3 gap-2">
                 {([
-                  { mode: "all",    icon: UsersIcon,     label: "Tous les membres" },
-                  { mode: "type",   icon: TagIcon,       label: "Par type" },
-                  { mode: "manual", icon: UserCheckIcon, label: "Sélection manuelle" },
+                  { mode: "all",    icon: UsersIcon,     label: t("membres.sms.modeAll") },
+                  { mode: "type",   icon: TagIcon,       label: t("membres.sms.modeType") },
+                  { mode: "manual", icon: UserCheckIcon, label: t("membres.sms.modeManual") },
                 ] as const).map(({ mode, icon: Icon, label }) => (
                   <button
                     key={mode}
@@ -332,32 +330,32 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
 
               {recipientMode === "all" && (
                 <p className="text-xs text-muted-foreground">
-                  Le SMS sera envoyé à tous les <strong>membres actifs ayant un numéro de téléphone</strong>.
+                  {t("membres.sms.allModeNotice")}
                 </p>
               )}
 
               {recipientMode === "type" && (
                 <div className="space-y-2">
-                  <p className="text-xs text-muted-foreground">Type de membre <span className="text-red-500">*</span></p>
+                  <p className="text-xs text-muted-foreground">{t("membres.sms.typeLabel")} <span className="text-red-500">*</span></p>
                   {types.length === 0 ? (
-                    <p className="text-sm text-muted-foreground italic">Aucun type configuré</p>
+                    <p className="text-sm text-muted-foreground italic">{t("membres.sms.noTypeConfigured")}</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
-                      {types.map(t => (
+                      {types.map(type => (
                         <button
-                          key={t.id}
+                          key={type.id}
                           type="button"
-                          onClick={() => setSelectedTypeId(t.id === selectedTypeId ? "" : t.id)}
+                          onClick={() => setSelectedTypeId(type.id === selectedTypeId ? "" : type.id)}
                           className={cn(
                             "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all",
-                            selectedTypeId === t.id
+                            selectedTypeId === type.id
                               ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
                               : "border-border text-muted-foreground hover:border-muted-foreground/40",
                           )}
                         >
-                          <span className="size-2 rounded-full shrink-0" style={{ background: t.color }} />
-                          {t.name}
-                          {selectedTypeId === t.id && <CheckIcon className="size-3 ml-0.5" />}
+                          <span className="size-2 rounded-full shrink-0" style={{ background: type.color }} />
+                          {type.name}
+                          {selectedTypeId === type.id && <CheckIcon className="size-3 ml-0.5" />}
                         </button>
                       ))}
                     </div>
@@ -370,7 +368,7 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
                   <div className="h-40 rounded-lg bg-muted animate-pulse" />
                 ) : membresWithPhone.length === 0 ? (
                   <p className="text-sm text-muted-foreground italic text-center py-4">
-                    Aucun membre actif avec un numéro de téléphone
+                    {t("membres.sms.noActiveMemberWithPhone")}
                   </p>
                 ) : (
                   <MemberPickList
@@ -389,11 +387,11 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
 
             {/* ── Message ── */}
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Message</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.sms.message")}</p>
               <textarea
                 rows={5}
                 maxLength={1600}
-                placeholder="Rédigez votre message SMS…"
+                placeholder={t("membres.sms.messagePlaceholder")}
                 value={body}
                 onChange={e => setBody(e.target.value)}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
@@ -401,18 +399,18 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
               <SmsCounter text={body} />
               <div className="flex items-start gap-2 rounded-lg border border-muted bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
                 <DeviceMobileIcon className="size-3.5 shrink-0 mt-0.5" />
-                <span>Les variables <code className="font-mono">{"{{prenom}}"}</code> et <code className="font-mono">{"{{association}}"}</code> ne sont pas disponibles pour les envois manuels.</span>
+                <span>{t("membres.sms.variablesNotice", { p: "{{prenom}}", a: "{{association}}" })}</span>
               </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
-              <Button variant="outline" onClick={handleClose}>Annuler</Button>
+              <Button variant="outline" onClick={handleClose}>{t("common.cancel")}</Button>
               <Button onClick={handleContinue} disabled={countLoading}>
                 {countLoading
                   ? <CircleNotchIcon className="mr-1.5 size-4 animate-spin" />
                   : <CaretRightIcon className="mr-1.5 size-4" />
                 }
-                Continuer
+                {t("membres.sms.continue")}
               </Button>
             </div>
           </div>
@@ -421,23 +419,23 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
             <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
               <WarningIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
               <div className="space-y-1">
-                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Confirmation d'envoi</p>
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">{t("membres.sms.confirmSendTitle")}</p>
                 <p className="text-sm text-amber-700 dark:text-amber-400">
-                  Ce SMS sera envoyé à <strong>{recipientSummary}</strong>. Cette action est irréversible.
+                  {t("membres.sms.confirmSendDescription", { recipients: recipientSummary })}
                 </p>
               </div>
             </div>
 
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
               <div className="space-y-0.5">
-                <p className="text-xs text-muted-foreground">Message</p>
+                <p className="text-xs text-muted-foreground">{t("membres.sms.message")}</p>
                 <p className="text-sm whitespace-pre-wrap">{body}</p>
               </div>
               <div className="space-y-0.5">
-                <p className="text-xs text-muted-foreground">Destinataires</p>
+                <p className="text-xs text-muted-foreground">{t("membres.sms.recipients")}</p>
                 <p className="text-sm font-medium">{recipientSummary}</p>
                 {recipientMode === "manual" && (
-                  <p className="text-xs text-muted-foreground">Seuls les membres avec un numéro de téléphone valide recevront le SMS.</p>
+                  <p className="text-xs text-muted-foreground">{t("membres.sms.recipientsManualOnly")}</p>
                 )}
               </div>
             </div>
@@ -445,11 +443,11 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setStep("compose")} disabled={sending}>
                 <PencilSimpleIcon className="mr-1.5 size-3.5" />
-                Modifier
+                {t("common.edit")}
               </Button>
               <Button onClick={handleSend} loading={sending}>
                 <PaperPlaneTiltIcon className="mr-1.5 size-4" />
-                Envoyer maintenant
+                {t("membres.sms.sendNow")}
               </Button>
             </div>
           </div>
@@ -459,9 +457,9 @@ export function SendSmsModal({ open, onOpenChange }: SendSmsModalProps) {
       <ConfirmDialog
         open={closeWarningOpen}
         onOpenChange={setCloseWarningOpen}
-        title="Abandonner le message ?"
-        description="Le message rédigé sera perdu si vous fermez maintenant."
-        confirmLabel="Abandonner"
+        title={t("membres.sms.discardTitle")}
+        description={t("membres.sms.discardDescription")}
+        confirmLabel={t("membres.sms.discard")}
         onConfirm={() => { setCloseWarningOpen(false); onOpenChange(false) }}
       />
     </>

@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { WarningCircleIcon, WarningIcon, PaperPlaneTiltIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
@@ -16,69 +17,91 @@ import { useMessageTemplates } from "@/hooks/use-message-templates"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useModules } from "@/lib/user-context"
 
+type Translator = ReturnType<typeof useTranslations>
+
 const EVENT_TRIGGERS: TriggerType[] = ["RSVP_CONFIRMED", "MEMBER_CREATED"]
 
-const schema = z.object({
-  name:          z.string().min(1, "Requis"),
-  templateId:    z.string().min(1, "Requis"),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY"]),
-  channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
-  recipients:    z.string(),
-  // SCHEDULED_ONCE
-  date:          z.string().optional(),
-  time:          z.string().optional(),
-  // SCHEDULED_RECURRING
-  frequency:     z.enum(["daily", "weekly", "monthly"]).optional(),
-  dayOfWeek:     z.string().optional(),
-  dayOfMonth:    z.string().optional(),
-  // EVENT_COTISATION_DUE
-  daysBefore:    z.string().optional(),
-  dueDate:       z.string().optional(),
-  // EVENT_PAYMENT_OVERDUE
-  daysAfter:     z.string().optional(),
-  // shared event cotisation
-  year:          z.string().optional(),
-  cooldownDays:  z.string().optional(),
-}).superRefine((v, ctx) => {
-  if (v.triggerType === "SCHEDULED_ONCE" && !v.date) {
-    ctx.addIssue({ code: "custom", path: ["date"], message: "Requis" })
-  }
-})
+function buildSchema(t: Translator) {
+  return z.object({
+    name:          z.string().min(1, t("messages.ruleModal.validation.required")),
+    templateId:    z.string().min(1, t("messages.ruleModal.validation.required")),
+    triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]),
+    channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
+    recipients:    z.string(),
+    // SCHEDULED_ONCE
+    date:          z.string().optional(),
+    time:          z.string().optional(),
+    // SCHEDULED_RECURRING
+    frequency:     z.enum(["daily", "weekly", "monthly"]).optional(),
+    dayOfWeek:     z.string().optional(),
+    dayOfMonth:    z.string().optional(),
+    // EVENT_COTISATION_DUE
+    daysBefore:    z.string().optional(),
+    dueDate:       z.string().optional(),
+    // EVENT_PAYMENT_OVERDUE
+    daysAfter:     z.string().optional(),
+    // shared event cotisation
+    year:          z.string().optional(),
+    cooldownDays:  z.string().optional(),
+  }).superRefine((v, ctx) => {
+    if (v.triggerType === "SCHEDULED_ONCE" && !v.date) {
+      ctx.addIssue({ code: "custom", path: ["date"], message: t("messages.ruleModal.validation.required") })
+    }
+  })
+}
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<ReturnType<typeof buildSchema>>
 
-const TRIGGER_OPTIONS = [
-  { value: "SCHEDULED_ONCE",        label: "Date unique" },
-  { value: "SCHEDULED_RECURRING",   label: "Récurrent" },
-  { value: "EVENT_COTISATION_DUE",  label: "Cotisation à venir" },
-  { value: "EVENT_PAYMENT_OVERDUE", label: "Paiement en retard" },
-  { value: "EVENT_REMINDER",        label: "Rappel d'événement" },
-  { value: "RSVP_CONFIRMED",        label: "Confirmation de participation (RSVP)" },
-  { value: "MEMBER_CREATED",        label: "Nouveau membre inscrit" },
-  { value: "MEMBER_BIRTHDAY",       label: "Anniversaire du membre" },
-]
+function getTriggerOptions(t: Translator) {
+  return [
+    { value: "SCHEDULED_ONCE",        label: t("messages.ruleModal.triggerOptions.scheduledOnce") },
+    { value: "SCHEDULED_RECURRING",   label: t("messages.ruleModal.triggerOptions.scheduledRecurring") },
+    { value: "EVENT_COTISATION_DUE",  label: t("messages.ruleModal.triggerOptions.eventCotisationDue") },
+    { value: "EVENT_PAYMENT_OVERDUE", label: t("messages.ruleModal.triggerOptions.eventPaymentOverdue") },
+    { value: "EVENT_REMINDER",        label: t("messages.ruleModal.triggerOptions.eventReminder") },
+    { value: "RSVP_CONFIRMED",        label: t("messages.ruleModal.triggerOptions.rsvpConfirmed") },
+    { value: "MEMBER_CREATED",        label: t("messages.ruleModal.triggerOptions.memberCreated") },
+    { value: "MEMBER_BIRTHDAY",       label: t("messages.ruleModal.triggerOptions.memberBirthday") },
+    { value: "EVENT_ADHERENT_LAPSED", label: t("messages.ruleModal.triggerOptions.eventAdherentLapsed") },
+  ]
+}
 
-const CHANNEL_OPTIONS = [
-  { value: "EMAIL", label: "Email uniquement" },
-  { value: "SMS",   label: "SMS uniquement" },
-  { value: "BOTH",  label: "Email + SMS" },
-]
+// Default cooldownDays per trigger type — kept in sync with each processor's own
+// `config.cooldownDays ?? N` fallback in src/app/api/cron/automations/route.ts, so a rule
+// created without touching the field behaves the same as what its placeholder implies.
+const COOLDOWN_DEFAULTS: Partial<Record<TriggerType, string>> = {
+  EVENT_COTISATION_DUE:  "7",
+  EVENT_PAYMENT_OVERDUE: "7",
+  EVENT_ADHERENT_LAPSED: "30",
+}
 
-const FREQUENCY_OPTIONS = [
-  { value: "daily",   label: "Quotidien" },
-  { value: "weekly",  label: "Hebdomadaire" },
-  { value: "monthly", label: "Mensuel" },
-]
+function getChannelOptions(t: Translator) {
+  return [
+    { value: "EMAIL", label: t("messages.ruleModal.channelOptions.email") },
+    { value: "SMS",   label: t("messages.ruleModal.channelOptions.sms") },
+    { value: "BOTH",  label: t("messages.ruleModal.channelOptions.both") },
+  ]
+}
 
-const DAY_OF_WEEK_OPTIONS = [
-  { value: "1", label: "Lundi" },
-  { value: "2", label: "Mardi" },
-  { value: "3", label: "Mercredi" },
-  { value: "4", label: "Jeudi" },
-  { value: "5", label: "Vendredi" },
-  { value: "6", label: "Samedi" },
-  { value: "0", label: "Dimanche" },
-]
+function getFrequencyOptions(t: Translator) {
+  return [
+    { value: "daily",   label: t("messages.ruleModal.frequencyOptions.daily") },
+    { value: "weekly",  label: t("messages.ruleModal.frequencyOptions.weekly") },
+    { value: "monthly", label: t("messages.ruleModal.frequencyOptions.monthly") },
+  ]
+}
+
+function getDayOfWeekOptions(t: Translator) {
+  return [
+    { value: "1", label: t("messages.ruleModal.dayOfWeekOptions.monday") },
+    { value: "2", label: t("messages.ruleModal.dayOfWeekOptions.tuesday") },
+    { value: "3", label: t("messages.ruleModal.dayOfWeekOptions.wednesday") },
+    { value: "4", label: t("messages.ruleModal.dayOfWeekOptions.thursday") },
+    { value: "5", label: t("messages.ruleModal.dayOfWeekOptions.friday") },
+    { value: "6", label: t("messages.ruleModal.dayOfWeekOptions.saturday") },
+    { value: "0", label: t("messages.ruleModal.dayOfWeekOptions.sunday") },
+  ]
+}
 
 interface Props {
   open:         boolean
@@ -87,6 +110,12 @@ interface Props {
 }
 
 export function RuleModal({ open, onOpenChange, rule }: Props) {
+  const t = useTranslations()
+  const TRIGGER_OPTIONS     = getTriggerOptions(t)
+  const CHANNEL_OPTIONS     = getChannelOptions(t)
+  const FREQUENCY_OPTIONS   = getFrequencyOptions(t)
+  const DAY_OF_WEEK_OPTIONS = getDayOfWeekOptions(t)
+
   const isEditing = !!rule
   const createMut    = useCreateRule()
   const updateMut    = useUpdateRule(rule?.id ?? "")
@@ -105,8 +134,8 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     cooldownDays: "7",
   }
 
-  const { register, handleSubmit, reset, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
-    resolver:      zodResolver(schema) as Resolver<FormValues>,
+  const { register, handleSubmit, reset, watch, control, setValue, formState: { errors, isSubmitting } } = useForm<FormValues>({
+    resolver:      zodResolver(buildSchema(t)) as Resolver<FormValues>,
     defaultValues,
   })
 
@@ -120,7 +149,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
   const { data: birthdayCoverage } = useBirthdayCoverage(open && triggerType === "MEMBER_BIRTHDAY", recipientTypeId)
 
   const isEventTrigger       = EVENT_TRIGGERS.includes(triggerType)
-  const selectedTemplate     = templates.find(t => t.id === templateId)
+  const selectedTemplate     = templates.find(tpl => tpl.id === templateId)
   const warnMissingSmsBody   = sms && channel !== "EMAIL" && !!templateId && !selectedTemplate?.smsBody
 
   useEffect(() => {
@@ -166,6 +195,9 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     if (values.triggerType === "EVENT_REMINDER") {
       return { daysBefore: Number(values.daysBefore) }
     }
+    if (values.triggerType === "EVENT_ADHERENT_LAPSED") {
+      return { cooldownDays: Number(values.cooldownDays) }
+    }
     return {}
   }
 
@@ -181,24 +213,24 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     try {
       if (isEditing) {
         await updateMut.mutateAsync(payload)
-        toast.success("Règle mise à jour")
+        toast.success(t("messages.ruleModal.toasts.updated"))
       } else {
         await createMut.mutateAsync(payload)
-        toast.success("Règle créée")
+        toast.success(t("messages.ruleModal.toasts.created"))
       }
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
-  const templateOptions = templates.map(t => ({
-    value: t.id,
-    label: t.name + (sms && t.smsBody ? " ✦" : "") + (!t.active ? " (inactif)" : ""),
+  const templateOptions = templates.map(tpl => ({
+    value: tpl.id,
+    label: tpl.name + (sms && tpl.smsBody ? " ✦" : "") + (!tpl.active ? t("messages.ruleModal.templateInactiveSuffix") : ""),
   }))
   const recipientOptions = [
-    { value: "ALL", label: "Tous les membres actifs" },
-    ...membreTypes.map(t => ({ value: `TYPE:${t.id}`, label: `Type : ${t.name}` })),
+    { value: "ALL", label: t("messages.ruleModal.recipientsAll") },
+    ...membreTypes.map(mt => ({ value: `TYPE:${mt.id}`, label: t("messages.ruleModal.recipientsType", { name: mt.name }) })),
   ]
 
   const isPending = isSubmitting || createMut.isPending || updateMut.isPending
@@ -207,22 +239,29 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title={isEditing ? "Modifier la règle" : "Nouvelle règle"}
+      title={isEditing ? t("messages.ruleModal.editTitle") : t("messages.ruleModal.newTitle")}
       size="lg"
     >
       <form onSubmit={handleSubmit(onSubmit as SubmitHandler<FormValues>)} className="space-y-4">
-        <FormField label="Nom de la règle" required placeholder="Rappel cotisation" error={errors.name?.message} {...register("name")} />
+        <FormField label={t("messages.ruleModal.ruleName")} required placeholder={t("messages.ruleModal.ruleNamePlaceholder")} error={errors.name?.message} {...register("name")} />
 
         <Controller
           name="triggerType"
           control={control}
           render={({ field }) => (
             <SelectField
-              label="Déclencheur"
+              label={t("messages.ruleModal.trigger")}
               required
               options={TRIGGER_OPTIONS}
               value={field.value}
-              onValueChange={field.onChange}
+              onValueChange={(v) => {
+                field.onChange(v)
+                // Only for a brand-new rule — editing an existing one already loaded its
+                // real saved cooldownDays via the reset() in the effect above, and switching
+                // trigger type while editing shouldn't clobber that.
+                const fallback = COOLDOWN_DEFAULTS[v as TriggerType]
+                if (!isEditing && fallback) setValue("cooldownDays", fallback)
+              }}
             />
           )}
         />
@@ -230,8 +269,8 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* SCHEDULED_ONCE */}
         {triggerType === "SCHEDULED_ONCE" && (
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Date d'envoi" required type="date" error={errors.date?.message} {...register("date")} />
-            <FormField label="Heure" required type="time" {...register("time")} />
+            <FormField label={t("messages.ruleModal.sendDate")} required type="date" error={errors.date?.message} {...register("date")} />
+            <FormField label={t("messages.ruleModal.time")} required type="time" {...register("time")} />
           </div>
         )}
 
@@ -242,7 +281,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               name="frequency"
               control={control}
               render={({ field }) => (
-                <SelectField label="Fréquence" options={FREQUENCY_OPTIONS} value={field.value} onValueChange={field.onChange} />
+                <SelectField label={t("messages.ruleModal.frequency")} options={FREQUENCY_OPTIONS} value={field.value} onValueChange={field.onChange} />
               )}
             />
             {frequency === "weekly" && (
@@ -250,28 +289,28 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
                 name="dayOfWeek"
                 control={control}
                 render={({ field }) => (
-                  <SelectField label="Jour de la semaine" options={DAY_OF_WEEK_OPTIONS} value={field.value} onValueChange={field.onChange} />
+                  <SelectField label={t("messages.ruleModal.dayOfWeek")} options={DAY_OF_WEEK_OPTIONS} value={field.value} onValueChange={field.onChange} />
                 )}
               />
             )}
             {frequency === "monthly" && (
-              <FormField label="Jour du mois" type="number" min={1} max={28} placeholder="1" {...register("dayOfMonth")} />
+              <FormField label={t("messages.ruleModal.dayOfMonth")} type="number" min={1} max={28} placeholder="1" {...register("dayOfMonth")} />
             )}
-            <FormField label="Heure d'envoi" type="time" {...register("time")} />
+            <FormField label={t("messages.ruleModal.sendTime")} type="time" {...register("time")} />
           </div>
         )}
 
         {/* EVENT_COTISATION_DUE */}
         {triggerType === "EVENT_COTISATION_DUE" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un message aux membres avec une cotisation impayée, N jours avant la date d'échéance.</p>
+            <p className="text-xs text-muted-foreground">{t("messages.ruleModal.cotisationDueHint")}</p>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Jours avant l'échéance" type="number" min={1} placeholder="30" {...register("daysBefore")} />
-              <FormField label="Date d'échéance" type="date" {...register("dueDate")} />
+              <FormField label={t("messages.ruleModal.daysBeforeDue")} type="number" min={1} placeholder="30" {...register("daysBefore")} />
+              <FormField label={t("messages.ruleModal.dueDate")} type="date" {...register("dueDate")} />
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Année de cotisation" type="number" placeholder="2026" {...register("year")} />
-              <FormField label="Cooldown (jours)" type="number" min={1} placeholder="7" hint="Délai min. entre 2 envois au même membre" {...register("cooldownDays")} />
+              <FormField label={t("messages.ruleModal.cotisationYear")} type="number" placeholder="2026" {...register("year")} />
+              <FormField label={t("messages.ruleModal.cooldownDays")} type="number" min={1} placeholder="7" hint={t("messages.ruleModal.cooldownHint")} {...register("cooldownDays")} />
             </div>
           </div>
         )}
@@ -279,28 +318,38 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* EVENT_PAYMENT_OVERDUE */}
         {triggerType === "EVENT_PAYMENT_OVERDUE" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un message aux membres dont la cotisation est impayée depuis N jours après le 1er janvier.</p>
+            <p className="text-xs text-muted-foreground">{t("messages.ruleModal.paymentOverdueHint")}</p>
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Jours de retard" type="number" min={1} placeholder="30" {...register("daysAfter")} />
-              <FormField label="Année de cotisation" type="number" placeholder="2026" {...register("year")} />
+              <FormField label={t("messages.ruleModal.daysOverdue")} type="number" min={1} placeholder="30" {...register("daysAfter")} />
+              <FormField label={t("messages.ruleModal.cotisationYear")} type="number" placeholder="2026" {...register("year")} />
             </div>
-            <FormField label="Cooldown (jours)" type="number" min={1} placeholder="7" hint="Délai min. entre 2 envois au même membre" {...register("cooldownDays")} />
+            <FormField label={t("messages.ruleModal.cooldownDays")} type="number" min={1} placeholder="7" hint={t("messages.ruleModal.cooldownHint")} {...register("cooldownDays")} />
           </div>
         )}
 
         {/* EVENT_REMINDER */}
         {triggerType === "EVENT_REMINDER" && (
           <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
-            <p className="text-xs text-muted-foreground">Envoie un rappel automatique aux participants confirmés ou probables, N jours avant chaque événement.</p>
+            <p className="text-xs text-muted-foreground">{t("messages.ruleModal.eventReminderHint")}</p>
             <FormField
-              label="Jours avant l'événement"
+              label={t("messages.ruleModal.daysBeforeEvent")}
               type="number"
               min={1}
               max={30}
               placeholder="1"
-              hint="Ex: 1 = la veille, 3 = 3 jours avant"
+              hint={t("messages.ruleModal.daysBeforeEventHint")}
               {...register("daysBefore")}
             />
+          </div>
+        )}
+
+        {/* EVENT_ADHERENT_LAPSED */}
+        {triggerType === "EVENT_ADHERENT_LAPSED" && (
+          <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+            <p className="text-xs text-muted-foreground">
+              {t("messages.ruleModal.adherentLapsedHint")}
+            </p>
+            <FormField label={t("messages.ruleModal.cooldownDays")} type="number" min={1} placeholder="30" hint={t("messages.ruleModal.cooldownHint")} {...register("cooldownDays")} />
           </div>
         )}
 
@@ -308,17 +357,25 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {triggerType === "MEMBER_BIRTHDAY" && (
           <div className="space-y-2">
             <div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
-              Envoie un message automatiquement le jour de l&apos;anniversaire de chaque membre actif (jour et mois, indépendamment de l&apos;année de naissance). Un seul envoi par membre et par an.
+              {t("messages.ruleModal.birthdayHint")}
             </div>
             {birthdayCoverage && birthdayCoverage.withBirthDate === 0 && birthdayCoverage.total > 0 && (
               <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300">
                 <WarningIcon className="size-4 shrink-0 mt-0.5" />
-                <span>Aucun {recipientTypeId ? "des membres actifs de ce type" : "de vos membres actifs"} ({birthdayCoverage.total}) n&apos;a de date de naissance renseignée — cette règle ne va rien envoyer tant qu&apos;aucune date n&apos;est ajoutée sur leur fiche.</span>
+                <span>
+                  {recipientTypeId
+                    ? t("messages.ruleModal.birthdayNoDateWarningType", { count: birthdayCoverage.total })
+                    : t("messages.ruleModal.birthdayNoDateWarningAll", { count: birthdayCoverage.total })
+                  }
+                </span>
               </div>
             )}
             {birthdayCoverage && birthdayCoverage.withBirthDate > 0 && (
               <p className="text-xs text-muted-foreground">
-                {birthdayCoverage.withBirthDate} / {birthdayCoverage.total} membres actifs{recipientTypeId ? " de ce type" : ""} ont une date de naissance renseignée.
+                {recipientTypeId
+                  ? t("messages.ruleModal.birthdayCoverageType", { withDate: birthdayCoverage.withBirthDate, total: birthdayCoverage.total })
+                  : t("messages.ruleModal.birthdayCoverage", { withDate: birthdayCoverage.withBirthDate, total: birthdayCoverage.total })
+                }
               </p>
             )}
           </div>
@@ -327,15 +384,19 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* RSVP_CONFIRMED / MEMBER_CREATED */}
         {isEventTrigger && (
           <div className="rounded-lg border bg-muted/20 px-3 py-2.5 text-xs text-muted-foreground">
-            {triggerType === "RSVP_CONFIRMED" && "Déclenché automatiquement lorsqu'un membre confirme sa participation à un événement."}
-            {triggerType === "MEMBER_CREATED"  && "Déclenché automatiquement lors de l'ajout d'un nouveau membre (rôle Membre uniquement)."}
+            {triggerType === "RSVP_CONFIRMED" && t("messages.ruleModal.rsvpConfirmedHint")}
+            {triggerType === "MEMBER_CREATED"  && t("messages.ruleModal.memberCreatedHint")}
           </div>
         )}
 
         {templates.length === 0 ? (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
             <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
-            <span>Aucun modèle disponible. Créez d'abord un modèle dans l'onglet <strong>Modèles</strong>.</span>
+            <span>
+              {t("messages.ruleModal.noTemplatesWarningPrefix")}
+              <strong>{t("messages.view.tabs.templates")}</strong>
+              {t("messages.ruleModal.noTemplatesWarningSuffix")}
+            </span>
           </div>
         ) : (
           <Controller
@@ -343,12 +404,12 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Modèle de message"
+                label={t("messages.ruleModal.templateLabel")}
                 required
                 options={templateOptions}
                 value={field.value}
                 onValueChange={field.onChange}
-                placeholder="Choisir un modèle…"
+                placeholder={t("messages.ruleModal.templatePlaceholder")}
                 error={errors.templateId?.message}
               />
             )}
@@ -362,7 +423,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Canal d'envoi"
+                label={t("messages.ruleModal.channel")}
                 options={CHANNEL_OPTIONS}
                 value={field.value}
                 onValueChange={field.onChange}
@@ -375,7 +436,11 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {selectedTemplate && !selectedTemplate.active && (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
             <WarningIcon className="size-4 shrink-0 mt-0.5" />
-            <span>Ce modèle est désactivé. Tant qu'il le reste, cette règle n'enverra rien — activez-le dans l'onglet <strong>Modèles</strong>.</span>
+            <span>
+              {t("messages.ruleModal.templateDeactivatedWarningPrefix")}
+              <strong>{t("messages.view.tabs.templates")}</strong>
+              {t("messages.ruleModal.templateDeactivatedWarningSuffix")}
+            </span>
           </div>
         )}
 
@@ -383,7 +448,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {warnMissingSmsBody && (
           <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/20 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
             <WarningIcon className="size-4 shrink-0 mt-0.5" />
-            <span>Le modèle sélectionné n'a pas de corps SMS. Modifiez le modèle pour activer l'envoi SMS.</span>
+            <span>{t("messages.ruleModal.missingSmsBodyWarning")}</span>
           </div>
         )}
 
@@ -393,7 +458,7 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Destinataires"
+                label={t("messages.ruleModal.recipients")}
                 options={recipientOptions}
                 value={field.value}
                 onValueChange={field.onChange}
@@ -409,22 +474,22 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               variant="ghost"
               size="sm"
               loading={testMut.isPending}
-              title="Envoie un email de test à votre adresse, en utilisant la configuration sauvegardée"
+              title={t("messages.ruleModal.testTooltip")}
               onClick={async () => {
                 try {
                   const res = await testMut.mutateAsync(rule!.id) as { sentTo: string }
-                  toast.success(`Email de test envoyé à ${res.sentTo} (config sauvegardée)`)
+                  toast.success(t("messages.ruleModal.toasts.testSent", { email: res.sentTo }))
                 } catch (err) {
-                  toast.error(err instanceof Error ? err.message : "Erreur")
+                  toast.error(err instanceof Error ? err.message : t("common.error"))
                 }
               }}
             >
-              <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> Tester (config sauvegardée)
+              <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> {t("messages.ruleModal.test")}
             </Button>
           )}
           <div className={`flex gap-2 ${isEditing ? "" : "ml-auto"}`}>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>Annuler</Button>
-            <Button type="submit" loading={isPending} disabled={templates.length === 0}>{isEditing ? "Enregistrer" : "Créer"}</Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>{t("common.cancel")}</Button>
+            <Button type="submit" loading={isPending} disabled={templates.length === 0}>{isEditing ? t("common.save") : t("messages.ruleModal.create")}</Button>
           </div>
         </div>
       </form>

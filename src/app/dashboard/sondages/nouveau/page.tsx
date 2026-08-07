@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { ArrowLeftIcon, MagnifyingGlassIcon, UsersIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,7 +15,13 @@ import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
 
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
+}
+
 export default function NouveauSondagePage() {
+  const t = useTranslations()
   const router = useRouter()
 
   const [title, setTitle]               = useState("")
@@ -61,7 +68,7 @@ export default function NouveauSondagePage() {
           title,
           description:  description || null,
           anonymous,
-          deadline:     deadline || null,
+          deadline:     deadline ? `${deadline}T23:59:59.000Z` : null,
           recipientMode,
           recipientIds: recipientMode === "SELECTED" ? recipientIds : undefined,
           questions:    questions.map(q => ({
@@ -77,23 +84,24 @@ export default function NouveauSondagePage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur lors de la création")
+        throw new Error(d.error ?? t("sondages.newSurveyPage.toasts.createError"))
       }
       return res.json()
     },
     onSuccess: (data) => {
-      toast.success("Sondage créé")
+      toast.success(t("sondages.newSurveyPage.toasts.created"))
       router.push(`/dashboard/sondages/${data.id}`)
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   })
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!title.trim()) { toast.error("Le titre est obligatoire"); return }
-    if (questions.length === 0) { toast.error("Ajoutez au moins une question"); return }
+    if (!title.trim()) { toast.error(t("sondages.newSurveyPage.toasts.titleRequired")); return }
+    if (questions.length === 0) { toast.error(t("sondages.newSurveyPage.toasts.atLeastOneQuestion")); return }
+    if (deadline && deadline < todayStr()) { toast.error(t("sondages.newSurveyPage.toasts.deadlinePast")); return }
     if (recipientMode === "SELECTED" && recipientIds.length === 0) {
-      toast.error("Sélectionnez au moins un membre")
+      toast.error(t("sondages.newSurveyPage.toasts.atLeastOneMember"))
       return
     }
     mutation.mutate()
@@ -107,8 +115,8 @@ export default function NouveauSondagePage() {
           <ArrowLeftIcon className="size-4" />
         </Button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl font-bold">Nouveau sondage</h1>
-          <p className="text-sm text-muted-foreground">Créez un questionnaire pour vos membres.</p>
+          <h1 className="text-xl font-bold">{t("sondages.newSurveyPage.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("sondages.newSurveyPage.subtitle")}</p>
         </div>
       </div>
 
@@ -118,43 +126,44 @@ export default function NouveauSondagePage() {
 
           {/* Left — metadata */}
           <div className="lg:col-span-2 p-5 space-y-4">
-            <h2 className="text-sm font-semibold">Informations générales</h2>
+            <h2 className="text-sm font-semibold">{t("sondages.newSurveyPage.generalInfo")}</h2>
 
             <div className="space-y-1.5">
-              <Label htmlFor="title">Titre <span className="ml-0.5 text-destructive" aria-hidden>*</span></Label>
+              <Label htmlFor="title">{t("sondages.newSurveyPage.titleLabel")} <span className="ml-0.5 text-destructive" aria-hidden>*</span></Label>
               <Input
                 id="title"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                placeholder="Ex. Satisfaction assemblée générale"
+                placeholder={t("sondages.newSurveyPage.titlePlaceholder")}
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="desc">Description <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+              <Label htmlFor="desc">{t("sondages.newSurveyPage.descriptionLabel")} <span className="text-muted-foreground font-normal">{t("sondages.newSurveyPage.optional")}</span></Label>
               <textarea
                 id="desc"
                 rows={3}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                placeholder="Contexte ou instructions pour les répondants…"
+                placeholder={t("sondages.newSurveyPage.descriptionPlaceholder")}
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="deadline">Date limite <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+              <Label htmlFor="deadline">{t("sondages.newSurveyPage.deadlineLabel")} <span className="text-muted-foreground font-normal">{t("sondages.newSurveyPage.optional")}</span></Label>
               <Input
                 id="deadline"
                 type="date"
+                min={todayStr()}
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label>Destinataires</Label>
+              <Label>{t("actualites.form.recipients")}</Label>
               <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
                 {(["ALL", "SELECTED"] as const).map(mode => (
                   <button
@@ -171,7 +180,7 @@ export default function NouveauSondagePage() {
                         : "text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    {mode === "ALL" ? "Tous les membres" : "Sélection manuelle"}
+                    {mode === "ALL" ? t("actualites.form.recipientsAll") : t("sondages.newSurveyPage.recipientsManual")}
                   </button>
                 ))}
               </div>
@@ -184,7 +193,7 @@ export default function NouveauSondagePage() {
                   <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
                   <input
                     type="text"
-                    placeholder="Rechercher un membre…"
+                    placeholder={t("actualites.form.searchMemberPlaceholder")}
                     value={memberSearch}
                     onChange={e => setMemberSearch(e.target.value)}
                     className="w-full bg-transparent pl-8 pr-3 py-2 text-sm outline-none"
@@ -195,7 +204,7 @@ export default function NouveauSondagePage() {
                   {filteredMembres.length === 0 ? (
                     <div className="flex items-center justify-center gap-2 py-6 text-muted-foreground text-sm">
                       <UsersIcon className="size-4" />
-                      {membres.length === 0 ? "Chargement…" : "Aucun résultat"}
+                      {membres.length === 0 ? t("actualites.form.loading") : t("actualites.form.noResult")}
                     </div>
                   ) : (
                     filteredMembres.map(m => {
@@ -229,14 +238,14 @@ export default function NouveauSondagePage() {
                 {recipientIds.length > 0 && (
                   <div className="border-t px-3 py-2 bg-muted/20 flex items-center justify-between">
                     <span className="text-xs text-muted-foreground">
-                      {recipientIds.length} membre{recipientIds.length > 1 ? "s" : ""} sélectionné{recipientIds.length > 1 ? "s" : ""}
+                      {t("actualites.form.selectedCount", { count: recipientIds.length })}
                     </span>
                     <button
                       type="button"
                       onClick={() => setRecipientIds([])}
                       className="text-xs text-muted-foreground hover:text-foreground underline"
                     >
-                      Tout désélectionner
+                      {t("actualites.form.deselectAll")}
                     </button>
                   </div>
                 )}
@@ -250,23 +259,23 @@ export default function NouveauSondagePage() {
                 onChange={e => setAnonymous(e.target.checked)}
                 className="rounded accent-foreground"
               />
-              <span>Réponses anonymes <span className="text-muted-foreground">(le nom des répondants ne sera pas enregistré)</span></span>
+              <span>{t("sondages.newSurveyPage.anonymousLabel")} <span className="text-muted-foreground">{t("sondages.newSurveyPage.anonymousHint")}</span></span>
             </label>
           </div>
 
           {/* Right — questions */}
           <div className="lg:col-span-3 p-5 space-y-3">
-            <h2 className="text-sm font-semibold">Questions <span className="ml-0.5 text-destructive" aria-hidden>*</span></h2>
+            <h2 className="text-sm font-semibold">{t("sondages.newSurveyPage.questionsLabel")} <span className="ml-0.5 text-destructive" aria-hidden>*</span></h2>
             <SondageFormBuilder onChange={setQuestions} />
           </div>
         </div>
 
         <div className="border-t px-5 py-3 bg-muted/20 flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Annuler
+            {t("common.cancel")}
           </Button>
           <Button type="submit" loading={mutation.isPending}>
-            Créer le sondage
+            {t("sondages.newSurveyPage.createButton")}
           </Button>
         </div>
       </div>

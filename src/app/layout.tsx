@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { NextIntlClientProvider } from "next-intl"
+import { getLocale, getMessages } from "next-intl/server"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { Providers } from "@/components/layout/providers"
 import { Toaster } from "@/components/ui/sonner"
@@ -14,15 +16,20 @@ export const metadata: Metadata = {
   description: "Gestion simplifiée pour associations françaises",
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
+  const messages = await getMessages()
+
   return (
-    <html lang="fr" className={inter.variable} suppressHydrationWarning>
+    <html lang={locale} className={inter.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
-        <ThemeProvider>
-          <TopLoader />
-          <Providers>{children}</Providers>
-          <Toaster position="bottom-right" richColors />
-        </ThemeProvider>
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <TopLoader />
+            <Providers>{children}</Providers>
+            <Toaster position="bottom-right" richColors />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   )

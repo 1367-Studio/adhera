@@ -1,18 +1,17 @@
+import { randomUUID } from "crypto"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
-import { sendEmailBulk } from "@/lib/mail"
-import { sondageInvitationEmail } from "@/lib/email"
+import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 export type SondageInviteResult = {
+  jobId:           string | null
   notified:        number
-  emailsSent:      number
-  emailsFailed:    number
   skippedNoEmail:  number
   skippedNoAccess: number
 }
 
-const EMPTY_RESULT: SondageInviteResult = { notified: 0, emailsSent: 0, emailsFailed: 0, skippedNoEmail: 0, skippedNoAccess: 0 }
+const EMPTY_RESULT: SondageInviteResult = { jobId: null, notified: 0, skippedNoEmail: 0, skippedNoAccess: 0 }
 
 // Notifies + emails a set of members about a sondage — used both on activation and when
 // new recipients are added to an already-ACTIF SELECTED sondage (see sondages/[id]/route.ts
@@ -54,32 +53,28 @@ export async function sendSondageInvitations(params: {
   })
   await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
 
-  const portalUrl      = `${process.env.NEXTAUTH_URL ?? ""}/portal/${association.slug}/sondages/${sondageId}`
   const recipients      = membres.filter(m => m.email)
   const skippedNoEmail  = membres.length - recipients.length
 
-  let emailsSent = 0
-  let emailsFailed = 0
+  let jobId: string | null = null
   if (recipients.length) {
+    jobId = randomUUID()
     const branding = resolveDocumentBranding(association)
-    const { sent, failed } = await sendEmailBulk(recipients.map(m => {
-      const mail = sondageInvitationEmail({
-        firstName:       m.firstName,
-        email:           m.email!,
+    await inngest.send({
+      name: "bulk/sondage-invitations.requested",
+      data: {
+        jobId,
+        associationId,
+        sondageId,
         associationName: association.name,
-        sondageTitle:    sondage.title,
-        deadline:        sondage.deadline,
-        portalUrl,
+        slug:             association.slug,
         branding,
-      })
-      return {
-        ...mail,
-        context: { associationId, membreId: m.id, source: "SONDAGE", sourceId: sondageId },
-      }
-    }))
-    emailsSent   = sent
-    emailsFailed = failed
+        sondageTitle:     sondage.title,
+        deadline:         sondage.deadline ? sondage.deadline.toISOString() : null,
+        members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, email: m.email! })),
+      },
+    })
   }
 
-  return { notified: membres.length, emailsSent, emailsFailed, skippedNoEmail, skippedNoAccess }
+  return { jobId, notified: membres.length, skippedNoEmail, skippedNoAccess }
 }

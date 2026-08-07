@@ -26,8 +26,11 @@ enum MembreStatus {
 
 enum CotisationStatus {
   EN_ATTENTE
+  PARTIELLEMENT_PAYEE
   PAYE
+  EN_RETARD
   EXONERE
+  ANNULEE
 }
 
 enum RsvpStatus {
@@ -79,6 +82,7 @@ enum TriggerType {
   RSVP_CONFIRMED
   MEMBER_CREATED
   MEMBER_BIRTHDAY
+  EVENT_ADHERENT_LAPSED
 }
 
 enum MessageChannel {
@@ -127,6 +131,12 @@ enum MeetingStatus {
   CANCELLED
 }
 
+enum MeetingType {
+  AG
+  BUREAU
+  GENERALE
+}
+
 enum QuestionType {
   TEXT_SHORT
   TEXT_LONG
@@ -139,6 +149,24 @@ enum QuestionType {
 enum BankTransactionType {
   CREDIT
   DEBIT
+}
+
+// Which header/portal a notification's link points into — lets the bell filter its list to
+// what's relevant in the current context, instead of a gestão user clicking one and getting
+// bounced into the member portal (or vice versa) with no warning.
+enum NotificationScope {
+  MEMBRE
+  GESTION
+}
+
+enum SupportTicketStatus {
+  OUVERT
+  FERME
+}
+
+enum ExerciceStatus {
+  OUVERT
+  CLOTURE
 }
 
 enum BankTransactionStatus {
@@ -209,6 +237,38 @@ enum OrganismeCategory {
   ORGANISME_UE_SIMILAIRE
 }
 
+enum Civilite {
+  MME
+  MLLE
+  M
+}
+
+enum GroupeSanguin {
+  A_POSITIF
+  A_NEGATIF
+  B_POSITIF
+  B_NEGATIF
+  AB_POSITIF
+  AB_NEGATIF
+  O_POSITIF
+  O_NEGATIF
+}
+
+enum Sexe {
+  HOMME
+  FEMME
+}
+
+enum TailleTshirt {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+  XXXL
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
@@ -228,6 +288,11 @@ model Association {
   siren                   String?
   rna                     String?
   canIssueTaxReceipts     Boolean            @default(false)
+  // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
+  // (EN_ATTENTE, current year) is created automatically for every new Membre — see
+  // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
+  // away instead of waiting on an admin to create one.
+  cotisationDefaultAmount Decimal?           @db.Decimal(10, 2)
   objet                   String?
   organismeCategory       OrganismeCategory  @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail String?
@@ -296,6 +361,7 @@ model Association {
   boutiqueProduits    BoutiqueProduit[]
   boutiqueCommandes   BoutiqueCommande[]
   meetings            Meeting[]
+  exercicesComptables ExerciceComptable[]
   bankAccounts        BankAccount[]
   bankTransactions    BankTransaction[]
   financeCategories   FinanceCategory[]
@@ -307,19 +373,27 @@ model Association {
   factures            Facture[]
   facturesRecues      FactureRecue[]
   emailMessages       EmailMessage[]
+  smsMessages         SmsMessage[]
+  supportTickets      SupportTicket[]
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String
-  name          String?
-  passwordHash  String
-  role          UserRole  @default(MEMBRE)
-  active        Boolean   @default(true)
-  associationId String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+  id              String    @id @default(cuid())
+  email           String
+  name            String?
+  passwordHash    String
+  role            UserRole  @default(MEMBRE)
+  active          Boolean   @default(true)
+  locale          String    @default("fr")
+  // Ordered array of DashboardWidgetId strings (see src/lib/dashboard-widgets.ts) —
+  // null means "never customized", resolved to the default order in app code via
+  // parseDashboardLayout(), same shape as Association.modules falling back to
+  // DEFAULT_MODULES via parseModules().
+  dashboardLayout Json?
+  associationId   String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
 
   // Set once, at signup, when the account is created via /register (see
   // src/lib/consent.ts and src/app/api/register/route.ts) — null for accounts created
@@ -330,10 +404,12 @@ model User {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association         Association?         @relation(fields: [associationId], references: [id])
-  notifications       Notification[]
-  membre              Membre?
-  passwordResetTokens PasswordResetToken[]
+  association           Association?           @relation(fields: [associationId], references: [id])
+  notifications         Notification[]
+  membre                Membre?
+  passwordResetTokens   PasswordResetToken[]
+  supportTickets        SupportTicket[]
+  supportTicketMessages SupportTicketMessage[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -355,21 +431,33 @@ model MembreType {
 }
 
 model Membre {
-  id            String       @id @default(cuid())
-  firstName     String
-  lastName      String
-  email         String?
-  phone         String?
-  birthDate     DateTime?
-  address       String?
-  status        MembreStatus @default(ACTIF)
-  typeId        String?
-  associationId String
-  userId        String?      @unique
-  joinedAt      DateTime     @default(now())
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  deletedAt     DateTime?
+  id               String         @id @default(cuid())
+  firstName        String
+  lastName         String
+  email            String?
+  phone            String?
+  birthDate        DateTime?
+  address          String?
+  civilite         Civilite?
+  groupeSanguin    GroupeSanguin?
+  sexe             Sexe?
+  allergies        String?
+  photoUrl         String?
+  possedeTshirt    Boolean?
+  tailleTshirt     TailleTshirt?
+  status           MembreStatus   @default(ACTIF)
+  // Tri-state manual override of "adhérent" status: null = automatic (computed from the
+  // current-year Cotisation, see src/lib/membre-adherent.ts), true = force adhérent, false =
+  // force bénévole. Defaults to null so a new member is not automatically an adhérent.
+  adherentOverride Boolean?
+  typeId           String?
+  responsableId    String?
+  associationId    String
+  userId           String?        @unique
+  joinedAt         DateTime       @default(now())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
 
   // Set on the public membership-request form (src/components/site/sections/site-
   // membership-section.tsx), which creates a PENDING Membre with no User/password yet —
@@ -383,6 +471,8 @@ model Membre {
   association           Association          @relation(fields: [associationId], references: [id])
   user                  User?                @relation(fields: [userId], references: [id])
   type                  MembreType?          @relation(fields: [typeId], references: [id])
+  responsable           Membre?              @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  dependants            Membre[]             @relation("MembreResponsable")
   cotisations           Cotisation[]
   participations        Participation[]
   actualiteRecipients   ActualiteRecipient[]
@@ -395,6 +485,7 @@ model Membre {
   meetingsAsParticipant MeetingParticipant[]
   incomes               Income[]
   emailMessages         EmailMessage[]
+  smsMessages           SmsMessage[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -417,11 +508,32 @@ model Evenement {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  association    Association     @relation(fields: [associationId], references: [id])
+  association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
+  customFields   EvenementCustomField[]
 
   @@index([associationId, date])
+}
+
+enum EvenementFieldType {
+  TEXT
+  NUMBER
+}
+
+// Admin-defined extra fields on an event's public registration form (name/type/order),
+// answered per Participation via Participation.answers — see that field's comment.
+model EvenementCustomField {
+  id          String             @id @default(cuid())
+  evenementId String
+  type        EvenementFieldType
+  label       String
+  required    Boolean            @default(false)
+  order       Int
+
+  evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+
+  @@index([evenementId])
 }
 
 model Participation {
@@ -431,6 +543,11 @@ model Participation {
   firstName       String // capturé sur la ligne — pas de join Membre pour l'affichage
   lastName        String
   email           String?
+  phone           String?
+  address         String?
+  // Réponses aux EvenementCustomField de cet événement, keyed by field id (ex: {"clxyz...": "42"})
+  // — un JSON simple suffit ici, personne n'agrège ces réponses entre participants comme un sondage.
+  answers         Json?
   present         Boolean     @default(false)
   rsvp            RsvpStatus?
   rsvpAt          DateTime?
@@ -438,6 +555,9 @@ model Participation {
   amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
   orderId         String? // regroupe les places d'une même réservation/paiement
   stripeSessionId String?
+  // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
+  // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
+  cancelToken     String?     @unique
   createdAt       DateTime    @default(now())
 
   membre         Membre?         @relation(fields: [membreId], references: [id])
@@ -451,23 +571,58 @@ model Participation {
 }
 
 model Cotisation {
-  id              String           @id @default(cuid())
-  membreId        String
-  associationId   String
-  amount          Decimal          @db.Decimal(10, 2)
-  year            Int
-  paidAt          DateTime?
-  status          CotisationStatus @default(EN_ATTENTE)
-  note            String?
-  stripeSessionId String?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                  String           @id @default(cuid())
+  membreId            String
+  associationId       String
+  amount              Decimal          @db.Decimal(10, 2)
+  amountPaid          Decimal          @default(0) @db.Decimal(10, 2)
+  year                Int
+  paidAt              DateTime?
+  dueDate             DateTime?
+  status              CotisationStatus @default(EN_ATTENTE)
+  note                String?
+  stripeSessionId     String?
+  declarationNumber   String?
+  declarationIssuedAt DateTime?
+  lastReminderSentAt  DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
-  membre      Membre      @relation(fields: [membreId], references: [id])
-  association Association @relation(fields: [associationId], references: [id])
+  membre       Membre                  @relation(fields: [membreId], references: [id])
+  association  Association             @relation(fields: [associationId], references: [id])
+  payments     CotisationPayment[]
+  installments CotisationInstallment[]
 
   @@unique([membreId, year])
+  @@unique([associationId, declarationNumber])
   @@index([associationId, status])
+}
+
+model CotisationInstallment {
+  id           String   @id @default(cuid())
+  cotisationId String
+  amount       Decimal  @db.Decimal(10, 2)
+  dueDate      DateTime
+  order        Int      @default(0)
+
+  cotisation Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+
+  @@index([cotisationId])
+}
+
+model CotisationPayment {
+  id           String   @id @default(cuid())
+  cotisationId String
+  amount       Decimal  @db.Decimal(10, 2)
+  method       String
+  paidAt       DateTime @default(now())
+  note         String?
+  createdAt    DateTime @default(now())
+
+  cotisation Cotisation @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+  income     Income?
+
+  @@index([cotisationId, paidAt])
 }
 
 model Don {
@@ -500,17 +655,68 @@ model Don {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String            @id @default(cuid())
   userId    String
   title     String
   body      String?
   link      String?
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  scope     NotificationScope @default(MEMBRE)
+  read      Boolean           @default(false)
+  createdAt DateTime          @default(now())
+  // High-volume, repeatable events (e.g. one sondage response after another) reuse the
+  // same unread row instead of creating a new one each time — see notifyAdminsOfResponse
+  // in src/app/api/portal/sondages/[id]/repondre/route.ts. Left null for every other
+  // notification type, which still gets one row per event as before.
+  groupKey  String?
+  count     Int               @default(1)
 
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, read])
+  @@index([userId, scope, read])
+  @@index([userId, groupKey, read])
+}
+
+// Two-way support channel between an association's own ADMIN and the platform's SUPER_ADMIN
+// team — see src/lib/support-tickets.ts. `readByStaffAt`/`readByAssociationAt` are single
+// shared timestamps rather than a per-user read table: only one ADMIN can ever write from
+// the association side (see SupportTicketMessage.authorId), and every SUPER_ADMIN shares one
+// "has staff looked at this" state, so there's no real many-to-many read state to track.
+model SupportTicket {
+  id                    String              @id @default(cuid())
+  associationId         String
+  authorId              String
+  subject               String
+  status                SupportTicketStatus @default(OUVERT)
+  // Denormalized off the latest SupportTicketMessage so the inbox can sort/filter without a
+  // join, and so unread state is a plain timestamp comparison — see deriveTicketUnread in
+  // src/lib/support-tickets.ts.
+  lastMessageAt         DateTime            @default(now())
+  lastMessageAuthorRole UserRole
+  readByStaffAt         DateTime?
+  readByAssociationAt   DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  author      User                   @relation(fields: [authorId], references: [id])
+  messages    SupportTicketMessage[]
+
+  @@index([associationId, status])
+  @@index([status, lastMessageAt])
+}
+
+model SupportTicketMessage {
+  id        String   @id @default(cuid())
+  ticketId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id])
+
+  @@index([ticketId, createdAt])
 }
 
 model Actualite {
@@ -548,6 +754,7 @@ model Material {
   associationId String
   name          String
   category      String?
+  categoryId    String?
   description   String?
   serialNumber  String?
   quantity      Int            @default(1)
@@ -555,12 +762,15 @@ model Material {
   location      String?
   purchaseDate  DateTime?
   purchasePrice Decimal?       @db.Decimal(10, 2)
+  rentalRate    Decimal?       @db.Decimal(10, 2)
+  imageUrl      String?
   notes         String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  loans       MaterialLoan[]
+  association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  financeCategory FinanceCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  loans           MaterialLoan[]
 
   @@index([associationId, status])
 }
@@ -575,11 +785,13 @@ model MaterialLoan {
   borrowedAt       DateTime   @default(now())
   expectedReturnAt DateTime?
   returnedAt       DateTime?
+  feeAmount        Decimal?   @db.Decimal(10, 2)
   notes            String?
   createdAt        DateTime   @default(now())
 
   material Material @relation(fields: [materialId], references: [id], onDelete: Cascade)
   membre   Membre?  @relation(fields: [membreId], references: [id])
+  facture  Facture?
 
   @@index([materialId, returnedAt])
 }
@@ -593,6 +805,10 @@ model MessageTemplate {
   body          String   @db.Text
   smsBody       String?  @db.Text
   active        Boolean  @default(true)
+  // At most one default per (associationId, category) — enforced in the API, not the DB.
+  // Lets a feature like the cotisation bulk-reminder action ("send-reminder-modal.tsx")
+  // know which template to preload without the admin picking one every time.
+  isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -771,6 +987,40 @@ model EmailMessage {
   @@index([source, sourceId])
 }
 
+enum SmsStatus {
+  QUEUED
+  SENDING
+  SENT
+  DELIVERED
+  UNDELIVERED
+  FAILED
+}
+
+model SmsMessage {
+  id            String    @id @default(cuid())
+  associationId String
+  membreId      String?
+  twilioSid     String?   @unique
+  to            String
+  body          String    @db.Text
+  // "BULK_MESSAGE" | "AUTOMATION" | "COTISATION_REMINDER" — String not enum, same
+  // convention as EmailMessage.source (new sources shouldn't need a migration).
+  source        String
+  sourceId      String?
+  status        SmsStatus @default(QUEUED)
+  errorMessage  String?
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failedAt      DateTime?
+  createdAt     DateTime  @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, membreId, createdAt(sort: Desc)])
+  @@index([source, sourceId])
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
@@ -871,6 +1121,7 @@ model Meeting {
   title            String
   description      String?
   status           MeetingStatus @default(SCHEDULED)
+  type             MeetingType   @default(GENERALE)
   scheduledAt      DateTime?
   startedAt        DateTime?
   endedAt          DateTime?
@@ -878,8 +1129,8 @@ model Meeting {
   createdById      String
   transcript       String?
   summary          String?
-  egressId         String?
-  recordingKey     String?
+  shareToken       String?       @unique
+  shareExpiresAt   DateTime?
   // Snapshot of whichever LiveKit account (platform or the association's own) actually
   // created this meeting's room, pinned on first use — later changes to the association's
   // LiveKit settings must not point an in-progress/already-created meeting at a different
@@ -892,6 +1143,7 @@ model Meeting {
 
   association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   participants MeetingParticipant[]
+  recordings   MeetingRecording[]
 
   @@index([associationId])
 }
@@ -908,7 +1160,47 @@ model MeetingParticipant {
   @@unique([meetingId, membreId])
 }
 
+// One row per participant's own audio recording — a meeting recorded this way produces
+// several files instead of one merged mix, so each transcript segment can later be
+// attributed to whoever actually said it (see Phase 1 of the meeting-transcript-export work).
+model MeetingRecording {
+  id           String    @id @default(cuid())
+  meetingId    String
+  // Matches the LiveKit participant identity issued when they joined: the raw userId for
+  // dashboard admins/managers, or "membre-{id}" for portal members (see token routes).
+  identity     String
+  displayName  String
+  egressId     String
+  recordingKey String?
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
 // ─── Finances & Conciliation bancaire ────────────────────────────────────────
+
+model ExerciceComptable {
+  id            String         @id @default(cuid())
+  associationId String
+  label         String
+  startDate     DateTime
+  endDate       DateTime
+  status        ExerciceStatus @default(OUVERT)
+  closedAt      DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  association      Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes          Income[]
+  expenses         Expense[]
+  bankTransactions BankTransaction[]
+
+  @@index([associationId, status])
+  @@index([associationId, startDate])
+}
 
 model BankAccount {
   id             String   @id @default(cuid())
@@ -932,6 +1224,7 @@ model BankAccount {
 model BankTransaction {
   id              String                @id @default(cuid())
   associationId   String
+  exerciceId      String?
   bankAccountId   String
   transactionDate DateTime
   label           String
@@ -945,6 +1238,7 @@ model BankTransaction {
   updatedAt       DateTime              @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   bankAccount     BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
   reconciliations BankReconciliation[]
 
@@ -968,51 +1262,63 @@ model FinanceCategory {
   expenses              Expense[]
   boutiqueProduits      BoutiqueProduit[]
   boutiqueCommandeItems BoutiqueCommandeItem[]
+  materials             Material[]
 
   @@index([associationId, type])
 }
 
 model Income {
-  id              String       @id @default(cuid())
-  associationId   String
-  memberId        String?
-  participationId String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
-  amount          Decimal      @db.Decimal(10, 2)
-  categoryId      String?
-  paymentMethod   String?
-  date            DateTime
-  description     String?
-  source          IncomeSource @default(MANUAL)
-  status          IncomeStatus @default(PENDING)
-  reference       String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id                  String       @id @default(cuid())
+  associationId       String
+  exerciceId          String?
+  memberId            String?
+  participationId     String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
+  facturePaymentId    String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
+  cotisationPaymentId String?      @unique // set when this row was auto-created from a CotisationPayment — see CotisationPayment.income
+  amount              Decimal      @db.Decimal(10, 2)
+  categoryId          String?
+  paymentMethod       String?
+  date                DateTime
+  description         String?
+  source              IncomeSource @default(MANUAL)
+  status              IncomeStatus @default(PENDING)
+  reference           String?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 
-  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre          Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
-  participation   Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
-  category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  reconciliations BankReconciliation[]
+  association       Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice          ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  membre            Membre?              @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  participation     Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  facturePayment    FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
+  cotisationPayment CotisationPayment?   @relation(fields: [cotisationPaymentId], references: [id], onDelete: SetNull)
+  category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  reconciliations   BankReconciliation[]
 
   @@index([associationId, status])
   @@index([associationId, date])
 }
 
 model Expense {
-  id            String        @id @default(cuid())
-  associationId String
-  amount        Decimal       @db.Decimal(10, 2)
-  categoryId    String?
-  date          DateTime
-  vendor        String?
-  description   String?
-  receiptUrl    String?
-  internalNote  String?
-  status        ExpenseStatus @default(DRAFT)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  associationId  String
+  exerciceId     String?
+  factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
+  amount         Decimal       @db.Decimal(10, 2)
+  categoryId     String?
+  date           DateTime
+  vendor         String?
+  description    String?
+  receiptUrl     String?
+  internalNote   String?
+  paymentMethod  String?
+  status         ExpenseStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
@@ -1149,6 +1455,7 @@ model Facture {
   associationId  String
   fournisseurId  String?
   devisId        String?       @unique
+  materialLoanId String?       @unique
   number         String
   status         FactureStatus @default(BROUILLON)
   issueDate      DateTime      @default(now())
@@ -1166,11 +1473,12 @@ model Facture {
   updatedAt      DateTime      @updatedAt
   deletedAt      DateTime?
 
-  association Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  fournisseur Fournisseur?     @relation(fields: [fournisseurId], references: [id])
-  devis       Devis?           @relation(fields: [devisId], references: [id])
-  items       FactureItem[]
-  payments    FacturePayment[]
+  association  Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur  Fournisseur?     @relation(fields: [fournisseurId], references: [id])
+  devis        Devis?           @relation(fields: [devisId], references: [id])
+  materialLoan MaterialLoan?    @relation(fields: [materialLoanId], references: [id], onDelete: SetNull)
+  items        FactureItem[]
+  payments     FacturePayment[]
 
   @@unique([associationId, number])
   @@index([associationId, status])
@@ -1203,6 +1511,7 @@ model FacturePayment {
   createdAt DateTime @default(now())
 
   facture Facture @relation(fields: [factureId], references: [id], onDelete: Cascade)
+  income  Income?
 
   @@index([factureId, paidAt])
 }
@@ -1231,6 +1540,7 @@ model FactureRecue {
 
   association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
   fournisseur Fournisseur? @relation(fields: [fournisseurId], references: [id])
+  expense     Expense?
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])

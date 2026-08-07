@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, BankIcon } from "@phosphor-icons/react/dist/ssr";
 import { useBankAccounts, useCreateBankAccount, useUpdateBankAccount, useDeleteBankAccount } from "@/hooks/use-bank-accounts"
 import type { BankAccountInput } from "@/lib/schemas"
@@ -26,6 +27,7 @@ type Account = {
 }
 
 export function BankAccountsView() {
+  const t = useTranslations()
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Account | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Account | null>(null)
@@ -39,20 +41,20 @@ export function BankAccountsView() {
   async function handleCreate(data: BankAccountInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Compte créé")
+      toast.success(t("finances.accountsView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: BankAccountInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Compte mis à jour")
+      toast.success(t("finances.accountsView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -60,10 +62,10 @@ export function BankAccountsView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Compte supprimé")
+      toast.success(t("finances.accountsView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -72,7 +74,7 @@ export function BankAccountsView() {
   const columns: Column<Account>[] = [
     {
       key: "account",
-      header: "Compte",
+      header: t("finances.accountsView.columns.account"),
       cell: (a) => (
         <div className="flex items-center gap-2.5">
           <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
@@ -87,7 +89,7 @@ export function BankAccountsView() {
     },
     {
       key: "balance",
-      header: "Solde",
+      header: t("finances.accountsView.columns.balance"),
       className: "w-32 text-right",
       cell: (a) => (
         <span className={`font-semibold tabular-nums ${Number(a.currentBalance) >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive"}`}>
@@ -97,11 +99,11 @@ export function BankAccountsView() {
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("finances.accountsView.columns.status"),
       className: "w-24",
       cell: (a) => a.isActive
-        ? <Badge variant="default" className="bg-green-600 hover:bg-green-700">Actif</Badge>
-        : <Badge variant="secondary">Inactif</Badge>,
+        ? <Badge variant="default" className="bg-green-600 hover:bg-green-700">{t("finances.accountsView.status.actif")}</Badge>
+        : <Badge variant="secondary">{t("finances.accountsView.status.inactif")}</Badge>,
     },
     {
       key: "actions",
@@ -109,8 +111,8 @@ export function BankAccountsView() {
       className: "w-10",
       cell: (a) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(a) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(a) },
+          { label: t("finances.accountsView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(a) },
+          { label: t("finances.accountsView.actions.delete"), icon: <TrashIcon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(a) },
         ]} />
       ),
     },
@@ -119,12 +121,12 @@ export function BankAccountsView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Comptes bancaires"
-        description="Gérez les comptes bancaires de l'association."
+        title={t("finances.accountsView.title")}
+        description={t("finances.accountsView.description")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter un compte
+            {t("finances.accountsView.add")}
           </Button>
         }
       />
@@ -134,14 +136,14 @@ export function BankAccountsView() {
         data={accounts as Account[]}
         loading={isLoading}
         keyExtractor={(a) => a.id}
-        empty="Aucun compte bancaire enregistré"
+        empty={t("finances.accountsView.noAccounts")}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouveau compte bancaire" size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.accountsView.newAccountTitle")} size="md" dismissable={false}>
         <BankAccountForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier le compte" size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.accountsView.editAccountTitle")} size="md" dismissable={false}>
         <BankAccountForm
           defaultValues={editTarget ? {
             bankName:       editTarget.bankName,
@@ -160,9 +162,9 @@ export function BankAccountsView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer ce compte ?"
+        title={t("finances.accountsView.deleteConfirmTitle")}
         description={deleteTarget ? `${deleteTarget.accountName} — ${deleteTarget.bankName}` : ""}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

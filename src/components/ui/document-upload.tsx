@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { UploadSimpleIcon, FileIcon, XIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 
 interface DocumentUploadProps {
@@ -17,6 +18,7 @@ interface DocumentUploadProps {
 }
 
 export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = false, onFilePending }: DocumentUploadProps) {
+  const t = useTranslations("documentUpload")
   const [uploading, setUploading] = useState(false)
   const [pendingFile, setPendingFile] = useState<File | null>(null)
   const inputRef  = useRef<HTMLInputElement>(null)
@@ -36,7 +38,7 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
   useEffect(() => () => { if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current) }, [])
 
   async function handleFile(file: File) {
-    if (file.size > 10 * 1024 * 1024) { toast.error("Fichier trop volumineux (max 10 Mo)"); return }
+    if (file.size > 10 * 1024 * 1024) { toast.error(t("fileTooLarge")); return }
 
     if (lazy) {
       if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)
@@ -57,7 +59,7 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
       const res = await fetch("/api/upload", { method: "POST", body: fd })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        toast.error(body.error ?? "Erreur lors de l'upload")
+        toast.error(body.error ?? t("uploadError"))
         return
       }
       const { url } = await res.json()
@@ -65,7 +67,7 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
     } catch {
       // fetch itself throwing (offline, DNS failure, timeout) — without this the upload
       // silently resets with no feedback, and the user has no idea it failed.
-      toast.error("Erreur réseau lors de l'upload — réessayez")
+      toast.error(t("networkError"))
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ""
@@ -87,14 +89,14 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
       <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
         <FileIcon className="size-4 shrink-0 text-muted-foreground" />
         <span className="flex-1 truncate text-sm">
-          {isPdf ? "Document PDF" : "Justificatif image"}
+          {isPdf ? t("pdfDocument") : t("imageReceipt")}
         </span>
         {!value.startsWith("blob:") && (
-          <a href={value} target="_blank" rel="noopener noreferrer" title="Voir le document">
+          <a href={value} target="_blank" rel="noopener noreferrer" title={t("viewDocument")}>
             <ArrowSquareOutIcon className="size-4 text-muted-foreground hover:text-foreground" />
           </a>
         )}
-        <button type="button" onClick={handleRemove} title="Supprimer">
+        <button type="button" onClick={handleRemove} title={t("remove")}>
           <XIcon className="size-4 text-muted-foreground hover:text-destructive" />
         </button>
       </div>
@@ -111,8 +113,8 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
         onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
       />
       {uploading
-        ? <span className="text-xs">Upload en cours…</span>
-        : <><UploadSimpleIcon className="size-4 shrink-0" /><span>Joindre image ou PDF (max 10 Mo)</span></>
+        ? <span className="text-xs">{t("uploading")}</span>
+        : <><UploadSimpleIcon className="size-4 shrink-0" /><span>{t("attach")}</span></>
       }
     </label>
   )

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
 import { useCurrentUser } from "@/lib/user-context"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
@@ -20,6 +21,7 @@ type PublicEvent = {
 }
 
 export function SiteView() {
+  const t           = useTranslations("site.view")
   const { role }    = useCurrentUser()
   const canEdit     = ADMINS.includes(role)
 
@@ -103,7 +105,7 @@ export function SiteView() {
             .filter((r): r is PromiseFulfilledResult<{ blobUrl: string; realUrl: string }> => r.status === "fulfilled")
             .map(r => r.value)
           const failCount = settled.filter(r => r.status === "rejected").length
-          if (failCount > 0) toast.warning(`${failCount} image(s) n'ont pas pu être téléchargées.`)
+          if (failCount > 0) toast.warning(t("uploadFailedWarning", { count: failCount }))
           let replaced = configStr
           for (const { blobUrl, realUrl } of successes) {
             replaced = replaced.replaceAll(blobUrl, realUrl)
@@ -115,23 +117,23 @@ export function SiteView() {
       await saveMutation.mutateAsync(finalConfig)
       setConfig(finalConfig)
       setIsDirty(false)
-      toast.success("Site sauvegardé")
+      toast.success(t("toasts.saved"))
     } catch {
-      toast.error("Erreur lors de la sauvegarde")
+      toast.error(t("toasts.saveError"))
     } finally {
       setSaving(false)
     }
   }
 
   async function togglePublish() {
-    if (isDirty) { toast.warning("Enregistrez vos modifications avant de publier."); return }
+    if (isDirty) { toast.warning(t("toasts.publishFirst")); return }
     const next = !published
     try {
       await saveMutation.mutateAsync({ published: next })
       setPublished(next)
-      toast.success(next ? "Site publié" : "Site dépublié")
+      toast.success(next ? t("toasts.published") : t("toasts.unpublished"))
     } catch {
-      toast.error("Erreur")
+      toast.error(t("toasts.error"))
     }
   }
 
@@ -167,7 +169,7 @@ export function SiteView() {
       <div className="h-1/2 flex-1 overflow-y-auto bg-gray-100 lg:h-full">
         <SitePreviewPanel
           config={config}
-          name={assoc?.name ?? "Mon association"}
+          name={assoc?.name ?? t("defaultAssociationName")}
           slug={assoc?.slug ?? ""}
           city={assoc?.city ?? null}
           country={assoc?.country ?? "France"}

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -23,7 +24,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     }),
     prisma.participation.findMany({
       where:  { evenementId },
-      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
+      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
     }),
   ])
 
@@ -39,6 +40,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         firstName:       m.firstName,
         lastName:        m.lastName,
         email:           p?.email ?? null,
+        phone:           p?.phone ?? null,
+        address:         p?.address ?? null,
+        answers:         p?.answers ?? null,
         present:         p?.present ?? false,
         rsvp:            p?.rsvp ?? null,
         ticketPaidAt:    p?.ticketPaidAt ?? null,
@@ -54,6 +58,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         firstName:       p.firstName,
         lastName:        p.lastName,
         email:           p.email,
+        phone:           p.phone,
+        address:         p.address,
+        answers:         p.answers,
         present:         p.present,
         rsvp:            p.rsvp,
         ticketPaidAt:    p.ticketPaidAt,
@@ -101,8 +108,12 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (participation.ticketPaidAt)
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
-  const paidAt = new Date()
+    const paidAt = new Date()
   const amount = Number(evenement.price)
+
+  const exercice = await resolveExerciceForDate(associationId, paidAt)
+  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  if (exerciceGuard) return exerciceGuard
 
   const updated = await prisma.participation.update({
     where: { id: participation.id },
@@ -112,6 +123,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   await prisma.income.create({
     data: {
       associationId,
+      exerciceId:      exercice?.id ?? null,
       memberId:        participation.membreId,
       participationId: participation.id,
       amount,

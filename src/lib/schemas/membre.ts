@@ -15,8 +15,22 @@ export const membreSchema = z.object({
     "La date de naissance doit être dans le passé",
   ),
   address:   z.string().trim().optional().or(z.literal("")),
+  civilite:      z.enum(["MME", "MLLE", "M"]).optional().or(z.literal("")),
+  sexe:          z.enum(["HOMME", "FEMME"]).optional().or(z.literal("")),
+  groupeSanguin: z.enum([
+    "A_POSITIF", "A_NEGATIF",
+    "B_POSITIF", "B_NEGATIF",
+    "AB_POSITIF", "AB_NEGATIF",
+    "O_POSITIF", "O_NEGATIF",
+  ]).optional().or(z.literal("")),
+  allergies:     z.string().trim().optional().or(z.literal("")),
+  photoUrl:     z.string().trim().optional().or(z.literal("")),
+  possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
+  tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
   status:    z.enum(["PENDING", "ACTIF", "INACTIF", "SUSPENDU"]),
   typeId:    z.string().optional().or(z.literal("")),
+  responsableId: z.string().optional().or(z.literal("")),
+  adherentOverride: z.enum(["true", "false"]).optional().or(z.literal("")),
 })
 
 export const membreCreateSchema = membreSchema.extend({

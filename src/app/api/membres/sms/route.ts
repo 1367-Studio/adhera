@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
+import { randomUUID } from "crypto"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { sendSmsBatch } from "@/lib/sms"
-import { writeActivityLog } from "@/lib/activity-log"
+import { inngest } from "@/lib/inngest"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -24,6 +24,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const { body, recipientIds, typeId } = parsed.data
 
+  const assoc = await prisma.association.findUnique({
+    where:  { id: ctx.associationId },
+    select: { name: true, slug: true },
+  })
+  if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
+
   const membres = await prisma.membre.findMany({
     where: {
       associationId: ctx.associationId,
@@ -38,33 +44,28 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.phone)
-  const jobs = recipients.map(m => ({ to: m.phone!, body }))
-  if (jobs.length === 0) return NextResponse.json({ sent: 0, failed: 0, failedMembers: [] })
-
-  const results = await sendSmsBatch(jobs, ctx.associationId)
-  const sent    = results.filter(Boolean).length
-  const failedMembers = recipients
-    .filter((_, i) => !results[i])
-    .map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` }))
-  const failed  = failedMembers.length
+  if (recipients.length === 0) return NextResponse.json({ jobId: null, totalRecipients: 0 })
 
   const recipientMode = recipientIds?.length ? "manual" : typeId ? "type" : "all"
-  if (sent > 0) {
-    await writeActivityLog({
+  const jobId = randomUUID()
+
+  await inngest.send({
+    name: "bulk/membres-sms.requested",
+    data: {
+      jobId,
       associationId: ctx.associationId,
       actorId:       ctx.userId,
-      action:        "SMS_SENT_BULK",
-      entity:        "Membre",
-      label:         body.slice(0, 80),
-      metadata:      {
-        sent,
-        failed,
+      body,
+      associationName: assoc.name,
+      slug:             assoc.slug,
+      members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, lastName: m.lastName, phone: m.phone! })),
+      activityMeta: {
         recipientMode,
         ...(typeId               ? { typeId }                              : {}),
         ...(recipientIds?.length ? { recipientCount: recipientIds.length } : {}),
       },
-    })
-  }
+    },
+  })
 
-  return NextResponse.json({ sent, failed, failedMembers })
+  return NextResponse.json({ jobId, totalRecipients: recipients.length })
 }, { module: "sms" })

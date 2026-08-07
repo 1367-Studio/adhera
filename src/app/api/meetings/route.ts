@@ -6,6 +6,8 @@ import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { meetingCreateSchema } from "@/lib/schemas"
+import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -14,24 +16,31 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const meetings = await prisma.meeting.findMany({
     where: { associationId },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
     orderBy: { createdAt: "desc" },
   })
 
-  return NextResponse.json(meetings)
+  return NextResponse.json(meetings.map(m => redactParticipantStatus(m, ctx.role, MANAGERS)))
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
-  const body = await req.json()
-  const { title, description, scheduledAt, participantIds, instant } = body
+  const body   = await req.json()
+  const parsed = meetingCreateSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
+  }
+  const { title, description, type, scheduledAt, participantIds, instant } = parsed.data
 
-  if (!title) return NextResponse.json({ error: "Titre requis" }, { status: 422 })
+  if ((participantIds ?? []).length > 0) {
+    // Same reasoning as the PATCH route: a membreId that exists but belongs to a different
+    // association would otherwise pass straight through and get attached as a participant.
+    const validCount = await prisma.membre.count({ where: { id: { in: participantIds }, associationId } })
+    if (validCount !== participantIds!.length) {
+      return NextResponse.json({ error: "Un ou plusieurs membres sont introuvables." }, { status: 422 })
+    }
+  }
 
   const roomName = `adhera-${associationId.slice(-8)}-${Date.now()}`
 
@@ -40,6 +49,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       associationId,
       title,
       description: description || null,
+      type: type || "GENERALE",
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
       status: instant ? "LIVE" : "SCHEDULED",
       startedAt: instant ? new Date() : null,
@@ -49,11 +59,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         create: (participantIds ?? []).map((membreId: string) => ({ membreId })),
       },
     },
-    include: {
-      participants: {
-        include: { membre: { select: { id: true, firstName: true, lastName: true } } },
-      },
-    },
+    select: MEETING_WITH_PARTICIPANTS_SELECT,
   })
 
   // Send email invites and in-app notifications to participants that have a user account
@@ -66,7 +72,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
       where: { id: { in: participantIds }, userId: { not: null } },
       include: { user: { select: { name: true, email: true } } },
     })
-    const portalBase = `${process.env.NEXTAUTH_URL ?? ""}/portal/${association?.slug}/reunions`
+    const portalPath = `/portal/${association?.slug}/reunions`
+    const portalBase = `${process.env.NEXTAUTH_URL ?? ""}${portalPath}`
     const branding = association ? resolveDocumentBranding(association) : null
     for (const m of membres) {
       if (!m.user?.email) continue
@@ -96,7 +103,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
           userId: m.userId!,
           title:  notifTitle,
           body:   notifBody,
-          link:   portalBase,
+          link:   portalPath,
         })),
       skipDuplicates: true,
     })

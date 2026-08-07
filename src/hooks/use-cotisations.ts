@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { CotisationInput, CotisationUpdateInput } from "@/lib/schemas"
+import type { CotisationInput, CotisationUpdateInput, CotisationPaymentInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
-import { apiErrorMessage } from "@/lib/api-error"
+import { apiErrorMessage, apiError } from "@/lib/api-error"
 
 const QK = ["cotisations"]
 
@@ -23,7 +23,9 @@ async function createCotisation(data: CotisationInput) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la création"))
+  // ApiError (not a plain Error) — the CANCELLED_EXISTS case needs its `code` and the
+  // existing cotisation's id (in `details`) to offer "edit it instead" in the UI.
+  if (!res.ok) throw await apiError(res, "Erreur lors de la création")
   return res.json()
 }
 
@@ -37,9 +39,29 @@ async function updateCotisation(id: string, data: CotisationUpdateInput) {
   return res.json()
 }
 
-async function deleteCotisation(id: string) {
-  const res = await fetch(`/api/cotisations/${id}`, { method: "DELETE" })
-  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression"))
+async function deleteCotisation(id: string, force?: boolean) {
+  const res = await fetch(`/api/cotisations/${id}`, {
+    method:  "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ force: !!force }),
+  })
+  if (!res.ok) throw await apiError(res, "Erreur lors de la suppression")
+}
+
+async function addCotisationPayment(id: string, data: CotisationPaymentInput) {
+  const res = await fetch(`/api/cotisations/${id}/paiements`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'enregistrement du paiement"))
+  return res.json()
+}
+
+async function removeCotisationPayment(id: string, paymentId: string) {
+  const res = await fetch(`/api/cotisations/${id}/paiements/${paymentId}`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression du paiement"))
+  return res.json()
 }
 
 export function useCotisationsPaginated(page: number, limit = 20, filters: Filters = {}) {
@@ -81,7 +103,23 @@ export function useUpdateCotisation(id: string) {
 export function useDeleteCotisation() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: deleteCotisation,
+    mutationFn: ({ id, force }: { id: string; force?: boolean }) => deleteCotisation(id, force),
     onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useAddCotisationPayment(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: CotisationPaymentInput) => addCotisationPayment(id, data),
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+export function useRemoveCotisationPayment(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (paymentId: string) => removeCotisationPayment(id, paymentId),
+    onSuccess:  () => invalidateAll(qc),
   })
 }

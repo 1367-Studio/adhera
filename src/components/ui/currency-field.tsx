@@ -8,6 +8,7 @@ interface CurrencyFieldProps {
   error?:    string
   hint?:     string
   required?: boolean
+  disabled?: boolean
   value:     number
   onChange:  (value: number) => void
   onBlur?:   () => void
@@ -103,7 +104,7 @@ function fmtCents(cents: number): string {
   }).format(cents / 100)
 }
 
-export function CurrencyField({ label, error, hint, required, value, onChange, onBlur }: CurrencyFieldProps) {
+export function CurrencyField({ label, error, hint, required, disabled, value, onChange, onBlur }: CurrencyFieldProps) {
   const [cents, setCents] = useState(() => Math.round((value ?? 0) * 100))
   const internal          = useRef(false)
   const savedRef          = useRef(cents)
@@ -167,6 +168,7 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
         type="text"
         inputMode="numeric"
         value={fmtCents(cents)}
+        disabled={disabled}
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         onChange={() => {/* controlled via onKeyDown */}}
@@ -174,6 +176,7 @@ export function CurrencyField({ label, error, hint, required, value, onChange, o
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none cursor-text",
+          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
           error && "border-destructive",
         )}
       />

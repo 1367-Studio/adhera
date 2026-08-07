@@ -9,6 +9,7 @@ const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 const schema = z.object({
   name:          z.string().min(1).max(150),
   category:      z.string().max(80).optional().nullable(),
+  categoryId:    z.string().optional().nullable(),
   description:   z.string().max(1000).optional().nullable(),
   serialNumber:  z.string().max(100).optional().nullable(),
   quantity:      z.number().int().min(1).default(1),
@@ -16,6 +17,8 @@ const schema = z.object({
   location:      z.string().max(150).optional().nullable(),
   purchaseDate:  z.string().optional().nullable(),
   purchasePrice: z.number().positive().optional().nullable(),
+  rentalRate:    z.number().nonnegative().optional().nullable(),
+  imageUrl:      z.string().max(1000).optional().nullable(),
   notes:         z.string().max(1000).optional().nullable(),
 })
 
@@ -56,11 +59,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const result = materials.map(m => {
     const confirmedLoans = m.loans.filter(l => l.status === "CONFIRME")
     const pendingLoans   = m.loans.filter(l => l.status === "DEMANDE")
+    const reservedLoans  = confirmedLoans.filter(l => l.borrowedAt > now)
+    // Only loans that have actually started reduce today's usable stock — a future-dated
+    // reservation shouldn't make an otherwise-free item look unavailable right now.
+    const currentLoans   = confirmedLoans.filter(l => l.borrowedAt <= now)
     const overdueCount   = confirmedLoans.filter(l => l.expectedReturnAt && l.expectedReturnAt < now).length
     return {
       ...m,
       loanedQty:            confirmedLoans.reduce((s, l) => s + l.quantity, 0),
-      availableQty:         m.quantity - confirmedLoans.reduce((s, l) => s + l.quantity, 0),
+      reservedQty:          reservedLoans.reduce((s, l) => s + l.quantity, 0),
+      availableQty:         m.quantity - currentLoans.reduce((s, l) => s + l.quantity, 0),
       pendingDemandesCount: pendingLoans.length,
       pendingDemandes:      pendingLoans,
       overdueCount,
@@ -78,13 +86,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { purchaseDate, purchasePrice, ...rest } = parsed.data
+  const { purchaseDate, purchasePrice, rentalRate, ...rest } = parsed.data
   const material = await prisma.material.create({
     data: {
       ...rest,
       associationId,
       purchaseDate:  purchaseDate ? new Date(purchaseDate) : null,
       purchasePrice: purchasePrice ?? null,
+      rentalRate:    rentalRate ?? null,
     },
   })
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,22 +15,25 @@ import { DEFAULT_SITE_CONFIG, SECTION_LABELS } from "@/types/site-config"
 import { SiteSectionSheet } from "./site-section-sheet"
 import { BASE_PATH } from "@/lib/env"
 
+type Translator = ReturnType<typeof useTranslations>
+
 function newId() { return Math.random().toString(36).slice(2, 10) }
 
-function createSection(type: SectionType): SiteSection {
+function createSection(type: SectionType, t: Translator): SiteSection {
   switch (type) {
-    case "hero":       return { id: newId(), type: "hero",       title: "Bienvenue",              subtitle: "" }
-    case "about":      return { id: newId(), type: "about",      title: "À propos",               content: "" }
-    case "events":     return { id: newId(), type: "events",     title: "Prochains événements",   limit: 6 }
-    case "actualites": return { id: newId(), type: "actualites", title: "Actualités",             limit: 6 }
-    case "membership": return { id: newId(), type: "membership", title: "Rejoindre l'association", body: "" }
-    case "contact":    return { id: newId(), type: "contact",    title: "Contact" }
+    case "hero":       return { id: newId(), type: "hero",       title: t("site.defaultTitles.hero"),       subtitle: "" }
+    case "about":      return { id: newId(), type: "about",      title: t("site.defaultTitles.about"),      content: "" }
+    case "events":     return { id: newId(), type: "events",     title: t("site.defaultTitles.events"),     limit: 6 }
+    case "actualites": return { id: newId(), type: "actualites", title: t("site.defaultTitles.actualites"), limit: 6 }
+    case "membership": return { id: newId(), type: "membership", title: t("site.defaultTitles.membership"), body: "" }
+    case "contact":    return { id: newId(), type: "contact",    title: t("site.defaultTitles.contact") }
   }
 }
 
 const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "membership", "contact"]
 
 export function SiteEditor({ canEdit }: { canEdit: boolean }) {
+  const t = useTranslations()
   const { data, isLoading } = useSiteConfig()
   const saveMutation = useSaveSiteConfig()
 
@@ -69,7 +73,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
   }
 
   function addSection(type: SectionType) {
-    const section = createSection(type)
+    const section = createSection(type, t)
     updateConfig({ sections: [...(config?.sections ?? []), section] })
     setAddMenuOpen(false)
     setEditingSection(section)
@@ -107,24 +111,24 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
     try {
       await saveMutation.mutateAsync(config)
       setIsDirty(false)
-      toast.success("Site sauvegardé")
+      toast.success(t("site.view.toasts.saved"))
     } catch {
-      toast.error("Erreur lors de la sauvegarde")
+      toast.error(t("site.view.toasts.saveError"))
     }
   }
 
   async function togglePublish() {
     if (isDirty) {
-      toast.warning("Enregistrez vos modifications avant de publier.")
+      toast.warning(t("site.view.toasts.publishFirst"))
       return
     }
     const next = !published
     try {
       await saveMutation.mutateAsync({ published: next })
       setPublished(next)
-      toast.success(next ? "Site publié" : "Site dépublié")
+      toast.success(next ? t("site.view.toasts.published") : t("site.view.toasts.unpublished"))
     } catch {
-      toast.error("Erreur")
+      toast.error(t("common.error"))
     }
   }
 
@@ -146,7 +150,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
         <div className="flex items-center gap-2">
           <Badge variant={published ? "default" : "secondary"} className="gap-1.5">
             {published ? <GlobeIcon className="size-3" /> : <EyeSlashIcon className="size-3" />}
-            {published ? "Publié" : "Non publié"}
+            {published ? t("site.controls.published") : t("site.controls.unpublished")}
           </Badge>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -158,7 +162,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
               className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
               <ArrowSquareOutIcon className="size-3.5" />
-              Voir le site
+              {t("site.editor.viewSite")}
             </a>
           )}
           {canEdit && (
@@ -169,7 +173,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
                 onClick={togglePublish}
                 loading={saveMutation.isPending}
               >
-                {published ? "Dépublier" : "Publier"}
+                {published ? t("site.controls.unpublishButton") : t("site.controls.publishButton")}
               </Button>
               <Button
                 size="sm"
@@ -178,7 +182,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
                 onClick={save}
               >
                 <FloppyDiskIcon className="size-3.5 mr-1.5" />
-                Enregistrer
+                {t("common.save")}
               </Button>
             </>
           )}
@@ -189,7 +193,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
       {canEdit && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/30">
           <div className="space-y-1.5">
-            <Label className="text-xs">Couleur principale</Label>
+            <Label className="text-xs">{t("site.controls.primaryColor")}</Label>
             <div className="flex items-center gap-2">
               <input
                 type="color"
@@ -206,20 +210,20 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">URL du logo (optionnel)</Label>
+            <Label className="text-xs">{t("site.editor.logoUrl")}</Label>
             <Input
               value={config?.logoUrl ?? ""}
               onChange={e => updateConfig({ logoUrl: e.target.value })}
-              placeholder="https://…"
+              placeholder={t("site.controls.linkUrlPlaceholder")}
               className="text-sm h-9"
             />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
-            <Label className="text-xs">Texte du pied de page</Label>
+            <Label className="text-xs">{t("site.editor.footerText")}</Label>
             <Input
               value={config?.footerText ?? ""}
               onChange={e => updateConfig({ footerText: e.target.value })}
-              placeholder={`© ${new Date().getFullYear()} Mon Association`}
+              placeholder={t("site.controls.footerTextPlaceholder", { year: new Date().getFullYear() })}
               className="text-sm h-9"
             />
           </div>
@@ -228,11 +232,11 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
 
       {/* Sections list */}
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sections</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("site.controls.sections")}</p>
 
         {sections.length === 0 && (
           <div className="border border-dashed rounded-lg p-8 text-center text-sm text-muted-foreground">
-            Aucune section. Ajoutez-en une ci-dessous.
+            {t("site.controls.noSections")}
           </div>
         )}
 
@@ -279,7 +283,7 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
         <div className="relative" ref={addMenuRef}>
           <Button variant="outline" size="sm" onClick={() => setAddMenuOpen(v => !v)}>
             <PlusIcon className="size-3.5 mr-1.5" />
-            Ajouter une section
+            {t("site.controls.addSection")}
           </Button>
           {addMenuOpen && (
             <div className="absolute top-full left-0 mt-1 z-20 bg-popover border rounded-lg shadow-md py-1 min-w-48">
@@ -300,9 +304,9 @@ export function SiteEditor({ canEdit }: { canEdit: boolean }) {
       <ConfirmDialog
         open={!!deletingId}
         onOpenChange={open => !open && setDeletingId(null)}
-        title="Supprimer la section"
-        description="Cette action est irréversible."
-        confirmLabel="Supprimer"
+        title={t("site.controls.deleteSectionTitle")}
+        description={t("common.irreversibleAction")}
+        confirmLabel={t("common.delete")}
         onConfirm={() => { if (deletingId) removeSection(deletingId) }}
       />
 

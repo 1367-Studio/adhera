@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { factureSchema, type FactureInput } from "@/lib/schemas"
 import { useFournisseursList } from "@/hooks/use-fournisseurs"
@@ -14,20 +15,6 @@ import { TextareaField } from "@/components/ui/textarea-field"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { useModules } from "@/lib/user-context"
-
-// PAYEE and PARTIELLEMENT_PAYEE aren't manual choices — the backend derives them from
-// amountPaid vs total (resolveManualStatus in facture-status.ts) the same way it derives
-// EN_RETARD, so picking one by hand here would just get silently overridden on save. They're
-// only ever offered once the facture already has a payment recorded (see `statusOptions`
-// below), at which point the field is locked anyway and this list just needs to include the
-// current value so the Select still shows its label.
-const ALL_STATUS_OPTIONS = [
-  { value: "BROUILLON",           label: "Brouillon"          },
-  { value: "EN_ATTENTE",          label: "En attente"         },
-  { value: "PARTIELLEMENT_PAYEE", label: "Partiellement payée" },
-  { value: "PAYEE",               label: "Payée"               },
-  { value: "ANNULEE",             label: "Annulée"             },
-]
 
 const emptyItem = { description: "", quantity: 1, unitPrice: 0, vatRate: 20, discount: 0 }
 
@@ -47,6 +34,22 @@ interface FactureFormProps {
 }
 
 export function FactureForm({ defaultValues, onSubmit, onCancel, loading, lockedFromDevis, amountPaid = 0 }: FactureFormProps) {
+  const t = useTranslations()
+
+  // PAYEE and PARTIELLEMENT_PAYEE aren't manual choices — the backend derives them from
+  // amountPaid vs total (resolveManualStatus in facture-status.ts) the same way it derives
+  // EN_RETARD, so picking one by hand here would just get silently overridden on save. They're
+  // only ever offered once the facture already has a payment recorded (see `statusOptions`
+  // below), at which point the field is locked anyway and this list just needs to include the
+  // current value so the Select still shows its label.
+  const allStatusOptions = [
+    { value: "BROUILLON",           label: t("factures.form.status.brouillon")          },
+    { value: "EN_ATTENTE",          label: t("factures.form.status.enAttente")          },
+    { value: "PARTIELLEMENT_PAYEE", label: t("factures.form.status.partiellementPayee") },
+    { value: "PAYEE",               label: t("factures.form.status.payee")              },
+    { value: "ANNULEE",             label: t("factures.form.status.annulee")            },
+  ]
+
   // Once a payment exists, PAYEE/PARTIELLEMENT_PAYEE are derived and shouldn't be
   // hand-picked — but the backend still allows cancelling a partially/fully paid facture
   // (ANNULEE passes through resolveManualStatus untouched), so the field must stay usable
@@ -54,8 +57,8 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
   const statusLocked = amountPaid > 0
   const lockedStatus = defaultValues?.status
   const statusOptions = statusLocked
-    ? ALL_STATUS_OPTIONS.filter(o => o.value === lockedStatus || o.value === "ANNULEE")
-    : ALL_STATUS_OPTIONS.filter(o => o.value !== "PAYEE" && o.value !== "PARTIELLEMENT_PAYEE")
+    ? allStatusOptions.filter(o => o.value === lockedStatus || o.value === "ANNULEE")
+    : allStatusOptions.filter(o => o.value !== "PAYEE" && o.value !== "PARTIELLEMENT_PAYEE")
 
   const modules = useModules()
   const { data: fournisseurs = [] } = useFournisseursList(defaultValues?.fournisseurId || undefined, modules.fournisseurs)
@@ -95,7 +98,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Fournisseur"
+                label={t("documents.fournisseur")}
                 options={fournisseurOptions}
                 value={field.value ?? ""}
                 onValueChange={field.onChange}
@@ -106,8 +109,8 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
           />
         ) : (
           <div className="space-y-1.5">
-            <p className="text-sm font-medium">Fournisseur</p>
-            <p className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">Module Fournisseurs désactivé</p>
+            <p className="text-sm font-medium">{t("documents.fournisseur")}</p>
+            <p className="rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">{t("documents.fournisseurModuleDisabled")}</p>
           </div>
         )}
         <div className="space-y-1.5">
@@ -116,7 +119,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Statut"
+                label={t("membres.form.fields.status")}
                 required
                 options={statusOptions}
                 value={field.value}
@@ -126,21 +129,21 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
             )}
           />
           {statusLocked && (
-            <p className="text-xs text-muted-foreground">Déterminé par les paiements enregistrés — vous pouvez toutefois annuler la facture.</p>
+            <p className="text-xs text-muted-foreground">{t("factures.form.statusLockedNotice")}</p>
           )}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          label="Date d'émission"
+          label={t("documents.issueDate")}
           type="date"
           required
           error={errors.issueDate?.message}
           {...register("issueDate")}
         />
         <FormField
-          label="Date d'échéance"
+          label={t("factures.form.dueDate")}
           type="date"
           error={errors.dueDate?.message}
           {...register("dueDate")}
@@ -148,15 +151,15 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
       </div>
 
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Articles</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("documents.items")}</p>
         <div className="space-y-3">
           {fields.map((field, index) => (
             <div key={field.id} className="rounded-lg border p-3 space-y-3">
               <div className="flex items-start gap-2">
                 <div className="flex-1">
                   <FormField
-                    label="Description"
-                    placeholder="Description"
+                    label={t("documents.itemDescription")}
+                    placeholder={t("documents.itemDescription")}
                     error={errors.items?.[index]?.description?.message}
                     {...register(`items.${index}.description`)}
                     disabled={lockedFromDevis}
@@ -178,7 +181,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <FormField
-                  label="Qté"
+                  label={t("documents.quantity")}
                   type="number"
                   step="0.01"
                   min="0"
@@ -187,7 +190,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
                   disabled={lockedFromDevis}
                 />
                 <div className="space-y-1.5">
-                  <p className="text-xs font-medium">Prix unitaire</p>
+                  <p className="text-xs font-medium">{t("documents.unitPrice")}</p>
                   <Controller
                     name={`items.${index}.unitPrice`}
                     control={control}
@@ -195,7 +198,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
                   />
                 </div>
                 <FormField
-                  label="TVA %"
+                  label={t("documents.vatRate")}
                   type="number"
                   step="0.01"
                   min="0"
@@ -205,7 +208,7 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
                   disabled={lockedFromDevis}
                 />
                 <div className="space-y-1.5">
-                  <p className="text-xs font-medium">Remise</p>
+                  <p className="text-xs font-medium">{t("documents.discount")}</p>
                   <Controller
                     name={`items.${index}.discount`}
                     control={control}
@@ -220,41 +223,41 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
         {!lockedFromDevis && (
           <Button type="button" variant="outline" size="sm" onClick={() => append(emptyItem)}>
             <PlusIcon className="mr-1.5 size-3.5" />
-            Ajouter un article
+            {t("documents.addItem")}
           </Button>
         )}
       </div>
 
       <div className="rounded-lg border bg-muted/30 p-3 space-y-1 text-sm">
         <div className="flex justify-between text-muted-foreground">
-          <span>Sous-total</span>
+          <span>{t("documents.subtotal")}</span>
           <span className="tabular-nums">{fmt(totals.subtotal)}</span>
         </div>
         <div className="flex justify-between text-muted-foreground">
-          <span>TVA</span>
+          <span>{t("documents.vat")}</span>
           <span className="tabular-nums">{fmt(totals.vatAmount)}</span>
         </div>
         {totals.discountAmount > 0 && (
           <div className="flex justify-between text-muted-foreground">
-            <span>Remise totale</span>
+            <span>{t("documents.totalDiscount")}</span>
             <span className="tabular-nums">−{fmt(totals.discountAmount)}</span>
           </div>
         )}
         <div className="flex justify-between font-semibold pt-1 border-t">
-          <span>Total</span>
+          <span>{t("documents.total")}</span>
           <span className="tabular-nums">{fmt(totals.total)}</span>
         </div>
       </div>
 
       <FormField
-        label="Conditions de paiement"
-        placeholder="ex: Paiement à 30 jours"
+        label={t("documents.paymentTerms")}
+        placeholder={t("documents.paymentTermsPlaceholder")}
         error={errors.paymentTerms?.message}
         {...register("paymentTerms")}
       />
 
       <TextareaField
-        label="Notes"
+        label={t("documents.notes")}
         rows={3}
         error={errors.notes?.message}
         {...register("notes")}
@@ -262,10 +265,10 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
-          Annuler
+          {t("common.cancel")}
         </Button>
         <Button type="submit" loading={loading}>
-          Enregistrer
+          {t("common.save")}
         </Button>
       </div>
     </form>

@@ -5,6 +5,7 @@ import { reconcileActionSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeMatchScore } from "@/lib/finance/match-score"
+import { closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -19,8 +20,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const { bankTransactionId, action, incomeId, expenseId } = parsed.data
 
-  const tx = await prisma.bankTransaction.findFirst({ where: { id: bankTransactionId, associationId } })
+  const tx = await prisma.bankTransaction.findFirst({
+    where:   { id: bankTransactionId, associationId },
+    include: { exercice: { select: { status: true } } },
+  })
   if (!tx) return NextResponse.json({ error: "Transaction introuvable" }, { status: 404 })
+
+  const txGuard = closedExerciceGuard(tx.exercice?.status)
+  if (txGuard) return txGuard
 
   if (action === "IGNORE") {
     await prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "IGNORED" } })
@@ -49,9 +56,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
       if (incomeId) {
         const income = await prisma.income.findFirst({
           where:   { id: incomeId, associationId },
-          include: { membre: { select: { firstName: true, lastName: true } } },
+          include: { membre: { select: { firstName: true, lastName: true } }, exercice: { select: { status: true } } },
         })
         if (!income) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
+
+        const incomeGuard = closedExerciceGuard(income.exercice?.status)
+        if (incomeGuard) return incomeGuard
 
         const matchScore = computeMatchScore(
           { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
@@ -75,8 +85,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_INCOME", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { incomeId } })
       } else if (expenseId) {
-        const expense = await prisma.expense.findFirst({ where: { id: expenseId, associationId } })
+        const expense = await prisma.expense.findFirst({
+          where:   { id: expenseId, associationId },
+          include: { exercice: { select: { status: true } } },
+        })
         if (!expense) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+        const expenseGuard = closedExerciceGuard(expense.exercice?.status)
+        if (expenseGuard) return expenseGuard
 
         const matchScore = computeMatchScore(
           { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
@@ -124,8 +140,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     }
 
     const reconciliation = await prisma.bankReconciliation.findFirst({
-      where: { bankTransactionId, associationId },
+      where:   { bankTransactionId, associationId },
+      include: {
+        income:  { select: { exercice: { select: { status: true } } } },
+        expense: { select: { exercice: { select: { status: true } } } },
+      },
     })
+
+    const linkedGuard = closedExerciceGuard(reconciliation?.income?.exercice?.status ?? reconciliation?.expense?.exercice?.status)
+    if (linkedGuard) return linkedGuard
 
     await prisma.$transaction([
       ...(reconciliation ? [prisma.bankReconciliation.delete({ where: { id: reconciliation.id } })] : []),

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { TextareaField } from "@/components/ui/textarea-field"
@@ -21,6 +22,8 @@ interface Props {
 // is picked (`{emailTarget && <SendEmailModal .../>}`), so a fresh `useState` initializer
 // is enough — no effect needed to resync on reopen, it's a brand new instance every time.
 export function SendEmailModal({ documentLabel, defaultTo, open, onOpenChange, onSend, loading }: Props) {
+  const t = useTranslations("documents")
+  const tCommon = useTranslations("common")
   const [to, setTo]           = useState(defaultTo)
   const [message, setMessage] = useState("")
 
@@ -30,28 +33,28 @@ export function SendEmailModal({ documentLabel, defaultTo, open, onOpenChange, o
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title={`Envoyer ${documentLabel} par e-mail`} size="sm">
+    <Modal open={open} onOpenChange={onOpenChange} title={t("sendByEmailTitle", { label: documentLabel })} size="sm">
       <div className="space-y-4">
         <FormField
-          label="Destinataire"
+          label={t("recipient")}
           type="email"
           required
           value={to}
           onChange={e => setTo(e.target.value)}
         />
         <TextareaField
-          label="Message (optionnel)"
+          label={t("messageOptional")}
           rows={3}
-          placeholder="Un mot pour accompagner l'envoi…"
+          placeholder={t("messagePlaceholder")}
           value={message}
           onChange={e => setMessage(e.target.value)}
         />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-            Annuler
+            {tCommon("cancel")}
           </Button>
           <Button type="button" onClick={handleSend} loading={loading} disabled={!to.trim()}>
-            Envoyer
+            {t("send")}
           </Button>
         </div>
       </div>

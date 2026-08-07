@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -126,8 +126,7 @@ export async function POST(
     label: `${firstName} ${lastName} — ${amount}€`,
   })
 
-  const amountCents    = Math.round(amount * 100)
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const amountCents = Math.round(amount * 100)
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -142,9 +141,8 @@ export async function POST(
       },
     ],
     payment_intent_data: {
-      application_fee_amount: applicationFee,
-      transfer_data:          { destination: assoc.stripeConnectId },
-      metadata:               { donId: don.id, associationId: assoc.id },
+      transfer_data: { destination: assoc.stripeConnectId },
+      metadata:      { donId: don.id, associationId: assoc.id },
     },
     metadata:    { donId: don.id },
     success_url: `${APP_URL}/portal/${slug}/don?payment=success`,

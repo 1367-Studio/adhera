@@ -3,8 +3,21 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
+import { isMembreAdherent, membreAdherentCotisationSelect } from "@/lib/membre-adherent"
+
+const RESPONSABLE_SELECT = {
+  select: {
+    id: true, firstName: true, lastName: true,
+    adherentOverride: true,
+    cotisations: membreAdherentCotisationSelect(),
+  },
+} as const
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Forcing a member's adhérent status is a financial call equivalent to marking a cotisation
+// paid — same role set as /api/association/cotisation-defaults, narrower than MANAGERS so
+// SECRETAIRE can still manage every other membre field but not this one.
+const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -14,20 +27,32 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     include: {
       cotisations:    { orderBy: { year: "desc" }, take: 50 },
       participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
+      // Ordered by the meeting's createdAt (always set), not scheduledAt (null for
+      // "start now" instant meetings) — same reasoning as /api/meetings's own ordering:
+      // sorting by a nullable column puts every instant meeting first regardless of how
+      // old it is, since Postgres sorts NULL first on DESC.
+      meetingsAsParticipant: {
+        include: { meeting: { select: { id: true, title: true, status: true, scheduledAt: true, createdAt: true } } },
+        orderBy: { meeting: { createdAt: "desc" } },
+        take:    50,
+      },
       materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
+      type:           { select: { id: true, name: true, color: true } },
       user:           { select: { role: true } },
+      responsable:    RESPONSABLE_SELECT,
+      dependants:     { select: { id: true, firstName: true, lastName: true } },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
-      _count: { select: { cotisations: true, participations: true, materialLoans: true } },
+      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true } },
     },
   })
 
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-  return NextResponse.json(membre)
+  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  const { associationId, userId } = ctx
+  const { associationId, userId, role: actorRole } = ctx
 
   const existing = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -38,13 +63,39 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+
+  if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
+    return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
+  }
 
   // Any status other than ACTIF flips User.active to false below (line ~81) — blocking only
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
   if (existing.userId === userId && rest.status !== undefined && rest.status !== "ACTIF") {
     return NextResponse.json({ error: "Vous ne pouvez pas désactiver votre propre compte" }, { status: 403 })
   }
+
+  if (responsableId) {
+    if (responsableId === id) {
+      return NextResponse.json({ error: "Un membre ne peut pas être son propre responsable" }, { status: 422 })
+    }
+    // Guards against a stale client (dropdown loaded before the candidate was deleted/
+    // reassigned elsewhere) and against cross-tenant ids — without this, an invalid id
+    // falls through to the FK constraint on save and crashes with a raw 500.
+    const responsableExists = await prisma.membre.findFirst({
+      where:  { id: responsableId, associationId, deletedAt: null },
+      select: { id: true },
+    })
+    if (!responsableExists) {
+      return NextResponse.json({ error: "Membre responsable introuvable" }, { status: 422 })
+    }
+  }
+
+  // Server-side backstop for the client's reactive clear (membre-form.tsx): never persist
+  // "does not have a t-shirt" alongside a size, regardless of what the request body says.
+  const possedeTshirtValue = possedeTshirt === undefined ? undefined : (possedeTshirt === "" ? null : possedeTshirt === "true")
+  const tailleTshirtValue  = possedeTshirtValue === false ? null : (tailleTshirt === undefined ? undefined : (tailleTshirt || null))
+  const adherentOverrideValue = adherentOverride === undefined ? undefined : (adherentOverride === "" ? null : adherentOverride === "true")
 
   const emailChanged = email !== undefined && email !== existing.email
 
@@ -73,12 +124,22 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       where: { id },
       data: {
         ...rest,
-        ...(email     !== undefined ? { email:     email     || null }                                      : {}),
-        ...(phone     !== undefined ? { phone:     phone     || null }                                      : {}),
-        ...(address   !== undefined ? { address:   address   || null }                                      : {}),
-        ...(typeId    !== undefined ? { typeId:    typeId    || null }                                      : {}),
-        ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
+        ...(email         !== undefined ? { email:         email         || null } : {}),
+        ...(phone         !== undefined ? { phone:         phone         || null } : {}),
+        ...(address       !== undefined ? { address:       address       || null } : {}),
+        ...(typeId        !== undefined ? { typeId:        typeId        || null } : {}),
+        ...(civilite      !== undefined ? { civilite:      civilite      || null } : {}),
+        ...(sexe          !== undefined ? { sexe:          sexe          || null } : {}),
+        ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),
+        ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
+        ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
+        ...(possedeTshirtValue !== undefined ? { possedeTshirt: possedeTshirtValue } : {}),
+        ...(tailleTshirtValue  !== undefined ? { tailleTshirt:  tailleTshirtValue  } : {}),
+        ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),
+        ...(birthDate     !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
+        ...(adherentOverrideValue !== undefined ? { adherentOverride: adherentOverrideValue } : {}),
       },
+      include: { cotisations: membreAdherentCotisationSelect(), responsable: RESPONSABLE_SELECT },
     })
 
     if (existing.userId) {
@@ -101,7 +162,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_UPDATED", entity: "Membre", entityId: id, label: `${membre.firstName} ${membre.lastName}`, metadata: { changes } })
   }
 
-  return NextResponse.json(membre)
+  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
 }, { roles: MANAGERS })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -114,7 +175,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
     return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 403 })
   }
 
-  await prisma.$transaction(async (tx) => {
+  const unlinkedDependants = await prisma.$transaction(async (tx) => {
     await tx.membre.update({ where: { id }, data: { deletedAt: new Date() } })
     if (existing.userId) {
       // Scramble the email so it's released for reuse — `@@unique([email, associationId])`
@@ -125,9 +186,18 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
         data:  { active: false, deletedAt: new Date(), email: `deleted+${existing.userId}@deleted.invalid` },
       })
     }
+
+    // onDelete: SetNull on the schema only fires on a hard delete — this is a soft delete
+    // (deletedAt), so without this, any minor whose "responsable" was this member would be
+    // left pointing at an archived, unreachable Membre (dead link on their fiche).
+    const { count } = await tx.membre.updateMany({
+      where: { responsableId: id, associationId },
+      data:  { responsableId: null },
+    })
+    return count
   })
 
   await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_DELETED", entity: "Membre", entityId: id, label: `${existing.firstName} ${existing.lastName}` })
 
-  return new NextResponse(null, { status: 204 })
+  return NextResponse.json({ deletedId: id, unlinkedDependants })
 }, { roles: MANAGERS })

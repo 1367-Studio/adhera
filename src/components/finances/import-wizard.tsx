@@ -3,12 +3,15 @@
 import { useState, useCallback } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import * as XLSX from "xlsx"
-import { UploadSimpleIcon, CaretRightIcon, CheckCircleIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
+import { UploadSimpleIcon, CaretRightIcon, CheckCircleIcon, FileIcon, FilePdfIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useBankAccounts } from "@/hooks/use-bank-accounts"
+import { useModules } from "@/lib/user-context"
+import { MODULE_LABELS } from "@/lib/modules"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 type Step = 1 | 2 | 3 | 4
@@ -33,7 +36,7 @@ type ColumnMapping = {
   balanceColumn: string
 }
 
-type ImportResult = { imported: number; duplicates: number; errors: number; toReconcile: number }
+type ImportResult = { imported: number; duplicates: number; errors: number; blocked: number; toReconcile: number }
 
 function fnv1a(raw: string): string {
   // FNV-1a 32-bit — deterministic, collision-resistant enough for dedup
@@ -157,7 +160,8 @@ function guessMapping(columns: string[]): Partial<ColumnMapping> {
 }
 
 function AutoBadge() {
-  return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">Détecté</span>
+  const t = useTranslations("finances.importWizard")
+  return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">{t("detected")}</span>
 }
 
 function RequiredLabel({ required = true, detected, children }: { required?: boolean; detected?: boolean; children: React.ReactNode }) {
@@ -173,7 +177,7 @@ function RequiredLabel({ required = true, detected, children }: { required?: boo
 type ColOption = { value: string; label: string }
 
 function ColumnField({
-  label, required, detected, value, onChange, options, placeholder = "Sélectionner",
+  label, required, detected, value, onChange, options, placeholder,
 }: {
   label:    string
   required?: boolean
@@ -183,11 +187,12 @@ function ColumnField({
   options:  ColOption[]
   placeholder?: string
 }) {
+  const t = useTranslations("finances.importWizard")
   return (
     <div>
       <RequiredLabel required={required} detected={detected}>{label}</RequiredLabel>
       <Select value={value} onValueChange={v => onChange(v ?? "")}>
-        <SelectTrigger className="mt-1"><SelectValue placeholder={placeholder} /></SelectTrigger>
+        <SelectTrigger className="mt-1"><SelectValue placeholder={placeholder ?? t("select")} /></SelectTrigger>
         <SelectContent>{options.map(o => <SelectItem key={o.value || "__none"} value={o.value || "__none"}>{o.label}</SelectItem>)}</SelectContent>
       </Select>
     </div>
@@ -195,6 +200,7 @@ function ColumnField({
 }
 
 export function ImportWizard() {
+  const t = useTranslations("finances.importWizard")
   const [step, setStep]           = useState<Step>(1)
   const [file, setFile]           = useState<File | null>(null)
   const [rawRows, setRawRows]     = useState<Record<string, unknown>[]>([])
@@ -204,11 +210,18 @@ export function ImportWizard() {
   const [parsedRows, setParsedRows] = useState<ParsedRow[]>([])
   const [importing, setImporting] = useState(false)
   const [result, setResult]       = useState<ImportResult | null>(null)
+  // "pdf" skips column mapping entirely (Step 2 only asks for the bank account) since a
+  // PDF has no tabular columns to map — the AI already returns fully-shaped rows.
+  const [source, setSource]       = useState<"file" | "pdf">("file")
+  const [pdfRows, setPdfRows]     = useState<Omit<ParsedRow, "externalId">[]>([])
+  const [parsingPdf, setParsingPdf] = useState(false)
 
   const { data: accounts = [] } = useBankAccounts()
+  const modules = useModules()
 
   const handleFileSelect = useCallback((f: File) => {
     setFile(f)
+    setSource("file")
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
@@ -230,11 +243,11 @@ export function ImportWizard() {
         setAutoDetected(detected)
         setStep(2)
       } catch {
-        toast.error("Impossible de lire le fichier")
+        toast.error(t("toasts.fileReadError"))
       }
     }
     reader.readAsArrayBuffer(f)
-  }, [])
+  }, [t])
 
   const VALID_EXTENSIONS = [".csv", ".xlsx", ".xls"]
   function isValidFile(f: File): boolean {
@@ -247,10 +260,81 @@ export function ImportWizard() {
     const f = e.dataTransfer.files[0]
     if (!f) return
     if (!isValidFile(f)) {
-      toast.error("Format non supporté. Utilisez un fichier CSV, XLSX ou XLS.")
+      toast.error(t("toasts.unsupportedFormat"))
       return
     }
     handleFileSelect(f)
+  }
+
+  const MAX_PDF_BYTES = 4 * 1024 * 1024 // kept in sync with the server cap in parse-pdf/route.ts
+
+  function isValidPdf(f: File): boolean {
+    return f.name.toLowerCase().endsWith(".pdf") || f.type === "application/pdf"
+  }
+
+  async function handlePdfSelect(f: File) {
+    if (!isValidPdf(f)) {
+      toast.error(t("toasts.notPdf"))
+      return
+    }
+    if (f.size > MAX_PDF_BYTES) {
+      toast.error(t("toasts.pdfTooLarge"))
+      return
+    }
+    setFile(f)
+    setSource("pdf")
+    setParsingPdf(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", f)
+      const res = await fetch("/api/finances/import/parse-pdf", { method: "POST", body: fd })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        toast.error(err.error ?? t("toasts.pdfAnalysisError"))
+        return
+      }
+      const data = await res.json() as { rows: Omit<ParsedRow, "externalId">[]; extracted: number; skipped: number }
+      if (data.skipped > 0) {
+        toast.info(t("toasts.pdfExtracted", { extracted: data.extracted, skipped: data.skipped }))
+      }
+      setPdfRows(data.rows)
+      setStep(2)
+    } catch {
+      toast.error(t("toasts.pdfNetworkError"))
+    } finally {
+      setParsingPdf(false)
+    }
+  }
+
+  function handlePdfDrop(e: React.DragEvent) {
+    e.preventDefault()
+    const f = e.dataTransfer.files[0]
+    if (!f) return
+    handlePdfSelect(f)
+  }
+
+  // Bank account is a genuine per-import decision the PDF text can't reliably answer
+  // (nothing on the statement guarantees which of the association's accounts it is) — this
+  // is where the account choice from the reduced Step 2 turns pdfRows into real ParsedRows,
+  // reusing the exact same dedup-hash logic as the file path below.
+  function confirmPdfAccount() {
+    if (!mapping.bankAccountId) {
+      toast.error(t("toasts.selectAccountRequired"))
+      return
+    }
+    const shapeOccurrences = new Map<string, number>()
+    const rows: ParsedRow[] = pdfRows.map(row => {
+      const shapeKey = `${row.transactionDate}|${row.label}|${row.amount}|${row.type}`
+      const occurrence = shapeOccurrences.get(shapeKey) ?? 0
+      shapeOccurrences.set(shapeKey, occurrence + 1)
+      return { ...row, externalId: makeExternalId(mapping.bankAccountId, row, occurrence) }
+    })
+    // dateColumn/labelColumn only need to be non-empty to satisfy importColumnMappingSchema
+    // on commit (src/app/api/finances/import/route.ts) — that route never reads their value
+    // again beyond validating presence, so these are inert placeholders, not real columns.
+    setMapping(m => ({ ...m, dateColumn: "pdf-ai-extracted", labelColumn: "pdf-ai-extracted", valueMode: "single", amountColumn: "pdf-ai-extracted" }))
+    setParsedRows(rows)
+    setStep(3)
   }
 
   function parseRows(): ParsedRow[] {
@@ -293,20 +377,20 @@ export function ImportWizard() {
 
   function handlePreview() {
     if (!mapping.bankAccountId || !mapping.dateColumn || !mapping.labelColumn) {
-      toast.error("Veuillez sélectionner le compte et les colonnes obligatoires")
+      toast.error(t("toasts.selectAccountAndColumns"))
       return
     }
     if (mapping.valueMode === "single" && !mapping.amountColumn) {
-      toast.error("Veuillez sélectionner la colonne de montant")
+      toast.error(t("toasts.selectAmountColumn"))
       return
     }
     if (mapping.valueMode === "split" && (!mapping.debitColumn || !mapping.creditColumn)) {
-      toast.error("Veuillez sélectionner les colonnes Débit et Crédit")
+      toast.error(t("toasts.selectDebitCredit"))
       return
     }
     const rows = parseRows()
     if (!rows.length) {
-      toast.error("Aucune ligne valide détectée")
+      toast.error(t("toasts.noValidRows"))
       return
     }
     setParsedRows(rows)
@@ -323,13 +407,13 @@ export function ImportWizard() {
       })
       if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error ?? "Erreur d'importation")
+        throw new Error(err.error ?? t("toasts.importError"))
       }
       const data = await res.json() as ImportResult
       setResult(data)
       setStep(4)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("toasts.genericError"))
     } finally {
       setImporting(false)
     }
@@ -339,6 +423,7 @@ export function ImportWizard() {
     setStep(1); setFile(null); setRawRows([]); setColumns([]); setParsedRows([]); setResult(null)
     setMapping({ bankAccountId: "", dateColumn: "", labelColumn: "", valueMode: "single", amountColumn: "", debitColumn: "", creditColumn: "", balanceColumn: "" })
     setAutoDetected(new Set())
+    setSource("file"); setPdfRows([]); setParsingPdf(false)
   }
 
   function updateMapping<K extends keyof ColumnMapping>(key: K, value: ColumnMapping[K]) {
@@ -364,15 +449,15 @@ export function ImportWizard() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title="Importer un relevé bancaire" description="Importez un fichier CSV ou Excel depuis votre banque." />
+      <PageHeader title={t("title")} description={t("description")} />
 
       {/* Steps indicator */}
       <div className="flex items-center gap-1 text-sm">
         {[
-          { n: 1, label: "Upload" },
-          { n: 2, label: "Mapping" },
-          { n: 3, label: "Aperçu" },
-          { n: 4, label: "Résultat" },
+          { n: 1, label: t("steps.upload") },
+          { n: 2, label: source === "pdf" ? t("steps.account") : t("steps.mapping") },
+          { n: 3, label: t("steps.preview") },
+          { n: 4, label: t("steps.result") },
         ].map((s, i) => (
           <div key={s.n} className="flex items-center gap-1">
             {i > 0 && <CaretRightIcon className="size-4 text-muted-foreground" />}
@@ -385,48 +470,123 @@ export function ImportWizard() {
 
       {/* Step 1: Upload */}
       {step === 1 && (
-        <div
-          onDrop={handleDrop}
-          onDragOver={e => e.preventDefault()}
-          className="rounded-xl border-2 border-dashed border-muted-foreground/30 p-12 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
-          onClick={() => document.getElementById("file-input")?.click()}
-        >
-          <input
-            id="file-input"
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f) handleFileSelect(f) }}
-          />
-          <UploadSimpleIcon className="size-10 mx-auto text-muted-foreground mb-3" />
-          <p className="font-medium">Glissez-déposez votre relevé ici</p>
-          <p className="text-sm text-muted-foreground mt-1">CSV ou Excel (.xlsx, .xls) — export depuis votre banque</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div
+            onDrop={handleDrop}
+            onDragOver={e => e.preventDefault()}
+            className="rounded-xl border-2 border-dashed border-muted-foreground/30 p-12 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
+            onClick={() => document.getElementById("file-input")?.click()}
+          >
+            <input
+              id="file-input"
+              type="file"
+              accept=".csv,.xlsx,.xls"
+              className="hidden"
+              onChange={e => { const f = e.target.files?.[0]; if (f) handleFileSelect(f) }}
+            />
+            <UploadSimpleIcon className="size-10 mx-auto text-muted-foreground mb-3" />
+            <p className="font-medium">{t("step1.dropTitle")}</p>
+            <p className="text-sm text-muted-foreground mt-1">{t("step1.dropSubtitle")}</p>
+          </div>
+
+          <div
+            onDrop={modules.ia && !parsingPdf ? handlePdfDrop : undefined}
+            onDragOver={e => e.preventDefault()}
+            className={cn(
+              "rounded-xl border-2 border-dashed p-12 text-center transition-colors",
+              modules.ia
+                ? "border-muted-foreground/30 hover:border-muted-foreground/60 cursor-pointer"
+                : "border-muted-foreground/15 opacity-60 cursor-not-allowed",
+            )}
+            onClick={() => modules.ia && !parsingPdf && document.getElementById("pdf-input")?.click()}
+          >
+            <input
+              id="pdf-input"
+              type="file"
+              accept=".pdf"
+              className="hidden"
+              disabled={!modules.ia}
+              onChange={e => { const f = e.target.files?.[0]; if (f) handlePdfSelect(f) }}
+            />
+            {parsingPdf ? (
+              <CircleNotchIcon className="size-10 mx-auto text-muted-foreground mb-3 animate-spin" />
+            ) : (
+              <FilePdfIcon className="size-10 mx-auto text-muted-foreground mb-3" />
+            )}
+            <p className="font-medium">{parsingPdf ? t("step1.pdfParsing") : t("step1.pdfTitle")}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {modules.ia
+                ? t("step1.pdfSubtitle")
+                : t("step1.pdfModuleRequired", { module: MODULE_LABELS.ia })}
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Step 2: Column mapping */}
-      {step === 2 && (
+      {/* Step 2: Column mapping (file) / account only (PDF) */}
+      {step === 2 && source === "pdf" && (
         <div className="rounded-xl border bg-card p-6 space-y-5">
           <div>
-            <p className="text-sm font-medium mb-1 text-muted-foreground">Fichier sélectionné</p>
-            <div className="flex items-center gap-2 text-sm"><FileIcon className="size-4" />{file?.name} — {rawRows.length} lignes détectées</div>
+            <p className="text-sm font-medium mb-1 text-muted-foreground">{t("step2.fileSelected")}</p>
+            <div className="flex items-center gap-2 text-sm"><FilePdfIcon className="size-4" />{t("step2.rowsExtractedByAi", { file: file?.name ?? "", count: pdfRows.length })}</div>
           </div>
 
           {(accounts as { id: string }[]).length === 0 ? (
             <div className="rounded-lg border border-dashed p-6 text-center">
-              <p className="text-sm text-muted-foreground">Aucun compte bancaire configuré.</p>
+              <p className="text-sm text-muted-foreground">{t("step2.noBankAccount")}</p>
               <Link href="/dashboard/finances/comptes" className="text-sm font-medium underline mt-1 inline-block">
-                Créer un compte bancaire →
+                {t("step2.createBankAccount")}
+              </Link>
+            </div>
+          ) : (
+            <div className="max-w-sm">
+              <RequiredLabel>{t("step2.bankAccount")}</RequiredLabel>
+              <Select value={mapping.bankAccountId} onValueChange={v => setMapping(m => ({ ...m, bankAccountId: v ?? "" }))}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder={t("step2.selectAccount")}>
+                    {selectedAccount ? `${selectedAccount.accountName} — ${selectedAccount.bankName}` : undefined}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {typedAccounts.map(a => (
+                    <SelectItem key={a.id} value={a.id}>{a.accountName} — {a.bankName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="flex justify-between pt-2">
+            <Button variant="outline" onClick={reset}>{t("step2.restart")}</Button>
+            {(accounts as { id: string }[]).length > 0 && (
+              <Button onClick={confirmPdfAccount}>{t("step2.previewResult")}</Button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {step === 2 && source === "file" && (
+        <div className="rounded-xl border bg-card p-6 space-y-5">
+          <div>
+            <p className="text-sm font-medium mb-1 text-muted-foreground">{t("step2.fileSelected")}</p>
+            <div className="flex items-center gap-2 text-sm"><FileIcon className="size-4" />{t("step2.rowsDetected", { file: file?.name ?? "", count: rawRows.length })}</div>
+          </div>
+
+          {(accounts as { id: string }[]).length === 0 ? (
+            <div className="rounded-lg border border-dashed p-6 text-center">
+              <p className="text-sm text-muted-foreground">{t("step2.noBankAccount")}</p>
+              <Link href="/dashboard/finances/comptes" className="text-sm font-medium underline mt-1 inline-block">
+                {t("step2.createBankAccount")}
               </Link>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <RequiredLabel>Compte bancaire</RequiredLabel>
+                  <RequiredLabel>{t("step2.bankAccount")}</RequiredLabel>
                   <Select value={mapping.bankAccountId} onValueChange={v => setMapping(m => ({ ...m, bankAccountId: v ?? "" }))}>
                     <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Sélectionner un compte">
+                      <SelectValue placeholder={t("step2.selectAccount")}>
                         {selectedAccount ? `${selectedAccount.accountName} — ${selectedAccount.bankName}` : undefined}
                       </SelectValue>
                     </SelectTrigger>
@@ -439,7 +599,7 @@ export function ImportWizard() {
                 </div>
 
                 <ColumnField
-                  label="Colonne de date"
+                  label={t("step2.dateColumn")}
                   detected={autoDetected.has("dateColumn")}
                   value={mapping.dateColumn}
                   onChange={v => updateMapping("dateColumn", v)}
@@ -447,7 +607,7 @@ export function ImportWizard() {
                 />
 
                 <ColumnField
-                  label="Colonne de libellé"
+                  label={t("step2.labelColumn")}
                   detected={autoDetected.has("labelColumn")}
                   value={mapping.labelColumn}
                   onChange={v => updateMapping("labelColumn", v)}
@@ -455,23 +615,23 @@ export function ImportWizard() {
                 />
 
                 <div>
-                  <RequiredLabel detected={autoDetected.has("valueMode")}>Format des montants</RequiredLabel>
+                  <RequiredLabel detected={autoDetected.has("valueMode")}>{t("step2.amountFormat")}</RequiredLabel>
                   <Select value={mapping.valueMode} onValueChange={v => updateMapping("valueMode", v as "single" | "split")}>
                     <SelectTrigger className="mt-1">
                       <SelectValue>
-                        {mapping.valueMode === "split" ? "Deux colonnes (Débit / Crédit)" : "Colonne unique (±montant)"}
+                        {mapping.valueMode === "split" ? t("step2.splitColumns") : t("step2.singleColumn")}
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="single">Colonne unique (positif = crédit, négatif = débit)</SelectItem>
-                      <SelectItem value="split">Deux colonnes séparées (Débit / Crédit)</SelectItem>
+                      <SelectItem value="single">{t("step2.singleColumnHint")}</SelectItem>
+                      <SelectItem value="split">{t("step2.splitColumnsHint")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {mapping.valueMode === "single" && (
                   <ColumnField
-                    label="Colonne montant"
+                    label={t("step2.amountColumn")}
                     detected={autoDetected.has("amountColumn")}
                     value={mapping.amountColumn}
                     onChange={v => updateMapping("amountColumn", v)}
@@ -482,14 +642,14 @@ export function ImportWizard() {
                 {mapping.valueMode === "split" && (
                   <>
                     <ColumnField
-                      label="Colonne débit"
+                      label={t("step2.debitColumn")}
                       detected={autoDetected.has("debitColumn")}
                       value={mapping.debitColumn}
                       onChange={v => updateMapping("debitColumn", v)}
                       options={colOptions}
                     />
                     <ColumnField
-                      label="Colonne crédit"
+                      label={t("step2.creditColumn")}
                       detected={autoDetected.has("creditColumn")}
                       value={mapping.creditColumn}
                       onChange={v => updateMapping("creditColumn", v)}
@@ -499,7 +659,7 @@ export function ImportWizard() {
                 )}
 
                 <ColumnField
-                  label="Colonne solde (optionnel)"
+                  label={t("step2.balanceColumn")}
                   required={false}
                   detected={autoDetected.has("balanceColumn")}
                   value={mapping.balanceColumn}
@@ -512,7 +672,7 @@ export function ImportWizard() {
               {/* Preview of first 3 rows */}
               {rawRows.length > 0 && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">Aperçu des premières lignes du fichier</p>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">{t("step2.previewRows")}</p>
                   <div className="overflow-x-auto rounded-lg border text-xs">
                     <table className="w-full">
                       <thead>
@@ -535,9 +695,9 @@ export function ImportWizard() {
           )}
 
           <div className="flex justify-between pt-2">
-            <Button variant="outline" onClick={reset}>Recommencer</Button>
+            <Button variant="outline" onClick={reset}>{t("step2.restart")}</Button>
             {(accounts as { id: string }[]).length > 0 && (
-              <Button onClick={handlePreview}>Aperçu du résultat</Button>
+              <Button onClick={handlePreview}>{t("step2.previewResult")}</Button>
             )}
           </div>
         </div>
@@ -547,19 +707,19 @@ export function ImportWizard() {
       {step === 3 && (
         <div className="space-y-4">
           <div className="rounded-xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Résultat du parsing</h3>
+            <h3 className="font-semibold mb-3">{t("step3.parsingResult")}</h3>
             <div className="grid grid-cols-3 gap-4 text-center mb-4">
               <div className="rounded-lg bg-muted/30 p-3">
                 <p className="text-2xl font-bold">{parsedRows.length}</p>
-                <p className="text-xs text-muted-foreground">Lignes valides</p>
+                <p className="text-xs text-muted-foreground">{t("step3.validRows")}</p>
               </div>
               <div className="rounded-lg bg-green-50 dark:bg-green-950/30 p-3">
                 <p className="text-2xl font-bold text-green-600 dark:text-green-400">{credits}</p>
-                <p className="text-xs text-muted-foreground">Crédits</p>
+                <p className="text-xs text-muted-foreground">{t("step3.credits")}</p>
               </div>
               <div className="rounded-lg bg-red-50 dark:bg-red-950/30 p-3">
                 <p className="text-2xl font-bold text-destructive">{debits}</p>
-                <p className="text-xs text-muted-foreground">Débits</p>
+                <p className="text-xs text-muted-foreground">{t("step3.debits")}</p>
               </div>
             </div>
 
@@ -567,10 +727,10 @@ export function ImportWizard() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-muted/30">
-                    <th className="px-3 py-2 text-left">Date</th>
-                    <th className="px-3 py-2 text-left">Libellé</th>
-                    <th className="px-3 py-2 text-right">Montant</th>
-                    <th className="px-3 py-2 text-center">Type</th>
+                    <th className="px-3 py-2 text-left">{t("step3.date")}</th>
+                    <th className="px-3 py-2 text-left">{t("step3.label")}</th>
+                    <th className="px-3 py-2 text-right">{t("step3.amount")}</th>
+                    <th className="px-3 py-2 text-center">{t("step3.type")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -583,7 +743,7 @@ export function ImportWizard() {
                       </td>
                       <td className="px-3 py-2 text-center">
                         <span className={`rounded px-1.5 py-0.5 text-xs font-medium ${row.type === "CREDIT" ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300" : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"}`}>
-                          {row.type === "CREDIT" ? "Crédit" : "Débit"}
+                          {row.type === "CREDIT" ? t("step3.credit") : t("step3.debit")}
                         </span>
                       </td>
                     </tr>
@@ -591,12 +751,12 @@ export function ImportWizard() {
                 </tbody>
               </table>
             </div>
-            {parsedRows.length > 8 && <p className="text-xs text-muted-foreground mt-2 text-center">… et {parsedRows.length - 8} ligne(s) supplémentaire(s)</p>}
+            {parsedRows.length > 8 && <p className="text-xs text-muted-foreground mt-2 text-center">{t("step3.moreRows", { count: parsedRows.length - 8 })}</p>}
           </div>
 
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep(2)}>Retour</Button>
-            <Button onClick={handleImport} loading={importing}>Importer {parsedRows.length} transaction(s)</Button>
+            <Button variant="outline" onClick={() => setStep(2)}>{t("step3.back")}</Button>
+            <Button onClick={handleImport} loading={importing}>{t("step3.importAction", { count: parsedRows.length })}</Button>
           </div>
         </div>
       )}
@@ -605,30 +765,41 @@ export function ImportWizard() {
       {step === 4 && result && (
         <div className="rounded-xl border bg-card p-8 text-center space-y-4">
           <CheckCircleIcon className="size-12 mx-auto text-green-600 dark:text-green-400" />
-          <h3 className="text-xl font-bold">Importation réussie</h3>
+          <h3 className="text-xl font-bold">{t("step4.success")}</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg mx-auto">
             <div>
               <p className="text-3xl font-bold">{result.imported}</p>
-              <p className="text-xs text-muted-foreground">Importées</p>
+              <p className="text-xs text-muted-foreground">{t("step4.imported")}</p>
             </div>
             <div>
               <p className="text-3xl font-bold text-muted-foreground">{result.duplicates}</p>
-              <p className="text-xs text-muted-foreground">Doublons ignorés</p>
+              <p className="text-xs text-muted-foreground">{t("step4.duplicates")}</p>
             </div>
             {result.errors > 0 && (
               <div>
                 <p className="text-3xl font-bold text-destructive">{result.errors}</p>
-                <p className="text-xs text-muted-foreground">Erreurs</p>
+                <p className="text-xs text-muted-foreground">{t("step4.errors")}</p>
+              </div>
+            )}
+            {result.blocked > 0 && (
+              <div>
+                <p className="text-3xl font-bold text-amber-600">{result.blocked}</p>
+                <p className="text-xs text-muted-foreground">{t("step4.blocked")}</p>
               </div>
             )}
             <div>
               <p className="text-3xl font-bold text-orange-600">{result.toReconcile}</p>
-              <p className="text-xs text-muted-foreground">À concilier</p>
+              <p className="text-xs text-muted-foreground">{t("step4.toReconcile")}</p>
             </div>
           </div>
+          {result.blocked > 0 && (
+            <p className="text-sm text-amber-700 dark:text-amber-400 max-w-md mx-auto">
+              {t("step4.blockedExplanation", { count: result.blocked })}
+            </p>
+          )}
           <div className="flex justify-center gap-3 pt-2">
-            <Button variant="outline" onClick={reset}>Importer un autre fichier</Button>
-            <Button onClick={() => window.location.href = `${BASE_PATH}/dashboard/finances/conciliation`}>Aller à la conciliation</Button>
+            <Button variant="outline" onClick={reset}>{t("step4.importAnother")}</Button>
+            <Button onClick={() => window.location.href = `${BASE_PATH}/dashboard/finances/conciliation`}>{t("step4.goToReconciliation")}</Button>
           </div>
         </div>
       )}

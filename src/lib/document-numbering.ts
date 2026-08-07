@@ -16,14 +16,12 @@ import { prisma } from "@/lib/prisma/client"
 // dropping the cast made "...-9999" (no literal "10" inside it) resolve to NULL and
 // "...-10000" (which contains "10") resolve to 10 instead of 10000.
 async function nextNumber(
-  prefix: string,
-  table: "Devis" | "Facture" | "BoutiqueCommande",
-  column: "number" | "receiptNumber",
+  yearPrefix: string,
+  table: "Devis" | "Facture" | "BoutiqueCommande" | "Cotisation",
+  column: "number" | "receiptNumber" | "declarationNumber",
   associationId: string,
 ): Promise<string> {
-  const year       = new Date().getFullYear()
-  const yearPrefix = `${prefix}-${year}-`
-  const col        = Prisma.raw(`"${column}"`)
+  const col = Prisma.raw(`"${column}"`)
 
   const rows = await prisma.$queryRaw<{ value: string }[]>(Prisma.sql`
     SELECT ${col} AS value FROM ${Prisma.raw(`"${table}"`)}
@@ -42,13 +40,21 @@ async function nextNumber(
 }
 
 export function nextDevisNumber(associationId: string): Promise<string> {
-  return nextNumber("DEV", "Devis", "number", associationId)
+  const year = new Date().getFullYear()
+  return nextNumber(`DEV-${year}-`, "Devis", "number", associationId)
 }
 
 export function nextFactureNumber(associationId: string): Promise<string> {
-  return nextNumber("FAC", "Facture", "number", associationId)
+  const year = new Date().getFullYear()
+  return nextNumber(`FAC-${year}-`, "Facture", "number", associationId)
 }
 
 export function nextBoutiqueReceiptNumber(associationId: string): Promise<string> {
-  return nextNumber("REC", "BoutiqueCommande", "receiptNumber", associationId)
+  const year = new Date().getFullYear()
+  return nextNumber(`REC-${year}-`, "BoutiqueCommande", "receiptNumber", associationId)
+}
+
+export function nextCotisationDeclarationNumber(associationId: string): Promise<string> {
+  const year = new Date().getFullYear()
+  return nextNumber(`${year}-`, "Cotisation", "declarationNumber", associationId)
 }

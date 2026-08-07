@@ -127,6 +127,9 @@ export function invitationEmail(p: {
   role:            string
   loginUrl:        string
   branding?:       EmailBranding
+  // Set when a default cotisation was auto-created for this member — same reasoning as
+  // portalWelcomeEmail's cotisation note.
+  cotisation?: { amount: number; year: number }
 }) {
   const isStaff   = p.role !== "MEMBRE"
   const roleLabel: Record<string, string> = {
@@ -141,9 +144,15 @@ export function invitationEmail(p: {
     ? `Vous avez été invité(e) en tant que <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à l'espace de gestion de l'association.`
     : `Vous avez été invité(e) comme <strong>${label}</strong> de <strong>${p.associationName}</strong>. Vous pouvez accéder à votre espace membre pour consulter les événements, actualités et gérer votre adhésion.`
 
+  const cotisationNote = p.cotisation ? `
+    <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
+      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
+    </p>` : ""
+
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
+    ${cotisationNote}
     ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl, p.branding?.primaryColor || undefined)}
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f4f4f5;border-radius:8px;padding:16px 20px;width:100%;">
       <tr>
@@ -173,6 +182,9 @@ export function rsvpConfirmationEmail(p: {
   eventDate:       Date
   eventLocation:   string | null
   portalUrl:       string
+  // Only set for public/guest registrations (no portal account to cancel from) — see
+  // src/app/api/public/cancel-ticket/[token]/route.ts.
+  cancelUrl?:      string
   branding?:       EmailBranding
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -196,7 +208,8 @@ export function rsvpConfirmationEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler ma participation</a>.</p>` : ""}`
   return {
     to:      p.email,
     subject: `Confirmation — ${p.eventTitle}`,
@@ -437,7 +450,14 @@ export function portalWelcomeEmail(p: {
   associationName: string
   loginUrl:        string
   branding?:       EmailBranding
+  // Set when a default cotisation was auto-created for this member — surfaces it here
+  // since it otherwise sits silently on their Cotisation tab until they think to check it.
+  cotisation?: { amount: number; year: number }
 }) {
+  const cotisationNote = p.cotisation ? `
+    <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3f3f46;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
+      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
+    </p>` : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -454,6 +474,7 @@ export function portalWelcomeEmail(p: {
         <span style="font-size:18px;font-weight:700;letter-spacing:2px;font-family:monospace;">${p.password}</span>
       </td></tr>
     </table>
+    ${cotisationNote}
     ${btn("Accéder à mon espace membre", p.loginUrl, p.branding?.primaryColor || undefined)}
     <p style="margin:0;font-size:13px;color:#71717a;">
       Nous vous recommandons de modifier votre mot de passe après la première connexion.
@@ -490,6 +511,9 @@ export function ticketPurchaseEmail(p: {
   quantity:        number
   paidAt:          Date
   portalUrl:       string
+  // Only set for public/guest tickets (no portal account to cancel from) — see
+  // src/app/api/public/cancel-ticket/[token]/route.ts.
+  cancelUrl?:      string
   branding?:       EmailBranding
 }) {
   const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -524,10 +548,34 @@ export function ticketPurchaseEmail(p: {
       </td></tr>
     </table>
     <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
-    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler et être remboursé</a>.</p>` : ""}`
   return {
     to:      p.email,
     subject: `Billet confirmé — ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+export function cancellationConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  refunded:        boolean
+  amount?:         number
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount != null ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Inscription annulée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » a bien été annulée.
+    </p>
+    ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
+  return {
+    to:      p.email,
+    subject: `Annulation confirmée — ${p.eventTitle}`,
     html:    layout(p.associationName, content, p.branding),
   }
 }
@@ -695,6 +743,68 @@ export function boutiqueNewOrderAdminEmail(p: {
   return {
     to:      p.email,
     subject: `Nouvelle vente boutique — ${totalStr}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// Sent to SUPPORT_TEAM_EMAIL whenever an association creates or replies to a support ticket
+// (see src/lib/support-tickets.ts). Branded as the platform (APP_NAME), not the association —
+// this is an internal ops notification, not something sent on the association's behalf.
+// subject/body/authorName/associationName are all admin-typed free text, escaped before
+// interpolation (unlike some older templates in this file — see boutiqueNewOrderAdminEmail —
+// this one takes no chances with it).
+export function supportTicketStaffEmail(p: {
+  to:              string
+  associationName: string
+  authorName:      string
+  subject:         string
+  body:            string
+  ticketUrl:       string
+  // Whether this message opened the ticket vs. was added to an existing one — the subject
+  // line stays identical either way (deliberately, so a client threads them together), but
+  // the body copy needs to say which one this is or "reply" reads as "brand-new" at a glance.
+  isNewTicket:     boolean
+}) {
+  const heading = p.isNewTicket ? "Nouvelle demande support" : "Nouvelle réponse sur une demande support"
+  const intro   = p.isNewTicket
+    ? `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a ouvert une nouvelle demande — objet : <strong>${escapeHtml(p.subject)}</strong>`
+    : `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a répondu sur la demande <strong>${escapeHtml(p.subject)}</strong> :`
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">${intro}</p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
+      <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
+    </table>
+    ${btn("Répondre", p.ticketUrl)}`
+  return {
+    to:      p.to,
+    subject: `[Support] ${p.associationName} — ${p.subject}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// Sent to the ticket's author when the platform team replies (src/lib/support-tickets.ts).
+// Same "platform-branded, not association-branded" reasoning as supportTicketStaffEmail — the
+// reply is from Adhera's own team, not from the association itself.
+export function supportTicketReplyEmail(p: {
+  to:           string
+  name:         string
+  subject:      string
+  body:         string
+  dashboardUrl: string
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle réponse à votre demande</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${escapeHtml(p.name)}, l'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
+    </p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
+      <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
+    </table>
+    ${btn("Voir la conversation", p.dashboardUrl)}`
+  return {
+    to:      p.to,
+    subject: `Réponse à votre demande — ${p.subject}`,
     html:    layout(APP_NAME, content),
   }
 }

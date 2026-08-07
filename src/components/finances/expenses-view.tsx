@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon, WarningIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
+import { useExercices } from "@/hooks/use-exercices"
 import type { ExpenseInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -18,39 +20,121 @@ import { FilterSelect } from "@/components/ui/filter-select"
 import { ExpenseForm } from "@/components/finances/expense-form"
 
 type Expense = {
-  id:          string
-  amount:      string
-  date:        string
-  description: string | null
-  vendor:      string | null
-  status:      "DRAFT" | "VALIDATED" | "CANCELLED"
-  receiptUrl:  string | null
-  internalNote: string | null
-  category:    { name: string } | null
-  reconciliations: { id: string }[]
+  id:              string
+  amount:          string
+  date:            string
+  description:     string | null
+  vendor:          string | null
+  status:          "DRAFT" | "VALIDATED" | "CANCELLED"
+  receiptUrl:      string | null
+  internalNote:    string | null
+  paymentMethod:   string | null
+  factureRecueId:  string | null
+  exerciceId:      string | null
+  category:        { name: string } | null
+  reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
-const statusConfig = {
-  DRAFT:     { label: "Brouillon", variant: "secondary" as const },
-  VALIDATED: { label: "Validée",   variant: "default"   as const },
-  CANCELLED: { label: "Annulée",   variant: "destructive" as const },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusConfig(t: Translator) {
+  return {
+    DRAFT:     { label: t("finances.expenseForm.status.draft"),     variant: "secondary" as const },
+    VALIDATED: { label: t("finances.expenseForm.status.validated"), variant: "default"   as const },
+    CANCELLED: { label: t("finances.expenseForm.status.cancelled"), variant: "destructive" as const },
+  }
+}
+
+// Lets the receipt be attached straight from the table row, no need to open the edit
+// modal — just stores the uploaded file's URL, no parsing/extraction of its contents
+// (that's a deliberately separate concern from the PDF-statement-import feature).
+//
+// `editModalOpen` disables this while the same row's edit modal is open: that modal
+// snapshots the row's receiptUrl into its own form state when it opens and always resends
+// it on save (see ExpenseForm's submit), so an inline upload landing in the background
+// while the modal is still open would get silently overwritten back to empty the moment
+// the modal is saved. Simplest fix is just not offering two write paths for the same row
+// at once — upload from the modal's own field instead while it's open.
+function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOpen: boolean }) {
+  const t = useTranslations()
+  const updateMutation = useUpdateExpense(expense.id)
+  const [uploading, setUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function handleFile(file: File) {
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error(t("documentUpload.fileTooLarge"))
+      return
+    }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      fd.append("prefix", "receipts")
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        toast.error(body.error ?? t("documentUpload.uploadError"))
+        return
+      }
+      const { url } = await res.json()
+      await updateMutation.mutateAsync({ receiptUrl: url })
+      toast.success(t("finances.expensesView.receiptAttached"))
+    } catch {
+      toast.error(t("documentUpload.networkError"))
+    } finally {
+      setUploading(false)
+      if (inputRef.current) inputRef.current.value = ""
+    }
+  }
+
+  if (expense.receiptUrl) {
+    return (
+      <a href={expense.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline">
+        <PaperclipIcon className="size-3" />{t("finances.expensesView.viewReceipt")}
+      </a>
+    )
+  }
+
+  if (editModalOpen) {
+    return <span className="text-xs text-muted-foreground">—</span>
+  }
+
+  return (
+    <label className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
+      <input
+        ref={inputRef}
+        type="file"
+        disabled={uploading}
+        accept="image/jpeg,image/png,image/webp,application/pdf"
+        className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f) }}
+      />
+      {uploading
+        ? <CircleNotchIcon className="size-3 animate-spin" />
+        : <UploadSimpleIcon className="size-3" />
+      }
+      {uploading ? t("finances.expensesView.uploadingReceipt") : t("finances.expensesView.attachReceipt")}
+    </label>
+  )
 }
 
 export function ExpensesView() {
-  const [page, setPage]                 = useState(1)
-  const [yearFilter, setYearFilter]     = useState(String(currentYear))
-  const [statusFilter, setStatusFilter] = useState("")
-  const [createOpen, setCreateOpen]     = useState(false)
-  const [editTarget, setEditTarget]     = useState<Expense | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null)
+  const t = useTranslations()
+  const [page, setPage]                     = useState(1)
+  const [statusFilter, setStatusFilter]     = useState("")
+  const [createOpen, setCreateOpen]         = useState(false)
+  const [editTarget, setEditTarget]         = useState<Expense | null>(null)
+  const [deleteTarget, setDeleteTarget]     = useState<Expense | null>(null)
+  const [exerciceFilter, setExerciceFilter] = useState("")
+
+  const { data: exercices = [] } = useExercices()
 
   const filters = {
-    ...(statusFilter ? { status: statusFilter } : {}),
-    ...(yearFilter ? { dateFrom: `${yearFilter}-01-01`, dateTo: `${yearFilter}-12-31` } : {}),
+    ...(statusFilter   ? { status: statusFilter }      : {}),
+    ...(exerciceFilter ? { exerciceId: exerciceFilter } : {}),
   }
 
   const { data: result, isLoading } = useExpenses(page, PAGE_SIZE, filters)
@@ -63,20 +147,20 @@ export function ExpensesView() {
   async function handleCreate(data: ExpenseInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Dépense enregistrée")
+      toast.success(t("finances.expensesView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: ExpenseInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Dépense mise à jour")
+      toast.success(t("finances.expensesView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -84,53 +168,74 @@ export function ExpensesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Dépense supprimée")
+      toast.success(t("finances.expensesView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const fmt = (n: string | number) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusConfig = getStatusConfig(t)
 
   const columns: Column<Expense>[] = [
     {
       key: "date",
-      header: "Date",
+      header: t("finances.expensesView.columns.date"),
       className: "w-28",
       cell: (e) => format(new Date(e.date), "dd/MM/yyyy", { locale: fr }),
     },
     {
       key: "description",
-      header: "Description",
+      header: t("finances.expensesView.columns.description"),
       cell: (e) => (
         <div>
           <p className="font-medium">{e.description || e.vendor || "—"}</p>
           <div className="flex items-center gap-2 mt-0.5">
             {e.vendor && e.description && <span className="text-xs text-muted-foreground">{e.vendor}</span>}
             {e.category && <span className="text-xs text-muted-foreground">{e.category.name}</span>}
-            {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
+            {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· {t("finances.expensesView.reconciled")}</span>}
+            {e.factureRecueId && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.expensesView.fromReceivedInvoiceTooltip")}>
+                <ReceiptIcon className="size-3" /> {t("finances.expensesView.fromReceivedInvoiceBadge")}
+              </span>
+            )}
+            {!e.exerciceId && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.expensesView.noExerciceTooltip")}>
+                <WarningIcon className="size-3" /> {t("finances.expensesView.noExerciceBadge")}
+              </span>
+            )}
           </div>
         </div>
       ),
     },
     {
-      key: "receipt",
-      header: "Justificatif",
-      className: "w-28",
-      cell: (e) => e.receiptUrl
-        ? <a href={e.receiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-blue-600 hover:underline"><PaperclipIcon className="size-3" />Voir</a>
-        : <span className="text-xs text-muted-foreground">—</span>,
+      key: "compte",
+      header: t("finances.expensesView.columns.compte"),
+      className: "w-36",
+      cell: (e) => e.reconciliations[0]?.bankTransaction.bankAccount.accountName ?? "—",
+    },
+    {
+      key: "paymentMethod",
+      header: t("finances.expensesView.columns.paymentMethod"),
+      className: "w-36",
+      cell: (e) => e.paymentMethod ?? "—",
     },
     {
       key: "amount",
-      header: "Montant",
+      header: t("finances.expensesView.columns.amount"),
       className: "w-28 text-right",
       cell: (e) => <span className="font-semibold tabular-nums text-destructive">−{fmt(e.amount)}</span>,
     },
     {
+      key: "receipt",
+      header: t("finances.expensesView.columns.receipt"),
+      className: "w-28",
+      cell: (e) => <ReceiptCell expense={e} editModalOpen={editTarget?.id === e.id} />,
+    },
+    {
       key: "status",
-      header: "Statut",
+      header: t("finances.expensesView.columns.status"),
       className: "w-28",
       cell: (e) => {
         const cfg = statusConfig[e.status]
@@ -143,8 +248,13 @@ export function ExpensesView() {
       className: "w-10",
       cell: (e) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
+          { label: t("finances.expensesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
+          {
+            label: t("finances.expensesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            onClick: () => e.factureRecueId
+              ? toast.error(t("finances.expensesView.deleteFromInvoiceError"))
+              : setDeleteTarget(e),
+          },
         ]} />
       ),
     },
@@ -153,34 +263,37 @@ export function ExpensesView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Dépenses"
-        description="Toutes les sorties d'argent de l'association."
+        title={t("finances.expensesView.title")}
+        description={t("finances.expensesView.description")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
 
       <div className="flex flex-wrap gap-2">
         <FilterSelect
-          value={yearFilter}
-          onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
-          placeholder="Toutes années"
-          width="w-32"
+          value={exerciceFilter}
+          onValueChange={v => { setExerciceFilter(v); setPage(1) }}
+          options={[
+            ...exercices.map(ex => ({ value: ex.id, label: ex.label })),
+            { value: "none", label: t("finances.expensesView.noExercice") },
+          ]}
+          placeholder={t("finances.expensesView.allExercices")}
+          width="w-40"
         />
 
         <FilterSelect
           value={statusFilter}
           onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "DRAFT",     label: "Brouillon" },
-            { value: "VALIDATED", label: "Validée" },
-            { value: "CANCELLED", label: "Annulée" },
+            { value: "DRAFT",     label: t("finances.expenseForm.status.draft")     },
+            { value: "VALIDATED", label: t("finances.expenseForm.status.validated") },
+            { value: "CANCELLED", label: t("finances.expenseForm.status.cancelled") },
           ]}
-          placeholder="Tous statuts"
+          placeholder={t("finances.expensesView.allStatuses")}
         />
       </div>
 
@@ -189,37 +302,39 @@ export function ExpensesView() {
         data={expenses}
         loading={isLoading}
         keyExtractor={(e) => e.id}
-        empty="Aucune dépense enregistrée"
+        empty={t("finances.expensesView.noExpense")}
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle dépense" size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.expensesView.newTitle")} size="md" dismissable={false}>
         <ExpenseForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier la dépense" size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.expensesView.editTitle")} size="md" dismissable={false}>
         <ExpenseForm
           defaultValues={editTarget ? {
-            amount:       parseFloat(editTarget.amount),
-            date:         editTarget.date.split("T")[0],
-            description:  editTarget.description  ?? "",
-            vendor:       editTarget.vendor        ?? "",
-            status:       editTarget.status,
-            receiptUrl:   editTarget.receiptUrl    ?? "",
-            internalNote: editTarget.internalNote  ?? "",
+            amount:        parseFloat(editTarget.amount),
+            date:          editTarget.date.split("T")[0],
+            description:   editTarget.description   ?? "",
+            vendor:        editTarget.vendor         ?? "",
+            status:        editTarget.status,
+            receiptUrl:    editTarget.receiptUrl     ?? "",
+            internalNote:  editTarget.internalNote   ?? "",
+            paymentMethod: editTarget.paymentMethod  ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          locked={!!editTarget?.factureRecueId}
         />
       </Modal>
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer cette dépense ?"
+        title={t("finances.expensesView.deleteConfirmTitle")}
         description={deleteTarget?.description ?? deleteTarget?.vendor ?? ""}
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

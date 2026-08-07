@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { SquaresFourIcon, BuildingsIcon, SignOutIcon } from "@phosphor-icons/react/dist/ssr";
+import { useTranslations } from "next-intl"
+import { SquaresFourIcon, BuildingsIcon, SignOutIcon, LifebuoyIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -13,10 +14,14 @@ import { signOut } from "next-auth/react"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { useBackofficeSupportTickets } from "@/hooks/use-backoffice-support-tickets"
+import { useSupportStaffTicketListener } from "@/hooks/use-support-ticket-listener"
+import { useQueryClient } from "@tanstack/react-query"
 
 const navItems = [
-  { name: "Vue d'ensemble", href: "/backoffice",              icon: SquaresFourIcon },
-  { name: "Associations",   href: "/backoffice/associations", icon: BuildingsIcon        },
+  { key: "overview",     href: "/backoffice",              icon: SquaresFourIcon },
+  { key: "associations", href: "/backoffice/associations", icon: BuildingsIcon  },
+  { key: "support",      href: "/backoffice/support",      icon: LifebuoyIcon   },
 ]
 
 function isActive(href: string, pathname: string) {
@@ -25,8 +30,17 @@ function isActive(href: string, pathname: string) {
 }
 
 export function BackofficeSidebar() {
-  const pathname = usePathname()
+  const t         = useTranslations("layout.backofficeSidebar")
+  const pathname  = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
+  const qc = useQueryClient()
+
+  // Rendered on every backoffice page (this sidebar is part of the shared layout), so the
+  // unread badge stays current without any page needing to think about it — mirrors how
+  // NotificationBell (src/components/layout/notification-bell.tsx) is always mounted too.
+  const { data: tickets = [] } = useBackofficeSupportTickets()
+  const unreadCount = tickets.filter(ticket => ticket.unread).length
+  useSupportStaffTicketListener(() => { qc.invalidateQueries({ queryKey: ["backoffice", "support-tickets"] }) })
 
   return (
     <Sidebar collapsible="icon" variant="inset">
@@ -37,7 +51,7 @@ export function BackofficeSidebar() {
               <LogoMark />
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
-                <span className="text-xs text-muted-foreground">Backoffice</span>
+                <span className="text-xs text-muted-foreground">{t("backoffice")}</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -53,11 +67,16 @@ export function BackofficeSidebar() {
                   <SidebarMenuButton
                     render={<Link href={item.href} />}
                     isActive={isActive(item.href, pathname)}
-                    tooltip={item.name}
+                    tooltip={t(item.key)}
                     onClick={() => { if (isMobile) setOpenMobile(false) }}
                   >
                     <item.icon />
-                    <span>{item.name}</span>
+                    <span>{t(item.key)}</span>
+                    {item.key === "support" && unreadCount > 0 && (
+                      <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -69,9 +88,9 @@ export function BackofficeSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Se déconnecter" onClick={() => signOut({ callbackUrl: `${BASE_PATH}/login` })}>
+            <SidebarMenuButton tooltip={t("signOut")} onClick={() => signOut({ callbackUrl: `${BASE_PATH}/login` })}>
               <SignOutIcon />
-              <span>Se déconnecter</span>
+              <span>{t("signOut")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

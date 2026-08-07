@@ -24,6 +24,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     throw err
   }
 
+  // Mirrors the portal token route: whoever starts the room first (admin or member) flips
+  // it live, otherwise an admin-started meeting stayed "Planifiée" in the DB forever since
+  // only the portal route used to do this. Done only after the LiveKit config succeeds —
+  // flipping it earlier would mark the meeting LIVE even on a failed join (e.g. LiveKit
+  // misconfigured), leaving it stuck live with no one actually in the room.
+  if (meeting.status === "SCHEDULED") {
+    await prisma.meeting.update({ where: { id: meetingId }, data: { status: "LIVE", startedAt: new Date() } })
+  }
+
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } })
   const identity = userId
   const name = user?.name ?? user?.email ?? identity

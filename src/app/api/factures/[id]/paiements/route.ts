@@ -3,6 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { facturePaymentSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -14,10 +15,19 @@ class OverpaymentError extends Error {
   constructor(public remaining: number) { super("overpayment") }
 }
 
+function incomeDescription(existing: { number: string; materialLoan: { material: { name: string } } | null; fournisseur: { companyName: string } | null }): string {
+  if (existing.materialLoan) return `Prêt matériel — ${existing.materialLoan.material.name} (Facture ${existing.number})`
+  if (existing.fournisseur)  return `Facture ${existing.number} — ${existing.fournisseur.companyName}`
+  return `Facture ${existing.number}`
+}
+
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.facture.findFirst({ where: { id, associationId, deletedAt: null } })
+  const existing = await prisma.facture.findFirst({
+    where:   { id, associationId, deletedAt: null },
+    include: { materialLoan: { include: { material: true } }, fournisseur: { select: { companyName: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Facture introuvable" }, { status: 404 })
   if (existing.status === "ANNULEE") {
     return NextResponse.json({ error: "Cette facture est annulée" }, { status: 409 })
@@ -33,6 +43,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const { amount, method, paidAt, note } = parsed.data
+  const paymentDate = paidAt ? new Date(paidAt) : new Date()
+
+  const exercice = await resolveExerciceForDate(associationId, paymentDate)
+  const guard = closedExerciceGuard(exercice?.status)
+  if (guard) return guard
 
   try {
     // amountPaid is updated via an atomic `increment` inside the transaction (not read-then-
@@ -43,12 +58,12 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // two concurrent payments would together exceed the total, since Postgres serializes the
     // two increments and whichever one pushes amountPaid past the total gets rolled back here.
     const facture = await prisma.$transaction(async (tx) => {
-      await tx.facturePayment.create({
+      const payment = await tx.facturePayment.create({
         data: {
           factureId: id,
           amount,
           method,
-          paidAt: paidAt ? new Date(paidAt) : new Date(),
+          paidAt: paymentDate,
           note:   note || null,
         },
       })
@@ -64,6 +79,26 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         throw new OverpaymentError(Math.max(0, total - (amountPaid - amount)))
       }
       const newStatus = amountPaid >= total - EPSILON ? "PAYEE" : amountPaid > 0 ? "PARTIELLEMENT_PAYEE" : updated.status
+
+      // Every Facture payment (devis-billed, fournisseur-billed, or material-loan-billed)
+      // feeds Income the same way. facturePaymentId is the reversible link that DELETE
+      // .../paiements/[paymentId] uses to remove this row again if the payment is deleted.
+      await tx.income.create({
+        data: {
+          associationId,
+          exerciceId:        exercice?.id ?? null,
+          memberId:          existing.materialLoan?.membreId ?? null,
+          facturePaymentId:  payment.id,
+          amount,
+          categoryId:    existing.materialLoan?.material.categoryId ?? null,
+          paymentMethod: method,
+          date:          paymentDate,
+          description:   incomeDescription(existing),
+          source:        "MANUAL",
+          status:        "PAID",
+          reference:     existing.number,
+        },
+      })
 
       return tx.facture.update({
         where: { id },

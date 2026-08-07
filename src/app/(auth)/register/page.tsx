@@ -1,14 +1,18 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { RegisterForm } from "@/components/auth/register-form"
 import { getPricingInfo } from "@/lib/stripe"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
 
-export const metadata: Metadata = { title: "Créer un compte" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.register")
+  return { title: t("pageTitle") }
+}
 
 export default async function RegisterPage() {
-  const pricing = await getPricingInfo()
+  const [pricing, t] = await Promise.all([getPricingInfo(), getTranslations("auth.register")])
 
   return (
     <div className="w-full max-w-md">
@@ -19,18 +23,18 @@ export default async function RegisterPage() {
 
       <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">
         <div className="space-y-1.5">
-          <h1 className="text-xl font-semibold tracking-tight">Créer un compte</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">
-            {pricing.trialDays} jours d'essai gratuit · Sans engagement · Annulation facile
+            {t("subtitle", { trialDays: pricing.trialDays })}
           </p>
         </div>
 
         <RegisterForm pricing={pricing} />
 
         <p className="text-center text-sm text-muted-foreground">
-          Déjà un compte ?{" "}
+          {t("alreadyAccount")}{" "}
           <Link href="/login" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors">
-            Se connecter
+            {t("signIn")}
           </Link>
         </p>
       </div>

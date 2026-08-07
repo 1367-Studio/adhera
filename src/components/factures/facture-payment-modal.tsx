@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { useAddFacturePayment } from "@/hooks/use-factures"
 import { Modal } from "@/components/ui/modal"
 import { CurrencyField } from "@/components/ui/currency-field"
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function FacturePaymentModal({ factureId, remaining, open, onOpenChange }: Props) {
+  const t = useTranslations()
   const [amount, setAmount] = useState(remaining > 0 ? remaining : 0)
   const [method, setMethod] = useState("Virement")
   const [paidAt, setPaidAt] = useState(new Date().toISOString().split("T")[0])
@@ -34,39 +36,39 @@ export function FacturePaymentModal({ factureId, remaining, open, onOpenChange }
 
   async function handleSubmit() {
     if (amount <= 0) {
-      toast.error("Le montant doit être supérieur à 0")
+      toast.error(t("factures.payment.toasts.amountMustBePositive"))
       return
     }
     if (amount > remaining + 0.01) {
-      toast.error(`Le montant dépasse le solde restant dû (${remaining.toFixed(2)} €)`)
+      toast.error(t("factures.payment.toasts.amountExceedsBalance", { amount: `${remaining.toFixed(2)} €` }))
       return
     }
     try {
       await mutation.mutateAsync({ amount, method, paidAt, note })
-      toast.success("Paiement enregistré")
+      toast.success(t("factures.payment.toasts.recorded"))
       onOpenChange(false)
       setNote("")
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   return (
-    <Modal open={open} onOpenChange={onOpenChange} title="Enregistrer un paiement" size="sm">
+    <Modal open={open} onOpenChange={onOpenChange} title={t("factures.payment.title")} size="sm">
       <div className="space-y-4">
         <div className="space-y-1">
-          <CurrencyField label="Montant" required value={amount} onChange={setAmount} />
-          <p className="text-xs text-muted-foreground">Solde restant dû : {remaining.toFixed(2)} €</p>
+          <CurrencyField label={t("factures.payment.amount")} required value={amount} onChange={setAmount} />
+          <p className="text-xs text-muted-foreground">{t("factures.payment.remainingBalance", { amount: `${remaining.toFixed(2)} €` })}</p>
         </div>
-        <SelectField label="Méthode" required options={methodOptions} value={method} onValueChange={setMethod} />
-        <FormField label="Date du paiement" type="date" value={paidAt} onChange={e => setPaidAt(e.target.value)} />
-        <FormField label="Note" placeholder="Référence, remarque…" value={note} onChange={e => setNote(e.target.value)} />
+        <SelectField label={t("factures.payment.method")} required options={methodOptions} value={method} onValueChange={setMethod} />
+        <FormField label={t("factures.payment.date")} type="date" value={paidAt} onChange={e => setPaidAt(e.target.value)} />
+        <FormField label={t("factures.payment.note")} placeholder={t("factures.payment.notePlaceholder")} value={note} onChange={e => setNote(e.target.value)} />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
-            Annuler
+            {t("common.cancel")}
           </Button>
           <Button type="button" onClick={handleSubmit} loading={mutation.isPending}>
-            Enregistrer
+            {t("common.save")}
           </Button>
         </div>
       </div>

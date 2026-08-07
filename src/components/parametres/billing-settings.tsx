@@ -1,13 +1,15 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { CheckCircleIcon, ClockIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { apiErrorMessage } from "@/lib/api-error"
+import { CancelPlanDialog } from "@/components/parametres/cancel-plan-dialog"
 
 type BillingStatus = {
   subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
@@ -20,19 +22,25 @@ type BillingStatus = {
   memberLimit:         number
 }
 
-const TIER_LABELS: Record<BillingStatus["plan"], string> = { essential: "Essentiel", pro: "Pro" }
-
-const statusConfig = {
-  TRIAL:     { label: "Essai gratuit",       variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
-  ACTIVE:    { label: "Actif",               variant: "default"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
-  PAST_DUE:  { label: "Paiement en retard",  variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
-  SUSPENDED: { label: "Suspendu",            variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
-  CANCELLED: { label: "Annulé",              variant: "secondary"   as const, icon: <XCircleIcon       className="size-3.5" /> },
+function useStatusConfig() {
+  const t = useTranslations("parametres.billing")
+  return {
+    TRIAL:     { label: t("status.trial"),     variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
+    ACTIVE:    { label: t("status.active"),    variant: "default"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
+    PAST_DUE:  { label: t("status.pastDue"),   variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
+    SUSPENDED: { label: t("status.suspended"), variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
+    CANCELLED: { label: t("status.cancelled"), variant: "secondary"   as const, icon: <XCircleIcon       className="size-3.5" /> },
+  }
 }
 
 export function BillingSettings({ canEdit }: { canEdit: boolean }) {
+  const t             = useTranslations("parametres.billing")
+  const tCommon       = useTranslations("common")
+  const tierLabels: Record<BillingStatus["plan"], string> = { essential: t("tier.essential"), pro: t("tier.pro") }
+  const statusConfig  = useStatusConfig()
   const qc           = useQueryClient()
   const searchParams = useSearchParams()
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
 
   const { data, isLoading, isError } = useQuery<BillingStatus>({
     queryKey: ["billing-status"],
@@ -50,11 +58,24 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
   const portalMutation = useMutation({
     mutationFn: async () => {
       const res = await fetch("/api/billing/portal", { method: "POST" })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<{ url: string }>
     },
     onSuccess: ({ url }) => { window.location.href = url },
-    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError:   (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
+  })
+
+  const resumeMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/billing/resume-subscription", { method: "POST" })
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
+      return res.json()
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["billing-status"] })
+      toast.success(t("resumeSuccessToast"))
+    },
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const status = data?.subscriptionStatus ?? null
@@ -64,9 +85,9 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold">Abonnement</h3>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Gérez votre abonnement à la plateforme et vos moyens de paiement.
+            {t("subtitle")}
           </p>
         </div>
         {!isLoading && cfg && (
@@ -79,40 +100,36 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
 
       {!isLoading && !isError && data && (
         <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-3 py-2 text-xs">
-          <span className="font-medium">Formule {TIER_LABELS[data.plan]}</span>
+          <span className="font-medium">{t("planLabel", { tier: tierLabels[data.plan] })}</span>
           <span className={data.memberCount >= data.memberLimit ? "font-medium text-destructive" : "text-muted-foreground"}>
-            {data.memberCount} / {data.memberLimit} membres
+            {t("membersCount", { count: data.memberCount, limit: data.memberLimit })}
           </span>
         </div>
       )}
 
       {!isLoading && isError && (
         <p className="text-xs text-destructive">
-          Impossible de récupérer votre statut d'abonnement. Réessayez plus tard.
+          {t("loadError")}
         </p>
       )}
 
       {!isLoading && !isError && (
         <div className="space-y-3">
-          {status === "TRIAL" && data?.trialEndsAt && (
+          {status === "TRIAL" && data?.trialEndsAt && !data?.cancelAtPeriodEnd && (
             <p className="text-xs text-muted-foreground">
-              Votre essai gratuit se termine le{" "}
-              {new Date(data.trialEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
-              Passé cette date, la carte enregistrée sera débitée automatiquement, sauf annulation avant cette date.
+              {t("trialEndsAt", { date: new Date(data.trialEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
             </p>
           )}
 
           {status === "ACTIVE" && (
             <p className="text-xs text-muted-foreground">
-              Votre abonnement est actif. Vous pouvez à tout moment consulter vos factures,
-              changer de moyen de paiement ou annuler depuis l'espace de gestion Stripe.
+              {t("activeText")}
             </p>
           )}
 
           {status === "PAST_DUE" && (
             <p className="text-xs text-destructive">
-              Le dernier prélèvement a échoué. Mettez à jour votre moyen de paiement pour éviter
-              une suspension de votre compte.
+              {t("pastDueText")}
             </p>
           )}
 
@@ -121,37 +138,51 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
               can render, so this branch shouldn't actually be reachable in normal use. */}
           {status === "SUSPENDED" && (
             <p className="text-xs text-destructive">
-              Votre abonnement est suspendu suite à plusieurs échecs de paiement.
-              Rendez-vous sur l&apos;écran dédié pour le réactiver, exporter vos données ou l&apos;annuler définitivement.
+              {t("suspendedText")}
             </p>
           )}
 
           {status === "CANCELLED" && (
             <p className="text-xs text-muted-foreground">
-              Votre abonnement a été annulé. Contactez le support pour le réactiver.
+              {t("cancelledText")}
             </p>
           )}
 
           {data?.cancelAtPeriodEnd && data?.currentPeriodEndsAt && (
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              Votre abonnement a été résilié et prendra fin le{" "}
-              {new Date(data.currentPeriodEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
-              Vous conservez l&apos;accès complet jusqu&apos;à cette date.
-            </p>
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                {t("cancelAtPeriodEnd", { date: new Date(data.currentPeriodEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
+              </p>
+              {canEdit && (
+                <Button size="sm" variant="outline" loading={resumeMutation.isPending} onClick={() => resumeMutation.mutate()}>
+                  {t("resumeSubscription")}
+                </Button>
+              )}
+            </div>
           )}
 
           {canEdit && data?.hasBilling && status !== "CANCELLED" && status !== "SUSPENDED" && (
-            <Button
-              size="sm"
-              variant={status === "PAST_DUE" ? "default" : "outline"}
-              loading={portalMutation.isPending}
-              onClick={() => portalMutation.mutate()}
-            >
-              {status === "PAST_DUE" ? "Mettre à jour le paiement" : "Gérer mon abonnement"}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={status === "PAST_DUE" ? "default" : "outline"}
+                loading={portalMutation.isPending}
+                onClick={() => portalMutation.mutate()}
+              >
+                {status === "PAST_DUE" ? t("updatePayment") : t("manageSubscription")}
+              </Button>
+
+              {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (
+                <Button size="sm" variant="outline" onClick={() => setCancelDialogOpen(true)}>
+                  {t("cancelPlan")}
+                </Button>
+              )}
+            </div>
           )}
         </div>
       )}
+
+      <CancelPlanDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen} isTrial={status === "TRIAL"} />
     </div>
   )
 }

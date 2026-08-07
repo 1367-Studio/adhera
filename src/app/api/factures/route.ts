@@ -53,9 +53,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
     return NextResponse.json(data.map(withDerivedStatus))
   }
 
+  // payments is only needed by the paginated table (the "Méthode de paiement" column) —
+  // the lightweight take:500 branch above stays cheap for callers that don't render it.
+  const includeWithPayments = { ...include, payments: { select: { method: true }, orderBy: { paidAt: "asc" as const } } }
+
   const { page, limit, skip } = parsePagination(searchParams)
   const [data, total] = await Promise.all([
-    prisma.facture.findMany({ where, orderBy, skip, take: limit, include }),
+    prisma.facture.findMany({ where, orderBy, skip, take: limit, include: includeWithPayments }),
     prisma.facture.count({ where }),
   ])
   return NextResponse.json({ data: data.map(withDerivedStatus), total, page, limit, totalPages: Math.ceil(total / limit) })

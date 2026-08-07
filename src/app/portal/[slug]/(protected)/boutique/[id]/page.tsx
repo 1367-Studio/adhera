@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { ArrowLeftIcon, ShoppingBagIcon, ShoppingCartIcon, MinusIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,8 @@ type Produit  = {
 }
 
 export default function ProduitDetailPage() {
+  const t             = useTranslations("portalMembre.boutique")
+  const tCommon       = useTranslations("common")
   const { slug, id } = useParams<{ slug: string; id: string }>()
   const router       = useRouter()
   const { addItem, count } = useCart(slug)
@@ -30,7 +33,7 @@ export default function ProduitDetailPage() {
   const { data: produit, isLoading, error } = useQuery<Produit>({
     queryKey: ["portal-boutique-produit", id],
     queryFn:  () => fetch(`/api/portal/boutique/${id}`).then(async r => {
-      if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+      if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
       return r.json()
     }),
   })
@@ -58,10 +61,10 @@ export default function ProduitDetailPage() {
   if (error || !produit) {
     return (
       <div className="space-y-3">
-        <p className="text-muted-foreground text-sm">Produit introuvable.</p>
+        <p className="text-muted-foreground text-sm">{t("notFound")}</p>
         <Button variant="outline" size="sm" onClick={() => router.push(`/portal/${slug}/boutique`)}>
           <ArrowLeftIcon className="mr-1.5 size-4" />
-          Retour à la boutique
+          {t("backToShop")}
         </Button>
       </div>
     )
@@ -72,8 +75,8 @@ export default function ProduitDetailPage() {
 
   function handleAddToCart() {
     if (!produit) return
-    if (!selectedVariante) { toast.error("Sélectionnez une variante"); return }
-    if (selectedVariante.stock < quantity) { toast.error("Stock insuffisant"); return }
+    if (!selectedVariante) { toast.error(t("selectVariant")); return }
+    if (selectedVariante.stock < quantity) { toast.error(t("insufficientStock")); return }
     addItem({
       produitId:     produit.id,
       varianteId:    selectedVariante.id,
@@ -83,7 +86,7 @@ export default function ProduitDetailPage() {
       imageUrl:      produit.imageUrl,
       stock:         selectedVariante.stock,
     }, quantity)
-    toast.success("Ajouté au panier")
+    toast.success(t("addedToCart"))
   }
 
   return (
@@ -95,7 +98,7 @@ export default function ProduitDetailPage() {
         {count > 0 && (
           <Button variant="outline" className="ml-auto" onClick={() => router.push(`/portal/${slug}/boutique/panier`)}>
             <ShoppingCartIcon className="mr-1.5 size-4" />
-            Panier ({count})
+            {t("cart", { count })}
           </Button>
         )}
       </div>
@@ -117,7 +120,7 @@ export default function ProduitDetailPage() {
               ? <p className="text-2xl font-semibold text-primary mt-1">{fmt(selectedVariante.price)}</p>
               : produit.variantes.length > 0 && (
                 <p className="text-lg text-muted-foreground mt-1">
-                  À partir de {fmt(Math.min(...produit.variantes.map(v => v.price)))}
+                  {t("startingFrom", { price: fmt(Math.min(...produit.variantes.map(v => v.price))) })}
                 </p>
               )
             }
@@ -129,7 +132,7 @@ export default function ProduitDetailPage() {
 
           {/* Variante picker */}
           <div className="space-y-2">
-            <p className="text-sm font-medium">Variante <span className="text-destructive">*</span></p>
+            <p className="text-sm font-medium">{t("variantLabel")} <span className="text-destructive">*</span></p>
             <div className="flex flex-wrap gap-2">
               {produit.variantes.map(v => {
                 const outOfStock = v.stock === 0
@@ -149,7 +152,7 @@ export default function ProduitDetailPage() {
                     )}
                   >
                     {v.label}
-                    {outOfStock && <span className="ml-1.5 text-xs opacity-70">Épuisé</span>}
+                    {outOfStock && <span className="ml-1.5 text-xs opacity-70">{t("outOfStock")}</span>}
                   </button>
                 )
               })}
@@ -159,7 +162,7 @@ export default function ProduitDetailPage() {
           {/* Quantity */}
           {selectedVariante && selectedVariante.stock > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium">Quantité</p>
+              <p className="text-sm font-medium">{t("quantity")}</p>
               <div className="inline-flex items-center rounded-lg border gap-0.5 p-0.5">
                 <button
                   type="button"
@@ -177,12 +180,12 @@ export default function ProduitDetailPage() {
                   <PlusIcon className="size-3.5" />
                 </button>
               </div>
-              <p className="text-xs text-muted-foreground">{selectedVariante.stock} en stock</p>
+              <p className="text-xs text-muted-foreground">{t("inStock", { count: selectedVariante.stock })}</p>
             </div>
           )}
 
           {selectedVariante && selectedVariante.stock === 0 && (
-            <Badge variant="secondary">Cette variante est épuisée</Badge>
+            <Badge variant="secondary">{t("variantOutOfStock")}</Badge>
           )}
 
           <Button
@@ -192,7 +195,7 @@ export default function ProduitDetailPage() {
             className="w-full sm:w-auto"
           >
             <ShoppingCartIcon className="mr-2 size-4" />
-            Ajouter au panier
+            {t("addToCart")}
           </Button>
         </div>
       </div>

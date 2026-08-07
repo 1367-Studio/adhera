@@ -4,6 +4,7 @@ import { pusherServer } from "@/lib/pusher-server"
 
 type SessionUser = {
   id?:            string
+  role?:          string
   associationId?: string | null
 }
 
@@ -21,6 +22,13 @@ export async function POST(req: Request) {
     if (u.associationId !== channelAssocId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
+  }
+
+  // Fixed channel (not per-association) — every SUPER_ADMIN subscribes to this same one so
+  // the backoffice support inbox live-updates across every association, not just whichever
+  // one happens to be open. See src/lib/support-tickets.ts.
+  if (channelName === "private-support-staff" && u.role !== "SUPER_ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   const authResponse = pusherServer.authorizeChannel(socketId, channelName)

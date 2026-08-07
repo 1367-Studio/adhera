@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFacturesPaginated, useFactureDetail, useCreateFacture, useUpdateFacture, useDeleteFacture, useDuplicateFacture, useSendFactureEmail } from "@/hooks/use-factures"
 import { ApiError } from "@/lib/api-error"
+import { cn } from "@/lib/utils"
 import type { FactureInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -15,6 +17,7 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DocumentHistoryModal } from "@/components/ui/document-history-modal"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
+import { PdfPreviewModal } from "@/components/ui/pdf-preview-modal"
 import { FactureForm } from "@/components/factures/facture-form"
 import { FacturePaymentModal } from "@/components/factures/facture-payment-modal"
 import { FacturePaymentsModal } from "@/components/factures/facture-payments-modal"
@@ -40,15 +43,20 @@ type Facture = {
   fournisseur:   { id: string; companyName: string; email: string | null; billingEmail: string | null } | null
   devis?:        { id: string; number: string } | null
   items?: { id: string; description: string; quantity: string; unitPrice: string; vatRate: string; discount: string }[]
+  payments:      { method: string }[]
 }
 
-const statusBadge: Record<FactureStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  BROUILLON:           { label: "Brouillon",           variant: "secondary"   },
-  EN_ATTENTE:          { label: "En attente",          variant: "outline"     },
-  PARTIELLEMENT_PAYEE: { label: "Partiellement payée", variant: "outline"     },
-  PAYEE:               { label: "Payée",               variant: "default"    },
-  EN_RETARD:           { label: "En retard",           variant: "destructive" },
-  ANNULEE:             { label: "Annulée",             variant: "secondary"  },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusBadge(t: Translator): Record<FactureStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    BROUILLON:           { label: t("factures.form.status.brouillon"),          variant: "secondary"   },
+    EN_ATTENTE:          { label: t("factures.form.status.enAttente"),          variant: "outline"     },
+    PARTIELLEMENT_PAYEE: { label: t("factures.form.status.partiellementPayee"), variant: "outline"     },
+    PAYEE:               { label: t("factures.form.status.payee"),              variant: "default"    },
+    EN_RETARD:           { label: t("factures.view.status.enRetard"),           variant: "destructive" },
+    ANNULEE:             { label: t("factures.form.status.annulee"),            variant: "secondary"  },
+  }
 }
 
 function FilterSelect({
@@ -63,7 +71,7 @@ function FilterSelect({
   return (
     <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
       <SelectTrigger className="w-44">
-        <span className={selected ? "text-sm" : "text-sm text-muted-foreground"}>
+        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
       </SelectTrigger>
@@ -100,6 +108,7 @@ function toFormValues(f: Facture): Partial<FactureInput> {
 }
 
 export function FacturesView() {
+  const t = useTranslations()
   const router = useRouter()
   // Seeded from ?search=… so a "Voir tout" link from the Fournisseur detail page (or
   // any other deep link) lands here pre-filtered instead of on the unfiltered list.
@@ -121,6 +130,7 @@ export function FacturesView() {
   const [paymentsHistoryTarget, setPaymentsHistoryTarget] = useState<Facture | null>(null)
   const [historyTarget, setHistoryTarget] = useState<Facture | null>(null)
   const [emailTarget, setEmailTarget] = useState<Facture | null>(null)
+  const [previewTarget, setPreviewTarget] = useState<Facture | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -148,37 +158,37 @@ export function FacturesView() {
   async function handleCreate(data: FactureInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Facture créée avec succès")
+      toast.success(t("factures.view.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: FactureInput, force?: boolean) {
     try {
       await updateMutation.mutateAsync({ data, force })
-      toast.success("Facture mise à jour")
+      toast.success(t("factures.view.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
       if (err instanceof ApiError && err.code === "REQUIRES_CONFIRMATION") {
         toast.error(err.message, {
-          action: { label: "Confirmer", onClick: () => handleUpdate(data, true) },
+          action: { label: t("factures.view.toasts.confirm"), onClick: () => handleUpdate(data, true) },
         })
         return
       }
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleDuplicate(f: Facture) {
     try {
       const copy = await duplicateMutation.mutateAsync(f.id)
-      toast.success(`Facture ${copy.number} créée`, {
-        action: { label: "Modifier", onClick: () => setEditTarget({ id: copy.id } as Facture) },
+      toast.success(t("factures.view.toasts.duplicated", { number: copy.number }), {
+        action: { label: t("common.edit"), onClick: () => setEditTarget({ id: copy.id } as Facture) },
       })
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -186,10 +196,10 @@ export function FacturesView() {
     if (!emailTarget) return
     try {
       await sendEmailMutation.mutateAsync({ to, message })
-      toast.success("Facture envoyée par e-mail")
+      toast.success(t("factures.view.toasts.sent"))
       setEmailTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -197,40 +207,42 @@ export function FacturesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync({ id: deleteTarget.id, force })
-      toast.success("Facture supprimée")
+      toast.success(t("factures.view.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
       if (err instanceof ApiError && err.code === "REQUIRES_CONFIRMATION") {
         toast.error(err.message, {
-          action: { label: "Confirmer", onClick: () => handleDelete(true) },
+          action: { label: t("factures.view.toasts.confirm"), onClick: () => handleDelete(true) },
         })
         return
       }
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
+
+  const statusBadge = getStatusBadge(t)
 
   const columns: Column<Facture>[] = [
     {
       key: "number",
-      header: "N°",
+      header: t("factures.view.columns.number"),
       cell: (f) => (
         <div className="space-y-0.5">
           <p className="font-medium tabular-nums">{f.number}</p>
           {f.fournisseur && <p className="text-xs text-muted-foreground">{f.fournisseur.companyName}</p>}
-          {f.devis && <p className="text-xs text-muted-foreground">Depuis {f.devis.number}</p>}
+          {f.devis && <p className="text-xs text-muted-foreground">{t("factures.view.fromDevis", { number: f.devis.number })}</p>}
         </div>
       ),
     },
     {
       key: "dueDate",
-      header: "Échéance",
+      header: t("factures.view.columns.dueDate"),
       cell: (f) => f.dueDate ? format(new Date(f.dueDate), "dd/MM/yyyy", { locale: fr }) : <span className="text-muted-foreground text-xs">—</span>,
       hideInCard: true,
     },
     {
       key: "total",
-      header: "Montant",
+      header: t("factures.view.columns.amount"),
       className: "text-right",
       cell: (f) => {
         const remaining = Number(f.total) - Number(f.amountPaid)
@@ -238,15 +250,27 @@ export function FacturesView() {
           <div className="text-right">
             <p className="tabular-nums font-medium">{fmt(Number(f.total))}</p>
             {remaining > 0 && Number(f.amountPaid) > 0 && (
-              <p className="text-xs text-muted-foreground tabular-nums">Reste {fmt(remaining)}</p>
+              <p className="text-xs text-muted-foreground tabular-nums">{t("factures.view.remaining", { amount: fmt(remaining) })}</p>
             )}
           </div>
         )
       },
     },
     {
+      key: "paymentMethods",
+      header: t("factures.view.columns.paymentMethod"),
+      className: "max-w-40",
+      cell: (f) => {
+        const methods = [...new Set(f.payments.map(p => p.method))]
+        const label = methods.join(" + ")
+        return methods.length
+          ? <span className="block truncate text-sm" title={label}>{label}</span>
+          : <span className="text-muted-foreground text-xs">—</span>
+      },
+    },
+    {
       key: "status",
-      header: "Statut",
+      header: t("factures.view.columns.status"),
       cell: (f) => {
         const s = statusBadge[f.status]
         return <Badge variant={s.variant}>{s.label}</Badge>
@@ -259,35 +283,36 @@ export function FacturesView() {
       cell: (f) => (
         <RowActions actions={[
           ...(f.status !== "BROUILLON" && f.status !== "PAYEE" && f.status !== "ANNULEE" ? [
-            { label: "Enregistrer un paiement", icon: <MoneyIcon className="size-3.5" />, onClick: () => setPaymentTarget(f) },
+            { label: t("factures.view.actions.recordPayment"), icon: <MoneyIcon className="size-3.5" />, onClick: () => setPaymentTarget(f) },
           ] : []),
           ...(Number(f.amountPaid) > 0 ? [
-            { label: "Historique des paiements", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setPaymentsHistoryTarget(f) },
+            { label: t("factures.view.actions.paymentHistory"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setPaymentsHistoryTarget(f) },
           ] : []),
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f), separator: true },
-          { label: "Dupliquer", icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(f) },
-          { label: "Télécharger le PDF", icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/factures/${f.id}/pdf`, "_blank") },
-          { label: "Envoyer par e-mail", icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(f) },
-          { label: "Historique", icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(f) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          { label: t("factures.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f), separator: true },
+          { label: t("factures.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(f) },
+          { label: t("factures.view.actions.preview"), icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(f) },
+          { label: t("factures.view.actions.downloadPdf"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/factures/${f.id}/pdf`, "_blank") },
+          { label: t("factures.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(f) },
+          { label: t("factures.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(f) },
+          { label: t("factures.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
         ]} />
       ),
     },
   ]
 
   const descriptionText = search
-    ? `${result?.total ?? 0} résultat${(result?.total ?? 0) !== 1 ? "s" : ""}`
-    : `${result?.total ?? 0} facture${(result?.total ?? 0) !== 1 ? "s" : ""}`
+    ? t("factures.view.count", { count: result?.total ?? 0 })
+    : t("factures.view.countTotal", { count: result?.total ?? 0 })
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Factures"
+        title={t("factures.view.title")}
         description={descriptionText}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Nouvelle facture
+            {t("factures.view.newFacture")}
           </Button>
         }
       />
@@ -297,7 +322,7 @@ export function FacturesView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher une facture…"
+            placeholder={t("factures.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
             className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
@@ -322,14 +347,14 @@ export function FacturesView() {
           value={statusFilter}
           onChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "BROUILLON",           label: "Brouillon"           },
-            { value: "EN_ATTENTE",          label: "En attente"          },
-            { value: "PARTIELLEMENT_PAYEE", label: "Partiellement payée" },
-            { value: "PAYEE",               label: "Payée"               },
-            { value: "EN_RETARD",           label: "En retard"           },
-            { value: "ANNULEE",             label: "Annulée"             },
+            { value: "BROUILLON",           label: t("factures.form.status.brouillon")          },
+            { value: "EN_ATTENTE",          label: t("factures.form.status.enAttente")          },
+            { value: "PARTIELLEMENT_PAYEE", label: t("factures.form.status.partiellementPayee") },
+            { value: "PAYEE",               label: t("factures.form.status.payee")              },
+            { value: "EN_RETARD",           label: t("factures.view.status.enRetard")           },
+            { value: "ANNULEE",             label: t("factures.form.status.annulee")            },
           ]}
-          placeholder="Tous les statuts"
+          placeholder={t("factures.view.allStatuses")}
         />
 
         {fournisseurIdParam && (
@@ -338,7 +363,7 @@ export function FacturesView() {
             onClick={() => router.push("/dashboard/factures")}
             className="flex items-center gap-1.5 rounded-md border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Fournisseur : {facturesList.find(f => f.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? "filtré"}
+            {t("factures.view.supplierFilter", { name: facturesList.find(f => f.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? t("factures.view.supplierFilterFallback") })}
             <XIcon className="size-3.5" />
           </button>
         )}
@@ -349,7 +374,8 @@ export function FacturesView() {
         data={facturesList}
         loading={isLoading}
         keyExtractor={(f) => f.id}
-        empty={search ? `Aucun résultat pour « ${search} »` : "Aucune facture enregistrée"}
+        onRowClick={(f) => setPreviewTarget(f)}
+        empty={search ? t("factures.view.noResultsFor", { search }) : t("factures.view.noFacture")}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,
@@ -359,7 +385,7 @@ export function FacturesView() {
         } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle facture" size="2xl" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("factures.view.newFacture")} size="2xl" dismissable={false}>
         <FactureForm
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
@@ -367,9 +393,9 @@ export function FacturesView() {
         />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)} title="Modifier la facture" size="2xl" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)} title={t("factures.view.editTitle")} size="2xl" dismissable={false}>
         {editDetailLoading || !editDetail ? (
-          <p className="py-8 text-center text-sm text-muted-foreground">Chargement…</p>
+          <p className="py-8 text-center text-sm text-muted-foreground">{t("factures.view.loadingDetail")}</p>
         ) : (
           <FactureForm
             key={editDetail.id}
@@ -412,7 +438,7 @@ export function FacturesView() {
 
       {emailTarget && (
         <SendEmailModal
-          documentLabel={`la facture ${emailTarget.number}`}
+          documentLabel={t("factures.view.documentLabel", { number: emailTarget.number })}
           defaultTo={emailTarget.fournisseur?.billingEmail || emailTarget.fournisseur?.email || ""}
           open={!!emailTarget}
           onOpenChange={(open) => !open && setEmailTarget(null)}
@@ -421,16 +447,25 @@ export function FacturesView() {
         />
       )}
 
+      {previewTarget && (
+        <PdfPreviewModal
+          open={!!previewTarget}
+          onOpenChange={(open) => !open && setPreviewTarget(null)}
+          pdfUrl={`${BASE_PATH}/api/factures/${previewTarget.id}/pdf`}
+          title={t("factures.view.documentTitle", { number: previewTarget.number })}
+        />
+      )}
+
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(null)}
-        title={`Supprimer la facture ${deleteTarget?.number} ?`}
+        title={t("factures.view.deleteConfirmTitle", { number: deleteTarget?.number ?? "" })}
         description={
           deleteTarget?.devis
-            ? `Cette facture provient du devis ${deleteTarget.devis.number} — le devis redeviendra disponible pour une nouvelle conversion après cette suppression.`
-            : "Cette action est irréversible."
+            ? t("factures.view.deleteConfirmFromDevis", { number: deleteTarget.devis.number })
+            : t("factures.view.deleteConfirmIrreversible")
         }
-        confirmLabel="Supprimer"
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => handleDelete(false)}
       />

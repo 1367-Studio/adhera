@@ -3,13 +3,17 @@ import { prisma } from "@/lib/prisma/client"
 import { associationSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { ASSOCIATION_SAFE_SELECT } from "@/lib/association/select"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
-  const association = await prisma.association.findUnique({ where: { id: associationId } })
+  const association = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: ASSOCIATION_SAFE_SELECT,
+  })
   if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json(association)
 })
@@ -27,6 +31,7 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   const association = await prisma.association.update({
     where: { id: associationId },
     data:  { ...rest, city: city || null },
+    select: ASSOCIATION_SAFE_SELECT,
   })
   await writeActivityLog({
     associationId,

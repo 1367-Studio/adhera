@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
+import { useParams, useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { EnvelopeSimpleIcon, CircleNotchIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { EnvelopeSimpleIcon, CircleNotchIcon, CaretDownIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { portalFetch } from "@/lib/portal-fetch"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,6 +19,7 @@ type EmailRow = {
   id:           string
   subject:      string
   source:       string
+  sourceId:     string | null
   status:       EmailStatus
   sentAt:       string | null
   deliveredAt:  string | null
@@ -35,57 +38,67 @@ type PageResult = {
   totalPages: number
 }
 
-const STATUS_BADGE: Record<EmailStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  QUEUED:     { label: "En file",   variant: "outline"     },
-  SENT:       { label: "Envoyé",    variant: "secondary"   },
-  DELIVERED:  { label: "Livré",     variant: "secondary"   },
-  OPENED:     { label: "Ouvert",    variant: "default"     },
-  CLICKED:    { label: "Ouvert",    variant: "default"     },
-  DELAYED:    { label: "En cours",  variant: "outline"     },
-  BOUNCED:    { label: "Erreur",    variant: "destructive" },
-  // Kept distinct from BOUNCED/FAILED's "Erreur" — this is the member's own action
-  // (they marked it as spam), not a delivery failure, and the expanded timeline below
-  // already calls this same event "Spam"; matching the badge to it avoids showing two
-  // different words for the same status.
-  COMPLAINED: { label: "Spam",      variant: "destructive" },
-  FAILED:     { label: "Erreur",    variant: "destructive" },
-}
-
-// Plain-language fallback shown under the timeline for failure statuses — BOUNCED and
-// COMPLAINED usually have a matching timeline step, but FAILED has no dedicated timestamp
-// in the schema at all, so without this a member sees a red "Erreur" badge and, on
-// expanding, nothing more informative than "Créé" with no explanation of what happened.
-const STATUS_NOTE: Partial<Record<EmailStatus, string>> = {
-  BOUNCED:    "Cet e-mail n'a pas pu être livré (adresse invalide ou boîte pleine).",
-  COMPLAINED: "Vous avez signalé cet e-mail comme indésirable.",
-  FAILED:     "L'envoi de cet e-mail a échoué.",
-}
-
-const SOURCE_LABEL: Record<string, string> = {
-  SONDAGE:        "Sondage",
-  AUTOMATION:     "Automatisation",
-  BULK_MESSAGE:   "Message groupé",
-  MEMBER_INVITE:  "Invitation",
-  MEETING_INVITE: "Réunion",
-  TRANSACTION:    "Confirmation",
-  DOCUMENT:       "Document",
-  TEST:           "Test",
-}
-
 type TimelineKey = "createdAt" | "sentAt" | "deliveredAt" | "openedAt" | "clickedAt" | "bouncedAt" | "complainedAt"
 
-const TIMELINE_STEPS: { key: TimelineKey; label: string; tone: "default" | "error" }[] = [
-  { key: "createdAt",    label: "Créé",   tone: "default" },
-  { key: "sentAt",       label: "Envoyé", tone: "default" },
-  { key: "deliveredAt",  label: "Livré",  tone: "default" },
-  { key: "openedAt",     label: "Ouvert", tone: "default" },
-  { key: "clickedAt",    label: "Cliqué", tone: "default" },
-  { key: "bouncedAt",    label: "Erreur", tone: "error"   },
-  { key: "complainedAt", label: "Spam",   tone: "error"   },
-]
-
 function EmailRowItem({ e }: { e: EmailRow }) {
+  const t        = useTranslations("portalMembre.communications")
+  const { slug } = useParams<{ slug: string }>()
+  const router   = useRouter()
   const [open, setOpen] = useState(false)
+
+  // The stored HTML preview below has all hrefs stripped by sanitizeEmailPreviewHtml (a
+  // deliberate security measure — arbitrary stored email markup must never become a live,
+  // clickable link in the portal), which silently kills the "Répondre au sondage" button
+  // baked into that HTML. This CTA is the app-controlled replacement: it points straight at
+  // the still-live sondage via sourceId rather than trusting anything from the email body.
+  const sondageHref = e.source === "SONDAGE" && e.sourceId ? `/portal/${slug}/sondages/${e.sourceId}` : null
+
+  const STATUS_BADGE: Record<EmailStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    QUEUED:     { label: t("statusBadge.queued"),     variant: "outline"     },
+    SENT:       { label: t("statusBadge.sent"),       variant: "secondary"   },
+    DELIVERED:  { label: t("statusBadge.delivered"),  variant: "secondary"   },
+    OPENED:     { label: t("statusBadge.opened"),     variant: "default"     },
+    CLICKED:    { label: t("statusBadge.clicked"),    variant: "default"     },
+    DELAYED:    { label: t("statusBadge.delayed"),    variant: "outline"     },
+    BOUNCED:    { label: t("statusBadge.bounced"),    variant: "destructive" },
+    // Kept distinct from BOUNCED/FAILED's "Erreur" — this is the member's own action
+    // (they marked it as spam), not a delivery failure, and the expanded timeline below
+    // already calls this same event "Spam"; matching the badge to it avoids showing two
+    // different words for the same status.
+    COMPLAINED: { label: t("statusBadge.complained"), variant: "destructive" },
+    FAILED:     { label: t("statusBadge.failed"),     variant: "destructive" },
+  }
+
+  // Plain-language fallback shown under the timeline for failure statuses — BOUNCED and
+  // COMPLAINED usually have a matching timeline step, but FAILED has no dedicated timestamp
+  // in the schema at all, so without this a member sees a red "Erreur" badge and, on
+  // expanding, nothing more informative than "Créé" with no explanation of what happened.
+  const STATUS_NOTE: Partial<Record<EmailStatus, string>> = {
+    BOUNCED:    t("statusNote.bounced"),
+    COMPLAINED: t("statusNote.complained"),
+    FAILED:     t("statusNote.failed"),
+  }
+
+  const SOURCE_LABEL: Record<string, string> = {
+    SONDAGE:        t("sourceLabel.sondage"),
+    AUTOMATION:     t("sourceLabel.automation"),
+    BULK_MESSAGE:   t("sourceLabel.bulkMessage"),
+    MEMBER_INVITE:  t("sourceLabel.memberInvite"),
+    MEETING_INVITE: t("sourceLabel.meetingInvite"),
+    TRANSACTION:    t("sourceLabel.transaction"),
+    DOCUMENT:       t("sourceLabel.document"),
+    TEST:           t("sourceLabel.test"),
+  }
+
+  const TIMELINE_STEPS: { key: TimelineKey; label: string; tone: "default" | "error" }[] = [
+    { key: "createdAt",    label: t("timeline.created"),    tone: "default" },
+    { key: "sentAt",       label: t("timeline.sent"),       tone: "default" },
+    { key: "deliveredAt",  label: t("timeline.delivered"),  tone: "default" },
+    { key: "openedAt",     label: t("timeline.opened"),     tone: "default" },
+    { key: "clickedAt",    label: t("timeline.clicked"),    tone: "default" },
+    { key: "bouncedAt",    label: t("timeline.bounced"),    tone: "error"   },
+    { key: "complainedAt", label: t("timeline.complained"), tone: "error"   },
+  ]
   // Sorted by actual timestamp, not array position — webhook events (Resend) can land
   // out of the "expected" order (e.g. a delayed bounce recorded after delivery).
   const timeline = TIMELINE_STEPS
@@ -109,13 +122,13 @@ function EmailRowItem({ e }: { e: EmailRow }) {
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm text-left hover:bg-muted/30 transition-colors"
-      >
-        <div className="flex items-start gap-2.5 min-w-0">
+      <div className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-muted/30 transition-colors">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          aria-expanded={open}
+          className="flex items-start gap-2.5 min-w-0 flex-1 text-left"
+        >
           <EnvelopeSimpleIcon className="size-4 mt-0.5 shrink-0 text-muted-foreground" />
           <div className="min-w-0">
             <p className="font-medium truncate">{e.subject}</p>
@@ -123,12 +136,36 @@ function EmailRowItem({ e }: { e: EmailRow }) {
               {SOURCE_LABEL[e.source] ?? e.source} · {format(new Date(e.createdAt), "d MMM yyyy, HH:mm", { locale: fr })}
             </p>
           </div>
-        </div>
+        </button>
         <div className="flex items-center gap-2 shrink-0">
           <Badge variant={STATUS_BADGE[e.status].variant}>{STATUS_BADGE[e.status].label}</Badge>
-          <CaretDownIcon className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+          {sondageHref && (
+            // Label collapses to icon-only below sm: this row is one of the few with a
+            // CTA long enough (badge + button text + caret) to squeeze the truncated
+            // subject down to a few characters on a phone-width viewport, which this
+            // page is opened on far more than the admin dashboard is.
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs gap-1 px-2 sm:px-2.5"
+              aria-label={t("openSondage")}
+              onClick={() => router.push(sondageHref)}
+            >
+              <span className="hidden sm:inline">{t("openSondage")}</span>
+              <CaretRightIcon className="size-3.5" />
+            </Button>
+          )}
+          <button
+            type="button"
+            onClick={() => setOpen(v => !v)}
+            aria-expanded={open}
+            aria-label={t("content")}
+            className="p-2 -m-2 rounded-md hover:bg-muted/50"
+          >
+            <CaretDownIcon className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+          </button>
         </div>
-      </button>
+      </div>
 
       {open && (
         <div className="border-t px-4 py-3 space-y-3">

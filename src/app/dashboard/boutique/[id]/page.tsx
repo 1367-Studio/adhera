@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -26,12 +27,16 @@ import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
-const MANUAL_PAYMENT_TYPE_OPTIONS = [
-  { value: "ESPECES",  label: "Espèces" },
-  { value: "CHEQUE",   label: "Chèque" },
-  { value: "CB",       label: "Carte bancaire" },
-  { value: "VIREMENT", label: "Virement" },
-]
+type Translator = ReturnType<typeof useTranslations>
+
+function getManualPaymentTypeOptions(t: Translator) {
+  return [
+    { value: "ESPECES",  label: t("paymentType.especes") },
+    { value: "CHEQUE",   label: t("paymentType.cheque") },
+    { value: "CB",       label: t("paymentType.cb") },
+    { value: "VIREMENT", label: t("paymentType.virement") },
+  ]
+}
 
 type VarianteRow = { _key: string; id?: string; label: string; price: number; stock: string }
 type Variante    = { id: string; label: string; price: number; stock: number }
@@ -53,11 +58,15 @@ type Commande = {
   items:         CommandeItem[]
 }
 
-const STATUS_PRODUIT_LABEL  = { DRAFT: "Brouillon", ACTIVE: "En ligne", ARCHIVED: "Archivé" }
+function getProduitStatusLabel(t: Translator) {
+  return { DRAFT: t("produitStatus.draft"), ACTIVE: t("produitStatus.active"), ARCHIVED: t("produitStatus.archived") }
+}
 const STATUS_PRODUIT_VARIANT: Record<string, "secondary" | "default" | "outline"> = {
   DRAFT: "secondary", ACTIVE: "default", ARCHIVED: "outline",
 }
-const STATUS_COMMANDE_LABEL   = { PENDING: "En attente", PAID: "Payée", CANCELLED: "Annulée" }
+function getCommandeStatusLabel(t: Translator) {
+  return { PENDING: t("commandeStatus.pending"), PAID: t("commandeStatus.paid"), CANCELLED: t("commandeStatus.cancelled") }
+}
 const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "default" | "destructive" | "outline"> = {
   PENDING: "secondary", PAID: "default", CANCELLED: "destructive",
 }
@@ -72,6 +81,12 @@ function newRow(): VarianteRow {
 export default function EditProduitPage() {
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
+  const t       = useTranslations("boutique")
+  const tCommon = useTranslations("common")
+
+  const MANUAL_PAYMENT_TYPE_OPTIONS = getManualPaymentTypeOptions(t)
+  const STATUS_PRODUIT_LABEL        = getProduitStatusLabel(t)
+  const STATUS_COMMANDE_LABEL       = getCommandeStatusLabel(t)
 
   const [activeTab, setActiveTab]       = useState("edit")
   const [payTarget, setPayTarget]       = useState<Commande | null>(null)
@@ -89,7 +104,7 @@ export default function EditProduitPage() {
 
   const { data: categories = [] } = useFinanceCategories("INCOME")
   const categoryOptions = [
-    { value: "", label: "Aucune catégorie" },
+    { value: "", label: t("form.categoryPlaceholder") },
     ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
   ]
 
@@ -149,17 +164,17 @@ export default function EditProduitPage() {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(typeof d.error === "string" ? d.error : "Erreur lors de la sauvegarde")
+        throw new Error(typeof d.error === "string" ? d.error : t("detail.toasts.saveError"))
       }
       return res.json()
     },
     onSuccess: (data: Produit) => {
-      toast.success("Produit mis à jour")
+      toast.success(t("detail.toasts.updated"))
       setVariantes(data.variantes.map(toRow))
       qc.invalidateQueries({ queryKey: ["boutique-produits"] })
       qc.invalidateQueries({ queryKey: ["boutique-produit", id] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   const updateStatusMutation = useMutation({
@@ -169,14 +184,14 @@ export default function EditProduitPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ status: newStatus }),
       })
-      if (!res.ok) throw new Error("Erreur")
+      if (!res.ok) throw new Error(tCommon("error"))
       return res.json()
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["boutique-produit", id] })
       qc.invalidateQueries({ queryKey: ["boutique-produits"] })
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   const updateCommandeStatus = useMutation({
@@ -186,14 +201,14 @@ export default function EditProduitPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ status, ...(items ? { items } : {}), ...(manualPaymentType ? { manualPaymentType } : {}) }),
       }).then(async r => {
-        if (!r.ok) throw new Error((await r.json()).error ?? "Erreur")
+        if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
         return r.json()
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["boutique-commandes-produit", id] })
-      toast.success("Commande mise à jour")
+      toast.success(t("detail.toasts.orderUpdated"))
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erreur"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
   function openPayModal(c: Commande) {
@@ -250,10 +265,10 @@ export default function EditProduitPage() {
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
-    if (!name.trim()) { toast.error("Le nom est obligatoire"); return }
-    if (variantes.length === 0) { toast.error("Au moins une variante est requise"); return }
+    if (!name.trim()) { toast.error(t("form.validation.nameRequired")); return }
+    if (variantes.length === 0) { toast.error(t("form.validation.atLeastOneVariant")); return }
     for (const v of variantes) {
-      if (!v.label.trim()) { toast.error("Chaque variante doit avoir un libellé"); return }
+      if (!v.label.trim()) { toast.error(t("form.validation.variantLabelRequired")); return }
     }
     saveMutation.mutate()
   }
@@ -265,9 +280,9 @@ export default function EditProduitPage() {
   if (!produit) {
     return (
       <DetailNotFound
-        message="Ce produit est introuvable ou a été supprimé."
+        message={t("detail.notFound")}
         backHref="/dashboard/boutique"
-        backLabel="Retour à la liste"
+        backLabel={t("detail.backToList")}
       />
     )
   }
@@ -277,14 +292,14 @@ export default function EditProduitPage() {
   const commandeColumns: Column<Commande>[] = [
     {
       key:  "membre",
-      header: "Membre",
+      header: t("detail.commandeColumns.membre"),
       cell: (c) => c.membre
         ? <div><p className="font-medium">{c.membre.firstName} {c.membre.lastName}</p><p className="text-xs text-muted-foreground">{c.membre.email}</p></div>
-        : <span className="text-muted-foreground italic">Invité</span>,
+        : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
     },
     {
       key:    "variante",
-      header: "Variante",
+      header: t("detail.commandeColumns.variante"),
       cell: (c) => (
         <div className="text-sm space-y-0.5">
           {c.items.map((item, i) => (
@@ -295,7 +310,7 @@ export default function EditProduitPage() {
     },
     {
       key:    "total",
-      header: "Total",
+      header: t("detail.commandeColumns.total"),
       className: "w-24",
       cell: (c) => (
         <span className="font-semibold tabular-nums">
@@ -305,7 +320,7 @@ export default function EditProduitPage() {
     },
     {
       key:    "status",
-      header: "Statut",
+      header: t("detail.commandeColumns.status"),
       className: "w-32",
       cell: (c) => (
         <Badge variant={STATUS_COMMANDE_VARIANT[c.status]}>
@@ -315,7 +330,7 @@ export default function EditProduitPage() {
     },
     {
       key:    "date",
-      header: "Date",
+      header: t("detail.commandeColumns.date"),
       className: "w-28",
       cell: (c) => format(new Date(c.createdAt), "dd/MM/yyyy", { locale: fr }),
     },
@@ -326,15 +341,15 @@ export default function EditProduitPage() {
       cell: (c) => c.status === "PENDING" ? (
         <RowActions
           actions={[
-            { label: "Marquer payée", icon: <MoneyIcon className="size-3.5" />, onClick: () => openPayModal(c) },
+            { label: t("view.actions.markPaid"), icon: <MoneyIcon className="size-3.5" />, onClick: () => openPayModal(c) },
           ]}
         />
       ) : c.status === "PAID" ? (
         <RowActions
           actions={[
-            { label: "Télécharger le reçu", icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
+            { label: t("view.actions.downloadReceipt"), icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
             ...(c.paymentMethod === "MANUAL" ? [
-              { label: "Modifier le moyen de paiement", icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
+              { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
           ]}
         />
@@ -346,7 +361,7 @@ export default function EditProduitPage() {
     <div className="space-y-5">
       {/* Header */}
       <div className="flex items-center gap-3 py-4">
-        <BackLink href="/dashboard/boutique" iconOnly>Boutique</BackLink>
+        <BackLink href="/dashboard/boutique" iconOnly>{t("view.title")}</BackLink>
         <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
@@ -358,7 +373,7 @@ export default function EditProduitPage() {
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {produit.variantes.length} variante{produit.variantes.length !== 1 ? "s" : ""} · {totalStock} en stock
+            {t("detail.variantsAndStock", { count: produit.variantes.length, stock: totalStock })}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -369,7 +384,7 @@ export default function EditProduitPage() {
               loading={updateStatusMutation.isPending}
             >
               <EyeIcon className="mr-1.5 size-4" />
-              Mettre en ligne
+              {t("detail.putOnline")}
             </Button>
           )}
           {produit.status === "ACTIVE" && (
@@ -380,7 +395,7 @@ export default function EditProduitPage() {
               loading={updateStatusMutation.isPending}
             >
               <ArchiveIcon className="mr-1.5 size-4" />
-              Archiver
+              {t("detail.archive")}
             </Button>
           )}
           {produit.status === "ARCHIVED" && (
@@ -391,7 +406,7 @@ export default function EditProduitPage() {
               loading={updateStatusMutation.isPending}
             >
               <PencilSimpleIcon className="mr-1.5 size-4" />
-              Réactiver
+              {t("detail.reactivate")}
             </Button>
           )}
         </div>
@@ -401,11 +416,11 @@ export default function EditProduitPage() {
         <TabsList>
           <TabsTrigger value="edit">
             <PencilSimpleIcon className="size-3.5" />
-            Produit
+            {t("detail.tabs.produit")}
           </TabsTrigger>
           <TabsTrigger value="commandes">
             <ShoppingCartIcon className="size-3.5" />
-            Commandes
+            {t("view.tabs.commandes")}
           </TabsTrigger>
         </TabsList>
 
@@ -417,15 +432,15 @@ export default function EditProduitPage() {
 
                 {/* Left */}
                 <div className="lg:col-span-2 p-5 space-y-4">
-                  <h2 className="text-sm font-semibold">Informations</h2>
+                  <h2 className="text-sm font-semibold">{t("detail.informationsTitle")}</h2>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="name">Nom <span className="text-destructive ml-0.5">*</span></Label>
+                    <Label htmlFor="name">{t("form.nameLabel")} <span className="text-destructive ml-0.5">*</span></Label>
                     <Input id="name" value={name} onChange={e => setName(e.target.value)} />
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="desc">Description <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+                    <Label htmlFor="desc">{t("form.descriptionLabel")} <span className="text-muted-foreground font-normal">{t("form.optional")}</span></Label>
                     <textarea
                       id="desc"
                       rows={3}
@@ -436,7 +451,7 @@ export default function EditProduitPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label>Image du produit <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
+                    <Label>{t("form.imageLabel")} <span className="text-muted-foreground font-normal">{t("form.optional")}</span></Label>
                     <ImageUpload
                       value={imageUrl}
                       onChange={setImageUrl}
@@ -447,12 +462,12 @@ export default function EditProduitPage() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label>Visibilité</Label>
+                    <Label>{t("form.visibilityLabel")}</Label>
                     <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
                       {([
-                        { v: "DRAFT",    l: "Brouillon" },
-                        { v: "ACTIVE",   l: "En ligne"  },
-                        { v: "ARCHIVED", l: "Archivé"   },
+                        { v: "DRAFT",    l: t("produitStatus.draft")    },
+                        { v: "ACTIVE",   l: t("produitStatus.active")   },
+                        { v: "ARCHIVED", l: t("produitStatus.archived") },
                       ] as const).map(opt => (
                         <button
                           key={opt.v}
@@ -472,26 +487,26 @@ export default function EditProduitPage() {
                   </div>
 
                   <SelectField
-                    label="Catégorie comptable"
+                    label={t("form.categoryLabel")}
                     options={categoryOptions}
                     value={categoryId}
                     onValueChange={setCategoryId}
-                    placeholder="Aucune catégorie"
+                    placeholder={t("form.categoryPlaceholder")}
                   />
                 </div>
 
                 {/* Right — variantes */}
                 <div className="lg:col-span-3 p-5 space-y-4">
                   <h2 className="text-sm font-semibold">
-                    Variantes <span className="text-destructive ml-0.5">*</span>
-                    <span className="text-muted-foreground font-normal ml-1.5">(taille, couleur, etc.)</span>
+                    {t("form.variantesLabel")} <span className="text-destructive ml-0.5">*</span>
+                    <span className="text-muted-foreground font-normal ml-1.5">{t("form.variantesHint")}</span>
                   </h2>
 
                   <div className="space-y-2">
                     <div className="grid grid-cols-[1fr_140px_80px_32px] gap-2 px-1">
-                      <p className="text-xs text-muted-foreground font-medium">Libellé</p>
-                      <p className="text-xs text-muted-foreground font-medium">Prix</p>
-                      <p className="text-xs text-muted-foreground font-medium">Stock</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("form.variantLabelColumn")}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("form.priceColumn")}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("form.stockColumn")}</p>
                       <span />
                     </div>
 
@@ -499,7 +514,7 @@ export default function EditProduitPage() {
                       <div key={v._key} className="grid grid-cols-[1fr_140px_80px_32px] gap-2 items-center">
                         <Input
                           className="h-9"
-                          placeholder="Ex. Taille M / Bleu"
+                          placeholder={t("form.variantLabelPlaceholder")}
                           value={v.label}
                           onChange={e => updateVariante(v._key, "label", e.target.value)}
                         />
@@ -526,14 +541,14 @@ export default function EditProduitPage() {
 
                     <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addVariante}>
                       <PlusIcon className="size-3.5" />
-                      Ajouter une variante
+                      {t("form.addVariant")}
                     </Button>
                   </div>
                 </div>
               </div>
 
               <div className="border-t px-5 py-3 bg-muted/20 flex justify-end">
-                <Button type="submit" loading={saveMutation.isPending}>Enregistrer</Button>
+                <Button type="submit" loading={saveMutation.isPending}>{tCommon("save")}</Button>
               </div>
             </div>
           </form>
@@ -547,7 +562,7 @@ export default function EditProduitPage() {
               data={commandeResult?.data ?? []}
               loading={false}
               keyExtractor={(c) => c.id}
-              empty="Aucune commande pour ce produit"
+              empty={t("detail.noCommandeForProduct")}
             />
           </div>
         </TabsContent>
@@ -563,14 +578,14 @@ export default function EditProduitPage() {
           <Modal
             open={!!payTarget}
             onOpenChange={o => { if (!o) setPayTarget(null) }}
-            title="Encaisser la commande"
+            title={t("payModal.title")}
             size="sm"
             footer={
               <>
-                <Button variant="outline" onClick={() => setPayTarget(null)}>Annuler</Button>
+                <Button variant="outline" onClick={() => setPayTarget(null)}>{tCommon("cancel")}</Button>
                 <Button loading={updateCommandeStatus.isPending} disabled={adjustedTotal === 0 || !manualPaymentType} onClick={handleEncaisser}>
                   <MoneyIcon className="mr-1.5 size-4" />
-                  Encaisser {fmt(adjustedTotal)}
+                  {t("payModal.confirmWithAmount", { amount: fmt(adjustedTotal) })}
                 </Button>
               </>
             }
@@ -579,11 +594,11 @@ export default function EditProduitPage() {
               <div className="space-y-4 py-1">
                 {payTarget.membre && (
                   <p className="text-sm text-muted-foreground">
-                    Commande de <span className="font-medium text-foreground">{payTarget.membre.firstName} {payTarget.membre.lastName}</span>
+                    {t("payModal.orderOf")} <span className="font-medium text-foreground">{payTarget.membre.firstName} {payTarget.membre.lastName}</span>
                   </p>
                 )}
                 <SelectField
-                  label="Moyen de paiement"
+                  label={t("paymentMethodLabel")}
                   required
                   options={MANUAL_PAYMENT_TYPE_OPTIONS}
                   value={manualPaymentType}
@@ -612,12 +627,12 @@ export default function EditProduitPage() {
                   <div className="border-t pt-3 space-y-1.5">
                     {hasAdjustment && (
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Total commandé</span>
+                        <span>{t("payModal.orderedTotal")}</span>
                         <span className="line-through">{fmt(payTarget.totalAmount)}</span>
                       </div>
                     )}
                     {hasZeroItems && (
-                      <p className="text-xs text-muted-foreground">Le stock des articles non retirés sera restauré.</p>
+                      <p className="text-xs text-muted-foreground">{t("payModal.restockNoticeStatic")}</p>
                     )}
                   </div>
                 )}
@@ -631,9 +646,9 @@ export default function EditProduitPage() {
       <ConfirmDialog
         open={!!stripePayTarget}
         onOpenChange={o => { if (!o) setStripePayTarget(null) }}
-        title="Marquer comme payée ?"
-        description={`Cette commande Stripe (${stripePayTarget ? (stripePayTarget.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : ""}) sera marquée comme payée manuellement.`}
-        confirmLabel="Confirmer le paiement"
+        title={t("stripeConfirm.title")}
+        description={t("stripeConfirm.descriptionSimple", { amount: stripePayTarget ? (stripePayTarget.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : "" })}
+        confirmLabel={t("stripeConfirm.confirmLabel")}
         loading={updateCommandeStatus.isPending}
         onConfirm={() => {
           if (stripePayTarget) updateCommandeStatus.mutate({ commandeId: stripePayTarget.id, status: "PAID" })
@@ -645,31 +660,31 @@ export default function EditProduitPage() {
       <Modal
         open={!!correctTarget}
         onOpenChange={o => { if (!o) setCorrectTarget(null) }}
-        title="Modifier le moyen de paiement"
+        title={t("correctPaymentModal.title")}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setCorrectTarget(null)}>Annuler</Button>
+            <Button variant="outline" onClick={() => setCorrectTarget(null)}>{tCommon("cancel")}</Button>
             <Button
               loading={updateCommandeStatus.isPending}
               disabled={!correctedType || correctedType === correctTarget?.manualPaymentType}
               onClick={handleCorrectPaymentType}
             >
-              Enregistrer
+              {tCommon("save")}
             </Button>
           </>
         }
       >
         <div className="py-1">
           <SelectField
-            label="Moyen de paiement"
+            label={t("paymentMethodLabel")}
             required
             options={MANUAL_PAYMENT_TYPE_OPTIONS}
             value={correctedType}
             onValueChange={setCorrectedType}
           />
           <p className="text-xs text-muted-foreground mt-2">
-            Cela ne modifie pas le montant déjà comptabilisé dans Finances — corrigez-le là-bas si besoin.
+            {t("correctPaymentModal.hint")}
           </p>
         </div>
       </Modal>

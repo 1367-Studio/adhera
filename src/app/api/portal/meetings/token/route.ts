@@ -12,40 +12,41 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   const membre = await prisma.membre.findUnique({
     where:  { id: membreId! },
-    select: { id: true, firstName: true, lastName: true },
+    select: { id: true, firstName: true, lastName: true, status: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 
-  const participant = await prisma.meetingParticipant.findFirst({
+  const meetingSelect = {
+    id: true, roomName: true, associationId: true, status: true, type: true,
+    livekitUrl: true, livekitApiKey: true, livekitApiSecret: true,
+  } as const
+
+  let participant = await prisma.meetingParticipant.findFirst({
     where: { meetingId, membreId: membre.id },
-    include: {
-      meeting: {
-        select: {
-          id: true, roomName: true, associationId: true, status: true,
-          livekitUrl: true, livekitApiKey: true, livekitApiSecret: true,
-        },
-      },
-    },
+    include: { meeting: { select: meetingSelect } },
   })
+
+  // AG concerns the whole association: an ACTIF member who wasn't individually invited
+  // can still join, same class of access as the portal meetings list grants them. Their
+  // participant row is created on first join so attendance is tracked like anyone else's.
+  if (!participant && membre.status === "ACTIF") {
+    const meeting = await prisma.meeting.findFirst({
+      where: { id: meetingId, associationId, type: "AG" },
+      select: meetingSelect,
+    })
+    if (meeting) {
+      participant = await prisma.meetingParticipant.create({
+        data: { meetingId, membreId: membre.id },
+        include: { meeting: { select: meetingSelect } },
+      })
+    }
+  }
+
   if (!participant || participant.meeting.associationId !== associationId) {
     return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
   }
   if (participant.meeting.status === "ENDED" || participant.meeting.status === "CANCELLED") {
     return NextResponse.json({ error: "Cette réunion est terminée" }, { status: 403 })
-  }
-
-  // Mark join time
-  await prisma.meetingParticipant.update({
-    where: { id: participant.id },
-    data:  { joinedAt: new Date() },
-  })
-
-  // Update meeting to LIVE if still SCHEDULED
-  if (participant.meeting.status === "SCHEDULED") {
-    await prisma.meeting.update({
-      where: { id: meetingId },
-      data:  { status: "LIVE", startedAt: new Date() },
-    })
   }
 
   let livekit
@@ -54,6 +55,20 @@ export const POST = withPortalAuth(async (req, ctx) => {
   } catch (err) {
     if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
     throw err
+  }
+
+  // Only recorded once the join is actually going to succeed — an early write here would
+  // mark the meeting LIVE (and this membre as joined) even if the LiveKit config turns out
+  // to be broken and no one ends up in the room.
+  await prisma.meetingParticipant.update({
+    where: { id: participant.id },
+    data:  { joinedAt: new Date() },
+  })
+  if (participant.meeting.status === "SCHEDULED") {
+    await prisma.meeting.update({
+      where: { id: meetingId },
+      data:  { status: "LIVE", startedAt: new Date() },
+    })
   }
 
   const identity = `membre-${membre.id}`

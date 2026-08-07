@@ -71,6 +71,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const pusherReady  = !!(process.env.PUSHER_APP_ID && process.env.PUSHER_KEY && process.env.PUSHER_SECRET)
     const plainText    = stripHtml(updated.content)
     const notifBody    = plainText.slice(0, 120) + (plainText.length > 120 ? "…" : "")
+    const association  = await prisma.association.findUnique({ where: { id: associationId }, select: { slug: true } })
 
     let userIds: string[]
 
@@ -89,7 +90,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
 
     await prisma.notification.createMany({
-      data: userIds.map(uid => ({ userId: uid, title: updated.title, body: notifBody, link: "/portal/actualites" })),
+      data: userIds.map(uid => ({ userId: uid, title: updated.title, body: notifBody, link: `/portal/${association?.slug}/actualites` })),
       skipDuplicates: true,
     })
     if (pusherReady) {

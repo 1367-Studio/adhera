@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { useTranslations } from "next-intl"
 import { EnvelopeSimpleIcon, CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { useAutomationLogs } from "@/hooks/use-automation-logs"
 import { Button } from "@/components/ui/button"
 
 export function HistoriqueView() {
+  const t = useTranslations("messages.historique")
   const [page, setPage] = useState(1)
   const { data, isLoading } = useAutomationLogs(page)
 
@@ -16,8 +18,8 @@ export function HistoriqueView() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-base font-semibold">Historique des envois</h2>
-        <p className="text-sm text-muted-foreground">Tous les emails envoyés automatiquement par les règles actives.</p>
+        <h2 className="text-base font-semibold">{t("title")}</h2>
+        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       {isLoading ? (
@@ -30,23 +32,23 @@ export function HistoriqueView() {
         <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
           <EnvelopeSimpleIcon className="size-8 text-muted-foreground/40" />
           <div>
-            <p className="text-sm font-medium">Aucun envoi enregistré</p>
-            <p className="text-xs text-muted-foreground">Les envois apparaîtront ici dès qu'une règle sera exécutée.</p>
+            <p className="text-sm font-medium">{t("noSends")}</p>
+            <p className="text-xs text-muted-foreground">{t("noSendsHint")}</p>
           </div>
         </div>
       ) : (
         <>
           <p className="text-xs text-muted-foreground">
-            {data.total} envoi{data.total > 1 ? "s" : ""} enregistré{data.total > 1 ? "s" : ""}
+            {t("sendsCount", { count: data.total })}
           </p>
           <div className="rounded-xl border overflow-hidden overflow-x-auto">
             <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b bg-muted/40">
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">Date</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">Règle</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">Destinataire</th>
-                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">Sujet</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">{t("columns.date")}</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">{t("columns.rule")}</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">{t("columns.recipient")}</th>
+                  <th className="px-4 py-2.5 text-left font-medium text-muted-foreground text-xs">{t("columns.subject")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -81,7 +83,7 @@ export function HistoriqueView() {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Page {page} / {totalPages}</span>
+              <span>{t("pageOf", { page, total: totalPages })}</span>
               <div className="flex items-center gap-1">
                 <Button
                   variant="ghost"

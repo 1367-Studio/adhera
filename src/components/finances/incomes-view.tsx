@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, TrendUpIcon, CheckCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link"
+import { useTranslations } from "next-intl"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, CheckCircleIcon, ClockIcon, ReceiptIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from "@/hooks/use-incomes"
-import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useExercices } from "@/hooks/use-exercices"
 import type { IncomeInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -17,37 +19,41 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { IncomeForm } from "@/components/finances/income-form"
-import { cn } from "@/lib/utils"
 
 type Income = {
-  id:          string
-  amount:      string
-  date:        string
-  description: string | null
-  status:      "PENDING" | "PAID" | "CANCELLED"
-  source:      string
-  reference:   string | null
-  paymentMethod: string | null
-  category:    { name: string } | null
-  membre:      { firstName: string; lastName: string } | null
-  reconciliations: { id: string }[]
+  id:               string
+  amount:           string
+  date:             string
+  description:      string | null
+  status:           "PENDING" | "PAID" | "CANCELLED"
+  source:           string
+  reference:        string | null
+  paymentMethod:    string | null
+  facturePaymentId: string | null
+  exerciceId:       string | null
+  category:         { name: string } | null
+  membre:           { id: string; firstName: string; lastName: string } | null
+  reconciliations:  { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
 
 const PAGE_SIZE   = 25
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
-const statusConfig = {
-  PENDING:   { label: "En attente", variant: "secondary" as const, icon: ClockIcon },
-  PAID:      { label: "Payé",       variant: "default" as const,   icon: CheckCircleIcon },
-  CANCELLED: { label: "Annulé",     variant: "destructive" as const, icon: XIcon },
+type Translator = ReturnType<typeof useTranslations>
+
+function getStatusConfig(t: Translator) {
+  return {
+    PENDING:   { label: t("finances.incomeForm.status.pending"),   variant: "secondary" as const, icon: ClockIcon },
+    PAID:      { label: t("finances.incomeForm.status.paid"),      variant: "default" as const,   icon: CheckCircleIcon },
+    CANCELLED: { label: t("finances.incomeForm.status.cancelled"), variant: "destructive" as const, icon: XIcon },
+  }
 }
 
 export function IncomesView() {
+  const t = useTranslations()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
-  const [yearFilter, setYearFilter]     = useState(String(currentYear))
+  const [exerciceFilter, setExerciceFilter] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Income | null>(null)
@@ -56,14 +62,11 @@ export function IncomesView() {
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
-  const { data: categories = [] } = useFinanceCategories("INCOME")
+  const { data: exercices = [] } = useExercices()
 
   const filters = {
-    ...(statusFilter ? { status: statusFilter } : {}),
-    ...(yearFilter ? {
-      dateFrom: `${yearFilter}-01-01`,
-      dateTo:   `${yearFilter}-12-31`,
-    } : {}),
+    ...(statusFilter   ? { status: statusFilter }     : {}),
+    ...(exerciceFilter ? { exerciceId: exerciceFilter } : {}),
   }
 
   const { data: result, isLoading } = useIncomes(page, PAGE_SIZE, filters)
@@ -76,20 +79,20 @@ export function IncomesView() {
   async function handleCreate(data: IncomeInput) {
     try {
       await createMutation.mutateAsync(data)
-      toast.success("Recette enregistrée")
+      toast.success(t("finances.incomesView.toasts.created"))
       setCreateOpen(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleUpdate(data: IncomeInput) {
     try {
       await updateMutation.mutateAsync(data)
-      toast.success("Recette mise à jour")
+      toast.success(t("finances.incomesView.toasts.updated"))
       setEditTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -97,45 +100,74 @@ export function IncomesView() {
     if (!deleteTarget) return
     try {
       await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success("Recette supprimée")
+      toast.success(t("finances.incomesView.toasts.deleted"))
       setDeleteTarget(null)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   const fmt = (n: string | number) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusConfig = getStatusConfig(t)
 
   const columns: Column<Income>[] = [
     {
       key: "date",
-      header: "Date",
+      header: t("finances.incomesView.columns.date"),
       className: "w-28",
       cell: (i) => format(new Date(i.date), "dd/MM/yyyy", { locale: fr }),
     },
     {
       key: "description",
-      header: "Description",
+      header: t("finances.incomesView.columns.description"),
       cell: (i) => (
         <div>
-          <p className="font-medium">{i.description || (i.membre ? `${i.membre.firstName} ${i.membre.lastName}` : "—")}</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            {i.category && <span className="text-xs text-muted-foreground">{i.category.name}</span>}
-            {i.paymentMethod && <span className="text-xs text-muted-foreground">· {i.paymentMethod}</span>}
-            {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· Concilié</span>}
-          </div>
+          <p className="font-medium">
+            {i.description
+              ? i.description
+              : i.membre
+                ? <Link href={`/dashboard/membres/${i.membre.id}`} className="hover:underline" onClick={e => e.stopPropagation()}>{i.membre.firstName} {i.membre.lastName}</Link>
+                : "—"}
+          </p>
+          {(i.reconciliations.length > 0 || i.facturePaymentId || !i.exerciceId) && (
+            <div className="flex items-center gap-2 mt-0.5">
+              {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">{t("finances.incomesView.reconciled")}</span>}
+              {i.facturePaymentId && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
+                  <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
+                </span>
+              )}
+              {!i.exerciceId && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.incomesView.noExerciceTooltip")}>
+                  <WarningIcon className="size-3" /> {t("finances.incomesView.noExerciceBadge")}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       ),
     },
     {
+      key: "compte",
+      header: t("finances.incomesView.columns.compte"),
+      className: "w-36",
+      cell: (i) => i.reconciliations[0]?.bankTransaction.bankAccount.accountName ?? "—",
+    },
+    {
+      key: "paymentMethod",
+      header: t("finances.incomesView.columns.paymentMethod"),
+      className: "w-36",
+      cell: (i) => i.paymentMethod ?? "—",
+    },
+    {
       key: "amount",
-      header: "Montant",
+      header: t("finances.incomesView.columns.amount"),
       className: "w-28 text-right",
       cell: (i) => <span className="font-semibold tabular-nums text-green-600 dark:text-green-400">+{fmt(i.amount)}</span>,
     },
     {
       key: "status",
-      header: "Statut",
+      header: t("finances.incomesView.columns.status"),
       className: "w-28",
       cell: (i) => {
         const cfg = statusConfig[i.status]
@@ -148,8 +180,13 @@ export function IncomesView() {
       className: "w-10",
       cell: (i) => (
         <RowActions actions={[
-          { label: "Modifier",  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
-          { label: "Supprimer", icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(i) },
+          { label: t("finances.incomesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
+          {
+            label: t("finances.incomesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,
+            onClick: () => i.facturePaymentId
+              ? toast.error(t("finances.incomesView.deleteFromInvoiceError"))
+              : setDeleteTarget(i),
+          },
         ]} />
       ),
     },
@@ -158,12 +195,12 @@ export function IncomesView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Recettes"
-        description="Toutes les entrées d'argent de l'association."
+        title={t("finances.incomesView.title")}
+        description={t("finances.incomesView.description")}
         action={
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
-            Ajouter
+            {t("common.add")}
           </Button>
         }
       />
@@ -173,7 +210,7 @@ export function IncomesView() {
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <input
             type="text"
-            placeholder="Rechercher…"
+            placeholder={t("finances.incomesView.searchPlaceholder")}
             value={searchInput}
             onChange={e => {
               setSearchInput(e.target.value)
@@ -190,22 +227,25 @@ export function IncomesView() {
         </div>
 
         <FilterSelect
-          value={yearFilter}
-          onValueChange={v => { setYearFilter(v); setPage(1) }}
-          options={yearOptions.map(y => ({ value: String(y), label: String(y) }))}
-          placeholder="Toutes années"
-          width="w-32"
+          value={exerciceFilter}
+          onValueChange={v => { setExerciceFilter(v); setPage(1) }}
+          options={[
+            ...exercices.map(ex => ({ value: ex.id, label: ex.label })),
+            { value: "none", label: t("finances.incomesView.noExercice") },
+          ]}
+          placeholder={t("finances.incomesView.allExercices")}
+          width="w-40"
         />
 
         <FilterSelect
           value={statusFilter}
           onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
-            { value: "PENDING",   label: "En attente" },
-            { value: "PAID",      label: "Payé" },
-            { value: "CANCELLED", label: "Annulé" },
+            { value: "PENDING",   label: t("finances.incomeForm.status.pending")   },
+            { value: "PAID",      label: t("finances.incomeForm.status.paid")      },
+            { value: "CANCELLED", label: t("finances.incomeForm.status.cancelled") },
           ]}
-          placeholder="Tous statuts"
+          placeholder={t("finances.incomesView.allStatuses")}
         />
       </div>
 
@@ -214,15 +254,15 @@ export function IncomesView() {
         data={incomes}
         loading={isLoading}
         keyExtractor={(i) => i.id}
-        empty="Aucune recette enregistrée"
+        empty={t("finances.incomesView.noIncome")}
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title="Nouvelle recette" size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.incomesView.newTitle")} size="md" dismissable={false}>
         <IncomeForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title="Modifier la recette" size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.incomesView.editTitle")} size="md" dismissable={false}>
         <IncomeForm
           defaultValues={editTarget ? {
             amount:        parseFloat(editTarget.amount),
@@ -236,15 +276,16 @@ export function IncomesView() {
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
+          locked={!!editTarget?.facturePaymentId}
         />
       </Modal>
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title="Supprimer cette recette ?"
-        description={deleteTarget?.description ?? `Recette de ${deleteTarget ? fmt(deleteTarget.amount) : ""}`}
-        confirmLabel="Supprimer"
+        title={t("finances.incomesView.deleteConfirmTitle")}
+        description={deleteTarget?.description ?? t("finances.incomesView.deleteConfirmFallback", { amount: deleteTarget ? fmt(deleteTarget.amount) : "" })}
+        confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />

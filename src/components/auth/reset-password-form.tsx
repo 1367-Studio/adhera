@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { CircleNotchIcon, LockIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ResetPasswordForm({ token }: Props) {
+  const t = useTranslations("auth.resetPassword.form")
   const router = useRouter()
 
   const [password, setPassword] = useState("")
@@ -21,10 +23,10 @@ export function ResetPasswordForm({ token }: Props) {
 
   function validate(): boolean {
     const e: Record<string, string> = {}
-    if (!password)                e.password = "Mot de passe requis."
-    else if (password.length < 8) e.password = "Min. 8 caractères."
-    if (password && !confirm)     e.confirm  = "Confirmez le mot de passe."
-    else if (password !== confirm) e.confirm = "Les mots de passe ne correspondent pas."
+    if (!password)                e.password = t("passwordRequired")
+    else if (password.length < 8) e.password = t("passwordMinLength")
+    if (password && !confirm)     e.confirm  = t("confirmRequired")
+    else if (password !== confirm) e.confirm = t("passwordMismatch")
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -42,15 +44,15 @@ export function ResetPasswordForm({ token }: Props) {
       })
 
       if (res.ok) {
-        toast.success("Mot de passe modifié. Vous pouvez vous connecter.")
+        toast.success(t("successToast"))
         router.replace("/login")
       } else {
         const data = await res.json().catch(() => ({}))
         if (data.field) setErrors(p => ({ ...p, [data.field]: data.error }))
-        else toast.error(data.error ?? "Erreur lors de la réinitialisation.")
+        else toast.error(data.error ?? t("genericErrorToast"))
       }
     } catch {
-      toast.error("Erreur réseau. Veuillez réessayer.")
+      toast.error(t("networkErrorToast"))
     } finally {
       setLoading(false)
     }
@@ -59,11 +61,11 @@ export function ResetPasswordForm({ token }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <FormField
-        label="Nouveau mot de passe"
+        label={t("newPasswordLabel")}
         type="password"
         autoComplete="new-password"
         autoFocus
-        placeholder="Min. 8 caractères"
+        placeholder={t("newPasswordPlaceholder")}
         leadingIcon={<LockIcon />}
         value={password}
         onChange={(e) => { setPassword(e.target.value); setErrors(p => ({ ...p, password: "" })) }}
@@ -71,7 +73,7 @@ export function ResetPasswordForm({ token }: Props) {
       />
 
       <FormField
-        label="Confirmer le mot de passe"
+        label={t("confirmPasswordLabel")}
         type="password"
         autoComplete="new-password"
         placeholder="••••••••"
@@ -90,7 +92,7 @@ export function ResetPasswordForm({ token }: Props) {
 
       <Button type="submit" className="w-full mt-2" disabled={loading}>
         {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Enregistrer le nouveau mot de passe
+        {t("submit")}
       </Button>
     </form>
   )

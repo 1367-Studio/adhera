@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -20,6 +21,8 @@ interface BankSettingsProps {
 }
 
 export function BankSettings({ canEdit, data }: BankSettingsProps) {
+  const t = useTranslations("parametres.bankSettings")
+  const tCommon = useTranslations("common")
   const qc = useQueryClient()
 
   const [website, setWebsite] = useState(data.website ?? "")
@@ -41,7 +44,7 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ website, iban, bic }),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<BankData>
     },
     onSuccess: (saved) => {
@@ -49,10 +52,10 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
       setIban(saved.iban ?? "")
       setBic(saved.bic ?? "")
       qc.invalidateQueries({ queryKey: ["association"] })
-      toast.success("Coordonnées mises à jour")
+      toast.success(t("toasts.updated"))
       setDirty(false)
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const hasPreview = !!(website || iban || bic)
@@ -60,26 +63,25 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-sm font-semibold">Site web &amp; coordonnées bancaires</h3>
+        <h3 className="text-sm font-semibold">{t("title")}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Affichés sur les devis et factures — le RIB uniquement sur les factures, jamais sur
-          un devis ou un reçu déjà payé.
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-1.5">
-          <Label className="text-xs">Site web</Label>
+          <Label className="text-xs">{t("website")}</Label>
           <Input
             disabled={!canEdit}
             value={website}
             onChange={e => { setWebsite(e.target.value); setDirty(true) }}
-            placeholder="mon-association.fr"
+            placeholder={t("websitePlaceholder")}
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs">IBAN</Label>
+            <Label className="text-xs">{t("iban")}</Label>
             <Input
               disabled={!canEdit}
               value={iban}
@@ -89,7 +91,7 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs">BIC</Label>
+            <Label className="text-xs">{t("bic")}</Label>
             <Input
               disabled={!canEdit}
               value={bic}
@@ -103,13 +105,13 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
 
       {hasPreview && (
         <div className="rounded-lg border bg-muted/30 p-3 text-xs space-y-1.5">
-          <p className="font-medium text-muted-foreground">Aperçu sur le document</p>
+          <p className="font-medium text-muted-foreground">{t("previewTitle")}</p>
           {website && <p className="text-muted-foreground">{website}</p>}
           {(iban || bic) && (
             <div className="pt-1 space-y-0.5">
-              <p className="font-medium">Coordonnées bancaires</p>
-              {iban && <p className="text-muted-foreground">IBAN : {iban}</p>}
-              {bic  && <p className="text-muted-foreground">BIC : {bic}</p>}
+              <p className="font-medium">{t("bankDetails")}</p>
+              {iban && <p className="text-muted-foreground">{t("ibanColon", { value: iban })}</p>}
+              {bic  && <p className="text-muted-foreground">{t("bicColon", { value: bic })}</p>}
             </div>
           )}
         </div>
@@ -117,7 +119,7 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
 
       {canEdit && (
         <Button size="sm" disabled={!dirty} loading={mutation.isPending} onClick={() => mutation.mutate()}>
-          Enregistrer
+          {tCommon("save")}
         </Button>
       )}
     </div>

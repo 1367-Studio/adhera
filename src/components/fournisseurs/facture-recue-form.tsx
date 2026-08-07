@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { factureRecueSchema, type FactureRecueInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -11,21 +12,6 @@ import { TextareaField } from "@/components/ui/textarea-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
-
-const typeOptions = [
-  { value: "facture",     label: "Facture"     },
-  { value: "devis_recu",  label: "Devis reçu"  },
-  { value: "comprovante", label: "Justificatif" },
-  { value: "contrat",     label: "Contrat"     },
-  { value: "autre",       label: "Autre"       },
-]
-
-const statusOptions = [
-  { value: "A_PAYER",   label: "À payer"    },
-  { value: "PAYEE",     label: "Payée"      },
-  { value: "EN_LITIGE", label: "En litige"  },
-  { value: "ANNULEE",   label: "Annulée"    },
-]
 
 interface FactureRecueFormProps {
   defaultValues?: Partial<FactureRecueInput>
@@ -35,6 +21,23 @@ interface FactureRecueFormProps {
 }
 
 export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }: FactureRecueFormProps) {
+  const t = useTranslations()
+
+  const typeOptions = [
+    { value: "facture",     label: t("fournisseurs.detail.documentTypes.facture")     },
+    { value: "devis_recu",  label: t("fournisseurs.detail.documentTypes.devisRecu")   },
+    { value: "comprovante", label: t("fournisseurs.detail.documentTypes.comprovante") },
+    { value: "contrat",     label: t("fournisseurs.detail.documentTypes.contrat")     },
+    { value: "autre",       label: t("fournisseurs.detail.documentTypes.autre")       },
+  ]
+
+  const statusOptions = [
+    { value: "A_PAYER",   label: t("fournisseurs.document.statusOptions.aPayer")   },
+    { value: "PAYEE",     label: t("fournisseurs.document.statusOptions.payee")    },
+    { value: "EN_LITIGE", label: t("fournisseurs.document.statusOptions.enLitige") },
+    { value: "ANNULEE",   label: t("fournisseurs.document.statusOptions.annulee")  },
+  ]
+
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FactureRecueInput>({
     resolver: zodResolver(factureRecueSchema),
     defaultValues: {
@@ -57,7 +60,8 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
     })
   }, [defaultValues, reset])
 
-  const fileUrl = watch("fileUrl")
+  const fileUrl       = watch("fileUrl")
+  const watchedStatus = watch("status")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -76,13 +80,13 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
         const res = await fetch("/api/upload", { method: "POST", body: fd })
         if (!res.ok) {
           const body = await res.json().catch(() => ({}))
-          toast.error(body.error ?? "Erreur lors de l'upload du document")
+          toast.error(body.error ?? t("fournisseurs.document.toasts.uploadError"))
           return
         }
         const { url } = await res.json()
         resolvedFileUrl = url
       } catch {
-        toast.error("Erreur réseau lors de l'upload — réessayez")
+        toast.error(t("fournisseurs.document.toasts.networkError"))
         return
       } finally {
         setUploading(false)
@@ -98,19 +102,19 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
           name="type"
           control={control}
           render={({ field }) => (
-            <SelectField label="Type" required options={typeOptions} value={field.value} onValueChange={field.onChange} error={errors.type?.message} />
+            <SelectField label={t("fournisseurs.document.type")} required options={typeOptions} value={field.value} onValueChange={field.onChange} error={errors.type?.message} />
           )}
         />
-        <FormField label="N° du document" placeholder="Référence fournisseur" error={errors.number?.message} {...register("number")} />
+        <FormField label={t("fournisseurs.document.number")} placeholder={t("fournisseurs.document.numberPlaceholder")} error={errors.number?.message} {...register("number")} />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Date" type="date" required error={errors.issueDate?.message} {...register("issueDate")} />
+        <FormField label={t("fournisseurs.document.date")} type="date" required error={errors.issueDate?.message} {...register("issueDate")} />
         <Controller
           name="amount"
           control={control}
           render={({ field }) => (
-            <CurrencyField label="Montant" required value={field.value ?? 0} onChange={field.onChange} error={errors.amount?.message} />
+            <CurrencyField label={t("fournisseurs.document.amount")} required value={field.value ?? 0} onChange={field.onChange} error={errors.amount?.message} />
           )}
         />
       </div>
@@ -119,12 +123,22 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
         name="status"
         control={control}
         render={({ field }) => (
-          <SelectField label="Statut" required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
+          <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
         )}
       />
+      {defaultValues?.status === "PAYEE" && watchedStatus !== "PAYEE" && (
+        <p className="text-xs text-destructive rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
+          {t("fournisseurs.document.unmarkPaidWarning")}
+        </p>
+      )}
+      {defaultValues?.status !== "PAYEE" && watchedStatus === "PAYEE" && (
+        <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
+          {t("fournisseurs.document.markPaidNotice")}
+        </p>
+      )}
 
       <div>
-        <label className="text-sm font-medium">Document</label>
+        <label className="text-sm font-medium">{t("fournisseurs.document.file")}</label>
         <div className="mt-1.5">
           <DocumentUpload
             value={fileUrl ?? ""}
@@ -137,14 +151,14 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
         {errors.fileUrl?.message && <p className="mt-1 text-xs text-destructive">{errors.fileUrl.message}</p>}
       </div>
 
-      <TextareaField label="Notes" rows={3} error={errors.notes?.message} {...register("notes")} />
+      <TextareaField label={t("documents.notes")} rows={3} error={errors.notes?.message} {...register("notes")} />
 
       <div className="flex justify-end gap-2 pt-2">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading || uploading}>
-          Annuler
+          {t("common.cancel")}
         </Button>
         <Button type="submit" loading={loading || uploading}>
-          Enregistrer
+          {t("common.save")}
         </Button>
       </div>
     </form>

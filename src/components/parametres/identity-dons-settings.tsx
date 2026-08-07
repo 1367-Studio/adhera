@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr";
@@ -26,6 +27,8 @@ interface IdentityDonsSettingsProps {
 }
 
 export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
+  const t       = useTranslations("parametres.identityDons")
+  const tCommon = useTranslations("common")
   const qc = useQueryClient()
 
   const { data } = useQuery<IdentityData>({
@@ -68,16 +71,16 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? "Erreur")
+        throw new Error(d.error ?? tCommon("error"))
       }
       return res.json()
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["association-identity"] })
-      toast.success("Identité mise à jour")
+      toast.success(t("toasts.updated"))
       setDirty(false)
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   const hasIdentifier = siren.trim() !== "" || rna.trim() !== ""
@@ -85,23 +88,23 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="text-sm font-semibold">Identité légale & Dons</h3>
+        <h3 className="text-sm font-semibold">{t("title")}</h3>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Informations requises pour l'émission des reçus fiscaux (Cerfa 11580).
+          {t("subtitle")}
         </p>
       </div>
 
       <div className="space-y-3">
         <FormField
-          label="Adresse complète"
-          placeholder="12 rue de la Paix, 75001 Paris"
+          label={t("address")}
+          placeholder={t("addressPlaceholder")}
           disabled={!canEdit}
           value={address}
           onChange={e => { setAddress(e.target.value); setDirty(true) }}
         />
         <FormField
-          label="Téléphone"
-          placeholder="01 23 45 67 89"
+          label={t("phone")}
+          placeholder={t("phonePlaceholder")}
           disabled={!canEdit}
           value={phone}
           onChange={e => { setPhone(e.target.value); setDirty(true) }}
@@ -109,16 +112,16 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
 
         <div className="grid grid-cols-2 gap-3">
           <FormField
-            label="SIREN / SIRET"
-            placeholder="123456789"
+            label={t("siren")}
+            placeholder={t("sirenPlaceholder")}
             disabled={!canEdit}
             value={siren}
             onChange={e => { setSiren(e.target.value.replace(/\D/g, "")); setDirty(true) }}
             maxLength={14}
           />
           <FormField
-            label="Numéro RNA"
-            placeholder="W751234567"
+            label={t("rna")}
+            placeholder={t("rnaPlaceholder")}
             disabled={!canEdit}
             value={rna}
             onChange={e => { setRna(e.target.value); setDirty(true) }}
@@ -126,8 +129,8 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
         </div>
 
         <FormField
-          label="Objet de l'association"
-          placeholder="Ex : promotion du sport amateur auprès des jeunes"
+          label={t("objet")}
+          placeholder={t("objetPlaceholder")}
           disabled={!canEdit}
           value={objet}
           onChange={e => { setObjet(e.target.value); setDirty(true) }}
@@ -135,7 +138,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            Catégorie de l'organisme
+            {t("organismeCategory")}
           </label>
           <select
             disabled={!canEdit}
@@ -152,13 +155,13 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
             ))}
           </select>
           <p className="text-xs text-muted-foreground">
-            Catégorie cochée sur les reçus fiscaux (Cerfa 11580 / 16216), utilisée pour les dons d'entreprises.
+            {t("organismeCategoryHint")}
           </p>
         </div>
 
         <FormField
-          label="Précisions sur la catégorie (optionnel)"
-          placeholder="Ex : date de reconnaissance d'utilité publique"
+          label={t("organismeCategoryDetail")}
+          placeholder={t("organismeCategoryDetailPlaceholder")}
           disabled={!canEdit}
           value={organismeCategoryDetail}
           onChange={e => { setOrganismeCategoryDetail(e.target.value); setDirty(true) }}
@@ -176,10 +179,9 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
             className="mt-0.5 rounded border-input accent-violet-600"
           />
           <div>
-            <p className="text-sm font-medium">Émettre des reçus fiscaux</p>
+            <p className="text-sm font-medium">{t("taxReceiptToggle")}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Notre association est reconnue d'intérêt général (Art. 200 CGI) et habilitée
-              à délivrer des reçus fiscaux permettant une réduction d'impôt de 66 % à 75 %.
+              {t("taxReceiptToggleDesc")}
             </p>
           </div>
         </label>
@@ -187,7 +189,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
         {!hasIdentifier && !canIssueTaxReceipts && (
           <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
             <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
-            <span>Ajoutez un numéro SIREN ou RNA pour pouvoir activer cette option.</span>
+            <span>{t("noIdentifierWarning")}</span>
           </div>
         )}
 
@@ -195,9 +197,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
             <span>
-              Les reçus fiscaux seront envoyés automatiquement par e-mail après chaque don
-              et disponibles au téléchargement dans l'espace membre.
-              Conservation obligatoire : 6 ans minimum.
+              {t("taxReceiptInfo")}
             </span>
           </div>
         )}
@@ -206,9 +206,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
           <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
             <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
             <span>
-              Vérifiez l'Objet et la Catégorie de l'organisme ci-dessus avant de recevoir des dons
-              d'entreprises : ils sont imprimés sur le reçu fiscal (Cerfa 16216) et le défaut
-              « Association loi 1901 » peut ne pas correspondre à votre situation.
+              {t("taxReceiptObjetWarning")}
             </span>
           </div>
         )}
@@ -221,7 +219,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
           loading={mutation.isPending}
           onClick={() => mutation.mutate()}
         >
-          Enregistrer
+          {tCommon("save")}
         </Button>
       )}
     </div>

@@ -11,11 +11,21 @@ export type MeetingParticipant = {
   membre: { id: string; firstName: string; lastName: string }
 }
 
+export type MeetingRecording = {
+  id:           string
+  identity:     string
+  displayName:  string
+  recordingKey: string | null
+  startedAt:    string
+  endedAt:      string | null
+}
+
 export type Meeting = {
   id: string
   title: string
   description: string | null
   status: "SCHEDULED" | "LIVE" | "ENDED" | "CANCELLED"
+  type: "AG" | "BUREAU" | "GENERALE"
   scheduledAt: string | null
   startedAt: string | null
   endedAt: string | null
@@ -23,10 +33,9 @@ export type Meeting = {
   createdById: string
   transcript:   string | null
   summary:      string | null
-  egressId:     string | null
-  recordingKey: string | null
   createdAt:    string
   participants: MeetingParticipant[]
+  recordings:   MeetingRecording[]
 }
 
 async function fetchMeetings() {
@@ -38,6 +47,7 @@ async function fetchMeetings() {
 async function createMeeting(data: {
   title: string
   description?: string
+  type?: "AG" | "BUREAU" | "GENERALE"
   scheduledAt?: string
   participantIds?: string[]
   instant?: boolean
@@ -51,13 +61,32 @@ async function createMeeting(data: {
   return res.json() as Promise<Meeting>
 }
 
-async function updateMeeting(id: string, data: Partial<{ status: string; endedAt: string; summary: string; transcript: string }>) {
+// Lets callers distinguish a 409 (meeting no longer editable — status changed under them)
+// from an ordinary validation error, without parsing the French message text.
+export class MeetingUpdateError extends Error {
+  constructor(message: string, public readonly status: number) {
+    super(message)
+    this.name = "MeetingUpdateError"
+  }
+}
+
+async function updateMeeting(id: string, data: Partial<{
+  status: string
+  endedAt: string
+  summary: string
+  transcript: string
+  title: string
+  description: string
+  type: "AG" | "BUREAU" | "GENERALE"
+  scheduledAt: string
+  participantIds: string[]
+}>) {
   const res = await fetch(`/api/meetings/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la mise à jour"))
+  if (!res.ok) throw new MeetingUpdateError(await apiErrorMessage(res, "Erreur lors de la mise à jour"), res.status)
   return res.json() as Promise<Meeting>
 }
 
@@ -72,7 +101,7 @@ async function fetchToken(meetingId: string, endpoint: string) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ meetingId }),
   })
-  if (!res.ok) throw new Error("Erreur lors de la génération du token")
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Impossible de rejoindre la réunion."))
   return res.json() as Promise<{ token: string; roomName: string; serverUrl: string }>
 }
 
@@ -158,5 +187,53 @@ export function useMeetingToken(meetingId: string | null, endpoint = "/api/meeti
     queryFn: () => fetchToken(meetingId!, endpoint),
     enabled: !!meetingId,
     staleTime: 1000 * 60 * 60 * 3,
+    // Every mount here is a fresh "join now" action (e.g. clicking Démarrer/Rejoindre again
+    // after a failure), not a cacheable read — without this, retrying within the default
+    // 5min gcTime window just replays the previous attempt's cached error/toast instantly,
+    // never actually hitting the network again.
+    refetchOnMount: "always",
+  })
+}
+
+async function generateShareLink(meetingId: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/share-link`, { method: "POST" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<{ shareToken: string; shareExpiresAt: string }>
+}
+
+async function revokeShareLink(meetingId: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/share-link`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+}
+
+async function sendMeetingMinutesEmail(meetingId: string, to: string, message: string) {
+  const res = await fetch(`/api/meetings/${meetingId}/transcript-pdf/send-email`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ to, message }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'envoi de l'e-mail"))
+  return res.json()
+}
+
+export function useGenerateMeetingShareLink(meetingId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => generateShareLink(meetingId),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ["meeting", meetingId] }),
+  })
+}
+
+export function useRevokeMeetingShareLink(meetingId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => revokeShareLink(meetingId),
+    onSuccess:  () => qc.invalidateQueries({ queryKey: ["meeting", meetingId] }),
+  })
+}
+
+export function useSendMeetingMinutesEmail(meetingId: string) {
+  return useMutation({
+    mutationFn: ({ to, message }: { to: string; message: string }) => sendMeetingMinutesEmail(meetingId, to, message),
   })
 }

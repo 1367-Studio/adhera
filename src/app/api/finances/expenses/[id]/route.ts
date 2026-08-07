@@ -3,14 +3,21 @@ import { prisma } from "@/lib/prisma/client"
 import { expenseUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { closedExerciceGuard } from "@/lib/finance/exercice"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.expense.findFirst({ where: { id, associationId } })
+  const existing = await prisma.expense.findFirst({
+    where:   { id, associationId },
+    include: { exercice: { select: { status: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  if (closedGuard) return closedGuard
 
   const body   = await req.json()
   const parsed = expenseUpdateSchema.safeParse(body)
@@ -18,7 +25,20 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, categoryId, vendor, description, receiptUrl, internalNote, ...rest } = parsed.data
+  const { date, categoryId, vendor, description, receiptUrl, internalNote, paymentMethod, ...rest } = parsed.data
+
+  // Auto-created from a FactureRecue marked payée — amount/date/status/vendor mirror that
+  // document and can only change by editing it from Fournisseurs. categoryId/description/
+  // internalNote/receiptUrl are association-side annotations and stay editable here.
+  if (existing.factureRecueId) {
+    const changesAmount = rest.amount !== undefined && Number(rest.amount) !== Number(existing.amount)
+    const changesStatus = rest.status !== undefined && rest.status !== existing.status
+    const changesDate    = date       !== undefined && new Date(date).getTime() !== existing.date.getTime()
+    const changesVendor  = vendor     !== undefined && (vendor || null) !== existing.vendor
+    if (changesAmount || changesStatus || changesDate || changesVendor) {
+      return NextResponse.json({ error: "Le montant, la date, le statut et le fournisseur de cette dépense viennent d'une facture reçue — modifiez-les depuis Fournisseurs." }, { status: 409 })
+    }
+  }
 
   // If status moves away from VALIDATED, any bank reconciliation for this expense is no
   // longer valid — unlink it and reset the transaction, mirroring what DELETE already does.
@@ -33,12 +53,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       where: { id },
       data:  {
         ...rest,
-        ...(date         ? { date: new Date(date) } : {}),
-        ...(categoryId   !== undefined ? { categoryId:   categoryId   || null } : {}),
-        ...(vendor       !== undefined ? { vendor:       vendor       || null } : {}),
-        ...(description  !== undefined ? { description:  description  || null } : {}),
-        ...(receiptUrl   !== undefined ? { receiptUrl:   receiptUrl   || null } : {}),
-        ...(internalNote !== undefined ? { internalNote: internalNote || null } : {}),
+        ...(date          ? { date: new Date(date) } : {}),
+        ...(categoryId    !== undefined ? { categoryId:    categoryId    || null } : {}),
+        ...(vendor        !== undefined ? { vendor:        vendor        || null } : {}),
+        ...(description   !== undefined ? { description:   description   || null } : {}),
+        ...(receiptUrl    !== undefined ? { receiptUrl:    receiptUrl    || null } : {}),
+        ...(internalNote  !== undefined ? { internalNote:  internalNote  || null } : {}),
+        ...(paymentMethod !== undefined ? { paymentMethod: paymentMethod || null } : {}),
       },
     }),
     ...(leavesValidated ? [prisma.bankReconciliation.deleteMany({ where: { expenseId: id } })] : []),
@@ -54,8 +75,18 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.expense.findFirst({ where: { id, associationId } })
+  const existing = await prisma.expense.findFirst({
+    where:   { id, associationId },
+    include: { exercice: { select: { status: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  if (closedGuard) return closedGuard
+
+  if (existing.factureRecueId) {
+    return NextResponse.json({ error: "Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer." }, { status: 409 })
+  }
 
   // Find linked bank transactions before deleting the reconciliation link
   const reconciliations = await prisma.bankReconciliation.findMany({

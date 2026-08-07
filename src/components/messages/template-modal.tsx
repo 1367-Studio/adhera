@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { DotsSixIcon, ChatTextIcon, PaperPlaneTiltIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
@@ -13,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { useModules } from "@/lib/user-context"
-import { substituteVars, buildVars, TEMPLATE_CATEGORIES, TEMPLATE_CATEGORY_LABELS } from "@/lib/automation"
+import { substituteVars, buildVars, TEMPLATE_CATEGORIES, type TemplateCategory } from "@/lib/automation"
 import {
   useCreateTemplate, useUpdateTemplate, useTestSendTemplate,
   type MessageTemplate, type TemplateInput,
@@ -23,17 +24,28 @@ function hasText(html: string) {
   return html.replace(/<[^>]*>/g, "").trim().length > 0
 }
 
-const CATEGORY_OPTIONS = TEMPLATE_CATEGORIES.map(value => ({ value, label: TEMPLATE_CATEGORY_LABELS[value] }))
+function getTemplateCategoryLabels(t: ReturnType<typeof useTranslations>): Record<TemplateCategory, string> {
+  return {
+    GENERAL:     t("messages.categories.general"),
+    COTISATION:  t("messages.categories.cotisation"),
+    EVENEMENT:   t("messages.categories.evenement"),
+    MEMBRE:      t("messages.categories.membre"),
+    FACTURATION: t("messages.categories.facturation"),
+  }
+}
 
-const schema = z.object({
-  name:     z.string().min(1, "Requis"),
-  category: z.enum(TEMPLATE_CATEGORIES),
-  subject:  z.string().min(1, "Requis"),
-  body:     z.string().refine(hasText, "Requis"),
-  smsBody:  z.string().optional(),
-})
+function buildSchema(t: ReturnType<typeof useTranslations>) {
+  return z.object({
+    name:      z.string().min(1, t("messages.templateModal.validation.required")),
+    category:  z.enum(TEMPLATE_CATEGORIES),
+    subject:   z.string().min(1, t("messages.templateModal.validation.required")),
+    body:      z.string().refine(hasText, t("messages.templateModal.validation.required")),
+    smsBody:   z.string().optional(),
+    isDefault: z.boolean(),
+  })
+}
 
-type FormValues = z.infer<typeof schema>
+type FormValues = z.infer<ReturnType<typeof buildSchema>>
 
 const PREVIEW_VARS = buildVars({
   prenom:            "Prénom",
@@ -48,20 +60,6 @@ const PREVIEW_VARS = buildVars({
   lieuEvenement:     "Salle des fêtes",
 })
 
-const VARIABLES = [
-  { token: "{{prenom}}",             label: "Prénom" },
-  { token: "{{nom}}",                label: "Nom" },
-  { token: "{{nom_complet}}",        label: "Nom complet" },
-  { token: "{{email}}",              label: "Email" },
-  { token: "{{association}}",        label: "Association" },
-  { token: "{{lien_portal}}",        label: "Lien portail" },
-  { token: "{{annee_cotisation}}",   label: "Année cotis." },
-  { token: "{{montant_cotisation}}", label: "Montant cotis." },
-  { token: "{{titre_evenement}}",    label: "Titre événement" },
-  { token: "{{date_evenement}}",     label: "Date événement" },
-  { token: "{{lieu_evenement}}",     label: "Lieu événement" },
-]
-
 interface Props {
   open:         boolean
   onOpenChange: (open: boolean) => void
@@ -69,6 +67,23 @@ interface Props {
 }
 
 export function TemplateModal({ open, onOpenChange, template }: Props) {
+  const t = useTranslations()
+  const templateCategoryLabels = getTemplateCategoryLabels(t)
+  const categoryOptions = TEMPLATE_CATEGORIES.map(value => ({ value, label: templateCategoryLabels[value] }))
+  const variables = [
+    { token: "{{prenom}}",             label: t("messages.templateModal.variables.prenom") },
+    { token: "{{nom}}",                label: t("messages.templateModal.variables.nom") },
+    { token: "{{nom_complet}}",        label: t("messages.templateModal.variables.nomComplet") },
+    { token: "{{email}}",              label: t("messages.templateModal.variables.email") },
+    { token: "{{association}}",        label: t("messages.templateModal.variables.association") },
+    { token: "{{lien_portal}}",        label: t("messages.templateModal.variables.lienPortal") },
+    { token: "{{annee_cotisation}}",   label: t("messages.templateModal.variables.anneeCotisation") },
+    { token: "{{montant_cotisation}}", label: t("messages.templateModal.variables.montantCotisation") },
+    { token: "{{titre_evenement}}",    label: t("messages.templateModal.variables.titreEvenement") },
+    { token: "{{date_evenement}}",     label: t("messages.templateModal.variables.dateEvenement") },
+    { token: "{{lieu_evenement}}",     label: t("messages.templateModal.variables.lieuEvenement") },
+  ]
+
   const isEditing = !!template
   const { sms }   = useModules()
   const createMut = useCreateTemplate()
@@ -77,47 +92,48 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false)
 
   const { register, handleSubmit, reset, setValue, watch, control, formState: { errors, isSubmitting } } = useForm<FormValues>({
-    resolver:      zodResolver(schema),
-    defaultValues: { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" },
+    resolver:      zodResolver(buildSchema(t)),
+    defaultValues: { name: "", category: "GENERAL", subject: "", body: "", smsBody: "", isDefault: false },
   })
 
   useEffect(() => {
     if (open) {
       reset(template
-        ? { name: template.name, category: template.category, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "" }
-        : { name: "", category: "GENERAL", subject: "", body: "", smsBody: "" }
+        ? { name: template.name, category: template.category, subject: template.subject, body: template.body, smsBody: template.smsBody ?? "", isDefault: template.isDefault }
+        : { name: "", category: "GENERAL", subject: "", body: "", smsBody: "", isDefault: false }
       )
     }
   }, [open, template, reset])
 
   async function onSubmit(data: FormValues) {
     const payload: TemplateInput = {
-      name:     data.name,
-      category: data.category,
-      subject:  data.subject,
-      body:     data.body,
-      smsBody:  data.smsBody?.trim() || undefined,
+      name:      data.name,
+      category:  data.category,
+      subject:   data.subject,
+      body:      data.body,
+      smsBody:   data.smsBody?.trim() || undefined,
+      isDefault: data.isDefault,
     }
     try {
       if (isEditing) {
         await updateMut.mutateAsync(payload)
-        toast.success("Modèle mis à jour")
+        toast.success(t("messages.templateModal.toasts.updated"))
       } else {
         await createMut.mutateAsync(payload)
-        toast.success("Modèle créé")
+        toast.success(t("messages.templateModal.toasts.created"))
       }
       onOpenChange(false)
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
   async function handleTestSend() {
     try {
       const res = await testMut.mutateAsync(template!.id) as { sentTo: string }
-      toast.success(`Email de test envoyé à ${res.sentTo}`)
+      toast.success(t("messages.templateModal.toasts.testSent", { email: res.sentTo }))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : t("common.error"))
     }
   }
 
@@ -130,15 +146,15 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
     <Modal
       open={open}
       onOpenChange={onOpenChange}
-      title={isEditing ? "Modifier le modèle" : "Nouveau modèle"}
+      title={isEditing ? t("messages.templateModal.editTitle") : t("messages.templateModal.newTitle")}
       size="2xl"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <FormField
-            label="Nom interne"
+            label={t("messages.templateModal.internalName")}
             required
-            placeholder="Rappel cotisation annuelle"
+            placeholder={t("messages.templateModal.internalNamePlaceholder")}
             error={errors.name?.message}
             {...register("name")}
           />
@@ -147,8 +163,8 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
             control={control}
             render={({ field }) => (
               <SelectField
-                label="Catégorie"
-                options={CATEGORY_OPTIONS}
+                label={t("messages.templateModal.category")}
+                options={categoryOptions}
                 value={field.value}
                 onValueChange={field.onChange}
               />
@@ -156,17 +172,17 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
           />
         </div>
         <FormField
-          label="Objet de l'email"
+          label={t("messages.templateModal.emailSubject")}
           required
-          placeholder="Rappel : votre cotisation {{annee_cotisation}}"
+          placeholder={t("messages.templateModal.emailSubjectPlaceholder")}
           error={errors.subject?.message}
           {...register("subject")}
         />
 
         <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground">Variables — glissez dans l'objet, le corps ou le SMS</p>
+          <p className="text-xs font-medium text-muted-foreground">{t("messages.templateModal.variablesHint")}</p>
           <div className="flex flex-wrap gap-1.5">
-            {VARIABLES.map(v => (
+            {variables.map(v => (
               <button
                 key={v.token}
                 type="button"
@@ -186,30 +202,42 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         </div>
 
         <RichTextEditor
-          label="Corps du message (email)"
+          label={t("messages.templateModal.emailBody")}
           required
           value={watch("body")}
           onChange={v => setValue("body", v, { shouldValidate: true })}
-          placeholder="Bonjour {{prenom}},…"
+          placeholder={t("messages.templateModal.emailBodyPlaceholder")}
           minHeight="200px"
           error={errors.body?.message}
         />
+
+        <label className="flex items-start gap-2.5 rounded-lg border p-3 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register("isDefault")}
+            className="mt-0.5 size-4 shrink-0 cursor-pointer rounded border border-input accent-primary"
+          />
+          <span className="space-y-0.5">
+            <span className="block text-sm font-medium">{t("messages.templateModal.isDefault")}</span>
+            <span className="block text-xs text-muted-foreground">{t("messages.templateModal.isDefaultHint")}</span>
+          </span>
+        </label>
 
         {sms && (
           <div className="space-y-2 rounded-xl border bg-muted/20 p-4">
             <div className="flex items-center gap-2">
               <ChatTextIcon className="size-4 text-muted-foreground" />
-              <p className="text-sm font-medium">Corps du SMS</p>
+              <p className="text-sm font-medium">{t("messages.templateModal.smsBody")}</p>
             </div>
-            <p className="text-xs text-muted-foreground">Texte court envoyé par SMS. Laissez vide si ce modèle n'est pas utilisé avec un canal SMS.</p>
+            <p className="text-xs text-muted-foreground">{t("messages.templateModal.smsBodyHint")}</p>
             <textarea
               {...register("smsBody")}
               rows={3}
-              placeholder="{{association}} — Bonjour {{prenom}}, …"
+              placeholder={t("messages.templateModal.smsBodyPlaceholder")}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <p className={`text-xs text-right ${smsBody.length > 160 ? "text-amber-600" : "text-muted-foreground"}`}>
-              {smsBody.length} / 160 caractères{smsBody.length > 160 ? " — sera divisé en plusieurs SMS" : ""}
+              {t("messages.templateModal.smsCharCount", { count: smsBody.length })}{smsBody.length > 160 ? t("messages.templateModal.smsWillSplit") : ""}
             </p>
           </div>
         )}
@@ -217,7 +245,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         <div className="flex items-center justify-between pt-1">
           <div className="flex gap-2">
             <Button type="button" variant="ghost" size="sm" onClick={() => setPreviewOpen(true)}>
-              <EyeIcon className="mr-1.5 size-3.5" /> Aperçu
+              <EyeIcon className="mr-1.5 size-3.5" /> {t("messages.templateModal.preview")}
             </Button>
             {isEditing && (
               <Button
@@ -225,19 +253,19 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
                 variant="ghost"
                 size="sm"
                 loading={testMut.isPending}
-                title="Envoie un email de test à votre adresse"
+                title={t("messages.templateModal.testTooltip")}
                 onClick={handleTestSend}
               >
-                <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> Tester
+                <PaperPlaneTiltIcon className="mr-1.5 size-3.5" /> {t("messages.templateModal.test")}
               </Button>
             )}
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Annuler
+              {t("common.cancel")}
             </Button>
             <Button type="submit" loading={isPending}>
-              {isEditing ? "Enregistrer" : "Créer"}
+              {isEditing ? t("common.save") : t("messages.templateModal.create")}
             </Button>
           </div>
         </div>
@@ -246,13 +274,13 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
       <Modal
         open={previewOpen}
         onOpenChange={setPreviewOpen}
-        title="Aperçu du message"
-        description="Rendu avec des données d'exemple"
+        title={t("messages.templateModal.previewTitle")}
+        description={t("messages.templateModal.previewDescription")}
         size="lg"
       >
         <div className="space-y-3">
           <div>
-            <p className="text-xs font-medium text-muted-foreground mb-1">Objet</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">{t("messages.templateModal.previewSubject")}</p>
             <p className="text-sm font-medium">{substituteVars(subject || "", PREVIEW_VARS)}</p>
           </div>
           <div className="rounded-lg border p-4 bg-card">

@@ -9,6 +9,7 @@ const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
 const schema = z.object({
   name:          z.string().min(1).max(150).optional(),
   category:      z.string().max(80).optional().nullable(),
+  categoryId:    z.string().optional().nullable(),
   description:   z.string().max(1000).optional().nullable(),
   serialNumber:  z.string().max(100).optional().nullable(),
   quantity:      z.number().int().min(1).optional(),
@@ -16,6 +17,8 @@ const schema = z.object({
   location:      z.string().max(150).optional().nullable(),
   purchaseDate:  z.string().optional().nullable(),
   purchasePrice: z.number().positive().optional().nullable(),
+  rentalRate:    z.number().nonnegative().optional().nullable(),
+  imageUrl:      z.string().max(1000).optional().nullable(),
   notes:         z.string().max(1000).optional().nullable(),
 })
 
@@ -29,19 +32,27 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const material = await prisma.material.findFirst({
     where:   { id, associationId },
     include: {
+      financeCategory: { select: { id: true, name: true } },
       loans: {
         orderBy: { borrowedAt: "desc" },
-        include: { membre: { select: { firstName: true, lastName: true } } },
+        include: {
+          membre:  { select: { firstName: true, lastName: true, email: true } },
+          facture: { select: { id: true, number: true, status: true } },
+        },
       },
     },
   })
   if (!material) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
-  const loanedQty = material.loans
-    .filter(l => !l.returnedAt && l.status === "CONFIRME")
-    .reduce((s, l) => s + l.quantity, 0)
+  const now = new Date()
+  const activeLoans = material.loans.filter(l => !l.returnedAt && l.status === "CONFIRME")
+  const loanedQty   = activeLoans.reduce((s, l) => s + l.quantity, 0)
+  const reservedQty = activeLoans.filter(l => l.borrowedAt > now).reduce((s, l) => s + l.quantity, 0)
+  // Only loans that have actually started reduce today's usable stock — a future-dated
+  // reservation shouldn't make an otherwise-free item look unavailable right now.
+  const currentQty  = activeLoans.filter(l => l.borrowedAt <= now).reduce((s, l) => s + l.quantity, 0)
 
-  return NextResponse.json({ ...material, loanedQty, availableQty: material.quantity - loanedQty })
+  return NextResponse.json({ ...material, loanedQty, reservedQty, availableQty: material.quantity - currentQty })
 }, { roles: ALLOWED })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -54,7 +65,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { purchaseDate, purchasePrice, ...rest } = parsed.data
+  const { purchaseDate, purchasePrice, rentalRate, ...rest } = parsed.data
 
   if (rest.quantity !== undefined) {
     const activeLoans = await prisma.materialLoan.aggregate({
@@ -76,6 +87,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...rest,
       ...(purchaseDate !== undefined ? { purchaseDate: purchaseDate ? new Date(purchaseDate) : null } : {}),
       ...(purchasePrice !== undefined ? { purchasePrice: purchasePrice ?? null } : {}),
+      ...(rentalRate !== undefined ? { rentalRate: rentalRate ?? null } : {}),
     },
   })
 

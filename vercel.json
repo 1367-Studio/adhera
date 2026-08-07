@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/purge-email-html",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/cotisation-status-sweep",
+      "schedule": "0 5 * * *"
     }
   ]
 }

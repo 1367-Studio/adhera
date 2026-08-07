@@ -1,0 +1,3863 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "loading": "Loading...",
+    "search": "Search",
+    "yes": "Yes",
+    "no": "No",
+    "success": "Success",
+    "error": "Error",
+    "genericError": "An error occurred",
+    "networkError": "Network error",
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "created": "Created",
+    "updated": "Updated",
+    "irreversibleAction": "This action cannot be undone."
+  },
+  "auth": {
+    "layout": {
+      "imageAlt": "Login",
+      "eyebrow": "Association management platform",
+      "headingLine1": "Manage your association.",
+      "headingLine2": "Simply.",
+      "subtitle": "Members, dues, events, and treasury — all in one place.",
+      "featureMembers": "Member & subscriber management",
+      "featureCotisations": "Dues tracking",
+      "featureEvents": "Events & attendance",
+      "featureTreasury": "Simplified treasury",
+      "footerSuffix": "Data hosted in France"
+    },
+    "login": {
+      "pageTitle": "Login",
+      "heading": "Login",
+      "subtitle": "Enter your credentials to access your space.",
+      "suspended": "Your association's subscription is suspended. Contact your administrator to resolve the situation.",
+      "noAccount": "Don't have an account yet?",
+      "createAccount": "Create an account",
+      "form": {
+        "emailLabel": "Email address",
+        "emailPlaceholder": "contact@association.fr",
+        "passwordLabel": "Password",
+        "forgotPassword": "Forgot your password?",
+        "submit": "Sign in",
+        "or": "or",
+        "continueWithGoogle": "Continue with Google"
+      }
+    },
+    "register": {
+      "pageTitle": "Create an account",
+      "heading": "Create an account",
+      "subtitle": "{trialDays}-day free trial · No commitment · Cancel anytime",
+      "alreadyAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "steps": {
+        "info": "Your account",
+        "payment": "Payment"
+      },
+      "form": {
+        "associationNameLabel": "Association name",
+        "associationNamePlaceholder": "Paris Sports Association",
+        "cityLabel": "City",
+        "cityPlaceholder": "Paris",
+        "firstNameLabel": "First name",
+        "firstNamePlaceholder": "John",
+        "lastNameLabel": "Last name",
+        "lastNamePlaceholder": "Smith",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "contact@association.com",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Min. 8 characters",
+        "passwordGoogleHint": "For this first account creation, choose a password. You'll then be able to sign in with Google.",
+        "acceptTermsPrefix": "I accept the",
+        "termsOfService": "Terms of Service",
+        "acceptTermsAnd": "and the",
+        "privacyPolicy": "privacy policy",
+        "continueToPayment": "Continue to payment",
+        "perkTrialDays": "{days} free days",
+        "perkNoCommitment": "No commitment",
+        "perkEasyCancel": "Easy cancellation",
+        "genericError": "Error"
+      },
+      "payment": {
+        "trialBadge": "Free trial",
+        "freeToday": "€0 today",
+        "trialOffered": "{days} days offered",
+        "afterTrial": "After the trial period",
+        "perMonth": "{price}/month",
+        "billedOnce": "Billed once · {total}/year",
+        "discount": "−{pct}%",
+        "paymentError": "Payment error",
+        "createAccountError": "Error creating account",
+        "genericError": "Error",
+        "startTrial": "Start my free trial",
+        "securePayment": "Secure payment by Stripe · Cancel before {days} days to pay nothing"
+      },
+      "done": {
+        "title": "Account created successfully!",
+        "withGoogle": "Sign in with Google to access your dashboard.",
+        "withPassword": "Sign in with the email and password you just set.",
+        "continueWithGoogle": "Continue with Google",
+        "googleSignInFailed": "Google sign-in failed. Try again or sign in with your password.",
+        "orSignInWithPassword": "Or sign in with your email and password",
+        "signIn": "Sign in"
+      }
+    },
+    "forgotPassword": {
+      "pageTitle": "Forgot password",
+      "heading": "Forgot your password?",
+      "subtitle": "Enter your email address to receive a reset link.",
+      "backToLogin": "Back to sign in",
+      "form": {
+        "emailLabel": "Email address",
+        "emailPlaceholder": "contact@association.fr",
+        "emailRequired": "Email address required.",
+        "emailInvalid": "Invalid email address.",
+        "submit": "Send link",
+        "sendError": "Error sending. Please try again in a moment.",
+        "networkError": "Network error. Please try again."
+      },
+      "sent": {
+        "title": "Check your inbox",
+        "description": "If an account exists with <b>{email}</b>, you'll receive a reset link shortly.",
+        "checkSpam": "Don't forget to check your spam folder."
+      }
+    },
+    "resetPassword": {
+      "pageTitle": "New password",
+      "heading": "New password",
+      "subtitle": "Choose a secure password for your account.",
+      "invalidLink": "Invalid link. Please request a new reset link.",
+      "requestNewLink": "Request a new link",
+      "form": {
+        "newPasswordLabel": "New password",
+        "newPasswordPlaceholder": "Min. 8 characters",
+        "confirmPasswordLabel": "Confirm password",
+        "passwordRequired": "Password required.",
+        "passwordMinLength": "Min. 8 characters.",
+        "confirmRequired": "Confirm your password.",
+        "passwordMismatch": "Passwords do not match.",
+        "submit": "Save new password",
+        "successToast": "Password changed. You can now sign in.",
+        "genericErrorToast": "Error resetting password.",
+        "networkErrorToast": "Network error. Please try again."
+      }
+    }
+  },
+  "portal": {
+    "login": {
+      "pageTitle": "Sign in — Member area",
+      "title": "Member area",
+      "subtitle": "Sign in to access your area.",
+      "suspendedNotice": "This association's subscription is suspended. Contact the administrator to resolve the situation.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "contact@association.org",
+      "passwordLabel": "Password",
+      "signIn": "Sign in",
+      "forgotPassword": "Forgot password?",
+      "or": "or",
+      "continueWithGoogle": "Continue with Google",
+      "noAccount": "No account yet? Sign up"
+    },
+    "register": {
+      "pageTitle": "Create an account — Member area",
+      "title": "Create an account",
+      "subtitle": "Join your association's member area.",
+      "alreadyAccount": "Already have an account? Sign in",
+      "viaGoogleNotice": "You're continuing with Google. Confirm your details to finish creating your account.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "emailLabel": "Email address",
+      "typeLabel": "Member type",
+      "typePlaceholder": "Choose a type…",
+      "acceptTerms": "I agree that my data will be processed in accordance with the",
+      "privacyPolicy": "privacy policy",
+      "submit": "Create my account",
+      "toasts": {
+        "createError": "Error creating the account",
+        "accountCreated": "Account created!",
+        "accountCreatedCheckEmail": "Account created! Check your email to receive your login details."
+      }
+    },
+    "checkin": {
+      "label": "Check-in",
+      "confirmPresence": "Confirm my attendance",
+      "peopleCheckedIn": "{count, plural, one {# person already checked in} other {# people already checked in}}",
+      "successTitle": "Attendance recorded!",
+      "successDescription": "Your attendance for {title} has been confirmed.",
+      "alreadyTitle": "Already checked in",
+      "alreadyDescription": "Your attendance for {title} has already been confirmed.",
+      "expiredTitle": "QR Code expired",
+      "expiredDescription": "This QR Code is no longer valid. Contact the organizer.",
+      "invalidTitle": "Invalid QR Code",
+      "invalidDescription": "This link does not match any event.",
+      "errorTitle": "Error",
+      "genericError": "An error occurred.",
+      "retry": "Retry"
+    },
+    "meetingShare": {
+      "label": "Meeting minutes",
+      "download": "Download PDF",
+      "expiredTitle": "Link expired",
+      "expiredDescription": "This share link is no longer valid. Ask the association for a new one.",
+      "invalidTitle": "Invalid link",
+      "invalidDescription": "This share link was not found or has been revoked.",
+      "errorTitle": "Something went wrong",
+      "genericError": "Something went wrong. Please try again."
+    },
+    "sidebar": {
+      "actualites": "News",
+      "evenements": "Events",
+      "materiel": "Equipment",
+      "cotisation": "My dues",
+      "dons": "My donations",
+      "sondages": "Surveys",
+      "boutique": "Shop",
+      "reunions": "Meetings",
+      "communications": "My communications",
+      "profil": "My profile",
+      "mySpace": "My space"
+    },
+    "rsvp": {
+      "confirme": "I'll be there!",
+      "provavel": "If possible",
+      "incerto": "Maybe",
+      "absent": "I'm not coming"
+    }
+  },
+  "documents": {
+    "fournisseur": "Supplier",
+    "fournisseurModuleDisabled": "Suppliers module disabled",
+    "issueDate": "Issue date",
+    "items": "Items",
+    "itemDescription": "Description",
+    "quantity": "Qty",
+    "unitPrice": "Unit price",
+    "vatRate": "VAT %",
+    "discount": "Discount",
+    "addItem": "Add an item",
+    "subtotal": "Subtotal",
+    "vat": "VAT",
+    "totalDiscount": "Total discount",
+    "total": "Total",
+    "paymentTerms": "Payment terms",
+    "paymentTermsPlaceholder": "e.g. Payment within 30 days",
+    "notes": "Notes",
+    "sendByEmailTitle": "Send {label} by email",
+    "recipient": "Recipient",
+    "messageOptional": "Message (optional)",
+    "messagePlaceholder": "A note to go along with the email…",
+    "send": "Send",
+    "previewLoadError": "Unable to load the preview.",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "download": "Download",
+    "historyTitle": "History",
+    "historyTitleWithNumber": "History — {number}",
+    "activityLog": {
+      "devisCreated": "Quote created",
+      "devisUpdated": "Quote updated",
+      "devisSent": "Quote sent",
+      "devisAccepted": "Quote accepted",
+      "devisRefused": "Quote refused",
+      "devisExpired": "Quote expired",
+      "devisDuplicated": "Quote duplicated",
+      "devisConverted": "Quote converted to invoice",
+      "devisDeleted": "Quote deleted",
+      "devisEmailSent": "Quote sent by email",
+      "factureCreated": "Invoice created",
+      "factureCreatedFromDevis": "Invoice created from a quote",
+      "factureUpdated": "Invoice updated",
+      "factureDuplicated": "Invoice duplicated",
+      "factureDeleted": "Invoice deleted",
+      "facturePaymentAdded": "Payment recorded",
+      "facturePaymentRemoved": "Payment removed",
+      "factureEmailSent": "Invoice sent by email",
+      "fournisseurCreated": "Supplier created",
+      "fournisseurUpdated": "Supplier updated",
+      "fournisseurDeleted": "Supplier archived",
+      "factureRecueCreated": "Document added",
+      "factureRecueUpdated": "Document updated",
+      "factureRecueDeleted": "Document deleted",
+      "noHistory": "No history",
+      "statusChange": "Status: {old} → {new}",
+      "system": "System",
+      "shownOfTotal": "{shown} of {total}",
+      "loadMore": "Load more"
+    }
+  },
+  "documentUpload": {
+    "fileTooLarge": "File too large (max 10 MB)",
+    "uploadError": "Error uploading the file",
+    "networkError": "Network error while uploading — please try again",
+    "pdfDocument": "PDF document",
+    "imageReceipt": "Image receipt",
+    "viewDocument": "View document",
+    "remove": "Remove",
+    "uploading": "Uploading…",
+    "attach": "Attach an image or PDF (max 10 MB)"
+  },
+  "factures": {
+    "form": {
+      "status": {
+        "brouillon": "Draft",
+        "enAttente": "Pending",
+        "partiellementPayee": "Partially paid",
+        "payee": "Paid",
+        "annulee": "Cancelled"
+      },
+      "dueDate": "Due date",
+      "statusLockedNotice": "Determined by recorded payments — you can still cancel the invoice."
+    },
+    "view": {
+      "title": "Invoices",
+      "newFacture": "New invoice",
+      "count": "{count, plural, one {# result} other {# results}}",
+      "countTotal": "{count, plural, one {# invoice} other {# invoices}}",
+      "columns": {
+        "number": "No.",
+        "dueDate": "Due date",
+        "amount": "Amount",
+        "paymentMethod": "Payment method",
+        "status": "Status"
+      },
+      "fromDevis": "From {number}",
+      "remaining": "{amount} remaining",
+      "status": {
+        "enRetard": "Overdue"
+      },
+      "actions": {
+        "recordPayment": "Record a payment",
+        "paymentHistory": "Payment history",
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "preview": "Preview",
+        "downloadPdf": "Download PDF",
+        "sendEmail": "Send by email",
+        "history": "History",
+        "delete": "Delete"
+      },
+      "searchPlaceholder": "Search for an invoice…",
+      "allStatuses": "All statuses",
+      "supplierFilter": "Supplier: {name}",
+      "supplierFilterFallback": "filtered",
+      "noResultsFor": "No results for \"{search}\"",
+      "noFacture": "No invoice recorded",
+      "loadingDetail": "Loading…",
+      "editTitle": "Edit invoice",
+      "documentLabel": "invoice {number}",
+      "documentTitle": "Invoice {number}",
+      "deleteConfirmTitle": "Delete invoice {number}?",
+      "deleteConfirmFromDevis": "This invoice originates from quote {number} — the quote will become available for a new conversion after this deletion.",
+      "deleteConfirmIrreversible": "This action cannot be undone.",
+      "toasts": {
+        "created": "Invoice created successfully",
+        "updated": "Invoice updated",
+        "duplicated": "Invoice {number} created",
+        "sent": "Invoice sent by email",
+        "deleted": "Invoice deleted",
+        "confirm": "Confirm"
+      }
+    },
+    "payment": {
+      "title": "Record a payment",
+      "amount": "Amount",
+      "remainingBalance": "Remaining balance: {amount}",
+      "method": "Method",
+      "date": "Payment date",
+      "note": "Note",
+      "notePlaceholder": "Reference, remark…",
+      "historyTitle": "Payment history",
+      "noPayments": "No payment recorded",
+      "deleteConfirmTitle": "Delete this payment?",
+      "deleteConfirmDescription": "The {amount} payment will be removed and the invoice status recalculated.",
+      "deleteTooltip": "Delete this payment",
+      "toasts": {
+        "amountMustBePositive": "The amount must be greater than 0",
+        "amountExceedsBalance": "The amount exceeds the remaining balance ({amount})",
+        "recorded": "Payment recorded",
+        "deleted": "Payment deleted"
+      }
+    }
+  },
+  "devis": {
+    "form": {
+      "status": {
+        "brouillon": "Draft",
+        "envoye": "Sent",
+        "accepte": "Accepted",
+        "refuse": "Refused",
+        "expire": "Expired"
+      },
+      "validUntil": "Valid until"
+    },
+    "view": {
+      "title": "Quotes",
+      "newDevis": "New quote",
+      "count": "{count, plural, one {# result} other {# results}}",
+      "countTotal": "{count} quotes",
+      "columns": {
+        "number": "No.",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "invoiced": "Invoiced",
+      "actions": {
+        "convert": "Convert to invoice",
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "preview": "Preview",
+        "downloadPdf": "Download PDF",
+        "sendEmail": "Send by email",
+        "history": "History",
+        "delete": "Delete",
+        "deleteAlreadyInvoiced": "Delete (already invoiced)"
+      },
+      "searchPlaceholder": "Search for a quote…",
+      "allStatuses": "All statuses",
+      "supplierFilter": "Supplier: {name}",
+      "supplierFilterFallback": "filtered",
+      "noResultsFor": "No results for \"{search}\"",
+      "noDevis": "No quote recorded",
+      "loadingDetail": "Loading…",
+      "editTitle": "Edit quote",
+      "alreadyConvertedNotice": "This quote has already been converted to invoice {number}. The items are now frozen — only the status, dates and notes can still be edited.",
+      "documentLabel": "quote {number}",
+      "documentTitle": "Quote {number}",
+      "deleteConfirmTitle": "Delete quote {number}?",
+      "deleteConfirmIrreversible": "This action cannot be undone.",
+      "toasts": {
+        "created": "Quote created successfully",
+        "updated": "Quote updated",
+        "converted": "Invoice {number} created",
+        "viewAction": "View",
+        "duplicated": "Quote {number} created",
+        "sent": "Quote sent by email",
+        "deleted": "Quote deleted",
+        "confirm": "Confirm"
+      }
+    }
+  },
+  "fournisseurs": {
+    "form": {
+      "status": {
+        "actif": "Active",
+        "inactif": "Inactive"
+      },
+      "companyName": "Legal name",
+      "tradeName": "Trade name",
+      "contact": "Contact",
+      "contactPlaceholder": "Contact name",
+      "contactRole": "Contact role",
+      "email": "Email",
+      "emailPlaceholder": "contact@supplier.com",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 555 123 4567",
+      "billingEmail": "Billing email",
+      "website": "Website",
+      "address": "Address",
+      "addressPlaceholder": "123 Main St",
+      "city": "City",
+      "postalCode": "Postal code",
+      "country": "Country",
+      "siret": "Registration ID",
+      "siren": "Business ID",
+      "vatNumber": "VAT number",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. Printing, Catering…",
+      "notes": "Internal notes"
+    },
+    "view": {
+      "title": "Suppliers",
+      "count": "{count, plural, one {# result} other {# results}}",
+      "countTotal": "{count, plural, one {# supplier} other {# suppliers}}",
+      "columns": {
+        "name": "Supplier",
+        "contact": "Contact",
+        "city": "City",
+        "category": "Category",
+        "status": "Status"
+      },
+      "status": {
+        "archive": "Archived"
+      },
+      "actions": {
+        "view": "View profile",
+        "edit": "Edit",
+        "archive": "Archive"
+      },
+      "searchPlaceholder": "Search for a supplier…",
+      "allStatuses": "All statuses",
+      "statusFilter": {
+        "actifs": "Active",
+        "inactifs": "Inactive"
+      },
+      "noResultsFor": "No results for \"{search}\"",
+      "noFournisseur": "No supplier recorded",
+      "addTitle": "Add a supplier",
+      "editTitle": "Edit supplier",
+      "loadingDetail": "Loading…",
+      "archiveConfirmTitle": "Archive {name}?",
+      "archiveConfirmWithDependencies": "This supplier will no longer appear in lists. It remains linked to {devis} quote(s) and {factures} invoice(s) — those stay accessible, but this supplier won't appear in creation forms anymore (except on those existing documents).",
+      "archiveConfirmSimple": "This supplier will no longer appear in lists.",
+      "toasts": {
+        "created": "Supplier added successfully",
+        "updated": "Supplier updated",
+        "archived": "Supplier archived"
+      }
+    },
+    "detail": {
+      "notFound": "This supplier could not be found or has been deleted.",
+      "backToList": "Back to the list",
+      "backLink": "Suppliers",
+      "devisButton": "Quote",
+      "factureButton": "Invoice",
+      "documentButton": "Document",
+      "contact": "Contact",
+      "noContactInfo": "No contact information",
+      "addressAndIds": "Address & IDs",
+      "siret": "Registration ID: {value}",
+      "vat": "VAT: {value}",
+      "noInfo": "No information",
+      "internalNotes": "Internal notes",
+      "noNotes": "No notes",
+      "tabs": {
+        "devis": "Quotes",
+        "factures": "Invoices",
+        "paiements": "Payments",
+        "documents": "Documents",
+        "historique": "History"
+      },
+      "noDevis": "No quotes for this supplier",
+      "viewAll": "View all ({count})",
+      "noFacture": "No invoices for this supplier",
+      "noPayment": "No payment recorded",
+      "noDocument": "No document received",
+      "documentTypes": {
+        "facture": "Invoice",
+        "devisRecu": "Quote received",
+        "comprovante": "Receipt",
+        "contrat": "Contract",
+        "autre": "Other"
+      },
+      "inFinances": "In Finances",
+      "inFinancesTooltip": "Paid — generates an expense in Finances; deleting it or changing its status also deletes that expense",
+      "viewDocument": "View the document",
+      "delete": "Delete",
+      "showingRecentDocuments": "Showing the {count} most recent documents out of {total} total.",
+      "editTitle": "Edit supplier",
+      "newDevisTitle": "New quote",
+      "newFactureTitle": "New invoice",
+      "addDocumentTitle": "Add a document",
+      "deleteDocumentTitle": "Delete this document?",
+      "deleteDocumentPaidDescription": "This action cannot be undone. This document is marked paid: the expense it generated in Finances (and any bank reconciliation) will be deleted along with it.",
+      "deleteDocumentDescription": "This action cannot be undone.",
+      "toasts": {
+        "updated": "Supplier updated",
+        "archived": "Supplier archived",
+        "devisCreated": "Quote created successfully",
+        "factureCreated": "Invoice created successfully",
+        "documentAdded": "Document added",
+        "documentDeleted": "Document deleted"
+      }
+    },
+    "document": {
+      "type": "Type",
+      "number": "Document no.",
+      "numberPlaceholder": "Supplier reference",
+      "date": "Date",
+      "amount": "Amount",
+      "statusOptions": {
+        "aPayer": "To pay",
+        "payee": "Paid",
+        "enLitige": "In dispute",
+        "annulee": "Cancelled"
+      },
+      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
+      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
+      "file": "Document",
+      "toasts": {
+        "uploadError": "Error uploading the document",
+        "networkError": "Network error during upload — please try again"
+      }
+    }
+  },
+  "dashboard": {
+    "pageTitle": "Dashboard",
+    "subtitle": "Overview of your association",
+    "customize": {
+      "customize": "Customize",
+      "done": "Done",
+      "reset": "Reset",
+      "dragHint": "Drag to reorder"
+    },
+    "stats": {
+      "activeMembers": "Active members",
+      "eventsThisMonth": "Events this month",
+      "cotisationsPending": "Pending membership fees",
+      "financialBalance": "Financial balance"
+    },
+    "nextEvent": {
+      "title": "Next event",
+      "empty": "No upcoming events."
+    },
+    "cotisations": {
+      "title": "Membership fees {year}",
+      "collectedThisYear": "collected this year",
+      "pendingPayment": "{count} awaiting payment"
+    },
+    "recentOrders": {
+      "title": "Recent orders",
+      "pending": "Pending ({count})",
+      "recent": "Recent sales",
+      "guest": "Guest",
+      "viewAll": "View all orders",
+      "empty": "No sales yet."
+    },
+    "loanedMaterial": {
+      "title": "Loaned equipment",
+      "overdue": "Overdue ({count})",
+      "inProgress": "In progress",
+      "noDueDate": "No due date",
+      "viewAll": "View all equipment",
+      "empty": "No equipment currently on loan."
+    },
+    "charts": {
+      "income": "Income",
+      "expense": "Expenses",
+      "emptyState": "Charts will appear here once membership fees or financial transactions are recorded.",
+      "collectedPercent": "% collected",
+      "trendTitle": "Income vs expenses — last 6 months",
+      "categoryTitle": "Income by category — {year}"
+    }
+  },
+  "tour": {
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "progress": "'{{current}}' / '{{total}}'",
+    "helpButtonLabel": "Help and guided tour",
+    "helpButtonTooltip": "Guided tour",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to {appName} 👋",
+        "description": "Let's take a quick tour of your management space. You'll discover what each section is for and how to get started. You can restart this tour anytime with the help button in the top right."
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Your starting point: key figures, upcoming events, and your association's recent activity at a glance."
+      },
+      "membres": {
+        "title": "Members",
+        "description": "The heart of your association. Add a member with the \"Add\" button at the top of the page, import a list, filter by status or type, and send bulk SMS."
+      },
+      "evenements": {
+        "title": "Events",
+        "description": "Create an event (meeting, outing, workshop…) with \"New event\". Manage RSVPs, the location on the map, and sell paid tickets via Stripe."
+      },
+      "cotisations": {
+        "title": "Membership fees",
+        "description": "Track each member's annual membership fee: who has paid, who still needs a reminder. Set the amount and export tracking whenever you like."
+      },
+      "tresorerie": {
+        "title": "Treasury",
+        "description": "Record income and expenses by category to track your association's balance. Add a transaction with the dedicated button at the top of the page."
+      },
+      "dons": {
+        "title": "Donations",
+        "description": "Collect and track donations made to your association, with details per donor."
+      },
+      "reunions": {
+        "title": "Meetings",
+        "description": "Hold video meetings directly in {appName}. Create a meeting and share the link with participants."
+      },
+      "sondages": {
+        "title": "Polls",
+        "description": "Consult your members: create a poll, add your questions, and track responses in real time."
+      },
+      "boutique": {
+        "title": "Shop",
+        "description": "Sell products or merchandise to your members. Add an item, set its price, and manage orders."
+      },
+      "actualites": {
+        "title": "News",
+        "description": "Publish articles with rich text and images. Choose the recipients: a real-time notification alerts them automatically."
+      },
+      "messages": {
+        "title": "Messages",
+        "description": "Chat with your members from a centralized messaging space."
+      },
+      "materiel": {
+        "title": "Equipment",
+        "description": "Keep an inventory of your association's equipment and track loans and borrowings."
+      },
+      "site": {
+        "title": "Website",
+        "description": "Customize your association's public page: banner, events, news, membership form, and contact. Every section is modular."
+      },
+      "activite": {
+        "title": "History",
+        "description": "Find the log of actions taken in the management space to keep track of what's changed."
+      },
+      "parametres": {
+        "title": "Settings",
+        "description": "Configure your association and enable or disable each module. A disabled module disappears from the menu, but your data is kept."
+      },
+      "viewSwitcher": {
+        "title": "Switch space",
+        "description": "Switch from the management space to \"My space\", the member view of the portal, to see what your members see."
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Your real-time alerts appear here: new registrations, responses, payments…"
+      },
+      "themeToggle": {
+        "title": "Light / dark theme",
+        "description": "Switch between light and dark mode based on your preference."
+      },
+      "userMenu": {
+        "title": "Your profile",
+        "description": "Edit your profile, change your password, and sign out from this menu."
+      },
+      "help": {
+        "title": "Need help?",
+        "description": "That's it! Forgot something or have a question later? Click this button to restart the tour whenever you like."
+      }
+    }
+  },
+  "finances": {
+    "nav": {
+      "overview": "Overview",
+      "exercices": "Fiscal years",
+      "accounts": "Accounts",
+      "income": "Income",
+      "expenses": "Expenses",
+      "import": "Import",
+      "reconciliation": "Reconciliation",
+      "categories": "Categories",
+      "reports": "Reports"
+    },
+    "categoryForm": {
+      "name": "Name",
+      "namePlaceholder": "e.g. Membership fees",
+      "type": "Type",
+      "typeIncome": "Income",
+      "typeExpense": "Expense",
+      "accountingCode": "Accounting code",
+      "accountingCodePlaceholder": "e.g. 70600"
+    },
+    "bankAccountForm": {
+      "bankName": "Bank name",
+      "bankNamePlaceholder": "e.g. Chase",
+      "accountName": "Account name",
+      "accountNamePlaceholder": "e.g. Main account",
+      "ibanLast4": "Last 4 digits of account number",
+      "currency": "Currency",
+      "currencies": {
+        "eur": "EUR — Euro",
+        "usd": "USD — Dollar",
+        "brl": "BRL — Real",
+        "chf": "CHF — Swiss franc",
+        "gbp": "GBP — Pound sterling"
+      },
+      "openingBalance": "Opening balance"
+    },
+    "incomeForm": {
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "cancelled": "Cancelled"
+      },
+      "paymentMethod": {
+        "none": "Not specified",
+        "virement": "Bank transfer",
+        "cheque": "Check",
+        "especes": "Cash",
+        "stripe": "Stripe",
+        "autre": "Other"
+      },
+      "lockedNotice": "Amount, date, status and reference come from the original invoice payment — edit them from Invoices instead. Category and description remain editable here.",
+      "amount": "Amount",
+      "date": "Date",
+      "category": "Category",
+      "noCategory": "No category",
+      "paymentMethodLabel": "Payment method",
+      "reference": "Reference",
+      "referencePlaceholder": "e.g. TRF-2024-001",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Annual membership fee 2024"
+    },
+    "expenseForm": {
+      "status": {
+        "draft": "Draft",
+        "validated": "Validated",
+        "cancelled": "Cancelled"
+      },
+      "lockedNotice": "Amount, date, status and vendor come from the original received invoice — edit them from Suppliers instead. Category and notes remain editable here.",
+      "vendor": "Vendor",
+      "vendorPlaceholder": "e.g. Home Depot",
+      "descriptionPlaceholder": "e.g. Sports equipment purchase",
+      "internalNote": "Internal note",
+      "internalNotePlaceholder": "Note for the treasurer…",
+      "receipt": "Receipt",
+      "toasts": {
+        "uploadError": "Error uploading the receipt",
+        "networkError": "Network error during upload — please try again"
+      }
+    },
+    "exerciceForm": {
+      "foundingWarning": "This first fiscal year permanently sets the association's accounting calendar. Every following fiscal year will have to use the same start and end dates.",
+      "label": "Label",
+      "labelPlaceholder": "E.g.: Fiscal year 2026",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "patternHint": "The established fiscal calendar follows this pattern: {pattern}."
+    },
+    "exercicesView": {
+      "title": "Fiscal years",
+      "description": "Manage the association's fiscal periods.",
+      "columns": {
+        "exercice": "Fiscal year",
+        "status": "Status"
+      },
+      "status": {
+        "ouvert": "Open",
+        "cloture": "Closed"
+      },
+      "actions": {
+        "close": "Close",
+        "reopen": "Reopen",
+        "delete": "Delete"
+      },
+      "noExercices": "No fiscal year recorded",
+      "closeConfirmTitle": "Close this fiscal year?",
+      "closeConfirmWarning": "No income or expense from this period can be created or edited until it's reopened.",
+      "deleteConfirmTitle": "Delete this fiscal year?",
+      "deleteConfirmWarning": "{count, plural, =0 {No record is linked to this fiscal year.} one {# linked record will be left without a fiscal year.} other {# linked records will be left without a fiscal year.}}",
+      "reopenConfirmTitle": "Reopen this fiscal year?",
+      "reopenConfirmDescription": "Records from this period will be creatable and editable again.",
+      "add": "New fiscal year",
+      "newExerciceTitle": "New fiscal year",
+      "gapWarningTitle": "Gap between fiscal years",
+      "gapWarningDescription": "There is an uncovered gap of {days, plural, one {# day} other {# days}} (from {start} to {end}). Continue anyway?",
+      "earlyClosureTitle": "Early closure",
+      "earlyClosureDescription": "This fiscal year doesn't officially end until {date}. Closing it now will block new entries until {date}. Continue?",
+      "patternMismatchHint": "The dates don't match the established fiscal calendar. Corrected dates: {start} – {end}.",
+      "toasts": {
+        "closed": "Fiscal year closed",
+        "reopened": "Fiscal year reopened",
+        "deleted": "Fiscal year deleted",
+        "created": "Fiscal year created",
+        "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically",
+        "createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically"
+      }
+    },
+    "accountsView": {
+      "title": "Bank accounts",
+      "description": "Manage the association's bank accounts.",
+      "add": "Add an account",
+      "columns": {
+        "account": "Account",
+        "balance": "Balance",
+        "status": "Status"
+      },
+      "status": {
+        "actif": "Active",
+        "inactif": "Inactive"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "noAccounts": "No bank account recorded",
+      "newAccountTitle": "New bank account",
+      "editAccountTitle": "Edit account",
+      "deleteConfirmTitle": "Delete this account?",
+      "toasts": {
+        "created": "Account created",
+        "updated": "Account updated",
+        "deleted": "Account deleted"
+      }
+    },
+    "categoriesView": {
+      "title": "Categories",
+      "description": "Manage income and expense categories.",
+      "seedButton": "Set up default categories",
+      "noCategories": "No categories",
+      "default": "Default",
+      "income": "Income",
+      "expenses": "Expenses",
+      "newCategoryTitle": "New category",
+      "editCategoryTitle": "Edit category",
+      "deleteConfirmTitle": "Delete this category?",
+      "deleteConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. These entries will be reassigned to \"Uncategorized\".",
+      "toasts": {
+        "created": "Category created",
+        "updated": "Category updated",
+        "deleted": "Category deleted",
+        "seeded": "{count, plural, one {# category initialized} other {# categories initialized}}"
+      }
+    },
+    "incomesView": {
+      "title": "Income",
+      "description": "All money coming into the association.",
+      "columns": {
+        "date": "Date",
+        "description": "Description",
+        "compte": "Account",
+        "paymentMethod": "Payment method",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "reconciled": "Reconciled",
+      "fromInvoiceBadge": "From an invoice",
+      "fromInvoiceTooltip": "Automatically generated from an invoice payment — editable only from Invoices",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteFromInvoiceError": "This income comes from an invoice — remove the payment from Invoices instead.",
+      "searchPlaceholder": "Search…",
+      "allYears": "All years",
+      "exercise": "Fiscal year {year}",
+      "allExercices": "All fiscal years",
+      "noExercice": "No fiscal year",
+      "noExerciceBadge": "No fiscal year",
+      "noExerciceTooltip": "This record isn't linked to any fiscal year.",
+      "allStatuses": "All statuses",
+      "noIncome": "No income recorded",
+      "newTitle": "New income",
+      "editTitle": "Edit income",
+      "deleteConfirmTitle": "Delete this income?",
+      "deleteConfirmFallback": "Income of {amount}",
+      "toasts": {
+        "created": "Income recorded",
+        "updated": "Income updated",
+        "deleted": "Income deleted"
+      }
+    },
+    "expensesView": {
+      "title": "Expenses",
+      "description": "All money going out of the association.",
+      "columns": {
+        "date": "Date",
+        "description": "Description",
+        "receipt": "Receipt",
+        "compte": "Account",
+        "paymentMethod": "Payment method",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "reconciled": "Reconciled",
+      "fromReceivedInvoiceBadge": "From a received invoice",
+      "fromReceivedInvoiceTooltip": "Automatically generated from a received invoice marked paid — editable only from Suppliers",
+      "viewReceipt": "View",
+      "attachReceipt": "Attach",
+      "receiptAttached": "Receipt attached",
+      "uploadingReceipt": "Uploading…",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteFromInvoiceError": "This expense comes from a received invoice — change its status from Suppliers to remove it.",
+      "allYears": "All years",
+      "exercise": "Fiscal year {year}",
+      "allExercices": "All fiscal years",
+      "noExercice": "No fiscal year",
+      "noExerciceBadge": "No fiscal year",
+      "noExerciceTooltip": "This record isn't linked to any fiscal year.",
+      "allStatuses": "All statuses",
+      "noExpense": "No expense recorded",
+      "newTitle": "New expense",
+      "editTitle": "Edit expense",
+      "deleteConfirmTitle": "Delete this expense?",
+      "toasts": {
+        "created": "Expense recorded",
+        "updated": "Expense updated",
+        "deleted": "Expense deleted"
+      }
+    },
+    "importWizard": {
+      "title": "Import a bank statement",
+      "description": "Import a CSV, Excel or PDF statement from your bank.",
+      "steps": {
+        "upload": "Upload",
+        "mapping": "Mapping",
+        "account": "Account",
+        "preview": "Preview",
+        "result": "Result"
+      },
+      "detected": "Detected",
+      "select": "Select",
+      "step1": {
+        "dropTitle": "Drag and drop your statement here",
+        "dropSubtitle": "CSV or Excel (.xlsx, .xls) — export from your bank",
+        "pdfTitle": "Import a PDF (AI analysis)",
+        "pdfParsing": "Analyzing PDF…",
+        "pdfSubtitle": "PDF statement with native text — lines are extracted automatically",
+        "pdfModuleRequired": "Requires the {module} module — enable it in Settings → Modules"
+      },
+      "step2": {
+        "fileSelected": "Selected file",
+        "rowsDetected": "{file} — {count} row(s) detected",
+        "rowsExtractedByAi": "{file} — {count} row(s) extracted by AI",
+        "noBankAccount": "No bank account configured.",
+        "createBankAccount": "Create a bank account →",
+        "bankAccount": "Bank account",
+        "selectAccount": "Select an account",
+        "dateColumn": "Date column",
+        "labelColumn": "Label column",
+        "amountFormat": "Amount format",
+        "singleColumn": "Single column (±amount)",
+        "splitColumns": "Two columns (Debit / Credit)",
+        "singleColumnHint": "Single column (positive = credit, negative = debit)",
+        "splitColumnsHint": "Two separate columns (Debit / Credit)",
+        "amountColumn": "Amount column",
+        "debitColumn": "Debit column",
+        "creditColumn": "Credit column",
+        "balanceColumn": "Balance column (optional)",
+        "previewRows": "Preview of the file's first rows",
+        "restart": "Start over",
+        "previewResult": "Preview result"
+      },
+      "step3": {
+        "parsingResult": "Parsing result",
+        "validRows": "Valid rows",
+        "credits": "Credits",
+        "debits": "Debits",
+        "date": "Date",
+        "label": "Label",
+        "amount": "Amount",
+        "type": "Type",
+        "credit": "Credit",
+        "debit": "Debit",
+        "moreRows": "… and {count} more row(s)",
+        "back": "Back",
+        "importAction": "Import {count} transaction(s)"
+      },
+      "step4": {
+        "success": "Import successful",
+        "imported": "Imported",
+        "duplicates": "Duplicates ignored",
+        "errors": "Errors",
+        "blocked": "Skipped (closed period)",
+        "blockedExplanation": "{count, plural, one {# row was} other {# rows were}} skipped because {count, plural, one {it falls} other {they fall}} inside an already-closed period. Reopen that period and re-import this same file to include them — already-imported rows won't be duplicated.",
+        "toReconcile": "To reconcile",
+        "importAnother": "Import another file",
+        "goToReconciliation": "Go to reconciliation"
+      },
+      "toasts": {
+        "fileReadError": "Unable to read the file",
+        "unsupportedFormat": "Unsupported format. Use a CSV, XLSX or XLS file.",
+        "notPdf": "This file is not a PDF.",
+        "pdfTooLarge": "File too large (max 4 MB).",
+        "pdfExtracted": "{extracted} row(s) extracted, {skipped} skipped (incomplete data)",
+        "pdfAnalysisError": "Error analyzing the PDF",
+        "pdfNetworkError": "Network error while analyzing the PDF",
+        "selectAccountRequired": "Please select the account",
+        "selectAccountAndColumns": "Please select the account and required columns",
+        "selectAmountColumn": "Please select the amount column",
+        "selectDebitCredit": "Please select the Debit and Credit columns",
+        "noValidRows": "No valid rows detected",
+        "importError": "Import error",
+        "genericError": "Error"
+      }
+    },
+    "dashboard": {
+      "title": "Overview",
+      "description": "Financial summary of the association.",
+      "exercise": "Fiscal year {year}",
+      "incomeCard": "Income {year}",
+      "expensesCard": "Expenses {year}",
+      "resultCard": "Result {year}",
+      "cumulativeResultCard": "Cumulative result",
+      "unmatchedTitle": "Unreconciled transactions",
+      "unmatchedLabel": "to process",
+      "pendingReceiptsTitle": "Pending receipts",
+      "pendingReceiptsLabel": "draft expenses"
+    },
+    "reconciliationView": {
+      "title": "Bank Reconciliation",
+      "description": "Match imported bank transactions to your income and expenses.",
+      "statusFilters": {
+        "all": "All",
+        "unmatched": "Unmatched",
+        "matched": "Matched",
+        "ignored": "Ignored",
+        "duplicate": "Duplicates"
+      },
+      "status": {
+        "unmatched": "Unmatched",
+        "matched": "Matched",
+        "pending": "Pending",
+        "ignored": "Ignored",
+        "duplicate": "Duplicate"
+      },
+      "columns": {
+        "date": "Date",
+        "label": "Bank description",
+        "amount": "Amount",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "reconciledFallback": "Matched",
+      "allAccounts": "All accounts",
+      "noTransactions": "No transactions to display",
+      "actions": {
+        "unmatch": "Unmatch",
+        "unmatchTitle": "Cancel reconciliation",
+        "reactivate": "Reactivate",
+        "reactivateTitle": "Move back to unmatched",
+        "match": "Match",
+        "addIncome": "Income",
+        "addExpense": "Expense",
+        "ignore": "Ignore"
+      },
+      "createIncomeTitle": "Create income",
+      "createExpenseTitle": "Create expense",
+      "transactionLabel": "Transaction:",
+      "toasts": {
+        "ignored": "Transaction ignored",
+        "markedDuplicate": "Marked as duplicate",
+        "reactivated": "Transaction moved back to the queue",
+        "unmatched": "Reconciliation cancelled",
+        "incomeCreated": "Income created and matched",
+        "expenseCreated": "Expense created and matched",
+        "matched": "Reconciliation confirmed"
+      }
+    },
+    "reconciliationMatchModal": {
+      "title": "Match to an income or expense",
+      "searching": "Searching for matches…",
+      "noMatches": "No matches found within ±7 days.",
+      "suggestedMatches": "Suggested matches",
+      "typeIncome": "Income",
+      "typeExpense": "Expense",
+      "confirm": "Confirm match"
+    }
+  },
+  "evenements": {
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "2025 General Assembly",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "location": "Location",
+      "price": "Price",
+      "priceHint": "Leave at 0 for a free event",
+      "capacity": "Capacity",
+      "capacityHint": "(empty = unlimited)",
+      "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
+      "description": "Description",
+      "descriptionPlaceholder": "Event details…"
+    },
+    "view": {
+      "title": "Events",
+      "calendarView": "Calendar view",
+      "count": "{count, plural, one {# event} other {# events}}",
+      "listLabel": "List",
+      "calendarLabel": "Calendar",
+      "create": "Create",
+      "columns": {
+        "event": "Event",
+        "date": "Date",
+        "presences": "Attendance"
+      },
+      "presentCount": "{count, plural, one {# attendee} other {# attendees}}",
+      "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
+      "actions": {
+        "presences": "Attendance",
+        "edit": "Edit",
+        "customFields": "Custom fields",
+        "delete": "Delete"
+      },
+      "searchPlaceholder": "Search for an event…",
+      "noResultsFor": "No results for \"{search}\"",
+      "noEvent": "No event created",
+      "createTitle": "Create an event",
+      "editTitle": "Edit event",
+      "deleteConfirmTitle": "Delete \"{title}\"?",
+      "deleteConfirmDescription": "The event and all its attendance records will be permanently deleted.",
+      "toasts": {
+        "created": "Event created successfully",
+        "updated": "Event updated",
+        "deleted": "Event deleted"
+      }
+    },
+    "customFields": {
+      "modalTitle": "Custom fields — {title}",
+      "description": "Add extra fields to this event's public registration form.",
+      "noFields": "No custom fields yet.",
+      "fieldLabel": "Field label",
+      "fieldLabelPlaceholder": "E.g. T-shirt size",
+      "fieldType": "Type",
+      "typeText": "Text",
+      "typeNumber": "Number",
+      "fieldRequired": "Required",
+      "removeField": "Remove this field",
+      "addField": "Add a field",
+      "labelRequiredError": "Every field needs a label.",
+      "saved": "Custom fields saved"
+    },
+    "calendar": {
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "today": "Today",
+      "todayTooltip": "Go back to the current month",
+      "createHere": "Create here",
+      "noEventThisDay": "No event on this day.",
+      "othersCount": "{count, plural, one {+# other} other {+# others}}"
+    },
+    "presences": {
+      "rsvp": {
+        "confirme": "I'll be there",
+        "provavel": "If possible",
+        "incerto": "Maybe",
+        "absent": "Absent"
+      },
+      "export": {
+        "button": "Export",
+        "csv": "CSV (.csv)",
+        "excel": "Excel (.xlsx)",
+        "pdf": "PDF (.pdf)"
+      },
+      "notFound": {
+        "message": "This event could not be found or was deleted.",
+        "backLabel": "Back to list"
+      },
+      "checkInWindow": {
+        "beforePrefix": "QR Code check-in will only open on",
+        "beforeSuffix": "(3h before the event starts).",
+        "afterPrefix": "QR Code check-in has been closed since",
+        "afterSuffixWithEnd": "(6h after the event ends).",
+        "afterSuffixNoEnd": "(no end time is set for this event — the window closes 6h after the default start + 24h).",
+        "manualHint": "You can still check attendance manually in the list below."
+      },
+      "counter": {
+        "presentWord": "{count, plural, one {present} other {present}}",
+        "full": "Full",
+        "liveCheckIn": "Check-in in progress · real-time"
+      },
+      "qr": {
+        "heading": "Check-in QR Code",
+        "infoTooltip": "A single QR code for the whole event, valid for 24h. Each attendee scans it with their phone, logs into the portal if needed, then confirms their attendance — this marks their ticket and any named guests as present. A paid ticket (paid event) or a confirmed RSVP (free event) is required for it to work.",
+        "expiresOn": "Expires on {date}",
+        "copyLink": "Copy link",
+        "regenerate": "Regenerate",
+        "regenerateTooltip": "Invalidates the current QR code and generates a new one, valid for 24h",
+        "revokeTooltip": "Disable the QR Code",
+        "expired": "QR Code expired.",
+        "none": "No active QR Code.",
+        "generate": "Generate a QR Code"
+      },
+      "list": {
+        "searchPlaceholder": "Search…",
+        "addGuest": "Add a guest",
+        "noResults": "No results",
+        "noActiveMembers": "No active members",
+        "guestBadge": "Guest",
+        "paidBadge": "Paid",
+        "cancelPaymentTooltip": "Cancel this cash payment",
+        "infoTooltip": "View registration details",
+        "infoPhone": "Phone",
+        "infoAddress": "Address",
+        "reservedBadge": "Reserved",
+        "markPaid": "Mark as paid",
+        "editTitle": "Edit",
+        "removeTitle": "Remove"
+      },
+      "addGuestModal": {
+        "title": "Add a guest",
+        "optional": "(optional)",
+        "submit": "Add and mark present"
+      },
+      "editGuestModal": {
+        "title": "Edit guest"
+      },
+      "revokeConfirm": {
+        "title": "Disable the QR Code?",
+        "description": "Members will no longer be able to scan this code to record their attendance. Attendance already recorded is kept.",
+        "confirmLabel": "Disable"
+      },
+      "regenerateConfirm": {
+        "title": "Regenerate the QR Code?",
+        "description": "The current QR Code will be immediately invalidated. Anyone trying to scan the old code will no longer be able to check in."
+      },
+      "deleteGuestConfirm": {
+        "title": "Remove {name}?",
+        "descriptionPresent": "This person is already marked present — removing their record will also erase this attendance.",
+        "descriptionAbsent": "This person will be removed from this event's attendance list.",
+        "confirmLabel": "Remove"
+      },
+      "toasts": {
+        "markedPaid": "{name} marked as paid",
+        "paymentCancelled": "Payment for {name} cancelled",
+        "guestAdded": "{name} added and marked present",
+        "guestUpdated": "Guest updated",
+        "guestRemoved": "{name} removed from the list",
+        "updateError": "Error updating",
+        "qrGenerated": "QR Code generated",
+        "qrRevoked": "QR Code disabled",
+        "noMembersToExport": "No members to export",
+        "linkCopied": "Link copied"
+      }
+    }
+  },
+  "actualites": {
+    "form": {
+      "coverImage": "Cover image",
+      "title": "Title",
+      "titlePlaceholder": "News post title…",
+      "content": "Content",
+      "contentPlaceholder": "Write your news post…",
+      "relatedEvent": "Related event",
+      "noEvent": "No linked event",
+      "noneOption": "None",
+      "pinned": "Pin to top of feed",
+      "recipients": "Recipients",
+      "recipientsAll": "All members",
+      "recipientsSelected": "Selection",
+      "searchMemberPlaceholder": "Search for a member…",
+      "loading": "Loading…",
+      "noResult": "No results",
+      "selectedCount": "{count, plural, one {# member selected} other {# members selected}}",
+      "deselectAll": "Deselect all",
+      "toasts": {
+        "uploadError": "Error uploading the image"
+      }
+    },
+    "view": {
+      "title": "News",
+      "count": "{count, plural, one {# post} other {# posts}}",
+      "gridLabel": "Grid",
+      "listLabel": "List",
+      "write": "Write",
+      "searchPlaceholder": "Search for a news post…",
+      "noResultsFor": "No results for \"{search}\"",
+      "noPost": "No post created",
+      "published": "Published",
+      "draft": "Draft",
+      "pinned": "Pinned",
+      "actions": {
+        "edit": "Edit",
+        "unpublish": "Unpublish",
+        "publish": "Publish",
+        "delete": "Delete"
+      },
+      "previous": "Previous",
+      "next": "Next",
+      "createTitle": "Write a news post",
+      "editTitle": "Edit news post",
+      "deleteConfirmTitle": "Delete \"{title}\"?",
+      "deleteConfirmDescription": "This post will be permanently deleted.",
+      "toasts": {
+        "created": "Post created",
+        "updated": "Post updated",
+        "deleted": "Post deleted",
+        "unpublished": "Post unpublished",
+        "published": "\"{title}\" published — members notified"
+      }
+    }
+  },
+  "sondages": {
+    "questionTypes": {
+      "textShort": "Short text",
+      "textLong": "Long text",
+      "singleChoice": "Single choice",
+      "multipleChoice": "Multiple choice",
+      "rating": "Rating (1–5)",
+      "yesNo": "Yes / No"
+    },
+    "questionBuilder": {
+      "questionPlaceholder": "Question…",
+      "required": "Required",
+      "optionPlaceholder": "Option {n}",
+      "addOption": "Add an option",
+      "conditionalActive": "Conditional logic active",
+      "addCondition": "Add a display condition",
+      "showOnlyIf": "Show this question only if:",
+      "chooseQuestion": "— choose a question —",
+      "operatorEq": "equals",
+      "operatorNeq": "does not equal",
+      "operatorIncludes": "contains",
+      "removeCondition": "Remove",
+      "conditionNotice": "This question will only be visible if the condition above is met."
+    },
+    "formBuilder": {
+      "noQuestions": "No questions yet. Add one below.",
+      "addQuestion": "Add a question"
+    },
+    "view": {
+      "title": "Surveys",
+      "description": "Create questionnaires and view results.",
+      "newSurvey": "New survey",
+      "searchPlaceholder": "Search…",
+      "noSurvey": "No survey yet. Create your first questionnaire.",
+      "status": {
+        "brouillon": "Draft",
+        "actif": "Active",
+        "ferme": "Closed"
+      },
+      "anonymous": "Anonymous",
+      "questionsCount": "{count, plural, one {# question} other {# questions}}",
+      "responsesCount": "{count, plural, one {# response} other {# responses}}",
+      "deadlineLabel": "Closes: {date}",
+      "recipientsAll": "All members",
+      "recipientsSelected": "Selection",
+      "activate": "Activate",
+      "close": "Close",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "deleteConfirmTitle": "Delete this survey?",
+      "toasts": {
+        "activated": "Survey activated",
+        "closed": "Survey closed",
+        "deleted": "Survey deleted"
+      }
+    },
+    "newSurveyPage": {
+      "title": "New survey",
+      "subtitle": "Create a questionnaire for your members.",
+      "generalInfo": "General information",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. General assembly satisfaction",
+      "descriptionLabel": "Description",
+      "optional": "(optional)",
+      "descriptionPlaceholder": "Context or instructions for respondents…",
+      "deadlineLabel": "Deadline",
+      "recipientsManual": "Manual selection",
+      "anonymousLabel": "Anonymous responses",
+      "anonymousHint": "(respondents' names will not be recorded)",
+      "questionsLabel": "Questions",
+      "createButton": "Create the survey",
+      "toasts": {
+        "createError": "Error creating the survey",
+        "created": "Survey created",
+        "titleRequired": "The title is required",
+        "atLeastOneQuestion": "Add at least one question",
+        "atLeastOneMember": "Select at least one member",
+        "deadlinePast": "The deadline cannot be in the past"
+      }
+    },
+    "detail": {
+      "toasts": {
+        "invitationsSent": "{count, plural, one {# invitation sent by email} other {# invitations sent by email}}",
+        "invitationsFailed": "{count, plural, one {# invitation could not be sent — see the Sends tab} other {# invitations could not be sent — see the Sends tab}}"
+      }
+    }
+  },
+  "reunions": {
+    "form": {
+      "type": {
+        "generale": "General meeting",
+        "ag": "General assembly",
+        "bureau": "Board meeting"
+      },
+      "allStatuses": "All statuses",
+      "statusOptions": {
+        "actifs": "Active",
+        "enAttente": "Pending",
+        "inactifs": "Inactive",
+        "suspendus": "Suspended"
+      },
+      "title": "Title",
+      "titlePlaceholder": "E.g. Board meeting",
+      "description": "Description",
+      "descriptionPlaceholder": "Agenda, information…",
+      "meetingType": "Meeting type",
+      "startNow": "Start immediately",
+      "scheduledDateTime": "Scheduled date and time",
+      "participants": "Participants",
+      "filterByStatus": "Filter by status",
+      "filterByGroup": "Filter by group",
+      "allGroups": "All groups",
+      "select": "Select ({count})",
+      "deselect": "Deselect ({count})",
+      "selectedTotal": "{count, plural, one {# member selected} other {# members selected}} in total",
+      "noMatch": "No member matches this filter.",
+      "start": "Start",
+      "schedule": "Schedule"
+    },
+    "view": {
+      "title": "Meetings",
+      "description": "Organize video meetings with your members",
+      "newMeeting": "New meeting",
+      "loading": "Loading…",
+      "noMeeting": "No meeting yet",
+      "createMeeting": "Create a meeting",
+      "leave": "Leave",
+      "defaultTitle": "Meeting",
+      "createTitle": "New meeting",
+      "editTitle": "Edit meeting",
+      "deleteConfirmTitle": "Delete this meeting?",
+      "deleteConfirmDescription": "This action cannot be undone.",
+      "participantsCount": "{count, plural, one {# participant} other {# participants}}",
+      "join": "Join",
+      "start": "Start",
+      "transcription": "Transcript",
+      "liveSince": "In progress for {mins} min",
+      "durationLessThanMin": "< 1 min",
+      "durationMin": "{mins} min",
+      "toasts": {
+        "meetingStarted": "Meeting started",
+        "meetingScheduled": "Meeting scheduled",
+        "meetingUpdated": "Meeting updated",
+        "meetingDeleted": "Meeting deleted",
+        "refreshError": "Unable to refresh the meeting status.",
+        "liveNotification": "{title} — meeting in progress",
+        "liveNotificationDescription": "A meeting has just started."
+      }
+    },
+    "detail": {
+      "backToList": "Meetings",
+      "status": {
+        "scheduled": "Scheduled",
+        "live": "Live",
+        "ended": "Ended",
+        "cancelled": "Cancelled"
+      },
+      "notFound": {
+        "message": "This meeting could not be found or has been deleted.",
+        "backLabel": "Back to list"
+      },
+      "exportAttendance": {
+        "prefix": "Attendance ",
+        "suffix": "sheet"
+      },
+      "exportMinutes": {
+        "prefix": "Meeting ",
+        "suffix": "minutes"
+      },
+      "share": {
+        "heading": "Share",
+        "expiresOn": "Expires on {date}",
+        "copyLink": "Copy link",
+        "revoke": "Revoke",
+        "generateLink": "Generate a link",
+        "sendEmail": "Send by email",
+        "toasts": { "linkCopied": "Link copied", "emailSent": "Email sent" }
+      },
+      "toasts": {
+        "transcriptSaved": "Transcript saved",
+        "transcriptSaveError": "Error while saving",
+        "transcribeError": "Transcription error",
+        "transcriptGenerated": "Transcript generated by Whisper",
+        "whisperError": "Whisper error",
+        "aiError": "AI error",
+        "summaryGenerated": "Summary generated",
+        "noParticipantsToExport": "No participants to export"
+      },
+      "transcribeRecording": "Transcribe the recording",
+      "transcribing": "Transcribing…",
+      "uploadAudio": "Upload audio",
+      "saveTranscript": "Save",
+      "whisperTranscribing": "Whisper is transcribing the audio… This may take a few moments.",
+      "transcriptPlaceholder": "The transcript will appear here after the meeting. You can also upload an audio file or type the text manually.",
+      "acceptedFormats": "Accepted formats: MP3, M4A, WAV, WebM, OGG, FLAC · Max 25 MB · Automatic language detection (French, Portuguese, English…)",
+      "scheduledOn": "Scheduled for {date}",
+      "startedOn": "Started on {date}",
+      "endedOn": "Ended on {date}",
+      "recordingInProgress": "Recording in progress",
+      "recordingAvailable": "Recording available",
+      "aiSummary": "AI summary",
+      "regenerate": "Regenerate",
+      "generate": "Generate",
+      "generateSummaryHint": "Click \"Generate\" to create the summary.",
+      "transcriptRequiredHint": "A transcript is required to generate the summary."
+    },
+    "livekitSettings": {
+      "heading": "Video meetings (LiveKit)",
+      "description": "Used for video meetings. Without your own account, meetings run on the platform's shared account — limited to the platform's LiveKit plan. Set up your own LiveKit project for unlimited use, billed directly to your account. Audio recordings always remain stored on the platform's infrastructure — only the video call itself uses your account.",
+      "configuredTitle": "Custom LiveKit account configured",
+      "urlLabel": "URL: ",
+      "notConfigured": "Platform account in use — usage limited to the platform's LiveKit plan.",
+      "serverUrlLabel": "Server URL (wss://)",
+      "apiKeyLabel": "API Key",
+      "apiKeyPlaceholderExisting": "Existing key — enter a new one to replace it",
+      "apiSecretLabel": "API Secret",
+      "apiSecretPlaceholderExisting": "Existing secret — enter a new one to replace it",
+      "credentialsHint": "Find your credentials at ",
+      "testing": "Testing…",
+      "testConnection": "Test connection",
+      "saving": "Saving…",
+      "save": "Save",
+      "removeCredentials": "Remove credentials",
+      "webhookTitle": "Webhook to configure on your LiveKit project",
+      "webhookDescription": "In cloud.livekit.io → Settings → Webhooks, add this URL signed with the same API Key above, otherwise a forgotten open meeting will no longer close automatically on your account.",
+      "removeConfirmTitle": "Remove LiveKit credentials?",
+      "removeConfirmDescription": "Meetings will fall back to the platform's shared account, limited to its own LiveKit plan. A meeting currently in progress on your account will not be automatically transferred.",
+      "toasts": {
+        "testSuccess": "Connection successful — these credentials work.",
+        "testFailedDefault": "Connection failed.",
+        "testError": "Unable to test the connection.",
+        "saved": "LiveKit configuration saved",
+        "savedIncomplete": "Saved, but a field is still missing — meetings will use the platform's account until all 3 fields are filled in.",
+        "saveError": "Unable to save the LiveKit configuration",
+        "removed": "LiveKit credentials removed",
+        "removeError": "Unable to remove the credentials"
+      }
+    },
+    "meetingRoom": {
+      "waitingForParticipants": "Waiting for participants…",
+      "chat": "Chat",
+      "noMessages": "No messages yet.",
+      "messagePlaceholder": "Message…",
+      "toasts": {
+        "sendMessageError": "Unable to send the message.",
+        "stopRecordingError": "Unable to stop the recording.",
+        "startRecordingError": "Unable to start the recording.",
+        "recordingError": "Error while managing the recording.",
+        "endMeetingError": "Unable to end the meeting. Please try again."
+      },
+      "recording": "Recording",
+      "record": "Record",
+      "stopRecordingTooltip": "Stop recording the meeting",
+      "startRecordingTooltip": "Start recording (visible to participants)",
+      "end": "End",
+      "ending": "Ending the meeting…",
+      "recordingBanner": "This meeting is being recorded",
+      "recordingBannerTranscribable": " and can be transcribed",
+      "joinError": "Unable to join the meeting.",
+      "kickedOutTitle": "The meeting has been closed by the administrator.",
+      "kickedOutSubtitle": "You will be redirected…"
+    }
+  },
+  "materiel": {
+    "form": {
+      "photo": "Photo",
+      "name": "Name",
+      "namePlaceholder": "MacBook Pro 2023",
+      "category": "Category",
+      "noneOption": "— None —",
+      "status": {
+        "disponible": "Available",
+        "enUse": "In use",
+        "enMaintenance": "Under maintenance",
+        "horsService": "Out of service",
+        "perdu": "Lost"
+      },
+      "quantity": "Quantity",
+      "location": "Location",
+      "locationPlaceholder": "Room A, Storage…",
+      "serialNumber": "Serial number / reference",
+      "serialNumberPlaceholder": "SN-12345",
+      "description": "Description",
+      "descriptionPlaceholder": "Short description…",
+      "purchaseDate": "Purchase date",
+      "purchasePrice": "Purchase price",
+      "rentalRate": "Default loan rate ($ / unit)",
+      "rentalRateHint": "Pre-fills the rate on every new loan — charged × the borrowed quantity",
+      "accountingCategory": "Accounting category",
+      "notes": "Notes",
+      "notesPlaceholder": "Internal remarks…",
+      "editTitle": "Edit item",
+      "newTitle": "New item",
+      "create": "Create",
+      "toasts": {
+        "uploadError": "Error uploading the photo",
+        "updated": "Item updated",
+        "created": "Item created"
+      },
+      "validation": {
+        "required": "Required",
+        "minQuantity": "Min. 1"
+      }
+    },
+    "loanModal": {
+      "title": "Record a loan — {name}",
+      "availableUnits": "{available, plural, one {# unit available} other {# units available}} out of {total}",
+      "borrowerMembre": "Member",
+      "borrowerExterne": "External person",
+      "memberLabel": "Member",
+      "memberPlaceholder": "Select a member…",
+      "borrowerNameLabel": "Borrower's name",
+      "borrowerNamePlaceholder": "John Smith",
+      "borrowedAt": "Checkout date",
+      "expectedReturn": "Expected return",
+      "futureDateNotice": "Future date: the item will be recorded as reserved until this date.",
+      "quantityBorrowed": "Quantity borrowed",
+      "rateLabelMultiple": "Loan rate ($ / unit)",
+      "rateLabelSingle": "Loan amount ($)",
+      "totalCharged": "Amount charged: {quantity} × {rate} = {total}",
+      "notes": "Notes",
+      "notesPlaceholder": "Intended use, condition at checkout…",
+      "noCapacity": "No unit available",
+      "toasts": {
+        "created": "Loan recorded"
+      },
+      "validation": {
+        "required": "Required",
+        "returnAfterBorrow": "Must be after the checkout date"
+      }
+    },
+    "view": {
+      "title": "Equipment",
+      "description": "Inventory and loan management",
+      "add": "Add",
+      "statsLabels": {
+        "articles": "Items",
+        "disponibles": "Available",
+        "enPret": "On loan",
+        "reserves": "Reserved",
+        "maintenance": "Maintenance"
+      },
+      "pendingRequests": "Pending requests",
+      "accept": "Accept",
+      "refuse": "Refuse",
+      "returnExpected": " · return expected on {date}",
+      "toasts": {
+        "confirmed": "Loan confirmed",
+        "refused": "Request refused"
+      },
+      "maintenancePill": "Maintenance",
+      "overdueCount": "{count} overdue",
+      "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
+      "availableOf": "{available}/{total} available",
+      "searchPlaceholder": "Search…",
+      "filters": {
+        "all": "All",
+        "disponibles": "Available",
+        "enUtilisation": "In use",
+        "reserves": "Reserved",
+        "maintenance": "Maintenance",
+        "horsService": "Out of service",
+        "perdus": "Lost"
+      },
+      "noArticles": "No items",
+      "noResults": "No results",
+      "noArticlesHint": "Add your first item to get started.",
+      "noResultsHint": "Try different filters or search terms.",
+      "addArticle": "Add an item"
+    },
+    "detailSheet": {
+      "helpAriaLabel": "What do these icons do?",
+      "helpPdfLabel": "PDF",
+      "helpPdfDesc": "— the loan slip, to view or print right away.",
+      "helpEmailLabel": "E-mail",
+      "helpEmailDesc": "— sends this same loan slip to the borrower.",
+      "helpFactureLabel": "Invoice",
+      "helpFactureDesc": "— creates a real payable invoice in Invoices (different from the loan slip).",
+      "factureStatusPartial": "Part. paid",
+      "viewFactureTitle": "View invoice {number}",
+      "generateFactureTitle": "Generate an invoice for this loan",
+      "generateFacture": "Generate invoice",
+      "infoGrid": {
+        "quantity": "Quantity",
+        "availableOf": "{available}/{total} avail.",
+        "location": "Location",
+        "reference": "Ref.",
+        "acquiredOn": "Acquired on {date}",
+        "defaultRate": "Default loan rate: {amount}",
+        "accountingCategory": "Accounting category: {name}"
+      },
+      "pendingSection": {
+        "heading": "Pending requests",
+        "accept": "Accept",
+        "refuse": "Refuse",
+        "returnExpected": "Expected return on {date}"
+      },
+      "activeSection": {
+        "heading": "Loans & reservations",
+        "lend": "Lend",
+        "noActiveLoans": "No active loans.",
+        "reservedBadge": "Reserved",
+        "pdfTitle": "Loan slip (PDF)",
+        "emailTitle": "Send by e-mail",
+        "notYetOutTitle": "Not out yet",
+        "markReturnedTitle": "Mark as returned",
+        "returned": "Returned",
+        "deleteTitle": "Delete",
+        "reservedFor": "Reserved for ",
+        "goneOn": "Out on ",
+        "returnExpected": " · Expected return ",
+        "overdue": " (overdue)"
+      },
+      "historySection": {
+        "heading": "History ({count})",
+        "requestedOn": "requested on {date}",
+        "refusedBadge": "Refused"
+      },
+      "deleteLoanConfirm": {
+        "title": "Delete this loan?",
+        "descriptionHistory": "The entry will be removed from the history.",
+        "descriptionActive": "The active loan will be deleted without recording a return date."
+      },
+      "deleteMaterialConfirm": {
+        "title": "Delete \"{name}\"?",
+        "descriptionBlocked": "Not possible: {count} loan(s) in progress for this item. Record their return before deleting.",
+        "descriptionConfirmed": "The item and all its loan history will be permanently deleted.",
+        "descriptionPendingWarning": " Warning: {count} pending request(s) will be lost."
+      },
+      "emailModal": {
+        "documentLabel": "the loan slip"
+      },
+      "toasts": {
+        "returned": "Return recorded",
+        "emailSent": "Loan slip sent by e-mail",
+        "factureGenerated": "Invoice generated",
+        "loanDeleted": "Loan deleted",
+        "materialDeleted": "\"{name}\" deleted",
+        "loanConfirmed": "Loan confirmed",
+        "loanRefused": "Request refused"
+      }
+    },
+    "portalPage": {
+      "title": "Equipment",
+      "subtitle": "Browse the catalog and request a loan.",
+      "requestModal": {
+        "quantityLabel": "Quantity",
+        "availableSuffix": "/ {count} available",
+        "expectedReturnLabel": "Expected return date",
+        "optional": "(optional)",
+        "noteLabel": "Note",
+        "notePlaceholder": "Details about the intended use…",
+        "sending": "Sending…",
+        "send": "Send request"
+      },
+      "loanStatus": {
+        "confirmed": "Confirmed",
+        "pending": "Pending"
+      },
+      "refusedSection": {
+        "heading": "Requests not granted",
+        "requestedOn": "Your request from {date} could not be granted.",
+        "refusedBadge": "Refused"
+      },
+      "activeSection": {
+        "heading": "My current loans",
+        "returnExpected": "Expected return on {date}",
+        "overdueSuffix": " (overdue)",
+        "editTitle": "Edit",
+        "cancelRequestTitle": "Cancel request"
+      },
+      "catalog": {
+        "heading": "Catalog",
+        "searchPlaceholder": "Search…",
+        "noResultsSearch": "No items match your search.",
+        "noResults": "No items available at the moment.",
+        "availableOf": "{available}/{total} avail.",
+        "loanInProgress": "Request in progress",
+        "unavailable": "Item unavailable",
+        "outOfStock": "Out of stock",
+        "requestLoan": "Request a loan"
+      },
+      "cancelModal": {
+        "title": "Cancel the request?",
+        "cancelling": "Cancelling…"
+      },
+      "toasts": {
+        "requestSent": "Request sent — the administrator will confirm the loan",
+        "requestUpdated": "Request updated",
+        "requestCancelled": "Request cancelled"
+      }
+    }
+  },
+  "boutique": {
+    "produitStatus": {
+      "draft": "Draft",
+      "active": "Online",
+      "archived": "Archived"
+    },
+    "commandeStatus": {
+      "pending": "Pending",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    },
+    "paymentType": {
+      "especes": "Cash",
+      "cheque": "Check",
+      "cb": "Card",
+      "virement": "Bank transfer",
+      "stripe": "Stripe",
+      "manualFallback": "Manual"
+    },
+    "paymentMethodLabel": "Payment method",
+    "form": {
+      "nameLabel": "Name",
+      "descriptionLabel": "Description",
+      "optional": "(optional)",
+      "imageLabel": "Product image",
+      "visibilityLabel": "Visibility",
+      "categoryLabel": "Accounting category",
+      "categoryPlaceholder": "No category",
+      "variantesLabel": "Variants",
+      "variantesHint": "(size, color, etc.)",
+      "variantLabelColumn": "Label",
+      "priceColumn": "Price",
+      "stockColumn": "Stock",
+      "variantLabelPlaceholder": "E.g. Size M / Blue",
+      "addVariant": "Add a variant",
+      "validation": {
+        "nameRequired": "Name is required",
+        "atLeastOneVariant": "At least one variant is required",
+        "variantLabelRequired": "Each variant must have a label"
+      }
+    },
+    "view": {
+      "title": "Shop",
+      "description": "Manage your products and orders.",
+      "newProduct": "New product",
+      "tabs": {
+        "produits": "Products",
+        "commandes": "Orders"
+      },
+      "produitColumns": {
+        "produit": "Product",
+        "status": "Status",
+        "stock": "Stock",
+        "prix": "Price",
+        "ventes": "Sales"
+      },
+      "variantsCount": "{count, plural, one {# variant} other {# variants}}",
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "deleteAlreadyOrdered": "Delete (already ordered)",
+        "markPaid": "Mark as paid",
+        "cancelOrder": "Cancel",
+        "downloadReceipt": "Download receipt",
+        "editPaymentMethod": "Edit payment method"
+      },
+      "noProduct": "No products",
+      "noOrder": "No orders",
+      "guest": "Guest",
+      "commandeColumns": {
+        "membre": "Member",
+        "items": "Items",
+        "total": "Total",
+        "paiement": "Payment",
+        "status": "Status",
+        "date": "Date"
+      },
+      "othersCount": "{count, plural, one {+# other} other {+# others}}",
+      "statusFilterAll": "All",
+      "deleteProduitTitle": "Delete product",
+      "deleteProduitDescription": "Delete \"{name}\"? This action cannot be undone.",
+      "cancelOrderTitle": "Cancel this order?",
+      "cancelOrderDescriptionWithName": "Cancel {name}'s order? The items' stock will be restored. This action cannot be undone.",
+      "cancelOrderDescription": "Cancel this order? The items' stock will be restored. This action cannot be undone.",
+      "cancelOrderConfirm": "Cancel order",
+      "toasts": {
+        "productDeleted": "Product deleted",
+        "deleteError": "Error while deleting",
+        "orderUpdated": "Order updated"
+      }
+    },
+    "payModal": {
+      "title": "Collect payment for order",
+      "orderOf": "Order from",
+      "confirmWithAmount": "Collect {amount}",
+      "orderedTotal": "Ordered total",
+      "restockNoticePlural": "{count, plural, one {The stock for the item not collected will be restored.} other {The stock for the items not collected will be restored.}}",
+      "restockNoticeStatic": "The stock for items not collected will be restored."
+    },
+    "stripeConfirm": {
+      "title": "Mark as paid?",
+      "descriptionSimple": "This Stripe order ({amount}) will be marked as paid manually.",
+      "descriptionWithHint": "This Stripe order ({amount}) will be marked as paid manually. Use this only if the Stripe payment was received but the webhook didn't trigger.",
+      "confirmLabel": "Confirm payment"
+    },
+    "correctPaymentModal": {
+      "title": "Edit payment method",
+      "hint": "This doesn't change the amount already recorded in Finances — correct it there if needed."
+    },
+    "detail": {
+      "notFound": "This product could not be found or has been deleted.",
+      "backToList": "Back to list",
+      "variantsAndStock": "{count, plural, one {# variant} other {# variants}} · {stock} in stock",
+      "putOnline": "Publish",
+      "archive": "Archive",
+      "reactivate": "Reactivate",
+      "tabs": {
+        "produit": "Product"
+      },
+      "informationsTitle": "Information",
+      "noCommandeForProduct": "No orders for this product",
+      "commandeColumns": {
+        "membre": "Member",
+        "variante": "Variant",
+        "total": "Total",
+        "status": "Status",
+        "date": "Date"
+      },
+      "toasts": {
+        "updated": "Product updated",
+        "saveError": "Error while saving",
+        "orderUpdated": "Order updated"
+      }
+    },
+    "create": {
+      "heading": "New product",
+      "subtitle": "Add a product to your shop.",
+      "generalInfoTitle": "General information",
+      "namePlaceholder": "E.g. Club jersey",
+      "descriptionPlaceholder": "Describe the product…",
+      "createButton": "Create product",
+      "toasts": {
+        "created": "Product created",
+        "createError": "Error while creating"
+      }
+    }
+  },
+  "messages": {
+    "categories": {
+      "general": "General",
+      "cotisation": "Membership fee",
+      "evenement": "Event",
+      "membre": "Member",
+      "facturation": "Billing"
+    },
+    "view": {
+      "title": "Messages",
+      "description": "Message templates and automated sends",
+      "tabs": {
+        "templates": "Templates",
+        "rules": "Automations",
+        "historique": "History"
+      },
+      "reminderSchedule": "Reminder schedule"
+    },
+    "templatesManager": {
+      "title": "Message templates",
+      "subtitle": "Write reusable templates with dynamic variables.",
+      "newTemplate": "New template",
+      "noTemplates": "No templates",
+      "noTemplatesHint": "Create a first template to use it in your rules.",
+      "createTemplate": "Create a template",
+      "active": "Active",
+      "inactive": "Inactive",
+      "rulesCount": "{count, plural, one {# rule} other {# rules}}",
+      "modifiedOn": " · modified on {date}",
+      "actions": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "deactivate": "Deactivate",
+        "activate": "Activate",
+        "delete": "Delete"
+      },
+      "deleteConfirmTitle": "Delete \"{name}\"?",
+      "deleteConfirmInUse": "{count, plural, one {This template is used by # rule. Delete it first.} other {This template is used by # rules. Delete them first.}}",
+      "deleteConfirmSimple": "This template will be permanently deleted.",
+      "deactivateConfirmTitle": "Deactivate \"{name}\"?",
+      "deactivateConfirmDescription": "{count, plural, one {# active rule uses this template and will stop sending anything while it stays deactivated.} other {# active rules use this template and will stop sending anything while it stays deactivated.}}",
+      "toasts": {
+        "deleted": "Template \"{name}\" deleted",
+        "deactivated": "Template deactivated",
+        "activated": "Template activated",
+        "duplicated": "Template \"{name}\" duplicated",
+        "duplicateSuffix": " (copy)"
+      }
+    },
+    "templateModal": {
+      "editTitle": "Edit template",
+      "newTitle": "New template",
+      "internalName": "Internal name",
+      "internalNamePlaceholder": "Annual membership fee reminder",
+      "category": "Category",
+      "isDefault": "Default template",
+      "isDefaultHint": "Automatically used as the suggested message for this category (e.g. cotisation reminders sent from the Cotisations page).",
+      "emailSubject": "Email subject",
+      "emailSubjectPlaceholder": "Reminder: your '{{annee_cotisation}}' membership fee",
+      "variablesHint": "Variables — drag into the subject, body, or SMS",
+      "variables": {
+        "prenom": "First name",
+        "nom": "Last name",
+        "nomComplet": "Full name",
+        "email": "Email",
+        "association": "Association",
+        "lienPortal": "Portal link",
+        "anneeCotisation": "Fee year",
+        "montantCotisation": "Fee amount",
+        "titreEvenement": "Event title",
+        "dateEvenement": "Event date",
+        "lieuEvenement": "Event location"
+      },
+      "emailBody": "Message body (email)",
+      "emailBodyPlaceholder": "Hello '{{prenom}}',…",
+      "smsBody": "SMS body",
+      "smsBodyHint": "Short text sent by SMS. Leave empty if this template isn't used with an SMS channel.",
+      "smsBodyPlaceholder": "'{{association}}' — Hello '{{prenom}}', …",
+      "smsCharCount": "{count} / 160 characters",
+      "smsWillSplit": " — will be split into multiple SMS",
+      "preview": "Preview",
+      "test": "Test",
+      "testTooltip": "Sends a test email to your address",
+      "create": "Create",
+      "previewTitle": "Message preview",
+      "previewDescription": "Rendered with sample data",
+      "previewSubject": "Subject",
+      "toasts": {
+        "updated": "Template updated",
+        "created": "Template created",
+        "testSent": "Test email sent to {email}"
+      },
+      "validation": {
+        "required": "Required"
+      }
+    },
+    "rulesManager": {
+      "title": "Automation rules",
+      "subtitle": "Automatic sends based on a schedule or an event.",
+      "newRule": "New rule",
+      "noRules": "No rules",
+      "noRulesHint": "Create a first rule to automate your sends.",
+      "createRule": "Create a rule",
+      "triggerLabels": {
+        "scheduledOnce": "One-time date",
+        "scheduledRecurring": "Recurring",
+        "eventCotisationDue": "Upcoming fee",
+        "eventPaymentOverdue": "Overdue payment",
+        "eventReminder": "Event reminder",
+        "rsvpConfirmed": "RSVP confirmed",
+        "memberCreated": "New member",
+        "memberBirthday": "Birthday",
+        "eventAdherentLapsed": "Membership not renewed"
+      },
+      "statusLabels": {
+        "active": "Active",
+        "paused": "Paused",
+        "done": "Done"
+      },
+      "inactiveTemplateBadge": "Inactive template",
+      "inactiveTemplateTooltip": "The associated template is deactivated: this rule no longer sends anything",
+      "templateSuffix": " · Template: {name}",
+      "pendingExecution": "Pending execution",
+      "nextRun": "Next send: {date}",
+      "lastRun": "Last send: {date}",
+      "actions": {
+        "pause": "Pause",
+        "activate": "Activate",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "toasts": {
+        "activated": "Rule activated",
+        "paused": "Rule paused",
+        "deleted": "Rule \"{name}\" deleted"
+      },
+      "deleteConfirmTitle": "Delete \"{name}\"?",
+      "deleteConfirmDescription": "This rule will be permanently deleted. Emails already sent are not affected.",
+      "triggerSummary": {
+        "dateNotSet": "Date not set",
+        "onDate": "On {date} at {time}",
+        "frequency": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly"
+        },
+        "weekdaysShort": {
+          "sunday": "Sun",
+          "monday": "Mon",
+          "tuesday": "Tue",
+          "wednesday": "Wed",
+          "thursday": "Thu",
+          "friday": "Fri",
+          "saturday": "Sat"
+        },
+        "weeklyOn": "{label} ({day}) at {time}",
+        "monthlyOn": "{label} (on the {day}) at {time}",
+        "atTime": "{label} at {time}",
+        "cotisationDue": "{days}d before due date · year {year}",
+        "paymentOverdue": "{days}d overdue · year {year}",
+        "reminderTomorrow": "The day before each event",
+        "reminderDays": "{days}d before each event",
+        "rsvpConfirmed": "Triggered on RSVP confirmation",
+        "memberCreated": "Triggered when a member is created",
+        "memberBirthday": "On each member's birthday"
+      }
+    },
+    "ruleModal": {
+      "editTitle": "Edit rule",
+      "newTitle": "New rule",
+      "ruleName": "Rule name",
+      "ruleNamePlaceholder": "Membership fee reminder",
+      "trigger": "Trigger",
+      "triggerOptions": {
+        "scheduledOnce": "One-time date",
+        "scheduledRecurring": "Recurring",
+        "eventCotisationDue": "Upcoming fee",
+        "eventPaymentOverdue": "Overdue payment",
+        "eventReminder": "Event reminder",
+        "rsvpConfirmed": "RSVP confirmation",
+        "memberCreated": "New member registered",
+        "memberBirthday": "Member's birthday",
+        "eventAdherentLapsed": "Membership not renewed"
+      },
+      "sendDate": "Send date",
+      "time": "Time",
+      "frequency": "Frequency",
+      "frequencyOptions": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "dayOfWeek": "Day of the week",
+      "dayOfWeekOptions": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "dayOfMonth": "Day of the month",
+      "sendTime": "Send time",
+      "cotisationDueHint": "Sends a message to members with an unpaid fee, N days before the due date.",
+      "daysBeforeDue": "Days before due date",
+      "dueDate": "Due date",
+      "cotisationYear": "Fee year",
+      "cooldownDays": "Cooldown (days)",
+      "cooldownHint": "Minimum delay between 2 sends to the same member",
+      "paymentOverdueHint": "Sends a message to members whose fee has been unpaid for N days after January 1st.",
+      "daysOverdue": "Days overdue",
+      "eventReminderHint": "Sends an automatic reminder to confirmed or likely attendees, N days before each event.",
+      "daysBeforeEvent": "Days before the event",
+      "daysBeforeEventHint": "E.g.: 1 = the day before, 3 = 3 days before",
+      "adherentLapsedHint": "Sends a message to active members who were members last year (fee paid/exempted) but don't yet have a valid fee for the current year. A member whose membership status was manually forced is never affected.",
+      "birthdayHint": "Automatically sends a message on each active member's birthday (day and month, regardless of birth year). One send per member per year.",
+      "birthdayNoDateWarningType": "None of the active members of this type ({count}) have a birth date on file — this rule won't send anything until a date is added to their profile.",
+      "birthdayNoDateWarningAll": "None of your active members ({count}) have a birth date on file — this rule won't send anything until a date is added to their profile.",
+      "birthdayCoverage": "{withDate} / {total} active members have a birth date on file.",
+      "birthdayCoverageType": "{withDate} / {total} active members of this type have a birth date on file.",
+      "rsvpConfirmedHint": "Automatically triggered when a member confirms attendance at an event.",
+      "memberCreatedHint": "Automatically triggered when a new member is added (Member role only).",
+      "noTemplatesWarningPrefix": "No template available. First create a template in the ",
+      "noTemplatesWarningSuffix": " tab.",
+      "templateLabel": "Message template",
+      "templatePlaceholder": "Choose a template…",
+      "templateInactiveSuffix": " (inactive)",
+      "channel": "Send channel",
+      "channelOptions": {
+        "email": "Email only",
+        "sms": "SMS only",
+        "both": "Email + SMS"
+      },
+      "templateDeactivatedWarningPrefix": "This template is deactivated. As long as it stays that way, this rule won't send anything — activate it in the ",
+      "templateDeactivatedWarningSuffix": " tab.",
+      "missingSmsBodyWarning": "The selected template has no SMS body. Edit the template to enable SMS sending.",
+      "recipients": "Recipients",
+      "recipientsAll": "All active members",
+      "recipientsType": "Type: {name}",
+      "testTooltip": "Sends a test email to your address, using the saved configuration",
+      "test": "Test (saved config)",
+      "create": "Create",
+      "toasts": {
+        "updated": "Rule updated",
+        "created": "Rule created",
+        "testSent": "Test email sent to {email} (saved config)"
+      },
+      "validation": {
+        "required": "Required"
+      }
+    },
+    "campagneModal": {
+      "title": "Reminder sequence",
+      "description": "Create a sequence of fee reminders. Each step becomes a separate rule triggered automatically.",
+      "noTemplatesWarningPrefix": "No template available. First create a template in the ",
+      "noTemplatesWarningSuffix": " tab.",
+      "campaignName": "Campaign name",
+      "campaignNamePlaceholder": "2026 fee reminders",
+      "templateLabel": "Message template",
+      "templatePlaceholder": "Choose a template…",
+      "recipients": "Recipients",
+      "recipientsAll": "All active members",
+      "recipientsType": "Type: {name}",
+      "cotisationYear": "Fee year",
+      "dueDate": "Due date",
+      "dueDateHint": "For 'before' steps. Optional — default: Dec 31.",
+      "cooldownDays": "Cooldown (days)",
+      "cooldownHint": "Minimum delay between 2 sends to the same member",
+      "stepsTitle": "Sequence steps",
+      "addStep": "Add a step",
+      "noSteps": "No steps — add at least one.",
+      "stepTypeBefore": "days before the due date",
+      "stepTypeAfter": "days after the due date",
+      "create": "Create",
+      "createWithCount": "Create ({count, plural, one {# rule} other {# rules}})",
+      "validation": {
+        "nameRequired": "Campaign name required",
+        "templateRequired": "Template required",
+        "stepsRequired": "Add at least one step",
+        "yearMin": "The year must be {year} or later",
+        "stepDaysMin": "Each step must have at least 1 day",
+        "duplicateSteps": "Duplicate steps were detected"
+      },
+      "toasts": {
+        "created": "{count, plural, one {Campaign created with # rule} other {Campaign created with # rules}}",
+        "allFailed": "No rule could be created",
+        "partial": "{createdCount, plural, one {# rule created} other {# rules created}}, {failedCount, plural, one {# failed} other {# failed}} : {names}"
+      }
+    },
+    "historique": {
+      "title": "Send history",
+      "subtitle": "All emails automatically sent by active rules.",
+      "noSends": "No send recorded",
+      "noSendsHint": "Sends will appear here as soon as a rule runs.",
+      "sendsCount": "{count, plural, one {# send recorded} other {# sends recorded}}",
+      "columns": {
+        "date": "Date",
+        "rule": "Rule",
+        "recipient": "Recipient",
+        "subject": "Subject"
+      },
+      "pageOf": "Page {page} / {total}"
+    }
+  },
+  "parametres": {
+    "view": {
+      "title": "Settings",
+      "description": "Configure your association",
+      "tabs": {
+        "general": "General",
+        "paiements": "Payments",
+        "abonnement": "Subscription",
+        "integrations": "Integrations"
+      },
+      "associationInfo": "Association information",
+      "associationName": "Association name",
+      "city": "City",
+      "cityPlaceholder": "New York",
+      "country": "Country",
+      "toasts": {
+        "saved": "Settings saved"
+      }
+    },
+    "portalLinkSettings": {
+      "title": "Member portal link",
+      "subtitle": "Share this link with your members so they can access their space.",
+      "copyFailed": "Automatic copy unavailable — select the text above and copy it manually.",
+      "copied": "Copied!",
+      "copy": "Copy",
+      "open": "Open"
+    },
+    "cotisationDefaultsSettings": {
+      "title": "Membership fee",
+      "subtitle": "When an amount is set, a pending membership fee for the current year is automatically created for every new member — they can then pay it themselves from the portal, without waiting for an admin to create it. Leave empty to not create anything automatically.",
+      "defaultAmount": "Default membership fee amount",
+      "defaultAmountHint": "$0.00 = no membership fee is created automatically.",
+      "toasts": {
+        "updated": "Default amount updated"
+      }
+    },
+    "bankSettings": {
+      "title": "Website & bank details",
+      "subtitle": "Shown on quotes and invoices — bank details only on invoices, never on a quote or an already-paid receipt.",
+      "website": "Website",
+      "websitePlaceholder": "my-association.org",
+      "iban": "Account number",
+      "bic": "Routing number",
+      "previewTitle": "Preview on the document",
+      "bankDetails": "Bank details",
+      "ibanColon": "Account: {value}",
+      "bicColon": "Routing: {value}",
+      "toasts": {
+        "updated": "Details updated"
+      }
+    },
+    "membreTypes": {
+      "name": "Name",
+      "namePlaceholder": "Active member",
+      "description": "Description",
+      "descriptionPlaceholder": "Members up to date with their annual fee",
+      "color": "Color",
+      "preview": "Preview",
+      "title": "Member types",
+      "subtitle": "Categories assigned to your association's members",
+      "add": "Add",
+      "noTypes": "No type created",
+      "membersCount": "{count, plural, one {# member} other {# members}}",
+      "deleteConfirmTitle": "Delete \"{name}\"?",
+      "deleteConfirmInUse": "This type is used by {count} member(s). Reassign them before deleting.",
+      "deleteConfirmSimple": "This type will be permanently deleted.",
+      "toasts": {
+        "created": "Type \"{name}\" created",
+        "deleted": "Type \"{name}\" deleted",
+        "updated": "Type updated"
+      }
+    },
+    "branding": {
+      "title": "Brand identity",
+      "subtitle": "Logo and colors shown on the dashboard, invoices/quotes, attendance sheet and public site.",
+      "logo": "Logo",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "secondaryPlaceholder": "Optional",
+      "proOnlyText": "Custom logo and colors (dashboard, invoices/quotes, attendance sheet) are reserved for the Pro plan. Upgrade from the Subscription tab to enable them.",
+      "toasts": {
+        "updated": "Brand identity updated",
+        "uploadError": "Error uploading the logo"
+      }
+    },
+    "identityDons": {
+      "title": "Legal identity & Donations",
+      "subtitle": "Information required to issue tax receipts (Cerfa 11580).",
+      "address": "Full address",
+      "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
+      "phone": "Phone",
+      "phonePlaceholder": "01 23 45 67 89",
+      "siren": "SIREN / SIRET",
+      "sirenPlaceholder": "123456789",
+      "rna": "RNA number",
+      "rnaPlaceholder": "W751234567",
+      "objet": "Association's purpose",
+      "objetPlaceholder": "E.g.: promoting amateur sports among young people",
+      "organismeCategory": "Organization category",
+      "organismeCategoryHint": "Category checked on tax receipts (Cerfa 11580 / 16216), used for corporate donations.",
+      "organismeCategoryDetail": "Category details (optional)",
+      "organismeCategoryDetailPlaceholder": "E.g.: date of public interest recognition",
+      "taxReceiptToggle": "Issue tax receipts",
+      "taxReceiptToggleDesc": "Our association is recognized as being of general interest (Art. 200 CGI) and authorized to issue tax receipts granting a 66% to 75% tax reduction.",
+      "noIdentifierWarning": "Add a SIREN or RNA number to enable this option.",
+      "taxReceiptInfo": "Tax receipts will be sent automatically by email after each donation and available for download in the member area. Mandatory retention: 6 years minimum.",
+      "taxReceiptObjetWarning": "Check the Purpose and Organization category above before receiving corporate donations: they are printed on the tax receipt (Cerfa 16216) and the default \"Association loi 1901\" may not match your situation.",
+      "toasts": {
+        "updated": "Identity updated"
+      }
+    },
+    "billing": {
+      "title": "Subscription",
+      "subtitle": "Manage your platform subscription and payment methods.",
+      "tier": {
+        "essential": "Essential",
+        "pro": "Pro"
+      },
+      "status": {
+        "trial": "Free trial",
+        "active": "Active",
+        "pastDue": "Payment overdue",
+        "suspended": "Suspended",
+        "cancelled": "Cancelled"
+      },
+      "planLabel": "{tier} plan",
+      "membersCount": "{count} / {limit} members",
+      "loadError": "Unable to retrieve your subscription status. Try again later.",
+      "trialEndsAt": "Your free trial ends on {date}. After that date, your saved card will be charged automatically, unless cancelled before then.",
+      "activeText": "Your subscription is active. You can view your invoices, change your payment method or cancel at any time from the Stripe management portal.",
+      "pastDueText": "The last payment attempt failed. Update your payment method to avoid your account being suspended.",
+      "suspendedText": "Your subscription is suspended after several failed payments. Go to the dedicated screen to reactivate it, export your data or cancel it permanently.",
+      "cancelledText": "Your subscription has been cancelled. Contact support to reactivate it.",
+      "cancelAtPeriodEnd": "Your subscription has been cancelled and will end on {date}. You keep full access until then.",
+      "updatePayment": "Update payment",
+      "manageSubscription": "Manage my subscription",
+      "cancelPlan": "Cancel my subscription",
+      "resumeSubscription": "Undo cancellation",
+      "resumeSuccessToast": "The scheduled cancellation has been undone. Your subscription continues as normal.",
+      "cancelPlanDialog": {
+        "title": "Cancel your subscription",
+        "description": "Your subscription will stay active until the end of the period you've already paid for. No further charge will be made after that.",
+        "descriptionTrial": "Your access will stay active until your free trial ends. You won't be charged.",
+        "reasonLabel": "Why do you want to cancel?",
+        "reasonPlaceholder": "Choose a reason",
+        "reasons": {
+          "price": "The price is too high",
+          "missingFeatures": "Missing features",
+          "associationInactive": "The association is no longer active",
+          "switchingTool": "We're switching to another tool",
+          "hardToUse": "The tool is hard to use",
+          "other": "Other reason"
+        },
+        "feedbackLabel": "Tell us more (optional)",
+        "feedbackPlaceholder": "Tell us more…",
+        "validation": {
+          "reasonRequired": "Select a reason",
+          "feedbackRequired": "Please specify the reason"
+        },
+        "confirmLabel": "Confirm cancellation",
+        "successToast": "Cancellation scheduled. You keep access until the end of the current period."
+      }
+    },
+    "stripeConnect": {
+      "title": "Online payment (Stripe)",
+      "subtitle": "Let your members pay their membership fee online.",
+      "status": {
+        "notConnected": "Not connected",
+        "incomplete": "Incomplete",
+        "pending": "Pending",
+        "enabled": "Active",
+        "invalid": "Connection lost"
+      },
+      "toasts": {
+        "updated": "Stripe account updated",
+        "notFinalized": "The Stripe connection wasn't completed. Try again if needed."
+      },
+      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account.",
+      "editAccount": "Edit account",
+      "dashboardButton": "Stripe dashboard",
+      "pendingText": "Your account is being verified by Stripe. You'll receive a confirmation email.",
+      "completeOnboarding": "Complete sign-up",
+      "invalidText": "The connection to your Stripe account was lost (account deleted or access revoked). Online payment is disabled until reconnected.",
+      "reconnect": "Reconnect Stripe",
+      "connectText": "Connect a Stripe account to enable online membership fee payments.",
+      "connect": "Connect Stripe"
+    },
+    "suspended": {
+      "titleSuspended": "Subscription suspended",
+      "titleCancelled": "Subscription cancelled",
+      "pollingText": "We're confirming your payment, please wait a few seconds...",
+      "cancelledDesc": "Your subscription has been cancelled and access to the dashboard is blocked. Your data is kept: {action}",
+      "cancelledDescCanEdit": "you can export it or resubscribe at any time.",
+      "cancelledDescCannotEdit": "contact an administrator of the association to resubscribe.",
+      "suspendedDescWithDate": "The last payments failed and your subscription has been suspended since {date}.",
+      "suspendedDescNoDate": "The last payments failed and your subscription is suspended.",
+      "suspendedDescSuffix": "Access to the dashboard is blocked until reactivation. Your data is kept: {action}",
+      "suspendedDescCanEdit": "you can export it or cancel permanently at any time.",
+      "suspendedDescCannotEdit": "contact an administrator of the association to reactivate the subscription.",
+      "pollTimeout": "Confirmation is taking longer than expected. Refresh the page in a moment.",
+      "resubscribe": "Resubscribe",
+      "reactivate": "Reactivate my subscription",
+      "exportData": "Export my data",
+      "cancelForever": "Permanently cancel my subscription",
+      "signOut": "Sign out",
+      "cancelDialog": {
+        "title": "Permanently cancel the subscription",
+        "description": "Your account will be closed and access to the platform permanently cut off for all members. This action is irreversible.",
+        "confirmLabel": "Confirm cancellation",
+        "confirming": "Cancelling..."
+      },
+      "toasts": {
+        "reactivated": "Subscription reactivated!"
+      }
+    },
+    "reactivateSubscription": {
+      "back": "Back",
+      "title": "Resubscribe",
+      "subtitle": "Your previous subscription was cancelled. Choose a plan and enter a payment method to regain access.",
+      "newSubscription": "New subscription",
+      "perMonth": "{amount}/month",
+      "billedOnce": "Billed as a single payment",
+      "perYear": "{amount}/year",
+      "confirmButton": "Confirm and resubscribe",
+      "securePayment": "Secure payment by Stripe",
+      "retry": "Retry",
+      "paymentError": "Payment error",
+      "reactivateError": "Error during reactivation",
+      "toasts": {
+        "reactivated": "Subscription reactivated!"
+      }
+    }
+  },
+  "cotisations": {
+    "form": {
+      "member": "Member",
+      "memberPlaceholder": "Select a member…",
+      "year": "Year",
+      "amount": "Amount",
+      "paidAt": "Payment date",
+      "note": "Note",
+      "notePlaceholder": "Additional information…",
+      "dueDate": "Due date",
+      "paymentMethod": "Payment method",
+      "statusAuto": "Automatic",
+      "statusAutoHint": "Automatically determined by payments and the due date — you can still exempt or cancel the cotisation.",
+      "currentStatusLabel": "Current status:",
+      "exonereConfirmTitle": "Exempt this cotisation?",
+      "exonereConfirmDescription": "Payments already recorded will be deleted. This action cannot be undone.",
+      "installments": {
+        "title": "Installments",
+        "none": "No installments — the cotisation uses the due date above.",
+        "count": "Number of installments",
+        "generate": "Generate installments",
+        "amountRequiredHint": "Fill in the cotisation amount above to generate installments.",
+        "add": "Add an installment",
+        "total": "Installments total: {total} / {amount}",
+        "dueDateIgnoredHint": "Ignored while an installment schedule is set — lateness is computed from the installments below instead.",
+        "lockedHint": "Payments are already recorded — remove them first to edit the schedule.",
+        "totalMismatch": "The installments total ({total}) doesn't match the cotisation amount ({amount})."
+      }
+    },
+    "view": {
+      "title": "Membership fees",
+      "selectAllMatching": "Select all (active filters)",
+      "selectedCount": "{count, plural, one {# selected} other {# selected}}",
+      "deselectAll": "Deselect",
+      "sendReminder": "Send reminder",
+      "exportMembers": "Export members",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
+      "count": "{count, plural, one {# membership fee} other {# membership fees}}",
+      "totalCollected": " · {amount} collected",
+      "exercise": "Fiscal year {year}",
+      "columns": {
+        "member": "Member",
+        "amount": "Amount",
+        "remaining": "Remaining",
+        "status": "Status",
+        "paidAt": "Paid on",
+        "dueDate": "Due date",
+        "paymentMethod": "Payment method",
+        "lastReminder": "Last reminder"
+      },
+      "actions": {
+        "edit": "Edit",
+        "declaration": "Receipt",
+        "delete": "Delete",
+        "recordPayment": "Record a payment",
+        "paymentHistory": "Payment history"
+      },
+      "searchPlaceholder": "Search for a member…",
+      "allStatuses": "All statuses",
+      "all": "All",
+      "statusFilter": {
+        "enAttente": "Pending",
+        "payees": "Paid",
+        "exonerees": "Exempt",
+        "partiellementPayees": "Partially paid",
+        "enRetard": "Overdue",
+        "annulees": "Cancelled"
+      },
+      "noResultsFor": "No results for \"{search}\"",
+      "noCotisation": "No membership fee recorded",
+      "addTitle": "Add a membership fee",
+      "editTitle": "Edit membership fee",
+      "deleteConfirmTitle": "Delete this membership fee?",
+      "deleteConfirmDescription": "{year} membership fee for {name}.",
+      "toasts": {
+        "created": "Membership fee recorded",
+        "updated": "Membership fee updated",
+        "deleted": "Membership fee deleted",
+        "confirm": "Confirm",
+        "editCancelled": "Edit the cancelled membership fee"
+      },
+      "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
+      "remaining": "{amount} remaining"
+    },
+    "reminderModal": {
+      "title": "Send a cotisation reminder",
+      "channelEmail": "Email",
+      "channelSms": "SMS",
+      "smsModuleRequired": "Requires the SMS module",
+      "recipients": "{count, plural, one {# recipient} other {# recipients}}",
+      "noRecipient": "No recipient",
+      "removeRecipient": "Remove this recipient",
+      "subjectLabel": "Subject",
+      "bodyLabel": "Message",
+      "variablesNotice": "The message is personalized for each recipient — '{{prenom}}', '{{montant_cotisation}}' and '{{annee_cotisation}}' are filled in automatically when sending.",
+      "sendNow": "Send ({count})",
+      "resultTitle": "Reminders sent",
+      "sent": "Sent",
+      "failed": "Failed",
+      "skippedNoEmail": "No email",
+      "skippedNoPhone": "No phone",
+      "toasts": {
+        "subjectRequired": "Please enter a subject",
+        "bodyRequired": "Please enter a message",
+        "templateLoadError": "Unable to load the reminder template",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
+        "reminderSent": "{count, plural, one {Reminder sent to # recipient} other {Reminders sent to # recipients}}",
+        "noReminderSent": "No reminder sent",
+        "noReminderSentWithFailures": "No reminder sent — {count, plural, one {# failure} other {# failures}}",
+        "sendFailures": "{count, plural, one {# send failed} other {# sends failed}}"
+      },
+      "continue": "Continue",
+      "confirmTitle": "Confirm sending",
+      "confirmDescription": "You're about to send a {channel} reminder to {count, plural, one {# recipient} other {# recipients}}. This action cannot be undone.",
+      "andOthers": " and {count} more",
+      "skippedInvalid": "{count, plural, one {# cotisation was no longer pending by the time it was sent (already paid or deleted) and was skipped} other {# cotisations were no longer pending by the time they were sent (already paid or deleted) and were skipped}}"
+    },
+    "payment": {
+      "title": "Record a payment",
+      "amount": "Amount",
+      "remainingBalance": "Remaining balance: {amount}",
+      "method": "Payment method",
+      "date": "Payment date",
+      "note": "Note",
+      "notePlaceholder": "Reference, remark…",
+      "historyTitle": "Payment history",
+      "noPayments": "No payment recorded",
+      "deleteConfirmTitle": "Delete this payment?",
+      "deleteConfirmDescription": "The {amount} payment will be removed and the dues balance recalculated.",
+      "deleteTooltip": "Delete this payment",
+      "toasts": {
+        "amountMustBePositive": "The amount must be greater than 0",
+        "amountExceedsBalance": "The amount exceeds the remaining balance ({amount})",
+        "recorded": "Payment recorded",
+        "deleted": "Payment deleted"
+      }
+    },
+    "statusTooltip": {
+      "enAttente": "Cotisation not yet paid, still within the deadline.",
+      "partiellementPayee": "Payment in progress according to the schedule.",
+      "paye": "The cotisation has been paid in full.",
+      "enRetard": "The payment deadline has passed.",
+      "exonere": "No payment is required.",
+      "annulee": "This cotisation has been cancelled."
+    }
+  },
+  "membres": {
+    "form": {
+      "status": {
+        "pending": "Pending",
+        "actif": "Active",
+        "inactif": "Inactive",
+        "suspendu": "Suspended"
+      },
+      "role": {
+        "membre": "Member",
+        "secretaire": "Secretary",
+        "tresorier": "Treasurer",
+        "president": "President",
+        "admin": "Admin"
+      },
+      "civilite": {
+        "none": "Not specified",
+        "mme": "Mrs.",
+        "mlle": "Ms.",
+        "m": "Mr."
+      },
+      "sexe": {
+        "none": "Not specified",
+        "homme": "Male",
+        "femme": "Female"
+      },
+      "groupeSanguinNone": "Not specified",
+      "tailleTshirtNone": "Not specified",
+      "adherentOverride": {
+        "auto": "Automatic (based on membership fee)",
+        "forceAdherent": "Force member status",
+        "forceBenevole": "Force volunteer status"
+      },
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "emailPlaceholder": "contact@example.com",
+        "phone": "Phone",
+        "phonePlaceholder": "+1 555 123 4567",
+        "role": "Role",
+        "birthDate": "Date of birth",
+        "status": "Status",
+        "adhesionCotisation": "Membership fee status",
+        "civilite": "Title",
+        "sexe": "Sex",
+        "groupeSanguin": "Blood type",
+        "possedeTshirt": "Has a t-shirt",
+        "tailleTshirt": "T-shirt size",
+        "responsable": "Legal guardian (if minor)",
+        "allergies": "Known allergies",
+        "allergiesPlaceholder": "Peanuts, pollen…",
+        "type": "Member type",
+        "address": "Address",
+        "addressPlaceholder": "123 Main St, Springfield"
+      },
+      "invitationNotice": "An invitation email with login details will be sent to this address.",
+      "adherentAutoWithResponsable": "Computed automatically: their own current-year membership fee if it exists, otherwise their guardian's — only override for exceptions (independent of \"Status\", which controls the account).",
+      "adherentAutoNoResponsable": "Computed automatically from the current-year membership fee — only override for exceptions (independent of \"Status\", which controls the account).",
+      "noType": "No type",
+      "noResponsable": "None",
+      "noAdultResponsable": "No eligible adult member available",
+      "preview": "Preview:"
+    },
+    "actions": {
+      "add": "Add a member",
+      "edit": "Edit member",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete {name}?"
+    },
+    "view": {
+      "title": "Members",
+      "resultsCount": "{count, plural, one {# result} other {# results}}",
+      "membersCount": "{count, plural, one {# member} other {# members}}",
+      "blankFormPdf": "Blank form (PDF)",
+      "sendEmail": "Send an email",
+      "sendSms": "Send an SMS",
+      "export": "Export",
+      "exportExcel": "Excel (.xlsx)",
+      "exportPdf": "PDF (.pdf)",
+      "columns": {
+        "member": "Member",
+        "phone": "Phone",
+        "memberSince": "Member since",
+        "status": "Status",
+        "membership": "Membership"
+      },
+      "membershipAdherent": "Member",
+      "membershipBenevole": "Volunteer",
+      "statsMembership": "Membership",
+      "statsAdherents": "Members",
+      "statsBenevoles": "Volunteers",
+      "statsDemographics": "Demographics",
+      "statsMen": "Men",
+      "statsWomen": "Women",
+      "statsSexUnknown": "Sex not specified",
+      "statsAdults": "Adults",
+      "statsChildren": "Children",
+      "statsAgeUnknown": "Age not specified",
+      "searchPlaceholder": "Search for a member…",
+      "allStatuses": "All statuses",
+      "allTypes": "All types",
+      "allMembership": "Members and volunteers",
+      "statusOptions": {
+        "pending": "Pending",
+        "actifs": "Active",
+        "inactifs": "Inactive",
+        "suspendus": "Suspended"
+      },
+      "adherentOptions": {
+        "adherents": "Members",
+        "benevoles": "Volunteers"
+      },
+      "noResultsFor": "No results for \"{search}\"",
+      "noMembers": "No members registered",
+      "actions": {
+        "view": "View profile",
+        "edit": "Edit",
+        "history": "History",
+        "changeRole": "Change role",
+        "createAccess": "Create access",
+        "delete": "Delete"
+      },
+      "deleteConfirmDescription": "This member will be archived and will no longer be able to access the association.",
+      "historyTitle": "History — {name}",
+      "historyTitleDefault": "History",
+      "toasts": {
+        "accessCreated": "Access created for {name} — an email was sent to them",
+        "memberAdded": "Member added successfully",
+        "memberUpdated": "Member updated",
+        "memberDeleted": "Member deleted",
+        "memberDeletedWithUnlink": "Member deleted — removed as legal guardian of {count} member(s)",
+        "noMembersToExport": "No members to export",
+        "viewSubscription": "View subscription",
+        "roleUpdated": "Role updated"
+      },
+      "changeRoleTitle": "Change role",
+      "changeRoleDescription": "{name}'s role in the association."
+    },
+    "detail": {
+      "notFound": "This member could not be found or has been deleted.",
+      "backToList": "Back to the list",
+      "backLink": "Members",
+      "memberSince": "Member since {date}",
+      "adherentViaResponsable": "Status inherited from their guardian — this member has no membership fee under their own name",
+      "viaResponsable": " (via guardian)",
+      "cotisationButton": "Membership fee",
+      "createAccessButton": "Create access",
+      "roleButton": "Role",
+      "contact": "Contact",
+      "noContactInfo": "No contact information",
+      "memberSinceColon": "Member since: {date}",
+      "typeColon": "Type: {name}",
+      "personalInfo": "Personal information",
+      "civiliteColon": "Title: {value}",
+      "sexeColon": "Sex: {value}",
+      "birthColon": "Born: {date}",
+      "groupeSanguinColon": "Blood type: {value}",
+      "hasTshirtColon": "Has a t-shirt: {value}",
+      "tshirtSizeColon": "T-shirt size: {value}",
+      "allergiesColon": "Allergies: {value}",
+      "legalGuardianColon": "Legal guardian:",
+      "noInfo": "No information provided",
+      "accountAccess": "Account & access",
+      "activeAccount": "Active account · {role}",
+      "noAccountWithEmail": "No user account — access can be created",
+      "noAccountNoEmail": "No user account — email required to create access",
+      "dependantsTitle": "Members under their guardianship:",
+      "tabs": {
+        "cotisations": "Membership fees",
+        "evenements": "Events",
+        "reunions": "Meetings",
+        "materiel": "Equipment",
+        "historique": "History",
+        "emails": "Emails",
+        "sms": "SMS"
+      },
+      "cotisationStatus": {
+        "enAttente": "Pending",
+        "paye": "Paid",
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled"
+      },
+      "loanStatus": {
+        "demande": "Pending request",
+        "confirme": "In progress",
+        "refuse": "Refused",
+        "returned": "Returned"
+      },
+      "meetingStatus": {
+        "scheduled": "Scheduled",
+        "live": "In progress",
+        "ended": "Ended",
+        "cancelled": "Cancelled"
+      },
+      "noCotisation": "No membership fee recorded",
+      "paidOn": "Paid on {date}",
+      "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
+      "noParticipation": "No participation recorded",
+      "present": "Present",
+      "showingRecentParticipations": "Showing the {count} most recent participations out of {total} total.",
+      "noMeeting": "No meeting recorded",
+      "participated": "Attended",
+      "notParticipated": "Did not attend",
+      "showingRecentMeetings": "Showing the {count} most recent meetings out of {total} total.",
+      "noLoan": "No equipment loan",
+      "borrowedOn": "Borrowed on {date}",
+      "returnedOn": " · Returned on {date}",
+      "showingRecentLoans": "Showing the {count} most recent loans out of {total} total.",
+      "addCotisationTitle": "Add a membership fee",
+      "editCotisationTitle": "Edit membership fee",
+      "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",
+      "toasts": {
+        "accessCreated": "Access created — an email was sent",
+        "cotisationAdded": "Membership fee added",
+        "cotisationUpdated": "Membership fee updated"
+      }
+    },
+    "sms": {
+      "title": "Send an SMS",
+      "charsRemaining": "{count, plural, one {# character remaining} other {# characters remaining}}",
+      "segmentsCount": "· {count} SMS",
+      "truncatedNotice": "Only the first 500 members are shown. To target more members, use \"All members\" or \"By type\" mode.",
+      "searchPlaceholder": "Search…",
+      "membersCount": "{count, plural, one {# member} other {# members}}",
+      "deselectAll": "Deselect all",
+      "selectAll": "Select all",
+      "noMemberFound": "No member found",
+      "selectedCount": "{count, plural, one {# member selected} other {# members selected}}",
+      "noMemberSelected": "No member selected",
+      "recipients": "Recipients",
+      "modeAll": "All members",
+      "modeType": "By type",
+      "modeManual": "Manual selection",
+      "allModeNotice": "The SMS will be sent to all active members with a phone number.",
+      "typeLabel": "Member type",
+      "noTypeConfigured": "No type configured",
+      "noActiveMemberWithPhone": "No active member with a phone number",
+      "message": "Message",
+      "messagePlaceholder": "Write your SMS message…",
+      "variablesNotice": "The variables {p} and {a} are not available for manual sends.",
+      "continue": "Continue",
+      "confirmSendTitle": "Send confirmation",
+      "confirmSendDescription": "This SMS will be sent to {recipients}. This action cannot be undone.",
+      "recipientsManualOnly": "Only members with a valid phone number will receive the SMS.",
+      "sendNow": "Send now",
+      "discardTitle": "Discard the message?",
+      "discardDescription": "The message you wrote will be lost if you close now.",
+      "discard": "Discard",
+      "recipientsOfType": "{count, plural, one {# member} other {# members}} of type \"{type}\"",
+      "recipientsTypeSelected": "{count, plural, one {# member (type selected)} other {# members (type selected)}}",
+      "recipientsActive": "{count, plural, one {# active member} other {# active members}}",
+      "toasts": {
+        "selectType": "Select a member type",
+        "selectMember": "Select at least one member",
+        "writeMessage": "Write the SMS message",
+        "queued": "{count, plural, one {Sending to # member…} other {Sending to # members…}}",
+        "noPhoneRecipient": "No recipient with a phone number in this selection",
+        "cannotVerifyCount": "Unable to check the number of recipients",
+        "noSmsSent": "No SMS sent",
+        "noSmsSentWithFailures": "No SMS sent — {count, plural, one {# failure} other {# failures}}",
+        "smsSent": "{count, plural, one {SMS sent to # member} other {SMS sent to # members}}",
+        "sendFailures": "{count, plural, one {# send failed} other {# sends failed}}{preview}",
+        "andOthers": " and {count} more",
+        "networkError": "Network error"
+      }
+    },
+    "email": {
+      "title": "Send an email",
+      "recipients": "Recipients",
+      "modeAll": "All members",
+      "modeType": "By type",
+      "modeManual": "Manual selection",
+      "allModeNotice": "The email will be sent to all active members with an email address.",
+      "typeLabel": "Member type",
+      "noTypeConfigured": "No type configured",
+      "noActiveMemberWithEmail": "No active member with an email address",
+      "searchPlaceholder": "Search…",
+      "membersCount": "{count, plural, one {# member} other {# members}}",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "noMemberFound": "No member found",
+      "selectedCount": "{count, plural, one {# member selected} other {# members selected}}",
+      "noMemberSelected": "No member selected",
+      "externalEmailsLabel": "External emails",
+      "externalEmailsPlaceholder": "email@example.com",
+      "externalEmailsHint": "Combine with the members above, or use “Manual selection” without checking anyone to send only to these emails.",
+      "externalMemberConflictChipTitle": "Already a member: {name}",
+      "externalMemberConflictWarning": "Already belong to existing members: {list} — this send won't show up in their history and won't have their name filled in. Consider picking them from the list instead of typing them.",
+      "unresolvedVarsWarning": "These variables won't be filled in for this send (they'll appear as plain text): {vars}",
+      "unknownVarsWarning": "These variables don't exist and will never be filled in — check for typos: {vars}",
+      "templateSectionLabel": "Template",
+      "templateContextWarning": "This template uses dues/event variables that won't be filled in for a manual send.",
+      "deselectTemplate": "Deselect",
+      "noTemplateCreated": "No template created.",
+      "createTemplateLink": "Create a template",
+      "inMessagesSection": " in the Messages section.",
+      "messageSectionLabel": "Message",
+      "saveAsTemplate": "Save as template",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Email subject…",
+      "bodyLabel": "Message body",
+      "bodyPlaceholder": "Write your message…",
+      "continue": "Continue",
+      "confirmSendTitle": "Send confirmation",
+      "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
+      "sendNow": "Send now",
+      "replaceContentTitle": "Replace content?",
+      "replaceContentDescription": "Applying this template will replace the subject and body already written.",
+      "replace": "Replace",
+      "discardTitle": "Discard the message?",
+      "discardDescription": "The content you wrote will be lost if you close now.",
+      "discard": "Discard",
+      "templateNameLabel": "Template name",
+      "templateNamePlaceholder": "e.g. Annual dues reminder…",
+      "recipientsOfType": "{count, plural, one {# member} other {# members}} of type “{type}”",
+      "recipientsActive": "{count, plural, one {# active member} other {# active members}}",
+      "externalOnlyCount": "{count, plural, one {# external email} other {# external emails}}",
+      "recipientsWithExternal": "{members} + {count, plural, one {# external email} other {# external emails}}",
+      "toasts": {
+        "selectType": "Select a member type",
+        "selectMember": "Select at least one member or add an external email",
+        "invalidExternalEmail": "Invalid email address",
+        "pasteInvalidSkipped": "{count, plural, one {# pasted address isn't valid and was skipped} other {# pasted addresses aren't valid and were skipped}}",
+        "externalEmailLimitReached": "Limit of {max} external emails reached",
+        "duplicateExternalSkipped": "{count, plural, one {# external email was already among the selected recipients and was skipped} other {# external emails were already among the selected recipients and were skipped}}",
+        "subjectRequired": "Enter a subject for the message",
+        "bodyRequired": "Write the message content",
+        "noRecipientWithEmail": "No recipient with an email address in this selection",
+        "queued": "{count, plural, one {Sending to # recipient…} other {Sending to # recipients…}}",
+        "cannotVerifyCount": "Unable to verify the number of recipients",
+        "templateSaved": "Template “{name}” saved",
+        "noEmailSent": "No email sent",
+        "noEmailSentWithFailures": "No email sent — {count, plural, one {# failure} other {# failures}}",
+        "emailSent": "{count, plural, one {Email sent to # member} other {Email sent to # members}} — each recipient's delivery status will appear in their history",
+        "sendFailures": "{count, plural, one {# send failed} other {# sends failed}}{preview}",
+        "andOthers": " and {count} other(s)"
+      }
+    },
+    "activityLog": {
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "address": "Address",
+        "birthDate": "Date of birth",
+        "status": "Status",
+        "typeId": "Type",
+        "role": "Role",
+        "adherentOverride": "Membership status"
+      },
+      "adherentOverrideValues": {
+        "forcedAdherent": "Forced Member",
+        "forcedBenevole": "Forced Volunteer"
+      },
+      "actions": {
+        "membreCreated": "Member added",
+        "membreUpdated": "Information updated",
+        "profilUpdated": "Profile updated",
+        "profileUpdated": "Profile updated",
+        "membreRoleChanged": "Role changed",
+        "passwordChanged": "Password changed",
+        "passwordReset": "Password reset",
+        "membreDeleted": "Member archived",
+        "membrePortalRegistered": "Portal registration",
+        "membreInscriptionRequested": "Membership request (website)",
+        "cotisationCreated": "Dues added",
+        "cotisationUpdated": "Dues updated",
+        "cotisationDeleted": "Dues deleted",
+        "cotisationPaid": "Dues paid",
+        "cotisationRefunded": "Dues refunded",
+        "loanCreated": "Equipment loan created",
+        "loanRequested": "Loan requested",
+        "loanConfirmed": "Loan confirmed",
+        "loanRefused": "Loan refused",
+        "loanReturned": "Equipment returned",
+        "loanUpdated": "Loan updated",
+        "loanCancelled": "Loan cancelled",
+        "loanDeleted": "Loan deleted"
+      },
+      "actorPrefix": "by {name}",
+      "loadError": "Unable to load history.",
+      "empty": "No activity recorded for this member.",
+      "shownOfTotal": "{shown} of {total, plural, one {# action} other {# actions}}",
+      "loadMore": "Show more"
+    },
+    "activiteView": {
+      "title": "Activity",
+      "actionsCount": "{count, plural, one {# action} other {# actions}}",
+      "resetFilters": "Reset",
+      "allModules": "All modules",
+      "fromLabel": "From",
+      "toLabel": "to",
+      "errorLoading": "Error loading activity.",
+      "retry": "Retry",
+      "noActivityFound": "No activity found",
+      "deletedElement": "Deleted item",
+      "system": "System",
+      "pageOf": "Page {page} of {totalPages}",
+      "columns": {
+        "date": "Date",
+        "action": "Action",
+        "element": "Item",
+        "by": "By",
+        "details": "Details"
+      },
+      "entities": {
+        "membre": "Members",
+        "user": "Accounts",
+        "actualite": "News",
+        "evenement": "Events",
+        "participation": "Attendance / RSVP",
+        "cotisation": "Dues",
+        "material": "Equipment",
+        "materialLoan": "Loans",
+        "messageTemplate": "Templates",
+        "automationRule": "Automations",
+        "membreType": "Member types",
+        "association": "Settings",
+        "boutiqueProduit": "Shop – Products",
+        "boutiqueCommande": "Shop – Orders",
+        "sondage": "Surveys",
+        "sondageReponse": "Surveys – Responses",
+        "meeting": "Meetings",
+        "don": "Donations",
+        "bankAccount": "Bank accounts",
+        "bankTransaction": "Bank transactions",
+        "income": "Income",
+        "expense": "Expenses",
+        "financeCategory": "Finance categories",
+        "payment": "Payments"
+      },
+      "messageTemplateFilterLabel": "Msg templates",
+      "actualiteFields": {
+        "title": "Title",
+        "pinned": "Pinned",
+        "publishedAt": "Publication",
+        "recipientMode": "Recipients",
+        "content": "Content"
+      },
+      "actualiteValues": {
+        "draft": "Draft",
+        "contentChanged": "changed"
+      },
+      "recipientModeAll": "All members",
+      "recipientModeSelected": "Selection",
+      "genericFields": {
+        "evenementLocation": "Location",
+        "evenementPrice": "Price",
+        "evenementCapacity": "Capacity",
+        "cotisationAmount": "Amount",
+        "cotisationPaidAt": "Payment date",
+        "cotisationNote": "Note"
+      },
+      "rsvp": {
+        "confirme": "Confirmed",
+        "provavel": "Likely",
+        "incerto": "Uncertain",
+        "absent": "Absent"
+      },
+      "statusValues": {
+        "paye": "Paid",
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled",
+        "paused": "Paused",
+        "done": "Done"
+      },
+      "entrySortie": {
+        "entree": "Credit",
+        "sortie": "Debit"
+      },
+      "detailsRsvpLabel": "RSVP:",
+      "detailsPresent": "Present",
+      "detailsQuantityLabel": "Qty: {qty}",
+      "automationSkippedNoContact": "{skipped} / {total, plural, one {# birthday} other {# birthdays}} today skipped — member with no reachable email or phone.",
+      "bulkSend": {
+        "modeAll": "all members",
+        "modeType": "by type",
+        "modeManual": "manual selection",
+        "summary": "{sent, plural, one {# sent} other {# sent}}",
+        "failedSuffix": "{failed, plural, one {# failed} other {# failed}}",
+        "externalEmails": "External emails: {emails}"
+      },
+      "actions": {
+        "membreCreated": "Member added",
+        "membreUpdated": "Member updated",
+        "membreDeleted": "Member archived",
+        "membrePortalRegistered": "Registered (portal)",
+        "membreInscriptionRequested": "Membership request (website)",
+        "membreRoleChanged": "Role changed",
+        "membreAccessCreated": "Access created",
+        "profilUpdated": "Profile updated",
+        "profileUpdated": "Profile updated",
+        "passwordChanged": "Password changed",
+        "passwordReset": "Password reset",
+        "emailSentBulk": "Email sent",
+        "smsSentBulk": "SMS sent",
+        "actualiteCreated": "News item created",
+        "actualiteUpdated": "News item updated",
+        "actualiteDeleted": "News item deleted",
+        "evenementCreated": "Event created",
+        "evenementUpdated": "Event updated",
+        "evenementDeleted": "Event deleted",
+        "presenceMarked": "Attendance marked",
+        "rsvpUpdated": "RSVP updated",
+        "participationGuestUpdated": "Guest updated",
+        "participationGuestRemoved": "Guest removed",
+        "participationPublicCreated": "Public registration received",
+        "participationPublicCancelled": "Public registration cancelled",
+        "ticketCheckoutStarted": "Payment started",
+        "ticketPaid": "Ticket paid",
+        "ticketPaymentCancelled": "Payment cancelled",
+        "ticketRefunded": "Ticket refunded",
+        "evenementQrGenerated": "Check-in QR generated",
+        "evenementQrRevoked": "Check-in QR revoked",
+        "cotisationCreated": "Dues created",
+        "cotisationUpdated": "Dues updated",
+        "cotisationDeleted": "Dues deleted",
+        "cotisationRefunded": "Dues refunded",
+        "bankAccountCreated": "Bank account added",
+        "bankAccountUpdated": "Bank account updated",
+        "bankAccountDeleted": "Bank account deleted",
+        "bankStatementImported": "Statement imported",
+        "bankTxStatusUpdated": "Transaction updated",
+        "txIgnored": "Transaction ignored",
+        "txMarkedDuplicate": "Marked as duplicate",
+        "txMatchedIncome": "Income reconciled",
+        "txMatchedExpense": "Expense reconciled",
+        "txUnmatched": "Reconciliation cancelled",
+        "incomeCreated": "Income added",
+        "incomeUpdated": "Income updated",
+        "incomeDeleted": "Income deleted",
+        "expenseCreated": "Expense added",
+        "expenseUpdated": "Expense updated",
+        "expenseDeleted": "Expense deleted",
+        "financeCategoryCreated": "Category created",
+        "financeCategoryUpdated": "Category updated",
+        "financeCategoryDeleted": "Category deleted",
+        "partialRefundReceived": "Partial refund",
+        "exerciceCreated": "Fiscal year created",
+        "exerciceUpdated": "Fiscal year updated",
+        "exerciceCloture": "Fiscal year closed",
+        "exerciceReouvert": "Fiscal year reopened",
+        "exerciceDeleted": "Fiscal year deleted",
+        "materielCreated": "Equipment added",
+        "materielUpdated": "Equipment updated",
+        "materielDeleted": "Equipment deleted",
+        "loanCreated": "Loan created",
+        "loanRequested": "Loan requested",
+        "loanConfirmed": "Loan confirmed",
+        "loanRefused": "Loan refused",
+        "loanReturned": "Loan returned",
+        "loanUpdated": "Request updated",
+        "loanCancelled": "Request cancelled",
+        "loanDeleted": "Loan deleted",
+        "templateCreated": "Template created",
+        "templateUpdated": "Template updated",
+        "templateDeleted": "Template deleted",
+        "templateActivated": "Template activated",
+        "templateDeactivated": "Template deactivated",
+        "ruleCreated": "Rule created",
+        "ruleUpdated": "Rule updated",
+        "ruleDeleted": "Rule deleted",
+        "automationSkipped": "Send(s) skipped — no contact info",
+        "typeCreated": "Type created",
+        "typeUpdated": "Type updated",
+        "typeDeleted": "Type deleted",
+        "meetingCreated": "Meeting created",
+        "meetingUpdated": "Meeting updated",
+        "meetingDeleted": "Meeting deleted",
+        "meetingEnded": "Meeting ended",
+        "meetingRecordingStarted": "Recording started",
+        "meetingRecordingStopped": "Recording stopped",
+        "meetingTranscribed": "Transcript generated",
+        "meetingSummarized": "Summary generated",
+        "sondageCreated": "Survey created",
+        "sondageUpdated": "Survey updated",
+        "sondageDeleted": "Survey deleted",
+        "sondageActivated": "Survey activated",
+        "sondageClosed": "Survey closed",
+        "sondageReponseSubmitted": "Response submitted",
+        "boutiqueProduitCreated": "Product created",
+        "boutiqueProduitUpdated": "Product updated",
+        "boutiqueProduitDeleted": "Product deleted",
+        "boutiqueCommandeCreated": "Order created",
+        "boutiqueCommandeUpdated": "Order updated",
+        "commandeRefunded": "Order refunded",
+        "donCreated": "Donation created",
+        "donPaid": "Donation received",
+        "donRefunded": "Donation refunded",
+        "cotisationPaidStripe": "Dues paid (Stripe)",
+        "associationRegistered": "Association created",
+        "associationUpdated": "Settings updated",
+        "siteUpdated": "Website updated",
+        "sitePublished": "Website published",
+        "siteUnpublished": "Website unpublished",
+        "smsSettingsUpdated": "SMS — settings",
+        "aiConfigUpdated": "AI — settings",
+        "livekitConfigUpdated": "Video — settings",
+        "ticketCheckoutExpired": "Payment expired"
+      }
+    }
+  },
+  "site": {
+    "sectionLabels": {
+      "hero": "Main banner",
+      "about": "About",
+      "events": "Upcoming events",
+      "actualites": "News",
+      "membership": "Join the association",
+      "contact": "Contact"
+    },
+    "defaultTitles": {
+      "hero": "Welcome",
+      "about": "About",
+      "events": "Upcoming events",
+      "membership": "Join the association",
+      "actualites": "News",
+      "contact": "Contact"
+    },
+    "view": {
+      "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
+      "defaultAssociationName": "My association",
+      "toasts": {
+        "saved": "Site saved",
+        "saveError": "Error saving the site",
+        "publishFirst": "Save your changes before publishing.",
+        "published": "Site published",
+        "unpublished": "Site unpublished",
+        "error": "Error"
+      }
+    },
+    "controls": {
+      "published": "Published",
+      "unpublished": "Unpublished",
+      "copyLink": "Copy link",
+      "open": "Open",
+      "unpublishButton": "Unpublish",
+      "publishButton": "Publish",
+      "save": "Save",
+      "appearance": "Appearance",
+      "primaryColor": "Primary color",
+      "logo": "Logo",
+      "header": "Header",
+      "headerBgColor": "Background color",
+      "headerBgPlaceholder": "#ffffff (white by default)",
+      "loginButton": "\"Sign in\" button",
+      "registerButton": "\"Sign up\" button",
+      "footer": "Footer",
+      "footerTextLabel": "Text",
+      "footerTextPlaceholder": "© {year} My Association",
+      "footerBgColor": "Background color",
+      "links": "Links",
+      "add": "Add",
+      "linkLabelPlaceholder": "Label",
+      "linkUrlPlaceholder": "https://…",
+      "linkUrlError": "The URL must start with https://",
+      "noLinks": "No links. Click Add.",
+      "sections": "Sections",
+      "noSections": "No sections. Add one below.",
+      "addSection": "Add a section",
+      "deleteSectionTitle": "Delete the section",
+      "deleteSectionDescription": "This action is irreversible."
+    },
+    "sectionSheet": {
+      "editTitle": "Edit — {label}",
+      "sectionTitle": "Section title",
+      "subtitle": "Subtitle",
+      "subtitlePlaceholder": "Discover our association…",
+      "heroHeight": "Banner height",
+      "heroHeightFull": "Full page",
+      "heroHeightHalf": "Half page",
+      "bgImage": "Background image (optional)",
+      "bgImageHint": "A dark overlay will be added automatically.",
+      "bgColor": "Background color (optional)",
+      "bgColorHint": "Ignored if an image is set.",
+      "bgColorPlaceholder": "Uses the primary color by default",
+      "content": "Content",
+      "contentPlaceholder": "Present your association…",
+      "eventsLimit": "Number of events to display",
+      "eventsLimitHint": "Events are automatically pulled from your calendar.",
+      "actualitesLimit": "Number of news posts to display",
+      "actualitesLimitHint": "Only the first N published news posts will be shown on the site.",
+      "membershipIntro": "Introductory text",
+      "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
+      "membershipHint": "Requests appear in the member list with \"Pending\" status.",
+      "contactHint": "This section automatically displays the city and country configured in the association's settings.",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "discardTitle": "Discard changes?",
+      "discardDescription": "Unapplied changes will be lost.",
+      "discardConfirm": "Discard"
+    },
+    "editor": {
+      "viewSite": "View site",
+      "logoUrl": "Logo URL (optional)",
+      "footerText": "Footer text"
+    }
+  },
+  "portalMembre": {
+    "sondages": {
+      "title": "Surveys",
+      "subtitle": "Questionnaires to complete for your association.",
+      "noSurveys": "No active survey at the moment.",
+      "loadError": "Unable to load surveys. Please try again later.",
+      "answered": "Answered",
+      "toComplete": "To complete",
+      "anonymous": "Anonymous",
+      "questionsCount": "{count, plural, one {# question} other {# questions}}",
+      "deadline": "Closes: {date}",
+      "completedOn": "Completed on {date}",
+      "respond": "Respond"
+    },
+    "boutique": {
+      "title": "Shop",
+      "subtitle": "Order your items online.",
+      "myOrders": "My orders",
+      "cart": "Cart ({count})",
+      "noProducts": "No items available at the moment.",
+      "outOfStock": "Sold out",
+      "notFound": "Product not found.",
+      "backToShop": "Back to shop",
+      "selectVariant": "Select a variant",
+      "insufficientStock": "Insufficient stock",
+      "addedToCart": "Added to cart",
+      "variantLabel": "Variant",
+      "startingFrom": "From {price}",
+      "quantity": "Quantity",
+      "inStock": "{count} in stock",
+      "variantOutOfStock": "This variant is sold out",
+      "addToCart": "Add to cart",
+      "myCart": "My cart",
+      "cartEmpty": "Your cart is empty.",
+      "viewShop": "View shop",
+      "orderPlacedTitle": "Order placed!",
+      "orderPlacedDescription": "Your order is awaiting payment. The administration will contact you to finalize it.",
+      "myOrdersButton": "My orders",
+      "continueShopping": "Continue shopping",
+      "maxStockReached": "Max stock reached",
+      "summary": "Summary",
+      "total": "Total",
+      "paymentMethod": "Payment method",
+      "paymentManual": "On pickup",
+      "paymentStripe": "Online",
+      "paymentManualHint": "Payment is made on pickup. The administration will contact you.",
+      "paymentStripeHint": "You'll receive a secure payment link after the order is confirmed.",
+      "note": "Note",
+      "optional": "(optional)",
+      "notePlaceholder": "E.g. To pick up on Saturday…",
+      "order": "Place order",
+      "paymentConfirmed": "Payment confirmed! Your order has been recorded.",
+      "orderStatus": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "cancelled": "Cancelled"
+      },
+      "noOrders": "No orders at the moment.",
+      "noteLabel": "Note: {note}",
+      "downloadReceipt": "Download receipt",
+      "pendingConfirmationHint": "Awaiting confirmation. The administration will contact you for pickup.",
+      "editModalTitle": "Edit my order",
+      "editModalDescription": "You can reduce or remove items. To add more, place a new order.",
+      "saveWithAmount": "Save {amount}",
+      "totalOrdered": "Total ordered",
+      "removeAllHint": "To remove all items, cancel the order instead.",
+      "cancelOrderTitle": "Cancel this order?",
+      "cancelOrderDescription": "This action is irreversible. The items will be put back in stock.",
+      "cancelOrderConfirm": "Cancel the order",
+      "toasts": {
+        "paymentError": "Error during payment",
+        "orderError": "Error placing the order",
+        "orderUpdated": "Order updated",
+        "orderCancelled": "Order cancelled"
+      }
+    },
+    "dons": {
+      "title": "My donations",
+      "subtitle": "History of your contributions.",
+      "makeDonation": "Make a donation",
+      "noneYet": "You haven't made a donation yet.",
+      "makeFirstDonation": "Make my first donation",
+      "received": "Received",
+      "pending": "Pending",
+      "messageQuote": "\"{message}\"",
+      "taxReceipt": "Tax receipt",
+      "taxReceiptHint": "Your tax receipts entitle you to a tax reduction (Art. 200 CGI).",
+      "toWhom": "to {name}",
+      "taxDeductibleTitle": "Your donation is tax-deductible",
+      "taxDeductibleDetail": "75% reduction up to €1,000, then 66% — Art. 200 CGI. A tax receipt will be emailed to you and available in \"My donations\".",
+      "noAddressWarning": "Your profile has no address on file — your tax receipt will be issued without it.",
+      "completeProfile": "Complete my profile",
+      "checkAvailabilityError": "Unable to check payment availability. Try again later.",
+      "addEmailPrompt": "Add an email to your profile before making a donation — that's where you'll receive the confirmation and tax receipt.",
+      "paymentUnavailable": "Online payment is not available at the moment.",
+      "amountLabel": "Amount",
+      "messageLabel": "Message (optional)",
+      "messagePlaceholder": "A message for the association…",
+      "anonymousLabel": "I wish to remain anonymous in any public donor listing (does not affect your tax receipt)",
+      "submitWithAmount": "Donate {amount}",
+      "toasts": {
+        "thanked": "Thank you for your donation! A confirmation email has been sent to you.",
+        "cancelled": "Donation cancelled."
+      }
+    },
+    "reunions": {
+      "title": "Meetings",
+      "subtitle": "Your ongoing and upcoming meetings.",
+      "noMeetings": "No meeting scheduled at the moment.",
+      "status": {
+        "scheduled": "Scheduled",
+        "live": "Live",
+        "ended": "Ended"
+      },
+      "join": "Join",
+      "start": "Start",
+      "history": "History",
+      "endedOn": "Ended on {date}",
+      "leave": "Leave",
+      "defaultTitle": "Meeting",
+      "refreshError": "Unable to refresh the meeting status.",
+      "liveNotification": "{title} — meeting in progress",
+      "liveNotificationDescription": "Join now."
+    },
+    "cotisation": {
+      "title": "My dues",
+      "subtitle": "Track your annual payments.",
+      "status": {
+        "enAttente": "Pending",
+        "paye": "Paid",
+        "exonere": "Exempt",
+        "partiellementPayee": "Partially paid",
+        "enRetard": "Overdue",
+        "annulee": "Cancelled"
+      },
+      "currentYearTitle": "{year} dues — Current year",
+      "paidOn": "Paid on {date}",
+      "payOnline": "Pay online",
+      "payAmount": "Pay {amount}",
+      "installmentsTitle": "Payment schedule",
+      "installmentCovered": "Paid",
+      "installmentPending": "Upcoming",
+      "history": "History",
+      "noHistory": "No history available.",
+      "yearLabel": "Year {year}",
+      "paidOnShort": " · paid on {date}",
+      "pay": "Pay",
+      "noMemberProfile": "No member profile linked to this account.",
+      "toasts": {
+        "paymentDone": "Payment successful!",
+        "paymentCancelled": "Payment cancelled.",
+        "paymentError": "Error during payment"
+      },
+      "remaining": "{amount} remaining",
+      "otherPaymentMethodsNotice": "You can also pay this due another way (check, cash, bank transfer) directly with your association — the payment will be recorded by a manager.",
+      "offlinePaymentNotice": "Contact your association to pay this due (check, cash, bank transfer) — the payment will be recorded by a manager."
+    },
+    "communications": {
+      "title": "My communications",
+      "subtitle": "The emails your association has sent you.",
+      "noEmails": "No email received at the moment.",
+      "statusBadge": {
+        "queued": "Queued",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "opened": "Opened",
+        "clicked": "Opened",
+        "delayed": "In progress",
+        "bounced": "Error",
+        "complained": "Spam",
+        "failed": "Error"
+      },
+      "statusNote": {
+        "bounced": "This email could not be delivered (invalid address or full mailbox).",
+        "complained": "You reported this email as spam.",
+        "failed": "Sending this email failed."
+      },
+      "sourceLabel": {
+        "sondage": "Survey",
+        "automation": "Automation",
+        "bulkMessage": "Bulk message",
+        "memberInvite": "Invitation",
+        "meetingInvite": "Meeting",
+        "transaction": "Confirmation",
+        "document": "Document",
+        "test": "Test"
+      },
+      "timeline": {
+        "created": "Created",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "opened": "Opened",
+        "clicked": "Clicked",
+        "bounced": "Error",
+        "complained": "Spam"
+      },
+      "tracking": "Tracking",
+      "content": "Content",
+      "loading": "Loading…",
+      "contentLoadError": "Unable to load the content.",
+      "retry": "Retry",
+      "emailContentTitle": "Email content: {subject}",
+      "previewNotice": "Preview — links are disabled.",
+      "attachmentsNotice": " Attachments are not shown here.",
+      "contentUnavailable": "Content not available for this send.",
+      "countOfTotal": "{shown} of {total, plural, one {# email} other {# emails}}",
+      "seeMore": "See more",
+      "openSondage": "Answer the survey"
+    },
+    "profil": {
+      "notFound": "Profile not found.",
+      "title": "My profile",
+      "subtitle": "Your personal information.",
+      "identity": {
+        "title": "Identity",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "notProvided": "Not provided",
+        "status": "Status",
+        "birthDate": "Date of birth",
+        "notProvidedFem": "Not provided"
+      },
+      "statusLabel": {
+        "PENDING": "Pending validation",
+        "ACTIF": "Active",
+        "INACTIF": "Inactive",
+        "SUSPENDU": "Suspended"
+      },
+      "contact": {
+        "title": "Contact & information",
+        "phone": "Phone",
+        "phonePlaceholder": "+1 555 000 0000",
+        "phoneInvalid": "Invalid phone number",
+        "birthDate": "Date of birth",
+        "birthDateInPast": "Date of birth must be in the past",
+        "address": "Address",
+        "addressPlaceholder": "123 Main St, Paris",
+        "civilite": "Title",
+        "groupeSanguin": "Blood type",
+        "possedeTshirt": "Has a t-shirt",
+        "tailleTshirt": "T-shirt size",
+        "allergies": "Known allergies",
+        "allergiesPlaceholder": "Peanuts, pollen…",
+        "notProvided": "Not provided",
+        "yes": "Yes",
+        "no": "No",
+        "save": "Save",
+        "saving": "Saving…"
+      },
+      "civiliteLabels": {
+        "MME": "Mrs",
+        "MLLE": "Ms",
+        "M": "Mr"
+      },
+      "groupeSanguinLabels": {
+        "A_POSITIF": "A+",
+        "A_NEGATIF": "A-",
+        "B_POSITIF": "B+",
+        "B_NEGATIF": "B-",
+        "AB_POSITIF": "AB+",
+        "AB_NEGATIF": "AB-",
+        "O_POSITIF": "O+",
+        "O_NEGATIF": "O-"
+      },
+      "toasts": {
+        "updated": "Profile updated",
+        "updateError": "Error updating profile",
+        "photoUpdated": "Photo updated",
+        "photoUpdateError": "Error updating photo"
+      },
+      "removePhoto": {
+        "title": "Remove profile photo?",
+        "description": "You can add a new one anytime.",
+        "confirm": "Remove"
+      }
+    }
+  },
+  "ai": {
+    "heading": "AI Assistant",
+    "description": "Used for AI-assisted writing in text editors. By default, the platform key is used for free. Configure your own key (Groq, OpenAI or Mistral) so costs are billed to your account.",
+    "configuredTitle": "Custom key configured",
+    "providerLabel": "Provider:",
+    "modelLabel": "· Model:",
+    "transcriptionNotice": "Meeting transcription always uses Groq (the only supported provider) — it keeps using the platform key, not your {provider} key.",
+    "platformKeyActive": "Platform key active — you can use AI without any configuration.",
+    "providerFieldLabel": "Provider",
+    "providerFieldPlaceholder": "Choose a provider…",
+    "apiKeyLabel": "API Key",
+    "apiKeyPlaceholderReplace": "Existing key — enter to replace",
+    "apiKeyPlaceholderNew": "Paste your API key…",
+    "apiKeyHint": "Get your key at {docs}",
+    "modelFieldLabel": "Model",
+    "modelFieldPlaceholderDefault": "Default: {model}",
+    "modelFieldPlaceholderSelectProvider": "Select a provider first",
+    "modelFieldHint": "Leave blank to use the default model.",
+    "saving": "Saving…",
+    "removeKey": "Remove custom key",
+    "toasts": {
+      "saved": "AI configuration saved",
+      "saveError": "Could not save the AI configuration",
+      "keyRemoved": "Key removed — back to the platform key",
+      "removeError": "Could not remove the key"
+    }
+  },
+  "sms": {
+    "heading": "SMS Notifications",
+    "description": "Used to send SMS to members. Requires your own Twilio account — there is no key shared by the platform, SMS are billed directly to your Twilio account.",
+    "configuredTitle": "Twilio account configured",
+    "phoneNumberLine": "Number: {number}",
+    "notConfiguredWarning": "No Twilio account configured — sending SMS will not work until you enter your credentials.",
+    "accountSidLabel": "Account SID",
+    "accountSidPlaceholderReplace": "Existing SID — enter to replace",
+    "authTokenLabel": "Auth Token",
+    "authTokenPlaceholderReplace": "Existing token — enter to replace",
+    "credentialsHint": "Find your credentials at",
+    "phoneNumberLabel": "Sending number",
+    "saving": "Saving…",
+    "removeCredentials": "Remove credentials",
+    "toasts": {
+      "saved": "SMS configuration saved",
+      "incomplete": "Saved, but a field is still missing — SMS won't work until all 3 fields are filled in.",
+      "saveError": "Could not save the SMS configuration",
+      "credentialsRemoved": "Twilio credentials removed",
+      "removeError": "Could not remove the credentials"
+    }
+  },
+  "layout": {
+    "appSidebar": {
+      "associations": "Associations",
+      "parametres": "Settings",
+      "dashboard": "Dashboard",
+      "membres": "Members",
+      "evenements": "Events",
+      "cotisations": "Dues",
+      "finances": "Financial tracking",
+      "devis": "Quotes",
+      "factures": "Invoices",
+      "fournisseurs": "Suppliers",
+      "dons": "Donations",
+      "reunions": "Meetings",
+      "sondages": "Surveys",
+      "boutique": "Shop",
+      "actualites": "News",
+      "messages": "Messaging",
+      "materiel": "Equipment",
+      "site": "Website",
+      "activite": "History",
+      "suporte": "Support",
+      "categories": {
+        "adherents": "Membership",
+        "communication": "Communication",
+        "finances": "Finances",
+        "outils": "Tools"
+      }
+    },
+    "backofficeSidebar": {
+      "backoffice": "Backoffice",
+      "overview": "Overview",
+      "associations": "Associations",
+      "support": "Support",
+      "signOut": "Sign out"
+    },
+    "legalLinksMenu": {
+      "trigger": "Legal documents",
+      "mentionsLegales": "Legal notice",
+      "cgu": "Terms of use",
+      "cgs": "Terms of service",
+      "politiqueConfidentialite": "Privacy policy",
+      "opensNewTab": "Opens in a new tab"
+    },
+    "themeToggle": {
+      "changeTheme": "Change theme"
+    },
+    "header": {
+      "myPortal": "My space",
+      "myProfile": "My profile",
+      "management": "Management"
+    },
+    "userMenu": {
+      "roleLabels": {
+        "SUPER_ADMIN": "Super Admin",
+        "ADMIN": "Administrator",
+        "PRESIDENT": "President",
+        "TRESORIER": "Treasurer",
+        "SECRETAIRE": "Secretary",
+        "MEMBRE": "Member"
+      },
+      "editProfile": "Edit profile",
+      "changePassword": "Change password",
+      "logout": "Sign out"
+    },
+    "changePasswordModal": {
+      "title": "Change password",
+      "currentPasswordLabel": "Current password",
+      "currentPasswordRequired": "Please enter your current password.",
+      "newPasswordLabel": "New password",
+      "newPasswordRequired": "Please enter a new password.",
+      "newPasswordMinLength": "Min. 8 characters.",
+      "newPasswordMustDiffer": "The new password must be different from the current one.",
+      "confirmPasswordLabel": "Confirm new password",
+      "confirmPasswordRequired": "Confirm the new password.",
+      "passwordMismatch": "Passwords do not match.",
+      "toastSuccess": "Password changed.",
+      "toastError": "Error saving changes.",
+      "confirm": "Change"
+    },
+    "profileEditModal": {
+      "title": "Edit profile",
+      "firstNameLabel": "First name",
+      "firstNameRequired": "First name is required.",
+      "lastNameLabel": "Last name",
+      "lastNameRequired": "Last name is required.",
+      "emailLabel": "Email",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Invalid email.",
+      "toastSuccess": "Profile updated. The name in the header will update on next sign-in.",
+      "toastError": "Error saving changes.",
+      "toastNetworkError": "Connection error. Please try again."
+    }
+  },
+  "support": {
+    "title": "Support",
+    "subtitle": "A question, an issue, some feedback? Write to us.",
+    "newTicket": "New request",
+    "empty": "No requests yet.",
+    "notFound": "Request not found.",
+    "backToList": "Back",
+    "backofficeTitle": "Support",
+    "filterAll": "All",
+    "status": {
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "closeTicket": "Close request",
+    "reopenTicket": "Reopen request",
+    "closeConfirmTitle": "Close this request?",
+    "closeConfirmDescription": "You can always reopen it by sending a new message.",
+    "noMessages": "No messages.",
+    "staffLabel": "Adhera Support",
+    "composerPlaceholder": "Write your message…",
+    "form": {
+      "subject": "Subject",
+      "message": "Message",
+      "cancel": "Cancel",
+      "send": "Send"
+    },
+    "toasts": {
+      "created": "Request sent",
+      "error": "Something went wrong",
+      "closed": "Request closed",
+      "reopened": "Request reopened"
+    }
+  }
+}

@@ -5,6 +5,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
+import { useTranslations } from "next-intl"
 import { authenticate, signInWithGoogleDashboard } from "@/lib/auth/actions"
 import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
@@ -12,6 +13,7 @@ import { FormField } from "@/components/ui/form-field"
 import { GoogleIcon } from "@/components/icons/google-icon"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
+  const t = useTranslations("auth.login.form")
   const [googleLoading, setGoogleLoading] = useState(false)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -40,9 +42,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
       <FormField
-        label="Adresse email"
+        label={t("emailLabel")}
         type="email"
-        placeholder="contact@association.fr"
+        placeholder={t("emailPlaceholder")}
         autoComplete="email"
         autoFocus
         required
@@ -51,7 +53,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
       />
 
       <FormField
-        label="Mot de passe"
+        label={t("passwordLabel")}
         type="password"
         placeholder="••••••••"
         autoComplete="current-password"
@@ -62,7 +64,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
             href="/forgot-password"
             className="underline underline-offset-4 hover:text-foreground transition-colors"
           >
-            Mot de passe oublié ?
+            {t("forgotPassword")}
           </Link>
         }
         {...register("password")}
@@ -70,12 +72,12 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
 
       <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
         {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        Se connecter
+        {t("submit")}
       </Button>
 
       <div className="relative flex items-center gap-2 py-1">
         <div className="flex-1 h-px bg-border" />
-        <span className="text-xs text-muted-foreground/60 shrink-0">ou</span>
+        <span className="text-xs text-muted-foreground/60 shrink-0">{t("or")}</span>
         <div className="flex-1 h-px bg-border" />
       </div>
 
@@ -90,7 +92,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <GoogleIcon className="mr-2 size-4" />
         }
-        Continuer avec Google
+        {t("continueWithGoogle")}
       </Button>
     </form>
   )
