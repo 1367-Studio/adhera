@@ -115,10 +115,21 @@ function EmailRowItem({ e }: { e: EmailRow }) {
     staleTime: Infinity,
   })
 
-  const sanitizedHtml = useMemo(
-    () => (content?.html ? sanitizeEmailPreviewHtml(content.html) : null),
-    [content],
-  )
+  const sanitizedHtml = useMemo(() => {
+    if (!content?.html) return null
+    const html = sanitizeEmailPreviewHtml(content.html)
+    if (!sondageHref) return html
+    // When an app-controlled CTA (sondageHref) is already shown outside the iframe, hide the
+    // matching button baked into the email HTML instead of leaving a dead, href-less button
+    // that looks clickable but silently does nothing. Parsed via DOMParser rather than a
+    // string replace on "</head>" — sanitizeEmailPreviewHtml's output isn't guaranteed to keep
+    // that exact literal, and DOMParser always yields a real <head> to append into.
+    const doc = new DOMParser().parseFromString(html, "text/html")
+    const style = doc.createElement("style")
+    style.textContent = ".email-cta-btn{display:none}"
+    doc.head.appendChild(style)
+    return doc.documentElement.outerHTML
+  }, [content, sondageHref])
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
@@ -146,8 +157,11 @@ function EmailRowItem({ e }: { e: EmailRow }) {
             // page is opened on far more than the admin dashboard is.
             <Button
               size="sm"
-              variant="outline"
-              className="h-7 text-xs gap-1 px-2 sm:px-2.5"
+              // orange-700 (not the -500 used for "incerto" status badges elsewhere) so
+              // this reads as a solid CTA rather than the muted/pastel orange this app
+              // otherwise uses for "pending/uncertain" — and it holds ~5:1 contrast with
+              // white text, where -500 only manages ~2.8:1.
+              className="h-7 text-xs gap-1 px-2 sm:px-2.5 bg-orange-700 text-white hover:bg-orange-800"
               aria-label={t("openSondage")}
               onClick={() => router.push(sondageHref)}
             >
