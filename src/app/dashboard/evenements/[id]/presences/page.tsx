@@ -53,7 +53,7 @@ function rowKey(row: PresenceRow): string {
 }
 
 function hasExtraInfo(row: PresenceRow): boolean {
-  return !!(row.phone || row.address || (row.answers && Object.keys(row.answers).length > 0))
+  return !!(row.email || row.phone || row.address || (row.answers && Object.keys(row.answers).length > 0))
 }
 
 type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
@@ -402,6 +402,7 @@ export default function PresencesPage() {
     const showInfoCol = typed.some(hasExtraInfo)
     const contactLine = (r: PresenceRow) => {
       const parts: string[] = []
+      if (r.email) parts.push(r.email)
       if (r.phone) parts.push(r.phone)
       if (r.address) parts.push(r.address)
       for (const f of ev?.customFields ?? []) {
@@ -941,6 +942,12 @@ export default function PresencesPage() {
       >
         {infoTarget && (
           <div className="space-y-3 py-2 text-sm">
+            {infoTarget.email && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("evenements.presences.list.infoEmail")}</p>
+                <p>{infoTarget.email}</p>
+              </div>
+            )}
             {infoTarget.phone && (
               <div>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("evenements.presences.list.infoPhone")}</p>

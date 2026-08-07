@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
+import { useTranslations, useLocale } from "next-intl"
 import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 
 type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
 
@@ -25,12 +27,6 @@ type EventInfo = {
   customFields:    CustomField[]
 }
 
-// Browser locale for date/currency display — falls back to fr-FR (matches every other
-// hardcoded-French public page in this app) when unavailable, e.g. during SSR.
-function locale(): string {
-  return typeof navigator !== "undefined" && navigator.language ? navigator.language : "fr-FR"
-}
-
 type Props = { slug: string; id: string }
 
 export function EvenementRegisterForm(props: Props) {
@@ -43,6 +39,8 @@ export function EvenementRegisterForm(props: Props) {
 
 function EvenementRegisterFormInner({ slug, id }: Props) {
   const searchParams = useSearchParams()
+  const t   = useTranslations("evenements.publicRegister")
+  const loc = useLocale()
 
   const [event, setEvent]     = useState<EventInfo | null>(null)
   const [loadingEvent, setLoadingEvent] = useState(true)
@@ -66,11 +64,16 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
       .finally(() => setLoadingEvent(false))
   }, [slug, id])
 
+  // Guards against showing the redirect toast again if the effect re-runs for an unrelated
+  // reason (e.g. `t` getting a new identity when the visitor switches language via LocaleSwitcher).
+  const shownTicketToast = useRef<string | null>(null)
   useEffect(() => {
     const p = searchParams.get("ticket")
-    if (p === "success") toast.success("Inscription confirmée ! Un e-mail de confirmation vous a été envoyé.")
-    if (p === "cancelled") toast.info("Paiement annulé.")
-  }, [searchParams])
+    if (!p || shownTicketToast.current === p) return
+    shownTicketToast.current = p
+    if (p === "success") toast.success(t("toastConfirmed"))
+    if (p === "cancelled") toast.info(t("toastCancelled"))
+  }, [searchParams, t])
 
   const isPaid = !!event?.isPaid
   const canSubmit =
@@ -103,11 +106,11 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
         }),
       })
       const data = await res.json()
-      if (!res.ok) { toast.error(data.error ?? "Erreur"); return }
+      if (!res.ok) { toast.error(data.error ?? t("errorGeneric")); return }
       if (data.url) { window.location.href = data.url; return }
       setSubmitted(true)
     } catch {
-      toast.error("Erreur réseau")
+      toast.error(t("errorNetwork"))
     } finally {
       setLoading(false)
     }
@@ -123,18 +126,22 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
 
   if (notFound || !event) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-4">
-        <p className="text-muted-foreground">Cet événement est introuvable.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
+        <p className="text-muted-foreground">{t("notFound")}</p>
+        <LocaleSwitcher />
       </div>
     )
   }
 
   const dateObj = new Date(event.date)
-  const loc     = locale()
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-50/60 to-background flex items-start justify-center py-12 px-4">
       <div className="w-full max-w-md space-y-6">
+        <div className="flex justify-end">
+          <LocaleSwitcher />
+        </div>
+
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center size-12 rounded-full bg-violet-100 dark:bg-violet-900/30 mb-2">
@@ -168,44 +175,42 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
 
         {submitted ? (
           <div className="rounded-xl border p-6 text-center text-sm space-y-1">
-            <p className="font-medium">Inscription enregistrée !</p>
+            <p className="font-medium">{t("submittedTitle")}</p>
             <p className="text-muted-foreground">
-              {email
-                ? "Un e-mail de confirmation vous a été envoyé."
-                : "Vous n'avez pas renseigné d'e-mail, donc aucune confirmation ne vous sera envoyée — gardez ce lien de côté."}
+              {email ? t("submittedWithEmail") : t("submittedNoEmail")}
             </p>
           </div>
         ) : event.past ? (
           <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            Cet événement est déjà passé.
+            {t("past")}
           </div>
         ) : event.full ? (
           <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            Cet événement est complet.
+            {t("full")}
           </div>
         ) : isPaid && !event.paymentEnabled ? (
           <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            Le paiement en ligne n&apos;est pas disponible pour le moment.
+            {t("paymentDisabled")}
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
             {/* Honeypot — visually and semantically hidden from real visitors/screen readers,
                 but present in the DOM for bots that blindly fill every input they find. */}
             <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
-              <label htmlFor="website">Ne pas remplir</label>
+              <label htmlFor="website">{t("honeypotLabel")}</label>
               <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Prénom *</label>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("firstNameLabel")}</label>
                 <input
                   type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Nom *</label>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("lastNameLabel")}</label>
                 <input
                   type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
@@ -215,19 +220,19 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
 
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                E-mail {isPaid ? "*" : "(optionnel)"}
+                {isPaid ? t("emailLabelRequired") : t("emailLabelOptional")}
               </label>
               <input
                 type="email" required={isPaid} value={email} onChange={e => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
               />
               {!isPaid && (
-                <p className="text-xs text-muted-foreground">Sans e-mail, vous ne recevrez pas de confirmation.</p>
+                <p className="text-xs text-muted-foreground">{t("emailNoConfirmHint")}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Téléphone (optionnel)</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("phoneLabel")}</label>
               <input
                 type="tel" value={phone} onChange={e => setPhone(e.target.value)}
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
@@ -235,7 +240,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Adresse (optionnelle)</label>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("addressLabel")}</label>
               <input
                 type="text" value={address} onChange={e => setAddress(e.target.value)}
                 className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
@@ -245,7 +250,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
             {event.customFields.map(field => (
               <div key={field.id} className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  {field.label} {field.required ? "*" : "(optionnel)"}
+                  {field.required ? t("customFieldRequired", { label: field.label }) : t("customFieldOptional", { label: field.label })}
                 </label>
                 <input
                   type={field.type === "NUMBER" ? "number" : "text"}
@@ -268,13 +273,13 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
             >
               <TicketIcon className="size-4 mr-2" />
               {isPaid
-                ? `Payer ${Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}`
-                : "S'inscrire"}
+                ? t("pay", { amount: Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                : t("submit")}
             </Button>
 
             <div className="flex gap-2 text-xs text-muted-foreground">
               <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
-              <p>Vos données sont utilisées uniquement pour votre inscription à cet événement.</p>
+              <p>{t("privacyNote")}</p>
             </div>
           </form>
         )}
