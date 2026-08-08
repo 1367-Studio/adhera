@@ -52,7 +52,7 @@ async function notifyAdminsOfResponse(
   // Grouping resets once the admin reads it (the read=false filter no longer matches),
   // so it always reflects "what's new since you last checked".
   const groupKey = `sondage-response:${sondageId}`
-  const link     = `/dashboard/sondages/${sondageId}`
+  const link     = `/dashboard/sondages/${sondageId}?tab=reponses`
 
   await Promise.all(admins.map(async (admin) => {
     const existing = await prisma.notification.findFirst({
