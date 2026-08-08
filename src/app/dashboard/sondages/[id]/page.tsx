@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { Suspense, useState, useEffect } from "react"
+import { useParams, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -83,11 +83,43 @@ function toBuilderQuestions(qs: Sondage["questions"]): BuilderQuestion[] {
   }))
 }
 
+const TAB_VALUES = ["edit", "resultats", "reponses", "envois"] as const
+
 export default function SondageDetailPage() {
+  return (
+    <Suspense fallback={null}>
+      <SondageDetailPageInner />
+    </Suspense>
+  )
+}
+
+// useSearchParams() (pour ouvrir directement l'onglet "Réponses" depuis le lien de la
+// notification de nouvelle réponse) exige une limite Suspense au-dessus.
+function SondageDetailPageInner() {
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
+  const searchParams = useSearchParams()
 
-  const [activeTab, setActiveTab] = useState("edit")
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const fromUrl = searchParams.get("tab")
+    return TAB_VALUES.includes(fromUrl as typeof TAB_VALUES[number]) ? fromUrl! : "edit"
+  })
+
+  // The notification bell navigates with router.push (soft nav) — if the admin is already
+  // on this sondage's page, the component doesn't remount, so the ?tab= initializer above
+  // never re-runs. Re-sync from the URL on every navigation, and refetch reponses so a
+  // re-click on an already-open "Réponses" tab (e.g. a new grouped notification) doesn't
+  // sit on stale data until the user notices and hits "Actualiser".
+  useEffect(() => {
+    const fromUrl = searchParams.get("tab")
+    if (!fromUrl || !TAB_VALUES.includes(fromUrl as typeof TAB_VALUES[number])) return
+    setActiveTab(fromUrl)
+    if (fromUrl === "reponses") {
+      qc.invalidateQueries({ queryKey: ["sondage-reponses", id] })
+      qc.invalidateQueries({ queryKey: ["sondage", id] })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, id])
 
   const { data: sondage, isLoading } = useQuery<Sondage>({
     queryKey:  ["sondage", id],
