@@ -488,7 +488,7 @@ export default function ReunionDetailPage() {
           </div>
 
           {isTranscribing && (
-            <div className="rounded-xl border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed p-4 flex items-center gap-3 text-sm text-muted-foreground">
               <CircleNotchIcon className="size-4 animate-spin shrink-0" />
               {t("reunions.detail.whisperTranscribing")}
             </div>
@@ -500,7 +500,7 @@ export default function ReunionDetailPage() {
             placeholder={t("reunions.detail.transcriptPlaceholder")}
             className="font-mono text-xs resize-none flex-1 min-h-[300px]"
           />
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {t("reunions.detail.acceptedFormats")}
           </p>
         </div>
@@ -509,7 +509,7 @@ export default function ReunionDetailPage() {
         <div className="space-y-4">
 
           {/* Meta */}
-          <div className="rounded-xl border bg-card p-4 space-y-2 text-sm text-muted-foreground">
+          <div className="rounded-lg border bg-card p-4 space-y-2 text-sm text-muted-foreground">
             {meeting.scheduledAt && (
               <span className="flex items-center gap-1.5">
                 <CalendarBlankIcon className="size-4 shrink-0" />
@@ -567,11 +567,11 @@ export default function ReunionDetailPage() {
               </div>
 
               {meeting.summary ? (
-                <div className="rounded-xl border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
+                <div className="rounded-lg border bg-muted/30 p-4 text-sm whitespace-pre-wrap leading-relaxed">
                   {meeting.summary}
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed p-6 text-center">
+                <div className="rounded-lg border border-dashed p-6 text-center">
                   <SparkleIcon className="size-7 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs text-muted-foreground">
                     {transcript.trim()
@@ -585,7 +585,7 @@ export default function ReunionDetailPage() {
           {canManage && (
             <div className="space-y-2">
               <Label>{t("reunions.detail.share.heading")}</Label>
-              <div className="rounded-xl border bg-card p-4 space-y-3">
+              <div className="rounded-lg border bg-card p-4 space-y-3">
                 {meeting.shareToken && meeting.shareExpiresAt && new Date(meeting.shareExpiresAt) > new Date() ? (
                   <>
                     <p className="text-xs text-muted-foreground">

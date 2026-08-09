@@ -6,10 +6,9 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ArrowRightIcon, WarningIcon, CopyIcon, ClockCounterClockwiseIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, XIcon, ArrowRightIcon, WarningIcon, CopyIcon, ClockCounterClockwiseIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useDevisPaginated, useDevisDetail, useCreateDevis, useUpdateDevis, useDeleteDevis, useConvertDevis, useDuplicateDevis, useSendDevisEmail } from "@/hooks/use-devis"
 import { ApiError } from "@/lib/api-error"
-import { cn } from "@/lib/utils"
 import type { DevisInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -22,7 +21,8 @@ import { DevisForm } from "@/components/devis/devis-form"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { SearchInput } from "@/components/ui/search-input"
 import { useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
 
@@ -43,40 +43,14 @@ type Devis = {
 
 type Translator = ReturnType<typeof useTranslations>
 
-function getStatusBadge(t: Translator): Record<Devis["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+function getStatusBadge(t: Translator): Record<Devis["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" }> {
   return {
     BROUILLON: { label: t("devis.form.status.brouillon"), variant: "secondary"   },
     ENVOYE:    { label: t("devis.form.status.envoye"),    variant: "outline"     },
-    ACCEPTE:   { label: t("devis.form.status.accepte"),   variant: "default"     },
+    ACCEPTE:   { label: t("devis.form.status.accepte"),   variant: "success"     },
     REFUSE:    { label: t("devis.form.status.refuse"),    variant: "destructive" },
     EXPIRE:    { label: t("devis.form.status.expire"),    variant: "outline"     },
   }
-}
-
-function FilterSelect({
-  value, onChange, options, placeholder,
-}: {
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; label: string }[]
-  placeholder: string
-}) {
-  const selected = options.find(o => o.value === value)
-  return (
-    <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
-      <SelectTrigger className="w-40">
-        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
-          {selected?.label ?? placeholder}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="__all__">{placeholder}</SelectItem>
-        {options.map(o => (
-          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
 }
 
 const PAGE_SIZE = 20
@@ -304,34 +278,22 @@ export function DevisView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <div className="relative w-72">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("devis.view.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => {
-                if (debounceRef.current) clearTimeout(debounceRef.current)
-                setSearchInput("")
-                setSearch("")
-                setPage(1)
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => {
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            setSearchInput("")
+            setSearch("")
+            setPage(1)
+          }}
+          placeholder={t("devis.view.searchPlaceholder")}
+          containerClassName="w-72"
+        />
 
         <FilterSelect
           value={statusFilter}
-          onChange={v => { setStatusFilter(v); setPage(1) }}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
             { value: "BROUILLON", label: t("devis.form.status.brouillon") },
             { value: "ENVOYE",    label: t("devis.form.status.envoye")    },
@@ -340,13 +302,14 @@ export function DevisView() {
             { value: "EXPIRE",    label: t("devis.form.status.expire")    },
           ]}
           placeholder={t("devis.view.allStatuses")}
+          width="w-40"
         />
 
         {fournisseurIdParam && (
           <button
             type="button"
             onClick={() => router.push("/dashboard/devis")}
-            className="flex items-center gap-1.5 rounded-md border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-input px-3 text-sm transition-colors hover:bg-muted"
           >
             {t("devis.view.supplierFilter", { name: devisList.find(d => d.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? t("devis.view.supplierFilterFallback") })}
             <XIcon className="size-3.5" />

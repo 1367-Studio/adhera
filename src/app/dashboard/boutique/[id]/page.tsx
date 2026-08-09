@@ -427,7 +427,7 @@ export default function EditProduitPage() {
         {/* Edit tab */}
         <TabsContent value="edit">
           <form onSubmit={handleSave} className="pt-4 pb-10">
-            <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="rounded-lg border bg-card overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x">
 
                 {/* Left */}
@@ -614,9 +614,9 @@ export default function EditProduitPage() {
                           <p className="text-xs text-muted-foreground">{item.varianteLabel}</p>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <button type="button" onClick={() => adjustQty(item.id, -1)} disabled={item.qty <= 0} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">−</button>
+                          <button type="button" onClick={() => adjustQty(item.id, -1)} disabled={item.qty <= 0} className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">−</button>
                           <span className="w-6 text-center text-sm font-semibold tabular-nums">{item.qty}</span>
-                          <button type="button" onClick={() => adjustQty(item.id, +1)} disabled={item.qty >= item.originalQty} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">+</button>
+                          <button type="button" onClick={() => adjustQty(item.id, +1)} disabled={item.qty >= item.originalQty} className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">+</button>
                           <span className={cn("w-20 text-right text-sm tabular-nums", notCollected ? "text-muted-foreground/50 line-through" : "text-muted-foreground")}>{fmt(item.unitPrice * item.qty)}</span>
                         </div>
                       </div>

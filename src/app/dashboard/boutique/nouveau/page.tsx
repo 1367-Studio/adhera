@@ -104,7 +104,7 @@ export default function NouveauProduitPage() {
       </div>
 
       {/* Card */}
-      <div className="rounded-xl border bg-card overflow-hidden pb-10">
+      <div className="rounded-lg border bg-card overflow-hidden pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x">
 
           {/* Left — informations */}

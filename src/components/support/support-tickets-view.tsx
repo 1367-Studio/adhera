@@ -67,7 +67,7 @@ export function SupportTicketsView() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[0, 1, 2].map(i => <div key={i} className="h-16 animate-pulse rounded-xl border bg-card" />)}
+          {[0, 1, 2].map(i => <div key={i} className="h-16 animate-pulse rounded-lg border bg-card" />)}
         </div>
       ) : tickets.length === 0 ? (
         <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("empty")}</p>
@@ -85,7 +85,7 @@ export function SupportTicketsView() {
                     {formatDistanceToNow(new Date(ticket.lastMessageAt), { addSuffix: true, locale: dateFnsLocale })}
                   </p>
                 </div>
-                <Badge variant={ticket.status === "OUVERT" ? "default" : "secondary"}>
+                <Badge variant={ticket.status === "OUVERT" ? "default" : "outline"}>
                   {ticket.status === "OUVERT" ? t("status.open") : t("status.closed")}
                 </Badge>
               </Card>

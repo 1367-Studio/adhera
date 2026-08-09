@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchInput } from "@/components/ui/search-input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { clientNextAmountDue } from "@/lib/cotisation-display"
@@ -55,14 +56,16 @@ type Translator = ReturnType<typeof useTranslations>
 
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
-function getStatusBadge(t: Translator): Record<CotisationStatus, { label: string; tooltip: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+// Canonical status semantics (CLAUDE.md §7): completed → success, attention → warning,
+// overdue → destructive, pending → secondary, terminal/neutral → outline.
+function getStatusBadge(t: Translator): Record<CotisationStatus, { label: string; tooltip: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" }> {
   return {
     EN_ATTENTE:          { label: t("membres.detail.cotisationStatus.enAttente"),          tooltip: t("cotisations.statusTooltip.enAttente"),          variant: "secondary"   },
-    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), tooltip: t("cotisations.statusTooltip.partiellementPayee"), variant: "outline"     },
-    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               tooltip: t("cotisations.statusTooltip.paye"),               variant: "default"     },
+    PARTIELLEMENT_PAYEE: { label: t("membres.detail.cotisationStatus.partiellementPayee"), tooltip: t("cotisations.statusTooltip.partiellementPayee"), variant: "warning"     },
+    PAYE:                { label: t("membres.detail.cotisationStatus.paye"),               tooltip: t("cotisations.statusTooltip.paye"),               variant: "success"     },
     EN_RETARD:           { label: t("membres.detail.cotisationStatus.enRetard"),           tooltip: t("cotisations.statusTooltip.enRetard"),           variant: "destructive" },
     EXONERE:             { label: t("membres.detail.cotisationStatus.exonere"),            tooltip: t("cotisations.statusTooltip.exonere"),            variant: "outline"     },
-    ANNULEE:             { label: t("membres.detail.cotisationStatus.annulee"),            tooltip: t("cotisations.statusTooltip.annulee"),            variant: "secondary"   },
+    ANNULEE:             { label: t("membres.detail.cotisationStatus.annulee"),            tooltip: t("cotisations.statusTooltip.annulee"),            variant: "outline"     },
   }
 }
 
@@ -430,31 +433,18 @@ export function CotisationsView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        {/* Search */}
-        <div className="relative w-60">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("cotisations.view.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => {
-                if (debounceRef.current) clearTimeout(debounceRef.current)
-                setSearchInput("")
-                setSearch("")
-                setPage(1)
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          placeholder={t("cotisations.view.searchPlaceholder")}
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => {
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            setSearchInput("")
+            setSearch("")
+            setPage(1)
+          }}
+          containerClassName="w-60"
+        />
 
         {/* Year filter */}
         <Select
@@ -515,8 +505,8 @@ export function CotisationsView() {
           <p className="text-sm font-medium">{t("cotisations.view.selectedCount", { count: selected.size })}</p>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={clearSelection}>{t("cotisations.view.deselectAll")}</Button>
-            <Button size="sm" onClick={() => setReminderOpen(true)}>
-              <BellIcon className="mr-1.5 size-4" />
+            <Button variant="outline" size="sm" onClick={() => setReminderOpen(true)}>
+              <BellIcon className="mr-1.5 size-3.5" />
               {t("cotisations.view.sendReminder")}
             </Button>
           </div>

@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PaperclipIcon, ReceiptIcon, WarningIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, PaperclipIcon, ReceiptIcon, WarningIcon, UploadSimpleIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useExpenses, useCreateExpense, useUpdateExpense, useDeleteExpense } from "@/hooks/use-expenses"
@@ -42,7 +42,7 @@ type Translator = ReturnType<typeof useTranslations>
 function getStatusConfig(t: Translator) {
   return {
     DRAFT:     { label: t("finances.expenseForm.status.draft"),     variant: "secondary" as const },
-    VALIDATED: { label: t("finances.expenseForm.status.validated"), variant: "default"   as const },
+    VALIDATED: { label: t("finances.expenseForm.status.validated"), variant: "success"   as const },
     CANCELLED: { label: t("finances.expenseForm.status.cancelled"), variant: "destructive" as const },
   }
 }
@@ -196,12 +196,12 @@ export function ExpensesView() {
             {e.category && <span className="text-xs text-muted-foreground">{e.category.name}</span>}
             {e.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">· {t("finances.expensesView.reconciled")}</span>}
             {e.factureRecueId && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.expensesView.fromReceivedInvoiceTooltip")}>
+              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground" title={t("finances.expensesView.fromReceivedInvoiceTooltip")}>
                 <ReceiptIcon className="size-3" /> {t("finances.expensesView.fromReceivedInvoiceBadge")}
               </span>
             )}
             {!e.exerciceId && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.expensesView.noExerciceTooltip")}>
+              <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400" title={t("finances.expensesView.noExerciceTooltip")}>
                 <WarningIcon className="size-3" /> {t("finances.expensesView.noExerciceBadge")}
               </span>
             )}

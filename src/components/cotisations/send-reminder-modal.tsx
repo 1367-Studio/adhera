@@ -139,7 +139,7 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
     >
       {step === "confirm" ? (
         <div className="space-y-5">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
+          <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
             <WarningIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
             <div className="space-y-1">
               <p className="text-sm font-medium text-amber-800 dark:text-amber-300">{t("cotisations.reminderModal.confirmTitle")}</p>
@@ -187,7 +187,7 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
               type="button"
               onClick={() => setChannel("EMAIL")}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg border p-3 text-sm font-medium transition-all",
+                "flex items-center justify-center gap-2 rounded-md border p-3 text-sm font-medium transition-colors",
                 channel === "EMAIL"
                   ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
                   : "border-border text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/40",
@@ -202,7 +202,7 @@ export function SendReminderModal({ open, onOpenChange, cotisations, onSent }: S
               onClick={() => setChannel("SMS")}
               title={!smsEnabled ? t("cotisations.reminderModal.smsModuleRequired") : undefined}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-lg border p-3 text-sm font-medium transition-all",
+                "flex items-center justify-center gap-2 rounded-md border p-3 text-sm font-medium transition-colors",
                 !smsEnabled && "opacity-40 cursor-not-allowed",
                 channel === "SMS"
                   ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"

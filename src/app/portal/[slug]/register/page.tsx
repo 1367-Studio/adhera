@@ -31,7 +31,7 @@ export default async function PortalRegisterPage({
           <LocaleSwitcher />
         </div>
 
-        <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">
+        <div className="rounded-lg border bg-card p-8 space-y-6">
           <div className="space-y-1.5">
             <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="text-sm text-muted-foreground">

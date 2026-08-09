@@ -88,7 +88,7 @@ function ReponseCard({ reponse, questions, anonymous }: {
   })()
 
   return (
-    <div className="rounded-xl border bg-card overflow-hidden">
+    <div className="rounded-lg border bg-card overflow-hidden">
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
@@ -155,7 +155,7 @@ export function SondageRepondesIndividuelles({ data }: SondageRepondesIndividuel
 
   if (data.reponses.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+      <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
         <UserIcon className="size-10 text-muted-foreground/50 mx-auto" />
         <p className="text-sm text-muted-foreground">Aucune réponse pour le moment.</p>
       </div>

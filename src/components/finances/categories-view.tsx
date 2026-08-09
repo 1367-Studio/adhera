@@ -42,13 +42,13 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
           <div className="flex items-center gap-2">
             <span className="font-medium">{c.name}</span>
             {c.accountingCode && <span className="text-xs text-muted-foreground">{c.accountingCode}</span>}
-            {c.isDefault && <Badge variant="outline" className="text-xs">{t("default")}</Badge>}
+            {c.isDefault && <Badge variant="outline">{t("default")}</Badge>}
           </div>
           <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" className="size-7" onClick={() => onEdit(c)}>
+            <Button size="icon-sm" variant="ghost" onClick={() => onEdit(c)}>
               <PencilSimpleIcon className="size-3.5" />
             </Button>
-            <Button size="icon" variant="ghost" className="size-7 text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
+            <Button size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
               <TrashIcon className="size-3.5" />
             </Button>
           </div>
@@ -127,20 +127,20 @@ export function CategoriesView() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm text-green-700 dark:text-green-400">{t("finances.categoriesView.income")}</h3>
-            <Button size="sm" variant="ghost" onClick={() => { setCreateType("INCOME"); setCreateOpen(true) }}>
+            <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("INCOME"); setCreateOpen(true) }}>
               <PlusIcon className="size-4" />
             </Button>
           </div>
           <CategoryList categories={incomeCategories as Category[]} loading={loadingI} onEdit={setEditTarget} onDelete={setDeleteTarget} />
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm text-red-700 dark:text-red-400">{t("finances.categoriesView.expenses")}</h3>
-            <Button size="sm" variant="ghost" onClick={() => { setCreateType("EXPENSE"); setCreateOpen(true) }}>
+            <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("EXPENSE"); setCreateOpen(true) }}>
               <PlusIcon className="size-4" />
             </Button>
           </div>

@@ -47,7 +47,7 @@ export default function ProduitDetailPage() {
       <div className="space-y-4 py-4 animate-pulse">
         <div className="h-8 w-48 bg-muted rounded" />
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="aspect-square bg-muted rounded-xl" />
+          <div className="aspect-square bg-muted rounded-lg" />
           <div className="space-y-4">
             <div className="h-6 w-64 bg-muted rounded" />
             <div className="h-4 w-32 bg-muted rounded" />
@@ -105,7 +105,7 @@ export default function ProduitDetailPage() {
 
       <div className="grid md:grid-cols-2 gap-6 lg:gap-10">
         {/* Image */}
-        <div className="aspect-square rounded-xl overflow-hidden border bg-muted flex items-center justify-center">
+        <div className="aspect-square rounded-lg overflow-hidden border bg-muted flex items-center justify-center">
           {produit.imageUrl
             ? <img src={produit.imageUrl} alt={produit.name} className="w-full h-full object-cover" />
             : <ShoppingBagIcon className="size-16 text-muted-foreground/30" />
@@ -143,7 +143,7 @@ export default function ProduitDetailPage() {
                     disabled={outOfStock}
                     onClick={() => { setSelectedVarianteId(v.id); setQuantity(1) }}
                     className={cn(
-                      "rounded-lg border px-3 py-2 text-sm font-medium transition-all",
+                      "rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
                       selectedVarianteId === v.id
                         ? "border-ring bg-background shadow-sm text-foreground"
                         : outOfStock

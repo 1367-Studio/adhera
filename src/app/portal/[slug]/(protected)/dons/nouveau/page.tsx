@@ -67,7 +67,7 @@ export default function NouveauDonPage() {
   if (loadingAssoc) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="size-6 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+        <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -75,8 +75,8 @@ export default function NouveauDonPage() {
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center justify-center size-12 rounded-full bg-violet-100 dark:bg-violet-900/30 mb-2">
-          <HandshakeIcon className="size-6 text-violet-600 dark:text-violet-400" />
+        <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+          <HandshakeIcon className="size-6 text-primary" />
         </div>
         <h1 className="text-2xl font-bold tracking-tight">{t("makeDonation")}</h1>
         {assoc?.name && (
@@ -85,11 +85,11 @@ export default function NouveauDonPage() {
       </div>
 
       {assoc?.canIssueTaxReceipts && (
-        <div className="rounded-xl border border-violet-200 bg-violet-50/80 dark:bg-violet-950/20 p-4 flex gap-3">
-          <InfoIcon className="size-4 text-violet-600 shrink-0 mt-0.5" />
-          <div className="text-sm text-violet-800 dark:text-violet-300 space-y-1">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-4 flex gap-3">
+          <InfoIcon className="size-4 text-primary shrink-0 mt-0.5" />
+          <div className="text-sm text-foreground space-y-1">
             <p className="font-semibold">{t("taxDeductibleTitle")}</p>
-            <p className="text-xs text-violet-700 dark:text-violet-400">
+            <p className="text-xs text-muted-foreground">
               {t("taxDeductibleDetail")}
             </p>
           </div>
@@ -97,7 +97,7 @@ export default function NouveauDonPage() {
       )}
 
       {assoc?.canIssueTaxReceipts && assoc.hasEmail && !assoc.hasAddress && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/80 dark:bg-amber-950/20 p-4 flex gap-3">
+        <div className="rounded-lg border border-amber-200 bg-amber-50/80 dark:bg-amber-950/20 p-4 flex gap-3">
           <WarningCircleIcon className="size-4 text-amber-600 shrink-0 mt-0.5" />
           <div className="text-sm text-amber-800 dark:text-amber-300 space-y-1">
             <p>
@@ -111,11 +111,11 @@ export default function NouveauDonPage() {
       )}
 
       {assocError ? (
-        <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
           {t("checkAvailabilityError")}
         </div>
       ) : assoc && !assoc.hasEmail ? (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-center space-y-3">
+        <div className="rounded-lg border border-amber-200 bg-amber-50/80 dark:bg-amber-950/20 p-6 text-center space-y-3">
           <WarningCircleIcon className="size-6 text-amber-600 mx-auto" />
           <p className="text-sm text-amber-800 dark:text-amber-300">
             {t("addEmailPrompt")}
@@ -125,11 +125,11 @@ export default function NouveauDonPage() {
           </Button>
         </div>
       ) : !assoc?.paymentEnabled ? (
-        <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+        <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
           {t("paymentUnavailable")}
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="rounded-xl border bg-card shadow-sm p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-5">
           <div className="space-y-2">
             <label className="text-sm font-medium">{t("amountLabel")}</label>
             <div className="grid grid-cols-4 gap-2">
@@ -141,8 +141,8 @@ export default function NouveauDonPage() {
                   className={cn(
                     "rounded-lg border py-2.5 text-sm font-semibold transition-colors",
                     amount === v
-                      ? "bg-violet-600 border-violet-600 text-white"
-                      : "border-input hover:border-violet-400 hover:text-violet-700",
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "border-input hover:border-primary/50",
                   )}
                 >
                   {v} €
@@ -160,7 +160,7 @@ export default function NouveauDonPage() {
               maxLength={500}
               rows={2}
               placeholder={t("messagePlaceholder")}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400 resize-none"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
             />
           </div>
 
@@ -169,7 +169,7 @@ export default function NouveauDonPage() {
               type="checkbox"
               checked={anonymous}
               onChange={e => setAnonymous(e.target.checked)}
-              className="mt-0.5 rounded border-input accent-violet-600"
+              className="mt-0.5 rounded border-input accent-primary"
             />
             <span className="text-sm text-muted-foreground">
               {t("anonymousLabel")}
@@ -180,7 +180,7 @@ export default function NouveauDonPage() {
             type="submit"
             disabled={!canSubmit}
             loading={loading}
-            className="w-full bg-violet-600 hover:bg-violet-700 text-white"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/85"
           >
             <HandshakeIcon className="size-4 mr-2" />
             {amount > 0 ? t("submitWithAmount", { amount: amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) }) : t("makeDonation")}

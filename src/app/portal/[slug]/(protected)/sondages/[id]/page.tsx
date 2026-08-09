@@ -114,7 +114,7 @@ function QuestionInput({
         value={str}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Votre réponse…"
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+        className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
       />
     );
   }
@@ -126,7 +126,7 @@ function QuestionInput({
         value={str}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Votre réponse…"
-        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
+        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring resize-none"
       />
     );
   }
@@ -322,7 +322,7 @@ export default function SondageFormPage() {
       // down once the actual content replaces this skeleton.
       <div className="space-y-4 py-4 animate-pulse">
         <div className="h-8 w-64 bg-muted rounded" />
-        <div className="h-48 bg-muted rounded-xl" />
+        <div className="h-48 bg-muted rounded-lg" />
       </div>
     );
   }
@@ -348,7 +348,7 @@ export default function SondageFormPage() {
   if (sondage.repondu || submitted) {
     return (
       <div className="space-y-5">
-        <div className="rounded-xl border bg-card p-8 text-center space-y-4 max-w-lg mx-auto mt-8">
+        <div className="rounded-lg border bg-card p-8 text-center space-y-4 max-w-lg mx-auto mt-8">
           <div className="size-14 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto">
             <CheckCircleIcon className="size-7 text-green-600 dark:text-green-400" />
           </div>
@@ -383,7 +383,7 @@ export default function SondageFormPage() {
         >
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
+        <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ClipboardTextIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
@@ -416,7 +416,7 @@ export default function SondageFormPage() {
       {/* Questions */}
       <div className="space-y-4">
         {visibleQuestions.map((q, i) => (
-          <div key={q.id} className="rounded-xl border bg-card p-5 space-y-3">
+          <div key={q.id} className="rounded-lg border bg-card p-5 space-y-3">
             <div className="flex items-start gap-1.5">
               <span className="text-xs text-muted-foreground font-medium pt-0.5 shrink-0">
                 {i + 1}.

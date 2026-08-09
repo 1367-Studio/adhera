@@ -43,7 +43,7 @@ export function NotificationBell() {
               button — the button isn't flush against the screen edge (ThemeToggle/UserMenu
               sit after it in the header), so `right-0` relative to it alone overflowed off
               the left edge of narrow screens and got clipped. */}
-          <div className="fixed inset-x-2 top-14 z-50 overflow-hidden rounded-xl border border-border bg-card shadow-xl sm:absolute sm:inset-x-auto sm:left-auto sm:right-0 sm:top-10 sm:w-80">
+          <div className="fixed inset-x-2 top-14 z-50 overflow-hidden rounded-lg border border-border bg-card shadow-xl sm:absolute sm:inset-x-auto sm:left-auto sm:right-0 sm:top-10 sm:w-80">
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <span className="text-sm font-medium">
                 Notifications{unread.length > 0 && ` (${unread.length})`}
@@ -96,7 +96,7 @@ export function NotificationBell() {
                         {stripHtml(n.body)}
                       </p>
                     )}
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">
+                    <p className="text-xs text-muted-foreground/60 mt-1">
                       {format(new Date(n.createdAt), "d MMM à HH:mm", { locale: fr })}
                     </p>
                   </div>

@@ -2,7 +2,7 @@
 
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { EnvelopeSimpleIcon, CheckCircleIcon, EyeIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { EnvelopeSimpleIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
 
 type EmailStatus = "QUEUED" | "SENT" | "DELIVERED" | "OPENED" | "CLICKED" | "BOUNCED" | "COMPLAINED" | "DELAYED" | "FAILED"
@@ -48,7 +48,7 @@ export function SondageEmailStats({ data }: SondageEmailStatsProps) {
   const skippedTotal = data.skippedNoEmail.length + data.skippedNoAccess
 
   const skippedBanner = skippedTotal > 0 && (
-    <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
+    <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 flex gap-3">
       <WarningCircleIcon className="size-5 shrink-0 text-amber-600 mt-0.5" />
       <div className="space-y-1 text-sm">
         <p className="font-medium text-amber-800 dark:text-amber-300">
@@ -72,7 +72,7 @@ export function SondageEmailStats({ data }: SondageEmailStatsProps) {
     return (
       <div className="space-y-4">
         {skippedBanner}
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
           <EnvelopeSimpleIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">Aucun e-mail envoyé pour ce sondage.</p>
         </div>
@@ -88,27 +88,30 @@ export function SondageEmailStats({ data }: SondageEmailStatsProps) {
     <div className="space-y-4">
       {skippedBanner}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5"><EnvelopeSimpleIcon className="size-3.5" />Envoyés</p>
-          <p className="text-2xl font-semibold mt-1 tabular-nums">{data.total}</p>
-        </div>
-        <div className="rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5"><CheckCircleIcon className="size-3.5" />Livrés</p>
-          <p className="text-2xl font-semibold mt-1 tabular-nums">{delivered}</p>
-        </div>
-        <div className="rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5"><EyeIcon className="size-3.5" />Ouverts</p>
-          <p className="text-2xl font-semibold mt-1 tabular-nums">{opened}</p>
-          <p className="text-xs text-muted-foreground mt-0.5">{data.total ? Math.round(opened / data.total * 100) : 0}% de taux d&apos;ouverture</p>
-        </div>
-        <div className="rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground flex items-center gap-1.5"><WarningCircleIcon className="size-3.5" />Erreurs</p>
-          <p className="text-2xl font-semibold mt-1 tabular-nums">{errors}</p>
-        </div>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
+        <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="font-medium tabular-nums">{data.total}</span>
+          <span className="text-muted-foreground">Envoyés</span>
+        </span>
+        <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="font-medium tabular-nums">{delivered}</span>
+          <span className="text-muted-foreground">Livrés</span>
+        </span>
+        <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="font-medium tabular-nums">{opened}</span>
+          <span className="text-muted-foreground">Ouverts</span>
+        </span>
+        <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="font-medium tabular-nums">{data.total ? Math.round(opened / data.total * 100) : 0}%</span>
+          <span className="text-muted-foreground">de taux d&apos;ouverture</span>
+        </span>
+        <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="font-medium tabular-nums">{errors}</span>
+          <span className="text-muted-foreground">Erreurs</span>
+        </span>
       </div>
 
-      <div className="rounded-xl border bg-card overflow-hidden">
+      <div className="rounded-lg border bg-card overflow-hidden">
         <div className="divide-y">
           {data.recipients.map((r, i) => (
             <div key={r.membreId ?? i} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">

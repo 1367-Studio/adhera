@@ -74,7 +74,7 @@ export function ModuleToggles({ associationId, initialModules }: Props) {
               onClick={() => !pending && toggle(key)}
               disabled={pending}
               className={cn(
-                "group relative flex flex-col gap-3 rounded-xl border p-4 text-left transition-all",
+                "group relative flex flex-col gap-3 rounded-lg border p-4 text-left transition-all",
                 enabled
                   ? "border-foreground/20 bg-foreground/[0.04]"
                   : "border-border bg-background hover:bg-muted/40",
@@ -106,13 +106,13 @@ export function ModuleToggles({ associationId, initialModules }: Props) {
                 )}>
                   {MODULE_LABELS[key]}
                 </p>
-                <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
                   {description}
                 </p>
               </div>
 
               {key === "site" && !enabled && saved[key] && (
-                <p className="flex items-center gap-1 text-[11px] text-amber-600">
+                <p className="flex items-center gap-1 text-xs text-amber-600">
                   <WarningIcon className="size-3 shrink-0" />
                   Retirera le site public immédiatement.
                 </p>

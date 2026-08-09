@@ -29,7 +29,7 @@ export function SiteActualitesSection({ section, actualites, color }: Props) {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayed.map(actu => (
-              <article key={actu.id} className="rounded-xl border border-gray-100 overflow-hidden hover:shadow-sm transition-shadow">
+              <article key={actu.id} className="rounded-lg border border-gray-100 overflow-hidden transition-shadow">
                 {actu.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -41,7 +41,7 @@ export function SiteActualitesSection({ section, actualites, color }: Props) {
                 <div className="p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     {actu.pinned && (
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white" style={{ background: color }}>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ background: color }}>
                         À la une
                       </span>
                     )}

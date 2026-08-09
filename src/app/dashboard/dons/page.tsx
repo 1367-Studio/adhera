@@ -4,12 +4,13 @@ import { useState, useRef, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { DownloadSimpleIcon, MagnifyingGlassIcon, XIcon, HandshakeIcon, UsersIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
+import { DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
@@ -86,10 +87,10 @@ export default function DonsPage() {
             <p className="font-medium flex items-center gap-1.5">
               {d.donorType === "COMPANY" ? (d.companyName ?? `${d.firstName} ${d.lastName}`) : `${d.firstName} ${d.lastName}`}
               {d.donorType === "COMPANY" && (
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Entreprise</Badge>
+                <Badge variant="secondary">Entreprise</Badge>
               )}
               {d.anonymous && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0">Anonyme</Badge>
+                <Badge variant="outline">Anonyme</Badge>
               )}
             </p>
             <p className="text-xs text-muted-foreground">{d.email}</p>
@@ -127,11 +128,10 @@ export default function DonsPage() {
       className: "w-10",
       cell: (d) => d.paidAt ? (
         <Button
-          size="sm"
+          size="icon-sm"
           variant="ghost"
           onClick={() => downloadRecu(d.id)}
           title="Générer le reçu fiscal"
-          className="h-7 px-2"
         >
           <DownloadSimpleIcon className="size-3.5" />
         </Button>
@@ -149,7 +149,7 @@ export default function DonsPage() {
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="rounded-xl border bg-card p-4 space-y-1">
+        <div className="rounded-lg border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <TrendUpIcon className="size-3.5" />
             Total {yearFilter}
@@ -158,14 +158,14 @@ export default function DonsPage() {
             {totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
           </p>
         </div>
-        <div className="rounded-xl border bg-card p-4 space-y-1">
+        <div className="rounded-lg border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <UsersIcon className="size-3.5" />
             Donateurs
           </div>
           <p className="text-xl font-bold">{totalCount}</p>
         </div>
-        <div className="rounded-xl border bg-card p-4 space-y-1">
+        <div className="rounded-lg border bg-card p-4 space-y-1">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <HandshakeIcon className="size-3.5" />
             Don moyen
@@ -178,41 +178,24 @@ export default function DonsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <div className="relative w-60">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Rechercher…"
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => { setSearchInput(""); setSearch(""); setPage(1) }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => { setSearchInput(""); setSearch(""); setPage(1) }}
+          placeholder="Rechercher…"
+          containerClassName="w-60"
+        />
 
-        <Select
-          value={String(yearFilter)}
-          onValueChange={v => { if (v) { setYearFilter(parseInt(v)); setPage(1) } }}
-        >
-          <SelectTrigger className="w-28">
-            <SelectValue />
-          </SelectTrigger>
+        <Select value={String(yearFilter)} onValueChange={v => { if (v) { setYearFilter(parseInt(v)); setPage(1) } }}>
+          <SelectTrigger className="w-36"><SelectValue>{String(yearFilter)}</SelectValue></SelectTrigger>
           <SelectContent>
-            {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+            {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{String(y)}</SelectItem>)}
           </SelectContent>
         </Select>
 
-        <Badge variant="secondary" className="self-center">
+        <span className="self-center text-sm text-muted-foreground">
           {result?.total ?? 0} don{(result?.total ?? 0) !== 1 ? "s" : ""}
-        </Badge>
+        </span>
       </div>
 
       <DataTable

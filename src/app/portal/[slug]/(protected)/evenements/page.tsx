@@ -284,7 +284,7 @@ function PaidEventSection({
                 <button
                   type="button"
                   onClick={() => setCancelTarget(t.id)}
-                  className="shrink-0 text-[11px] text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
+                  className="shrink-0 text-xs text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
                 >
                   Annuler
                 </button>
@@ -295,7 +295,7 @@ function PaidEventSection({
           <Button
             size="sm"
             variant="ghost"
-            className="w-full text-muted-foreground text-xs h-7"
+            className="w-full text-muted-foreground"
             onClick={() => setCancelTarget("ALL")}
           >
             Annuler et demander un remboursement
@@ -344,7 +344,7 @@ function PaidEventSection({
         <Button
           size="sm"
           variant="ghost"
-          className="w-full text-muted-foreground text-xs h-8"
+          className="w-full text-muted-foreground"
           loading={setRsvpMutation.isPending}
           onClick={() => setConfirmCancelReservation(true)}
         >
@@ -438,7 +438,7 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
             disabled={mutation.isPending}
             onClick={() => handle(opt.value)}
             className={cn(
-              "flex items-center gap-2 rounded-lg border px-3 py-2 text-xs font-medium transition-all",
+              "flex items-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-colors",
               isActive ? opt.activeColor : opt.color,
               mutation.isPending && !isActive && "opacity-40 cursor-not-allowed",
             )}
@@ -498,7 +498,7 @@ function FreeEventGuestsPanel({
         <Button
           size="sm"
           variant="outline"
-          className="w-full h-7 text-xs"
+          className="w-full"
           loading={mutation.isPending}
           onClick={() => mutation.mutate({ rsvp: "CONFIRME", quantity, guests }, {
             onSuccess: () => toast.success("Invités mis à jour"),
@@ -547,7 +547,7 @@ function EventCard({
 
   return (
     <div className={cn(
-      "rounded-2xl border bg-card p-5 space-y-4 transition-all",
+      "rounded-lg border bg-card p-5 space-y-4 transition-colors",
       isPast && "opacity-75 hover:opacity-100",
     )}>
       {/* Header */}
@@ -667,7 +667,7 @@ function EventCard({
 
 function SkeletonCard() {
   return (
-    <div className="rounded-2xl border bg-card p-5 space-y-4 animate-pulse">
+    <div className="rounded-lg border bg-card p-5 space-y-4 animate-pulse">
       <div className="space-y-2.5">
         <div className="h-4 w-3/5 rounded-md bg-muted" />
         <div className="h-3 w-full rounded-md bg-muted" />

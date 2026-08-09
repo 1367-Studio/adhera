@@ -299,7 +299,7 @@ export function MembreDetailView() {
               )}
               {membre.type && <MembreTypeBadge name={membre.type.name} color={membre.type.color} />}
               {membre.user && membre.user.role !== "MEMBRE" && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
+                <span className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
                   <ShieldIcon className="size-2.5" />
                   {roleLabels[membre.user.role] ?? membre.user.role}
                 </span>
@@ -347,7 +347,7 @@ export function MembreDetailView() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.contact")}</p>
           {membre.email && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><EnvelopeSimpleIcon className="size-3.5" />{membre.email}</p>
@@ -363,7 +363,7 @@ export function MembreDetailView() {
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.form.fields.status")}</p>
           <p className="flex items-center gap-1.5 text-muted-foreground">
             <CalendarIcon className="size-3.5" />
@@ -372,7 +372,7 @@ export function MembreDetailView() {
           {membre.type && <p className="text-muted-foreground">{t("membres.detail.typeColon", { name: membre.type.name })}</p>}
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.personalInfo")}</p>
           {membre.civilite && (
             <p className="text-muted-foreground">{t("membres.detail.civiliteColon", { value: civiliteLabels[membre.civilite] ?? membre.civilite })}</p>
@@ -416,7 +416,7 @@ export function MembreDetailView() {
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.accountAccess")}</p>
           {membre.userId ? (
             <p className="flex items-center gap-1.5 text-muted-foreground">

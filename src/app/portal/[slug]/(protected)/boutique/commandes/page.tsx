@@ -140,7 +140,7 @@ function MesCommandesPageInner() {
         <Button type="button" variant="ghost" size="icon" onClick={() => router.push(`/portal/${slug}/boutique`)}>
           <ArrowLeftIcon className="size-4" />
         </Button>
-        <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
+        <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <PackageIcon className="size-6 text-primary" />
         </div>
         <h1 className="text-xl font-semibold tracking-tight">{t("myOrders")}</h1>
@@ -149,11 +149,11 @@ function MesCommandesPageInner() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 rounded-xl border bg-muted animate-pulse" />
+            <div key={i} className="h-24 rounded-lg border bg-muted animate-pulse" />
           ))}
         </div>
       ) : commandes.length === 0 ? (
-        <div className="rounded-xl border bg-card p-12 text-center space-y-3">
+        <div className="rounded-lg border bg-card p-12 text-center space-y-3">
           <ShoppingBagIcon className="size-8 text-muted-foreground mx-auto" />
           <p className="text-muted-foreground text-sm">{t("noOrders")}</p>
           <Button variant="outline" onClick={() => router.push(`/portal/${slug}/boutique`)}>
@@ -163,7 +163,7 @@ function MesCommandesPageInner() {
       ) : (
         <div className="space-y-3">
           {commandes.map(c => (
-            <div key={c.id} className="rounded-xl border bg-card p-4 space-y-3">
+            <div key={c.id} className="rounded-lg border bg-card p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-muted-foreground">
@@ -258,9 +258,9 @@ function MesCommandesPageInner() {
                       <p className="text-xs text-muted-foreground">{item.varianteLabel}</p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <button type="button" onClick={() => adjustQty(item.id, -1)} disabled={item.qty <= 0} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">−</button>
+                      <button type="button" onClick={() => adjustQty(item.id, -1)} disabled={item.qty <= 0} className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">−</button>
                       <span className="w-6 text-center text-sm font-semibold tabular-nums">{item.qty}</span>
-                      <button type="button" onClick={() => adjustQty(item.id, +1)} disabled={item.qty >= item.originalQty} className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">+</button>
+                      <button type="button" onClick={() => adjustQty(item.id, +1)} disabled={item.qty >= item.originalQty} className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30">+</button>
                       <span className={cn("w-20 text-right text-sm tabular-nums", removed ? "text-muted-foreground/50 line-through" : "text-muted-foreground")}>{fmt(item.unitPrice * item.qty)}</span>
                     </div>
                   </div>

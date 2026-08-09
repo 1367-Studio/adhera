@@ -43,8 +43,7 @@ export function LocaleSwitcher() {
             size="icon"
             className="size-8"
             loading={isPending}
-            loadingClassName="text-lime-400 drop-shadow-[0_0_5px_rgba(163,230,53,0.85)]"
-          />
+                      />
         }
       >
         <GlobeIcon className="size-4" />

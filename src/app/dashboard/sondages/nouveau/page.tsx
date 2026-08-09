@@ -121,7 +121,7 @@ export default function NouveauSondagePage() {
       </div>
 
       {/* Unified card */}
-      <div className="rounded-xl border bg-card overflow-hidden pb-10">
+      <div className="rounded-lg border bg-card overflow-hidden pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x">
 
           {/* Left — metadata */}

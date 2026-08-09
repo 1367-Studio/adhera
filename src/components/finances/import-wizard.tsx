@@ -161,7 +161,7 @@ function guessMapping(columns: string[]): Partial<ColumnMapping> {
 
 function AutoBadge() {
   const t = useTranslations("finances.importWizard")
-  return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-[10px] font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">{t("detected")}</span>
+  return <span className="ml-1.5 rounded bg-blue-100 px-1.5 py-0.5 align-middle text-xs font-medium text-blue-700 dark:bg-blue-950 dark:text-blue-300">{t("detected")}</span>
 }
 
 function RequiredLabel({ required = true, detected, children }: { required?: boolean; detected?: boolean; children: React.ReactNode }) {
@@ -474,7 +474,7 @@ export function ImportWizard() {
           <div
             onDrop={handleDrop}
             onDragOver={e => e.preventDefault()}
-            className="rounded-xl border-2 border-dashed border-muted-foreground/30 p-12 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
+            className="rounded-lg border-2 border-dashed border-muted-foreground/30 p-12 text-center cursor-pointer hover:border-muted-foreground/60 transition-colors"
             onClick={() => document.getElementById("file-input")?.click()}
           >
             <input
@@ -493,7 +493,7 @@ export function ImportWizard() {
             onDrop={modules.ia && !parsingPdf ? handlePdfDrop : undefined}
             onDragOver={e => e.preventDefault()}
             className={cn(
-              "rounded-xl border-2 border-dashed p-12 text-center transition-colors",
+              "rounded-lg border-2 border-dashed p-12 text-center transition-colors",
               modules.ia
                 ? "border-muted-foreground/30 hover:border-muted-foreground/60 cursor-pointer"
                 : "border-muted-foreground/15 opacity-60 cursor-not-allowed",
@@ -525,7 +525,7 @@ export function ImportWizard() {
 
       {/* Step 2: Column mapping (file) / account only (PDF) */}
       {step === 2 && source === "pdf" && (
-        <div className="rounded-xl border bg-card p-6 space-y-5">
+        <div className="rounded-lg border bg-card p-6 space-y-5">
           <div>
             <p className="text-sm font-medium mb-1 text-muted-foreground">{t("step2.fileSelected")}</p>
             <div className="flex items-center gap-2 text-sm"><FilePdfIcon className="size-4" />{t("step2.rowsExtractedByAi", { file: file?.name ?? "", count: pdfRows.length })}</div>
@@ -566,7 +566,7 @@ export function ImportWizard() {
       )}
 
       {step === 2 && source === "file" && (
-        <div className="rounded-xl border bg-card p-6 space-y-5">
+        <div className="rounded-lg border bg-card p-6 space-y-5">
           <div>
             <p className="text-sm font-medium mb-1 text-muted-foreground">{t("step2.fileSelected")}</p>
             <div className="flex items-center gap-2 text-sm"><FileIcon className="size-4" />{t("step2.rowsDetected", { file: file?.name ?? "", count: rawRows.length })}</div>
@@ -706,7 +706,7 @@ export function ImportWizard() {
       {/* Step 3: Preview & confirm */}
       {step === 3 && (
         <div className="space-y-4">
-          <div className="rounded-xl border bg-card p-5">
+          <div className="rounded-lg border bg-card p-5">
             <h3 className="font-semibold mb-3">{t("step3.parsingResult")}</h3>
             <div className="grid grid-cols-3 gap-4 text-center mb-4">
               <div className="rounded-lg bg-muted/30 p-3">
@@ -763,7 +763,7 @@ export function ImportWizard() {
 
       {/* Step 4: Result */}
       {step === 4 && result && (
-        <div className="rounded-xl border bg-card p-8 text-center space-y-4">
+        <div className="rounded-lg border bg-card p-8 text-center space-y-4">
           <CheckCircleIcon className="size-12 mx-auto text-green-600 dark:text-green-400" />
           <h3 className="text-xl font-bold">{t("step4.success")}</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg mx-auto">

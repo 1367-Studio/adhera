@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
-import { getTypeColor } from "@/components/ui/membre-type-badge"
+import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
@@ -26,6 +25,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SearchInput } from "@/components/ui/search-input"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -115,35 +116,6 @@ function StatItem({ label, value }: { label: string; value: number }) {
       <span className="font-medium tabular-nums text-foreground">{value}</span>
       <span className="text-muted-foreground">{label}</span>
     </span>
-  )
-}
-
-function FilterSelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-}: {
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; label: string }[]
-  placeholder: string
-}) {
-  const selected = options.find(o => o.value === value)
-  return (
-    <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
-      <SelectTrigger className="w-40 rounded-md">
-        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
-          {selected?.label ?? placeholder}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="__all__">{placeholder}</SelectItem>
-        {options.map(o => (
-          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
   )
 }
 
@@ -339,12 +311,7 @@ export function MembresView() {
           <div className="min-w-0 space-y-0.5">
             <div className="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap">
               <p className="font-medium">{m.lastName} {m.firstName}</p>
-              {m.type && (
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap">
-                  <span className={cn("size-1.5 rounded-full shrink-0", getTypeColor(m.type.color).dot)} />
-                  {m.type.name}
-                </span>
-              )}
+              {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
               {m.user && m.user.role !== "MEMBRE" && (
                 <span className="text-xs text-muted-foreground whitespace-nowrap">{roleLabels[m.user.role]}</span>
               )}
@@ -478,36 +445,22 @@ export function MembresView() {
       )}
 
       <div className="flex flex-wrap gap-2">
-        {/* Search */}
-        <div className="relative w-72">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("membres.view.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => {
-                if (debounceRef.current) clearTimeout(debounceRef.current)
-                setSearchInput("")
-                setSearch("")
-                setPage(1)
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          placeholder={t("membres.view.searchPlaceholder")}
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => {
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            setSearchInput("")
+            setSearch("")
+            setPage(1)
+          }}
+          containerClassName="w-72"
+        />
 
-        {/* Status filter */}
         <FilterSelect
           value={statusFilter}
-          onChange={v => { setStatusFilter(v); setPage(1) }}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
             { value: "PENDING",  label: t("membres.view.statusOptions.pending")   },
             { value: "ACTIF",    label: t("membres.view.statusOptions.actifs")    },
@@ -515,28 +468,29 @@ export function MembresView() {
             { value: "SUSPENDU", label: t("membres.view.statusOptions.suspendus") },
           ]}
           placeholder={t("membres.view.allStatuses")}
+          width="w-40"
         />
 
-        {/* Type filter */}
         {types.length > 0 && (
           <FilterSelect
             value={typeFilter}
-            onChange={v => { setTypeFilter(v); setPage(1) }}
+            onValueChange={v => { setTypeFilter(v); setPage(1) }}
             options={types.map(type => ({ value: type.id, label: type.name }))}
             placeholder={t("membres.view.allTypes")}
+            width="w-40"
           />
         )}
 
-        {/* Adherent filter */}
         {modules.cotisations && (
           <FilterSelect
             value={adherentFilter}
-            onChange={v => { setAdherentFilter(v); setPage(1) }}
+            onValueChange={v => { setAdherentFilter(v); setPage(1) }}
             options={[
               { value: "ADHERENT", label: t("membres.view.adherentOptions.adherents") },
               { value: "BENEVOLE", label: t("membres.view.adherentOptions.benevoles")  },
             ]}
             placeholder={t("membres.view.allMembership")}
+            width="w-40"
           />
         )}
       </div>

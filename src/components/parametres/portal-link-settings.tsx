@@ -47,7 +47,7 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
         readOnly
         value={portalUrl}
         onFocus={(e) => e.target.select()}
-        className="w-full rounded-xl border bg-muted px-4 py-3 font-mono text-sm break-all outline-none cursor-text"
+        className="h-9 w-full rounded-md border bg-muted px-3 font-mono text-sm outline-none cursor-text"
       />
 
       {copyFailed && (

@@ -224,7 +224,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         </label>
 
         {sms && (
-          <div className="space-y-2 rounded-xl border bg-muted/20 p-4">
+          <div className="space-y-2 rounded-lg border bg-muted/20 p-4">
             <div className="flex items-center gap-2">
               <ChatTextIcon className="size-4 text-muted-foreground" />
               <p className="text-sm font-medium">{t("messages.templateModal.smsBody")}</p>

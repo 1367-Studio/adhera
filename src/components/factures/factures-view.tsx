@@ -6,10 +6,9 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, XIcon, MoneyIcon, ClockCounterClockwiseIcon, CopyIcon, DownloadSimpleIcon, EnvelopeSimpleIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFacturesPaginated, useFactureDetail, useCreateFacture, useUpdateFacture, useDeleteFacture, useDuplicateFacture, useSendFactureEmail } from "@/hooks/use-factures"
 import { ApiError } from "@/lib/api-error"
-import { cn } from "@/lib/utils"
 import type { FactureInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -24,7 +23,8 @@ import { FacturePaymentsModal } from "@/components/factures/facture-payments-mod
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { SearchInput } from "@/components/ui/search-input"
 import { BASE_PATH } from "@/lib/env"
 
 type FactureStatus = "BROUILLON" | "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYEE" | "EN_RETARD" | "ANNULEE"
@@ -48,41 +48,15 @@ type Facture = {
 
 type Translator = ReturnType<typeof useTranslations>
 
-function getStatusBadge(t: Translator): Record<FactureStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+function getStatusBadge(t: Translator): Record<FactureStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "success" | "warning" }> {
   return {
     BROUILLON:           { label: t("factures.form.status.brouillon"),          variant: "secondary"   },
-    EN_ATTENTE:          { label: t("factures.form.status.enAttente"),          variant: "outline"     },
-    PARTIELLEMENT_PAYEE: { label: t("factures.form.status.partiellementPayee"), variant: "outline"     },
-    PAYEE:               { label: t("factures.form.status.payee"),              variant: "default"    },
+    EN_ATTENTE:          { label: t("factures.form.status.enAttente"),          variant: "secondary"   },
+    PARTIELLEMENT_PAYEE: { label: t("factures.form.status.partiellementPayee"), variant: "warning"     },
+    PAYEE:               { label: t("factures.form.status.payee"),              variant: "success"    },
     EN_RETARD:           { label: t("factures.view.status.enRetard"),           variant: "destructive" },
-    ANNULEE:             { label: t("factures.form.status.annulee"),            variant: "secondary"  },
+    ANNULEE:             { label: t("factures.form.status.annulee"),            variant: "outline"  },
   }
-}
-
-function FilterSelect({
-  value, onChange, options, placeholder,
-}: {
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; label: string }[]
-  placeholder: string
-}) {
-  const selected = options.find(o => o.value === value)
-  return (
-    <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
-      <SelectTrigger className="w-44">
-        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
-          {selected?.label ?? placeholder}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="__all__">{placeholder}</SelectItem>
-        {options.map(o => (
-          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
 }
 
 const PAGE_SIZE = 20
@@ -318,34 +292,22 @@ export function FacturesView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <div className="relative w-72">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("factures.view.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => {
-                if (debounceRef.current) clearTimeout(debounceRef.current)
-                setSearchInput("")
-                setSearch("")
-                setPage(1)
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => {
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            setSearchInput("")
+            setSearch("")
+            setPage(1)
+          }}
+          placeholder={t("factures.view.searchPlaceholder")}
+          containerClassName="w-72"
+        />
 
         <FilterSelect
           value={statusFilter}
-          onChange={v => { setStatusFilter(v); setPage(1) }}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
             { value: "BROUILLON",           label: t("factures.form.status.brouillon")          },
             { value: "EN_ATTENTE",          label: t("factures.form.status.enAttente")          },
@@ -355,13 +317,14 @@ export function FacturesView() {
             { value: "ANNULEE",             label: t("factures.form.status.annulee")            },
           ]}
           placeholder={t("factures.view.allStatuses")}
+          width="w-40"
         />
 
         {fournisseurIdParam && (
           <button
             type="button"
             onClick={() => router.push("/dashboard/factures")}
-            className="flex items-center gap-1.5 rounded-md border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-input px-3 text-sm transition-colors hover:bg-muted"
           >
             {t("factures.view.supplierFilter", { name: facturesList.find(f => f.fournisseurId === fournisseurIdParam)?.fournisseur?.companyName ?? t("factures.view.supplierFilterFallback") })}
             <XIcon className="size-3.5" />

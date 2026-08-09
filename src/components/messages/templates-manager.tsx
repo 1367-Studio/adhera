@@ -13,8 +13,8 @@ import {
 import { TemplateModal } from "@/components/messages/template-modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { cn } from "@/lib/utils"
 import type { TemplateCategory } from "@/lib/automation"
 
 function getTemplateCategoryLabels(t: ReturnType<typeof useTranslations>): Record<TemplateCategory, string> {
@@ -108,10 +108,10 @@ export function TemplatesManager() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[0,1,2].map(i => <div key={i} className="h-16 rounded-xl bg-muted animate-pulse" />)}
+          {[0,1,2].map(i => <div key={i} className="h-16 rounded-lg bg-muted animate-pulse" />)}
         </div>
       ) : templates.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 text-center">
           <FileTextIcon className="size-8 text-muted-foreground/40" />
           <div>
             <p className="text-sm font-medium">{t("messages.templatesManager.noTemplates")}</p>
@@ -122,26 +122,21 @@ export function TemplatesManager() {
           </Button>
         </div>
       ) : (
-        <div className="divide-y rounded-xl border overflow-hidden">
+        <div className="divide-y rounded-lg border overflow-hidden">
           {templates.map(template => (
             <div key={template.id} className="flex items-start justify-between gap-4 px-4 py-3 bg-card hover:bg-muted/30 transition-colors">
               <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium text-sm truncate">{template.name}</p>
-                  <span className={cn(
-                    "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                    template.active
-                      ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                      : "bg-muted text-muted-foreground",
-                  )}>
-                    {template.active ? t("messages.templatesManager.active") : t("messages.templatesManager.inactive")}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground border rounded-full px-2 py-0.5">
+                  {template.active
+                    ? <Badge variant="success">{t("messages.templatesManager.active")}</Badge>
+                    : <Badge variant="secondary">{t("messages.templatesManager.inactive")}</Badge>}
+                  <span className="text-xs text-muted-foreground">
                     {templateCategoryLabels[template.category]}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground truncate">{template.subject}</p>
-                <p className="text-[11px] text-muted-foreground/60">
+                <p className="text-xs text-muted-foreground/60">
                   {t("messages.templatesManager.rulesCount", { count: template._count.rules })}
                   {t("messages.templatesManager.modifiedOn", { date: format(new Date(template.updatedAt), "d MMM yyyy", { locale: fr }) })}
                 </p>

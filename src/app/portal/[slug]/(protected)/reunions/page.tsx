@@ -111,14 +111,14 @@ export default function ReunionsPortalPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[0, 1].map(i => (
-            <div key={i} className="rounded-2xl border p-5 animate-pulse space-y-2">
+            <div key={i} className="rounded-lg border p-5 animate-pulse space-y-2">
               <div className="h-4 w-48 bg-muted rounded" />
               <div className="h-3 w-32 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : active.length === 0 && ended.length === 0 ? (
-        <div className="rounded-2xl border border-dashed p-12 text-center space-y-3">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-3">
           <VideoCameraIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">{t("noMeetings")}</p>
         </div>
@@ -127,7 +127,7 @@ export default function ReunionsPortalPage() {
           {active.length > 0 && (
             <div className="space-y-3">
               {active.map(meeting => (
-                <div key={meeting.id} className="rounded-2xl border bg-card p-5 flex items-center gap-4">
+                <div key={meeting.id} className="rounded-lg border bg-card p-5 flex items-center gap-4">
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-sm">{meeting.title}</span>
@@ -161,7 +161,7 @@ export default function ReunionsPortalPage() {
             <div className="space-y-3">
               <p className="text-sm font-medium text-muted-foreground">{t("history")}</p>
               {ended.map(meeting => (
-                <div key={meeting.id} className="rounded-2xl border bg-card p-5">
+                <div key={meeting.id} className="rounded-lg border bg-card p-5">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="font-semibold text-sm">{meeting.title}</span>
                     <Badge variant="outline">{t("status.ended")}</Badge>

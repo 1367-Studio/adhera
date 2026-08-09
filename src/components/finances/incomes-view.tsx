@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, CheckCircleIcon, ClockIcon, ReceiptIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, XIcon, CheckCircleIcon, ClockIcon, ReceiptIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useIncomes, useCreateIncome, useUpdateIncome, useDeleteIncome } from "@/hooks/use-incomes"
@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
+import { SearchInput } from "@/components/ui/search-input"
 import { IncomeForm } from "@/components/finances/income-form"
 
 type Income = {
@@ -43,7 +44,7 @@ type Translator = ReturnType<typeof useTranslations>
 function getStatusConfig(t: Translator) {
   return {
     PENDING:   { label: t("finances.incomeForm.status.pending"),   variant: "secondary" as const, icon: ClockIcon },
-    PAID:      { label: t("finances.incomeForm.status.paid"),      variant: "default" as const,   icon: CheckCircleIcon },
+    PAID:      { label: t("finances.incomeForm.status.paid"),      variant: "success" as const,   icon: CheckCircleIcon },
     CANCELLED: { label: t("finances.incomeForm.status.cancelled"), variant: "destructive" as const, icon: XIcon },
   }
 }
@@ -133,12 +134,12 @@ export function IncomesView() {
             <div className="flex items-center gap-2 mt-0.5">
               {i.reconciliations.length > 0 && <span className="text-xs text-green-600 dark:text-green-400">{t("finances.incomesView.reconciled")}</span>}
               {i.facturePaymentId && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground" title={t("finances.incomesView.fromInvoiceTooltip")}>
                   <ReceiptIcon className="size-3" /> {t("finances.incomesView.fromInvoiceBadge")}
                 </span>
               )}
               {!i.exerciceId && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" title={t("finances.incomesView.noExerciceTooltip")}>
+                <span className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-400" title={t("finances.incomesView.noExerciceTooltip")}>
                   <WarningIcon className="size-3" /> {t("finances.incomesView.noExerciceBadge")}
                 </span>
               )}
@@ -206,25 +207,17 @@ export function IncomesView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <div className="relative w-60">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("finances.incomesView.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => {
-              setSearchInput(e.target.value)
-              if (debounceRef.current) clearTimeout(debounceRef.current)
-              debounceRef.current = setTimeout(() => { setSearch(e.target.value); setPage(1) }, 300)
-            }}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button type="button" onClick={() => { setSearchInput(""); setSearch(""); setPage(1) }} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={v => {
+            setSearchInput(v)
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            debounceRef.current = setTimeout(() => { setSearch(v); setPage(1) }, 300)
+          }}
+          onClear={() => { setSearchInput(""); setSearch(""); setPage(1) }}
+          placeholder={t("finances.incomesView.searchPlaceholder")}
+          containerClassName="w-60"
+        />
 
         <FilterSelect
           value={exerciceFilter}

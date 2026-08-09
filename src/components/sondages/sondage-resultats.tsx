@@ -172,7 +172,7 @@ interface SondageResultatsProps {
 export function SondageResultats({ data }: SondageResultatsProps) {
   if (data.totalReponses === 0) {
     return (
-      <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+      <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
         <UsersIcon className="size-10 text-muted-foreground/50 mx-auto" />
         <p className="text-sm text-muted-foreground">Aucune réponse pour le moment.</p>
       </div>
@@ -186,7 +186,7 @@ export function SondageResultats({ data }: SondageResultatsProps) {
       </p>
 
       {data.questions.map((q, i) => (
-        <div key={q.questionId} className="rounded-xl border bg-card p-5 space-y-4">
+        <div key={q.questionId} className="rounded-lg border bg-card p-5 space-y-4">
           <div>
             <p className="text-xs text-muted-foreground">Q{i + 1}</p>
             <p className="font-semibold text-sm">{q.label}</p>

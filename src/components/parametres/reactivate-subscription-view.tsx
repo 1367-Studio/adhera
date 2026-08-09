@@ -80,7 +80,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="rounded-xl border bg-card p-4 space-y-1.5 text-sm">
+      <div className="rounded-lg border bg-card p-4 space-y-1.5 text-sm">
         <div className="flex justify-between text-muted-foreground">
           <span>{t("newSubscription")}</span>
           <span className="font-medium text-foreground">
@@ -95,7 +95,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
         )}
       </div>
 
-      <div className="rounded-xl border bg-card p-4">
+      <div className="rounded-lg border bg-card p-4">
         <PaymentElement
           options={{
             layout:        { type: "tabs", defaultCollapsed: false },
