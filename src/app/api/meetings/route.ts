@@ -66,7 +66,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if ((participantIds ?? []).length > 0) {
     const association = await prisma.association.findUnique({
       where: { id: associationId },
-      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
     })
     const membres = await prisma.membre.findMany({
       where: { id: { in: participantIds }, userId: { not: null } },

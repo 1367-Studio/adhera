@@ -24,7 +24,6 @@ type AssociationForDeclaration = {
   address: string | null
   city:    string | null
   logoUrl: string | null
-  primaryColor: string | null
 }
 
 async function assignDeclarationNumber(cotisationId: string, associationId: string): Promise<string> {
@@ -56,13 +55,6 @@ async function assignDeclarationNumber(cotisationId: string, associationId: stri
   throw new Error("Impossible d'attribuer un numéro de déclaration unique")
 }
 
-function hexToRgb(hex: string) {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return null
-  const n = parseInt(m[1], 16)
-  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
-}
-
 export async function generateDeclarationCotisation(
   cotisation:  CotisationForDeclaration,
   membre:      MembreForDeclaration,
@@ -78,7 +70,7 @@ export async function generateDeclarationCotisation(
   const doc  = await PDFDocument.create()
   const font = await doc.embedFont(StandardFonts.Helvetica)
   const bold = await doc.embedFont(StandardFonts.HelveticaBold)
-  const ACCENT = (association.primaryColor && hexToRgb(association.primaryColor)) || rgb(0.45, 0.45, 0.45)
+  const ACCENT = rgb(0.45, 0.45, 0.45)
 
   let logoImage = null
   if (association.logoUrl) {

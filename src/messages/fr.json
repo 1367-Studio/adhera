@@ -1579,7 +1579,10 @@
         "revoke": "Révoquer",
         "generateLink": "Générer un lien",
         "sendEmail": "Envoyer par e-mail",
-        "toasts": { "linkCopied": "Lien copié", "emailSent": "E-mail envoyé" }
+        "toasts": {
+          "linkCopied": "Lien copié",
+          "emailSent": "E-mail envoyé"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcription sauvegardée",
@@ -2422,12 +2425,9 @@
     },
     "branding": {
       "title": "Identité visuelle",
-      "subtitle": "Logo et couleurs affichés sur le dashboard, les devis/factures, la feuille de présence et le site public.",
+      "subtitle": "Logo affiché sur le dashboard, les devis/factures, la feuille de présence et le site public.",
       "logo": "Logo",
-      "primaryColor": "Couleur primaire",
-      "secondaryColor": "Couleur secondaire",
-      "secondaryPlaceholder": "Optionnel",
-      "proOnlyText": "Le logo et les couleurs personnalisés (dashboard, devis/factures, feuille de présence) sont réservés à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour les activer.",
+      "proOnlyText": "Le logo personnalisé (dashboard, devis/factures, feuille de présence) est réservé à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour l'activer.",
       "toasts": {
         "updated": "Identité visuelle mise à jour",
         "uploadError": "Erreur lors de l'upload du logo"

@@ -112,7 +112,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true, cotisationDefaultAmount: true },
+    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, cotisationDefaultAmount: true },
   })
 
   const membreData = {
@@ -205,7 +205,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       fireEventRule({
         triggerType:   "MEMBER_CREATED",
         associationId,
-        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor },
+        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
       }).catch(() => {})
     }

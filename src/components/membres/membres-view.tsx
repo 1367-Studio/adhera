@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, EnvelopeSimpleIcon, ClockCounterClockwiseIcon, ShieldIcon, DeviceMobileIcon, KeyIcon, EyeIcon, GenderMaleIcon, GenderFemaleIcon, BabyIcon, UserIcon, QuestionIcon, DownloadSimpleIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
-import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
+import { getTypeColor } from "@/components/ui/membre-type-badge"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCurrentUser, useModules } from "@/lib/user-context"
@@ -109,17 +109,12 @@ type MembresStats = MembresStatsBucket & {
   benevoles: MembresStatsBucket
 }
 
-function StatTile({ label, value, icon: Icon }: { label: string; value: number; icon: React.ElementType }) {
+function StatItem({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border bg-card p-3 flex items-center gap-2.5">
-      <div className="flex size-8 items-center justify-center rounded-lg bg-muted shrink-0">
-        <Icon className="size-4 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-lg font-bold tabular-nums leading-none">{value}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-      </div>
-    </div>
+    <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+      <span className="font-medium tabular-nums text-foreground">{value}</span>
+      <span className="text-muted-foreground">{label}</span>
+    </span>
   )
 }
 
@@ -137,7 +132,7 @@ function FilterSelect({
   const selected = options.find(o => o.value === value)
   return (
     <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
-      <SelectTrigger className="w-40">
+      <SelectTrigger className="w-40 rounded-md">
         <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
           {selected?.label ?? placeholder}
         </span>
@@ -341,18 +336,20 @@ export function MembresView() {
               {m.firstName[0]}{m.lastName[0]}
             </div>
           )}
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2 flex-wrap">
+          <div className="min-w-0 space-y-0.5">
+            <div className="flex items-baseline gap-x-2 gap-y-0.5 flex-wrap">
               <p className="font-medium">{m.lastName} {m.firstName}</p>
-              {m.type && <MembreTypeBadge name={m.type.name} color={m.type.color} />}
-              {m.user && m.user.role !== "MEMBRE" && (
-                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
-                  <ShieldIcon className="size-2.5" />
-                  {roleLabels[m.user.role]}
+              {m.type && (
+                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap">
+                  <span className={cn("size-1.5 rounded-full shrink-0", getTypeColor(m.type.color).dot)} />
+                  {m.type.name}
                 </span>
               )}
+              {m.user && m.user.role !== "MEMBRE" && (
+                <span className="text-xs text-muted-foreground whitespace-nowrap">{roleLabels[m.user.role]}</span>
+              )}
             </div>
-            {m.email && <p className="text-xs text-muted-foreground">{m.email}</p>}
+            {m.email && <p className="text-xs text-muted-foreground truncate">{m.email}</p>}
           </div>
         </div>
       ),
@@ -366,7 +363,7 @@ export function MembresView() {
     {
       key: "joinedAt",
       header: t("membres.view.columns.memberSince"),
-      cell: (m) => format(new Date(m.joinedAt), "MMM yyyy", { locale: fr }),
+      cell: (m) => <span className="text-muted-foreground">{format(new Date(m.joinedAt), "MMM yyyy", { locale: fr })}</span>,
       hideInCard: true,
     },
     {
@@ -381,9 +378,9 @@ export function MembresView() {
       key: "adherent",
       header: t("membres.view.columns.membership"),
       cell: (m: Membre) => (
-        <Badge variant={m.isAdherent ? "secondary" : "outline"}>
-          {m.isAdherent ? t("membres.view.membershipAdherent") : t("membres.view.membershipBenevole")}
-        </Badge>
+        m.isAdherent
+          ? <span>{t("membres.view.membershipAdherent")}</span>
+          : <span className="text-muted-foreground">{t("membres.view.membershipBenevole")}</span>
       ),
     }] : []),
     {
@@ -423,23 +420,16 @@ export function MembresView() {
         description={descriptionText}
         action={
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
-              <DownloadSimpleIcon className="mr-1.5 size-4" />
-              {t("membres.view.blankFormPdf")}
-            </Button>
             <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
-              <EnvelopeSimpleIcon className="mr-1.5 size-4" />
               {t("membres.view.sendEmail")}
             </Button>
             {modules.sms && (
               <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
-                <DeviceMobileIcon className="mr-1.5 size-4" />
                 {t("membres.view.sendSms")}
               </Button>
             )}
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
-                <DownloadSimpleIcon className="mr-1.5 size-4" />
                 {t("membres.view.export")}
                 <CaretDownIcon className="ml-1 size-3" />
               </DropdownMenuTrigger>
@@ -449,6 +439,10 @@ export function MembresView() {
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => exportMembresPdf(buildExportParams())}>
                   {t("membres.view.exportPdf")}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
+                  {t("membres.view.blankFormPdf")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -461,26 +455,24 @@ export function MembresView() {
       />
 
       {stats && (
-        <div className="space-y-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
           {modules.cotisations && (
-            <div className="space-y-1.5">
-              <p className="text-xs text-muted-foreground">{t("membres.view.statsMembership")}</p>
-              <div className="grid grid-cols-2 gap-2">
-                <StatTile label={t("membres.view.statsAdherents")} value={stats.adherents.count} icon={UserIcon} />
-                <StatTile label={t("membres.view.statsBenevoles")} value={stats.benevoles.count} icon={UserIcon} />
+            <>
+              <div role="group" aria-label={t("membres.view.statsMembership")} className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+                <StatItem value={stats.adherents.count} label={t("membres.view.statsAdherents")} />
+                <StatItem value={stats.benevoles.count} label={t("membres.view.statsBenevoles")} />
               </div>
-            </div>
+              <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
+            </>
           )}
-          <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">{t("membres.view.statsDemographics")}</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-              <StatTile label={t("membres.view.statsMen")} value={stats.hommes} icon={GenderMaleIcon} />
-              <StatTile label={t("membres.view.statsWomen")} value={stats.femmes} icon={GenderFemaleIcon} />
-              <StatTile label={t("membres.view.statsSexUnknown")} value={stats.sexeNonRenseigne} icon={QuestionIcon} />
-              <StatTile label={t("membres.view.statsAdults")} value={stats.adultes} icon={UserIcon} />
-              <StatTile label={t("membres.view.statsChildren")} value={stats.enfants} icon={BabyIcon} />
-              <StatTile label={t("membres.view.statsAgeUnknown")} value={stats.ageNonRenseigne} icon={QuestionIcon} />
-            </div>
+          <div role="group" aria-label={t("membres.view.statsDemographics")} className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+            <StatItem value={stats.adultes} label={t("membres.view.statsAdults")} />
+            <StatItem value={stats.enfants} label={t("membres.view.statsChildren")} />
+            <StatItem value={stats.ageNonRenseigne} label={t("membres.view.statsAgeUnknown")} />
+            <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
+            <StatItem value={stats.hommes} label={t("membres.view.statsMen")} />
+            <StatItem value={stats.femmes} label={t("membres.view.statsWomen")} />
+            <StatItem value={stats.sexeNonRenseigne} label={t("membres.view.statsSexUnknown")} />
           </div>
         </div>
       )}
@@ -494,7 +486,7 @@ export function MembresView() {
             placeholder={t("membres.view.searchPlaceholder")}
             value={searchInput}
             onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className="h-8 w-full rounded-md border border-input bg-background pl-9 pr-8 text-sm outline-none focus:ring-1 focus:ring-ring"
           />
           {searchInput && (
             <button

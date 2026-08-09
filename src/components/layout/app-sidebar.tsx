@@ -230,9 +230,9 @@ export function AppSidebar() {
   }, [])
 
   // "Associations" only makes sense as a category label under the generic Adhera
-  // identity — once the association shows its own logo/color, the name above it is
+  // identity — once the association shows its own logo, the name above it is
   // already unambiguous and the subtitle just reads as redundant.
-  const isBranded = !!(branding?.logoUrl || branding?.primaryColor)
+  const isBranded = !!branding?.logoUrl
   const isFlyout  = state === "collapsed" && !isMobile
 
   return (

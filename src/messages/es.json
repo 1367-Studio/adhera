@@ -1579,7 +1579,10 @@
         "revoke": "Revocar",
         "generateLink": "Generar enlace",
         "sendEmail": "Enviar por correo",
-        "toasts": { "linkCopied": "Enlace copiado", "emailSent": "Correo enviado" }
+        "toasts": {
+          "linkCopied": "Enlace copiado",
+          "emailSent": "Correo enviado"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcripción guardada",
@@ -2422,12 +2425,9 @@
     },
     "branding": {
       "title": "Identidad visual",
-      "subtitle": "Logo y colores mostrados en el panel, presupuestos/facturas, hoja de asistencia y sitio público.",
+      "subtitle": "Logo mostrado en el panel, presupuestos/facturas, hoja de asistencia y sitio público.",
       "logo": "Logo",
-      "primaryColor": "Color primario",
-      "secondaryColor": "Color secundario",
-      "secondaryPlaceholder": "Opcional",
-      "proOnlyText": "El logo y los colores personalizados (panel, presupuestos/facturas, hoja de asistencia) están reservados al plan Pro. Mejore su plan en la pestaña Suscripción para activarlos.",
+      "proOnlyText": "El logo personalizado (panel, presupuestos/facturas, hoja de asistencia) está reservado al plan Pro. Mejore su plan en la pestaña Suscripción para activarlo.",
       "toasts": {
         "updated": "Identidad visual actualizada",
         "uploadError": "Error al subir el logo"

@@ -1579,7 +1579,10 @@
         "revoke": "Revogar",
         "generateLink": "Gerar link",
         "sendEmail": "Enviar por e-mail",
-        "toasts": { "linkCopied": "Link copiado", "emailSent": "E-mail enviado" }
+        "toasts": {
+          "linkCopied": "Link copiado",
+          "emailSent": "E-mail enviado"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcrição salva",
@@ -2422,12 +2425,9 @@
     },
     "branding": {
       "title": "Identidade visual",
-      "subtitle": "Logo e cores exibidos no painel, orçamentos/faturas, folha de presença e site público.",
+      "subtitle": "Logo exibido no painel, orçamentos/faturas, folha de presença e site público.",
       "logo": "Logo",
-      "primaryColor": "Cor primária",
-      "secondaryColor": "Cor secundária",
-      "secondaryPlaceholder": "Opcional",
-      "proOnlyText": "O logo e as cores personalizadas (painel, orçamentos/faturas, folha de presença) são exclusivos do plano Pro. Faça upgrade na aba Assinatura para ativá-los.",
+      "proOnlyText": "O logo personalizado (painel, orçamentos/faturas, folha de presença) é exclusivo do plano Pro. Faça upgrade na aba Assinatura para ativá-lo.",
       "toasts": {
         "updated": "Identidade visual atualizada",
         "uploadError": "Erro ao enviar o logo"

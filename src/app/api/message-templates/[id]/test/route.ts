@@ -15,7 +15,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const template = await prisma.messageTemplate.findFirst({
     where:   { id, associationId },
-    include: { association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } } },
+    include: { association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } } },
   })
   if (!template) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 

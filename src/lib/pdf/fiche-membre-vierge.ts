@@ -5,8 +5,7 @@ export interface FicheMembreViergeInput {
     name: string
     // Resolved by resolveDocumentBranding() — already null when the association's plan
     // doesn't include custom branding, see src/lib/pdf/document-pdf.ts for the same pattern.
-    logoUrl:      string | null
-    primaryColor: string | null
+    logoUrl: string | null
   }
 }
 
@@ -18,18 +17,11 @@ const GRAY      = rgb(0.45, 0.45, 0.45)
 const LINE_GRAY = rgb(0.7, 0.7, 0.7)
 const BLACK     = rgb(0.1, 0.1, 0.1)
 
-function hexToRgb(hex: string): ReturnType<typeof rgb> | null {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return null
-  const n = parseInt(m[1], 16)
-  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
-}
-
 export async function buildFicheMembreViergePdf(input: FicheMembreViergeInput): Promise<Buffer> {
   const doc  = await PDFDocument.create()
   const font = await doc.embedFont(StandardFonts.Helvetica)
   const bold = await doc.embedFont(StandardFonts.HelveticaBold)
-  const ACCENT = (input.association.primaryColor && hexToRgb(input.association.primaryColor)) || GRAY
+  const ACCENT = GRAY
 
   let logoImage: Awaited<ReturnType<PDFDocument["embedPng"]>> | null = null
   if (input.association.logoUrl) {

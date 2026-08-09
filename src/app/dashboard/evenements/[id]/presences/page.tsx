@@ -26,7 +26,7 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
-import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type PresenceRow = {
   membreId:        string | null
@@ -127,14 +127,13 @@ export default function PresencesPage() {
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
 
-  // Logo/couleur pour le PDF de présences (handleExportPdf) — même règle Pro-only que
+  // Logo pour le PDF de présences (handleExportPdf) — même règle Pro-only que
   // les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
   const { data: assoc } = useQuery<{
     name: string
     plan: "ESSENTIAL" | "PRO"
     customBrandingEnabled: boolean | null
     logoUrl: string | null
-    primaryColor: string | null
   }>({
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
@@ -311,8 +310,7 @@ export default function PresencesPage() {
     // Branding gated the same way as devis/facture PDFs — Pro by default, see
     // canUseCustomBranding() in src/lib/plan-limits.ts.
     const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
-    const headerRgb: [number, number, number] =
-      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const headerRgb: [number, number, number] = [0, 0, 0]
     const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
 
     // ── Header bar ─────────────────────────────────────────────────────────

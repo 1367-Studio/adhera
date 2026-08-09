@@ -13,13 +13,11 @@ export type SessionUser = {
 }
 
 // Already resolved against the Pro gate by the layout (see resolveDocumentBranding() in
-// src/lib/plan-limits.ts) — logoUrl/primaryColor are null whenever the association isn't
-// entitled, so components reading this never need to know about plans.
+// src/lib/plan-limits.ts) — logoUrl is null whenever the association isn't entitled, so
+// components reading this never need to know about plans.
 export type Branding = {
-  name:           string
-  logoUrl:        string | null
-  primaryColor:   string | null
-  secondaryColor: string | null
+  name:    string
+  logoUrl: string | null
 }
 
 const UserContext     = createContext<SessionUser | null>(null)

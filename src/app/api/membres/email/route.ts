@@ -29,7 +29,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 

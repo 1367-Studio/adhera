@@ -260,7 +260,8 @@ function CotisationPortalPageInner() {
               {thisYear.declarationNumber && (
                 <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
+                className="hover:bg-muted/10"
                 onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${thisYear.id}/declaration`)}
                 >
                   <DownloadSimpleIcon className="size-3.5" />
@@ -297,7 +298,7 @@ function CotisationPortalPageInner() {
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("history")}</h2>
 
         {history.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center border rounded-lg">
+          <p className="text-sm text-muted-foreground py-4 text-center">
             {t("noHistory")}
           </p>
         ) : (

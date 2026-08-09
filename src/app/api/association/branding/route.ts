@@ -8,8 +8,6 @@ import { deleteFromR2 } from "@/lib/r2"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
-const HEX_COLOR = /^#[0-9a-fA-F]{6}$/
-
 // logoUrl is only ever supposed to come from our own /api/upload → R2 flow (see
 // ImageUpload), but this is a raw JSON PATCH endpoint — without this check, an admin
 // could point it at an arbitrary host and turn buildDocumentPdf()'s server-side fetch()
@@ -29,8 +27,6 @@ const schema = z.object({
   logoUrl: z.string().trim().url().max(500)
     .refine(isAllowedLogoUrl, "URL de logo non autorisée")
     .optional().or(z.literal("")),
-  primaryColor:   z.string().regex(HEX_COLOR, "Couleur invalide (format #RRGGBB)").optional(),
-  secondaryColor: z.string().regex(HEX_COLOR, "Couleur invalide (format #RRGGBB)").optional().or(z.literal("")),
 })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
@@ -47,15 +43,13 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!canUseCustomBranding(association))
     return NextResponse.json({ error: "Personnalisation de marque réservée à la formule Pro" }, { status: 403 })
 
-  const { logoUrl, primaryColor, secondaryColor } = parsed.data
+  const { logoUrl } = parsed.data
   const previousLogoUrl = association.logoUrl
 
   await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
-      ...(logoUrl        !== undefined ? { logoUrl:        logoUrl || null }        : {}),
-      ...(primaryColor   !== undefined ? { primaryColor }                           : {}),
-      ...(secondaryColor !== undefined ? { secondaryColor: secondaryColor || null } : {}),
+      ...(logoUrl !== undefined ? { logoUrl: logoUrl || null } : {}),
     },
   })
 

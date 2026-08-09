@@ -53,7 +53,7 @@ export async function POST(
     where:  { slug },
     select: {
       id: true, name: true, slug: true, sitePublished: true, modules: true, stripeConnectId: true,
-      plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true,
+      plan: true, customBrandingEnabled: true, logoUrl: true,
     },
   })
   if (!assoc || !assoc.sitePublished) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })

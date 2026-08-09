@@ -69,7 +69,7 @@ export default function BoutiquePortalPage() {
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border bg-muted animate-pulse aspect-[3/4]" />
+            <div key={i} className="rounded-xl border bg-muted" />
           ))}
         </div>
       ) : produits.length === 0 ? (
@@ -89,7 +89,7 @@ export default function BoutiquePortalPage() {
                 key={p.id}
                 type="button"
                 onClick={() => router.push(`/portal/${slug}/boutique/${p.id}`)}
-                className="group rounded-xl border bg-card overflow-hidden text-left hover:shadow-md transition-shadow"
+                className="group rounded-xl border bg-card overflow-hidden text-left"
               >
                 <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
                   {p.imageUrl

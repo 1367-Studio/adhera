@@ -46,14 +46,14 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
 
   return (
     <article
-      className="group rounded-xl border bg-card overflow-hidden flex flex-col transition-all hover:-translate-y-0.5 hover:shadow-md animate-in fade-in-0 slide-in-from-bottom-3 duration-300"
+      className="group rounded-xl border bg-card overflow-hidden flex flex-col transition-all animate-in fade-in-0 slide-in-from-bottom-3 duration-300"
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "both" }}
     >
       <Link href={`/portal/${slug}/actualites/${post.id}`} className="block relative aspect-video w-full overflow-hidden">
         {post.imageUrl ? (
           <>
             <img src={post.imageUrl} aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60" />
-            <img src={post.imageUrl} alt={post.title} className="relative z-10 w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]" />
+            <img src={post.imageUrl} alt={post.title} className="relative z-10 w-full h-full object-contain transition-transform duration-500" />
           </>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-muted/40">
@@ -223,7 +223,7 @@ export default function ActualitesPortalPage() {
                 type="button"
                 onClick={() => setPage(p => p + 1)}
                 disabled={isFetching}
-                className="flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-50"
               >
                 {isFetching ? <CircleNotchIcon className="size-4 animate-spin" /> : null}
                 Charger plus

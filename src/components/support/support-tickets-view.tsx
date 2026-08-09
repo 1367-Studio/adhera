@@ -72,9 +72,9 @@ export function SupportTicketsView() {
       ) : tickets.length === 0 ? (
         <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 gap-1 flex flex-col">
           {tickets.map(ticket => (
-            <Link key={ticket.id} href={`/dashboard/suporte/${ticket.id}`}>
+            <Link key={ticket.id} className="block mb-0" href={`/dashboard/suporte/${ticket.id}`}>
               <Card className="flex-row items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

@@ -22,7 +22,7 @@ import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
 
-import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type MeetingParticipant = {
   id:     string
@@ -107,14 +107,13 @@ export default function ReunionDetailPage() {
     staleTime: 0,
   })
 
-  // Logo/couleur pour le PDF de feuille de présence (handleExportPdf) — même règle
+  // Logo pour le PDF de feuille de présence (handleExportPdf) — même règle
   // Pro-only que les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
   const { data: assoc } = useQuery<{
     name: string
     plan: "ESSENTIAL" | "PRO"
     customBrandingEnabled: boolean | null
     logoUrl: string | null
-    primaryColor: string | null
   }>({
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
@@ -242,15 +241,10 @@ export default function ReunionDetailPage() {
     const today = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
 
     const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
-    const headerRgb: [number, number, number] =
-      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const headerRgb: [number, number, number] = [0, 0, 0]
     const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
 
-    // Custom brand colors are freely picked (plain <input type="color">), so a light/pale
-    // one would make the fixed white header text unreadable — pick dark text on light fills.
-    const [hr, hg, hb] = headerRgb
-    const headerLuminance = (hr * 299 + hg * 587 + hb * 114) / 1000
-    const headerTextRgb: [number, number, number] = headerLuminance > 150 ? BLACK : [255, 255, 255]
+    const headerTextRgb: [number, number, number] = [255, 255, 255]
 
     // ── Header bar ─────────────────────────────────────────────────────────
     const headerH = 30

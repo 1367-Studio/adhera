@@ -27,12 +27,12 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { cotisationId }) =>
 
   const assoc = await prisma.association.findUnique({
   where:  { id: ctx.associationId },
-  select: { id: true, name: true, address: true, city: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+  select: { id: true, name: true, address: true, city: true, plan: true, customBrandingEnabled: true, logoUrl: true },
 })
 if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
 const branding = resolveDocumentBranding(assoc)
-const { pdf, declarationNumber } = await generateDeclarationCotisation(cotisation, membre, { ...assoc, logoUrl: branding.logoUrl, primaryColor: branding.primaryColor })
+const { pdf, declarationNumber } = await generateDeclarationCotisation(cotisation, membre, { ...assoc, logoUrl: branding.logoUrl })
 
   return new NextResponse(new Uint8Array(pdf), {
     headers: {

@@ -74,7 +74,7 @@ function PostCard({
 
   return (
     <div className={cn(
-      "group rounded-xl border bg-card overflow-hidden flex flex-col transition-all hover:shadow-md",
+      "group rounded-xl border bg-card overflow-hidden flex flex-col",
       !post.publishedAt && "border-dashed border-muted-foreground/40",
     )}>
       {/* Cover image */}

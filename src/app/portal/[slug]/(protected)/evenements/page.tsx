@@ -179,7 +179,7 @@ function QuantityStepper({
           type="button"
           onClick={() => onChange(Math.max(1, value - 1))}
           disabled={value <= 1}
-          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground disabled:opacity-40 transition-colors"
         >
           <MinusIcon className="size-3" />
         </button>
@@ -188,7 +188,7 @@ function QuantityStepper({
           type="button"
           onClick={() => onChange(Math.min(max, value + 1))}
           disabled={value >= max}
-          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground hover:bg-muted disabled:opacity-40 transition-colors"
+          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground disabled:opacity-40 transition-colors"
         >
           <PlusIcon className="size-3" />
         </button>
@@ -547,7 +547,7 @@ function EventCard({
 
   return (
     <div className={cn(
-      "rounded-2xl border bg-card p-5 space-y-4 transition-all hover:-translate-y-0.5 hover:shadow-md",
+      "rounded-2xl border bg-card p-5 space-y-4 transition-all",
       isPast && "opacity-75 hover:opacity-100",
     )}>
       {/* Header */}
@@ -755,7 +755,7 @@ function EvenementsPortalPageInner() {
             {[0,1,2].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : upcoming.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center border rounded-xl">
+          <p className="text-sm text-muted-foreground py-4 text-center">
             Aucun événement à venir.
           </p>
         ) : (
@@ -773,7 +773,7 @@ function EvenementsPortalPageInner() {
             {upcomingHasMore && (
               <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
                 <CaretRightIcon className="size-3.5" />
-                D'autres événements à venir ne sont pas affichés. Contactez votre association pour plus d'informations.
+                D&apos;autres événements à venir ne sont pas affichés. Contactez votre association pour plus d&apos;informations.
               </p>
             )}
           </div>

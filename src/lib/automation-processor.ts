@@ -14,7 +14,7 @@ const BATCH_SIZE = 100
 
 export const automationRuleInclude = {
   template:    true,
-  association: { select: { id: true, name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+  association: { select: { id: true, name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
 } as const
 
 export type RuleWithRelations = Awaited<ReturnType<typeof prisma.automationRule.findMany<{

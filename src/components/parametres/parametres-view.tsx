@@ -37,9 +37,7 @@ type Association = {
   bic:     string | null
   plan:    "ESSENTIAL" | "PRO"
   customBrandingEnabled: boolean | null
-  logoUrl:        string | null
-  primaryColor:   string | null
-  secondaryColor: string | null
+  logoUrl: string | null
   cotisationDefaultAmount: string | number | null
 }
 
@@ -179,7 +177,7 @@ function ParametresViewInner() {
               <BrandingSettings
                 canEdit={canEdit}
                 canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
-                data={{ logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor, secondaryColor: assoc.secondaryColor }}
+                data={{ logoUrl: assoc.logoUrl }}
               />
             </div>
           )}

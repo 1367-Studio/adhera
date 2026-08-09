@@ -17,25 +17,15 @@ export function escapeHtml(str: string): string {
 // Resolved via resolveDocumentBranding() (src/lib/plan-limits.ts) at each call site —
 // already null when the association's plan doesn't include custom branding, so this
 // file doesn't need to know about plans.
-export type EmailBranding = { logoUrl: string | null; primaryColor: string | null } | null | undefined
+export type EmailBranding = { logoUrl: string | null } | null | undefined
 
-// White CTA text is unreadable on a light admin-picked color (pastel yellow, etc.) —
-// switch to dark text above this perceived-brightness threshold instead of assuming
-// every brand color is dark enough for white to work.
-function isLightColor(hex: string): boolean {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return false
-  const n = parseInt(m[1], 16)
-  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255
-  return (r * 299 + g * 587 + b * 114) / 1000 > 160
-}
+// The accent shows through the header's top bar and the button, not as a full-bleed
+// banner behind white text — restrained, and it keeps a transparent-background logo
+// visible against a plain white header.
+const ACCENT = "#000"
 
-// Accent color shows through the header's top bar and the button, not as a full-bleed
-// banner behind white text — same restraint as the devis/facture PDF (document-pdf.ts),
-// which avoids readability issues with arbitrary admin-picked colors and keeps a
-// transparent-background logo visible against a plain white header.
 function layout(associationName: string, content: string, branding?: EmailBranding): string {
-  const accent = branding?.primaryColor || "#000"
+  const accent = ACCENT
   const nameEsc = escapeHtml(associationName)
   const headerInner = branding?.logoUrl
     ? `<table cellpadding="0" cellspacing="0"><tr>
@@ -81,11 +71,10 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
 </html>`
 }
 
-function btn(label: string, url: string, accent = "#000"): string {
-  const textColor = isLightColor(accent) ? "#18181b" : "#fff"
+function btn(label: string, url: string): string {
   return `<table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-    <tr><td style="border-radius:6px;background:${accent};">
-      <a href="${url}" style="display:inline-block;padding:12px 28px;color:${textColor};font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
+    <tr><td style="border-radius:6px;background:${ACCENT};">
+      <a href="${url}" style="display:inline-block;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
     </td></tr>
   </table>`
 }
@@ -108,7 +97,7 @@ export function welcomeEmail(p: {
         ? "Vous pouvez accéder à votre espace membre pour consulter les événements, actualités et gérer votre adhésion."
         : "N'hésitez pas à contacter votre association pour toute question."}
     </p>
-    ${p.hasPortalAccess ? btn("Accéder à mon espace", p.portalUrl, p.branding?.primaryColor || undefined) : ""}
+    ${p.hasPortalAccess ? btn("Accéder à mon espace", p.portalUrl) : ""}
     ${p.hasPortalAccess
       ? `<p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec l'adresse <strong>${p.email}</strong>.</p>`
       : ""}`
@@ -153,7 +142,7 @@ export function invitationEmail(p: {
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
     ${cotisationNote}
-    ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl, p.branding?.primaryColor || undefined)}
+    ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl)}
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f4f4f5;border-radius:8px;padding:16px 20px;width:100%;">
       <tr>
         <td style="font-size:13px;color:#71717a;padding-bottom:6px;">Vos identifiants de connexion</td>
@@ -208,7 +197,7 @@ export function rsvpConfirmationEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir l'événement", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${btn("Voir l'événement", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler ma participation</a>.</p>` : ""}`
   return {
     to:      p.email,
@@ -244,7 +233,7 @@ export function sondageInvitationEmail(p: {
         <span style="font-size:14px;">${deadlineStr}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Répondre au sondage", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Répondre au sondage", p.portalUrl)}`
   return {
     to:      p.email,
     subject: `Sondage — ${p.sondageTitle}`,
@@ -354,7 +343,7 @@ export function eventReminderEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
-    ${btn("Voir les détails", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir les détails", p.portalUrl)}`
   return {
     to:      p.email,
     subject: `Rappel — ${p.eventTitle} (${whenLabel})`,
@@ -475,7 +464,7 @@ export function portalWelcomeEmail(p: {
       </td></tr>
     </table>
     ${cotisationNote}
-    ${btn("Accéder à mon espace membre", p.loginUrl, p.branding?.primaryColor || undefined)}
+    ${btn("Accéder à mon espace membre", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">
       Nous vous recommandons de modifier votre mot de passe après la première connexion.
     </p>`
@@ -548,7 +537,7 @@ export function ticketPurchaseEmail(p: {
       </td></tr>
     </table>
     <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
-    ${btn("Voir mes événements", p.portalUrl, p.branding?.primaryColor || undefined)}
+    ${btn("Voir mes événements", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler et être remboursé</a>.</p>` : ""}`
   return {
     to:      p.email,
@@ -613,7 +602,7 @@ export function meetingInviteEmail(p: {
         <span style="font-size:14px;">${whenStr}</span>
       </td></tr>
     </table>
-    ${btn("Rejoindre la réunion", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Rejoindre la réunion", p.portalUrl)}`
   return {
     to:      p.email,
     subject: `Invitation — ${p.meetingTitle}`,
@@ -716,7 +705,7 @@ export function boutiqueConfirmationEmail(p: {
       </tfoot>
     </table>
     <p style="margin:0 0 8px;font-size:13px;color:#71717a;">Payé le ${dateStr}. Conservez cet email comme confirmation.</p>
-    ${btn("Voir mes commandes", p.portalUrl, p.branding?.primaryColor || undefined)}`
+    ${btn("Voir mes commandes", p.portalUrl)}`
 
   return {
     to:      p.email,
