@@ -5,6 +5,23 @@ import { prisma } from "@/lib/prisma/client"
 const PAGE_SIZE = 50
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
+// This endpoint is only reachable by association-level managers (never SUPER_ADMIN — see
+// MANAGERS above). ASSOCIATION_UPDATED rows are written by the platform backoffice
+// (src/app/api/backoffice/associations/[id]/route.ts) and can carry `internalNotes` in
+// their diff, which is staff-only. Strip it here rather than at write time so the full
+// diff still exists in the DB for platform-side auditing. Gated on both entity and action
+// (not just entity="Association", which four other routes also write with unrelated
+// metadata shapes) to keep this scoped to the one writer that ever puts internalNotes in
+// `changes`.
+function redactInternalNotes(entity: string, action: string, metadata: unknown): unknown {
+  if (entity !== "Association" || action !== "ASSOCIATION_UPDATED") return metadata
+  if (metadata === null || typeof metadata !== "object" || Array.isArray(metadata)) return metadata
+  const { changes, ...rest } = metadata as Record<string, unknown>
+  if (!changes || typeof changes !== "object" || Array.isArray(changes)) return metadata
+  const { internalNotes: _internalNotes, ...otherChanges } = changes as Record<string, unknown>
+  return { ...rest, changes: otherChanges }
+}
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -81,6 +98,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const enriched = logs.map(l => ({
     ...l,
+    metadata:  redactInternalNotes(l.entity, l.action, l.metadata),
     actorName: l.actorId ? (actorMap[l.actorId] ?? null) : null,
   }))
 
