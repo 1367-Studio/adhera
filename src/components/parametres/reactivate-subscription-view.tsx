@@ -108,7 +108,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
         <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>
       )}
 
-      <Button type="submit" className="w-full h-11 text-sm font-medium" disabled={loading || !stripe}>
+      <Button type="submit" size="lg" className="w-full" disabled={loading || !stripe}>
         {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         {t("confirmButton")}
       </Button>
@@ -185,7 +185,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
         {loadingIntent && !error && (
           <div className="space-y-3">
             <Skeleton className="h-32 w-full rounded-xl" />
-            <Skeleton className="h-11 w-full rounded-md" />
+            <Skeleton className="h-10 w-full rounded-md" />
           </div>
         )}
 

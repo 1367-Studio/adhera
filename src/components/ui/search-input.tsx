@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { MagnifyingGlassIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -17,6 +18,7 @@ interface SearchInputProps extends Omit<React.ComponentProps<typeof Input>, "onC
 // (each with a different height/radius/width); this wraps the shared Input so search
 // fields stay aligned with FilterSelect and Button by construction.
 export function SearchInput({ value, onValueChange, onClear, containerClassName, className, ...props }: SearchInputProps) {
+  const t = useTranslations("common")
   return (
     <div className={cn("relative w-64", containerClassName)}>
       <MagnifyingGlassIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -30,7 +32,7 @@ export function SearchInput({ value, onValueChange, onClear, containerClassName,
       {value && (
         <button
           type="button"
-          aria-label="Effacer la recherche"
+          aria-label={t("clearSearch")}
           onClick={() => (onClear ? onClear() : onValueChange(""))}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
         >
