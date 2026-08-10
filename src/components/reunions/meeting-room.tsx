@@ -13,7 +13,7 @@ import {
   isTrackReference,
   useChat,
 } from "@livekit/components-react"
-import { Track } from "livekit-client"
+import { DisconnectReason, Track } from "livekit-client"
 import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
@@ -427,7 +427,20 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
     if (error) toast.error(error.message)
   }, [error])
 
-  const handleDisconnected = useCallback(() => {
+  const handleDisconnected = useCallback((reason?: DisconnectReason) => {
+    // Reasons this app itself triggers on purpose — someone clicked Leave/End
+    // (CLIENT_INITIATED), an admin ended the meeting, which deletes the LiveKit room
+    // server-side before the client's own disconnect() call even runs (ROOM_DELETED wins
+    // the race), or a participant was removed (PARTICIPANT_REMOVED, already surfaced
+    // gently via the "kicked out" state below). Anything else is a real connection
+    // failure (bad LiveKit URL/keys, WebSocket blocked, server unreachable...) that used
+    // to redirect silently, making a broken config indistinguishable from someone just
+    // leaving — surface only those instead of guessing from logs after the fact.
+    const expected = new Set([DisconnectReason.CLIENT_INITIATED, DisconnectReason.ROOM_DELETED, DisconnectReason.PARTICIPANT_REMOVED])
+    if (reason !== undefined && !expected.has(reason)) {
+      console.error("[LiveKit] Room disconnected unexpectedly:", DisconnectReason[reason] ?? reason)
+      toast.error(t("reunions.meetingRoom.toasts.unexpectedDisconnect"))
+    }
     // Reason unknown at this layer (could be the meeting truly ending elsewhere, or just a
     // network blip) — treat it as a potential status change so callers refresh rather than
     // trust possibly-stale cached data.
@@ -437,7 +450,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
       setKickedOut(true)
       setTimeout(() => onLeave({ ended: true }), 3000)
     }
-  }, [isAdmin, onLeave])
+  }, [isAdmin, onLeave, t])
 
   if (isLoading) {
     return (

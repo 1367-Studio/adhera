@@ -1683,7 +1683,8 @@
         "stopRecordingError": "No se pudo detener la grabación.",
         "startRecordingError": "No se pudo iniciar la grabación.",
         "recordingError": "Error al gestionar la grabación.",
-        "endMeetingError": "No se pudo finalizar la reunión. Inténtelo de nuevo."
+        "endMeetingError": "No se pudo finalizar la reunión. Inténtelo de nuevo.",
+        "unexpectedDisconnect": "La conexión a la reunión se interrumpió de forma inesperada."
       },
       "recording": "Grabación",
       "record": "Grabar",

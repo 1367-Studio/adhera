@@ -6,6 +6,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueNewOrderAdminEmail } from "@/lib/email"
 import { pusherServer } from "@/lib/pusher-server"
+import { APP_URL } from "@/lib/env"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -131,7 +132,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
       })
       await pusherServer.trigger(`private-association-${ctx.associationId}`, "new-notification", {}).catch(() => {})
 
-      const dashboardUrl = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/boutique`
+      const dashboardUrl = `${APP_URL}/dashboard/boutique`
       for (const admin of admins) {
         if (!admin.email) continue
         // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare

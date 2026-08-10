@@ -9,6 +9,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { APP_URL } from "@/lib/env"
 
 type Params = { id: string }
 
@@ -139,7 +140,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true },
     })
     if (assoc) {
-      const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
+      const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
       const branding   = resolveDocumentBranding(assoc)
       void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",

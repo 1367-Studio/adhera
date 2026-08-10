@@ -9,6 +9,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { currentCotisationYear, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 import { nextAmountDue } from "@/lib/cotisation-status"
 import type { TriggerType, MessageChannel } from "@prisma/client"
+import { APP_URL } from "@/lib/env"
 
 const BATCH_SIZE = 100
 
@@ -518,7 +519,7 @@ async function processEventReminder(
 
   if (events.length === 0) return 0
 
-  const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal/${rule.association.slug}/evenements`
+  const portalUrl = `${APP_URL}/portal/${rule.association.slug}/evenements`
   let sent = 0
 
   const eventIds = events.map(e => e.id)
