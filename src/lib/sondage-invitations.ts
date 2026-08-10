@@ -26,7 +26,7 @@ export async function sendSondageInvitations(params: {
 
   const [sondage, association, allTargets] = await Promise.all([
     prisma.sondage.findUnique({ where: { id: sondageId }, select: { title: true, deadline: true } }),
-    prisma.association.findUnique({ where: { id: associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } }),
+    prisma.association.findUnique({ where: { id: associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } }),
     prisma.membre.findMany({
       where:  { id: { in: membreIds } },
       select: { id: true, userId: true, firstName: true, email: true },

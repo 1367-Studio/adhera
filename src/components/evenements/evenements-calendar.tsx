@@ -91,8 +91,8 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
           {/* key forces re-mount → fade-in on every month change */}
           <h2
             key={`${year}-${month}`}
-            className="text-base font-semibold w-40 text-center capitalize animate-in fade-in duration-300"
-            style={{ animationFillMode: "both" }}
+            className="text-base font-semibold w-40 text-center capitalize"
+
           >
             {format(current, "MMMM yyyy", { locale: fr })}
           </h2>
@@ -110,7 +110,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
         </TooltipProvider>
       </div>
 
-      <div className="rounded-xl border overflow-hidden">
+      <div className="rounded-lg border overflow-hidden">
         {/* Day headers — static, no animation */}
         <div className="grid grid-cols-7 border-b bg-muted/30">
           {dayHeaders.map(d => (
@@ -120,14 +120,14 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
           ))}
         </div>
 
-        {/* Grid — key triggers remount + slide animation on month change */}
+        {/* Grid — key remounts the grid on month change */}
         <div
           key={`grid-${year}-${month}`}
           className={cn(
-            "grid grid-cols-7 animate-in fade-in-0 duration-300",
+            "grid grid-cols-7",
             direction === "right" ? "slide-in-from-right-4" : "slide-in-from-left-4",
           )}
-          style={{ animationFillMode: "both" }}
+
         >
           {days.map((day, i) => {
             const dayEvents  = eventsForDay(day)
@@ -173,23 +173,23 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                     <div className="h-4 rounded bg-muted animate-pulse" />
                   ) : (
                     <>
-                      {visible.map((ev, idx) => (
+                      {visible.map((ev) => (
                         <button
                           key={ev.id}
                           onClick={(e) => { e.stopPropagation(); setSelected(day) }}
                           className={cn(
-                            "w-full text-left truncate rounded px-1.5 py-0.5 text-[11px] font-medium leading-snug",
-                            "animate-in fade-in-0 slide-in-from-bottom-1 duration-200 hover:opacity-80 transition-opacity",
+                            "w-full text-left truncate rounded px-1.5 py-0.5 text-xs font-medium leading-snug",
+                            "transition-colors",
                             eventColor(ev.id),
                           )}
-                          style={{ animationDelay: `${idx * 40}ms`, animationFillMode: "both" }}
+
                           title={ev.title}
                         >
                           {format(new Date(ev.date), "HH:mm")} {ev.title}
                         </button>
                       ))}
                       {overflow > 0 && (
-                        <p className="px-1 text-[11px] text-muted-foreground font-medium animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
+                        <p className="px-1 text-xs text-muted-foreground font-medium">
                           {t("evenements.calendar.othersCount", { count: overflow })}
                         </p>
                       )}
@@ -206,8 +206,8 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
       {selected && (
         <div
           key={selected.toISOString()}
-          className="rounded-xl border bg-card p-4 space-y-3 animate-in fade-in-0 slide-in-from-bottom-3 duration-250"
-          style={{ animationFillMode: "both" }}
+          className="rounded-lg border bg-card p-4 space-y-3"
+
         >
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold capitalize">
@@ -222,11 +222,11 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
             <p className="text-sm text-muted-foreground">{t("evenements.calendar.noEventThisDay")}</p>
           ) : (
             <div className="space-y-2">
-              {selectedEvents.map((ev, idx) => (
+              {selectedEvents.map((ev) => (
                 <div
                   key={ev.id}
-                  className="rounded-lg border p-3 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
-                  style={{ animationDelay: `${idx * 50}ms`, animationFillMode: "both" }}
+                  className="rounded-lg border p-3"
+
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">

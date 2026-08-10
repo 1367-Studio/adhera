@@ -221,10 +221,7 @@ export function TableauDeBord({ initialLayout }: Props) {
 
   return (
     <div className="space-y-6 py-4">
-      <div
-        className="flex items-start justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
-        style={{ animationFillMode: "both" }}
-      >
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t("dashboard.pageTitle")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">

@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { TrendUpIcon, TrendDownIcon, BankIcon, ScalesIcon, WarningCircleIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
@@ -55,48 +54,36 @@ async function fetchStats(year: number): Promise<Stats> {
   }
 }
 
-function StatCard({ title, value, icon: Icon, colorClass, prefix = "" }: {
-  title:      string
-  value:      number
-  icon:       React.ElementType
-  colorClass: string
-  prefix?:    string
+// Key figures as plain typography (CLAUDE.md §8): label over value, no card per statistic,
+// no icon tiles, no per-metric color families — only negative values get the destructive color.
+function StatItem({ title, value, prefix = "" }: {
+  title:   string
+  value:   number
+  prefix?: string
 }) {
   const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   return (
-    <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{title}</span>
-        <div className={cn("flex size-7 items-center justify-center rounded-lg", colorClass)}>
-          <Icon className="size-3.5" />
-        </div>
-      </div>
-      <span className={cn("text-xl font-bold tabular-nums", value >= 0 ? "" : "text-destructive")}>
+    <div>
+      <dt className="text-xs text-muted-foreground">{title}</dt>
+      <dd className={cn("mt-1 text-xl font-semibold tabular-nums", value < 0 && "text-destructive")}>
         {prefix}{fmt(value)}
-      </span>
+      </dd>
     </div>
   )
 }
 
-function CountCard({ title, value, icon: Icon, colorClass, label }: {
-  title:      string
-  value:      number
-  icon:       React.ElementType
-  colorClass: string
-  label:      string
+function CountItem({ title, value, label }: {
+  title: string
+  value: number
+  label: string
 }) {
   return (
-    <div className="rounded-xl border bg-card p-4 flex flex-col gap-2">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{title}</span>
-        <div className={cn("flex size-7 items-center justify-center rounded-lg", colorClass)}>
-          <Icon className="size-3.5" />
-        </div>
-      </div>
-      <div className="flex items-baseline gap-1.5">
-        <span className="text-xl font-bold tabular-nums">{value}</span>
+    <div>
+      <dt className="text-xs text-muted-foreground">{title}</dt>
+      <dd className="mt-1 flex items-baseline gap-1.5">
+        <span className="text-xl font-semibold tabular-nums">{value}</span>
         <span className="text-xs text-muted-foreground">{label}</span>
-      </div>
+      </dd>
     </div>
   )
 }
@@ -129,32 +116,23 @@ export function FinanceDashboard() {
       />
 
       {isLoading ? (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-xl border bg-card p-4 h-24 animate-pulse bg-muted/30" />
+        <div className="grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+              <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+            </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-          <StatCard title={t("incomeCard", { year })} value={s.totalIncomes}  icon={TrendUpIcon}   colorClass="bg-green-50 dark:bg-green-950/30" prefix="+" />
-          <StatCard title={t("expensesCard", { year })} value={-s.totalExpenses} icon={TrendDownIcon} colorClass="bg-red-50 dark:bg-red-950/30" />
-          <StatCard
-            title={t("resultCard", { year })}
-            value={s.result}
-            icon={ScalesIcon}
-            colorClass={s.result >= 0 ? "bg-green-50 dark:bg-green-950/30" : "bg-red-50 dark:bg-red-950/30"}
-            prefix={s.result >= 0 ? "+" : ""}
-          />
-          <StatCard
-            title={t("cumulativeResultCard")}
-            value={s.cumulativeResult}
-            icon={BankIcon}
-            colorClass="bg-blue-50 dark:bg-blue-950/30"
-            prefix={s.cumulativeResult >= 0 ? "+" : ""}
-          />
-          <CountCard title={t("unmatchedTitle")} value={s.unmatched}       icon={WarningCircleIcon} colorClass="bg-orange-50 dark:bg-orange-950/30" label={t("unmatchedLabel")} />
-          <CountCard title={t("pendingReceiptsTitle")}    value={s.pendingReceipts} icon={ReceiptIcon}     colorClass="bg-yellow-50 dark:bg-yellow-950/30" label={t("pendingReceiptsLabel")} />
-        </div>
+        <dl className="grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-3">
+          <StatItem title={t("incomeCard", { year })} value={s.totalIncomes} prefix="+" />
+          <StatItem title={t("expensesCard", { year })} value={-s.totalExpenses} />
+          <StatItem title={t("resultCard", { year })} value={s.result} prefix={s.result >= 0 ? "+" : ""} />
+          <StatItem title={t("cumulativeResultCard")} value={s.cumulativeResult} prefix={s.cumulativeResult >= 0 ? "+" : ""} />
+          <CountItem title={t("unmatchedTitle")} value={s.unmatched} label={t("unmatchedLabel")} />
+          <CountItem title={t("pendingReceiptsTitle")} value={s.pendingReceipts} label={t("pendingReceiptsLabel")} />
+        </dl>
       )}
     </div>
   )

@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
-import { PlusIcon, PencilSimpleIcon, ArchiveIcon, MagnifyingGlassIcon, XIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, ArchiveIcon, EyeIcon } from "@phosphor-icons/react/dist/ssr";
 import { useFournisseursPaginated, useFournisseur, useCreateFournisseur, useUpdateFournisseur, useDeleteFournisseur } from "@/hooks/use-fournisseurs"
 import type { FournisseurInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -17,7 +16,8 @@ import { FournisseurForm } from "@/components/fournisseurs/fournisseur-form"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { SearchInput } from "@/components/ui/search-input"
 
 type Fournisseur = {
   id:           string
@@ -39,35 +39,6 @@ function getStatusBadge(t: Translator): Record<Fournisseur["status"], { label: s
     INACTIF: { label: t("fournisseurs.form.status.inactif"), variant: "secondary" },
     ARCHIVE: { label: t("fournisseurs.view.status.archive"), variant: "outline"   },
   }
-}
-
-function FilterSelect({
-  value,
-  onChange,
-  options,
-  placeholder,
-}: {
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; label: string }[]
-  placeholder: string
-}) {
-  const selected = options.find(o => o.value === value)
-  return (
-    <Select value={value || "__all__"} onValueChange={v => onChange(!v || v === "__all__" ? "" : v)}>
-      <SelectTrigger className="w-40">
-        <span title={selected?.label ?? placeholder} className={cn("min-w-0 flex-1 truncate text-left", selected ? "text-sm" : "text-sm text-muted-foreground")}>
-          {selected?.label ?? placeholder}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="__all__">{placeholder}</SelectItem>
-        {options.map(o => (
-          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
 }
 
 const PAGE_SIZE = 20
@@ -231,39 +202,28 @@ export function FournisseursView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <div className="relative w-72">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-          <input
-            type="text"
-            placeholder={t("fournisseurs.view.searchPlaceholder")}
-            value={searchInput}
-            onChange={e => handleSearch(e.target.value)}
-            className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-          {searchInput && (
-            <button
-              type="button"
-              onClick={() => {
-                if (debounceRef.current) clearTimeout(debounceRef.current)
-                setSearchInput("")
-                setSearch("")
-                setPage(1)
-              }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <XIcon className="size-3.5" />
-            </button>
-          )}
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={handleSearch}
+          onClear={() => {
+            if (debounceRef.current) clearTimeout(debounceRef.current)
+            setSearchInput("")
+            setSearch("")
+            setPage(1)
+          }}
+          placeholder={t("fournisseurs.view.searchPlaceholder")}
+          containerClassName="w-72"
+        />
 
         <FilterSelect
           value={statusFilter}
-          onChange={v => { setStatusFilter(v); setPage(1) }}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
           options={[
             { value: "ACTIF",   label: t("fournisseurs.view.statusFilter.actifs")   },
             { value: "INACTIF", label: t("fournisseurs.view.statusFilter.inactifs") },
           ]}
           placeholder={t("fournisseurs.view.allStatuses")}
+          width="w-40"
         />
       </div>
 

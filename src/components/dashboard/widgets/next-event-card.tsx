@@ -14,7 +14,7 @@ interface Props {
 export function NextEventCard({ prochainEvenement, isLoading }: Props) {
   const t = useTranslations("dashboard.nextEvent")
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-3">
+    <div className="rounded-lg border bg-card p-5 space-y-3">
       <div className="flex items-center gap-2">
         <CalendarBlankIcon className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{t("title")}</span>

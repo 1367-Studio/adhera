@@ -71,7 +71,7 @@ function RequestModal({
       onClick={onClose}
     >
       <div
-        className="bg-background rounded-2xl border shadow-xl w-full max-w-md space-y-5 p-5 animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-250"
+        className="bg-background rounded-lg border shadow-xl w-full max-w-md space-y-5 p-5 animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-0 duration-250"
         style={{ animationFillMode: "both" }}
         onClick={e => e.stopPropagation()}
       >
@@ -115,7 +115,7 @@ function RequestModal({
               min={minDate}
               value={expectedReturnAt}
               onChange={e => setExpectedReturnAt(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
+              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
 
@@ -129,7 +129,7 @@ function RequestModal({
               placeholder={t("requestModal.notePlaceholder")}
               value={notes}
               onChange={e => setNotes(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none outline-none focus:ring-1 focus:ring-ring"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none outline-none focus:ring-1 focus:ring-ring"
             />
           </div>
         </div>
@@ -162,13 +162,13 @@ function LoanStatusBadge({ status }: { status: "DEMANDE" | "CONFIRME" }) {
   const t = useTranslations("materiel.portalPage.loanStatus")
   if (status === "CONFIRME") {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+      <span className="inline-flex items-center gap-1 h-5 text-xs font-medium px-2 rounded-md bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
         <CheckCircleIcon className="size-3" /> {t("confirmed")}
       </span>
     )
   }
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+    <span className="inline-flex items-center gap-1 h-5 text-xs font-medium px-2 rounded-md bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
       <ClockIcon className="size-3" /> {t("pending")}
     </span>
   )
@@ -266,7 +266,7 @@ export default function MaterielPage() {
       <div className="space-y-6 animate-pulse">
         <div className="h-7 w-36 rounded bg-muted" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {[0,1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-muted" />)}
+          {[0,1,2,3].map(i => <div key={i} className="h-24 rounded-lg bg-muted" />)}
         </div>
       </div>
     )
@@ -286,14 +286,14 @@ export default function MaterielPage() {
             <h2 className="text-sm font-semibold text-destructive/80">{t("refusedSection.heading")}</h2>
             <div className="space-y-2">
               {myRefusedLoans.map(loan => (
-                <div key={loan.id} className="rounded-xl border border-destructive/20 bg-destructive/5 px-4 py-3 flex items-center justify-between gap-3">
+                <div key={loan.id} className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{loan.material.name}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {t("refusedSection.requestedOn", { date: format(new Date(loan.borrowedAt), "d MMM yyyy", { locale: fr }) })}
                     </p>
                   </div>
-                  <span className="shrink-0 inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full bg-destructive/10 dark:bg-destructive/25 text-destructive">
+                  <span className="shrink-0 inline-flex items-center gap-1 h-5 text-xs font-medium px-2 rounded-md bg-destructive/10 dark:bg-destructive/25 text-destructive">
                     <XCircleIcon className="size-3" /> {t("refusedSection.refusedBadge")}
                   </span>
                 </div>
@@ -309,7 +309,7 @@ export default function MaterielPage() {
             <div className="space-y-2">
               {myActiveLoans.map(loan => (
                 <div key={loan.id} className={cn(
-                  "rounded-xl border bg-card px-4 py-3 flex items-start justify-between gap-3",
+                  "rounded-lg border bg-card px-4 py-3 flex items-start justify-between gap-3",
                   isOverdue(loan) && "border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/20",
                 )}>
                   <div className="min-w-0">
@@ -396,7 +396,7 @@ export default function MaterielPage() {
                   <div
                     key={item.id}
                     className={cn(
-                      "rounded-xl border bg-card p-4 space-y-2.5",
+                      "rounded-lg border bg-card p-4 space-y-2.5",
                       (noStock || unavailable) && "opacity-60",
                     )}
                   >
@@ -406,7 +406,7 @@ export default function MaterielPage() {
                         {item.category && <p className="text-xs text-muted-foreground truncate">{item.category}</p>}
                       </div>
                       <span className={cn(
-                        "shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full",
+                        "shrink-0 inline-flex h-5 items-center rounded-md px-2 text-xs font-medium",
                         item.availableQty > 0
                           ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                           : "bg-muted text-muted-foreground",
@@ -498,7 +498,7 @@ export default function MaterielPage() {
           onClick={() => setCancelingId(null)}
         >
           <div
-            className="bg-background rounded-2xl border shadow-xl w-full max-w-sm p-6 space-y-4"
+            className="bg-background rounded-lg border shadow-xl w-full max-w-sm p-6 space-y-4"
             onClick={e => e.stopPropagation()}
           >
             <div>

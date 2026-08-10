@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { FormField } from "@/components/ui/form-field"
 import { TextareaField } from "@/components/ui/textarea-field"
+import { FaqSection } from "@/components/support/faq-section"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
 import { SUPPORT_TICKET_SUBJECT_MAX_LENGTH, SUPPORT_TICKET_BODY_MAX_LENGTH } from "@/lib/support-tickets-limits"
@@ -53,7 +54,8 @@ export function SupportTicketsView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="py-4">
+      <FaqSection />
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
@@ -67,14 +69,14 @@ export function SupportTicketsView() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[0, 1, 2].map(i => <div key={i} className="h-16 animate-pulse rounded-xl border bg-card" />)}
+          {[0, 1, 2].map(i => <div key={i} className="h-16 animate-pulse rounded-lg border bg-card" />)}
         </div>
       ) : tickets.length === 0 ? (
         <p className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 gap-1 flex flex-col">
           {tickets.map(ticket => (
-            <Link key={ticket.id} href={`/dashboard/suporte/${ticket.id}`}>
+            <Link key={ticket.id} className="block mb-0" href={`/dashboard/suporte/${ticket.id}`}>
               <Card className="flex-row items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted/40">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -85,7 +87,7 @@ export function SupportTicketsView() {
                     {formatDistanceToNow(new Date(ticket.lastMessageAt), { addSuffix: true, locale: dateFnsLocale })}
                   </p>
                 </div>
-                <Badge variant={ticket.status === "OUVERT" ? "default" : "secondary"}>
+                <Badge variant={ticket.status === "OUVERT" ? "default" : "outline"}>
                   {ticket.status === "OUVERT" ? t("status.open") : t("status.closed")}
                 </Badge>
               </Card>

@@ -97,7 +97,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
               ? "Ex : convocation à l'AG du 15 janvier…"
               : "Instruction optionnelle (ex : rend plus formel)…"
           }
-          className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+          className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
         />
         <Button
           size="sm"

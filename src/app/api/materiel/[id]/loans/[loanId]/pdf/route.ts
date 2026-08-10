@@ -17,7 +17,7 @@ export const GET = withAdminAuth<{ id: string; loanId: string }>(async (_req, ct
 
   const association = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { name: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 

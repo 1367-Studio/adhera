@@ -75,10 +75,10 @@ const STATUS_PRODUIT_VARIANT: Record<string, "secondary" | "default" | "outline"
 function getCommandeStatusLabel(t: Translator) {
   return { PENDING: t("commandeStatus.pending"), PAID: t("commandeStatus.paid"), CANCELLED: t("commandeStatus.cancelled") }
 }
-const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "default" | "outline" | "destructive"> = {
+const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "success" | "outline"> = {
   PENDING:   "secondary",
-  PAID:      "default",
-  CANCELLED: "destructive",
+  PAID:      "success",
+  CANCELLED: "outline",
 }
 
 type Tab = "produits" | "commandes"
@@ -349,7 +349,7 @@ function BoutiquePageInner() {
       header: t("view.commandeColumns.status"),
       className: "w-32",
       cell: (c) => (
-        <Badge variant={STATUS_COMMANDE_VARIANT[c.status] as "secondary" | "default" | "outline" | "destructive"}>
+        <Badge variant={STATUS_COMMANDE_VARIANT[c.status]}>
           {STATUS_COMMANDE_LABEL[c.status]}
         </Badge>
       ),
@@ -392,7 +392,7 @@ function BoutiquePageInner() {
         title={t("view.title")}
         description={t("view.description")}
         action={tab === "produits" ? (
-          <Button onClick={() => router.push("/dashboard/boutique/nouveau")}>
+          <Button size="sm" onClick={() => router.push("/dashboard/boutique/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("view.newProduct")}
           </Button>
@@ -441,7 +441,7 @@ function BoutiquePageInner() {
                 type="button"
                 onClick={() => setStatusFilter(s)}
                 className={cn(
-                  "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                  "rounded-md border px-3 h-8 inline-flex items-center text-xs font-medium transition-colors",
                   statusFilter === s
                     ? "bg-foreground text-background border-foreground"
                     : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
@@ -519,7 +519,7 @@ function BoutiquePageInner() {
                             type="button"
                             onClick={() => adjustQty(item.id, -1)}
                             disabled={item.qty <= 0}
-                            className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
+                            className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
                           >
                             −
                           </button>
@@ -528,7 +528,7 @@ function BoutiquePageInner() {
                             type="button"
                             onClick={() => adjustQty(item.id, +1)}
                             disabled={item.qty >= item.originalQty}
-                            className="size-7 rounded-full border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
+                            className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
                           >
                             +
                           </button>

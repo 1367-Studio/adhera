@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 
   const association = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true, modules: true, cotisationDefaultAmount: true },
+    select: { id: true, name: true, plan: true, customBrandingEnabled: true, logoUrl: true, modules: true, cotisationDefaultAmount: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 

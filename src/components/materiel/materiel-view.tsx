@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { PlusIcon, MagnifyingGlassIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
@@ -10,17 +10,19 @@ import { MaterialDetailSheet } from "@/components/materiel/material-detail-sheet
 import { MaterielStatsCharts } from "@/components/materiel/materiel-stats-charts"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
 
 type Translator = ReturnType<typeof useTranslations>
 
-function getStatusConfig(t: Translator): Record<MaterialStatus, { label: string; dot: string; pill: string }> {
+function getStatusConfig(t: Translator): Record<MaterialStatus, { label: string; dot: string; variant: "success" | "default" | "warning" | "secondary" | "destructive" }> {
   return {
-    DISPONIBLE:     { label: t("materiel.form.status.disponible"), dot: "bg-green-500", pill: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-    EN_USE:         { label: t("materiel.form.status.enUse"),      dot: "bg-blue-500",  pill: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-    EN_MAINTENANCE: { label: t("materiel.view.maintenancePill"),    dot: "bg-amber-400", pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
-    HORS_SERVICE:   { label: t("materiel.form.status.horsService"), dot: "bg-gray-400",  pill: "bg-muted text-muted-foreground" },
-    PERDU:          { label: t("materiel.form.status.perdu"),       dot: "bg-red-500",   pill: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
+    DISPONIBLE:     { label: t("materiel.form.status.disponible"), dot: "bg-green-500", variant: "success" },
+    EN_USE:         { label: t("materiel.form.status.enUse"),      dot: "bg-blue-500",  variant: "default" },
+    EN_MAINTENANCE: { label: t("materiel.view.maintenancePill"),    dot: "bg-amber-400", variant: "warning" },
+    HORS_SERVICE:   { label: t("materiel.form.status.horsService"), dot: "bg-gray-400",  variant: "secondary" },
+    PERDU:          { label: t("materiel.form.status.perdu"),       dot: "bg-red-500",   variant: "destructive" },
   }
 }
 
@@ -57,28 +59,30 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
         </p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
-        <button
-          type="button"
+        <Button
+          size="xs"
+          variant="outline"
           disabled={busy}
           onClick={async () => {
             try { await confirmLoan.mutateAsync(demande.id); toast.success(t("materiel.view.toasts.confirmed")) }
             catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
           }}
-          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 transition-colors disabled:opacity-40"
+          className="text-green-700 dark:text-green-400"
         >
           <CheckIcon className="size-3" /> {t("materiel.view.accept")}
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          size="xs"
+          variant="outline"
           disabled={busy}
           onClick={async () => {
             try { await refuseLoan.mutateAsync(demande.id); toast.success(t("materiel.view.toasts.refused")) }
             catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
           }}
-          className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors disabled:opacity-40"
+          className="text-destructive"
         >
           <XIcon className="size-3" /> {t("materiel.view.refuse")}
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -100,7 +104,7 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left rounded-xl border bg-card hover:bg-muted/30 transition-colors p-4 space-y-3"
+      className="w-full text-left rounded-lg border bg-card hover:bg-muted/30 transition-colors p-4 space-y-3"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-start gap-2.5 min-w-0">
@@ -116,9 +120,7 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
             {material.category && <p className="text-xs text-muted-foreground truncate">{material.category}</p>}
           </div>
         </div>
-        <span className={cn("shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full", cfg.pill)}>
-          {cfg.label}
-        </span>
+        <Badge variant={cfg.variant}>{cfg.label}</Badge>
       </div>
 
       <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
@@ -135,19 +137,19 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
         </div>
         <div className="flex items-center gap-2">
           {material.overdueCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+            <Badge variant="destructive">
               <WarningCircleIcon className="size-2.5" />
               {t("materiel.view.overdueCount", { count: material.overdueCount })}
-            </span>
+            </Badge>
           )}
           {material.pendingDemandesCount > 0 && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            <Badge variant="warning">
               <ClockIcon className="size-2.5" />
               {material.pendingDemandesCount}
-            </span>
+            </Badge>
           )}
           {material.reservedQty > 0 && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+            <span className="text-xs text-muted-foreground">
               {t("materiel.view.reservedCount", { count: material.reservedQty })}
             </span>
           )}
@@ -209,7 +211,7 @@ export function MaterielView() {
         title={t("materiel.view.title")}
         description={t("materiel.view.description")}
         action={
-          <Button onClick={() => setCreateOpen(true)}>
+          <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" /> {t("materiel.view.add")}
           </Button>
         }
@@ -217,18 +219,18 @@ export function MaterielView() {
 
       {/* Stats */}
       {!isLoading && materials.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
           {[
-            { label: t("materiel.view.statsLabels.articles"),    value: stats.total,       color: "text-foreground" },
-            { label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible,  color: "text-green-600"  },
-            { label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret,      color: "text-blue-600"   },
-            { label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve,     color: "text-indigo-600" },
-            { label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance, color: "text-amber-600"  },
+            { label: t("materiel.view.statsLabels.articles"),    value: stats.total       },
+            { label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible  },
+            { label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret      },
+            { label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve     },
+            { label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance },
           ].map(s => (
-            <div key={s.label} className="rounded-xl border bg-card px-4 py-3">
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-              <p className={cn("text-2xl font-bold", s.color)}>{s.value}</p>
-            </div>
+            <span key={s.label} className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+              <span className="font-medium tabular-nums">{s.value}</span>
+              <span className="text-muted-foreground">{s.label}</span>
+            </span>
           ))}
         </div>
       )}
@@ -240,7 +242,7 @@ export function MaterielView() {
         const allPending = materials.flatMap(m => (m.pendingDemandes ?? []).map(d => ({ demande: d, material: m })))
         if (allPending.length === 0) return null
         return (
-          <div className="rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 overflow-hidden">
+          <div className="rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50/50 dark:bg-amber-950/20 overflow-hidden">
             <div className="flex items-center gap-2 px-4 py-2.5 border-b border-amber-200 dark:border-amber-900">
               <ClockIcon className="size-3.5 text-amber-600" />
               <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
@@ -262,15 +264,12 @@ export function MaterielView() {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-          <input
-            value={searchInput}
-            onChange={e => setSearchInput(e.target.value)}
-            placeholder={t("materiel.view.searchPlaceholder")}
-            className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          />
-        </div>
+        <SearchInput
+          value={searchInput}
+          onValueChange={setSearchInput}
+          placeholder={t("materiel.view.searchPlaceholder")}
+          containerClassName="w-64"
+        />
         <div className="flex gap-1.5 flex-wrap">
           {filterOptions.map(f => (
             <button
@@ -278,7 +277,7 @@ export function MaterielView() {
               type="button"
               onClick={() => setStatusFilter(f.value)}
               className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
+                "rounded-md border px-3 h-8 inline-flex items-center text-xs font-medium transition-colors",
                 statusFilter === f.value
                   ? "bg-foreground text-background border-foreground"
                   : "border-transparent bg-muted/40 text-muted-foreground hover:bg-muted",
@@ -293,7 +292,7 @@ export function MaterielView() {
       {/* Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[0,1,2,3,4,5].map(i => <div key={i} className="h-28 rounded-xl bg-muted animate-pulse" />)}
+          {[0,1,2,3,4,5].map(i => <div key={i} className="h-28 rounded-lg bg-muted animate-pulse" />)}
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 py-20 text-center">

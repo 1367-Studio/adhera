@@ -322,7 +322,7 @@ function PaymentForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="rounded-xl border bg-card p-4 space-y-3">
+      <div className="rounded-lg border bg-card p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">{APP_NAME} · {t("trialBadge")}</span>
           <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
@@ -350,7 +350,7 @@ function PaymentForm({
         </div>
       </div>
 
-      <div className="rounded-xl border bg-card p-4">
+      <div className="rounded-lg border bg-card p-4">
         <PaymentElement
           options={{
             layout:        { type: "tabs", defaultCollapsed: false },

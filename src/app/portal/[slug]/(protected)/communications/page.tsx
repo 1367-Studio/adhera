@@ -133,7 +133,7 @@ function EmailRowItem({ e }: { e: EmailRow }) {
   }, [content, sondageHref, e.sourceId])
 
   return (
-    <div className="rounded-xl border bg-card overflow-hidden">
+    <div className="rounded-lg border bg-card overflow-hidden">
       <div className="w-full flex items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-muted/30 transition-colors">
         <button
           type="button"
@@ -278,14 +278,14 @@ export default function CommunicationsPortalPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[0, 1, 2].map(i => (
-            <div key={i} className="rounded-xl border p-4 animate-pulse space-y-2">
+            <div key={i} className="rounded-lg border p-4 animate-pulse space-y-2">
               <div className="h-4 w-48 bg-muted rounded" />
               <div className="h-3 w-32 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : emails.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
           <EnvelopeSimpleIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">Aucun e-mail reçu pour le moment.</p>
         </div>

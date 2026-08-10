@@ -90,7 +90,7 @@ function DonsPortalPageInner() {
         <Button
           size="sm"
           onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
-          className="gap-1.5 bg-violet-600 hover:bg-violet-700 text-white shrink-0"
+          className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/85 shrink-0"
         >
           <HandshakeIcon className="size-3.5" />
           {t("makeDonation")}
@@ -100,14 +100,14 @@ function DonsPortalPageInner() {
       {isLoading ? (
         <div className="space-y-3">
           {[0, 1, 2].map(i => (
-            <div key={i} className="rounded-xl border p-4 animate-pulse">
+            <div key={i} className="rounded-lg border p-4 animate-pulse">
               <div className="h-4 w-24 bg-muted rounded mb-2" />
               <div className="h-6 w-16 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : dons.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-10 text-center space-y-3">
+        <div className="rounded-lg border border-dashed p-10 text-center space-y-3">
           <HandshakeIcon className="size-8 text-muted-foreground mx-auto" />
           <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
           <Button

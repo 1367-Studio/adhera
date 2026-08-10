@@ -10,6 +10,7 @@
     "back": "Voltar",
     "loading": "Carregando...",
     "search": "Pesquisar",
+    "clearSearch": "Limpar pesquisa",
     "yes": "Sim",
     "no": "Não",
     "success": "Sucesso",
@@ -637,6 +638,34 @@
       "collectedPercent": "% arrecadado",
       "trendTitle": "Receitas vs despesas — últimos 6 meses",
       "categoryTitle": "Receitas por categoria — {year}"
+    }
+  },
+  "notifications": {
+    "fiscalPeriodReminder": {
+      "title": "Configure seu período fiscal",
+      "body": "Crie seu período fiscal para garantir o bom acompanhamento dos seus dados financeiros."
+    }
+  },
+  "fiscalPeriodPopup": {
+    "title": "Nova funcionalidade disponível!",
+    "greeting": "Olá,",
+    "body": "Crie agora seu período fiscal para garantir o bom acompanhamento dos seus dados financeiros. Consulte nosso guia para te ajudar na configuração:",
+    "guideLinkLabel": "Ver o manual de uso",
+    "guideUrl": "",
+    "supportHint": "Em caso de dificuldade, nossa equipe está à disposição através da mensagem de suporte, acessível na aba Comunicação → Suporte.",
+    "thanks": "Obrigado,",
+    "teamSignature": "A equipe de suporte",
+    "helpCta": "Precisa de ajuda?",
+    "cta": "Configurar agora",
+    "later": "Mais tarde",
+    "viewFullFaq": "Veja o FAQ completo",
+    "faqPreview": {
+      "items": [
+        { "question": "O que é um exercício fiscal?", "answer": "Um período financeiro (geralmente um ano) que agrupa suas receitas, despesas e transações bancárias para fins contábeis." },
+        { "question": "Como crio meu primeiro exercício fiscal?", "answer": "Escolha as suas próprias datas de início e fim. Essa escolha é permanente e define o calendário fiscal da sua associação para todos os anos futuros." },
+        { "question": "O que acontece quando encerro um exercício fiscal?", "answer": "Os registros existentes (receitas, despesas e transações bancárias) cujas datas estejam dentro desse exercício fiscal, mas que ainda não estejam vinculados a um exercício fiscal, são automaticamente vinculados a ele." },
+        { "question": "O que acontece quando excluo um exercício fiscal?", "answer": "Excluir um exercício fiscal não exclui os registros vinculados a ele. Esses registros simplesmente voltam a ficar “Não atribuídos”, como estavam antes da criação do exercício fiscal." }
+      ]
     }
   },
   "tour": {
@@ -1579,7 +1608,10 @@
         "revoke": "Revogar",
         "generateLink": "Gerar link",
         "sendEmail": "Enviar por e-mail",
-        "toasts": { "linkCopied": "Link copiado", "emailSent": "E-mail enviado" }
+        "toasts": {
+          "linkCopied": "Link copiado",
+          "emailSent": "E-mail enviado"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcrição salva",
@@ -2422,12 +2454,9 @@
     },
     "branding": {
       "title": "Identidade visual",
-      "subtitle": "Logo e cores exibidos no painel, orçamentos/faturas, folha de presença e site público.",
+      "subtitle": "Logo exibido no painel, orçamentos/faturas, folha de presença e site público.",
       "logo": "Logo",
-      "primaryColor": "Cor primária",
-      "secondaryColor": "Cor secundária",
-      "secondaryPlaceholder": "Opcional",
-      "proOnlyText": "O logo e as cores personalizadas (painel, orçamentos/faturas, folha de presença) são exclusivos do plano Pro. Faça upgrade na aba Assinatura para ativá-los.",
+      "proOnlyText": "O logo personalizado (painel, orçamentos/faturas, folha de presença) é exclusivo do plano Pro. Faça upgrade na aba Assinatura para ativá-lo.",
       "toasts": {
         "updated": "Identidade visual atualizada",
         "uploadError": "Erro ao enviar o logo"
@@ -3879,6 +3908,56 @@
       "message": "Mensagem",
       "cancel": "Cancelar",
       "send": "Enviar"
+    },
+    "faq": {
+      "sectionTitle": "Perguntas frequentes",
+      "categories": {
+      "fiscalPeriod": {
+      "label": "Período fiscal",
+          "items": [
+            {
+              "question": "O que é um exercício fiscal?",
+              "answer": "Um exercício fiscal representa um período financeiro definido pela sua associação (geralmente um ano). Toda receita, despesa ou transação bancária datada dentro desse período é automaticamente vinculada ao exercício fiscal correspondente.\n\nUma vez encerrado um exercício fiscal, nenhum novo registro pode ser criado dentro desse período e os registros existentes não podem mais ser modificados. Essa regra garante que as suas contas permaneçam confiáveis e consistentes ao longo do tempo, especialmente após uma auditoria ou revisão financeira."
+            },
+            {
+              "question": "Como crio meu primeiro exercício fiscal?",
+              "answer": "O primeiro exercício fiscal que você cria é flexível: você pode escolher as datas de início e fim que desejar, de acordo com o calendário contábil da sua associação (por exemplo: um ano civil de janeiro a dezembro, ou outro período como de setembro a agosto).\n\n⚠ Aviso: essa escolha é permanente no sistema. Ela define o calendário fiscal da sua associação. Todos os exercícios fiscais futuros devem seguir o mesmo padrão de datas (o mesmo dia/mês de início e fim), simplesmente aplicado aos anos seguintes.\n\nUm banner de aviso é exibido ao criar o primeiro exercício fiscal para lembrá-lo dessa regra.\n\nAo criar uma associação, o primeiro exercício fiscal deve seguir o calendário contábil escolhido pela associação. Se a atividade começar durante o ano, o período anterior ao início efetivo da atividade simplesmente permanecerá sem lançamentos contábeis.\n\nExemplo: Uma associação inicia sua atividade em março de 2026 e escolhe um exercício fiscal que vai de 1º de janeiro a 31 de dezembro. O primeiro exercício fiscal será, portanto, criado de 01/01/2026 a 31/12/2026. Janeiro e fevereiro não terão nenhum lançamento contábil."
+            },
+            {
+              "question": "Como crio os exercícios fiscais subsequentes?",
+              "answer": "A partir do segundo exercício fiscal, o formulário mostra o padrão de datas já definido (por exemplo: 01/01 – 31/12) para orientá-lo.\n\nOs novos exercícios fiscais devem seguir exatamente esse padrão. Se as datas inseridas não corresponderem ao calendário estabelecido, o sistema as corrige automaticamente e explica o ajuste realizado antes de permitir que você salve novamente."
+            },
+            {
+              "question": "E se houver um período não coberto entre dois exercícios fiscais?",
+              "answer": "Se as datas inseridas criarem um período não coberto por nenhum exercício fiscal (por exemplo, se você criar o exercício fiscal de 2027 diretamente após o exercício fiscal de 2025, deixando 2026 sem exercício fiscal), um aviso é exibido.\n\nO sistema indica a duração do período não coberto. Você pode confirmar e continuar, ou modificar as datas para cobrir corretamente o período faltante."
+            },
+            {
+              "question": "Como encerro um exercício fiscal?",
+              "answer": "Na lista de exercícios fiscais, use a ação \"Encerrar\" para encerrar um exercício fiscal.\n\nEm circunstâncias normais, um exercício fiscal só pode ser encerrado após sua data de término oficial.\n\nAo encerrar:\n• Os registros existentes (receitas, despesas e transações bancárias) cujas datas estejam dentro desse exercício fiscal, mas que ainda não estejam vinculados a nenhum exercício fiscal, são automaticamente atribuídos a ele.\n• Uma mensagem informa o número de registros que foram vinculados.\n\nApós o encerramento, nenhum novo registro pode ser criado dentro desse período e os dados existentes não podem mais ser modificados, a menos que o exercício fiscal seja reaberto."
+            },
+            {
+              "question": "Posso encerrar um exercício fiscal antecipadamente?",
+              "answer": "Em determinadas situações específicas, como o encerramento definitivo da atividade da associação (por exemplo, dissolução), um exercício fiscal pode ser encerrado antes da sua data de término oficial.\n\nO sistema informa que essa ação impedirá a criação ou modificação de novos registros dentro desse período até a data de término originalmente prevista.\n\nÉ necessária uma confirmação explícita antes de prosseguir com o encerramento antecipado."
+            },
+            {
+              "question": "Como reabro um exercício fiscal?",
+              "answer": "Clique na ação \"Reabrir\" na lista de exercícios fiscais.\n\nA reabertura permite que registros sejam criados e modificados novamente dentro desse período."
+            },
+            {
+              "question": "Posso excluir um exercício fiscal?",
+              "answer": "Somente um exercício fiscal aberto pode ser excluído.\n\nExcluir um exercício fiscal não exclui os registros vinculados a ele. Esses registros simplesmente voltam a ficar \"Não atribuídos\", como estavam antes da criação do exercício fiscal."
+            },
+            {
+              "question": "Como localizo registros \"Não atribuídos\"?",
+              "answer": "Nas telas de Receitas e Despesas, um selo laranja \"Não atribuído\" aparece em cada linha cuja data não corresponde a nenhum exercício fiscal existente.\n\nVocê também pode filtrar a lista para exibir apenas esses registros usando o menu suspenso no topo da página (opção \"Não atribuído\")."
+            },
+            {
+              "question": "O que acontece com importações de extratos bancários em períodos encerrados?",
+              "answer": "Ao importar um extrato bancário (CSV ou PDF), qualquer linha cuja data esteja dentro de um exercício fiscal já encerrado é ignorada.\n\nEssas linhas não são importadas para evitar modificações em um período contábil que já foi validado e encerrado. O resultado da importação indica o número de linhas ignoradas por esse motivo.\n\nPara importar essas linhas:\n1. Reabra o exercício fiscal correspondente.\n2. Importe o mesmo arquivo novamente.\n\nAs linhas que já foram importadas não serão criadas como duplicatas."
+            }
+          ]
+        }
+      }
     },
     "toasts": {
       "created": "Chamado enviado",

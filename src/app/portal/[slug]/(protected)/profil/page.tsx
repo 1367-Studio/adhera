@@ -185,7 +185,7 @@ export default function ProfilPage() {
           <div className="h-4 w-56 rounded bg-muted" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="rounded-xl border p-6 space-y-4">
+          <div className="rounded-lg border p-6 space-y-4">
             <div className="h-5 w-24 rounded bg-muted" />
             <div className="grid grid-cols-2 gap-4">
               {[0, 1, 2, 3].map(i => (
@@ -196,7 +196,7 @@ export default function ProfilPage() {
               ))}
             </div>
           </div>
-          <div className="rounded-xl border p-6 space-y-4">
+          <div className="rounded-lg border p-6 space-y-4">
             <div className="h-5 w-40 rounded bg-muted" />
             {[0, 1, 2].map(i => (
               <div key={i} className="space-y-1.5">

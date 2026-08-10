@@ -51,7 +51,7 @@ export default function CancelTicketPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="size-6 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+        <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -67,17 +67,17 @@ export default function CancelTicketPage() {
   const dateStr = new Date(info.eventDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 to-background flex items-start justify-center py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center size-12 rounded-full bg-violet-100 dark:bg-violet-900/30 mb-2">
-            <XCircleIcon className="size-6 text-violet-600 dark:text-violet-400" />
+          <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+            <XCircleIcon className="size-6 text-primary" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{info.eventTitle}</h1>
           <p className="text-muted-foreground text-sm">{info.firstName} {info.lastName}</p>
         </div>
 
-        <div className="rounded-xl border bg-card shadow-sm p-6 space-y-4 text-center">
+        <div className="rounded-lg border bg-card p-6 space-y-4 text-center">
           {done ? (
             <div className="space-y-1">
               <p className="font-medium">Inscription annulée.</p>

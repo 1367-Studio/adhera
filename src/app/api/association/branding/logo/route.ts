@@ -11,7 +11,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 export const GET = withAdminAuth(async (_req, ctx) => {
   const association = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
 

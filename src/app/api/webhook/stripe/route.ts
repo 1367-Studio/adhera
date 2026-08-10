@@ -46,7 +46,7 @@ export async function POST(req: Request) {
           where:   { id: commandeId },
           include: {
             membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
-            association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+            association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
             items:       {
               include: {
                 produit:  { select: { name: true } },
@@ -348,7 +348,7 @@ export async function POST(req: Request) {
                 date:         true,
                 location:     true,
                 associationId: true,
-                association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+                association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
               },
             },
           },
@@ -438,7 +438,7 @@ export async function POST(req: Request) {
 
         const don = await prisma.don.findUnique({
           where:   { id: donId },
-          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } } },
+          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true } } },
         })
         if (!don) break
 

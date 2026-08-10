@@ -87,7 +87,7 @@ export function SondageFormBuilder({ initialQuestions, onChange }: SondageFormBu
   return (
     <div className="space-y-3">
       {questions.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-8 text-center text-sm text-muted-foreground space-y-2">
+        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground space-y-2">
           <ClipboardTextIcon className="size-8 mx-auto text-muted-foreground/50" />
           <p>{t("noQuestions")}</p>
         </div>

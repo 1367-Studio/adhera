@@ -35,7 +35,7 @@ const STATUS_VARIANTS: Record<Meeting["status"], "default" | "secondary" | "dest
   SCHEDULED: "secondary",
   LIVE: "default",
   ENDED: "outline",
-  CANCELLED: "destructive",
+  CANCELLED: "outline",
 }
 
 function getTypeLabels(t: Translator): Record<Meeting["type"], string> {
@@ -175,7 +175,7 @@ export function ReunionsView() {
         title={t("reunions.view.title")}
         description={t("reunions.view.description")}
         action={
-          <Button onClick={() => setFormOpen(true)}>
+          <Button size="sm" onClick={() => setFormOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
             {t("reunions.view.newMeeting")}
           </Button>
@@ -299,7 +299,7 @@ function MeetingCard({
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <Badge variant={STATUS_VARIANTS[meeting.status]}>{statusLabels[meeting.status]}</Badge>
-          <Badge variant="outline">{typeLabels[meeting.type]}</Badge>
+          <span className="text-xs text-muted-foreground">{typeLabels[meeting.type]}</span>
         </div>
       </div>
 

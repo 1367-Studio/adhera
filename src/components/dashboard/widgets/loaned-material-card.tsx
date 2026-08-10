@@ -24,7 +24,7 @@ interface Props {
 export function LoanedMaterialCard({ materielEmpruntsListe, materielEnRetardCount, isLoading }: Props) {
   const t = useTranslations("dashboard.loanedMaterial")
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-3 flex flex-col">
+    <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col">
       <div className="flex items-center gap-2">
         <PackageIcon className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{t("title")}</span>
@@ -45,12 +45,12 @@ export function LoanedMaterialCard({ materielEmpruntsListe, materielEnRetardCoun
               <div key={l.id}>
                 {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
                 {startsNewGroup && l.isOverdue && (
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-red-600 dark:text-red-500 mb-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-red-600 dark:text-red-500 mb-1">
                     {t("overdue", { count: materielEnRetardCount })}
                   </p>
                 )}
                 {startsNewGroup && !l.isOverdue && i > 0 && (
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">
                     {t("inProgress")}
                   </p>
                 )}

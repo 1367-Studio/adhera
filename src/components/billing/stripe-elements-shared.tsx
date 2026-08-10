@@ -123,14 +123,14 @@ export function PlanPicker({
               type="button"
               onClick={() => onTierChange(t.id)}
               className={cn(
-                "relative rounded-xl border p-4 text-left transition-all",
+                "relative rounded-lg border p-4 text-left transition-all",
                 selected
                   ? "border-foreground bg-foreground/5 ring-1 ring-foreground"
                   : "border-border hover:border-muted-foreground/40"
               )}
             >
               {t.highlighted && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-2 py-0.5 text-[10px] font-semibold text-background whitespace-nowrap">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-2 py-0.5 text-xs font-semibold text-background whitespace-nowrap">
                   Populaire
                 </span>
               )}
@@ -141,10 +141,10 @@ export function PlanPicker({
               </p>
               {/* Disclosed here, not only on the payment step below — the annual plan isn't
                   a cheaper monthly draft, it's a single yearly charge. */}
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {plan === "yearly" ? `Facturé ${euros(tierPricing.yearlyAmountCents)}/an` : "Prélevé chaque mois"}
               </p>
-              <p className="mt-1.5 text-[11px] text-muted-foreground">Jusqu&apos;à {t.limit} membres</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">Jusqu&apos;à {t.limit} membres</p>
             </button>
           )
         })}

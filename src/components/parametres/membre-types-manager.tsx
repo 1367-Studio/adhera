@@ -50,7 +50,7 @@ function TypeForm({
           error={errors.name?.message}
           {...register("name")}
         />
-        <p className="mt-1 text-right text-[11px] text-muted-foreground">{nameValue.length}/{NAME_MAX}</p>
+        <p className="mt-1 text-right text-xs text-muted-foreground">{nameValue.length}/{NAME_MAX}</p>
       </div>
       <div>
         <FormField
@@ -61,7 +61,7 @@ function TypeForm({
           {...register("description")}
         />
         {descValue.length > 0 && (
-          <p className="mt-1 text-right text-[11px] text-muted-foreground">{descValue.length}/{DESCRIPTION_MAX}</p>
+          <p className="mt-1 text-right text-xs text-muted-foreground">{descValue.length}/{DESCRIPTION_MAX}</p>
         )}
       </div>
 
@@ -77,8 +77,8 @@ function TypeForm({
                 type="button"
                 onClick={() => setValue("color", color)}
                 className={cn(
-                  "size-7 rounded-full border-2 transition-all flex items-center justify-center",
-                  selectedColor === color ? "border-foreground scale-110" : "border-transparent hover:scale-105",
+                  "size-7 rounded-full border-2 transition-colors flex items-center justify-center",
+                  selectedColor === color ? "border-foreground" : "border-transparent hover:border-muted-foreground/40",
                 )}
               >
                 <span className={cn("size-4 rounded-full", dot)} />
@@ -136,7 +136,7 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
   }
 
   return (
-    <div className="rounded-xl border bg-card p-6 space-y-4">
+    <div className="rounded-lg border bg-card p-6 space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold">{t("title")}</h3>

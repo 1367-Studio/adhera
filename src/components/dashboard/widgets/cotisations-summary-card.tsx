@@ -19,7 +19,7 @@ export function CotisationsSummaryCard({ cotisationsEncaissees, cotisationsEnAtt
   const t   = useTranslations("dashboard.cotisations")
   const pal = usePalette()
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-3">
+    <div className="rounded-lg border bg-card p-5 space-y-3">
       <div className="flex items-center gap-2">
         <TrendUpIcon className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{t("title", { year: new Date().getFullYear() })}</span>

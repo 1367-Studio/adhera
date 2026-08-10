@@ -143,27 +143,27 @@ export function ReportsView() {
         }
       />
 
-      {/* Summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* Summary — plain key figures, no card per statistic (CLAUDE.md §8) */}
+      <dl className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
         {[
-          { label: "Total recettes", value: totalIncomes,              color: "text-green-600 dark:text-green-400", prefix: "+" },
+          { label: "Total recettes", value: totalIncomes,              color: "", prefix: "+" },
           { label: "Total dépenses", value: -totalExpenses,            color: "text-destructive",                   prefix: "" },
-          { label: "Résultat",       value: totalIncomes - totalExpenses, color: totalIncomes - totalExpenses >= 0 ? "text-green-600 dark:text-green-400" : "text-destructive", prefix: totalIncomes - totalExpenses >= 0 ? "+" : "" },
+          { label: "Résultat",       value: totalIncomes - totalExpenses, color: totalIncomes - totalExpenses >= 0 ? "" : "text-destructive", prefix: totalIncomes - totalExpenses >= 0 ? "+" : "" },
         ].map(({ label, value, color, prefix }) => (
-          <div key={label} className="rounded-xl border bg-card p-4">
-            <p className="text-xs text-muted-foreground">{label} {year}</p>
-            <p className={`text-2xl font-bold tabular-nums mt-1 ${color}`}>{prefix}{fmt(value)}</p>
+          <div key={label}>
+            <dt className="text-xs text-muted-foreground">{label} {year}</dt>
+            <dd className={`text-xl font-semibold tabular-nums mt-1 ${color}`}>{prefix}{fmt(value)}</dd>
           </div>
         ))}
-      </div>
+      </dl>
 
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2].map(i => <div key={i} className="rounded-xl border bg-card p-4 h-48 animate-pulse bg-muted/30" />)}
+          {[1, 2].map(i => <div key={i} className="h-48 animate-pulse rounded-lg border bg-muted/30 p-4" />)}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendUpIcon className="size-4 text-green-600" />
               <h3 className="font-semibold text-sm">Recettes par catégorie</h3>
@@ -174,7 +174,7 @@ export function ReportsView() {
             }
           </div>
 
-          <div className="rounded-xl border bg-card p-4">
+          <div className="rounded-lg border bg-card p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendDownIcon className="size-4 text-destructive" />
               <h3 className="font-semibold text-sm">Dépenses par catégorie</h3>

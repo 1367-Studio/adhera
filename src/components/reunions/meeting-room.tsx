@@ -132,7 +132,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
         )}
         {chatMessages.map((msg, i) => (
           <div key={msg.id ?? i} className="space-y-0.5">
-            <p className="text-[10px] text-muted-foreground font-medium">{msg.from?.name ?? msg.from?.identity}</p>
+            <p className="text-xs text-muted-foreground font-medium">{msg.from?.name ?? msg.from?.identity}</p>
             <p className="text-xs bg-muted rounded-lg px-2.5 py-1.5 break-words">{msg.message}</p>
           </div>
         ))}
@@ -275,7 +275,7 @@ function Controls({
           <ChatCircleIcon className="size-5" />
         </button>
         {unreadCount > 0 && !chatOpen && (
-          <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+          <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -380,7 +380,7 @@ function RoomInner({
   }
 
   return (
-    <div className="relative flex rounded-xl border overflow-hidden bg-background" style={{ height: 560 }}>
+    <div className="relative flex rounded-lg border overflow-hidden bg-background" style={{ height: 560 }}>
       {ending && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
           <CircleNotchIcon className="size-8 animate-spin text-muted-foreground" />
@@ -441,7 +441,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
 
   if (isLoading) {
     return (
-      <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
+      <div className="flex h-[560px] items-center justify-center rounded-lg border bg-card">
         <CircleNotchIcon className="size-8 animate-spin text-muted-foreground" />
       </div>
     )
@@ -449,7 +449,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
 
   if (error || !data) {
     return (
-      <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
+      <div className="flex h-[560px] items-center justify-center rounded-lg border bg-card">
         <p className="text-sm text-destructive">{error?.message ?? t("reunions.meetingRoom.joinError")}</p>
       </div>
     )
@@ -457,7 +457,7 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
 
   if (kickedOut) {
     return (
-      <div className="flex h-[560px] items-center justify-center rounded-xl border bg-card">
+      <div className="flex h-[560px] items-center justify-center rounded-lg border bg-card">
         <div className="text-center space-y-2">
           <p className="text-sm font-medium">{t("reunions.meetingRoom.kickedOutTitle")}</p>
           <p className="text-xs text-muted-foreground">{t("reunions.meetingRoom.kickedOutSubtitle")}</p>

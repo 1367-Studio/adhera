@@ -26,7 +26,7 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
-import { hexToRgb255, loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type PresenceRow = {
   membreId:        string | null
@@ -127,14 +127,13 @@ export default function PresencesPage() {
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
 
-  // Logo/couleur pour le PDF de présences (handleExportPdf) — même règle Pro-only que
+  // Logo pour le PDF de présences (handleExportPdf) — même règle Pro-only que
   // les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
   const { data: assoc } = useQuery<{
     name: string
     plan: "ESSENTIAL" | "PRO"
     customBrandingEnabled: boolean | null
     logoUrl: string | null
-    primaryColor: string | null
   }>({
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
@@ -311,8 +310,7 @@ export default function PresencesPage() {
     // Branding gated the same way as devis/facture PDFs — Pro by default, see
     // canUseCustomBranding() in src/lib/plan-limits.ts.
     const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
-    const headerRgb: [number, number, number] =
-      (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+    const headerRgb: [number, number, number] = [0, 0, 0]
     const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf("/api/association/branding/logo") : null
 
     // ── Header bar ─────────────────────────────────────────────────────────
@@ -556,7 +554,7 @@ export default function PresencesPage() {
 
       {/* Check-in window status */}
       {checkInWindowState !== "open" && (
-        <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400 text-xs px-3 py-2.5">
+        <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400 text-xs px-3 py-2.5">
           <WarningCircleIcon className="size-4 shrink-0 mt-0.5" />
           <span>
             {checkInWindowState === "before" ? (
@@ -579,7 +577,7 @@ export default function PresencesPage() {
       )}
 
       {/* Counter */}
-      <div className="rounded-xl border bg-card p-4 space-y-2">
+      <div className="rounded-lg border bg-card p-4 space-y-2">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-wrap">
             <UsersIcon className="size-4 text-muted-foreground" />
@@ -627,7 +625,7 @@ export default function PresencesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-4 items-start">
 
         {/* QR Panel */}
-        <div className="rounded-xl border bg-card p-4 space-y-4">
+        <div className="rounded-lg border bg-card p-4 space-y-4">
           <div className="flex items-center gap-1.5">
             <h2 className="text-sm font-semibold">{t("evenements.presences.qr.heading")}</h2>
             <TooltipProvider>
@@ -707,7 +705,7 @@ export default function PresencesPage() {
         </div>
 
         {/* Member list */}
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="rounded-lg border bg-card overflow-hidden">
           <div className="p-3 border-b flex items-center gap-2">
             <div className="relative flex-1">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
@@ -760,14 +758,14 @@ export default function PresencesPage() {
                         {row.lastName} {row.firstName}
                       </span>
                       {row.isGuest && (
-                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
+                        <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
                           {t("evenements.presences.list.guestBadge")}
                         </span>
                       )}
                     </span>
                     <div className="flex items-center gap-2 shrink-0">
                       {!hasFee && row.rsvp && RSVP_LABELS[row.rsvp] && (
-                        <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full hidden sm:inline", RSVP_LABELS[row.rsvp].classes)}>
+                        <span className={cn("text-xs font-medium px-2 py-0.5 rounded-full hidden sm:inline", RSVP_LABELS[row.rsvp].classes)}>
                           {RSVP_LABELS[row.rsvp].label}
                         </span>
                       )}
@@ -785,7 +783,7 @@ export default function PresencesPage() {
                   {hasFee && (
                     row.ticketPaidAt ? (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="flex items-center gap-1 text-[10px] font-medium text-green-600 dark:text-green-400">
+                        <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
                           <CheckIcon className="size-3" />
                           {t("evenements.presences.list.paidBadge")}
                         </span>
@@ -809,7 +807,7 @@ export default function PresencesPage() {
                       </div>
                     ) : row.rsvp === "CONFIRME" ? (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="flex items-center gap-1 text-[10px] font-medium text-primary shrink-0">
+                        <span className="flex items-center gap-1 text-xs font-medium text-primary shrink-0">
                           <BookmarkSimpleIcon className="size-3" />
                           {t("evenements.presences.list.reservedBadge")}
                         </span>
@@ -817,7 +815,7 @@ export default function PresencesPage() {
                           type="button"
                           onClick={() => handleMarkPaid(row)}
                           disabled={payingIds.has(rowKey(row))}
-                          className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                          className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                         >
                           <MoneyIcon className="size-3" />
                           {t("evenements.presences.list.markPaid")}
@@ -828,7 +826,7 @@ export default function PresencesPage() {
                         type="button"
                         onClick={() => handleMarkPaid(row)}
                         disabled={payingIds.has(rowKey(row))}
-                        className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
                       >
                         <MoneyIcon className="size-3" />
                         {t("evenements.presences.list.markPaid")}

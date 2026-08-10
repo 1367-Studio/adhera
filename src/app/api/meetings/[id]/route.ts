@@ -76,7 +76,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     if (toAdd.length > 0) {
       const association = await prisma.association.findUnique({
         where: { id: associationId },
-        select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+        select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
       })
       const newMembres = await prisma.membre.findMany({
         where: { id: { in: toAdd }, userId: { not: null } },

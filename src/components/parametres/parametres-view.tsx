@@ -37,9 +37,7 @@ type Association = {
   bic:     string | null
   plan:    "ESSENTIAL" | "PRO"
   customBrandingEnabled: boolean | null
-  logoUrl:        string | null
-  primaryColor:   string | null
-  secondaryColor: string | null
+  logoUrl: string | null
   cotisationDefaultAmount: string | number | null
 }
 
@@ -134,7 +132,7 @@ function ParametresViewInner() {
       {/* ── Général ───────────────────────────────────────────────────── */}
       {tab === "general" && (
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg border bg-card p-6">
             <h3 className="text-sm font-semibold mb-4">{t("parametres.view.associationInfo")}</h3>
             {isLoading ? (
               <div className="space-y-3">
@@ -175,17 +173,17 @@ function ParametresViewInner() {
           </div>
 
           {assoc && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <BrandingSettings
                 canEdit={canEdit}
                 canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
-                data={{ logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor, secondaryColor: assoc.secondaryColor }}
+                data={{ logoUrl: assoc.logoUrl }}
               />
             </div>
           )}
 
           {assoc && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <BankSettings
                 canEdit={canEditFinance}
                 data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic }}
@@ -194,7 +192,7 @@ function ParametresViewInner() {
           )}
 
           {assoc && modules.cotisations && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <CotisationDefaultsSettings
                 canEdit={canEditFinance}
                 cotisationDefaultAmount={assoc.cotisationDefaultAmount}
@@ -205,7 +203,7 @@ function ParametresViewInner() {
           <MembreTypesManager canEdit={canEdit} />
 
           {assoc?.slug && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <PortalLinkSettings slug={assoc.slug} />
             </div>
           )}
@@ -215,10 +213,10 @@ function ParametresViewInner() {
       {/* ── Paiements ─────────────────────────────────────────────────── */}
       {tab === "paiements" && (
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg border bg-card p-6">
             <StripeConnectSettings canEdit={canEdit} />
           </div>
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg border bg-card p-6">
             <IdentityDonsSettings canEdit={canEdit} />
           </div>
         </div>
@@ -227,7 +225,7 @@ function ParametresViewInner() {
       {/* ── Abonnement ────────────────────────────────────────────────── */}
       {tab === "abonnement" && (
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-6">
+          <div className="rounded-lg border bg-card p-6">
             <BillingSettings canEdit={canEdit} />
           </div>
         </div>
@@ -237,17 +235,17 @@ function ParametresViewInner() {
       {tab === "integrations" && (
         <div className="space-y-6">
           {modules.ia && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <AiSettings canEdit={canEdit} />
             </div>
           )}
           {modules.sms && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <SmsSettings canEdit={canEdit} />
             </div>
           )}
           {modules.reunions && (
-            <div className="rounded-xl border bg-card p-6">
+            <div className="rounded-lg border bg-card p-6">
               <LiveKitSettings canEdit={canEdit} />
             </div>
           )}

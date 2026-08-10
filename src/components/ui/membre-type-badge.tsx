@@ -22,12 +22,13 @@ interface MembreTypeBadgeProps {
   className?: string
 }
 
+// Deliberately not a pill (CLAUDE.md §7): the member type is secondary metadata, so it
+// renders as muted text with a small color dot — the dot alone carries the type color.
 export function MembreTypeBadge({ name, color, className }: MembreTypeBadgeProps) {
-  const { badge, dot } = getTypeColor(color)
+  const { dot } = getTypeColor(color)
   return (
     <span className={cn(
-      "inline-flex items-center gap-1.5 rounded-full text-[11px] font-medium px-2 py-0.5",
-      badge,
+      "inline-flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap",
       className,
     )}>
       <span className={cn("size-1.5 rounded-full shrink-0", dot)} />

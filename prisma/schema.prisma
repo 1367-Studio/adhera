@@ -400,9 +400,10 @@ model User {
   // any other way (admin-created members, portal self-registration) since those don't
   // go through the paid-signup consent step. termsVersion lets us know exactly which
   // revision of the CGS/politique de confidentialité was in effect when they agreed.
-  termsAcceptedAt DateTime?
-  termsVersion    String?
-  termsAcceptedIp String?
+  termsAcceptedAt         DateTime?
+  termsVersion            String?
+  termsAcceptedIp         String?
+  fiscalPeriodPopupSeenAt DateTime?
 
   association           Association?           @relation(fields: [associationId], references: [id])
   notifications         Notification[]

@@ -98,7 +98,7 @@ function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: Mater
     return (
       <Link
         href={`/dashboard/factures?search=${encodeURIComponent(loan.facture.number)}`}
-        className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/70 transition-colors"
+        className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground hover:bg-muted/70 transition-colors"
         title={t("materiel.detailSheet.viewFactureTitle", { number: loan.facture.number })}
       >
         <ReceiptIcon className="size-3" /> {loan.facture.number} · {FACTURE_STATUS_LABEL[loan.facture.status] ?? loan.facture.status}
@@ -114,7 +114,7 @@ function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: Mater
       type="button"
       onClick={onGenerate}
       disabled={pending}
-      className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40"
+      className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full border text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40"
       title={t("materiel.detailSheet.generateFactureTitle")}
     >
       <ReceiptIcon className="size-3" /> {t("materiel.detailSheet.generateFacture")}
@@ -222,7 +222,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                     <span className="text-xs text-muted-foreground border rounded-full px-2 py-0.5">{detail?.category ?? material?.category}</span>
                   )}
                   {cfg && (
-                    <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", cfg.classes)}>{cfg.label}</span>
+                    <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", cfg.classes)}>{cfg.label}</span>
                   )}
                 </div>
               </div>
@@ -321,7 +321,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                                   try { await confirmLoan.mutateAsync(loan.id); toast.success(t("materiel.detailSheet.toasts.loanConfirmed")) }
                                   catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
                                 }}
-                                className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 <CheckIcon className="size-3" /> {t("materiel.detailSheet.pendingSection.accept")}
                               </button>
@@ -332,18 +332,18 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                                   try { await refuseLoan.mutateAsync(loan.id); toast.success(t("materiel.detailSheet.toasts.loanRefused")) }
                                   catch (err) { toast.error(err instanceof Error ? err.message : t("common.error")) }
                                 }}
-                                className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                               >
                                 <XIcon className="size-3" /> {t("materiel.detailSheet.pendingSection.refuse")}
                               </button>
                             </div>
                           </div>
                           {loan.expectedReturnAt && (
-                            <p className="text-[11px] text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               {t("materiel.detailSheet.pendingSection.returnExpected", { date: format(new Date(loan.expectedReturnAt), "d MMM yyyy", { locale: fr }) })}
                             </p>
                           )}
-                          {loan.notes && <p className="text-[11px] text-muted-foreground italic">{loan.notes}</p>}
+                          {loan.notes && <p className="text-xs text-muted-foreground italic">{loan.notes}</p>}
                         </div>
                       ))}
                     </div>
@@ -382,7 +382,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                             <p className="text-sm font-medium flex items-center gap-1.5">
                               {borrowerLabel(loan)}{loan.quantity > 1 && <span className="text-muted-foreground ml-1">×{loan.quantity}</span>}
                               {reserved && (
-                                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                <span className="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
                                   {t("materiel.detailSheet.activeSection.reservedBadge")}
                                 </span>
                               )}
@@ -395,7 +395,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               <button type="button" onClick={() => setEmailTarget(loan)} className="text-muted-foreground hover:text-foreground transition-colors" title={t("materiel.detailSheet.activeSection.emailTitle")}>
                                 <EnvelopeSimpleIcon className="size-3.5" />
                               </button>
-                              <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending || reserved} className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title={reserved ? t("materiel.detailSheet.activeSection.notYetOutTitle") : t("materiel.detailSheet.activeSection.markReturnedTitle")}>
+                              <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending || reserved} className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title={reserved ? t("materiel.detailSheet.activeSection.notYetOutTitle") : t("materiel.detailSheet.activeSection.markReturnedTitle")}>
                                 <ArrowElbowDownLeftIcon className="size-3" /> {t("materiel.detailSheet.activeSection.returned")}
                               </button>
                               {/* Deleting a loan with a facture is rejected server-side (it would
@@ -407,7 +407,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               )}
                             </div>
                           </div>
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {reserved ? t("materiel.detailSheet.activeSection.reservedFor") : t("materiel.detailSheet.activeSection.goneOn")}{format(new Date(loan.borrowedAt), "d MMM yyyy", { locale: fr })}
                             {loan.expectedReturnAt && (
                               <span className={cn(isOverdue(loan) && "text-red-600 font-medium")}>
@@ -417,7 +417,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                             )}
                             {loanFeeLabel(loan) && ` · ${loanFeeLabel(loan)}`}
                           </p>
-                          {loan.notes && <p className="text-[11px] text-muted-foreground italic">{loan.notes}</p>}
+                          {loan.notes && <p className="text-xs text-muted-foreground italic">{loan.notes}</p>}
                           <FactureAction loan={loan} onGenerate={() => handleGenerateFacture(loan)} pending={generateFacture.isPending} canGenerate={canGenerateFacture} />
                         </div>
                         )
@@ -442,7 +442,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               {t("materiel.detailSheet.historySection.requestedOn", { date: format(new Date(loan.borrowedAt), "d MMM yy", { locale: fr }) })}
                             </span>
                           </div>
-                          <span className="shrink-0 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-destructive/10 dark:bg-destructive/25 text-destructive">
+                          <span className="shrink-0 text-xs font-medium px-1.5 py-0.5 rounded-full bg-destructive/10 dark:bg-destructive/25 text-destructive">
                             {t("materiel.detailSheet.historySection.refusedBadge")}
                           </span>
                         </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -21,6 +21,7 @@ import { EvenementCustomFieldsEditor } from "@/components/evenements/evenement-c
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
+import { SearchInput } from "@/components/ui/search-input"
 
 type Evenement = {
   id:          string
@@ -192,7 +193,7 @@ export function EvenementsView() {
           <button
             type="button"
             onClick={(ev) => { ev.stopPropagation(); router.push(`/dashboard/evenements/${e.id}/presences`) }}
-            className="flex flex-col gap-0.5 text-left hover:opacity-75 transition-opacity"
+            className="flex flex-col gap-0.5 text-left transition-colors hover:text-primary"
           >
             <span className="flex items-center gap-1.5 text-sm text-primary">
               <UsersIcon className="size-3.5" />
@@ -256,30 +257,18 @@ export function EvenementsView() {
         />
       ) : (
         <>
-          <div className="relative w-72">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-            <input
-              type="text"
-              placeholder={t("evenements.view.searchPlaceholder")}
-              value={searchInput}
-              onChange={e => handleSearch(e.target.value)}
-              className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-            />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (debounceRef.current) clearTimeout(debounceRef.current)
-                  setSearchInput("")
-                  setSearch("")
-                  setPage(1)
-                }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <XIcon className="size-3.5" />
-              </button>
-            )}
-          </div>
+          <SearchInput
+            value={searchInput}
+            onValueChange={handleSearch}
+            onClear={() => {
+              if (debounceRef.current) clearTimeout(debounceRef.current)
+              setSearchInput("")
+              setSearch("")
+              setPage(1)
+            }}
+            placeholder={t("evenements.view.searchPlaceholder")}
+            containerClassName="w-72"
+          />
 
           <DataTable
             columns={columns}

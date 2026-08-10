@@ -10,6 +10,7 @@
     "back": "Back",
     "loading": "Loading...",
     "search": "Search",
+    "clearSearch": "Clear search",
     "yes": "Yes",
     "no": "No",
     "success": "Success",
@@ -638,6 +639,34 @@
       "trendTitle": "Income vs expenses — last 6 months",
       "categoryTitle": "Income by category — {year}"
     }
+  },
+  "notifications": {
+    "fiscalPeriodReminder": {
+      "title": "Set up your fiscal period",
+      "body": "Create your fiscal period to ensure accurate tracking of your financial data."
+    }
+  },
+  "fiscalPeriodPopup": {
+    "title": "New feature available!",
+    "greeting": "Hello,",
+    "body": "Create your fiscal period now to ensure accurate tracking of your financial data. Check out our guide to help you set it up:",
+    "guideLinkLabel": "View the user guide",
+    "guideUrl": "",
+    "supportHint": "If you run into any difficulty, our team is available via the support messaging, accessible from the Communication → Support tab.",
+    "thanks": "Thank you,",
+    "teamSignature": "The support team",
+    "helpCta": "Need help?",
+    "cta": "Configure now",
+    "later": "Later",
+    "viewFullFaq": "See the full FAQ",
+      "faqPreview": {
+        "items": [
+          { "question": "What is a fiscal year?", "answer": "A financial period (usually one year) that groups your income, expenses and bank transactions for accounting purposes." },
+          { "question": "How do I create my first fiscal year?", "answer": "Choose your own start and end dates. This choice is permanent and sets your association's fiscal calendar for all future years." },
+          { "question": "What happens when I close a fiscal year?", "answer": "Existing records (income, expenses, and bank transactions) whose dates fall within this fiscal year but which are not yet linked to a fiscal year are automatically attached to it." },
+          { "question": "What happens when I delete a fiscal year?", "answer": "Deleting a fiscal year does not delete the records linked to it. These records simply become “Unassigned” again, as they were before the fiscal year was created." }
+        ]
+      }
   },
   "tour": {
     "next": "Next",
@@ -1579,7 +1608,10 @@
         "revoke": "Revoke",
         "generateLink": "Generate a link",
         "sendEmail": "Send by email",
-        "toasts": { "linkCopied": "Link copied", "emailSent": "Email sent" }
+        "toasts": {
+          "linkCopied": "Link copied",
+          "emailSent": "Email sent"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcript saved",
@@ -2422,12 +2454,9 @@
     },
     "branding": {
       "title": "Brand identity",
-      "subtitle": "Logo and colors shown on the dashboard, invoices/quotes, attendance sheet and public site.",
+      "subtitle": "Logo shown on the dashboard, invoices/quotes, attendance sheet and public site.",
       "logo": "Logo",
-      "primaryColor": "Primary color",
-      "secondaryColor": "Secondary color",
-      "secondaryPlaceholder": "Optional",
-      "proOnlyText": "Custom logo and colors (dashboard, invoices/quotes, attendance sheet) are reserved for the Pro plan. Upgrade from the Subscription tab to enable them.",
+      "proOnlyText": "A custom logo (dashboard, invoices/quotes, attendance sheet) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
       "toasts": {
         "updated": "Brand identity updated",
         "uploadError": "Error uploading the logo"
@@ -3879,6 +3908,56 @@
       "message": "Message",
       "cancel": "Cancel",
       "send": "Send"
+    },
+    "faq": {
+      "sectionTitle": "Frequently asked questions",
+      "categories": {
+        "fiscalPeriod": {
+          "label": "Fiscal period",
+          "items": [
+            {
+              "question": "What is a fiscal year?",
+              "answer": "A fiscal year represents a financial period defined by your association (usually one year). Every income, expense, or bank transaction dated within this period is automatically linked to the corresponding fiscal year.\n\nOnce a fiscal year is closed, no new records can be created within that period and existing records can no longer be modified. This rule ensures that your accounts remain reliable and consistent over time, especially after an audit or financial review."
+            },
+            {
+              "question": "How do I create my first fiscal year?",
+              "answer": "The very first fiscal year you create is flexible: you can choose the start and end dates you want, according to your association's accounting calendar (for example: a calendar year from January to December, or another schedule such as September to August).\n\n⚠ Warning: this choice is permanent in the system. It defines your association's fiscal calendar. All future fiscal years must follow the same date pattern (the same start and end day/month), simply applied to the following years.\n\nA warning banner is displayed when creating the first fiscal year to remind you of this rule.\n\nWhen creating an association, the first fiscal year must follow the accounting calendar chosen by the association. If the activity starts during the year, the period before the actual start of the activity will simply remain without any accounting entries.\n\nExample: An association starts its activity in March 2026 and chooses a fiscal year running from January 1 to December 31. The first fiscal year will therefore be created from 01/01/2026 to 12/31/2026. January and February will contain no accounting entries."
+            },
+            {
+              "question": "How do I create subsequent fiscal years?",
+              "answer": "From the second fiscal year onward, the form shows the date pattern already defined (for example: 01/01 – 12/31) to guide you.\n\nNew fiscal years must follow this pattern exactly. If the dates entered do not match the established calendar, the system automatically corrects them and explains the adjustment made before allowing you to save again."
+            },
+            {
+              "question": "What if there is a period not covered between two fiscal years?",
+              "answer": "If the dates entered create a period not covered by any fiscal year (for example, if you create fiscal year 2027 directly after fiscal year 2025, leaving 2026 without a fiscal year), a warning is displayed.\n\nThe system indicates the duration of the uncovered period. You can either confirm and continue or modify the dates to correctly cover the missing period."
+            },
+            {
+              "question": "How do I close a fiscal year?",
+              "answer": "From the fiscal year list, use the \"Close\" action to close a fiscal year.\n\nUnder normal circumstances, a fiscal year can only be closed after its official end date.\n\nWhen closing:\n• Existing records (income, expenses, and bank transactions) whose dates fall within this fiscal year but which are not yet linked to a fiscal year are automatically attached to it.\n• A message informs you of the number of records that were linked.\n\nAfter closing, no new records can be created within this period and existing data can no longer be modified, unless the fiscal year is reopened."
+            },
+            {
+              "question": "Can I close a fiscal year early?",
+              "answer": "In certain specific situations, such as the permanent cessation of the association's activity (for example, dissolution), a fiscal year can be closed before its official end date.\n\nThe system informs you that this action will prevent any new records from being created or modified within this period until the originally scheduled end date.\n\nAn explicit confirmation is required before proceeding with early closing."
+            },
+            {
+              "question": "How do I reopen a fiscal year?",
+              "answer": "Click the \"Reopen\" action from the fiscal year list.\n\nReopening allows records to be created and modified within this period again."
+            },
+            {
+              "question": "Can I delete a fiscal year?",
+              "answer": "Only an open fiscal year can be deleted.\n\nDeleting a fiscal year does not delete the records linked to it. These records simply become \"Unassigned\" again, as they were before the fiscal year was created."
+            },
+            {
+              "question": "How do I find \"Unassigned\" records?",
+              "answer": "On the Income and Expense screens, an orange \"Unassigned\" badge appears on each row whose date does not match any existing fiscal year.\n\nYou can also filter the list to display only these records using the dropdown menu at the top of the page (\"Unassigned\" option)."
+            },
+            {
+              "question": "What happens to bank statement imports for closed periods?",
+              "answer": "When importing a bank statement (CSV or PDF), any line whose date falls within an already closed fiscal year is skipped.\n\nThese lines are not imported in order to prevent modifications to an accounting period that has already been validated and closed. The import result indicates the number of lines skipped for this reason.\n\nTo import these lines:\n1. Reopen the relevant fiscal year.\n2. Import the same file again.\n\nLines that have already been imported will not be created as duplicates."
+            }
+          ]
+        }
+      }
     },
     "toasts": {
       "created": "Request sent",

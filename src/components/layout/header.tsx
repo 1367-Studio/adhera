@@ -66,13 +66,13 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const membreUnread  = membreNotifs.some(n => !n.read)
   const gestionUnread = gestionNotifs.some(n => !n.read)
   return (
-    <div className="flex shrink-0 items-center rounded-full border bg-muted p-0.5 text-xs font-medium">
+    <div className="flex shrink-0 items-center rounded-md border bg-muted p-0.5 text-xs font-medium">
       <Link
         href={`/portal/${slug}/${firstEnabledPortalPath(modules)}`}
         title={t("myPortal")}
         className={cn(
-          "relative flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
-          inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+          "relative flex items-center gap-1 rounded-sm px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
+          inPortal ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <UserIcon className="size-3.5 sm:hidden" />
@@ -83,8 +83,8 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
         href="/dashboard"
         title={t("management")}
         className={cn(
-          "relative flex items-center gap-1 rounded-full px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
-          !inPortal ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+          "relative flex items-center gap-1 rounded-sm px-2 py-1 whitespace-nowrap transition-colors sm:px-3",
+          !inPortal ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"
         )}
       >
         <SquaresFourIcon className="size-3.5 sm:hidden" />

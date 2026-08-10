@@ -1,10 +1,3 @@
-export function hexToRgb255(hex: string): [number, number, number] | null {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return null
-  const n = parseInt(m[1], 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
-}
-
 // Fetches the association's logo and turns it into a data URL + intrinsic size, both of
 // which jsPDF's addImage() needs — never throws, a broken/unreachable logo just falls
 // back to the platform's default header text at the call site.

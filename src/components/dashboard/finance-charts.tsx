@@ -79,7 +79,7 @@ function LollipopBar({ x, y, width, height, color }: {
   const innerR  = outerR * 0.45
   const x2      = Math.max(x + width - outerR, x)
   return (
-    <g style={{ filter: `drop-shadow(0 0 4px ${color}88)` }}>
+    <g>
       <line x1={x} y1={cy} x2={x2} y2={cy} stroke={color} strokeWidth={6} strokeLinecap="round" />
       <circle cx={x + width} cy={cy} r={outerR} fill="var(--card)" stroke={color} strokeWidth={2} />
       <circle cx={x + width} cy={cy} r={innerR} fill={color} />
@@ -110,8 +110,8 @@ export function FinanceCharts() {
   if (isLoading) {
     return (
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="h-48 rounded-xl border bg-card animate-pulse" />
-        <div className="h-48 rounded-xl border bg-card animate-pulse lg:col-span-2" />
+        <div className="h-48 rounded-lg border bg-card animate-pulse" />
+        <div className="h-48 rounded-lg border bg-card animate-pulse lg:col-span-2" />
       </div>
     )
   }
@@ -120,7 +120,7 @@ export function FinanceCharts() {
 
   if (!data.hasCotisations && !data.hasFinances) {
     return (
-      <div className="rounded-xl border border-dashed bg-card/50 p-6 text-center">
+      <div className="rounded-lg border border-dashed bg-card/50 p-6 text-center">
         <p className="text-sm text-muted-foreground">
           {t("dashboard.charts.emptyState")}
         </p>
@@ -150,16 +150,9 @@ export function FinanceCharts() {
       {/* Cotisations — part-to-whole → stacked bar, never a donut */}
       {data.hasCotisations && (
         <div className={cn(
-          "relative overflow-hidden rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30",
+          "relative overflow-hidden rounded-lg border bg-card p-6 dark:border-white/10",
           !data.hasFinances && "lg:col-span-3",
         )}>
-          {/* Soft glow behind the hero figure — decorative only, clipped to the card by
-              the parent's overflow-hidden so it never bleeds past the rounded corners. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -left-10 -top-16 size-40 rounded-full opacity-20 blur-3xl"
-            style={{ background: pal.recettes }}
-          />
           <p className="relative mb-1 text-xs font-medium text-muted-foreground">{t("dashboard.cotisations.title", { year: data.year })}</p>
           {/* Hero figure: % already collected — the one number a progress bar exists to
               answer, and distinct from the raw totals already listed below/elsewhere. */}
@@ -175,7 +168,6 @@ export function FinanceCharts() {
                 style={{
                   width:           `${cotisationDenom > 0 ? Math.max(((cotisationTotal > 0 ? c.amount : c.count) / cotisationDenom) * 100, 2) : 0}%`,
                   background:      cotisationColor[c.status] ?? pal.axis,
-                  boxShadow:       `0 0 8px ${cotisationColor[c.status] ?? pal.axis}88`,
                   animationDelay: `${i * 80}ms`,
                 }}
               />
@@ -203,7 +195,7 @@ export function FinanceCharts() {
           (dataviz skill: "trend over time" → line/area; bar is for comparing discrete
           categories, not a continuous monthly progression). */}
       {data.hasFinances && (
-        <div className={`rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
+        <div className={`rounded-lg border bg-card p-6 dark:border-white/10 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
           <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.trendTitle")}</p>
           {/* debounce: avoids a known Recharts+ResizeObserver race where the container's
               first reported size is stale/zero — without it the chart can settle into its
@@ -240,7 +232,6 @@ export function FinanceCharts() {
                 dot={{ r: 3, fill: pal.recettes, strokeWidth: 0 }}
                 activeDot={{ r: 5, fill: pal.recettes, stroke: "var(--card)", strokeWidth: 2 }}
                 animationDuration={600} animationEasing="ease-out"
-                style={{ filter: `drop-shadow(0 0 4px ${pal.recettes}88)` }}
               />
               <Area
                 type="monotone" dataKey="depenses" name="depenses"
@@ -248,7 +239,6 @@ export function FinanceCharts() {
                 dot={{ r: 3, fill: pal.depenses, strokeWidth: 0 }}
                 activeDot={{ r: 5, fill: pal.depenses, stroke: "var(--card)", strokeWidth: 2 }}
                 animationDuration={600} animationEasing="ease-out"
-                style={{ filter: `drop-shadow(0 0 4px ${pal.depenses}88)` }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -276,11 +266,11 @@ export function IncomeByCategoryChart() {
     staleTime: 5 * 60_000,
   })
 
-  if (isLoading) return <div className="h-48 rounded-xl border bg-card animate-pulse" />
+  if (isLoading) return <div className="h-48 rounded-lg border bg-card animate-pulse" />
   if (!data || !data.hasFinances || data.incomeByCategory.length === 0) return null
 
   return (
-    <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30">
+    <div className="rounded-lg border bg-card p-6 dark:border-white/10">
       <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.categoryTitle", { year: data.year })}</p>
       <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
         <BarChart

@@ -10,6 +10,7 @@
     "back": "Retour",
     "loading": "Chargement...",
     "search": "Rechercher",
+    "clearSearch": "Effacer la recherche",
     "yes": "Oui",
     "no": "Non",
     "success": "Succès",
@@ -637,6 +638,34 @@
       "collectedPercent": " % encaissé",
       "trendTitle": "Recettes vs dépenses — 6 derniers mois",
       "categoryTitle": "Recettes par catégorie — {year}"
+    }
+  },
+  "notifications": {
+    "fiscalPeriodReminder": {
+      "title": "Configurez votre période fiscale",
+      "body": "Créez votre période fiscale pour assurer le bon suivi de vos données financières."
+    }
+  },
+  "fiscalPeriodPopup": {
+    "title": "Nouvelle fonctionnalité disponible !",
+    "greeting": "Bonjour,",
+    "body": "Créez dès maintenant votre période fiscale afin d'assurer le bon suivi de vos données financières. Consultez notre guide pour vous accompagner dans sa configuration :",
+    "guideLinkLabel": "Voir le mode d'emploi",
+    "guideUrl": "",
+    "supportHint": "En cas de difficulté, notre équipe reste à votre disposition via la messagerie de support accessible depuis l'onglet Communication → Support.",
+    "thanks": "Merci,",
+    "teamSignature": "L'équipe support",
+    "helpCta": "Besoin d'aide ?",
+    "cta": "Configurer maintenant",
+    "later": "Plus tard",
+    "viewFullFaq": "Consulter la FAQ complète",
+    "faqPreview": {
+      "items": [
+        { "question": "Qu'est-ce qu'un exercice fiscal ?", "answer": "Une période financière (généralement un an) qui regroupe vos recettes, dépenses et transactions bancaires à des fins comptables." },
+        { "question": "Comment créer mon premier exercice fiscal ?", "answer": "Choisissez vos propres dates de début et de fin. Ce choix est permanent et définit le calendrier fiscal de votre association pour toutes les années suivantes." },
+        { "question": "Que se passe-t-il lorsque je clôture un exercice fiscal ?", "answer": "Les enregistrements existants (recettes, dépenses et transactions bancaires) dont les dates se situent dans cet exercice fiscal mais qui ne sont pas encore rattachés à un exercice fiscal y sont automatiquement rattachés." },
+        { "question": "Que se passe-t-il lorsque je supprime un exercice fiscal ?", "answer": "La suppression d'un exercice fiscal ne supprime pas les enregistrements qui y sont rattachés. Ces enregistrements redeviennent simplement « Non attribués », comme ils l'étaient avant la création de l'exercice fiscal." }
+      ]
     }
   },
   "tour": {
@@ -1579,7 +1608,10 @@
         "revoke": "Révoquer",
         "generateLink": "Générer un lien",
         "sendEmail": "Envoyer par e-mail",
-        "toasts": { "linkCopied": "Lien copié", "emailSent": "E-mail envoyé" }
+        "toasts": {
+          "linkCopied": "Lien copié",
+          "emailSent": "E-mail envoyé"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcription sauvegardée",
@@ -2422,12 +2454,9 @@
     },
     "branding": {
       "title": "Identité visuelle",
-      "subtitle": "Logo et couleurs affichés sur le dashboard, les devis/factures, la feuille de présence et le site public.",
+      "subtitle": "Logo affiché sur le dashboard, les devis/factures, la feuille de présence et le site public.",
       "logo": "Logo",
-      "primaryColor": "Couleur primaire",
-      "secondaryColor": "Couleur secondaire",
-      "secondaryPlaceholder": "Optionnel",
-      "proOnlyText": "Le logo et les couleurs personnalisés (dashboard, devis/factures, feuille de présence) sont réservés à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour les activer.",
+      "proOnlyText": "Le logo personnalisé (dashboard, devis/factures, feuille de présence) est réservé à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour l'activer.",
       "toasts": {
         "updated": "Identité visuelle mise à jour",
         "uploadError": "Erreur lors de l'upload du logo"
@@ -3879,6 +3908,56 @@
       "message": "Message",
       "cancel": "Annuler",
       "send": "Envoyer"
+    },
+    "faq": {
+      "sectionTitle": "Foire aux questions",
+      "categories": {
+        "fiscalPeriod": {
+          "label": "Période fiscale",
+          "items": [
+            {
+              "question": "Qu'est-ce qu'un exercice comptable ?",
+              "answer": "Un exercice comptable représente une période comptable définie par votre association (généralement une année). Chaque recette, dépense ou transaction bancaire dont la date correspond à cette période est automatiquement rattachée à l'exercice concerné.\n\nUne fois qu'un exercice est clôturé, aucun nouvel enregistrement ne peut y être créé et les enregistrements existants ne peuvent plus être modifiés. Cette règle garantit que vos comptes restent fiables et cohérents dans le temps, notamment après un contrôle ou un audit."
+            },
+            {
+              "question": "Comment créer mon premier exercice ?",
+              "answer": "Le premier exercice comptable que vous créez est libre : vous pouvez choisir les dates de début et de fin souhaitées, selon le calendrier comptable de votre association (par exemple : année civile de janvier à décembre, ou un autre calendrier comme septembre à août).\n\n⚠ Attention : ce choix est définitif dans le système. Il définit le calendrier des exercices comptables de votre association. Tous les exercices suivants devront respecter le même modèle de dates (même jour et même mois de début et de fin), simplement appliqué aux années suivantes.\n\nUne bannière d'avertissement est affichée lors de la création du premier exercice afin de vous rappeler cette règle.\n\nLors de la création d'une association, le premier exercice comptable doit respecter le calendrier comptable choisi par l'association. Si l'activité débute en cours d'année, la période précédant le début réel de l'activité restera simplement sans aucune écriture comptable.\n\nExemple : Une association démarre son activité en mars 2026 et choisit un exercice comptable du 1er janvier au 31 décembre. Le premier exercice sera donc créé du 01/01/2026 au 31/12/2026. Les mois de janvier et février ne contiendront aucune écriture comptable."
+            },
+            {
+              "question": "Comment créer les exercices suivants ?",
+              "answer": "À partir du deuxième exercice, le formulaire vous indique le modèle déjà défini (par exemple : 01/01 – 31/12) afin de vous guider.\n\nLes nouveaux exercices doivent respecter exactement ce modèle. Si les dates saisies ne correspondent pas au calendrier établi, le système les corrige automatiquement et vous explique la modification effectuée avant de vous permettre d'enregistrer à nouveau."
+            },
+            {
+              "question": "Et s'il existe une période non couverte entre deux exercices ?",
+              "answer": "Si les dates saisies créent une période non couverte entre deux exercices (par exemple, si vous créez directement l'exercice 2027 après l'exercice 2025 en laissant l'année 2026 sans exercice), un avertissement apparaît.\n\nLe système indique la durée de la période non couverte. Vous pouvez soit confirmer pour continuer, soit modifier les dates afin de couvrir correctement la période concernée."
+            },
+            {
+              "question": "Comment clôturer un exercice ?",
+              "answer": "Depuis la liste des exercices, utilisez l'action « Clôturer » pour fermer un exercice comptable.\n\nDans les conditions normales, un exercice ne peut être clôturé qu'après sa date de fin officielle.\n\nAu moment de la clôture :\n• Les enregistrements existants (recettes, dépenses, transactions bancaires) dont la date correspond à cet exercice mais qui ne sont pas encore rattachés à un exercice sont automatiquement associés.\n• Un message vous indique le nombre d'enregistrements qui ont été rattachés.\n\nAprès la clôture, aucun nouvel enregistrement ne peut être créé dans cette période et les données existantes ne peuvent plus être modifiées, sauf si l'exercice est rouvert."
+            },
+            {
+              "question": "Puis-je clôturer un exercice par anticipation ?",
+              "answer": "Dans certains cas particuliers, comme l'arrêt définitif de l'activité de l'association (par exemple une dissolution), il est possible de clôturer un exercice avant sa date de fin officielle.\n\nLe système vous informe que cette action empêchera toute nouvelle création ou modification d'enregistrement dans cette période jusqu'à la date prévue de fin d'exercice.\n\nUne confirmation explicite est demandée avant de procéder à la clôture anticipée."
+            },
+            {
+              "question": "Comment rouvrir un exercice ?",
+              "answer": "Cliquez sur l'action « Rouvrir » depuis la liste des exercices.\n\nLa réouverture permet à nouveau de créer et modifier des enregistrements dans cette période."
+            },
+            {
+              "question": "Puis-je supprimer un exercice ?",
+              "answer": "Seul un exercice ouvert peut être supprimé.\n\nLa suppression d'un exercice ne supprime pas les enregistrements qui lui étaient rattachés. Ces enregistrements redeviennent simplement des enregistrements « Sans exercice », comme avant la création de l'exercice."
+            },
+            {
+              "question": "Comment repérer les enregistrements « Sans exercice » ?",
+              "answer": "Dans les écrans Recettes et Dépenses, un badge orange « Sans exercice » apparaît sur chaque ligne dont la date ne correspond à aucun exercice existant.\n\nVous pouvez également filtrer la liste afin d'afficher uniquement ces enregistrements grâce au menu déroulant situé en haut de la page (option « Sans exercice »)."
+            },
+            {
+              "question": "Que se passe-t-il pour les imports de relevés bancaires sur des périodes clôturées ?",
+              "answer": "Lors de l'import d'un relevé bancaire (CSV ou PDF), toute ligne dont la date correspond à un exercice déjà clôturé est ignorée.\n\nCes lignes ne sont pas importées afin d'éviter toute modification d'une période comptable déjà validée. Le résultat de l'import indique le nombre de lignes ignorées pour cette raison.\n\nPour importer ces lignes :\n1. Rouvrez l'exercice concerné.\n2. Importez à nouveau le même fichier.\n\nLes lignes déjà importées ne seront pas créées en double."
+            }
+          ]
+        }
+      }
     },
     "toasts": {
       "created": "Demande envoyée",

@@ -6,13 +6,14 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, ClipboardTextIcon, UsersIcon, CheckCircleIcon, LockIcon, NotePencilIcon, MagnifyingGlassIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ClipboardTextIcon, UsersIcon, CheckCircleIcon, LockIcon, NotePencilIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Pagination } from "@/components/ui/pagination"
+import { SearchInput } from "@/components/ui/search-input"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import type { PaginatedResult } from "@/lib/pagination"
@@ -117,27 +118,24 @@ export default function SondagesPage() {
         }
       />
 
-      <div className="relative max-w-sm">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-        <input
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-          placeholder={t("sondages.view.searchPlaceholder")}
-          className="pl-8 h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        />
-      </div>
+      <SearchInput
+        value={searchInput}
+        onValueChange={setSearchInput}
+        placeholder={t("sondages.view.searchPlaceholder")}
+        containerClassName="w-full max-w-sm"
+      />
 
       {isLoading ? (
         <div className="space-y-3">
           {[0, 1, 2].map(i => (
-            <div key={i} className="rounded-xl border p-4 animate-pulse space-y-2">
+            <div key={i} className="rounded-lg border p-4 animate-pulse space-y-2">
               <div className="h-5 w-48 bg-muted rounded" />
               <div className="h-3 w-32 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : sondages.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-3">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-3">
           <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">{t("sondages.view.noSurvey")}</p>
           <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
@@ -151,7 +149,7 @@ export default function SondagesPage() {
             <div
               key={s.id}
               onClick={() => router.push(`/dashboard/sondages/${s.id}`)}
-              className="rounded-xl border bg-card p-4 flex items-center gap-4 cursor-pointer hover:border-ring transition-colors"
+              className="rounded-lg border bg-card p-4 flex items-center gap-4 cursor-pointer hover:border-ring transition-colors"
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -161,7 +159,7 @@ export default function SondagesPage() {
                     {statusLabel[s.status]}
                   </Badge>
                   {s.anonymous && (
-                    <Badge variant="outline" className="text-xs shrink-0">{t("sondages.view.anonymous")}</Badge>
+                    <Badge variant="outline" className="shrink-0">{t("sondages.view.anonymous")}</Badge>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
@@ -186,10 +184,10 @@ export default function SondagesPage() {
               <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                 {s.status === "BROUILLON" && (
                   <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => activateMutation.mutate(s.id)}
                     loading={activateMutation.isPending}
-                    className="h-7 text-xs"
                   >
                     {t("sondages.view.activate")}
                   </Button>
@@ -200,7 +198,6 @@ export default function SondagesPage() {
                     variant="outline"
                     onClick={() => closeMutation.mutate(s.id)}
                     loading={closeMutation.isPending}
-                    className="h-7 text-xs"
                   >
                     {t("sondages.view.close")}
                   </Button>

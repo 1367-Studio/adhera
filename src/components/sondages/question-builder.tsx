@@ -73,7 +73,7 @@ export function QuestionBuilder({
       : (conditionTrigger?.options ?? [])
 
   return (
-    <div className="rounded-xl border bg-card p-4 space-y-3">
+    <div className="rounded-lg border bg-card p-4 space-y-3">
       {/* Header row */}
       <div className="flex items-start gap-2">
         <span className="shrink-0 mt-1 text-xs font-semibold text-muted-foreground w-5 text-right">
@@ -218,7 +218,7 @@ export function QuestionBuilder({
                       },
                     })
                   }}
-                  className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-violet-400 max-w-[180px]"
+                  className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring max-w-[180px]"
                 >
                   <option value="">{t("sondages.questionBuilder.chooseQuestion")}</option>
                   {triggerCandidates.map((q, i) => (
@@ -236,7 +236,7 @@ export function QuestionBuilder({
                       onChange={e => update({
                         condition: { ...question.condition!, operator: e.target.value as QuestionCondition["operator"] },
                       })}
-                      className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-violet-400"
+                      className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
                     >
                       <option value="eq">{t("sondages.questionBuilder.operatorEq")}</option>
                       <option value="neq">{t("sondages.questionBuilder.operatorNeq")}</option>
@@ -251,7 +251,7 @@ export function QuestionBuilder({
                       onChange={e => update({
                         condition: { ...question.condition!, value: e.target.value },
                       })}
-                      className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-violet-400 max-w-[160px]"
+                      className="rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring max-w-[160px]"
                     >
                       {conditionOptions.map(opt => (
                         <option key={opt} value={opt}>{opt}</option>

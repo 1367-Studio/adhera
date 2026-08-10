@@ -40,7 +40,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const [assoc, cotisations] = await Promise.all([
     prisma.association.findUnique({
       where:  { id: associationId },
-      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
     }),
     // Scoped to this association and to members who still owe something (EN_ATTENTE,
     // PARTIELLEMENT_PAYEE, or EN_RETARD) — defense in depth, doesn't just trust that the

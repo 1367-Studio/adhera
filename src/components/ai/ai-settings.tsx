@@ -140,7 +140,7 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
 
       {/* Status */}
       {isConfigured ? (
-        <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
+        <div className="rounded-lg border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
           <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
             <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t("configuredTitle")}</p>
@@ -156,7 +156,7 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
           </div>
         </div>
       ) : data?.usingPlatformKey ? (
-        <div className="rounded-xl border bg-violet-50 dark:bg-violet-950/20 p-3 flex items-start gap-2.5">
+        <div className="rounded-lg border bg-violet-50 dark:bg-violet-950/20 p-3 flex items-start gap-2.5">
           <SparkleIcon className="size-4 mt-0.5 shrink-0 text-violet-600" />
           <p className="text-sm text-violet-700 dark:text-violet-300">
             {t("platformKeyActive")}

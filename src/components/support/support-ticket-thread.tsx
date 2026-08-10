@@ -72,7 +72,7 @@ export function SupportTicketThread({
   }
 
   return (
-    <div className="flex h-[calc(100vh-220px)] min-h-[420px] flex-col rounded-xl border bg-card">
+    <div className="flex h-[calc(100vh-220px)] min-h-[420px] flex-col rounded-lg border bg-card">
       <div className="flex items-center justify-between gap-3 border-b px-4 py-3">
         <div className="min-w-0">
           <h2 className="truncate font-semibold">{subject}</h2>

@@ -2,14 +2,13 @@
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { BASE_PATH } from "@/lib/env"
-import { loadLogoForPdf, hexToRgb255 } from "@/lib/pdf/branded-header-client"
+import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type AssociationBranding = {
   name: string
   plan: "ESSENTIAL" | "PRO"
   customBrandingEnabled: boolean | null
   logoUrl: string | null
-  primaryColor: string | null
 }
 
 export async function exportMembresPdf(params: URLSearchParams) {
@@ -44,8 +43,7 @@ export async function exportMembresPdf(params: URLSearchParams) {
 
   // Same Pro-gated branding rule as presences/declaration — see canUseCustomBranding().
   const canBrand = assoc ? (assoc.customBrandingEnabled ?? assoc.plan === "PRO") : false
-  const headerRgb: [number, number, number] =
-    (canBrand && assoc?.primaryColor && hexToRgb255(assoc.primaryColor)) || [0, 0, 0]
+  const headerRgb: [number, number, number] = [0, 0, 0]
   const logo = canBrand && assoc?.logoUrl ? await loadLogoForPdf(`${BASE_PATH}/api/association/branding/logo`) : null
 
 // ── Header ─────────────────────────────────────────────────────────────
