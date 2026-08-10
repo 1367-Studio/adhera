@@ -8,6 +8,7 @@ import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
+import { APP_URL } from "@/lib/env"
 
 // Editing what a meeting *is* (title/description/scheduledAt/type/participants) only makes
 // sense before it happens — once it's LIVE or ENDED, rewriting those fields would silently
@@ -83,7 +84,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         include: { user: { select: { name: true, email: true } } },
       })
       const portalPath   = `/portal/${association?.slug}/reunions`
-      const portalBase   = `${process.env.NEXTAUTH_URL ?? ""}${portalPath}`
+      const portalBase   = `${APP_URL}${portalPath}`
       const branding     = association ? resolveDocumentBranding(association) : null
       const finalTitle       = title ?? existing.title
       const finalScheduledAt = scheduledAt !== undefined

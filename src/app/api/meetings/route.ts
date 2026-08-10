@@ -8,6 +8,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { meetingCreateSchema } from "@/lib/schemas"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
+import { APP_URL } from "@/lib/env"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -73,7 +74,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       include: { user: { select: { name: true, email: true } } },
     })
     const portalPath = `/portal/${association?.slug}/reunions`
-    const portalBase = `${process.env.NEXTAUTH_URL ?? ""}${portalPath}`
+    const portalBase = `${APP_URL}${portalPath}`
     const branding = association ? resolveDocumentBranding(association) : null
     for (const m of membres) {
       if (!m.user?.email) continue

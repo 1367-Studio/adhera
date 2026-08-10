@@ -14,6 +14,7 @@ import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationO
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import type Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { APP_URL } from "@/lib/env"
 
 export const dynamic = "force-dynamic"
 
@@ -134,7 +135,7 @@ export async function POST(req: Request) {
           // Email confirmation to member, with the receipt PDF attached when it builds cleanly
           const memberEmail = commande.membre?.user?.email
           if (memberEmail && commande.membre) {
-            const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${commande.association.slug}/boutique/commandes`
+            const portalUrl = `${APP_URL}/portal/${commande.association.slug}/boutique/commandes`
 
             let pdfAttachment: { filename: string; content: Buffer } | undefined
             try {
@@ -207,7 +208,7 @@ export async function POST(req: Request) {
             })
             await pusherServer.trigger(`private-association-${commande.associationId}`, "new-notification", {}).catch(() => {})
 
-            const dashboardUrl = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/boutique`
+            const dashboardUrl = `${APP_URL}/dashboard/boutique`
             for (const admin of admins) {
               if (!admin.email) continue
               // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
@@ -400,13 +401,13 @@ export async function POST(req: Request) {
           })
           if (buyerTicket.email && evenement.association) {
             const assoc = evenement.association
-            const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${assoc.slug}/evenements`
+            const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
             // Only guest/public tickets (no membreId) get a cancel link — a member's own
             // ticket is already cancellable from the authenticated portal, and a multi-seat
             // order bought there can include companions this simple token-based flow (built
             // for the single-seat public registration form) isn't designed to handle.
             const cancelUrl = !buyerTicket.membreId && buyerTicket.cancelToken
-              ? `${process.env.NEXTAUTH_URL ?? ""}/annulation/${buyerTicket.cancelToken}`
+              ? `${APP_URL}/annulation/${buyerTicket.cancelToken}`
               : undefined
             sendEmail(ticketPurchaseEmail({
               firstName:       buyerTicket.firstName,
@@ -903,7 +904,7 @@ export async function POST(req: Request) {
         metadata:      { amountDue: invoice.amount_due, attemptCount: invoice.attempt_count, stripeEventId: event.id },
       })
 
-      const billingUrl    = `${process.env.NEXTAUTH_URL ?? ""}/dashboard/parametres`
+      const billingUrl    = `${APP_URL}/dashboard/parametres`
       const attemptCount  = invoice.attempt_count ?? 1
       const nextAttemptAt = invoice.next_payment_attempt ? new Date(invoice.next_payment_attempt * 1000) : null
       const amount        = invoice.amount_due != null ? invoice.amount_due / 100 : null
