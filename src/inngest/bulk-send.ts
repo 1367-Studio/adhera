@@ -6,6 +6,7 @@ import { customEmail, sondageInvitationEmail, type EmailBranding } from "@/lib/e
 import { substituteVars, buildVars } from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
 import { prisma } from "@/lib/prisma/client"
+import { APP_URL } from "@/lib/env"
 
 const EMAIL_CHUNK_SIZE = 100
 
@@ -267,7 +268,7 @@ export const bulkSendSondageInvitations = inngest.createFunction(
     }
 
     const { emailsSent, emailsFailed } = await step.run("send", async () => {
-      const portalUrl = `${process.env.NEXTAUTH_URL ?? ""}/portal/${slug}/sondages/${sondageId}`
+      const portalUrl = `${APP_URL}/portal/${slug}/sondages/${sondageId}`
       const { sent, failed } = await sendEmailBulk(members.map(m => {
         const mail = sondageInvitationEmail({
           firstName:       m.firstName,

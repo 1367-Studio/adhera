@@ -3,6 +3,7 @@ import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { APP_URL } from "@/lib/env"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
 
@@ -24,7 +25,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // Shown in the settings UI so admins know exactly what to paste into their own LiveKit
     // project's webhook config — without it, auto-close-if-left-running silently stops
     // working the moment they switch off the platform's shared account.
-    webhookUrl: `${process.env.NEXTAUTH_URL ?? ""}/api/webhook/livekit`,
+    webhookUrl: `${APP_URL}/api/webhook/livekit`,
   })
 })
 
