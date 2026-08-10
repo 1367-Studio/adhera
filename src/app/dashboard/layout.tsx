@@ -12,12 +12,16 @@ import { parseModules, deriveModulesForPlan } from "@/lib/modules"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { isColorDark } from "@/lib/color"
 import type { CSSProperties } from "react"
+import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session?.user) redirect("/login")
 
   const u = session.user as SessionUser
+  const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+  const canManageFinance = FINANCE.includes(u.role)
+
   if (u.role === "SUPER_ADMIN") redirect("/backoffice")
   if (u.role === "MEMBRE")      redirect(u.associationSlug ? `/portal/${u.associationSlug}` : "/login")
 
@@ -75,6 +79,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
     )
   }
 
+  const [popupUser, exerciceCount] = canManageFinance && u.associationId
+  ? await Promise.all([
+      prisma.user.findUnique({ where: { id: u.id }, select: { fiscalPeriodPopupSeenAt: true } }),
+      prisma.exerciceComptable.count({ where: { associationId: u.associationId } }),
+    ])
+  : [null, 0]
+
+  const showFiscalPeriodPopup = canManageFinance && modules.finances && !popupUser?.fiscalPeriodPopupSeenAt && exerciceCount === 0
+
   return (
     <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding}>
       <TopLoader />
@@ -84,6 +97,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <SidebarInset>
           <PastDueBanner />
           <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} />
+          <FiscalPeriodPopup show={showFiscalPeriodPopup} />
           <main className="flex flex-1 flex-col gap-4 p-4 pt-0 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>

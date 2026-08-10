@@ -639,6 +639,34 @@
       "categoryTitle": "Ingresos por categoría — {year}"
     }
   },
+  "notifications": {
+    "fiscalPeriodReminder": {
+      "title": "Configure su período fiscal",
+      "body": "Cree su período fiscal para garantizar un correcto seguimiento de sus datos financieros."
+    }
+  },
+  "fiscalPeriodPopup": {
+    "title": "¡Nueva función disponible!",
+    "greeting": "Hola,",
+    "body": "Cree ahora su período fiscal para garantizar un correcto seguimiento de sus datos financieros. Consulte nuestra guía para ayudarle en la configuración:",
+    "guideLinkLabel": "Ver el manual de uso",
+    "guideUrl": "",
+    "supportHint": "Si tiene alguna dificultad, nuestro equipo está a su disposición a través de la mensajería de soporte, accesible desde la pestaña Communication → Support.",
+    "thanks": "Gracias,",
+    "teamSignature": "El equipo de soporte",
+    "helpCta": "¿Necesita ayuda?",
+    "cta": "Configurar ahora",
+    "later": "Más tarde",
+    "viewFullFaq": "TODO",
+    "faqPreview": {
+      "items": [
+        { "question": "¿Qué es un ejercicio fiscal?", "answer": "Un período financiero (generalmente un año) que agrupa sus ingresos, gastos y transacciones bancarias con fines contables." },
+        { "question": "¿Cómo creo mi primer ejercicio fiscal?", "answer": "Elija sus propias fechas de inicio y fin. Esta elección es permanente y define el calendario fiscal de su asociación para todos los años futuros." },
+        { "question": "¿Qué ocurre cuando cierro un ejercicio fiscal?", "answer": "Los registros existentes (ingresos, gastos y transacciones bancarias) cuyas fechas se encuentren dentro de este ejercicio fiscal, pero que aún no estén vinculados a un ejercicio fiscal, se vinculan automáticamente a él." },
+        { "question": "¿Qué ocurre cuando elimino un ejercicio fiscal?", "answer": "Eliminar un ejercicio fiscal no elimina los registros vinculados a él. Estos registros simplemente vuelven a estar “Sin asignar”, como lo estaban antes de la creación del ejercicio fiscal." }
+      ]
+    }
+  },
   "tour": {
     "next": "Siguiente",
     "previous": "Anterior",
@@ -3879,6 +3907,56 @@
       "message": "Mensaje",
       "cancel": "Cancelar",
       "send": "Enviar"
+    },
+    "faq": {
+      "sectionTitle": "Preguntas frecuentes",
+      "categories": {
+        "fiscalPeriod": {
+          "label": "Período fiscal",
+          "items": [
+            {
+              "question": "¿Qué es un ejercicio fiscal?",
+              "answer": "Un ejercicio fiscal representa un período financiero definido por su asociación (generalmente un año). Todo ingreso, gasto o transacción bancaria fechada dentro de este período se vincula automáticamente al ejercicio fiscal correspondiente.\n\nUna vez cerrado un ejercicio fiscal, no se pueden crear nuevos registros dentro de ese período y los registros existentes ya no pueden modificarse. Esta regla garantiza que sus cuentas se mantengan fiables y coherentes a lo largo del tiempo, especialmente después de una auditoría o revisión financiera."
+            },
+            {
+              "question": "¿Cómo creo mi primer ejercicio fiscal?",
+              "answer": "El primer ejercicio fiscal que usted crea es flexible: puede elegir las fechas de inicio y fin que desee, de acuerdo con el calendario contable de su asociación (por ejemplo: un año natural de enero a diciembre, u otro período como de septiembre a agosto).\n\n⚠ Advertencia: esta elección es permanente en el sistema. Define el calendario fiscal de su asociación. Todos los ejercicios fiscales futuros deben seguir el mismo patrón de fechas (el mismo día/mes de inicio y fin), simplemente aplicado a los años siguientes.\n\nSe muestra un banner de advertencia al crear el primer ejercicio fiscal para recordarle esta regla.\n\nAl crear una asociación, el primer ejercicio fiscal debe seguir el calendario contable elegido por la asociación. Si la actividad comienza durante el año, el período anterior al inicio real de la actividad simplemente permanecerá sin asientos contables.\n\nEjemplo: Una asociación inicia su actividad en marzo de 2026 y elige un ejercicio fiscal que va del 1 de enero al 31 de diciembre. El primer ejercicio fiscal se creará, por lo tanto, del 01/01/2026 al 31/12/2026. Enero y febrero no tendrán ningún asiento contable."
+            },
+            {
+              "question": "¿Cómo creo los ejercicios fiscales siguientes?",
+              "answer": "A partir del segundo ejercicio fiscal, el formulario muestra el patrón de fechas ya definido (por ejemplo: 01/01 – 31/12) para guiarlo.\n\nLos nuevos ejercicios fiscales deben seguir exactamente este patrón. Si las fechas introducidas no coinciden con el calendario establecido, el sistema las corrige automáticamente y explica el ajuste realizado antes de permitirle guardar de nuevo."
+            },
+            {
+              "question": "¿Qué ocurre si hay un período no cubierto entre dos ejercicios fiscales?",
+              "answer": "Si las fechas introducidas generan un período no cubierto por ningún ejercicio fiscal (por ejemplo, si usted crea el ejercicio fiscal de 2027 directamente después del ejercicio fiscal de 2025, dejando 2026 sin ejercicio fiscal), se muestra una advertencia.\n\nEl sistema indica la duración del período no cubierto. Usted puede confirmar y continuar, o modificar las fechas para cubrir correctamente el período faltante."
+            },
+            {
+              "question": "¿Cómo cierro un ejercicio fiscal?",
+              "answer": "Desde la lista de ejercicios fiscales, utilice la acción \"Cerrar\" para cerrar un ejercicio fiscal.\n\nEn circunstancias normales, un ejercicio fiscal solo puede cerrarse después de su fecha de finalización oficial.\n\nAl cerrar:\n• Los registros existentes (ingresos, gastos y transacciones bancarias) cuyas fechas se encuentren dentro de este ejercicio fiscal, pero que aún no estén vinculados a ningún ejercicio fiscal, se vinculan automáticamente a él.\n• Un mensaje informa del número de registros que se vincularon.\n\nDespués del cierre, no se pueden crear nuevos registros dentro de este período y los datos existentes ya no pueden modificarse, a menos que se reabra el ejercicio fiscal."
+            },
+            {
+              "question": "¿Puedo cerrar un ejercicio fiscal de forma anticipada?",
+              "answer": "En determinadas situaciones específicas, como el cese definitivo de la actividad de la asociación (por ejemplo, disolución), un ejercicio fiscal puede cerrarse antes de su fecha de finalización oficial.\n\nEl sistema informa de que esta acción impedirá la creación o modificación de nuevos registros dentro de este período hasta la fecha de finalización originalmente prevista.\n\nSe requiere una confirmación explícita antes de proceder con el cierre anticipado."
+            },
+            {
+              "question": "¿Cómo reabro un ejercicio fiscal?",
+              "answer": "Haga clic en la acción \"Reabrir\" en la lista de ejercicios fiscales.\n\nLa reapertura permite crear y modificar registros nuevamente dentro de este período."
+            },
+            {
+              "question": "¿Puedo eliminar un ejercicio fiscal?",
+              "answer": "Solo se puede eliminar un ejercicio fiscal abierto.\n\nEliminar un ejercicio fiscal no elimina los registros vinculados a él. Estos registros simplemente vuelven a estar \"Sin asignar\", como lo estaban antes de la creación del ejercicio fiscal."
+            },
+            {
+              "question": "¿Cómo localizo registros \"Sin asignar\"?",
+              "answer": "En las pantallas de Ingresos y Gastos, aparece una etiqueta naranja \"Sin asignar\" en cada fila cuya fecha no coincide con ningún ejercicio fiscal existente.\n\nTambién puede filtrar la lista para mostrar únicamente estos registros mediante el menú desplegable en la parte superior de la página (opción \"Sin asignar\")."
+            },
+            {
+              "question": "¿Qué ocurre con las importaciones de extractos bancarios en períodos cerrados?",
+              "answer": "Al importar un extracto bancario (CSV o PDF), cualquier línea cuya fecha se encuentre dentro de un ejercicio fiscal ya cerrado se omite.\n\nEstas líneas no se importan para evitar modificaciones en un período contable que ya ha sido validado y cerrado. El resultado de la importación indica el número de líneas omitidas por este motivo.\n\nPara importar estas líneas:\n1. Reabra el ejercicio fiscal correspondiente.\n2. Importe el mismo archivo nuevamente.\n\nLas líneas que ya se hayan importado no se crearán como duplicados."
+            }
+          ]
+        }
+      }
     },
     "toasts": {
       "created": "Solicitud enviada",
