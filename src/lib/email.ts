@@ -21,8 +21,11 @@ export type EmailBranding = { logoUrl: string | null } | null | undefined
 
 // The accent shows through the header's top bar and the button, not as a full-bleed
 // banner behind white text — restrained, and it keeps a transparent-background logo
-// visible against a plain white header.
-const ACCENT = "#000"
+// visible against a plain white header. Kept just short of pure black: Apple Mail/
+// Outlook's automatic dark-mode repainting specifically targets #000/#fff pairs for
+// inversion (which flips this into unreadable dark-on-dark), and is less aggressive
+// with an near-black value that already reads as "intentionally dark".
+const ACCENT = "#18181b"
 
 function layout(associationName: string, content: string, branding?: EmailBranding): string {
   const accent = ACCENT
@@ -38,21 +41,34 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
+  <style>
+    :root { color-scheme: light; supported-color-schemes: light; }
+    /* Belt-and-suspenders for clients (Gmail app, some Outlook builds) that ignore the
+       meta tags above and repaint dark-mode colors from CSS instead — pins the card and
+       button back to their authored light-mode colors. */
+    @media (prefers-color-scheme: dark) {
+      .email-card, .email-btn { background: ${accent} !important; }
+      .email-card-bg { background: #fff !important; }
+      .email-btn a { color: #fff !important; }
+    }
+  </style>
 </head>
 <body style="margin:0;padding:0;background:#f4f4f5;font-family:Arial,sans-serif;color:#111;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 0;">
     <tr><td align="center">
-      <table width="560" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
+      <table width="560" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="email-card-bg" style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
         <tr>
-          <td style="background:${accent};padding:4px;font-size:0;line-height:0;">&nbsp;</td>
+          <td class="email-card" bgcolor="${accent}" style="background:${accent};padding:4px;font-size:0;line-height:0;">&nbsp;</td>
         </tr>
         <tr>
-          <td style="background:#fff;padding:24px 40px;border-bottom:1px solid #e4e4e7;">
+          <td class="email-card-bg" bgcolor="#ffffff" style="background:#fff;padding:24px 40px;border-bottom:1px solid #e4e4e7;">
             ${headerInner}
           </td>
         </tr>
         <tr>
-          <td style="padding:36px 40px;">
+          <td class="email-card-bg" bgcolor="#ffffff" style="background:#fff;padding:36px 40px;color:#111;">
             ${content}
           </td>
         </tr>
@@ -73,7 +89,7 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
 
 function btn(label: string, url: string): string {
   return `<table cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
-    <tr><td style="border-radius:6px;background:${ACCENT};">
+    <tr><td class="email-btn" bgcolor="${ACCENT}" style="border-radius:6px;background:${ACCENT};">
       <a href="${url}" style="display:inline-block;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;text-decoration:none;">${label}</a>
     </td></tr>
   </table>`
