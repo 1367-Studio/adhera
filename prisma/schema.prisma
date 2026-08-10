@@ -137,6 +137,23 @@ enum MeetingType {
   GENERALE
 }
 
+enum MeetingSignatureStatus {
+  DRAFT
+  ONGOING
+  DONE
+  EXPIRED
+  CANCELLED
+  DECLINED
+}
+
+enum MeetingSignerStatus {
+  NOTIFIED
+  VIEWED
+  SIGNED
+  DECLINED
+  ERROR
+}
+
 enum QuestionType {
   TEXT_SHORT
   TEXT_LONG
@@ -308,6 +325,11 @@ model Association {
   livekitUrl              String?
   livekitApiKey           String?
   livekitApiSecret        String?
+  // Youtrust (Yousign) BYOA — bring-your-own-account only, no platform fallback (same
+  // shape as smsAccountSid/smsAuthToken above). Null means the association hasn't set this up yet, in which
+  // case the ata signature feature is simply not shown — see src/lib/youtrust/config.ts.
+  youtrustApiKey          String?
+  youtrustWebhookSecret   String?
   stripeCustomerId        String?
   stripeSubscriptionId    String?
   stripeConnectId         String?
@@ -469,24 +491,25 @@ model Membre {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association           Association          @relation(fields: [associationId], references: [id])
-  user                  User?                @relation(fields: [userId], references: [id])
-  type                  MembreType?          @relation(fields: [typeId], references: [id])
-  responsable           Membre?              @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
-  dependants            Membre[]             @relation("MembreResponsable")
-  cotisations           Cotisation[]
-  participations        Participation[]
-  actualiteRecipients   ActualiteRecipient[]
-  materialLoans         MaterialLoan[]
-  automationLogs        AutomationLog[]
-  dons                  Don[]
-  sondageRecipients     SondageRecipient[]
-  sondageReponses       SondageReponse[]
-  boutiqueCommandes     BoutiqueCommande[]
-  meetingsAsParticipant MeetingParticipant[]
-  incomes               Income[]
-  emailMessages         EmailMessage[]
-  smsMessages           SmsMessage[]
+  association             Association          @relation(fields: [associationId], references: [id])
+  user                    User?                @relation(fields: [userId], references: [id])
+  type                    MembreType?          @relation(fields: [typeId], references: [id])
+  responsable             Membre?              @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  dependants              Membre[]             @relation("MembreResponsable")
+  cotisations             Cotisation[]
+  participations          Participation[]
+  actualiteRecipients     ActualiteRecipient[]
+  materialLoans           MaterialLoan[]
+  automationLogs          AutomationLog[]
+  dons                    Don[]
+  sondageRecipients       SondageRecipient[]
+  sondageReponses         SondageReponse[]
+  boutiqueCommandes       BoutiqueCommande[]
+  meetingsAsParticipant   MeetingParticipant[]
+  meetingSignatureSigners MeetingSignatureSigner[]
+  incomes                 Income[]
+  emailMessages           EmailMessage[]
+  smsMessages             SmsMessage[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -1142,9 +1165,10 @@ model Meeting {
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
-  association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  participants MeetingParticipant[]
-  recordings   MeetingRecording[]
+  association      Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  participants     MeetingParticipant[]
+  recordings       MeetingRecording[]
+  signatureRequest MeetingSignatureRequest?
 
   @@index([associationId])
 }
@@ -1179,6 +1203,52 @@ model MeetingRecording {
   meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
 
   @@index([meetingId])
+}
+
+// Youtrust (Yousign) signature envelope for a meeting's ata — created only when the
+// association has configured its own youtrustApiKey (BYOA, no platform fallback, see
+// src/lib/youtrust/config.ts). One per Meeting.
+model MeetingSignatureRequest {
+  id                String                 @id @default(cuid())
+  meetingId         String                 @unique
+  status            MeetingSignatureStatus @default(DRAFT)
+  youtrustRequestId String?
+  // Snapshot of the ata PDF sent for signing (R2 key) — Meeting.transcript/summary can keep
+  // changing after the envelope is created, but the document being signed must not.
+  pdfUrl            String?
+  signedPdfUrl      String?
+  auditTrailUrl     String?
+  createdById       String
+  activatedAt       DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
+
+  meeting Meeting                  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  signers MeetingSignatureSigner[]
+}
+
+// One row per attendee (MeetingParticipant.joinedAt not null) invited to sign. email/
+// firstName/lastName are a send-time snapshot of the Membre — same pinning rationale as
+// Meeting.livekitApiKey etc: a Membre's data changing later must not desync an
+// already-sent signature request.
+model MeetingSignatureSigner {
+  id                 String              @id @default(cuid())
+  signatureRequestId String
+  membreId           String
+  youtrustSignerId   String?
+  email              String
+  firstName          String
+  lastName           String
+  status             MeetingSignerStatus @default(NOTIFIED)
+  signedAt           DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  signatureRequest MeetingSignatureRequest @relation(fields: [signatureRequestId], references: [id], onDelete: Cascade)
+  membre           Membre                  @relation(fields: [membreId], references: [id], onDelete: Cascade)
+
+  @@unique([signatureRequestId, membreId])
 }
 
 // ─── Finances & Conciliation bancaire ────────────────────────────────────────
