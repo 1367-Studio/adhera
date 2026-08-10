@@ -24,6 +24,11 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
     await signIn("credentials", { email, password, ...(slug ? { slug } : {}), redirectTo: `${BASE_PATH}${callbackUrl ?? defaultRedirect}` })
   } catch (error) {
     if (error instanceof AuthError) {
+      // AuthError covers more than "wrong password" (e.g. authorize() throwing on a DB
+      // error, or NextAuth's own config/callback failures) — all surfaced identically to
+      // the user by design, but logging the real cause/type here means a report like
+      // "I didn't change my password" is diagnosable from server logs instead of a guess.
+      console.error("[auth] signIn failed:", error.type, error.cause ?? error)
       return { error: "Identifiants incorrects. Veuillez réessayer." }
     }
     throw error

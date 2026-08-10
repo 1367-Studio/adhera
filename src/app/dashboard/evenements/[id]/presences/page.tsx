@@ -531,10 +531,10 @@ export default function PresencesPage() {
             <CaretDownIcon className="ml-1 size-3" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => window.location.href = `/api/evenements/${id}/export?format=csv`}>
+            <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=csv`}>
               {t("evenements.presences.export.csv")}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => window.location.href = `/api/evenements/${id}/export?format=xlsx`}>
+            <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=xlsx`}>
               {t("evenements.presences.export.excel")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleExportPdf}>

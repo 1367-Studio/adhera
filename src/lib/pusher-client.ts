@@ -1,4 +1,5 @@
 import Pusher from "pusher-js"
+import { BASE_PATH } from "@/lib/env"
 
 let client: Pusher | null = null
 let attempted = false
@@ -14,7 +15,7 @@ export function getPusherClient(): Pusher | null {
   try {
     client = new Pusher(key, {
       cluster:      process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
-      authEndpoint: "/api/pusher/auth",
+      authEndpoint: `${BASE_PATH}/api/pusher/auth`,
     })
   } catch {
     client = null
