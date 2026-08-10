@@ -14,7 +14,7 @@ interface FireParams {
   association:   {
     name: string; slug: string; modules: unknown
     plan: AssociationPlan; customBrandingEnabled: boolean | null
-    logoUrl: string | null; primaryColor: string | null
+    logoUrl: string | null
   }
   membre:        { id: string; firstName: string; lastName: string; email: string | null; phone: string | null }
   evenement?:    { id: string; title: string; date: Date; location: string | null }

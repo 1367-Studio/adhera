@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, MagnifyingGlassIcon, XIcon, PushPinIcon, PaperPlaneTiltIcon, EyeSlashIcon, CalendarBlankIcon, ImageIcon, GridFourIcon, ListIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, PushPinIcon, PaperPlaneTiltIcon, EyeSlashIcon, CalendarBlankIcon, ImageIcon, GridFourIcon, ListIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -19,6 +19,7 @@ import { ActualiteForm } from "@/components/actualites/actualite-form"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
+import { SearchInput } from "@/components/ui/search-input"
 import { cn, stripHtml } from "@/lib/utils"
 
 type EvenementRef = { id: string; title: string; date: string; location: string | null }
@@ -74,7 +75,7 @@ function PostCard({
 
   return (
     <div className={cn(
-      "group rounded-xl border bg-card overflow-hidden flex flex-col transition-all hover:shadow-md",
+      "group rounded-lg border bg-card overflow-hidden flex flex-col",
       !post.publishedAt && "border-dashed border-muted-foreground/40",
     )}>
       {/* Cover image */}
@@ -97,18 +98,14 @@ function PostCard({
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
             {post.publishedAt ? (
-              <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[11px] font-medium px-2 py-0.5">
-                {t("published")}
-              </span>
+              <Badge variant="success">{t("published")}</Badge>
             ) : (
-              <span className="inline-flex items-center rounded-full bg-muted text-muted-foreground text-[11px] font-medium px-2 py-0.5">
-                {t("draft")}
-              </span>
+              <Badge variant="secondary">{t("draft")}</Badge>
             )}
             {post.pinned && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium px-2 py-0.5">
+              <Badge variant="warning">
                 <PushPinIcon className="size-2.5" /> {t("pinned")}
-              </span>
+              </Badge>
             )}
           </div>
           <RowActions
@@ -129,7 +126,7 @@ function PostCard({
         </div>
 
         {/* Meta */}
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground/70">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground/70">
           <span>{date}</span>
           {post.evenement && (
             <>
@@ -179,27 +176,27 @@ function PostRow({
     <div className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0 hover:bg-muted/30 transition-colors">
       <div className="flex items-center gap-1.5 shrink-0">
         {post.publishedAt ? (
-          <span className="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[11px] font-medium px-2 py-0.5">{t("published")}</span>
+          <Badge variant="success">{t("published")}</Badge>
         ) : (
-          <span className="inline-flex items-center rounded-full bg-muted text-muted-foreground text-[11px] font-medium px-2 py-0.5">{t("draft")}</span>
+          <Badge variant="secondary">{t("draft")}</Badge>
         )}
         {post.pinned && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium px-2 py-0.5">
+          <Badge variant="warning">
             <PushPinIcon className="size-2.5" /> {t("pinned")}
-          </span>
+          </Badge>
         )}
       </div>
 
       <p className="flex-1 text-sm font-medium truncate">{post.title}</p>
 
       {post.evenement && (
-        <span className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
+        <span className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground shrink-0">
           <CalendarBlankIcon className="size-3" />
           <span className="truncate max-w-[120px]">{post.evenement.title}</span>
         </span>
       )}
 
-      <span className="text-[11px] text-muted-foreground shrink-0">{date}</span>
+      <span className="text-xs text-muted-foreground shrink-0">{date}</span>
 
       <RowActions
         actions={[
@@ -298,32 +295,20 @@ export function ActualitesView() {
       />
 
       {/* Search */}
-      <div className="relative w-72">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-        <input
-          type="text"
-          placeholder={t("actualites.view.searchPlaceholder")}
-          value={searchInput}
-          onChange={e => handleSearch(e.target.value)}
-          className="w-full rounded-md border border-input bg-background pl-9 pr-8 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-        />
-        {searchInput && (
-          <button
-            type="button"
-            onClick={() => { if (debounceRef.current) clearTimeout(debounceRef.current); setSearchInput(""); setSearch(""); setPage(1) }}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            <XIcon className="size-3.5" />
-          </button>
-        )}
-      </div>
+      <SearchInput
+        value={searchInput}
+        onValueChange={handleSearch}
+        onClear={() => { if (debounceRef.current) clearTimeout(debounceRef.current); setSearchInput(""); setSearch(""); setPage(1) }}
+        placeholder={t("actualites.view.searchPlaceholder")}
+        containerClassName="w-72"
+      />
 
       {/* Posts */}
       {isLoading ? (
         view === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="rounded-xl border bg-card overflow-hidden animate-pulse">
+              <div key={i} className="rounded-lg border bg-card overflow-hidden animate-pulse">
                 <div className="aspect-video bg-muted w-full" />
                 <div className="p-3.5 space-y-2.5">
                   <div className="h-5 w-16 rounded-full bg-muted" />
@@ -338,7 +323,7 @@ export function ActualitesView() {
             ))}
           </div>
         ) : (
-          <div className="rounded-xl border bg-card overflow-hidden">
+          <div className="rounded-lg border bg-card overflow-hidden">
             {[1, 2, 3, 4].map(i => (
               <div key={i} className="flex items-center gap-3 px-4 py-3 border-b last:border-b-0 animate-pulse">
                 <div className="h-5 w-16 rounded-full bg-muted" />
@@ -349,7 +334,7 @@ export function ActualitesView() {
           </div>
         )
       ) : posts.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-muted/10 py-16 text-center">
+        <div className="rounded-lg border border-dashed bg-muted/10 py-16 text-center">
           <p className="text-muted-foreground text-sm">
             {search ? t("actualites.view.noResultsFor", { search }) : t("actualites.view.noPost")}
           </p>
@@ -366,7 +351,7 @@ export function ActualitesView() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border bg-card overflow-hidden">
+        <div className="rounded-lg border bg-card overflow-hidden">
           {posts.map(post => (
             <PostRow
               key={post.id}

@@ -86,7 +86,7 @@ export function CurrencyInput({ value, onChange, className, disabled }: Currency
       onChange={() => {}}
       onBlur={handleBlur}
       className={cn(
-        "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors",
+        "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm transition-colors",
         "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none cursor-text",
         "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
         className,
@@ -174,7 +174,7 @@ export function CurrencyField({ label, error, hint, required, disabled, value, o
         onChange={() => {/* controlled via onKeyDown */}}
         onBlur={handleBlur}
         className={cn(
-          "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors",
+          "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none cursor-text",
           "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
           error && "border-destructive",

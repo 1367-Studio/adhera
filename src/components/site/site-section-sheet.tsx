@@ -130,11 +130,11 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                     lazy
                     onFilePending={onFilePending}
                   />
-                  <p className="text-[11px] text-muted-foreground">{t("bgImageHint")}</p>
+                  <p className="text-xs text-muted-foreground">{t("bgImageHint")}</p>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs">{t("bgColor")}</Label>
-                  <p className="text-[11px] text-muted-foreground mb-1.5">{t("bgColorHint")}</p>
+                  <p className="text-xs text-muted-foreground mb-1.5">{t("bgColorHint")}</p>
                   <div className="flex items-center gap-2">
                     <input
                       type="color"

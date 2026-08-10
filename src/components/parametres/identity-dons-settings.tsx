@@ -144,7 +144,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
             disabled={!canEdit}
             value={organismeCategory}
             onChange={e => { setOrganismeCategory(e.target.value as OrganismeCategory); setDirty(true) }}
-            className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
           >
             {ORGANISME_CATEGORY_GROUPS.map(group => (
               <optgroup key={group.label} label={group.label}>
@@ -176,7 +176,7 @@ export function IdentityDonsSettings({ canEdit }: IdentityDonsSettingsProps) {
             checked={canIssueTaxReceipts}
             disabled={!canEdit || (!hasIdentifier && !canIssueTaxReceipts)}
             onChange={e => { setCanIssueTaxReceipts(e.target.checked); setDirty(true) }}
-            className="mt-0.5 rounded border-input accent-violet-600"
+            className="mt-0.5 rounded border-input accent-primary"
           />
           <div>
             <p className="text-sm font-medium">{t("taxReceiptToggle")}</p>

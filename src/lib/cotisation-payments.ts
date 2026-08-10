@@ -149,7 +149,7 @@ export async function sendCotisationPaymentConfirmation(
 
   const association = await prisma.association.findUnique({
     where:  { id: cotisation.associationId },
-    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return
 

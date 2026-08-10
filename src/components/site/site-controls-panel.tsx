@@ -340,7 +340,7 @@ export function SiteControlsPanel({
                 <button
                   type="button"
                   onClick={addLink}
-                  className="text-[10px] font-medium text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
                 >
                   <PlusIcon className="size-3" /> {t("add")}
                 </button>
@@ -363,7 +363,7 @@ export function SiteControlsPanel({
                     placeholder={t("linkUrlPlaceholder")}
                     className={cn("text-xs h-7 font-mono", urlInvalid && "border-red-400 focus-visible:ring-red-400")}
                   />
-                  {urlInvalid && <p className="text-[10px] text-red-500">{t("linkUrlError")}</p>}
+                  {urlInvalid && <p className="text-xs text-red-500">{t("linkUrlError")}</p>}
                 </div>
                 <button
                   type="button"
@@ -375,7 +375,7 @@ export function SiteControlsPanel({
               </div>
             )})}
             {footerLinks.length === 0 && (
-              <p className="text-[11px] text-muted-foreground">{t("noLinks")}</p>
+              <p className="text-xs text-muted-foreground">{t("noLinks")}</p>
             )}
           </div>
         </Panel>
@@ -416,7 +416,7 @@ export function SiteControlsPanel({
 
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium truncate">{section.title || sectionLabels[section.type]}</p>
-                  <p className="text-[10px] text-muted-foreground">{sectionLabels[section.type]}</p>
+                  <p className="text-xs text-muted-foreground">{sectionLabels[section.type]}</p>
                 </div>
 
                 {canEdit && (

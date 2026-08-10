@@ -66,13 +66,13 @@ export function parseModules(raw: unknown): AssocModules {
 export const PORTAL_NAV_ORDER: Array<{ path: string; moduleKey?: keyof AssocModules }> = [
   { path: "actualites",     moduleKey: "actualites"  },
   { path: "evenements",     moduleKey: "evenements"  },
-  { path: "materiel",       moduleKey: "materiel"    },
   { path: "cotisation",     moduleKey: "cotisations" },
-  { path: "dons",           moduleKey: "dons"        },
-  { path: "sondages",       moduleKey: "sondages"    },
-  { path: "boutique",       moduleKey: "boutique"    },
-  { path: "reunions",       moduleKey: "reunions"    },
   { path: "communications" },
+  { path: "reunions",       moduleKey: "reunions"    },
+  { path: "sondages",       moduleKey: "sondages"    },
+  { path: "dons",           moduleKey: "dons"        },
+  { path: "boutique",       moduleKey: "boutique"    },
+  { path: "materiel",       moduleKey: "materiel"    },
   { path: "profil"         },
 ]
 

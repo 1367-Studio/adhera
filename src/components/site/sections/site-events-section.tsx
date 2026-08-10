@@ -43,7 +43,7 @@ export function SiteEventsSection({ section, events, color, slug }: Props) {
               <Link
                 key={event.id}
                 href={`/${slug}/evenements/${event.id}`}
-                className="block bg-white rounded-xl border border-gray-100 p-5 space-y-3 hover:shadow-sm transition-shadow"
+                className="block bg-white rounded-lg border border-gray-100 p-5 space-y-3 transition-shadow"
               >
                 <div
                   className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white"

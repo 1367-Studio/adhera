@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, BankIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { useBankAccounts, useCreateBankAccount, useUpdateBankAccount, useDeleteBankAccount } from "@/hooks/use-bank-accounts"
 import type { BankAccountInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -76,14 +76,9 @@ export function BankAccountsView() {
       key: "account",
       header: t("finances.accountsView.columns.account"),
       cell: (a) => (
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <BankIcon className="size-4 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="font-medium">{a.accountName}</p>
-            <p className="text-xs text-muted-foreground">{a.bankName}{a.ibanLast4 ? ` · ****${a.ibanLast4}` : ""}</p>
-          </div>
+        <div>
+          <p className="font-medium">{a.accountName}</p>
+          <p className="text-xs text-muted-foreground">{a.bankName}{a.ibanLast4 ? ` · ****${a.ibanLast4}` : ""}</p>
         </div>
       ),
     },
@@ -102,7 +97,7 @@ export function BankAccountsView() {
       header: t("finances.accountsView.columns.status"),
       className: "w-24",
       cell: (a) => a.isActive
-        ? <Badge variant="default" className="bg-green-600 hover:bg-green-700">{t("finances.accountsView.status.actif")}</Badge>
+        ? <Badge variant="success">{t("finances.accountsView.status.actif")}</Badge>
         : <Badge variant="secondary">{t("finances.accountsView.status.inactif")}</Badge>,
     },
     {

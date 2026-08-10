@@ -28,7 +28,7 @@ interface Props {
 export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
   const t = useTranslations("dashboard.recentOrders")
   return (
-    <div className="rounded-xl border bg-card p-5 space-y-3 flex flex-col">
+    <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col">
       <div className="flex items-center gap-2">
         <ShoppingBagIcon className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{t("title")}</span>
@@ -46,12 +46,12 @@ export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
               <div key={v.id}>
                 {startsNewGroup && i > 0 && <div className="h-px bg-border my-2" />}
                 {startsNewGroup && v.status === "PENDING" && (
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-amber-600 dark:text-amber-500 mb-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-amber-600 dark:text-amber-500 mb-1">
                     {t("pending", { count: ventesRecentes.filter(x => x.status === "PENDING").length })}
                   </p>
                 )}
                 {startsNewGroup && v.status === "PAID" && i > 0 && (
-                  <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground mb-1">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-1">
                     {t("recent")}
                   </p>
                 )}

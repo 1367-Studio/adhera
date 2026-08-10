@@ -197,8 +197,8 @@ export function ReconciliationView() {
         if (tx.status === "MATCHED") {
           return (
             <Button
-              size="sm" variant="ghost"
-              className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
+              size="xs" variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
               onClick={() => handleUnmatch(tx)}
               title={t("finances.reconciliationView.actions.unmatchTitle")}
             >
@@ -209,8 +209,8 @@ export function ReconciliationView() {
         if (tx.status === "IGNORED" || tx.status === "DUPLICATE") {
           return (
             <Button
-              size="sm" variant="ghost"
-              className="h-7 text-xs px-2 text-muted-foreground hover:text-foreground"
+              size="xs" variant="ghost"
+              className="text-muted-foreground hover:text-foreground"
               onClick={() => handleReactivate(tx)}
               title={t("finances.reconciliationView.actions.reactivateTitle")}
             >
@@ -220,19 +220,19 @@ export function ReconciliationView() {
         }
         return (
           <div className="flex items-center gap-1 flex-wrap">
-            <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={() => setMatchModal(tx)}>
+            <Button size="xs" variant="outline" onClick={() => setMatchModal(tx)}>
               <LinkIcon className="size-3 mr-1" />{t("finances.reconciliationView.actions.match")}
             </Button>
             {tx.type === "CREDIT" ? (
-              <Button size="sm" variant="outline" className="h-7 text-xs px-2 text-green-700" onClick={() => setIncomeModal(tx)}>
+              <Button size="xs" variant="outline" className="text-green-700 dark:text-green-400" onClick={() => setIncomeModal(tx)}>
                 + {t("finances.reconciliationView.actions.addIncome")}
               </Button>
             ) : (
-              <Button size="sm" variant="outline" className="h-7 text-xs px-2 text-red-700" onClick={() => setExpenseModal(tx)}>
+              <Button size="xs" variant="outline" className="text-destructive" onClick={() => setExpenseModal(tx)}>
                 + {t("finances.reconciliationView.actions.addExpense")}
               </Button>
             )}
-            <Button size="icon" variant="ghost" className="size-7 text-muted-foreground hover:text-foreground" onClick={() => handleIgnore(tx)} title={t("finances.reconciliationView.actions.ignore")}>
+            <Button size="icon-sm" variant="ghost" className="text-muted-foreground hover:text-foreground" onClick={() => handleIgnore(tx)} title={t("finances.reconciliationView.actions.ignore")}>
               <MinusIcon className="size-3.5" />
             </Button>
           </div>
@@ -249,13 +249,13 @@ export function ReconciliationView() {
       />
 
       <div className="flex flex-wrap gap-2">
-        <div className="flex rounded-lg border overflow-hidden">
+        <div className="flex h-9 rounded-md border overflow-hidden">
           {statusFilters.map(f => (
             <button
               key={f.value}
               onClick={() => { setStatusFilter(f.value); setPage(1) }}
               className={cn(
-                "px-3 py-1.5 text-sm transition-colors",
+                "px-3 text-sm transition-colors",
                 statusFilter === f.value
                   ? "bg-foreground text-background"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/40",

@@ -10,6 +10,7 @@
     "back": "Back",
     "loading": "Loading...",
     "search": "Search",
+    "clearSearch": "Clear search",
     "yes": "Yes",
     "no": "No",
     "success": "Success",
@@ -1607,7 +1608,10 @@
         "revoke": "Revoke",
         "generateLink": "Generate a link",
         "sendEmail": "Send by email",
-        "toasts": { "linkCopied": "Link copied", "emailSent": "Email sent" }
+        "toasts": {
+          "linkCopied": "Link copied",
+          "emailSent": "Email sent"
+        }
       },
       "toasts": {
         "transcriptSaved": "Transcript saved",
@@ -2450,12 +2454,9 @@
     },
     "branding": {
       "title": "Brand identity",
-      "subtitle": "Logo and colors shown on the dashboard, invoices/quotes, attendance sheet and public site.",
+      "subtitle": "Logo shown on the dashboard, invoices/quotes, attendance sheet and public site.",
       "logo": "Logo",
-      "primaryColor": "Primary color",
-      "secondaryColor": "Secondary color",
-      "secondaryPlaceholder": "Optional",
-      "proOnlyText": "Custom logo and colors (dashboard, invoices/quotes, attendance sheet) are reserved for the Pro plan. Upgrade from the Subscription tab to enable them.",
+      "proOnlyText": "A custom logo (dashboard, invoices/quotes, attendance sheet) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
       "toasts": {
         "updated": "Brand identity updated",
         "uploadError": "Error uploading the logo"

@@ -119,7 +119,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
 
       {/* Status */}
       {data?.smsConfigured ? (
-        <div className="rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
+        <div className="rounded-lg border bg-emerald-50 dark:bg-emerald-950/30 p-3 flex items-start gap-2.5">
           <CheckCircleIcon className="size-4 mt-0.5 shrink-0 text-emerald-600" />
           <div className="space-y-0.5 flex-1 min-w-0">
             <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">{t("configuredTitle")}</p>
@@ -129,7 +129,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2.5">
+        <div className="rounded-lg border bg-amber-50 dark:bg-amber-950/20 p-3 flex items-start gap-2.5">
           <WarningIcon className="size-4 mt-0.5 shrink-0 text-amber-600" />
           <p className="text-sm text-amber-700 dark:text-amber-300">
             {t("notConfiguredWarning")}

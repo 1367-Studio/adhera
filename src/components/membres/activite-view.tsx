@@ -9,7 +9,7 @@ import { FunnelXIcon, CaretLeftIcon, CaretRightIcon, WarningCircleIcon } from "@
 import { cn } from "@/lib/utils"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { FilterSelect } from "@/components/ui/filter-select"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -365,7 +365,7 @@ function ActionBadge({ action, t }: { action: string; t: Translator }) {
   const actionConfig = getActionConfig(t)
   const cfg = actionConfig[action] ?? { label: action, color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" }
   return (
-    <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap", cfg.color)}>
+    <span className={cn("inline-flex h-5 items-center rounded-md px-2 text-xs font-medium whitespace-nowrap", cfg.color)}>
       {cfg.label}
     </span>
   )
@@ -509,26 +509,6 @@ function Details({ log, t }: { log: LogEntry; t: Translator }) {
   return <span className="text-muted-foreground text-xs">—</span>
 }
 
-function FilterSelect({ value, onChange, options, placeholder }: {
-  value: string; onChange: (v: string) => void
-  options: { value: string; label: string }[]; placeholder: string
-}) {
-  const selected = options.find(o => o.value === value)
-  return (
-    <Select value={value || "__all__"} onValueChange={v => onChange(v === "__all__" ? "" : (v ?? ""))}>
-      <SelectTrigger className="w-44 h-9">
-        <span className={cn("text-sm truncate", !selected && "text-muted-foreground")}>
-          {selected?.label ?? placeholder}
-        </span>
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="__all__">{placeholder}</SelectItem>
-        {options.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-      </SelectContent>
-    </Select>
-  )
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export function ActiviteView() {
@@ -573,7 +553,7 @@ export function ActiviteView() {
       />
 
       <div className="flex flex-wrap items-center gap-2">
-        <FilterSelect value={entity} onChange={v => { setEntity(v); setPage(1) }} options={entityOptions} placeholder={t("membres.activiteView.allModules")} />
+        <FilterSelect value={entity} onValueChange={v => { setEntity(v); setPage(1) }} options={entityOptions} placeholder={t("membres.activiteView.allModules")} width="w-44" />
 
         <div className="flex items-center gap-1.5">
           <label className="text-xs text-muted-foreground">{t("membres.activiteView.fromLabel")}</label>
@@ -591,7 +571,7 @@ export function ActiviteView() {
         </div>
 
         {hasFilters && (
-          <Button size="sm" variant="ghost" onClick={resetFilters} className="h-9 gap-1.5 text-muted-foreground">
+          <Button variant="ghost" onClick={resetFilters} className="text-muted-foreground">
             <FunnelXIcon className="size-3.5" />
             {t("membres.activiteView.resetFilters")}
           </Button>
@@ -604,7 +584,7 @@ export function ActiviteView() {
             <WarningCircleIcon className="size-4 shrink-0" />
             {t("membres.activiteView.errorLoading")}
           </div>
-          <Button size="sm" variant="outline" onClick={() => refetch()} className="h-7 text-xs text-destructive border-destructive/40 hover:bg-destructive/10">
+          <Button size="xs" variant="outline" onClick={() => refetch()} className="text-destructive border-destructive/40 hover:bg-destructive/10">
             {t("membres.activiteView.retry")}
           </Button>
         </div>
@@ -670,10 +650,10 @@ export function ActiviteView() {
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <span>{t("membres.activiteView.pageOf", { page, totalPages })}</span>
           <div className="flex gap-1">
-            <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+            <Button size="icon-sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => p - 1)} aria-label="Page précédente">
               <CaretLeftIcon className="size-4" />
             </Button>
-            <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
+            <Button size="icon-sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} aria-label="Page suivante">
               <CaretRightIcon className="size-4" />
             </Button>
           </div>

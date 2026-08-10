@@ -136,7 +136,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   if (rsvp === "CONFIRME" && !wasAlreadyConfirme) {
     const assoc = await prisma.association.findUnique({
       where:  { id: ctx.associationId },
-      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true },
     })
     if (assoc) {
       const portalUrl = `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/portal`
@@ -144,7 +144,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",
         associationId: ctx.associationId,
-        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl, primaryColor: assoc.primaryColor },
+        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
         membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
         evenement:     { id: evenementId, title: evenement.title, date: evenement.date, location: evenement.location },
       }).then(dispatched => {

@@ -66,12 +66,12 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
           {(showMembres || showRegister) && (
             <div className="flex items-center gap-1.5">
               {showRegister && (
-                <span className="text-[10px] font-medium px-2 py-1 rounded border" style={{ color, borderColor: color }}>
+                <span className="text-xs font-medium px-2 py-1 rounded border" style={{ color, borderColor: color }}>
                   S&apos;inscrire
                 </span>
               )}
               {showMembres && (
-                <span className="text-[10px] font-medium px-2 py-1 rounded text-white" style={{ background: color }}>
+                <span className="text-xs font-medium px-2 py-1 rounded text-white" style={{ background: color }}>
                   Se connecter
                 </span>
               )}
@@ -139,13 +139,13 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                     ) : (
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {displayed.map(event => (
-                          <div key={event.id} className="bg-white rounded-xl border border-gray-100 p-4 space-y-2">
-                            <div className="text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block text-white" style={{ background: color }}>
+                          <div key={event.id} className="bg-white rounded-lg border border-gray-100 p-4 space-y-2">
+                            <div className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white" style={{ background: color }}>
                               {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
                             </div>
                             <p className="text-sm font-semibold text-gray-900 leading-snug">{event.title}</p>
                             {event.location && (
-                              <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                              <div className="flex items-center gap-1 text-xs text-gray-500">
                                 <MapPinIcon className="size-3 shrink-0" />
                                 <span className="truncate">{event.location}</span>
                               </div>
@@ -174,7 +174,7 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                     ) : (
                       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {displayed.map(actu => (
-                          <article key={actu.id} className="rounded-xl border border-gray-100 overflow-hidden">
+                          <article key={actu.id} className="rounded-lg border border-gray-100 overflow-hidden">
                             {actu.imageUrl && (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={actu.imageUrl} alt={actu.title} className="w-full h-32 object-cover" />
@@ -186,7 +186,7 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                                     À la une
                                   </span>
                                 )}
-                                <time className="text-[10px] text-gray-400">
+                                <time className="text-xs text-gray-400">
                                   {new Date(actu.publishedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                                 </time>
                               </div>

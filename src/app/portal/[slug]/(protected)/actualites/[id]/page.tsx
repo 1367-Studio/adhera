@@ -37,7 +37,7 @@ function SkeletonDetail() {
   return (
     <div className="w-full space-y-6 animate-pulse">
       <div className="h-4 w-24 rounded bg-muted" />
-      <div className="aspect-video w-full rounded-xl bg-muted" />
+      <div className="aspect-video w-full rounded-lg bg-muted" />
       <div className="space-y-3">
         <div className="h-7 w-3/4 rounded bg-muted" />
         <div className="h-3 w-32 rounded bg-muted" />
@@ -87,7 +87,7 @@ export default function ActualiteDetailPage() {
       </Link>
 
       {post.imageUrl && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-xl border">
+        <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
           <img src={post.imageUrl} aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60" />
           <img src={post.imageUrl} alt={post.title} className="relative z-10 w-full h-full object-contain" />
         </div>
@@ -96,7 +96,7 @@ export default function ActualiteDetailPage() {
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           {post.pinned && (
-            <span className="inline-flex items-center gap-1.5 bg-orange-500/80 border border-orange-300/30 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1.5 bg-orange-500/80 border border-orange-300/30 text-white rounded-md px-2 py-0.5 text-xs font-medium">
               <PushPinIcon className="size-2.5" /> Épinglé
             </span>
           )}
@@ -110,7 +110,7 @@ export default function ActualiteDetailPage() {
       <RichTextView content={post.content} className="prose prose-sm max-w-none" />
 
       {ev && (
-        <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+        <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1.5">
               <CalendarBlankIcon className="size-3.5" />

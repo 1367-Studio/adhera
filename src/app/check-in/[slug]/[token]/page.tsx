@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { BrandLogo } from "@/components/layout/brand-logo"
-import { isColorDark } from "@/lib/color"
 
 type EventInfo = {
   title:            string
@@ -18,7 +17,7 @@ type EventInfo = {
   expired:          boolean
   alreadyCheckedIn: boolean
   totalPresent:     number
-  association: { name: string; logoUrl: string | null; primaryColor: string | null } | null
+  association: { name: string; logoUrl: string | null } | null
 }
 
 type State = "loading" | "ready" | "checking-in" | "success" | "already" | "expired" | "invalid" | "error"
@@ -78,13 +77,9 @@ export default function CheckInPage() {
   }
 
   const branding = info?.association
-  const brandStyle = branding?.primaryColor ? {
-    "--primary":            branding.primaryColor,
-    "--primary-foreground": isColorDark(branding.primaryColor) ? "#fff" : "#111827",
-  } as React.CSSProperties : undefined
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background" style={brandStyle}>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-sm space-y-6 text-center">
 
         <div className="flex items-center justify-center gap-2 mb-8 min-w-0">

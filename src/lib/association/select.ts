@@ -31,8 +31,6 @@ export const ASSOCIATION_SAFE_SELECT = {
   plan: true,
   customMemberLimit: true,
   logoUrl: true,
-  primaryColor: true,
-  secondaryColor: true,
   customBrandingEnabled: true,
   subscriptionStatus: true,
   trialEndsAt: true,

@@ -46,14 +46,14 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
 
   return (
     <article
-      className="group rounded-xl border bg-card overflow-hidden flex flex-col transition-all hover:-translate-y-0.5 hover:shadow-md animate-in fade-in-0 slide-in-from-bottom-3 duration-300"
+      className="group rounded-lg border bg-card overflow-hidden flex flex-col transition-colors"
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "both" }}
     >
       <Link href={`/portal/${slug}/actualites/${post.id}`} className="block relative aspect-video w-full overflow-hidden">
         {post.imageUrl ? (
           <>
             <img src={post.imageUrl} aria-hidden className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl opacity-60" />
-            <img src={post.imageUrl} alt={post.title} className="relative z-10 w-full h-full object-contain transition-transform duration-500 group-hover:scale-[1.03]" />
+            <img src={post.imageUrl} alt={post.title} className="relative z-10 w-full h-full object-contain transition-transform duration-500" />
           </>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center bg-muted/40">
@@ -63,12 +63,12 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
 
         <div className="absolute top-2.5 left-2.5 z-20 flex gap-1.5">
           {post.pinned && (
-            <span className="inline-flex items-center gap-1.5 bg-orange-500/80 backdrop-blur-md border border-orange-300/30 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-lg">
+            <span className="inline-flex items-center gap-1.5 bg-orange-500/80 backdrop-blur-md border border-orange-300/30 text-white rounded-md px-2 py-0.5 text-xs font-medium">
               <PushPinIcon className="size-2.5" /> Épinglé
             </span>
           )}
           {nouveau && (
-            <span className="inline-flex items-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/20 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-lg">
+            <span className="inline-flex items-center gap-1.5 bg-black/50 backdrop-blur-md border border-white/20 text-white rounded-md px-2 py-0.5 text-xs font-medium">
               <span className="size-1.5 bg-emerald-300 rounded-full animate-pulse" />
               Nouveau
             </span>
@@ -81,7 +81,7 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
           <Link href={`/portal/${slug}/actualites/${post.id}`} className="hover:underline underline-offset-2">
             <h2 className="font-semibold text-sm leading-snug line-clamp-2">{post.title}</h2>
           </Link>
-          <time className="text-[11px] text-muted-foreground/60 shrink-0 mt-0.5">
+          <time className="text-xs text-muted-foreground/60 shrink-0 mt-0.5">
             {format(new Date(post.publishedAt), "d MMM yyyy", { locale: fr })}
           </time>
         </div>
@@ -98,9 +98,9 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
         </Link>
 
         {post.evenement && (
-          <div className="rounded-xl border bg-muted/30 p-3 space-y-2 mt-1">
+          <div className="rounded-lg border bg-muted/30 p-3 space-y-2 mt-1">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-[11px] font-semibold text-primary uppercase tracking-wider flex items-center gap-1">
+              <p className="text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1">
                 <CalendarBlankIcon className="size-3.5" /> Événement associé
               </p>
               {post.evenementRsvp && <RsvpBadge rsvp={post.evenementRsvp} />}
@@ -150,7 +150,7 @@ function FeedCard({ post, slug, index }: { post: Actualite; slug: string; index:
 
 function SkeletonCard() {
   return (
-    <div className="rounded-xl border bg-card overflow-hidden animate-pulse">
+    <div className="rounded-lg border bg-card overflow-hidden animate-pulse">
       <div className="aspect-video bg-muted w-full" />
       <div className="p-3.5 space-y-2.5">
         <div className="flex justify-between gap-4">
@@ -206,7 +206,7 @@ export default function ActualitesPortalPage() {
           {[0, 1, 2, 3].map(i => <SkeletonCard key={i} />)}
         </div>
       ) : displayed.length === 0 ? (
-        <div className="rounded-xl border border-dashed bg-muted/10 py-20 flex flex-col items-center gap-3 text-center">
+        <div className="rounded-lg border border-dashed bg-muted/10 py-20 flex flex-col items-center gap-3 text-center">
           <ImageIcon className="size-8 text-muted-foreground/40" />
           <p className="text-muted-foreground text-sm">Aucune actualité pour le moment.</p>
         </div>
@@ -223,7 +223,7 @@ export default function ActualitesPortalPage() {
                 type="button"
                 onClick={() => setPage(p => p + 1)}
                 disabled={isFetching}
-                className="flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg border bg-card px-5 py-2.5 text-sm font-medium transition-colors disabled:opacity-50"
               >
                 {isFetching ? <CircleNotchIcon className="size-4 animate-spin" /> : null}
                 Charger plus

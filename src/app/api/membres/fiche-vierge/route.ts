@@ -11,13 +11,13 @@ export const GET = withAdminAuth(async (_req, ctx) => {
 
   const association = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true },
+    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   const branding = resolveDocumentBranding(association)
   const pdf = await buildFicheMembreViergePdf({
-    association: { name: association.name, logoUrl: branding.logoUrl, primaryColor: branding.primaryColor },
+    association: { name: association.name, logoUrl: branding.logoUrl },
   })
 
   const slug = association.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()

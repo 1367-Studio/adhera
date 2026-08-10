@@ -250,7 +250,7 @@ export function FournisseurDetailView() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.contact")}</p>
           {fournisseur.contactName && <p className="font-medium">{fournisseur.contactName}{fournisseur.contactRole && <span className="text-muted-foreground font-normal"> · {fournisseur.contactRole}</span>}</p>}
           {fournisseur.email && (
@@ -269,7 +269,7 @@ export function FournisseurDetailView() {
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.addressAndIds")}</p>
           {(fournisseur.address || fournisseur.city) && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
@@ -284,7 +284,7 @@ export function FournisseurDetailView() {
           )}
         </div>
 
-        <div className="rounded-xl border bg-card p-4 space-y-2.5 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("fournisseurs.detail.internalNotes")}</p>
           <p className="text-muted-foreground whitespace-pre-wrap">{fournisseur.notes || t("fournisseurs.detail.noNotes")}</p>
         </div>
@@ -411,7 +411,7 @@ export function FournisseurDetailView() {
                       {documentTypeLabel[doc.type] ?? doc.type}{doc.number && <span className="text-muted-foreground font-normal"> · {doc.number}</span>}
                       {doc.status === "PAYEE" && (
                         <span
-                          className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
+                          className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground"
                           title={t("fournisseurs.detail.inFinancesTooltip")}
                         >
                           <ReceiptIcon className="size-3" /> {t("fournisseurs.detail.inFinances")}

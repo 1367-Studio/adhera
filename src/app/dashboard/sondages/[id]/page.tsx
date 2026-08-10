@@ -367,7 +367,7 @@ function SondageDetailPageInner() {
         {/* Edit tab */}
         <TabsContent value="edit">
           <form onSubmit={handleSave} className="pt-4 pb-10">
-            <div className="rounded-xl border bg-card overflow-hidden">
+            <div className="rounded-lg border bg-card overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x">
 
                 {/* Left — metadata */}
@@ -540,7 +540,7 @@ function SondageDetailPageInner() {
                   ) : (
                     <div className="space-y-2">
                       {sondage.questions.map((q, i) => (
-                        <div key={q.id} className="rounded-xl border bg-card p-4 text-sm">
+                        <div key={q.id} className="rounded-lg border bg-card p-4 text-sm">
                           <span className="text-muted-foreground mr-2">{i + 1}.</span>
                           <span className="font-medium">{q.label}</span>
                           {q.required && <span className="text-destructive ml-1">*</span>}
@@ -574,7 +574,7 @@ function SondageDetailPageInner() {
             {resultatsLoading ? (
               <div className="space-y-3">
                 {[0, 1, 2].map(i => (
-                  <div key={i} className="rounded-xl border p-5 animate-pulse space-y-3">
+                  <div key={i} className="rounded-lg border p-5 animate-pulse space-y-3">
                     <div className="h-4 w-40 bg-muted rounded" />
                     <div className="h-24 bg-muted rounded" />
                   </div>
@@ -598,7 +598,7 @@ function SondageDetailPageInner() {
             {reponsesLoading ? (
               <div className="space-y-2">
                 {[0, 1, 2].map(i => (
-                  <div key={i} className="rounded-xl border p-4 animate-pulse flex items-center gap-3">
+                  <div key={i} className="rounded-lg border p-4 animate-pulse flex items-center gap-3">
                     <div className="size-8 rounded-full bg-muted shrink-0" />
                     <div className="space-y-1.5 flex-1">
                       <div className="h-3.5 w-32 bg-muted rounded" />
@@ -625,7 +625,7 @@ function SondageDetailPageInner() {
             {emailStatsLoading ? (
               <div className="space-y-3">
                 {[0, 1, 2].map(i => (
-                  <div key={i} className="rounded-xl border p-5 animate-pulse space-y-3">
+                  <div key={i} className="rounded-lg border p-5 animate-pulse space-y-3">
                     <div className="h-4 w-40 bg-muted rounded" />
                     <div className="h-24 bg-muted rounded" />
                   </div>

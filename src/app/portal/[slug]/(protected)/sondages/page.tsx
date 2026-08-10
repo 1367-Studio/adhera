@@ -42,19 +42,19 @@ export default function SondagesPortalPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[0, 1].map(i => (
-            <div key={i} className="rounded-xl border p-4 animate-pulse space-y-2">
+            <div key={i} className="rounded-lg border p-4 animate-pulse space-y-2">
               <div className="h-5 w-48 bg-muted rounded" />
               <div className="h-3 w-32 bg-muted rounded" />
             </div>
           ))}
         </div>
       ) : isError ? (
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
           <WarningIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">{t("loadError")}</p>
         </div>
       ) : sondages.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-2">
+        <div className="rounded-lg border border-dashed p-12 text-center space-y-2">
           <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">{t("noSurveys")}</p>
         </div>
@@ -64,7 +64,7 @@ export default function SondagesPortalPage() {
             <div
               key={s.id}
               onClick={() => !s.repondu && router.push(`/portal/${slug}/sondages/${s.id}`)}
-              className={`rounded-xl border bg-card p-4 flex items-center gap-4 transition-colors ${
+              className={`rounded-lg border bg-card p-4 flex items-center gap-4 transition-colors ${
                 s.repondu ? "opacity-70" : "cursor-pointer hover:border-ring"
               }`}
             >

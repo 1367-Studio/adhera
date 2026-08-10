@@ -27,7 +27,7 @@ export default async function ForgotPasswordPage({
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
-      <div className="rounded-xl border bg-card shadow-sm p-8 space-y-6">
+      <div className="rounded-lg border bg-card p-8 space-y-6">
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">

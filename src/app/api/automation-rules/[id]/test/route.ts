@@ -17,7 +17,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     where:   { id, associationId },
     include: {
       template:    true,
-      association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+      association: { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
     },
   })
   if (!rule) return NextResponse.json({ error: "Introuvable" }, { status: 404 })

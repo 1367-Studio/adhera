@@ -61,7 +61,7 @@ function InstallmentSchedule({ installments, amountPaid, t }: {
           <span>{format(new Date(i.dueDate), "d MMMM yyyy", { locale: fr })}</span>
           <div className="flex items-center gap-2">
             <span className="tabular-nums">{fmtEur(Number(i.amount))}</span>
-            <Badge variant={i.covered ? "default" : "secondary"} className="text-[10px]">
+            <Badge variant={i.covered ? "default" : "secondary"} className="text-xs">
               {i.covered ? t("installmentCovered") : t("installmentPending")}
             </Badge>
           </div>
@@ -181,25 +181,25 @@ function CotisationPortalPageInner() {
           <div className="h-7 w-48 rounded bg-muted" />
           <div className="h-4 w-56 rounded bg-muted" />
         </div>
-        <div className="rounded-xl border-2 p-6 space-y-4">
+        <div className="rounded-lg border-2 p-6 space-y-4">
           <div className="h-5 w-48 rounded bg-muted" />
           <div className="flex items-center justify-between">
             <div className="space-y-2">
               <div className="h-8 w-24 rounded bg-muted" />
               <div className="h-3 w-32 rounded bg-muted" />
             </div>
-            <div className="h-6 w-20 rounded-full bg-muted" />
+            <div className="h-5 w-20 rounded-md bg-muted" />
           </div>
         </div>
         <div className="space-y-3">
           <div className="h-4 w-24 rounded bg-muted" />
           {[0, 1].map(i => (
-            <div key={i} className="rounded-xl border p-4 flex items-center justify-between">
+            <div key={i} className="rounded-lg border p-4 flex items-center justify-between">
               <div className="space-y-1.5">
                 <div className="h-4 w-20 rounded bg-muted" />
                 <div className="h-3 w-28 rounded bg-muted" />
               </div>
-              <div className="h-6 w-16 rounded-full bg-muted" />
+              <div className="h-5 w-16 rounded-md bg-muted" />
             </div>
           ))}
         </div>
@@ -260,7 +260,8 @@ function CotisationPortalPageInner() {
               {thisYear.declarationNumber && (
                 <Button
                 size="sm"
-                variant="outline"
+                variant="ghost"
+                className="hover:bg-muted/10"
                 onClick={() => window.open(`${BASE_PATH}/api/portal/cotisation/${thisYear.id}/declaration`)}
                 >
                   <DownloadSimpleIcon className="size-3.5" />
@@ -297,7 +298,7 @@ function CotisationPortalPageInner() {
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("history")}</h2>
 
         {history.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center border rounded-lg">
+          <p className="text-sm text-muted-foreground py-4 text-center">
             {t("noHistory")}
           </p>
         ) : (

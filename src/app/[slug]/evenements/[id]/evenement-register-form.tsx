@@ -119,7 +119,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   if (loadingEvent) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="size-6 rounded-full border-2 border-violet-600 border-t-transparent animate-spin" />
+        <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     )
   }
@@ -136,7 +136,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   const dateObj = new Date(event.date)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/60 to-background flex items-start justify-center py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex justify-end">
           <LocaleSwitcher />
@@ -144,15 +144,15 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
 
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center size-12 rounded-full bg-violet-100 dark:bg-violet-900/30 mb-2">
-            <TicketIcon className="size-6 text-violet-600 dark:text-violet-400" />
+          <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+            <TicketIcon className="size-6 text-primary" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{event.title}</h1>
           <p className="text-muted-foreground text-sm">{event.associationName}</p>
         </div>
 
         {/* Détails */}
-        <div className="rounded-xl border bg-card shadow-sm p-4 space-y-2 text-sm">
+        <div className="rounded-lg border bg-card p-4 space-y-2 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <CalendarBlankIcon className="size-4 shrink-0" />
             <span>
@@ -169,31 +169,31 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
           )}
           {event.description && <p className="pt-1 text-foreground/90 whitespace-pre-line">{event.description}</p>}
           {event.price && Number(event.price) > 0 && (
-            <p className="pt-1 font-semibold text-violet-700 dark:text-violet-400">{Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}</p>
+            <p className="pt-1 font-semibold text-muted-foreground">{Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}</p>
           )}
         </div>
 
         {submitted ? (
-          <div className="rounded-xl border p-6 text-center text-sm space-y-1">
+          <div className="rounded-lg border p-6 text-center text-sm space-y-1">
             <p className="font-medium">{t("submittedTitle")}</p>
             <p className="text-muted-foreground">
               {email ? t("submittedWithEmail") : t("submittedNoEmail")}
             </p>
           </div>
         ) : event.past ? (
-          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
             {t("past")}
           </div>
         ) : event.full ? (
-          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
             {t("full")}
           </div>
         ) : isPaid && !event.paymentEnabled ? (
-          <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
             {t("paymentDisabled")}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="rounded-xl border bg-card shadow-sm p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-6 space-y-4">
             {/* Honeypot — visually and semantically hidden from real visitors/screen readers,
                 but present in the DOM for bots that blindly fill every input they find. */}
             <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
@@ -206,14 +206,14 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("firstNameLabel")}</label>
                 <input
                   type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("lastNameLabel")}</label>
                 <input
                   type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
             </div>
@@ -224,7 +224,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
               </label>
               <input
                 type="email" required={isPaid} value={email} onChange={e => setEmail(e.target.value)}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
               {!isPaid && (
                 <p className="text-xs text-muted-foreground">{t("emailNoConfirmHint")}</p>
@@ -235,7 +235,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("phoneLabel")}</label>
               <input
                 type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
 
@@ -243,7 +243,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("addressLabel")}</label>
               <input
                 type="text" value={address} onChange={e => setAddress(e.target.value)}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
 
@@ -260,7 +260,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                   required={field.required}
                   value={answers[field.id] ?? ""}
                   onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-violet-400"
+                  className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
                 />
               </div>
             ))}
@@ -269,7 +269,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
               type="submit"
               disabled={!canSubmit}
               loading={loading}
-              className="w-full bg-violet-600 hover:bg-violet-700 text-white"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/85"
             >
               <TicketIcon className="size-4 mr-2" />
               {isPaid

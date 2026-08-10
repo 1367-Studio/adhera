@@ -6,11 +6,10 @@ export interface MeetingMinutesPdfInput {
   startedAt:   Date | null
   endedAt:     Date | null
   association: {
-    name:    string
-    logoUrl: string | null
+    name: string
     // Resolved by resolveDocumentBranding() — already null when the association's plan
     // doesn't include custom branding, same convention as document-pdf.ts.
-    primaryColor: string | null
+    logoUrl: string | null
   }
   participants: { firstName: string; lastName: string }[]
   summary:      string | null
@@ -22,13 +21,6 @@ const PAGE_HEIGHT = 841.89
 const MARGIN      = 50
 const GRAY  = rgb(0.45, 0.45, 0.45)
 const BLACK = rgb(0.1, 0.1, 0.1)
-
-function hexToRgb(hex: string): ReturnType<typeof rgb> | null {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return null
-  const n = parseInt(m[1], 16)
-  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
-}
 
 function fmtDateTime(d: Date): string {
   return `${d.toLocaleDateString("fr-FR")} à ${d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
@@ -63,7 +55,7 @@ export async function buildMeetingMinutesPdf(input: MeetingMinutesPdfInput): Pro
   const font = await doc.embedFont(StandardFonts.Helvetica)
   const bold = await doc.embedFont(StandardFonts.HelveticaBold)
 
-  const ACCENT = (input.association.primaryColor && hexToRgb(input.association.primaryColor)) || GRAY
+  const ACCENT = GRAY
 
   let logoImage: Awaited<ReturnType<PDFDocument["embedPng"]>> | null = null
   if (input.association.logoUrl) {

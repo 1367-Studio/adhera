@@ -45,7 +45,7 @@ export default function BoutiquePortalPage() {
   return (
     <div className="space-y-5 pb-10">
       <div className="flex items-center gap-3 py-4">
-        <div className="rounded-xl bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
+        <div className="rounded-lg bg-primary/10 dark:bg-primary/20 p-2.5 shrink-0">
           <ShoppingBagIcon className="size-6 text-primary" />
         </div>
         <div className="flex-1 min-w-0">
@@ -69,11 +69,11 @@ export default function BoutiquePortalPage() {
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border bg-muted animate-pulse aspect-[3/4]" />
+            <div key={i} className="rounded-lg border bg-muted" />
           ))}
         </div>
       ) : produits.length === 0 ? (
-        <div className="rounded-xl border bg-card p-12 text-center space-y-2">
+        <div className="rounded-lg border bg-card p-12 text-center space-y-2">
           <ShoppingBagIcon className="size-8 text-muted-foreground mx-auto" />
           <p className="text-muted-foreground text-sm">{t("noProducts")}</p>
         </div>
@@ -89,11 +89,11 @@ export default function BoutiquePortalPage() {
                 key={p.id}
                 type="button"
                 onClick={() => router.push(`/portal/${slug}/boutique/${p.id}`)}
-                className="group rounded-xl border bg-card overflow-hidden text-left hover:shadow-md transition-shadow"
+                className="group rounded-lg border bg-card overflow-hidden text-left"
               >
                 <div className="aspect-square bg-muted flex items-center justify-center overflow-hidden">
                   {p.imageUrl
-                    ? <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ? <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover " />
                     : <ShoppingBagIcon className="size-10 text-muted-foreground/40" />
                   }
                 </div>

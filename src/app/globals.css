@@ -75,7 +75,8 @@
   --chart-3: #0891b2;
   --chart-4: #f43f5e;
   --chart-5: #64748b;
-  --radius: 0.875rem;
+  /* Restrained radius scale (CLAUDE.md §4): md=8px controls, lg=10px containers, xl=14px overlays. */
+  --radius: 0.625rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #334155;
   --sidebar-primary: #0369a1;
@@ -208,16 +209,18 @@ header.sticky {
 
 /* ── Tables ───────────────────────────────────────────────────────────────── */
 
+/* Flat surfaces (CLAUDE.md §9): tables and cards get a plain 1px border, never shadows —
+   elevation is reserved for true overlays (dialogs, popovers, dropdowns below). */
 [data-slot="table-wrapper"] {
   background: var(--card) !important;
-  border: 1.5px solid var(--border) !important;
+  border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: none !important;
 }
 .dark [data-slot="table-wrapper"] {
   background: var(--card) !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 [data-slot="table-header"] {
@@ -241,12 +244,12 @@ header.sticky {
 [data-slot="card"] {
   background: var(--card) !important;
   border: 1px solid var(--border) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: none !important;
 }
 .dark [data-slot="card"] {
   background: var(--card) !important;
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;
 }
 
 /* ── Modals ───────────────────────────────────────────────────────────────── */

@@ -26,8 +26,7 @@ export interface DocumentPdfInput {
     bic:  string | null
     // Resolved by resolveDocumentBranding() — already null when the association's plan
     // doesn't include custom branding, so this file doesn't need to know about plans.
-    logoUrl:      string | null
-    primaryColor: string | null
+    logoUrl: string | null
   }
   fournisseur: {
     companyName: string
@@ -54,13 +53,6 @@ const GRAY  = rgb(0.45, 0.45, 0.45)
 const BLACK = rgb(0.1, 0.1, 0.1)
 
 const COL = { desc: MARGIN, qty: 300, price: 375, vat: 425, discount: 480, total: PAGE_WIDTH - MARGIN }
-
-function hexToRgb(hex: string): ReturnType<typeof rgb> | null {
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex)
-  if (!m) return null
-  const n = parseInt(m[1], 16)
-  return rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255)
-}
 
 // toLocaleString("fr-FR") inserts a narrow no-break space between thousands that the
 // standard Helvetica (WinAnsi) encoding can't render — same issue already worked around
@@ -112,10 +104,7 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   const font    = await doc.embedFont(StandardFonts.Helvetica)
   const bold    = await doc.embedFont(StandardFonts.HelveticaBold)
 
-  // Falls back to the platform's neutral gray whenever the association has no custom
-  // color (or isn't entitled to one) — input.association.primaryColor is already null in
-  // that case, see resolveDocumentBranding().
-  const ACCENT = (input.association.primaryColor && hexToRgb(input.association.primaryColor)) || GRAY
+  const ACCENT = GRAY
 
   let logoImage: Awaited<ReturnType<PDFDocument["embedPng"]>> | null = null
   if (input.association.logoUrl) {

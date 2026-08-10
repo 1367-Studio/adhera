@@ -51,8 +51,8 @@ export function MaterielStatsCharts() {
   if (isLoading) {
     return (
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="h-48 rounded-xl border bg-card animate-pulse" />
-        <div className="h-48 rounded-xl border bg-card animate-pulse" />
+        <div className="h-48 rounded-lg border bg-card animate-pulse" />
+        <div className="h-48 rounded-lg border bg-card animate-pulse" />
       </div>
     )
   }
@@ -62,7 +62,7 @@ export function MaterielStatsCharts() {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {data.topLoaned.length > 0 && (
-        <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30">
+        <div className="rounded-lg border bg-card p-6 dark:border-white/10">
           <p className="mb-4 text-xs font-medium text-muted-foreground">Matériels les plus prêtés</p>
           <ResponsiveContainer width="100%" height={Math.max(data.topLoaned.length * 32, 80)} debounce={50}>
             <BarChart data={data.topLoaned} layout="vertical" barSize={16} margin={{ top: 0, right: 40, bottom: 0, left: 8 }}>
@@ -82,7 +82,7 @@ export function MaterielStatsCharts() {
       )}
 
       {data.revenueByMaterial.length > 0 && (
-        <div className="rounded-xl border bg-card p-6 dark:border-white/10 dark:shadow-lg dark:shadow-black/30">
+        <div className="rounded-lg border bg-card p-6 dark:border-white/10">
           <p className="mb-1 text-xs font-medium text-muted-foreground">Montant récolté par matériel</p>
           <p className="mb-3 text-lg font-semibold">{fmtEUR(data.totalRevenue)} <span className="text-xs font-normal text-muted-foreground">au total</span></p>
           <ResponsiveContainer width="100%" height={Math.max(data.revenueByMaterial.length * 32, 80)} debounce={50}>

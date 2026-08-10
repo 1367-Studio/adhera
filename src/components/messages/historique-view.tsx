@@ -25,11 +25,11 @@ export function HistoriqueView() {
       {isLoading ? (
         <div className="space-y-2">
           {[0, 1, 2, 3, 4].map(i => (
-            <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />
+            <div key={i} className="h-14 rounded-lg bg-muted animate-pulse" />
           ))}
         </div>
       ) : !data || data.logs.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 text-center">
           <EnvelopeSimpleIcon className="size-8 text-muted-foreground/40" />
           <div>
             <p className="text-sm font-medium">{t("noSends")}</p>
@@ -41,7 +41,7 @@ export function HistoriqueView() {
           <p className="text-xs text-muted-foreground">
             {t("sendsCount", { count: data.total })}
           </p>
-          <div className="rounded-xl border overflow-hidden overflow-x-auto">
+          <div className="rounded-lg border overflow-hidden overflow-x-auto">
             <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b bg-muted/40">
@@ -65,7 +65,7 @@ export function HistoriqueView() {
                         <div>
                           <p className="text-xs font-medium">{log.membre.firstName} {log.membre.lastName}</p>
                           {log.membre.email && (
-                            <p className="text-[11px] text-muted-foreground">{log.membre.email}</p>
+                            <p className="text-xs text-muted-foreground">{log.membre.email}</p>
                           )}
                         </div>
                       ) : (

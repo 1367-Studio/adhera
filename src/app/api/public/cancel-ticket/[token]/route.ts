@@ -23,7 +23,7 @@ async function findByToken(token: string) {
       evenement: {
         select: {
           title: true, date: true, price: true, associationId: true,
-          association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true, primaryColor: true } },
+          association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
         },
       },
     },

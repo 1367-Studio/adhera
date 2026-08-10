@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, LockIcon, LockOpenIcon, TrashIcon, CalendarIcon } from "@phosphor-icons/react/dist/ssr"
+import { PlusIcon, LockIcon, LockOpenIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useExercices, useCreateExercice, useUpdateExercice, useDeleteExercice, type Exercice, type ExerciceInput } from "@/hooks/use-exercices"
 import { ApiError } from "@/lib/api-error"
 import { PageHeader } from "@/components/ui/page-header"
@@ -174,14 +174,9 @@ export function ExercicesView() {
       key: "exercice",
       header: t("finances.exercicesView.columns.exercice"),
       cell: (e) => (
-        <div className="flex items-center gap-2.5">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted">
-            <CalendarIcon className="size-4 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="font-medium">{e.label}</p>
-            <p className="text-xs text-muted-foreground">{fmtRange(e)}</p>
-          </div>
+        <div>
+          <p className="font-medium">{e.label}</p>
+          <p className="text-xs text-muted-foreground">{fmtRange(e)}</p>
         </div>
       ),
     },
@@ -190,8 +185,8 @@ export function ExercicesView() {
       header: t("finances.exercicesView.columns.status"),
       className: "w-28",
       cell: (e) => e.status === "OUVERT"
-        ? <Badge variant="default" className="bg-green-600 hover:bg-green-700">{t("finances.exercicesView.status.ouvert")}</Badge>
-        : <Badge variant="secondary">{t("finances.exercicesView.status.cloture")}</Badge>,
+        ? <Badge variant="success">{t("finances.exercicesView.status.ouvert")}</Badge>
+        : <Badge variant="outline">{t("finances.exercicesView.status.cloture")}</Badge>,
     },
     {
       key: "actions",

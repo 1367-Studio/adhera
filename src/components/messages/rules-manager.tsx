@@ -13,7 +13,7 @@ import {
 import { RuleModal } from "@/components/messages/rule-modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -31,10 +31,10 @@ function getTriggerLabels(t: Translator): Record<string, string> {
   }
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  ACTIVE: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  PAUSED: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  DONE:   "bg-muted text-muted-foreground",
+const STATUS_VARIANTS: Record<string, "success" | "warning" | "secondary"> = {
+  ACTIVE: "success",
+  PAUSED: "warning",
+  DONE:   "secondary",
 }
 
 function getStatusLabels(t: Translator): Record<string, string> {
@@ -146,10 +146,10 @@ export function RulesManager() {
 
       {isLoading ? (
         <div className="space-y-2">
-          {[0,1,2].map(i => <div key={i} className="h-20 rounded-xl bg-muted animate-pulse" />)}
+          {[0,1,2].map(i => <div key={i} className="h-20 rounded-lg bg-muted animate-pulse" />)}
         </div>
       ) : rules.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
+        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 text-center">
           <RobotIcon className="size-8 text-muted-foreground/40" />
           <div>
             <p className="text-sm font-medium">{t("messages.rulesManager.noRules")}</p>
@@ -160,25 +160,22 @@ export function RulesManager() {
           </Button>
         </div>
       ) : (
-        <div className="divide-y rounded-xl border overflow-hidden">
+        <div className="divide-y rounded-lg border overflow-hidden">
           {rules.map(r => (
             <div key={r.id} className="flex items-start gap-4 px-4 py-3 bg-card hover:bg-muted/30 transition-colors">
               <div className="min-w-0 flex-1 space-y-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="font-medium text-sm">{r.name}</p>
-                  <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full", STATUS_COLORS[r.status])}>
+                  <Badge variant={STATUS_VARIANTS[r.status]}>
                     {statusLabels[r.status]}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground border rounded-full px-2 py-0.5">
+                  </Badge>
+                  <span className="text-xs text-muted-foreground">
                     {triggerLabels[r.triggerType]}
                   </span>
                   {r.status === "ACTIVE" && !r.template.active && (
-                    <span
-                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
-                      title={t("messages.rulesManager.inactiveTemplateTooltip")}
-                    >
+                    <Badge variant="warning" title={t("messages.rulesManager.inactiveTemplateTooltip")}>
                       {t("messages.rulesManager.inactiveTemplateBadge")}
-                    </span>
+                    </Badge>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -189,7 +186,7 @@ export function RulesManager() {
                   const next = new Date(r.nextRunAt)
                   const isPast = next < new Date()
                   return (
-                    <p className="text-[11px] text-muted-foreground/60 flex items-center gap-1">
+                    <p className="text-xs text-muted-foreground/60 flex items-center gap-1">
                       <ClockIcon className="size-2.5" />
                       {isPast
                         ? t("messages.rulesManager.pendingExecution")
@@ -199,17 +196,17 @@ export function RulesManager() {
                   )
                 })()}
                 {r.lastRunAt && (
-                  <p className="text-[11px] text-muted-foreground/60">
+                  <p className="text-xs text-muted-foreground/60">
                     {t("messages.rulesManager.lastRun", { date: format(new Date(r.lastRunAt), "d MMM yyyy", { locale: fr }) })}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-2 shrink-0 pt-0.5">
                 {r.status !== "DONE" && (
-                  <button
-                    type="button"
+                  <Button
+                    variant="ghost"
+                    size="icon-xs"
                     onClick={() => handleToggle(r)}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
                     title={r.status === "ACTIVE" ? t("messages.rulesManager.actions.pause") : t("messages.rulesManager.actions.activate")}
                     disabled={toggleMut.isPending}
                   >
@@ -217,24 +214,25 @@ export function RulesManager() {
                       ? <PauseCircleIcon className="size-3.5" />
                       : <PlayCircleIcon  className="size-3.5" />
                     }
-                  </button>
+                  </Button>
                 )}
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
                   onClick={() => openEdit(r)}
-                  className="text-muted-foreground hover:text-foreground transition-colors"
                   title={t("messages.rulesManager.actions.edit")}
                 >
                   <PencilSimpleIcon className="size-3.5" />
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-destructive hover:text-destructive"
                   onClick={() => setDeleteTarget(r)}
-                  className="text-muted-foreground hover:text-destructive transition-colors"
                   title={t("messages.rulesManager.actions.delete")}
                 >
                   <TrashIcon className="size-3.5" />
-                </button>
+                </Button>
               </div>
             </div>
           ))}
