@@ -164,6 +164,7 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     PASSWORD_RESET:           { label: t("membres.activiteView.actions.passwordReset"), color: SLA },
     EMAIL_SENT_BULK:          { label: t("membres.activiteView.actions.emailSentBulk"),       color: AMB_L  },
     SMS_SENT_BULK:            { label: t("membres.activiteView.actions.smsSentBulk"),          color: AMB_L  },
+    SUPPORT_EMAIL_SENT:       { label: t("membres.activiteView.actions.supportEmailSent"),       color: AMB_L  },
     // Actualités (amber)
     ACTUALITE_CREATED:        { label: t("membres.activiteView.actions.actualiteCreated"),     color: AMB    },
     ACTUALITE_UPDATED:        { label: t("membres.activiteView.actions.actualiteUpdated"),  color: AMB_L  },
@@ -449,7 +450,7 @@ function Details({ log, t }: { log: LogEntry; t: Translator }) {
     )
   }
 
-  if ((log.action === "EMAIL_SENT_BULK" || log.action === "SMS_SENT_BULK") && m.sent != null) {
+  if ((log.action === "EMAIL_SENT_BULK" || log.action === "SMS_SENT_BULK" || log.action === "SUPPORT_EMAIL_SENT") && m.sent != null) {
     const bulkModeLabels: Record<string, string> = {
       all:    t("membres.activiteView.bulkSend.modeAll"),
       type:   t("membres.activiteView.bulkSend.modeType"),

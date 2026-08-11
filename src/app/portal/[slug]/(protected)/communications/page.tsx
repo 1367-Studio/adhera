@@ -80,14 +80,15 @@ function EmailRowItem({ e }: { e: EmailRow }) {
   }
 
   const SOURCE_LABEL: Record<string, string> = {
-    SONDAGE:        t("sourceLabel.sondage"),
-    AUTOMATION:     t("sourceLabel.automation"),
-    BULK_MESSAGE:   t("sourceLabel.bulkMessage"),
-    MEMBER_INVITE:  t("sourceLabel.memberInvite"),
-    MEETING_INVITE: t("sourceLabel.meetingInvite"),
-    TRANSACTION:    t("sourceLabel.transaction"),
-    DOCUMENT:       t("sourceLabel.document"),
-    TEST:           t("sourceLabel.test"),
+    SONDAGE:         t("sourceLabel.sondage"),
+    AUTOMATION:      t("sourceLabel.automation"),
+    BULK_MESSAGE:    t("sourceLabel.bulkMessage"),
+    MEMBER_INVITE:   t("sourceLabel.memberInvite"),
+    MEETING_INVITE:  t("sourceLabel.meetingInvite"),
+    TRANSACTION:     t("sourceLabel.transaction"),
+    DOCUMENT:        t("sourceLabel.document"),
+    TEST:            t("sourceLabel.test"),
+    SUPPORT_MESSAGE: t("sourceLabel.supportMessage"),
   }
 
   const TIMELINE_STEPS: { key: TimelineKey; label: string; tone: "default" | "error" }[] = [

@@ -3261,6 +3261,7 @@
         "passwordReset": "Mot de passe réinitialisé",
         "emailSentBulk": "E-mail envoyé",
         "smsSentBulk": "SMS envoyé",
+        "supportEmailSent": "Email envoyé par le Support Formwise",
         "actualiteCreated": "Actualité créée",
         "actualiteUpdated": "Actualité modifiée",
         "actualiteDeleted": "Actualité supprimée",
@@ -3648,7 +3649,8 @@
         "meetingInvite": "Réunion",
         "transaction": "Confirmation",
         "document": "Document",
-        "test": "Test"
+        "test": "Test",
+        "supportMessage": "Envoyé par le Support Formwise"
       },
       "timeline": {
         "created": "Créé",
@@ -3909,6 +3911,20 @@
       "message": "Message",
       "cancel": "Annuler",
       "send": "Envoyer"
+    },
+    "tabs": {
+      "chat": "Chat",
+      "informational": "Informatifs"
+    },
+    "informational": {
+      "empty": "Aucun message du Support pour l'instant.",
+      "to": "Destinataire :",
+      "sentAt": "Envoyé le",
+      "error": "Impossible de charger les messages du Support.",
+      "retry": "Réessayer",
+      "refresh": "Actualiser",
+      "shownOfTotal": "{shown} sur {total}",
+      "loadMore": "Voir plus"
     },
     "faq": {
       "sectionTitle": "Foire aux questions",

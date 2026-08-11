@@ -5,6 +5,7 @@ import { prisma }    from "@/lib/prisma/client"
 import { Badge }     from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AssociationNotes } from "@/components/backoffice/association-notes"
+import { SupportEmailComposer } from "@/components/backoffice/support-email-composer"
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { CustomMemberLimitEditor } from "@/components/backoffice/custom-member-limit-editor"
 import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-editor"
@@ -211,6 +212,16 @@ export default async function AssociationDetailPage({ params }: { params: Promis
         </CardHeader>
         <CardContent>
           <AssociationNotes associationId={assoc.id} initialNotes={assoc.internalNotes ?? ""} />
+        </CardContent>
+      </Card>
+
+      {/* Support email */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Envoyer un email (Support Formwise)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SupportEmailComposer associationId={assoc.id} />
         </CardContent>
       </Card>
     </div>

@@ -11,12 +11,14 @@ export function getFrom(): string {
 const DEV_TO = "hello@1367studio.com"
 const BATCH_SIZE = 100
 
-// Attached to a send when the recipient resolves to a Membre, so the Resend webhook
-// (src/app/api/webhook/resend/route.ts) can later match delivery/open/bounce events back
-// to a row and the Membre/portal email histories can query by membreId.
+// Attached to a send when the recipient resolves to a Membre or a User (manager/staff
+// account), so the Resend webhook (src/app/api/webhook/resend/route.ts) can later match
+// delivery/open/bounce events back to a row and the Membre/portal/manager email histories
+// can query by membreId or userId.
 export type EmailContext = {
   associationId: string
   membreId?: string
+  userId?:   string
   source:        string
   sourceId?:     string
 }
@@ -35,6 +37,7 @@ async function logEmailMessage(
       data: {
         associationId: context.associationId,
         membreId:      context.membreId,
+        userId:        context.userId,
         source:        context.source,
         sourceId:      context.sourceId,
         to:            payload.to,
@@ -110,6 +113,7 @@ export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchIte
       data: rowsToLog.map(({ p, id }) => ({
         associationId: p.context!.associationId,
         membreId:      p.context!.membreId,
+        userId:        p.context!.userId,
         source:        p.context!.source,
         sourceId:      p.context!.sourceId,
         to:            p.to,

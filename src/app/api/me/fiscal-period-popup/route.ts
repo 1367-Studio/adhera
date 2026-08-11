@@ -17,7 +17,16 @@ export const PATCH = withAdminAuth(async (_req, ctx) => {
     where:  { id: userId },
     select: { fiscalPeriodPopupSeenAt: true },
   })
-  if (user?.fiscalPeriodPopupSeenAt) return NextResponse.json({ ok: true })
+
+  // fiscalPeriodPopupSeenAt must be bumped to "now" every time the popup opens — that's
+  // what dashboard/layout.tsx compares against loginAt to decide whether to show it again.
+  // Returning early here on a repeat login would leave it stuck at its very first value,
+  // which is then always older than the new login's loginAt — showing the popup on every
+  // refresh instead of once per login. Only the bell notification is a true "once ever".
+  if (user?.fiscalPeriodPopupSeenAt) {
+    await prisma.user.update({ where: { id: userId }, data: { fiscalPeriodPopupSeenAt: new Date() } })
+    return NextResponse.json({ ok: true })
+  }
 
   const t = await getTranslations("notifications.fiscalPeriodReminder")
 
