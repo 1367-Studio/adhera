@@ -186,6 +186,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role            = (user as { role?: string }).role
         token.associationId   = (user as { associationId?:   string | null }).associationId
         token.associationSlug = (user as { associationSlug?: string | null }).associationSlug
+        // Only ever set here, in the branch that only runs on an actual sign-in — every
+        // other request re-enters the `else` branch below and leaves this untouched, so it
+        // stays stable across refreshes/token rotation for the lifetime of one login.
+        // Lets "show once per login" features (e.g. FiscalPeriodPopup) tell a genuine
+        // relogin apart from the user just reloading the page.
+        token.loginAt = Date.now()
         token.subscriptionStatus = token.associationId
           ? (await prisma.association.findUnique({
               where:  { id: token.associationId as string },
@@ -230,6 +236,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           associationSlug?:    string | null
           subscriptionStatus?: string | null
           locale?:             string
+          loginAt?:            number
         }
         u.id                 = token.id                 as string
         u.role               = token.role               as string
@@ -237,6 +244,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         u.associationSlug    = token.associationSlug    as string | null | undefined
         u.subscriptionStatus = token.subscriptionStatus as string | null | undefined
         u.locale             = token.locale              as string | undefined
+        u.loginAt            = token.loginAt             as number | undefined
       }
       return session
     },
