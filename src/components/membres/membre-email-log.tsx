@@ -49,14 +49,15 @@ const STATUS_BADGE: Record<EmailStatus, { label: string; variant: "default" | "s
 }
 
 const SOURCE_LABEL: Record<string, string> = {
-  SONDAGE:        "Sondage",
-  AUTOMATION:     "Automatisation",
-  BULK_MESSAGE:   "Message groupé",
-  MEMBER_INVITE:  "Invitation",
-  MEETING_INVITE: "Réunion",
-  TRANSACTION:    "Confirmation",
-  DOCUMENT:       "Document",
-  TEST:           "Test",
+  SONDAGE:         "Sondage",
+  AUTOMATION:      "Automatisation",
+  BULK_MESSAGE:    "Message groupé",
+  MEMBER_INVITE:   "Invitation",
+  MEETING_INVITE:  "Réunion",
+  TRANSACTION:     "Confirmation",
+  DOCUMENT:        "Document",
+  TEST:            "Test",
+  SUPPORT_MESSAGE: "Envoyé par le Support Formwise",
 }
 
 type TimelineKey = "createdAt" | "sentAt" | "deliveredAt" | "openedAt" | "clickedAt" | "bouncedAt" | "complainedAt"

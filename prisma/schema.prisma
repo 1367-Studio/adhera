@@ -411,6 +411,7 @@ model User {
   passwordResetTokens   PasswordResetToken[]
   supportTickets        SupportTicket[]
   supportTicketMessages SupportTicketMessage[]
+  emailMessages         EmailMessage[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -957,6 +958,9 @@ model EmailMessage {
   id             String      @id @default(cuid())
   associationId  String
   membreId       String?
+  // Set when the recipient is a manager/staff account (User) rather than a Membre —
+  // e.g. Support-sent emails (source "SUPPORT_MESSAGE") can target either.
+  userId         String?
   resendId       String?     @unique
   to             String
   subject        String
@@ -967,8 +971,8 @@ model EmailMessage {
   // the admin preview — this flags that gap instead of letting the preview look complete.
   hasAttachments Boolean     @default(false)
   // "SONDAGE" | "AUTOMATION" | "BULK_MESSAGE" | "MEMBER_INVITE" | "MEETING_INVITE" |
-  // "TRANSACTION" | "DOCUMENT" | "TEST" — kept as a String (not enum) so new sources
-  // don't need a migration, matching the MessageTemplate.category convention.
+  // "TRANSACTION" | "DOCUMENT" | "TEST" | "SUPPORT_MESSAGE" — kept as a String (not enum)
+  // so new sources don't need a migration, matching the MessageTemplate.category convention.
   source         String
   sourceId       String?
   status         EmailStatus @default(QUEUED)
@@ -983,8 +987,10 @@ model EmailMessage {
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre?     @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([associationId, membreId, createdAt(sort: Desc)])
+  @@index([associationId, source, createdAt(sort: Desc)])
   @@index([source, sourceId])
 }
 
