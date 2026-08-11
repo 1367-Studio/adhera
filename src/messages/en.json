@@ -3261,6 +3261,7 @@
         "passwordReset": "Password reset",
         "emailSentBulk": "Email sent",
         "smsSentBulk": "SMS sent",
+        "supportEmailSent": "Email sent by Formwise Support",
         "actualiteCreated": "News item created",
         "actualiteUpdated": "News item updated",
         "actualiteDeleted": "News item deleted",
@@ -3648,7 +3649,8 @@
         "meetingInvite": "Meeting",
         "transaction": "Confirmation",
         "document": "Document",
-        "test": "Test"
+        "test": "Test",
+        "supportMessage": "Sent by Formwise Support"
       },
       "timeline": {
         "created": "Created",
@@ -3909,6 +3911,20 @@
       "message": "Message",
       "cancel": "Cancel",
       "send": "Send"
+    },
+    "tabs": {
+      "chat": "Chat",
+      "informational": "Informational"
+    },
+    "informational": {
+      "empty": "No messages from Support yet.",
+      "to": "Recipient:",
+      "sentAt": "Sent on",
+      "error": "Couldn't load messages from Support.",
+      "retry": "Retry",
+      "refresh": "Refresh",
+      "shownOfTotal": "{shown} of {total}",
+      "loadMore": "Load more"
     },
     "faq": {
       "sectionTitle": "Frequently asked questions",

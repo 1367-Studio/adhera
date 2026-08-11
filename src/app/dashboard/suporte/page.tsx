@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
-import { SupportTicketsView } from "@/components/support/support-tickets-view"
+import { SupportPageTabs } from "@/components/support/support-page-tabs"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("support")
@@ -8,5 +8,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function SupportTicketsPage() {
-  return <SupportTicketsView />
+  return <SupportPageTabs />
 }

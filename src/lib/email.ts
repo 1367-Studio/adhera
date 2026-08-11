@@ -505,6 +505,26 @@ export function customEmail(p: {
   }
 }
 
+// Emails sent by Formwise Support staff to an association's managers/members. Deliberately
+// never passes `branding` — this must never appear to come from the association itself.
+// Unlike customEmail() above, `bodyHtml` here is actually plain text from the backoffice
+// composer's <textarea> (see support-email-composer.tsx) — escaped and wrapped in
+// white-space:pre-wrap so line breaks survive and stray "<"/">" characters can't break the
+// layout, matching the convention already used for support-ticket notification emails
+// (supportTicketStaffEmail above).
+export function supportEmail(p: {
+  subject:        string
+  bodyHtml:       string
+  recipientEmail: string
+}) {
+  const content = `<div style="font-size:15px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.bodyHtml)}</div>`
+  return {
+    to:      p.recipientEmail,
+    subject: p.subject,
+    html:    layout("Support Formwise", content),
+  }
+}
+
 export function ticketPurchaseEmail(p: {
   firstName:       string
   email:           string
