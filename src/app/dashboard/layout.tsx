@@ -58,14 +58,26 @@ export default async function DashboardLayout({ children }: { children: React.Re
     )
   }
 
+  // Meant to nag once per actual login (not once ever, and not once per page refresh)
+  // until the association has a fiscal period configured. fiscalPeriodPopupSeenAt is
+  // compared against this session's loginAt (stamped once at sign-in, see auth/config.ts's
+  // jwt callback) rather than checked for mere presence: a refresh/new tab keeps the same
+  // loginAt, so a popup already shown this login stays hidden, while an actual relogin
+  // gets a fresh loginAt and shows it again. A session from before loginAt existed (no
+  // relogin yet since this shipped) falls back to the old "ever seen" check so it doesn't
+  // suddenly start reappearing on every refresh until its next real login.
   const [popupUser, exerciceCount] = canManageFinance && u.associationId
-  ? await Promise.all([
-      prisma.user.findUnique({ where: { id: u.id }, select: { fiscalPeriodPopupSeenAt: true } }),
-      prisma.exerciceComptable.count({ where: { associationId: u.associationId } }),
-    ])
-  : [null, 0]
+    ? await Promise.all([
+        prisma.user.findUnique({ where: { id: u.id }, select: { fiscalPeriodPopupSeenAt: true } }),
+        prisma.exerciceComptable.count({ where: { associationId: u.associationId } }),
+      ])
+    : [null, 0]
 
-  const showFiscalPeriodPopup = canManageFinance && modules.finances && !popupUser?.fiscalPeriodPopupSeenAt && exerciceCount === 0
+  const loginAt = (session.user as { loginAt?: number }).loginAt
+  const popupSeenThisLogin = !!popupUser?.fiscalPeriodPopupSeenAt
+    && (loginAt === undefined || popupUser.fiscalPeriodPopupSeenAt.getTime() >= loginAt)
+
+  const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0 && !popupSeenThisLogin
 
   return (
     <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding}>
