@@ -6,6 +6,10 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
+// Called every time the popup itself opens (see FiscalPeriodPopup — it shows on every
+// login until a fiscal period exists, by design), but this route only ever fires the
+// bell notification once: fiscalPeriodPopupSeenAt gates that side effect, not whether the
+// modal is shown, which is decided independently in dashboard/layout.tsx.
 export const PATCH = withAdminAuth(async (_req, ctx) => {
   const { userId, associationId } = ctx
 
