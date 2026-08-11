@@ -1697,6 +1697,23 @@
       "joinError": "Impossible de rejoindre la réunion.",
       "kickedOutTitle": "La réunion a été clôturée par l'administrateur.",
       "kickedOutSubtitle": "Vous allez être redirigé…"
+    },
+    "youtrustSettings": {
+      "heading": "Signature électronique des comptes rendus",
+      "description": "Utilisé pour signer électroniquement les comptes rendus de réunion. Nécessite votre propre compte Youtrust — il n'y a pas de clé partagée par la plateforme, la signature se fait directement sur votre compte Youtrust.",
+      "configuredTitle": "Compte Youtrust configuré",
+      "notConfiguredWarning": "Aucun compte Youtrust configuré — la signature électronique des comptes rendus ne sera pas disponible tant que vous n'aurez pas renseigné votre clé API.",
+      "apiKeyLabel": "Clé API",
+      "apiKeyPlaceholderReplace": "Clé existante — saisissez pour la remplacer",
+      "credentialsHint": "Retrouvez votre clé API sur",
+      "saving": "Enregistrement…",
+      "removeCredentials": "Supprimer les identifiants",
+      "toasts": {
+        "saved": "Configuration Youtrust enregistrée",
+        "saveError": "Impossible d'enregistrer la configuration Youtrust",
+        "credentialsRemoved": "Identifiants Youtrust supprimés",
+        "removeError": "Impossible de supprimer les identifiants"
+      }
     }
   },
   "materiel": {

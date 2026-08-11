@@ -1697,6 +1697,23 @@
       "joinError": "Não foi possível entrar na reunião.",
       "kickedOutTitle": "A reunião foi encerrada pelo administrador.",
       "kickedOutSubtitle": "Você será redirecionado…"
+    },
+    "youtrustSettings": {
+      "heading": "Assinatura eletrônica de atas",
+      "description": "Usado para assinar eletronicamente as atas de reunião. Requer sua própria conta Youtrust — não há chave compartilhada pela plataforma, a assinatura é feita diretamente na sua conta Youtrust.",
+      "configuredTitle": "Conta Youtrust configurada",
+      "notConfiguredWarning": "Nenhuma conta Youtrust configurada — a assinatura eletrônica de atas não estará disponível até que você informe sua chave de API.",
+      "apiKeyLabel": "Chave de API",
+      "apiKeyPlaceholderReplace": "Chave existente — digite para substituir",
+      "credentialsHint": "Encontre sua chave de API em",
+      "saving": "Salvando…",
+      "removeCredentials": "Remover credenciais",
+      "toasts": {
+        "saved": "Configuração da Youtrust salva",
+        "saveError": "Não foi possível salvar a configuração da Youtrust",
+        "credentialsRemoved": "Credenciais Youtrust removidas",
+        "removeError": "Não foi possível remover as credenciais"
+      }
     }
   },
   "materiel": {

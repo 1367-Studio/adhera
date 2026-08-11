@@ -1,4 +1,4 @@
-import { getYoutrustCredentials } from "./config";
+import { getYoutrustCredentials, getYoutrustBaseUrl } from "./config";
 
 export class YoutrustApiError extends Error {
   constructor(
@@ -9,10 +9,8 @@ export class YoutrustApiError extends Error {
   }
 }
 
-async function youtrustFetch(associationId: string, path: string, init: RequestInit = {}) {
-  const { apiKey, baseUrl } = await getYoutrustCredentials(associationId);
-
-  const res = await fetch(`${baseUrl}${path}`, {
+async function youtrustFetchWithKey(apiKey: string, path: string, init: RequestInit = {}) {
+  const res = await fetch(`${getYoutrustBaseUrl()}${path}`, {
     ...init,
     headers: { Authorization: `Bearer ${apiKey}`, ...(init.headers ?? {}) },
   });
@@ -23,6 +21,11 @@ async function youtrustFetch(associationId: string, path: string, init: RequestI
   }
 
   return res.json();
+}
+
+async function youtrustFetch(associationId: string, path: string, init: RequestInit = {}) {
+  const { apiKey } = await getYoutrustCredentials(associationId);
+  return youtrustFetchWithKey(apiKey, path, init);
 }
 
 export async function createSignatureRequest(associationId: string, name: string) {
@@ -78,4 +81,30 @@ export async function activateSignatureRequest(associationId: string, signatureR
   return youtrustFetch(associationId, `/signature_requests/${signatureRequestId}/activate`, {
     method: "POST",
   }) as Promise<{ status: string; activated_at: string }>;
+}
+
+export async function createWebhookSubscription(apiKey: string, endpoint: string) {
+  return youtrustFetchWithKey(apiKey, "/webhooks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      endpoint,
+      subscribed_events: [
+        "signature_request.done",
+        "signature_request.expired",
+        "signature_request.canceled",
+        "signature_request.declined",
+        "signer.notified",
+        "signer.link_opened",
+        "signer.done",
+        "signer.declined",
+        "signer.error",
+      ],
+      scopes: ["*"],
+      sandbox: process.env.YOUTRUST_ENVIRONMENT !== "production",
+      auto_retry: true,
+      enabled: true,
+      description: "Adhéra — signature des comptes rendus de réunion",
+    }),
+  }) as Promise<{ id: string; secret_key: string }>;
 }

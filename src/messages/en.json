@@ -1697,6 +1697,23 @@
       "joinError": "Unable to join the meeting.",
       "kickedOutTitle": "The meeting has been closed by the administrator.",
       "kickedOutSubtitle": "You will be redirected…"
+    },
+    "youtrustSettings": {
+      "heading": "Meeting minutes e-signature",
+      "description": "Used to electronically sign meeting minutes. Requires your own Youtrust account — there is no key shared by the platform, signing happens directly on your own Youtrust account.",
+      "configuredTitle": "Youtrust account configured",
+      "notConfiguredWarning": "No Youtrust account configured — e-signature of meeting minutes will not be available until you provide your API key.",
+      "apiKeyLabel": "API key",
+      "apiKeyPlaceholderReplace": "Existing key — type to replace",
+      "credentialsHint": "Find your API key at",
+      "saving": "Saving…",
+      "removeCredentials": "Remove credentials",
+      "toasts": {
+        "saved": "Youtrust configuration saved",
+        "saveError": "Could not save the Youtrust configuration",
+        "credentialsRemoved": "Youtrust credentials removed",
+        "removeError": "Could not remove credentials"
+      }
     }
   },
   "materiel": {

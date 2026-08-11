@@ -26,6 +26,7 @@ import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
+import { YoutrustSettings } from "@/components/reunions/youtrust-settings"
 type Association = {
   id:      string
   name:    string
@@ -45,10 +46,10 @@ type Tab = "general" | "paiements" | "abonnement" | "integrations"
 
 function getAllTabs(t: ReturnType<typeof useTranslations>) {
   return [
-    { value: "general"      as Tab, label: t("parametres.view.tabs.general"),      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
+    { value: "general"      as Tab, label: t("parametres.view.tabs.general"),      icon: <BuildingsIcon  className="size-3.5" />, modules: null            },
     { value: "paiements"    as Tab, label: t("parametres.view.tabs.paiements"),    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
-    { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
-    { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
+    { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon    className="size-3.5" />, modules: null            },
+    { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon  className="size-3.5" />, modules: ["ia", "sms", "reunions"]  },
   ] as const
 }
 
@@ -247,6 +248,11 @@ function ParametresViewInner() {
           {modules.reunions && (
             <div className="rounded-lg border bg-card p-6">
               <LiveKitSettings canEdit={canEdit} />
+            </div>
+          )}
+          {modules.reunions && (
+            <div className="rounded-lg border bg-card p-6">
+              <YoutrustSettings canEdit={canEdit} />
             </div>
           )}
         </div>

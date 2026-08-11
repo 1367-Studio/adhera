@@ -1697,6 +1697,23 @@
       "joinError": "No se pudo unir a la reunión.",
       "kickedOutTitle": "La reunión ha sido cerrada por el administrador.",
       "kickedOutSubtitle": "Será redirigido…"
+    },
+    "youtrustSettings": {
+      "heading": "Firma electrónica de actas",
+      "description": "Se usa para firmar electrónicamente las actas de reunión. Requiere tu propia cuenta Youtrust — no hay una clave compartida por la plataforma, la firma se realiza directamente en tu cuenta Youtrust.",
+      "configuredTitle": "Cuenta Youtrust configurada",
+      "notConfiguredWarning": "No hay ninguna cuenta Youtrust configurada — la firma electrónica de actas no estará disponible hasta que proporciones tu clave de API.",
+      "apiKeyLabel": "Clave de API",
+      "apiKeyPlaceholderReplace": "Clave existente — escribe para reemplazarla",
+      "credentialsHint": "Encuentra tu clave de API en",
+      "saving": "Guardando…",
+      "removeCredentials": "Eliminar credenciales",
+      "toasts": {
+        "saved": "Configuración de Youtrust guardada",
+        "saveError": "No se pudo guardar la configuración de Youtrust",
+        "credentialsRemoved": "Credenciales de Youtrust eliminadas",
+        "removeError": "No se pudieron eliminar las credenciales"
+      }
     }
   },
   "materiel": {
