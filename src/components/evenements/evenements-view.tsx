@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon } from "@phosphor-icons/react/dist/ssr";
+import { useQuery } from "@tanstack/react-query"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon, LinkIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -22,6 +23,7 @@ import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
+import { BASE_PATH } from "@/lib/env"
 
 type Evenement = {
   id:          string
@@ -98,6 +100,24 @@ export function EvenementsView() {
 
   const { data: result, isLoading } = useEvenementsPaginated(page, PAGE_SIZE, search || undefined)
   const evenements = (result?.data ?? []) as Evenement[]
+
+  // Only need the slug to build the public registration link — reuses the same
+  // query key as parametres-view.tsx so react-query can dedupe it when both are cached.
+  const { data: assoc } = useQuery<{ slug: string }>({
+    queryKey: ["association"],
+    queryFn:  () => fetch("/api/association").then(r => r.json()),
+  })
+
+  async function handleCopyLink(evenementId: string) {
+    if (!assoc?.slug) return
+    const url = `${window.location.origin}${BASE_PATH}/${assoc.slug}/evenements/${evenementId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success(t("evenements.view.toasts.linkCopied"))
+    } catch {
+      toast.error(t("common.error"))
+    }
+  }
 
   useEffect(() => {
     if (result && result.totalPages > 0 && page > result.totalPages) setPage(result.totalPages)
@@ -219,6 +239,7 @@ export function EvenementsView() {
       cell: (e) => (
         <RowActions actions={[
           { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
+          { label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.id) },
           { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
           { label: t("evenements.view.actions.customFields"), icon: <ListChecksIcon className="size-3.5" />, onClick: () => setCustomFieldsTarget(e) },
           { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },

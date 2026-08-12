@@ -1234,6 +1234,7 @@
       "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
       "actions": {
         "presences": "Attendance",
+        "copyLink": "Copy link",
         "edit": "Edit",
         "customFields": "Custom fields",
         "delete": "Delete"
@@ -1248,7 +1249,8 @@
       "toasts": {
         "created": "Event created successfully",
         "updated": "Event updated",
-        "deleted": "Event deleted"
+        "deleted": "Event deleted",
+        "linkCopied": "Link copied!"
       }
     },
     "customFields": {
