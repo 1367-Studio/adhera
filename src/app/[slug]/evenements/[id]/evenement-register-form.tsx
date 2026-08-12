@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { RichTextView } from "@/components/ui/rich-text-view"
 
 type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
 
@@ -167,7 +168,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
               <span>{event.location}</span>
             </div>
           )}
-          {event.description && <p className="pt-1 text-foreground/90 whitespace-pre-line">{event.description}</p>}
+          {event.description && <RichTextView content={event.description} className="pt-1 text-foreground/90" />}
           {event.price && Number(event.price) > 0 && (
             <p className="pt-1 font-semibold text-muted-foreground">{Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}</p>
           )}
