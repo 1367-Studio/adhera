@@ -1234,6 +1234,7 @@
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
       "actions": {
         "presences": "Asistencia",
+        "copyLink": "Copiar enlace",
         "edit": "Editar",
         "customFields": "Campos personalizados",
         "delete": "Eliminar"
@@ -1248,7 +1249,8 @@
       "toasts": {
         "created": "Evento creado correctamente",
         "updated": "Evento actualizado",
-        "deleted": "Evento eliminado"
+        "deleted": "Evento eliminado",
+        "linkCopied": "¡Enlace copiado!"
       }
     },
     "customFields": {
