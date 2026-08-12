@@ -1,3 +1,4 @@
+import Stripe from "stripe"
 import { NextResponse } from "next/server"
 import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
@@ -98,15 +99,33 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // Stripe rejects `account_update` type Account Links ("Valid types for this account are
   // [account_onboarding]") whenever the account still has anything currently_due — which
   // can be true even with detailsSubmitted, e.g. right after the mb_way_payments request
-  // above adds a new requirement that was never part of the original onboarding flow.
+  // above adds a new requirement that was never part of the original onboarding flow. This
+  // check is only a fast-path guess though: Stripe computes requirements asynchronously, so
+  // currentlyDue read right after the capability request above can still lag reality — the
+  // catch below falls back to account_onboarding whenever Stripe itself rejects the type,
+  // which is the only fully reliable signal.
   const linkType = detailsSubmitted && currentlyDue.length === 0 ? "account_update" : "account_onboarding"
 
-  const accountLink = await stripe.accountLinks.create({
+  const linkParams = {
     account:     connectId,
-    type:        linkType,
     return_url:  `${APP_URL}/dashboard/parametres?connect=success`,
     refresh_url: `${APP_URL}/dashboard/parametres?connect=refresh`,
-  })
+  }
+
+  let accountLink
+  try {
+    accountLink = await stripe.accountLinks.create({ ...linkParams, type: linkType })
+  } catch (err) {
+    if (
+      linkType === "account_update" &&
+      err instanceof Stripe.errors.StripeInvalidRequestError &&
+      err.param === "type"
+    ) {
+      accountLink = await stripe.accountLinks.create({ ...linkParams, type: "account_onboarding" })
+    } else {
+      throw err
+    }
+  }
 
   return NextResponse.json({ url: accountLink.url })
 })
