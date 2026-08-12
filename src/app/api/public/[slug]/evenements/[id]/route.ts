@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
+import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
+import { translateFields } from "@/lib/i18n/translate"
+import type { Locale } from "@/i18n/locales"
 
 export async function GET(
   _req: Request,
@@ -29,6 +32,14 @@ export async function GET(
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
+  // The admin always writes this content in their own language — translate it for
+  // visitors on the fly (cached per locale) rather than asking associations to
+  // maintain multiple copies. Location is a street address, not content, so it's
+  // left as-is — translating it would garble the "open in Google Maps" query.
+  const locale = (await getLocale()) as Locale
+  const [translated]  = await translateFields([{ title: evenement.title, description: evenement.description }], ["title", "description"], locale)
+  const customFields  = await translateFields(evenement.customFields, ["label"], locale)
+
   const isPaid = evenement.price != null && Number(evenement.price) > 0
 
   // Same reasoning as the public don route: a Connect id can exist before onboarding is
@@ -49,8 +60,8 @@ export async function GET(
   return NextResponse.json({
     associationName: assoc.name,
     id:          evenement.id,
-    title:       evenement.title,
-    description: evenement.description,
+    title:       translated.title,
+    description: translated.description,
     imageUrl:    evenement.imageUrl,
     date:        evenement.date,
     endDate:     evenement.endDate,
@@ -61,6 +72,6 @@ export async function GET(
     past,
     isPaid,
     paymentEnabled,
-    customFields: evenement.customFields,
+    customFields,
   })
 }

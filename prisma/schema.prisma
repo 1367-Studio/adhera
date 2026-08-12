@@ -1553,3 +1553,14 @@ model FactureRecue {
   @@index([associationId, status])
   @@index([associationId, deletedAt])
 }
+
+// Azure Translator cache — keyed by content hash so identical text (even across
+// associations) is translated once per locale and reused until the source text changes.
+model Translation {
+  hash       String
+  locale     String
+  translated String   @db.Text
+  createdAt  DateTime @default(now())
+
+  @@id([hash, locale])
+}
