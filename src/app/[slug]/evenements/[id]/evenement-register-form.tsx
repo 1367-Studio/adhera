@@ -64,7 +64,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
       .then((d: EventInfo) => setEvent(d))
       .catch(() => setNotFound(true))
       .finally(() => setLoadingEvent(false))
-  }, [slug, id])
+  }, [slug, id, loc])
 
   // Guards against showing the redirect toast again if the effect re-runs for an unrelated
   // reason (e.g. `t` getting a new identity when the visitor switches language via LocaleSwitcher).

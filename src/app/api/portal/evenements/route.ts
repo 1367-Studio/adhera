@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
+import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { translateFields } from "@/lib/i18n/translate"
+import type { Locale } from "@/i18n/locales"
 
 type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
 
@@ -100,9 +103,17 @@ export const GET = withPortalAuth(async (_req, ctx) => {
       partySize:      e.participations[0]?.orderId ? (partySizes[e.participations[0].orderId] ?? 1) : 1,
     }))
 
+  const upcomingWithCounts = withCounts(upcoming)
+  const pastWithCounts     = withCounts(past)
+
+  // One batched Azure call (cached per locale) covers title/description for every
+  // event on the page instead of one call per event.
+  const locale     = (await getLocale()) as Locale
+  const translated = await translateFields([...upcomingWithCounts, ...pastWithCounts], ["title", "description"], locale)
+
   return NextResponse.json({
-    upcoming:        withCounts(upcoming),
-    past:            withCounts(past),
+    upcoming:        translated.slice(0, upcomingWithCounts.length),
+    past:            translated.slice(upcomingWithCounts.length),
     upcomingHasMore,
     pastHasMore,
   })
