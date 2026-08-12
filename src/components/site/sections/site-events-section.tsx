@@ -16,6 +16,7 @@ type PublicEvent = {
   endDate:     string | null
   location:    string | null
   description: string | null
+  imageUrl:    string | null
   price:       string | null
   capacity:    number | null
 }
@@ -43,40 +44,50 @@ export function SiteEventsSection({ section, events, color, slug }: Props) {
               <Link
                 key={event.id}
                 href={`/${slug}/evenements/${event.id}`}
-                className="block bg-white rounded-lg border border-gray-100 p-5 space-y-3 transition-shadow"
+                className="block bg-white rounded-lg border border-gray-100 overflow-hidden transition-shadow"
               >
-                <div
-                  className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white"
-                  style={{ background: color }}
-                >
-                  {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
-                </div>
-
-                <h3 className="font-semibold text-gray-900 leading-snug">{event.title}</h3>
-
-                {event.description && (
-                  <RichTextView content={toHtml(event.description)} className="text-sm text-gray-500 line-clamp-2" />
+                {event.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={event.imageUrl}
+                    alt={event.title}
+                    className="w-full h-44 object-cover"
+                  />
                 )}
-
-                <div className="space-y-1 text-xs text-gray-500">
-                  <div className="flex items-center gap-1.5">
-                    <CalendarBlankIcon className="size-3.5 shrink-0" />
-                    <span>
-                      {new Date(event.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-                      {event.endDate && ` — ${new Date(event.endDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
-                    </span>
+                <div className="p-5 space-y-3">
+                  <div
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white"
+                    style={{ background: color }}
+                  >
+                    {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                   </div>
-                  {event.location && (
+
+                  <h3 className="font-semibold text-gray-900 leading-snug">{event.title}</h3>
+
+                  {event.description && (
+                    <RichTextView content={toHtml(event.description)} className="text-sm text-gray-500 line-clamp-2" />
+                  )}
+
+                  <div className="space-y-1 text-xs text-gray-500">
                     <div className="flex items-center gap-1.5">
-                      <MapPinIcon className="size-3.5 shrink-0" />
-                      <span className="truncate">{event.location}</span>
+                      <CalendarBlankIcon className="size-3.5 shrink-0" />
+                      <span>
+                        {new Date(event.date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                        {event.endDate && ` — ${new Date(event.endDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`}
+                      </span>
                     </div>
+                    {event.location && (
+                      <div className="flex items-center gap-1.5">
+                        <MapPinIcon className="size-3.5 shrink-0" />
+                        <span className="truncate">{event.location}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {event.price && Number(event.price) > 0 && (
+                    <p className="text-sm font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
                   )}
                 </div>
-
-                {event.price && Number(event.price) > 0 && (
-                  <p className="text-sm font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
-                )}
               </Link>
             ))}
           </div>

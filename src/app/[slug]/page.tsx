@@ -43,7 +43,7 @@ async function getSiteData(slug: string) {
           where:   { association: { slug }, date: { gte: now } },
           orderBy: { date: "asc" },
           take:    20,
-          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, price: true, capacity: true },
+          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true },
         })
       : Promise.resolve([]),
     mods.actualites

@@ -1175,6 +1175,7 @@
   },
   "evenements": {
     "form": {
+      "coverImage": "Cover image",
       "title": "Title",
       "titlePlaceholder": "2025 General Assembly",
       "startDate": "Start date",
@@ -1186,7 +1187,10 @@
       "capacityHint": "(empty = unlimited)",
       "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
       "description": "Description",
-      "descriptionPlaceholder": "Event details…"
+      "descriptionPlaceholder": "Event details…",
+      "toasts": {
+        "uploadError": "Error uploading the image"
+      }
     },
     "publicRegister": {
       "notFound": "This event could not be found.",

@@ -16,6 +16,7 @@ type EventInfo = {
   id:          string
   title:       string
   description: string | null
+  imageUrl:    string | null
   date:        string
   endDate:     string | null
   location:    string | null
@@ -142,6 +143,11 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
         <div className="flex justify-end">
           <LocaleSwitcher />
         </div>
+
+        {event.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={event.imageUrl} alt={event.title} className="w-full aspect-video rounded-lg object-cover" />
+        )}
 
         {/* Header */}
         <div className="text-center space-y-2">

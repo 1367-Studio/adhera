@@ -150,6 +150,7 @@ export type CalendarEvenement = {
   lng:         number | null
   price:       string | null
   description: string | null
+  imageUrl:    string | null
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null

@@ -1175,6 +1175,7 @@
   },
   "evenements": {
     "form": {
+      "coverImage": "Imagem de capa",
       "title": "Título",
       "titlePlaceholder": "Assembleia geral 2025",
       "startDate": "Data de início",
@@ -1186,7 +1187,10 @@
       "capacityHint": "(vazio = ilimitada)",
       "capacityUnit": "{count, plural, one {# vaga} other {# vagas}}",
       "description": "Descrição",
-      "descriptionPlaceholder": "Detalhes do evento…"
+      "descriptionPlaceholder": "Detalhes do evento…",
+      "toasts": {
+        "uploadError": "Erro ao enviar a imagem"
+      }
     },
     "publicRegister": {
       "notFound": "Este evento não foi encontrado.",

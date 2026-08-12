@@ -33,6 +33,7 @@ type Evenement = {
   lng:         number | null
   price:       string | null
   description: string | null
+  imageUrl:    string | null
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
@@ -81,7 +82,7 @@ export function EvenementsView() {
   }
 
   function calendarEventToEvenement(ev: CalendarEvenement): Evenement {
-    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, _count: ev._count, confirmedCount: 0 }
+    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, _count: ev._count, confirmedCount: 0 }
   }
 
   function handleCalendarEditClick(ev: CalendarEvenement)      { setEditTarget(calendarEventToEvenement(ev)) }
@@ -312,6 +313,7 @@ export function EvenementsView() {
             endDate:     editTarget.endDate ? toDatetimeLocal(editTarget.endDate) : "",
             location:    editTarget.location    ?? "",
             description: editTarget.description ?? "",
+            imageUrl:    editTarget.imageUrl    ?? "",
             lat:         editTarget.lat      ?? undefined,
             lng:         editTarget.lng      ?? undefined,
             price:       editTarget.price    != null ? Number(editTarget.price)    : undefined,
