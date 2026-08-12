@@ -497,6 +497,7 @@ model Evenement {
   id            String    @id @default(cuid())
   title         String
   description   String?
+  imageUrl      String?
   date          DateTime
   endDate       DateTime?
   location      String?

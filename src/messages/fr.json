@@ -1175,6 +1175,7 @@
   },
   "evenements": {
     "form": {
+      "coverImage": "Image de couverture",
       "title": "Titre",
       "titlePlaceholder": "Assemblée générale 2025",
       "startDate": "Date de début",
@@ -1186,7 +1187,10 @@
       "capacityHint": "(vide = illimitée)",
       "capacityUnit": "{count, plural, one {# place} other {# places}}",
       "description": "Description",
-      "descriptionPlaceholder": "Détails de l'événement…"
+      "descriptionPlaceholder": "Détails de l'événement…",
+      "toasts": {
+        "uploadError": "Erreur lors de l'upload de l'image"
+      }
     },
     "publicRegister": {
       "notFound": "Cet événement est introuvable.",

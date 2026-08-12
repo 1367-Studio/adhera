@@ -5,7 +5,7 @@ import { EvenementRegisterForm } from "./evenement-register-form"
 async function getEventMeta(slug: string, id: string) {
   return prisma.evenement.findFirst({
     where:  { id, association: { slug } },
-    select: { title: true, description: true, association: { select: { name: true } } },
+    select: { title: true, description: true, imageUrl: true, association: { select: { name: true } } },
   })
 }
 
@@ -24,7 +24,12 @@ export async function generateMetadata(
   return {
     title,
     description,
-    openGraph: { title, description, type: "website" },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: data.imageUrl ? [{ url: data.imageUrl }] : undefined,
+    },
   }
 }
 

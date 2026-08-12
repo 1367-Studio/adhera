@@ -24,6 +24,7 @@ type Evenement = {
   id:             string
   title:          string
   description:    string | null
+  imageUrl:       string | null
   date:           string
   endDate:        string | null
   location:       string | null
@@ -550,6 +551,11 @@ function EventCard({
       "rounded-lg border bg-card p-5 space-y-4 transition-colors",
       isPast && "opacity-75 hover:opacity-100",
     )}>
+      {ev.imageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={ev.imageUrl} alt={ev.title} className="w-full aspect-video rounded-md object-cover" />
+      )}
+
       {/* Header */}
       <div className="space-y-1.5">
         <div className="flex items-start justify-between gap-2">
