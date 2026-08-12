@@ -3,6 +3,7 @@ import { z } from "zod"
 const evenementBase = z.object({
   title:       z.string().trim().min(1, "Titre requis"),
   description: z.string().trim().optional().or(z.literal("")),
+  imageUrl:    z.string().trim().optional().or(z.literal("")),
   date:        z.string().min(1, "Date requise"),
   endDate:     z.string().optional().or(z.literal("")),
   location:    z.string().trim().optional().or(z.literal("")),

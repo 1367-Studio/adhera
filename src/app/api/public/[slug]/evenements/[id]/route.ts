@@ -21,7 +21,7 @@ export async function GET(
   const evenement = await prisma.evenement.findFirst({
     where:  { id, associationId: assoc.id },
     select: {
-      id: true, title: true, description: true, date: true, endDate: true,
+      id: true, title: true, description: true, imageUrl: true, date: true, endDate: true,
       location: true, price: true, capacity: true,
       customFields: { orderBy: { order: "asc" }, select: { id: true, type: true, label: true, required: true } },
       _count: { select: { participations: { where: { OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] } } } },
@@ -51,6 +51,7 @@ export async function GET(
     id:          evenement.id,
     title:       evenement.title,
     description: evenement.description,
+    imageUrl:    evenement.imageUrl,
     date:        evenement.date,
     endDate:     evenement.endDate,
     location:    evenement.location,

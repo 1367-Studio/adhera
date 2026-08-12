@@ -1,14 +1,18 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { evenementSchema, type EvenementInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { LocationPicker } from "@/components/ui/location-picker"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
 function defaultDate() {
@@ -42,8 +46,57 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
   const locationValue = watch("location") ?? ""
   const capacityValue = watch("capacity")
 
+  // Same lazy-upload pattern as actualite-form.tsx: picking a file only creates a local
+  // blob: preview, the real /api/upload only happens on submit — so cancelling out of
+  // this form never leaves an orphaned file in R2.
+  const [pendingFile, setPendingFile] = useState<{ blobUrl: string; file: File } | null>(null)
+  const [uploading,   setUploading]   = useState(false)
+
+  useEffect(() => {
+    if (!pendingFile) return
+    return () => URL.revokeObjectURL(pendingFile.blobUrl)
+  }, [pendingFile])
+
+  async function handleFormSubmit(data: EvenementInput) {
+    if (!pendingFile) {
+      await onSubmit(data)
+      return
+    }
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", pendingFile.file)
+      fd.append("prefix", "adhera/evenements")
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      if (!res.ok) { toast.error(t("toasts.uploadError")); return }
+      const { url } = (await res.json()) as { url: string }
+      await onSubmit({ ...data, imageUrl: url })
+      setPendingFile(null)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" noValidate>
+      <Controller
+        name="imageUrl"
+        control={control}
+        render={({ field }) => (
+          <div className="space-y-1.5">
+            <Label>{t("coverImage")}</Label>
+            <ImageUpload
+              value={field.value ?? ""}
+              onChange={url => { if (url === "") setPendingFile(null); field.onChange(url) }}
+              prefix="adhera/evenements"
+              aspectRatio="video"
+              lazy
+              onFilePending={(blobUrl, file) => setPendingFile({ blobUrl, file })}
+            />
+          </div>
+        )}
+      />
+
       <FormField
         label={t("title")}
         required
@@ -136,10 +189,10 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
       />
 
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading || uploading}>
           {tCommon("cancel")}
         </Button>
-        <Button type="submit" loading={loading}>
+        <Button type="submit" loading={loading || uploading}>
           {tCommon("save")}
         </Button>
       </div>
