@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useEvenementsByMonth, type CalendarEvenement } from "@/hooks/use-evenements"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 const MAX_VISIBLE  = 3
 
@@ -232,7 +233,11 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm truncate">{ev.title}</p>
-                        <PriceBadge price={ev.price} className="shrink-0" />
+                        {ev.ticketTypes.length > 1
+                          ? <PriceBadge price={cheapestAvailableTicketTypePrice(ev.ticketTypes)} fromPrice className="shrink-0" />
+                          : ev.ticketTypes.length === 1
+                            ? <PriceBadge price={ev.ticketTypes[0].price} className="shrink-0" />
+                            : <PriceBadge price={ev.price} className="shrink-0" />}
                       </div>
                       <div className="flex flex-wrap gap-x-3 mt-1 text-xs text-muted-foreground">
                         <span>

@@ -41,6 +41,7 @@ type PresenceRow = {
   rsvp:            string | null
   ticketPaidAt:    string | null
   stripeSessionId: string | null
+  ticketTypeLabel: string | null
   isGuest:         boolean
 }
 
@@ -58,6 +59,8 @@ function hasExtraInfo(row: PresenceRow): boolean {
 
 type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
 
+type EvenementTicketType = { id: string; label: string; price: string }
+
 type Evenement = {
   id:          string
   title:       string
@@ -69,6 +72,7 @@ type Evenement = {
   qrToken:     string | null
   qrExpiresAt: string | null
   customFields: CustomField[]
+  ticketTypes:  EvenementTicketType[]
 }
 
 // Mirrors the grace window enforced server-side in /api/portal/check-in/[token] —
@@ -170,7 +174,8 @@ export default function PresencesPage() {
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)
 
   const typed          = rows as PresenceRow[]
-  const hasFee         = !!ev?.price && Number(ev.price) > 0
+  const hasFee         = !!ev?.ticketTypes.length || (!!ev?.price && Number(ev.price) > 0)
+  const hasMultipleTicketTypes = (ev?.ticketTypes.length ?? 0) > 1
   const presentsCount  = typed.filter(r => r.present).length
   const reservedCount  = hasFee
     ? typed.filter(r => r.ticketPaidAt != null || r.rsvp === "CONFIRME").length
@@ -760,6 +765,11 @@ export default function PresencesPage() {
                       {row.isGuest && (
                         <span className="text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground shrink-0">
                           {t("evenements.presences.list.guestBadge")}
+                        </span>
+                      )}
+                      {hasMultipleTicketTypes && row.ticketTypeLabel && (
+                        <span className="text-xs text-muted-foreground truncate hidden sm:inline">
+                          · {row.ticketTypeLabel}
                         </span>
                       )}
                     </span>

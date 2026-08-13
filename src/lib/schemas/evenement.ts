@@ -35,3 +35,14 @@ const evenementCustomFieldSchema = z.object({
 export const evenementCustomFieldsSchema = z.array(evenementCustomFieldSchema).max(20)
 
 export type EvenementCustomFieldInput = z.infer<typeof evenementCustomFieldSchema>
+
+const evenementTicketTypeSchema = z.object({
+  id:       z.string().optional(), // absent = nouveau tarif
+  label:    z.string().trim().min(1).max(100),
+  price:    z.number().nonnegative(),
+  capacity: z.number().int().positive().nullish(), // absent/null = illimité
+})
+
+export const evenementTicketTypesSchema = z.array(evenementTicketTypeSchema).max(20)
+
+export type EvenementTicketTypeInput = z.infer<typeof evenementTicketTypeSchema>

@@ -342,6 +342,7 @@ export async function POST(req: Request) {
         const tickets = await prisma.participation.findMany({
           where:   { orderId },
           include: {
+            ticketType: { select: { price: true } },
             evenement: {
               select: {
                 title:        true,
@@ -360,19 +361,23 @@ export async function POST(req: Request) {
         if (buyerTicket?.evenement) {
           const evenement  = buyerTicket.evenement
           const quantity   = tickets.length
-          // Use what Stripe actually charged (locked in at checkout session creation),
-          // not the event's current price — an admin could have edited the price while
-          // the checkout session was still open. Every seat in the order shares the same
-          // single line item, so amount_total is always evenly divisible by quantity.
-          // This amount also drives later self-service refunds (cancel-ticket route), so
-          // getting it wrong here can make a refund attempt exceed what was ever charged.
-          const totalAmount = sess.amount_total != null ? sess.amount_total / 100 : Number(evenement.price!) * quantity
-          const unitAmount  = totalAmount / quantity
+          // Each seat's own ticket type (once the event has any) drives its amount — a
+          // mixed-tier order (e.g. one free seat, one paid) can no longer be split evenly
+          // across the order the way a flat single-price order always could. Falls back to
+          // the event's current price for untiered tickets, same acceptable-risk trade-off
+          // the flat-price path already made: an admin could have edited the price while
+          // the checkout session was still open. This amount also drives later self-service
+          // refunds (cancel-ticket route), so getting it wrong here can make a refund
+          // attempt exceed what was ever charged.
+          const ticketAmounts = new Map(tickets.map(t => [t.id, Number(t.ticketType?.price ?? evenement.price ?? 0)]))
+          const totalAmount   = [...ticketAmounts.values()].reduce((sum, a) => sum + a, 0)
 
           // Best-effort exercice link — never blocks, same reasoning as the other branches.
           const exercice = await resolveExerciceForDate(evenement.associationId, paidAt)
 
-          await prisma.participation.updateMany({ where: { orderId }, data: { amount: unitAmount } })
+          await prisma.$transaction(
+            tickets.map(t => prisma.participation.update({ where: { id: t.id }, data: { amount: ticketAmounts.get(t.id) } })),
+          )
 
           // One Income row per seat (not a single lump sum) so cancelling a single
           // companion later can remove just that seat's revenue without touching the rest.
@@ -382,7 +387,7 @@ export async function POST(req: Request) {
               exerciceId:      exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:        t.membreId,
               participationId: t.id,
-              amount:          unitAmount,
+              amount:          ticketAmounts.get(t.id)!,
               description:     `Billet (Stripe) — ${evenement.title} — ${t.firstName} ${t.lastName}`,
               paymentMethod:   "STRIPE",
               source:          "STRIPE",
@@ -639,17 +644,24 @@ export async function POST(req: Request) {
           // pre-refund total — an activity-log entry alone doesn't correct the books.
           // When one PaymentIntent backs several Income rows (a multi-seat ticket order),
           // there's no way to tell from the charge alone which seat the refund applies to,
-          // so the cut is spread evenly (all seats in one order always share the same
-          // price today, so this is exact, not an approximation).
+          // so the cut is spread proportionally to each row's own original amount — an
+          // even split only holds when every seat in the order was priced identically,
+          // which ticket tiers no longer guarantee (a mixed free+paid order would otherwise
+          // dock the free seat's already-zero income just as much as the paid one).
           const incomes = await prisma.income.findMany({ where: { reference: paymentIntentId, status: "PAID" } })
           if (incomes.length) {
             const refundedEuros = charge.amount_refunded / 100
-            const perRowCut     = refundedEuros / incomes.length
+            const totalOriginal = incomes.reduce((sum, i) => sum + Number(i.amount), 0)
             await prisma.$transaction(
-              incomes.map(i => prisma.income.update({
-                where: { id: i.id },
-                data:  { amount: Math.max(0, Number(i.amount) - perRowCut) },
-              }))
+              incomes.map(i => {
+                const share = totalOriginal > 0
+                  ? (Number(i.amount) / totalOriginal) * refundedEuros
+                  : refundedEuros / incomes.length
+                return prisma.income.update({
+                  where: { id: i.id },
+                  data:  { amount: Math.max(0, Number(i.amount) - share) },
+                })
+              })
             )
           }
 

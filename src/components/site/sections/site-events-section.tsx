@@ -2,6 +2,7 @@ import Link from "next/link"
 import type { EventsSection } from "@/types/site-config"
 import { CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 function toHtml(content: string): string {
   if (!content) return ""
@@ -19,6 +20,7 @@ type PublicEvent = {
   imageUrl:    string | null
   price:       string | null
   capacity:    number | null
+  ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
 
 type Props = {
@@ -84,7 +86,13 @@ export function SiteEventsSection({ section, events, color, slug }: Props) {
                     )}
                   </div>
 
-                  {event.price && Number(event.price) > 0 && (
+                  {event.ticketTypes.length > 1 ? (
+                    <p className="text-sm font-medium" style={{ color }}>
+                      À partir de {cheapestAvailableTicketTypePrice(event.ticketTypes).toFixed(2)} €
+                    </p>
+                  ) : event.ticketTypes.length === 1 ? (
+                    <p className="text-sm font-medium" style={{ color }}>{Number(event.ticketTypes[0].price).toFixed(2)} €</p>
+                  ) : event.price && Number(event.price) > 0 && (
                     <p className="text-sm font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
                   )}
                 </div>
