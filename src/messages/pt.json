@@ -1216,7 +1216,8 @@
       "pay": "Pagar {amount}",
       "privacyNote": "Seus dados são usados apenas para sua inscrição neste evento.",
       "errorGeneric": "Erro",
-      "errorNetwork": "Erro de rede"
+      "errorNetwork": "Erro de rede",
+      "inAppBrowserWarning": "Você está navegando pelo Facebook ou Instagram, o que pode impedir esta página de funcionar corretamente. Toque em ⋯ e depois em \"Abrir no navegador\"."
     },
     "view": {
       "title": "Eventos",
