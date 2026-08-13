@@ -1216,7 +1216,8 @@
       "pay": "Pay {amount}",
       "privacyNote": "Your data is used only for your registration to this event.",
       "errorGeneric": "Error",
-      "errorNetwork": "Network error"
+      "errorNetwork": "Network error",
+      "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\"."
     },
     "view": {
       "title": "Events",
