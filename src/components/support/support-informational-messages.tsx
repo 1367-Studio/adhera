@@ -28,7 +28,13 @@ function InformationalItem({ row }: { row: InformationalRow }) {
   const [open, setOpen] = useState(false)
   const t = useTranslations("support")
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
-  const sanitizedHtml = row.html ? sanitizeEmailPreviewHtml(row.html) : null
+  const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null)
+  useEffect(() => {
+    if (!row.html) { setSanitizedHtml(null); return }
+    let cancelled = false
+    sanitizeEmailPreviewHtml(row.html).then(html => { if (!cancelled) setSanitizedHtml(html) })
+    return () => { cancelled = true }
+  }, [row.html])
   const recipient = row.user
     ? `${row.user.name ?? row.user.email} · ${row.user.role}`
     : row.membre
