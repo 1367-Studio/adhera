@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -94,10 +94,13 @@ function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
     staleTime: Infinity,
   })
 
-  const sanitizedHtml = useMemo(
-    () => (content?.html ? sanitizeEmailPreviewHtml(content.html) : null),
-    [content],
-  )
+  const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null)
+  useEffect(() => {
+    if (!content?.html) { setSanitizedHtml(null); return }
+    let cancelled = false
+    sanitizeEmailPreviewHtml(content.html).then(html => { if (!cancelled) setSanitizedHtml(html) })
+    return () => { cancelled = true }
+  }, [content])
 
   return (
     <div className="rounded-lg border bg-card overflow-hidden">
