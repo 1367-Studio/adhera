@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useState } from "react"
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useParams, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -116,8 +116,9 @@ function EmailRowItem({ e }: { e: EmailRow }) {
     staleTime: Infinity,
   })
 
-  const sanitizedHtml = useMemo(() => {
-    if (!content?.html) return null
+  const [sanitizedHtml, setSanitizedHtml] = useState<string | null>(null)
+  useEffect(() => {
+    if (!content?.html) { setSanitizedHtml(null); return }
     let raw = content.html
     if (sondageHref) {
       // When an app-controlled CTA (sondageHref) is already shown outside the iframe, remove
@@ -130,7 +131,9 @@ function EmailRowItem({ e }: { e: EmailRow }) {
       dead?.closest("table")?.remove()
       raw = doc.documentElement.outerHTML
     }
-    return sanitizeEmailPreviewHtml(raw)
+    let cancelled = false
+    sanitizeEmailPreviewHtml(raw).then(html => { if (!cancelled) setSanitizedHtml(html) })
+    return () => { cancelled = true }
   }, [content, sondageHref, e.sourceId])
 
   return (
