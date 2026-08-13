@@ -18,6 +18,7 @@ type AssocData  = { name: string; slug: string; city: string | null; country: st
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
   location: string | null; description: string | null; price: string | null; capacity: number | null
+  ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
 
 export function SiteView() {
@@ -40,7 +41,7 @@ export function SiteView() {
     queryFn:  () =>
       fetch("/api/evenements?upcoming=true")
         .then(r => r.json())
-        .then((data: { id: string; title: string; date: string; endDate: string | null; location: string | null; description: string | null; price: string | null; capacity: number | null }[]) =>
+        .then((data: PublicEvent[]) =>
           data.map(e => ({ ...e, price: e.price != null ? String(e.price) : null }))
         ),
   })

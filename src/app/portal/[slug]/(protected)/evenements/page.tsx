@@ -15,10 +15,13 @@ import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
+import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT"
 
 type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
+
+type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean }
 
 type Evenement = {
   id:             string
@@ -32,20 +35,51 @@ type Evenement = {
   lng:            number | null
   price:          string | null
   capacity:       number | null
+  ticketTypes:    EvenementTicketType[]
   participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null }[]
   partySize:      number
   rsvpCounts:     RsvpCounts
   confirmedCount: number
 }
 
+function ticketTypeOptionLabel(tt: EvenementTicketType): string {
+  const price = Number(tt.price)
+  const label = `${tt.label} — ${price === 0 ? "Gratuit" : price.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`
+  return tt.full ? `${label} (complet)` : label
+}
+
+function TicketTypeSelect({
+  ticketTypes,
+  value,
+  onChange,
+}: {
+  ticketTypes: EvenementTicketType[]
+  value:       string | undefined
+  onChange:    (ticketTypeId: string) => void
+}) {
+  return (
+    <select
+      value={value ?? (ticketTypes.find(tt => !tt.full) ?? ticketTypes[0])?.id}
+      onChange={e => onChange(e.target.value)}
+      className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
+    >
+      {ticketTypes.map(tt => (
+        <option key={tt.id} value={tt.id} disabled={tt.full}>{ticketTypeOptionLabel(tt)}</option>
+      ))}
+    </select>
+  )
+}
+
 function GuestNameFields({
   count,
   guests,
   onChange,
+  ticketTypes,
 }: {
   count:    number
   guests:   GuestInput[]
   onChange: (guests: GuestInput[]) => void
+  ticketTypes?: EvenementTicketType[]
 }) {
   if (count <= 0) return null
   return (
@@ -90,6 +124,17 @@ function GuestNameFields({
               }}
               className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
             />
+            {ticketTypes && ticketTypes.length > 0 && (
+              <TicketTypeSelect
+                ticketTypes={ticketTypes}
+                value={g.ticketTypeId}
+                onChange={ticketTypeId => {
+                  const next = [...guests]
+                  next[i] = { ...g, ticketTypeId }
+                  onChange(next)
+                }}
+              />
+            )}
           </div>
         )
       })}
@@ -140,25 +185,31 @@ const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: stri
   },
 ]
 
-function TicketButton({ evenementId, quantity, guests }: { evenementId: string; quantity: number; guests: GuestInput[] }) {
+function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { evenementId: string; quantity: number; guests: GuestInput[]; ticketTypeId?: string; free?: boolean }) {
+  const qc = useQueryClient()
   const mutation = useMutation({
     mutationFn: async () => {
       const res = await fetch(`/api/portal/evenements/${evenementId}/checkout`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ quantity, guests }),
+        body:    JSON.stringify({ quantity, guests, ticketTypeId }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
       return res.json() as Promise<{ url: string }>
     },
     onSuccess: ({ url }) => { window.location.href = url },
-    onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError:   (err) => {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+      // A tier could have just filled up (someone else took the last spot) — refresh so
+      // the picker reflects that instead of letting the visitor retry the same dead end.
+      qc.invalidateQueries({ queryKey: ["portal-evenements"] })
+    },
   })
 
   return (
     <Button size="sm" loading={mutation.isPending} onClick={() => mutation.mutate()} className="w-full">
       <TicketIcon className="size-3.5 mr-1.5" />
-      Payer en ligne{quantity > 1 ? ` (×${quantity})` : ""}
+      {free ? "Confirmer" : "Payer en ligne"}{quantity > 1 ? ` (×${quantity})` : ""}
     </Button>
   )
 }
@@ -207,6 +258,7 @@ function PaidEventSection({
   isFull,
   remainingCapacity,
   price,
+  ticketTypes,
 }: {
   evenementId:       string
   ticketPaid:        boolean
@@ -216,9 +268,11 @@ function PaidEventSection({
   isFull:            boolean
   remainingCapacity: number | null
   price:             string | null
+  ticketTypes:       EvenementTicketType[]
 }) {
   const [quantity, setQuantity] = useState(ticketQuantity)
   const [guests, setGuests]     = useState<GuestInput[]>([])
+  const [selfTicketTypeId, setSelfTicketTypeId] = useState<string | undefined>((ticketTypes.find(tt => !tt.full) ?? ticketTypes[0])?.id)
   const [cancelTarget, setCancelTarget] = useState<string | "ALL" | null>(null)
   const [confirmCancelReservation, setConfirmCancelReservation] = useState(false)
   const setRsvpMutation = useSetRsvp(evenementId)
@@ -253,14 +307,51 @@ function PaidEventSection({
   })
 
   useEffect(() => { setQuantity(ticketQuantity) }, [ticketQuantity])
+
+  // The tier <select> for each guest row visually defaults to the first tier (native
+  // <select> behavior) even before the user touches it — without this, that default is
+  // only cosmetic and `guests[i].ticketTypeId` stays undefined until they actually click
+  // it, so submitting without interacting would send a seat with no tier at all. Keep
+  // state in sync with what's shown as soon as a seat exists.
+  useEffect(() => {
+    if (ticketTypes.length === 0) return
+    const defaultTicketTypeId = (ticketTypes.find(tt => !tt.full) ?? ticketTypes[0]).id
+    setGuests(prev => {
+      let changed = false
+      const next = prev.slice()
+      for (let i = 0; i < quantity - 1; i++) {
+        const g = next[i] ?? { firstName: "", lastName: "" }
+        if (!g.ticketTypeId) { next[i] = { ...g, ticketTypeId: defaultTicketTypeId }; changed = true }
+      }
+      return changed ? next : prev
+    })
+  }, [quantity, ticketTypes])
+
   const unitPrice = price != null ? Number(price) : null
   const maxQty = remainingCapacity != null ? Math.min(10, remainingCapacity) : 10
 
-  const TotalLine = quantity > 1 && unitPrice != null ? (
+  function resolveTierPrice(ticketTypeId: string | undefined): number {
+    return Number(ticketTypes.find(tt => tt.id === ticketTypeId)?.price ?? ticketTypes[0]?.price ?? 0)
+  }
+
+  // Each seat (self + guests) can carry its own tier once the event has ticket types —
+  // sum those instead of unitPrice * quantity, which only holds when every seat is priced
+  // the same (the flat-price case).
+  const total = ticketTypes.length > 0
+    ? resolveTierPrice(selfTicketTypeId) + guests.slice(0, quantity - 1).reduce((sum, g) => sum + resolveTierPrice(g.ticketTypeId), 0)
+    : unitPrice != null ? unitPrice * quantity : null
+
+  // A tiered event where every currently-selected seat is on a 0€ tier has nothing to pay
+  // for — the "reserve, pay on-site" cash option doesn't apply (there's no cash to collect),
+  // and would otherwise leave the reservation stuck "confirmed but never marked paid"
+  // forever since nothing ever triggers ticketPaidAt for it.
+  const allFree = ticketTypes.length > 0 && total === 0
+
+  const TotalLine = quantity > 1 && total != null ? (
     <div className="flex items-center justify-between text-xs">
       <span className="text-muted-foreground">Total :</span>
       <span className="font-medium tabular-nums">
-        {(unitPrice * quantity).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+        {total.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
       </span>
     </div>
   ) : null
@@ -339,9 +430,12 @@ function PaidEventSection({
         {maxQtyConfirme > 1 && (
           <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} />
         )}
-        <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
+        {ticketTypes.length > 0 && (
+          <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
+        )}
+        <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} ticketTypes={ticketTypes} />
         {TotalLine}
-        {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} />}
+        {(connectEnabled || allFree) && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} ticketTypeId={selfTicketTypeId} free={allFree} />}
         <Button
           size="sm"
           variant="ghost"
@@ -389,21 +483,26 @@ function PaidEventSection({
       {maxQty > 1 && (
         <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
       )}
-      <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
+      {ticketTypes.length > 0 && (
+        <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
+      )}
+      <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} ticketTypes={ticketTypes} />
       {TotalLine}
-      {connectEnabled && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} />}
-      <Button
-        size="sm"
-        variant={connectEnabled ? "outline" : "default"}
-        className="w-full"
-        loading={setRsvpMutation.isPending}
-        onClick={() => setRsvpMutation.mutate({ rsvp: "CONFIRME", quantity, guests }, {
-          onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
-        })}
-      >
-        <BookmarkSimpleIcon className="size-3.5 mr-1.5" />
-        Réserver – payer sur place
-      </Button>
+      {(connectEnabled || allFree) && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} ticketTypeId={selfTicketTypeId} free={allFree} />}
+      {!allFree && (
+        <Button
+          size="sm"
+          variant={connectEnabled ? "outline" : "default"}
+          className="w-full"
+          loading={setRsvpMutation.isPending}
+          onClick={() => setRsvpMutation.mutate({ rsvp: "CONFIRME", quantity, guests, ticketTypeId: selfTicketTypeId }, {
+            onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+          })}
+        >
+          <BookmarkSimpleIcon className="size-3.5 mr-1.5" />
+          Réserver – payer sur place
+        </Button>
+      )}
     </div>
   )
 }
@@ -542,9 +641,14 @@ function EventCard({
   const currentRsvp      = participation?.rsvp ?? null
   const ticketPaid       = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
   const ticketQuantity   = participation ? ev.partySize : 1
-  const hasFee           = ev.price != null && Number(ev.price) > 0
+  // Ticket types (when the event has any) drive the paid-section UI regardless of whether
+  // every tier happens to be 0€ — the admin explicitly set up a choice, so show it.
+  const hasTicketTypes   = ev.ticketTypes.length > 0
+  const hasFee           = hasTicketTypes || (ev.price != null && Number(ev.price) > 0)
+  const cheapestTicketTypePrice = hasTicketTypes ? cheapestAvailableTicketTypePrice(ev.ticketTypes) : null
   const remainingCapacity = ev.capacity != null ? Math.max(0, ev.capacity - ev.confirmedCount) : null
-  const isFull           = ev.capacity != null && ev.confirmedCount >= ev.capacity && !ticketPaid && currentRsvp !== "CONFIRME"
+  const allTicketTypesFull = hasTicketTypes && ev.ticketTypes.every(tt => tt.full)
+  const isFull           = (allTicketTypesFull || (ev.capacity != null && ev.confirmedCount >= ev.capacity)) && !ticketPaid && currentRsvp !== "CONFIRME"
 
   return (
     <div className={cn(
@@ -589,12 +693,16 @@ function EventCard({
       </div>
 
       {/* Tarif + ticket */}
-      {ev.price != null && hasFee && (
+      {hasFee && (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <span className="text-muted-foreground text-xs">Tarif :</span>
-              <PriceBadge price={ev.price} />
+              {ev.ticketTypes.length > 1
+                ? <PriceBadge price={cheapestTicketTypePrice} fromPrice />
+                : hasTicketTypes
+                  ? <PriceBadge price={ev.ticketTypes[0].price} />
+                  : <PriceBadge price={ev.price} />}
             </div>
             {ev.capacity != null && (
               <span className={cn(
@@ -618,6 +726,7 @@ function EventCard({
               isFull={isFull}
               remainingCapacity={remainingCapacity}
               price={ev.price}
+              ticketTypes={ev.ticketTypes}
             />
           )}
           {isPast && ticketPaid && (

@@ -515,6 +515,7 @@ model Evenement {
   participations Participation[]
   actualites     Actualite[]
   customFields   EvenementCustomField[]
+  ticketTypes    EvenementTicketType[]
 
   @@index([associationId, date])
 }
@@ -539,6 +540,24 @@ model EvenementCustomField {
   @@index([evenementId])
 }
 
+// Optional per-event list of ticket price tiers (e.g. "Gratuit" 0€, "Tarif réduit" 2,5€) that a
+// registrant picks from on the public/portal registration form, instead of Evenement.price's
+// single flat amount. Additive: an event with zero rows here behaves exactly as before, driven
+// entirely by Evenement.price — price is only ignored once at least one tier exists.
+model EvenementTicketType {
+  id          String  @id @default(cuid())
+  evenementId String
+  label       String
+  price       Decimal @db.Decimal(10, 2)
+  capacity    Int? // null = unlimited, same convention as Evenement.capacity
+  order       Int
+
+  evenement      Evenement       @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  participations Participation[]
+
+  @@index([evenementId])
+}
+
 model Participation {
   id              String      @id @default(cuid())
   membreId        String? // null = convive sans compte membre
@@ -558,13 +577,18 @@ model Participation {
   amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
   orderId         String? // regroupe les places d'une même réservation/paiement
   stripeSessionId String?
+  // Which EvenementTicketType this seat picked, when the event has tiers — null for
+  // untiered/flat-price/free events (the vast majority). Drives the per-seat amount at checkout
+  // time instead of Evenement.price.
+  ticketTypeId    String?
   // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
   // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
   cancelToken     String?     @unique
   createdAt       DateTime    @default(now())
 
-  membre         Membre?         @relation(fields: [membreId], references: [id])
-  evenement      Evenement       @relation(fields: [evenementId], references: [id])
+  membre         Membre?              @relation(fields: [membreId], references: [id])
+  evenement      Evenement            @relation(fields: [evenementId], references: [id])
+  ticketType     EvenementTicketType? @relation(fields: [ticketTypeId], references: [id])
   incomes        Income[]
   automationLogs AutomationLog[]
 

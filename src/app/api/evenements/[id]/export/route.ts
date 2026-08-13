@@ -24,7 +24,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const evenement = await prisma.evenement.findFirst({
     where:   { id, associationId },
-    include: { customFields: { orderBy: { order: "asc" } } },
+    include: { customFields: { orderBy: { order: "asc" } }, ticketTypes: { orderBy: { order: "asc" } } },
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -40,7 +40,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }),
     prisma.participation.findMany({
       where:  { evenementId: id },
-      select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true },
+      select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, ticketTypeId: true },
     }),
   ])
 
@@ -49,7 +49,9 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const slug    = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
   const date    = format(evenement.date, "yyyy-MM-dd")
-  const hasFee  = evenement.price != null && Number(evenement.price) > 0
+  const hasTicketTypes = evenement.ticketTypes.length > 0
+  const hasFee  = hasTicketTypes || (evenement.price != null && Number(evenement.price) > 0)
+  const ticketTypeLabels = new Map(evenement.ticketTypes.map(tt => [tt.id, tt.label]))
 
   const allRows = [
     ...membres.map(m => ({ firstName: m.firstName, lastName: m.lastName, email: byMembre.get(m.id)?.email ?? null, p: byMembre.get(m.id) })),
@@ -87,6 +89,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...base,
         Paiement: p?.ticketPaidAt ? "Payé" : p?.rsvp === "CONFIRME" ? "Réservé" : "",
         RSVP:     "",
+        ...(hasTicketTypes ? { Tarif: p?.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? "") : "" } : {}),
         ...customValues,
       }
     }
@@ -103,7 +106,10 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // field columns this event happens to have — their count varies per event, so an
     // exact hardcoded array (like before) would silently mis-align as soon as it did.
     const fixedCols = hasFee
-      ? [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 }]
+      ? [
+          { wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 },
+          ...(hasTicketTypes ? [{ wch: 18 }] : []),
+        ]
       : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
     ws["!cols"] = [...fixedCols, ...evenement.customFields.map(() => ({ wch: 20 }))]
 

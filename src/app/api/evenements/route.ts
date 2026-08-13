@@ -8,6 +8,30 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
+type EvenementWithTicketTypes = { ticketTypes: { id: string; label: string; price: unknown; capacity: number | null }[] }
+
+// Shared by both the unpaginated (calendar) and paginated (list) branches below — merges
+// each tier's live occupancy into `remaining`/`full`, same shape the public/portal routes
+// already expose, so the admin list can show "complet" and compute an accurate cheapest price.
+async function withTicketTypeOccupancy<T extends EvenementWithTicketTypes>(events: T[]) {
+  const cappedIds = events.flatMap(e => e.ticketTypes).filter(tt => tt.capacity != null).map(tt => tt.id)
+  const occupancy = cappedIds.length
+    ? await prisma.participation.groupBy({
+        by:     ["ticketTypeId"],
+        where:  { ticketTypeId: { in: cappedIds }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        _count: { _all: true },
+      })
+    : []
+  const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
+  return events.map(e => ({
+    ...e,
+    ticketTypes: e.ticketTypes.map(tt => {
+      const remaining = tt.capacity != null ? Math.max(0, tt.capacity - (occupiedMap.get(tt.id) ?? 0)) : null
+      return { ...tt, remaining, full: remaining === 0 }
+    }),
+  }))
+}
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -42,16 +66,22 @@ export const GET = withAdminAuth(async (req, ctx) => {
       where,
       orderBy,
       take: 500,
-      include: { _count: { select: { participations: { where: { present: true } } } } },
+      include: {
+        _count:      { select: { participations: { where: { present: true } } } },
+        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } },
+      },
     })
-    return NextResponse.json(data)
+    return NextResponse.json(await withTicketTypeOccupancy(data))
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
   const [data, total] = await Promise.all([
     prisma.evenement.findMany({
       where, orderBy, skip, take: limit,
-      include: { _count: { select: { participations: { where: { present: true } } } } },
+      include: {
+        _count:      { select: { participations: { where: { present: true } } } },
+        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } },
+      },
     }),
     prisma.evenement.count({ where }),
   ])
@@ -65,7 +95,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
       })
     : []
   const confirmedMap = Object.fromEntries(confirmedGroups.map(g => [g.evenementId, g._count._all]))
-  const enriched = data.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
+  const withOccupancy = await withTicketTypeOccupancy(data)
+  const enriched = withOccupancy.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
 
   return NextResponse.json({ data: enriched, total, page, limit, totalPages: Math.ceil(total / limit) })
 })

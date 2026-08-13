@@ -54,6 +54,16 @@ async function getPartySizes(orderIds: string[]): Promise<Record<string, number>
   return Object.fromEntries(groups.map(g => [g.orderId!, g._count._all]))
 }
 
+async function getTicketTypeOccupancy(ticketTypeIds: string[]): Promise<Record<string, number>> {
+  if (!ticketTypeIds.length) return {}
+  const groups = await prisma.participation.groupBy({
+    by:     ["ticketTypeId"],
+    where:  { ticketTypeId: { in: ticketTypeIds }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+    _count: { _all: true },
+  })
+  return Object.fromEntries(groups.map(g => [g.ticketTypeId!, g._count._all]))
+}
+
 export const GET = withPortalAuth(async (_req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -65,18 +75,20 @@ export const GET = withPortalAuth(async (_req, ctx) => {
 
   const LIMIT = 10
 
+  const ticketTypesSelect = { orderBy: { order: "asc" as const }, select: { id: true, label: true, price: true, capacity: true } }
+
   const [upcomingRaw, pastRaw] = await Promise.all([
     prisma.evenement.findMany({
       where:   { associationId, date: { gte: now } },
       orderBy: { date: "asc" },
       take:    LIMIT + 1,
-      include: { participations: participationSelect },
+      include: { participations: participationSelect, ticketTypes: ticketTypesSelect },
     }),
     prisma.evenement.findMany({
       where:   { associationId, date: { lt: now } },
       orderBy: { date: "desc" },
       take:    LIMIT + 1,
-      include: { participations: participationSelect },
+      include: { participations: participationSelect, ticketTypes: ticketTypesSelect },
     }),
   ])
 
@@ -89,10 +101,15 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const orderIds   = [...upcoming, ...past]
     .map(e => e.participations[0]?.orderId)
     .filter((id): id is string => !!id)
-  const [rsvpCounts, confirmedCounts, partySizes] = await Promise.all([
+  const cappedTicketTypeIds = [...upcoming, ...past]
+    .flatMap(e => e.ticketTypes)
+    .filter(tt => tt.capacity != null)
+    .map(tt => tt.id)
+  const [rsvpCounts, confirmedCounts, partySizes, ticketTypeOccupancy] = await Promise.all([
     getRsvpCounts(allIds),
     getConfirmedCounts(allIds),
     getPartySizes(orderIds),
+    getTicketTypeOccupancy(cappedTicketTypeIds),
   ])
 
   const withCounts = (list: typeof upcoming) =>
@@ -101,6 +118,10 @@ export const GET = withPortalAuth(async (_req, ctx) => {
       rsvpCounts:     rsvpCounts[e.id],
       confirmedCount: confirmedCounts[e.id],
       partySize:      e.participations[0]?.orderId ? (partySizes[e.participations[0].orderId] ?? 1) : 1,
+      ticketTypes:    e.ticketTypes.map(tt => {
+        const remaining = tt.capacity != null ? Math.max(0, tt.capacity - (ticketTypeOccupancy[tt.id] ?? 0)) : null
+        return { ...tt, remaining, full: remaining === 0 }
+      }),
     }))
 
   const upcomingWithCounts = withCounts(upcoming)

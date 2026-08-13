@@ -9,8 +9,12 @@ const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenementId }) => {
   const { associationId } = ctx
 
-  const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
+  const evenement = await prisma.evenement.findFirst({
+    where:   { id: evenementId, associationId },
+    include: { ticketTypes: { select: { id: true, label: true } } },
+  })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
+  const ticketTypeLabels = new Map(evenement.ticketTypes.map(tt => [tt.id, tt.label]))
 
   // Active members are offered as one-click walk-in targets even without a prior RSVP.
   // Every other Participation row (a member's named companions, a non-ACTIF member's
@@ -24,7 +28,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     }),
     prisma.participation.findMany({
       where:  { evenementId },
-      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true },
+      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true, ticketTypeId: true },
     }),
   ])
 
@@ -47,6 +51,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         rsvp:            p?.rsvp ?? null,
         ticketPaidAt:    p?.ticketPaidAt ?? null,
         stripeSessionId: p?.stripeSessionId ?? null,
+        ticketTypeLabel: p?.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
         isGuest:         false,
       }
     }),
@@ -65,6 +70,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
         rsvp:            p.rsvp,
         ticketPaidAt:    p.ticketPaidAt,
         stripeSessionId: p.stripeSessionId,
+        ticketTypeLabel: p.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
         isGuest:         p.membreId == null,
       })),
   ].sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
@@ -82,10 +88,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { title: true, price: true },
+    select: { title: true, price: true, ticketTypes: { select: { id: true, price: true } } },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  if (!evenement.price || Number(evenement.price) === 0)
+  const hasTicketTypes = evenement.ticketTypes.length > 0
+  if (!hasTicketTypes && (!evenement.price || Number(evenement.price) === 0))
     return NextResponse.json({ error: "Événement gratuit" }, { status: 422 })
 
   let participation
@@ -109,7 +116,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
     const paidAt = new Date()
-  const amount = Number(evenement.price)
+  // Charge whatever tier this registration already picked (public form, portal purchase, or
+  // a previous manual assignment) — only a walk-in that was never given a tier falls back to
+  // the cheapest one, since there's no UI here yet to let the admin pick one on the spot.
+  const amount = hasTicketTypes
+    ? Number(
+        evenement.ticketTypes.find(tt => tt.id === participation.ticketTypeId)?.price
+        ?? evenement.ticketTypes.reduce((min, tt) => Number(tt.price) < Number(min.price) ? tt : min).price,
+      )
+    : Number(evenement.price)
 
   const exercice = await resolveExerciceForDate(associationId, paidAt)
   const exerciceGuard = closedExerciceGuard(exercice?.status)

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon, LinkIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon, LinkIcon, TagIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -19,11 +19,15 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { EvenementForm } from "@/components/evenements/evenement-form"
 import { EvenementCustomFieldsEditor } from "@/components/evenements/evenement-custom-fields-editor"
+import { EvenementTicketTypesEditor } from "@/components/evenements/evenement-ticket-types-editor"
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { BASE_PATH } from "@/lib/env"
+import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+
+type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean }
 
 type Evenement = {
   id:          string
@@ -39,9 +43,11 @@ type Evenement = {
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
+  ticketTypes:    EvenementTicketType[]
   _count:         { participations: number }
   confirmedCount: number
 }
+
 
 function dateToDatetimeLocal(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0")
@@ -76,6 +82,7 @@ export function EvenementsView() {
   const [editTarget, setEditTarget]       = useState<Evenement | null>(null)
   const [deleteTarget, setDeleteTarget]   = useState<Evenement | null>(null)
   const [customFieldsTarget, setCustomFieldsTarget] = useState<Evenement | null>(null)
+  const [ticketTypesTarget, setTicketTypesTarget]   = useState<Evenement | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function openCreate(date?: Date) {
@@ -84,7 +91,7 @@ export function EvenementsView() {
   }
 
   function calendarEventToEvenement(ev: CalendarEvenement): Evenement {
-    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, _count: ev._count, confirmedCount: 0 }
+    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, ticketTypes: ev.ticketTypes, _count: ev._count, confirmedCount: 0 }
   }
 
   function handleCalendarEditClick(ev: CalendarEvenement)      { setEditTarget(calendarEventToEvenement(ev)) }
@@ -174,7 +181,11 @@ export function EvenementsView() {
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <p className="font-medium">{e.title}</p>
-            <PriceBadge price={e.price} />
+            {e.ticketTypes.length > 1
+              ? <PriceBadge price={cheapestAvailableTicketTypePrice(e.ticketTypes)} fromPrice />
+              : e.ticketTypes.length === 1
+                ? <PriceBadge price={e.ticketTypes[0].price} />
+                : <PriceBadge price={e.price} />}
           </div>
           {e.location && (
             <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -209,7 +220,7 @@ export function EvenementsView() {
       key: "presences",
       header: t("evenements.view.columns.presences"),
       cell: (e) => {
-        const hasFee = e.price != null && Number(e.price) > 0
+        const hasFee = e.ticketTypes.length > 0 || (e.price != null && Number(e.price) > 0)
         return (
           <button
             type="button"
@@ -242,6 +253,7 @@ export function EvenementsView() {
           { label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.id) },
           { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
           { label: t("evenements.view.actions.customFields"), icon: <ListChecksIcon className="size-3.5" />, onClick: () => setCustomFieldsTarget(e) },
+          { label: t("evenements.view.actions.ticketTypes"), icon: <TagIcon className="size-3.5" />, onClick: () => setTicketTypesTarget(e) },
           { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true,  onClick: () => setDeleteTarget(e) },
         ]} />
       ),
@@ -340,6 +352,7 @@ export function EvenementsView() {
             price:       editTarget.price    != null ? Number(editTarget.price)    : undefined,
             capacity:    editTarget.capacity != null ? Number(editTarget.capacity) : undefined,
           } : undefined}
+          hasTicketTypes={!!editTarget?.ticketTypes.length}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}
@@ -358,6 +371,23 @@ export function EvenementsView() {
           <EvenementCustomFieldsEditor
             evenementId={customFieldsTarget.id}
             onClose={() => setCustomFieldsTarget(null)}
+          />
+        )}
+      </Modal>
+
+      {/* Ticket types */}
+      <Modal
+        open={!!ticketTypesTarget}
+        onOpenChange={(open) => !open && setTicketTypesTarget(null)}
+        title={t("evenements.ticketTypes.modalTitle", { title: ticketTypesTarget?.title ?? "" })}
+        size="lg"
+        dismissable={false}
+      >
+        {ticketTypesTarget && (
+          <EvenementTicketTypesEditor
+            evenementId={ticketTypesTarget.id}
+            eventCapacity={ticketTypesTarget.capacity}
+            onClose={() => setTicketTypesTarget(null)}
           />
         )}
       </Modal>
