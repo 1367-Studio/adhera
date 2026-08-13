@@ -50,13 +50,13 @@ async function deleteEvenement(id: string) {
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la suppression"))
 }
 
-export type GuestInput = { firstName: string; lastName: string; email?: string }
+export type GuestInput = { firstName: string; lastName: string; email?: string; ticketTypeId?: string }
 
-async function setRsvp(evenementId: string, rsvp: string, quantity?: number, guests?: GuestInput[]) {
+async function setRsvp(evenementId: string, rsvp: string, quantity?: number, guests?: GuestInput[], ticketTypeId?: string) {
   const res = await fetch(`/api/portal/evenements/${evenementId}/rsvp`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ rsvp, ...(quantity != null && { quantity }), ...(guests != null && { guests }) }),
+    body:    JSON.stringify({ rsvp, ...(quantity != null && { quantity }), ...(guests != null && { guests }), ...(ticketTypeId != null && { ticketTypeId }) }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -154,6 +154,7 @@ export type CalendarEvenement = {
   capacity:    number | null
   qrToken:     string | null
   qrExpiresAt: string | null
+  ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
   _count:      { participations: number }
 }
 
@@ -230,8 +231,8 @@ export function useDeleteEvenement() {
 export function useSetRsvp(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ rsvp, quantity, guests }: { rsvp: string; quantity?: number; guests?: GuestInput[] }) =>
-      setRsvp(evenementId, rsvp, quantity, guests),
+    mutationFn: ({ rsvp, quantity, guests, ticketTypeId }: { rsvp: string; quantity?: number; guests?: GuestInput[]; ticketTypeId?: string }) =>
+      setRsvp(evenementId, rsvp, quantity, guests, ticketTypeId),
     onSuccess:  () => Promise.all([
       qc.invalidateQueries({ queryKey: QK }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
@@ -240,6 +241,10 @@ export function useSetRsvp(evenementId: string) {
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
       qc.invalidateQueries({ queryKey: ["membre-logs"] }),
     ]),
+    // A rejected reservation (e.g. a ticket type that just filled up) still means the
+    // occupancy shown to the visitor is stale — refresh it instead of leaving them able
+    // to retry the exact same dead end.
+    onError: () => qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
   })
 }
 
@@ -352,6 +357,52 @@ export function useSaveEvenementCustomFields(evenementId: string) {
   return useMutation({
     mutationFn: (fields: EvenementCustomFieldDraft[]) => saveCustomFields(evenementId, fields),
     onSuccess:  () => qc.invalidateQueries({ queryKey: [...QK, evenementId, "custom-fields"] }),
+  })
+}
+
+export type EvenementTicketType = {
+  id:       string
+  label:    string
+  price:    string
+  capacity: number | null
+  order:    number
+  occupied: number
+}
+export type EvenementTicketTypeDraft = Omit<EvenementTicketType, "id" | "order" | "price" | "occupied"> & { id?: string; price: number }
+
+async function fetchTicketTypes(evenementId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/ticket-types`)
+  if (!res.ok) throw new Error("Erreur lors du chargement des tarifs")
+  return res.json() as Promise<EvenementTicketType[]>
+}
+
+async function saveTicketTypes(evenementId: string, ticketTypes: EvenementTicketTypeDraft[]) {
+  const res = await fetch(`/api/evenements/${evenementId}/ticket-types`, {
+    method:  "PUT",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(ticketTypes),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<EvenementTicketType[]>
+}
+
+export function useEvenementTicketTypes(evenementId: string) {
+  return useQuery({
+    queryKey: [...QK, evenementId, "ticket-types"],
+    queryFn:  () => fetchTicketTypes(evenementId),
+    enabled:  !!evenementId,
+    staleTime: 0,
+  })
+}
+
+export function useSaveEvenementTicketTypes(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (ticketTypes: EvenementTicketTypeDraft[]) => saveTicketTypes(evenementId, ticketTypes),
+    onSuccess:  () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "ticket-types"] }),
+      qc.invalidateQueries({ queryKey: QK }),
+    ]),
   })
 }
 

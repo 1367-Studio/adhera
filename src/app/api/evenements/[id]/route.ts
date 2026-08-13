@@ -16,6 +16,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
         orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
       },
       customFields: { orderBy: { order: "asc" } },
+      ticketTypes:  { orderBy: { order: "asc" } },
       _count: { select: { participations: { where: { present: true } } } },
     },
   })

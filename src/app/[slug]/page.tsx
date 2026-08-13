@@ -15,6 +15,7 @@ import { parseModules }           from "@/lib/modules"
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
   location: string | null; description: string | null; price: string | null; capacity: number | null
+  ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
 
 type PublicActualite = {
@@ -43,7 +44,7 @@ async function getSiteData(slug: string) {
           where:   { association: { slug }, date: { gte: now } },
           orderBy: { date: "asc" },
           take:    20,
-          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true },
+          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true, ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } } },
         })
       : Promise.resolve([]),
     mods.actualites
@@ -57,6 +58,16 @@ async function getSiteData(slug: string) {
       : Promise.resolve([]),
   ])
 
+  const cappedTicketTypeIds = events.flatMap(e => e.ticketTypes).filter(tt => tt.capacity != null).map(tt => tt.id)
+  const occupancy = cappedTicketTypeIds.length
+    ? await prisma.participation.groupBy({
+        by:     ["ticketTypeId"],
+        where:  { ticketTypeId: { in: cappedTicketTypeIds }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        _count: { _all: true },
+      })
+    : []
+  const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
+
   return {
     name:        assoc.name,
     slug:        assoc.slug,
@@ -69,6 +80,10 @@ async function getSiteData(slug: string) {
       date:    e.date.toISOString(),
       endDate: e.endDate?.toISOString() ?? null,
       price:   e.price?.toString() ?? null,
+      ticketTypes: e.ticketTypes.map(tt => {
+        const remaining = tt.capacity != null ? Math.max(0, tt.capacity - (occupiedMap.get(tt.id) ?? 0)) : null
+        return { id: tt.id, label: tt.label, price: tt.price.toString(), remaining, full: remaining === 0 }
+      }),
     })) satisfies PublicEvent[],
     actualites: actualites.map(a => ({
       ...a,

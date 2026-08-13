@@ -30,9 +30,13 @@ interface EvenementFormProps {
   onSubmit: (data: EvenementInput) => Promise<void>
   onCancel: () => void
   loading?: boolean
+  // Whether this event already has EvenementTicketType rows (managed separately, via the
+  // "Tarifs" row action) — when true, the single price field below is ignored everywhere,
+  // so its hint says so instead of the usual "leave at 0 for a free event".
+  hasTicketTypes?: boolean
 }
 
-export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: EvenementFormProps) {
+export function EvenementForm({ defaultValues, onSubmit, onCancel, loading, hasTicketTypes }: EvenementFormProps) {
   const t = useTranslations("evenements.form")
   const tCommon = useTranslations("common")
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<EvenementInput>({
@@ -142,7 +146,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading }: Ev
           render={({ field }) => (
             <CurrencyField
               label={t("price")}
-              hint={t("priceHint")}
+              hint={hasTicketTypes ? t("priceOverriddenHint") : t("priceHint")}
               value={field.value ?? 0}
               onChange={v => field.onChange(v === 0 ? undefined : v)}
               onBlur={field.onBlur}

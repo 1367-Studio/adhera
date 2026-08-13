@@ -4,11 +4,13 @@ import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { isColorDark } from "@/lib/color"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 type MembreType  = { id: string; name: string; color: string }
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
   location: string | null; description: string | null; price: string | null; capacity: number | null
+  ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
 
 type PublicActualite = {
@@ -150,7 +152,13 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                                 <span className="truncate">{event.location}</span>
                               </div>
                             )}
-                            {event.price && Number(event.price) > 0 && (
+                            {event.ticketTypes.length > 1 ? (
+                              <p className="text-xs font-medium" style={{ color }}>
+                                À partir de {cheapestAvailableTicketTypePrice(event.ticketTypes).toFixed(2)} €
+                              </p>
+                            ) : event.ticketTypes.length === 1 ? (
+                              <p className="text-xs font-medium" style={{ color }}>{Number(event.ticketTypes[0].price).toFixed(2)} €</p>
+                            ) : event.price && Number(event.price) > 0 && (
                               <p className="text-xs font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
                             )}
                           </div>
