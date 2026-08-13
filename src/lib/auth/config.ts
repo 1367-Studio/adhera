@@ -56,17 +56,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           // Dashboard login: `email` is only unique *per association* (@@unique([email, associationId])),
           // so the same address can legitimately belong to unrelated accounts in different
           // associations (e.g. an admin of one association who is also a portal member of
-          // another). Try each candidate's password instead of picking an arbitrary one —
-          // otherwise a login attempt could silently authenticate as the wrong account.
+          // another). Test every candidate's password rather than stopping at the first
+          // match — if the same password happens to be valid for more than one of them
+          // (e.g. an admin reused their password across two associations), picking either
+          // one silently would risk logging into the wrong account without any explanation
+          // (e.g. a cancelled one instead of the active one they meant). Require exactly one
+          // match, same ambiguity guard as the Google callback's candidates.length > 1 below.
           const candidates = await prisma.user.findMany({
             where: { email: parsed.data.email, deletedAt: null, active: true },
           })
+          const matches: typeof candidates = []
           for (const candidate of candidates) {
             if (await bcrypt.compare(parsed.data.password, candidate.passwordHash)) {
-              user = candidate
-              break
+              matches.push(candidate)
             }
           }
+          if (matches.length === 1) user = matches[0]
         }
 
         if (!user) return null
