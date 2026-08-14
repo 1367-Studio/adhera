@@ -74,6 +74,9 @@ export async function GET(
 
   const full = evenement.capacity != null && evenement._count.participations >= evenement.capacity
   const past = evenement.date < new Date()
+  const remainingCapacity = evenement.capacity != null
+    ? Math.max(0, evenement.capacity - evenement._count.participations)
+    : null
 
   return NextResponse.json({
     associationName: assoc.name,
@@ -86,6 +89,7 @@ export async function GET(
     location:    evenement.location,
     price:       evenement.price?.toString() ?? null,
     capacity:    evenement.capacity,
+    remainingCapacity,
     full,
     past,
     isPaid,

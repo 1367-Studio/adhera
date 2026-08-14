@@ -11,7 +11,10 @@ import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { SelectField } from "@/components/ui/select-field"
+import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+
+const MAX_QUANTITY = 10
 
 type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
 type TicketType  = { id: string; label: string; price: string; remaining: number | null; full: boolean }
@@ -27,6 +30,7 @@ type EventInfo = {
   location:    string | null
   price:       string | null
   capacity:    number | null
+  remainingCapacity: number | null
   full:            boolean
   past:            boolean
   isPaid:          boolean
@@ -35,6 +39,18 @@ type EventInfo = {
   ticketTypes:     TicketType[]
 }
 
+type Attendee = {
+  firstName:    string
+  lastName:     string
+  email:        string
+  ticketTypeId: string
+  phone:        string
+  address:      string
+  answers:      Record<string, string>
+}
+
+const EMPTY_ATTENDEE: Attendee = { firstName: "", lastName: "", email: "", ticketTypeId: "", phone: "", address: "", answers: {} }
+
 type Props = { slug: string; id: string }
 
 export function EvenementRegisterForm(props: Props) {
@@ -42,6 +58,108 @@ export function EvenementRegisterForm(props: Props) {
     <Suspense fallback={null}>
       <EvenementRegisterFormInner {...props} />
     </Suspense>
+  )
+}
+
+function AttendeeFields({
+  index,
+  attendee,
+  onChange,
+  ticketTypes,
+  customFields,
+  showHeading,
+  t,
+  loc,
+}: {
+  index:        number
+  attendee:     Attendee
+  onChange:     (patch: Partial<Attendee>) => void
+  ticketTypes:  TicketType[]
+  customFields: CustomField[]
+  showHeading:  boolean
+  t:            ReturnType<typeof useTranslations>
+  loc:          string
+}) {
+  return (
+    <div className={showHeading ? "space-y-3 border-t pt-4 first:border-t-0 first:pt-0" : "space-y-3"}>
+      {showHeading && (
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          {t("attendeeHeading", { n: index + 1 })}
+        </p>
+      )}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("firstNameLabel")}</label>
+          <input
+            type="text" required value={attendee.firstName} onChange={e => onChange({ firstName: e.target.value })}
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("lastNameLabel")}</label>
+          <input
+            type="text" required value={attendee.lastName} onChange={e => onChange({ lastName: e.target.value })}
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("emailLabel")}</label>
+        <input
+          type="email" required value={attendee.email} onChange={e => onChange({ email: e.target.value })}
+          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+        />
+      </div>
+
+      {ticketTypes.length > 0 && (
+        <SelectField
+          id={`ticket-type-${index}`}
+          label={t("ticketTypeLabel")}
+          value={attendee.ticketTypeId || undefined}
+          onValueChange={v => onChange({ ticketTypeId: v })}
+          options={ticketTypes.map(tt => {
+            const price = Number(tt.price) === 0 ? t("ticketTypeFree") : Number(tt.price).toLocaleString(loc, { style: "currency", currency: "EUR" })
+            const suffix = tt.full ? ` (${t("ticketTypeSoldOut")})` : (tt.remaining != null ? ` (${t("ticketTypeRemaining", { count: tt.remaining })})` : "")
+            return { value: tt.id, disabled: tt.full, label: `${tt.label} — ${price}${suffix}` }
+          })}
+        />
+      )}
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("phoneLabel")}</label>
+        <input
+          type="tel" value={attendee.phone} onChange={e => onChange({ phone: e.target.value })}
+          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("addressLabel")}</label>
+        <input
+          type="text" value={attendee.address} onChange={e => onChange({ address: e.target.value })}
+          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+        />
+      </div>
+
+      {customFields.map(field => (
+        <div key={field.id} className="space-y-1.5">
+          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {field.required ? t("customFieldRequired", { label: field.label }) : t("customFieldOptional", { label: field.label })}
+          </label>
+          <input
+            type={field.type === "NUMBER" ? "number" : "text"}
+            min={field.type === "NUMBER" ? 0 : undefined}
+            step={field.type === "NUMBER" ? 1 : undefined}
+            inputMode={field.type === "NUMBER" ? "numeric" : undefined}
+            required={field.required}
+            value={attendee.answers[field.id] ?? ""}
+            onChange={e => onChange({ answers: { ...attendee.answers, [field.id]: e.target.value } })}
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -61,17 +179,15 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   // most event covers are landscape.
   const [isPortrait, setIsPortrait] = useState<boolean | null>(null)
 
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName]   = useState("")
-  const [email, setEmail]         = useState("")
-  const [phone, setPhone]         = useState("")
-  const [address, setAddress]     = useState("")
-  const [answers, setAnswers]     = useState<Record<string, string>>({})
-  const [website, setWebsite]     = useState("") // honeypot — must stay empty
+  // One ticket = one attendee, even within a single order — every submission carries a
+  // list, starting at 1. `attendees` can hold more entries than `attendeeCount` — lowering
+  // the stepper only hides the tail, it never discards what was typed into it, so raising
+  // the count back brings that data right back instead of forcing a retype.
+  const [attendees, setAttendees]         = useState<Attendee[]>([EMPTY_ATTENDEE])
+  const [attendeeCount, setAttendeeCount] = useState(1)
+  const [website, setWebsite]             = useState("") // honeypot — must stay empty
   const [submitted, setSubmitted] = useState(false)
-  const [cancelUrl, setCancelUrl] = useState<string | null>(null)
   const [loading, setLoading]     = useState(false)
-  const [ticketTypeId, setTicketTypeId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch(`/api/public/${slug}/evenements/${id}`)
@@ -81,14 +197,66 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
       .finally(() => setLoadingEvent(false))
   }, [slug, id, loc])
 
-  // Defaults to the first ticket type once the event (and its tiers, if any) loads —
-  // a no-op for events with no ticket types. Prefers a tier that still has room; falls
-  // back to the first one (sold out or not) so the picker never shows nothing selected.
+  // Defaults every attendee still missing a tier to the first one with room once the
+  // event (and its tiers, if any) loads — a no-op for events with no ticket types, and
+  // for attendees that already have a tier picked.
   useEffect(() => {
-    if (event?.ticketTypes.length && !ticketTypeId) {
-      setTicketTypeId((event.ticketTypes.find(tt => !tt.full) ?? event.ticketTypes[0]).id)
+    if (!event?.ticketTypes.length) return
+    const defaultTicketTypeId = (event.ticketTypes.find(tt => !tt.full) ?? event.ticketTypes[0]).id
+    setAttendees(prev => {
+      let changed = false
+      const next = prev.map(a => {
+        if (a.ticketTypeId) return a
+        changed = true
+        return { ...a, ticketTypeId: defaultTicketTypeId }
+      })
+      return changed ? next : prev
+    })
+  }, [event])
+
+  const hasTicketTypes = !!event?.ticketTypes.length
+  // Every tier sold out is functionally the same as the event itself being full.
+  const allTicketTypesFull = hasTicketTypes && event!.ticketTypes.every(tt => tt.full)
+
+  const maxAttendees = event
+    ? Math.max(1, Math.min(MAX_QUANTITY, event.remainingCapacity ?? MAX_QUANTITY))
+    : 1
+
+  // The event's remaining capacity can shrink after a refresh (e.g. someone else just
+  // took a spot) — clamp the visible count, but keep whatever was already typed in case
+  // capacity opens back up (someone else's hold expiring, etc).
+  useEffect(() => {
+    setAttendeeCount(prev => Math.min(prev, maxAttendees))
+  }, [maxAttendees])
+
+  function setQuantity(n: number) {
+    if (n > attendees.length) {
+      // New attendees inherit the last visible one's tier (when it still has room) instead
+      // of always resetting to the cheapest/first tier — buying N tickets of the same tier
+      // is the common case, and this avoids re-picking it by hand for every person added.
+      const lastTicketTypeId = attendees[attendeeCount - 1]?.ticketTypeId
+      const inherited = hasTicketTypes && !!lastTicketTypeId && !event!.ticketTypes.find(tt => tt.id === lastTicketTypeId)?.full
+      const defaultTicketTypeId = hasTicketTypes
+        ? (inherited ? lastTicketTypeId! : (event!.ticketTypes.find(tt => !tt.full) ?? event!.ticketTypes[0]).id)
+        : ""
+      const additions = Array.from({ length: n - attendees.length }, () => ({ ...EMPTY_ATTENDEE, ticketTypeId: defaultTicketTypeId }))
+      setAttendees(prev => [...prev, ...additions])
     }
-  }, [event, ticketTypeId])
+    setAttendeeCount(n)
+  }
+
+  function updateAttendee(index: number, patch: Partial<Attendee>) {
+    setAttendees(prev => prev.map((a, i) => (i === index ? { ...a, ...patch } : a)))
+  }
+
+  const visibleAttendees = attendees.slice(0, attendeeCount)
+
+  function seatPrice(a: Attendee): number {
+    if (hasTicketTypes) return Number(event!.ticketTypes.find(tt => tt.id === a.ticketTypeId)?.price ?? 0)
+    return event?.price ? Number(event.price) : 0
+  }
+  const total  = visibleAttendees.reduce((sum, a) => sum + seatPrice(a), 0)
+  const isPaid = total > 0
 
   // Guards against showing the redirect toast again if the effect re-runs for an unrelated
   // reason (e.g. `t` getting a new identity when the visitor switches language via LocaleSwitcher).
@@ -97,73 +265,88 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
     const p = searchParams.get("ticket")
     if (!p || shownTicketToast.current === p) return
     shownTicketToast.current = p
-    if (p === "success") toast.success(t("toastConfirmed"))
+    if (p === "success") {
+      toast.success(t("toastConfirmed"))
+      // Carried through the Stripe redirect — see the `skipped` param built in the
+      // inscription route — since the JSON response's own `skippedEmails` never reaches
+      // this page when checkout redirects straight to Stripe instead.
+      const skipped = Number(searchParams.get("skipped") ?? 0)
+      if (skipped > 0) toast.info(t("attendeesSkipped", { count: skipped }))
+    }
     if (p === "cancelled") toast.info(t("toastCancelled"))
   }, [searchParams, t])
 
-  const hasTicketTypes = !!event?.ticketTypes.length
-  const selectedTicketType = hasTicketTypes ? event!.ticketTypes.find(tt => tt.id === ticketTypeId) : undefined
-  // Every tier sold out is functionally the same as the event itself being full.
-  const allTicketTypesFull = hasTicketTypes && event!.ticketTypes.every(tt => tt.full)
-  // Ticket types (when the event has any) fully replace the flat price — isPaid reflects the
-  // chosen tier, not the ignored event.isPaid, so picking a 0€ tier behaves like a free event.
-  const isPaid = hasTicketTypes ? Number(selectedTicketType?.price ?? 0) > 0 : !!event?.isPaid
+  const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const canSubmit =
     !loading &&
     !!event &&
     !event.full &&
     !event.past &&
     (!isPaid || event.paymentEnabled) &&
-    (!hasTicketTypes || (!!selectedTicketType && !selectedTicketType.full)) &&
-    firstName.trim() &&
-    lastName.trim() &&
-    (!isPaid || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) &&
-    (event.customFields ?? []).every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
+    visibleAttendees.every(a =>
+      a.firstName.trim() &&
+      a.lastName.trim() &&
+      emailValid(a.email) &&
+      (!hasTicketTypes || (!!a.ticketTypeId && !event.ticketTypes.find(tt => tt.id === a.ticketTypeId)?.full)) &&
+      (event.customFields ?? []).every(f => !f.required || (a.answers[f.id] ?? "").trim() !== ""),
+    )
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!canSubmit || !event) return
+
+    if (new Set(visibleAttendees.map(a => a.email.trim().toLowerCase())).size !== visibleAttendees.length) {
+      toast.error(t("duplicateEmail"))
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch(`/api/public/${slug}/evenements/${id}/inscription`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          firstName: firstName.trim(),
-          lastName:  lastName.trim(),
-          email:     email.trim() || undefined,
-          phone:     phone.trim() || undefined,
-          address:   address.trim() || undefined,
-          answers,
+          attendees: visibleAttendees.map(a => ({
+            firstName: a.firstName.trim(),
+            lastName:  a.lastName.trim(),
+            email:     a.email.trim(),
+            ticketTypeId: hasTicketTypes ? a.ticketTypeId : undefined,
+            phone:     a.phone.trim() || undefined,
+            address:   a.address.trim() || undefined,
+            answers:   a.answers,
+          })),
           website,
-          ticketTypeId: hasTicketTypes ? ticketTypeId : undefined,
         }),
       })
       const data = await res.json()
       if (!res.ok) {
         if (data.code === "INVALID_TICKET_TYPE" || data.code === "TICKET_TYPE_FULL") {
-          if (data.code === "TICKET_TYPE_FULL") {
-            // The server's error text is in the event's original authoring language, not the
-            // visitor's — use the label from our own already-translated ticketTypes instead.
-            const fullLabel = event?.ticketTypes.find(tt => tt.id === ticketTypeId)?.label
-            toast.error(fullLabel ? t("ticketTypeFullNamed", { label: fullLabel }) : t("ticketTypeFull"))
-          } else {
-            toast.error(t("ticketTypeInvalid"))
-          }
+          toast.error(data.code === "TICKET_TYPE_FULL" ? t("ticketTypeFull") : t("ticketTypeInvalid"))
           // The tier list may have changed server-side since this page loaded (admin edited
-          // it, or someone else just took the last spot) — refresh it instead of leaving the
-          // visitor stuck on a selection that will only ever fail again.
+          // it, or someone else just took the last spot) — refresh it and clear any attendee
+          // stuck on a tier that no longer resolves or is now full, instead of leaving them
+          // stuck on a selection that will only ever fail again.
           fetch(`/api/public/${slug}/evenements/${id}`)
             .then(r => r.json())
-            .then((d: EventInfo) => { setEvent(d); setTicketTypeId(null) })
+            .then((d: EventInfo) => {
+              setEvent(d)
+              setAttendees(prev => prev.map(a => {
+                const tt = d.ticketTypes.find(x => x.id === a.ticketTypeId)
+                return (!tt || tt.full) ? { ...a, ticketTypeId: "" } : a
+              }))
+            })
             .catch(() => {})
           return
         }
+        if (data.code === "DUPLICATE_EMAIL") { toast.error(t("duplicateEmail")); return }
+        if (data.code === "ALREADY_REGISTERED") { toast.error(t("alreadyRegistered", { email: data.email ?? "" })); return }
         toast.error(data.error ?? t("errorGeneric"))
         return
       }
+      // Attendees already registered from a previous visit aren't re-charged/re-created —
+      // only genuinely new ones go through — so the buyer is told who was carried over.
+      if (data.skippedEmails?.length) toast.info(t("attendeesSkipped", { count: data.skippedEmails.length }))
       if (data.url) { window.location.href = data.url; return }
-      if (data.cancelUrl) setCancelUrl(data.cancelUrl)
       setSubmitted(true)
     } catch {
       toast.error(t("errorNetwork"))
@@ -264,31 +447,8 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                 <div className="rounded-lg border p-6 text-center text-sm space-y-3">
                   <div className="space-y-1">
                     <p className="font-medium">{t("submittedTitle")}</p>
-                    <p className="text-muted-foreground">
-                      {email ? t("submittedWithEmail") : t("submittedNoEmail")}
-                    </p>
+                    <p className="text-muted-foreground">{t("submittedWithEmail")}</p>
                   </div>
-                  {!email && cancelUrl && (
-                    <div className="flex items-center gap-2">
-                      <input
-                        readOnly
-                        value={cancelUrl}
-                        onFocus={e => e.currentTarget.select()}
-                        className="min-w-0 flex-1 rounded-md border border-input bg-muted/40 px-2.5 py-1.5 text-xs text-foreground outline-none"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          navigator.clipboard.writeText(cancelUrl)
-                          toast.success(t("linkCopied"))
-                        }}
-                      >
-                        {t("copyLink")}
-                      </Button>
-                    </div>
-                  )}
                 </div>
               ) : event.past ? (
                 <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
@@ -300,23 +460,6 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                 </div>
               ) : (
                 <div className="rounded-lg border bg-card p-6 space-y-4">
-                  {/* Hoisted out of the form below: switching tiers must always stay possible,
-                      even while the currently-selected tier can't be paid for (e.g. Stripe not
-                      set up) — otherwise picking a paid tier would hide this control along with
-                      the rest of the form, trapping the visitor with no way back to a free one. */}
-                  {hasTicketTypes && (
-                    <SelectField
-                      label={t("ticketTypeLabel")}
-                      value={ticketTypeId ?? undefined}
-                      onValueChange={setTicketTypeId}
-                      options={event.ticketTypes.map(tt => ({
-                        value: tt.id,
-                        disabled: tt.full,
-                        label: `${tt.label} — ${Number(tt.price) === 0 ? t("ticketTypeFree") : Number(tt.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}${tt.full ? ` (${t("ticketTypeSoldOut")})` : ""}`,
-                      }))}
-                    />
-                  )}
-
                   {isPaid && !event.paymentEnabled ? (
                     <p className="text-center text-sm text-muted-foreground py-2">{t("paymentDisabled")}</p>
                   ) : (
@@ -328,69 +471,30 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                       <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("firstNameLabel")}</label>
-                        <input
-                          type="text" required value={firstName} onChange={e => setFirstName(e.target.value)}
-                          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("lastNameLabel")}</label>
-                        <input
-                          type="text" required value={lastName} onChange={e => setLastName(e.target.value)}
-                          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                        />
-                      </div>
-                    </div>
+                    {maxAttendees > 1 && (
+                      <QuantityStepper value={attendeeCount} onChange={setQuantity} max={maxAttendees} label={t("attendeesCountLabel")} />
+                    )}
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        {isPaid ? t("emailLabelRequired") : t("emailLabelOptional")}
-                      </label>
-                      <input
-                        type="email" required={isPaid} value={email} onChange={e => setEmail(e.target.value)}
-                        className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+                    {visibleAttendees.map((a, i) => (
+                      <AttendeeFields
+                        key={i}
+                        index={i}
+                        attendee={a}
+                        onChange={patch => updateAttendee(i, patch)}
+                        ticketTypes={event.ticketTypes}
+                        customFields={event.customFields}
+                        showHeading={visibleAttendees.length > 1}
+                        t={t}
+                        loc={loc}
                       />
-                      {!isPaid && (
-                        <p className="text-xs text-muted-foreground">{t("emailNoConfirmHint")}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("phoneLabel")}</label>
-                      <input
-                        type="tel" value={phone} onChange={e => setPhone(e.target.value)}
-                        className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("addressLabel")}</label>
-                      <input
-                        type="text" value={address} onChange={e => setAddress(e.target.value)}
-                        className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                      />
-                    </div>
-
-                    {event.customFields.map(field => (
-                      <div key={field.id} className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                          {field.required ? t("customFieldRequired", { label: field.label }) : t("customFieldOptional", { label: field.label })}
-                        </label>
-                        <input
-                          type={field.type === "NUMBER" ? "number" : "text"}
-                          min={field.type === "NUMBER" ? 0 : undefined}
-                          step={field.type === "NUMBER" ? 1 : undefined}
-                          inputMode={field.type === "NUMBER" ? "numeric" : undefined}
-                          required={field.required}
-                          value={answers[field.id] ?? ""}
-                          onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
-                          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                        />
-                      </div>
                     ))}
+
+                    {visibleAttendees.length > 1 && (
+                      <div className="flex items-center justify-between text-sm border-t pt-3">
+                        <span className="text-muted-foreground">{t("totalLabel")}</span>
+                        <span className="font-semibold tabular-nums">{total.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                      </div>
+                    )}
 
                     <Button
                       type="submit"
@@ -400,7 +504,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                     >
                       <TicketIcon className="size-4 mr-2" />
                       {isPaid
-                        ? t("pay", { amount: Number(hasTicketTypes ? selectedTicketType?.price : event.price).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                        ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
                         : t("submit")}
                     </Button>
 

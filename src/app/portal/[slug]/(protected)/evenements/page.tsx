@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon, MinusIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
+import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useSetRsvp, type GuestInput } from "@/hooks/use-evenements"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -13,6 +13,7 @@ import { PriceBadge } from "@/components/ui/price-badge"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
@@ -214,41 +215,6 @@ function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { e
   )
 }
 
-function QuantityStepper({
-  value,
-  onChange,
-  max,
-}: {
-  value:    number
-  onChange: (v: number) => void
-  max:      number
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-xs text-muted-foreground flex-1">Nombre de places :</span>
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          onClick={() => onChange(Math.max(1, value - 1))}
-          disabled={value <= 1}
-          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground disabled:opacity-40 transition-colors"
-        >
-          <MinusIcon className="size-3" />
-        </button>
-        <span className="w-5 text-center text-sm font-medium tabular-nums">{value}</span>
-        <button
-          type="button"
-          onClick={() => onChange(Math.min(max, value + 1))}
-          disabled={value >= max}
-          className="flex size-6 items-center justify-center rounded border border-input bg-background text-muted-foreground disabled:opacity-40 transition-colors"
-        >
-          <PlusIcon className="size-3" />
-        </button>
-      </div>
-    </div>
-  )
-}
-
 function PaidEventSection({
   evenementId,
   ticketPaid,
@@ -428,7 +394,7 @@ function PaidEventSection({
           Réservé – paiement sur place
         </div>
         {maxQtyConfirme > 1 && (
-          <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} />
+          <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} label="Nombre de places :" />
         )}
         {ticketTypes.length > 0 && (
           <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
@@ -481,7 +447,7 @@ function PaidEventSection({
   return (
     <div className="space-y-2">
       {maxQty > 1 && (
-        <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
+        <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label="Nombre de places :" />
       )}
       {ticketTypes.length > 0 && (
         <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
@@ -592,7 +558,7 @@ function FreeEventGuestsPanel({
 
   return (
     <div className="space-y-2 rounded-lg border border-dashed p-2.5">
-      <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} />
+      <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label="Nombre de places :" />
       <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
       {dirty && (
         <Button
