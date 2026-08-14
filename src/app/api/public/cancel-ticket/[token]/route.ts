@@ -11,8 +11,10 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
 // isn't reachable) — accessed via the unguessable cancelToken emailed at registration
-// time, not a login. Always exactly one seat (the public form has no quantity/companions
-// concept), so this is deliberately simpler than the portal route's multi-seat handling.
+// time, not a login. Always exactly one seat: the public form can now create several
+// Participation rows sharing one orderId, but each row gets its own cancelToken so this
+// route only ever needs to look up and refund/release the one seat that token belongs
+// to — the other seats in the same order are untouched.
 
 class TicketAlreadyClaimedError extends Error {}
 
@@ -132,25 +134,31 @@ export async function POST(
     throw err
   }
 
-  try {
-    await stripe.refunds.create({
-      payment_intent:   paymentIntentId,
-      amount:           refundAmountCents,
-      reverse_transfer: true,
-    }, {
-      // Stable per participation — a network retry of this same call reaches the original
-      // refund instead of creating a second one.
-      idempotencyKey: `public-ticket-refund-${participation.id}`,
-    })
-  } catch (err) {
-    // The claim above already committed — undo it so the seat doesn't sit "cancelled" in
-    // the DB when no money actually moved.
-    await prisma.participation.update({ where: { id: participation.id }, data: savedState })
-    console.error(`[cancel-ticket] Stripe refund failed for participation ${participation.id}:`, err)
-    const message = err instanceof Stripe.errors.StripeError
-      ? err.message
-      : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
-    return NextResponse.json({ error: message }, { status: 502 })
+  // A 0€ tier mixed into an otherwise-paid order (multiple ticket types, only some free)
+  // still gets ticketPaidAt/stripeSessionId set on every seat once the order is paid — so
+  // a free seat can reach this branch with nothing to actually refund. Stripe rejects a
+  // refund of amount 0, and there's no money to move anyway, so just release the seat.
+  if (refundAmountCents > 0) {
+    try {
+      await stripe.refunds.create({
+        payment_intent:   paymentIntentId,
+        amount:           refundAmountCents,
+        reverse_transfer: true,
+      }, {
+        // Stable per participation — a network retry of this same call reaches the original
+        // refund instead of creating a second one.
+        idempotencyKey: `public-ticket-refund-${participation.id}`,
+      })
+    } catch (err) {
+      // The claim above already committed — undo it so the seat doesn't sit "cancelled" in
+      // the DB when no money actually moved.
+      await prisma.participation.update({ where: { id: participation.id }, data: savedState })
+      console.error(`[cancel-ticket] Stripe refund failed for participation ${participation.id}:`, err)
+      const message = err instanceof Stripe.errors.StripeError
+        ? err.message
+        : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
+      return NextResponse.json({ error: message }, { status: 502 })
+    }
   }
 
   const paidIncomes = await prisma.income.findMany({
@@ -174,8 +182,10 @@ export async function POST(
     prisma.income.deleteMany({ where: { id: { in: paidIncomes.map(i => i.id) } } }),
   ])
 
+  const refunded = refundAmountCents > 0
+
   await writeActivityLog({
-    associationId, action: "TICKET_REFUNDED", entity: "Participation", entityId: participation.id,
+    associationId, action: refunded ? "TICKET_REFUNDED" : "PARTICIPATION_PUBLIC_CANCELLED", entity: "Participation", entityId: participation.id,
     label: `${participation.firstName} ${participation.lastName} — ${participation.evenement.title}`,
   })
 
@@ -185,11 +195,11 @@ export async function POST(
       email:           participation.email,
       associationName: participation.evenement.association.name,
       eventTitle:      participation.evenement.title,
-      refunded:        true,
-      amount:          refundAmountCents / 100,
+      refunded,
+      amount:          refunded ? refundAmountCents / 100 : undefined,
       branding:        resolveDocumentBranding(participation.evenement.association),
     }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(() => {})
   }
 
-  return NextResponse.json({ ok: true, refunded: true })
+  return NextResponse.json({ ok: true, refunded })
 }

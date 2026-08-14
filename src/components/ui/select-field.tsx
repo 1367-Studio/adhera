@@ -26,11 +26,15 @@ interface SelectFieldProps {
   error?: string
   required?: boolean
   disabled?: boolean
+  // Overrides the id/for pairing derived from `label` — needed when the same label text
+  // is legitimately repeated on the page (e.g. one instance per row in a repeated list),
+  // which would otherwise produce duplicate DOM ids.
+  id?: string
 }
 
 export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
-  ({ label, options, value, onValueChange, placeholder, error, required, disabled }, ref) => {
-    const fieldId     = label.toLowerCase().replace(/\s+/g, "-")
+  ({ label, options, value, onValueChange, placeholder, error, required, disabled, id }, ref) => {
+    const fieldId     = id ?? label.toLowerCase().replace(/\s+/g, "-")
     const selectedLabel = options.find((o) => o.value === value)?.label
 
     return (
