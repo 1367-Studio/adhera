@@ -89,33 +89,40 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
     throw err
   }
 
-  try {
-    await stripe.refunds.create({
-      payment_intent:         paymentIntentId,
-      amount:                 refundAmountCents,
-      reverse_transfer:       true,
-      refund_application_fee: true,
-    }, {
-      // Stable for this exact set of seats — safe to reuse on a network retry of this
-      // same call (params never change once targetIds is fixed), so Stripe returns the
-      // original refund instead of creating a second one.
-      idempotencyKey: `ticket-refund-${targetIds.slice().sort().join("-")}`,
-    })
-  } catch (err) {
-    // The claim above already committed — undo it so the seat doesn't sit "cancelled"
-    // in the DB when no money actually moved. rsvp was never touched by the claim, so
-    // there's nothing to restore for it here.
-    await prisma.$transaction(
-      targets.map(t => prisma.participation.update({
-        where: { id: t.id },
-        data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount },
-      }))
-    )
-    console.error(`[cancel-ticket] Stripe refund failed for seats ${targetIds.join(",")}:`, err)
-    const message = err instanceof Stripe.errors.StripeError
-      ? err.message
-      : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
-    return NextResponse.json({ error: message }, { status: 502 })
+  // A 0€ tier mixed into an otherwise-paid order (multiple ticket types, only some free)
+  // still gets ticketPaidAt/stripeSessionId set on every seat once the order is paid — so
+  // cancelling just the free seat(s) can reach here with nothing to actually refund.
+  // Stripe rejects a refund of amount 0, and there's no money to move anyway, so just
+  // release the seat(s) below.
+  if (refundAmountCents > 0) {
+    try {
+      await stripe.refunds.create({
+        payment_intent:         paymentIntentId,
+        amount:                 refundAmountCents,
+        reverse_transfer:       true,
+        refund_application_fee: true,
+      }, {
+        // Stable for this exact set of seats — safe to reuse on a network retry of this
+        // same call (params never change once targetIds is fixed), so Stripe returns the
+        // original refund instead of creating a second one.
+        idempotencyKey: `ticket-refund-${targetIds.slice().sort().join("-")}`,
+      })
+    } catch (err) {
+      // The claim above already committed — undo it so the seat doesn't sit "cancelled"
+      // in the DB when no money actually moved. rsvp was never touched by the claim, so
+      // there's nothing to restore for it here.
+      await prisma.$transaction(
+        targets.map(t => prisma.participation.update({
+          where: { id: t.id },
+          data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount },
+        }))
+      )
+      console.error(`[cancel-ticket] Stripe refund failed for seats ${targetIds.join(",")}:`, err)
+      const message = err instanceof Stripe.errors.StripeError
+        ? err.message
+        : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
+      return NextResponse.json({ error: message }, { status: 502 })
+    }
   }
 
   const paidIncomes = await prisma.income.findMany({

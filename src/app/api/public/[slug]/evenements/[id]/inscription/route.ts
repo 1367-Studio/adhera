@@ -12,19 +12,28 @@ import { rsvpConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MAX_NUMBER_FIELD_VALUE = 999_999
+const MAX_QUANTITY = 10
 
-const baseSchema = z.object({
+const attendeeSchema = z.object({
   firstName: z.string().trim().min(1).max(80),
   lastName:  z.string().trim().min(1).max(80),
-  email:     z.string().trim().email().max(200).optional().or(z.literal("")),
-  phone:     z.string().trim().max(30).optional().or(z.literal("")),
-  address:   z.string().trim().max(300).optional().or(z.literal("")),
-  answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
+  email:     z.string().trim().email().max(200),
+  // Present only when the event has EvenementTicketType rows — see the ticketTypes lookup below.
+  ticketTypeId: z.string().optional(),
+  phone:        z.string().trim().max(30).optional().or(z.literal("")),
+  address:      z.string().trim().max(300).optional().or(z.literal("")),
+  // Each ticket belongs to a different person, so custom-field answers (e.g. shirt size)
+  // are asked and stored per attendee, not once for the whole order.
+  answers:      z.record(z.string(), z.string().max(500)).optional().default({}),
+})
+
+const baseSchema = z.object({
+  // One entry per ticket — each ticket belongs to a different person, even within a
+  // single order. Every submission (including a single ticket) goes through this array.
+  attendees: z.array(attendeeSchema).min(1).max(MAX_QUANTITY),
   // Honeypot — a real visitor never sees or fills this field (hidden off-screen in the
   // public form); a non-empty value means a bot filled every input it could find.
   website:   z.string().optional().or(z.literal("")),
-  // Present only when the event has EvenementTicketType rows — see the ticketTypes lookup below.
-  ticketTypeId: z.string().optional(),
 })
 
 class EventFullError extends Error {}
@@ -51,8 +60,7 @@ export async function POST(
   // adjust and try again.
   if (parsed.data.website) return NextResponse.json({ ok: true })
 
-  const { firstName, lastName, phone, address, answers } = parsed.data
-  const email = parsed.data.email ? parsed.data.email.toLowerCase() : ""
+  const { attendees } = parsed.data
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
@@ -75,154 +83,144 @@ export async function POST(
     return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
 
   // Custom fields are admin-defined per event, so their validation can't be a static
-  // zod schema — required/type checked here against what's currently configured.
-  for (const field of evenement.customFields) {
-    const value = answers[field.id]
-    if (field.required && (value == null || value.trim() === "")) {
-      return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
-    }
-    if (field.type === "NUMBER" && value && value.trim() !== "") {
-      const n = Number(value)
-      if (!Number.isInteger(n) || n < 0 || n > MAX_NUMBER_FIELD_VALUE) {
-        return NextResponse.json({ error: `Le champ « ${field.label} » doit être un nombre entier valide.` }, { status: 422 })
-      }
-    }
-  }
+  // zod schema — required/type checked here against what's currently configured. Each
+  // attendee answers their own copy (e.g. shirt size), so every attendee is checked.
   const knownFieldIds = new Set(evenement.customFields.map(f => f.id))
-  const cleanAnswers  = Object.fromEntries(Object.entries(answers).filter(([k]) => knownFieldIds.has(k)))
-
-  // Ticket types (when the admin defined any) replace the flat price entirely — the visitor
-  // must have picked one, and its price (not evenement.price) drives everything below.
-  let ticketType: (typeof evenement.ticketTypes)[number] | null = null
-  if (evenement.ticketTypes.length > 0) {
-    ticketType = evenement.ticketTypes.find(tt => tt.id === parsed.data.ticketTypeId) ?? null
-    if (!ticketType) return NextResponse.json({ error: "Tarif invalide", code: "INVALID_TICKET_TYPE" }, { status: 422 })
-  }
-  const isPaid = ticketType ? Number(ticketType.price) > 0 : evenement.price != null && Number(evenement.price) > 0
-  if (isPaid) {
-    if (!email) return NextResponse.json({ error: "L'e-mail est requis pour un événement payant." }, { status: 422 })
-    if (!assoc.stripeConnectId || !(await connectAccountChargesEnabled(assoc.stripeConnectId)))
-      return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
-  }
-
-  // Dedup by email — only meaningful when an email was given (free events don't require
-  // one, so two anonymous free entries can't be told apart; that's an inherent limit of
-  // not forcing an account/email on every visitor, not something this check can close).
-  const existing = email
-    ? await prisma.participation.findFirst({
-        where:  { evenementId: id, email: { equals: email, mode: "insensitive" } },
-        select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true },
-      })
-    : null
-
-  // Whether the EXISTING row itself was ever actually going to require payment — keyed off
-  // its own recorded tier/price at the time, not today's (possibly different) selection.
-  // Ticket types make "isPaid" a per-submission thing rather than a fixed event property,
-  // so re-deriving this from the *new* selection (as before tiers existed) would wrongly
-  // let switching tiers dodge the dedup check, or wrongly block a switch that should be
-  // allowed — see the two cases below.
-  const existingTicketType = existing?.ticketTypeId ? evenement.ticketTypes.find(tt => tt.id === existing.ticketTypeId) : null
-  const existingWasPaid    = existingTicketType
-    ? Number(existingTicketType.price) > 0
-    : evenement.price != null && Number(evenement.price) > 0
-
-  // A cancelled registration (via /annulation) leaves the row in place with both
-  // ticketPaidAt and rsvp cleared — it must NOT count as "already registered" here, or
-  // cancelling a free RSVP would permanently lock that email out of ever re-registering.
-  // An abandoned-but-never-cancelled paid checkout still has rsvp CONFIRME (the seat hold)
-  // with ticketPaidAt null and a stripeSessionId once a session was created — that case
-  // still falls through to the resume/reuse path below (or, if they're now picking a
-  // different tier, is allowed to proceed and replace the stale hold) rather than being
-  // treated as a done deal.
-  if (existing && (existing.ticketPaidAt || (existing.rsvp === "CONFIRME" && !existing.stripeSessionId && !existingWasPaid))) {
-    return NextResponse.json({ error: "Vous êtes déjà inscrit(e) à cet événement avec cette adresse e-mail." }, { status: 409 })
+  for (const a of attendees) {
+    for (const field of evenement.customFields) {
+      const value = a.answers[field.id]
+      if (field.required && (value == null || value.trim() === "")) {
+        return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
+      }
+      if (field.type === "NUMBER" && value && value.trim() !== "") {
+        const n = Number(value)
+        if (!Number.isInteger(n) || n < 0 || n > MAX_NUMBER_FIELD_VALUE) {
+          return NextResponse.json({ error: `Le champ « ${field.label} » doit être un nombre entier valide.` }, { status: 422 })
+        }
+      }
+    }
   }
 
-  // existing here (if any) is either a paid event's abandoned/in-progress checkout or a
-  // previously-cancelled registration being resumed — reuse that same row instead of
-  // minting a second one that would double-count capacity.
-  const orderId    = existing?.orderId ?? randomUUID()
-  // Only used when actually creating a new row below — an existing/reused row already
-  // has its own token from when it was first created, untouched by this update.
-  const cancelToken = randomBytes(20).toString("hex")
+  // Ticket types (when the admin defined any) replace the flat price entirely — every
+  // attendee must have picked one, and its price (not evenement.price) drives everything
+  // below for that seat.
+  const hasTicketTypes = evenement.ticketTypes.length > 0
+  const flatPrice      = evenement.price != null ? Number(evenement.price) : 0
+  const resolveTicketType = (ticketTypeId: string | undefined) =>
+    evenement.ticketTypes.find(tt => tt.id === ticketTypeId) ?? null
+  const resolvedAttendees = attendees.map(a => ({
+    ...a,
+    email:        a.email.toLowerCase(),
+    ticketType:   hasTicketTypes ? resolveTicketType(a.ticketTypeId) : null,
+    cleanAnswers: Object.fromEntries(Object.entries(a.answers).filter(([k]) => knownFieldIds.has(k))),
+  }))
+  if (hasTicketTypes && resolvedAttendees.some(a => !a.ticketType)) {
+    return NextResponse.json({ error: "Tarif invalide", code: "INVALID_TICKET_TYPE" }, { status: 422 })
+  }
+  // Two seats in the same order sharing an email would otherwise silently create two
+  // Participation rows with the same address — harmless by itself, but it makes the dedup
+  // logic below ambiguous about which row is "the" registration for that email.
+  if (new Set(resolvedAttendees.map(a => a.email)).size !== resolvedAttendees.length) {
+    return NextResponse.json({ error: "Chaque billet doit utiliser une adresse e-mail différente.", code: "DUPLICATE_EMAIL" }, { status: 422 })
+  }
+  const seatPrice = (a: (typeof resolvedAttendees)[number]): number =>
+    a.ticketType ? Number(a.ticketType.price) : flatPrice
+  const isPaid = resolvedAttendees.some(a => seatPrice(a) > 0)
+  if (isPaid && (!assoc.stripeConnectId || !(await connectAccountChargesEnabled(assoc.stripeConnectId)))) {
+    return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
+  }
 
-  let participationId: string
-  try {
-    participationId = await prisma.$transaction(async (tx) => {
-      if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
-        // Serialize concurrent registrations for this event, same lock used by the
-        // portal ticket checkout — without it, two public visitors racing for the last
-        // spot (or the same visitor re-registering after a cancellation right as it
-        // fills up) could both pass the occupancy check below.
-        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
-      }
+  // ---- Single-ticket order: same resume/reuse behavior as before tickets could be ----
+  // ---- grouped — an abandoned checkout can be picked back up from the same email.  ----
+  if (resolvedAttendees.length === 1) {
+    const attendee = resolvedAttendees[0]
+    const { firstName, lastName, email, ticketType, phone, address, cleanAnswers } = attendee
 
-      let pid: string
-      if (existing) {
-        await tx.participation.update({
-          where: { id: existing.id },
-          data:  { firstName, lastName, phone: phone || null, address: address || null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null },
-        })
-        pid = existing.id
-      } else {
-        const created = await tx.participation.create({
-          data: {
-            evenementId: id,
-            orderId,
-            firstName, lastName,
-            email:   email || null,
-            phone:   phone || null,
-            address: address || null,
-            answers: cleanAnswers,
-            rsvp:    "CONFIRME",
-            rsvpAt:  new Date(),
-            cancelToken,
-            ticketTypeId: ticketType?.id ?? null,
-          },
-          select: { id: true },
-        })
-        pid = created.id
-      }
-
-      // Applies whether this seat is brand new or a reused/resumed row — a resumed row
-      // that was never actually freed (still rsvp CONFIRME going in) is already counted
-      // in `occupied` by itself, so this is a no-op for it; a genuinely re-activated
-      // (previously cancelled) seat is what this is here to catch.
-      if (evenement.capacity != null) {
-        const occupied = await tx.participation.count({
-          where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
-        })
-        if (occupied > evenement.capacity) throw new EventFullError()
-      }
-
-      // Same post-write count-and-check as the event-level capacity above, scoped to the
-      // one tier this registration used — self-correcting for resubmits since it counts
-      // what's actually in the DB after the write, not a manual pre/post delta.
-      if (ticketType?.capacity != null) {
-        const occupiedTier = await tx.participation.count({
-          where: { evenementId: id, ticketTypeId: ticketType.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
-        })
-        if (occupiedTier > ticketType.capacity) throw new TicketTypeFullError(ticketType.label)
-      }
-
-      return pid
+    // Dedup by email — only meaningful for the resume/reuse logic below.
+    const existing = await prisma.participation.findFirst({
+      where:  { evenementId: id, email: { equals: email, mode: "insensitive" } },
+      select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true },
     })
-  } catch (err) {
-    if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
-    if (err instanceof TicketTypeFullError) return NextResponse.json({ error: `Le tarif « ${err.label} » est complet`, code: "TICKET_TYPE_FULL" }, { status: 422 })
-    throw err
-  }
 
-  await writeActivityLog({
-    associationId: assoc.id, action: "PARTICIPATION_PUBLIC_CREATED", entity: "Participation", entityId: participationId,
-    label: `${firstName} ${lastName} — ${evenement.title}`,
-  })
+    // Whether the EXISTING row itself was ever actually going to require payment — keyed off
+    // its own recorded tier/price at the time, not today's (possibly different) selection.
+    const existingTicketType = existing?.ticketTypeId ? evenement.ticketTypes.find(tt => tt.id === existing.ticketTypeId) : null
+    const existingWasPaid    = existingTicketType
+      ? Number(existingTicketType.price) > 0
+      : evenement.price != null && Number(evenement.price) > 0
 
-  if (!isPaid) {
-    if (email) {
-      sendEmail(rsvpConfirmationEmail({
-        firstName,
-        email,
+    // A cancelled registration (via /annulation) leaves the row in place with both
+    // ticketPaidAt and rsvp cleared — it must NOT count as "already registered" here.
+    if (existing && (existing.ticketPaidAt || (existing.rsvp === "CONFIRME" && !existing.stripeSessionId && !existingWasPaid))) {
+      return NextResponse.json({ error: "Vous êtes déjà inscrit(e) à cet événement avec cette adresse e-mail." }, { status: 409 })
+    }
+
+    const orderId     = existing?.orderId ?? randomUUID()
+    const cancelToken = randomBytes(20).toString("hex")
+
+    let participationId: string
+    try {
+      participationId = await prisma.$transaction(async (tx) => {
+        if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
+          await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
+        }
+
+        let pid: string
+        if (existing) {
+          await tx.participation.update({
+            where: { id: existing.id },
+            data:  { firstName, lastName, phone: phone || null, address: address || null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null },
+          })
+          pid = existing.id
+        } else {
+          const created = await tx.participation.create({
+            data: {
+              evenementId: id,
+              orderId,
+              firstName, lastName, email,
+              phone:   phone || null,
+              address: address || null,
+              answers: cleanAnswers,
+              rsvp:    "CONFIRME",
+              rsvpAt:  new Date(),
+              cancelToken,
+              ticketTypeId: ticketType?.id ?? null,
+            },
+            select: { id: true },
+          })
+          pid = created.id
+        }
+
+        if (evenement.capacity != null) {
+          const occupied = await tx.participation.count({
+            where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+          })
+          if (occupied > evenement.capacity) throw new EventFullError()
+        }
+
+        if (ticketType?.capacity != null) {
+          const occupiedTier = await tx.participation.count({
+            where: { evenementId: id, ticketTypeId: ticketType.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+          })
+          if (occupiedTier > ticketType.capacity) throw new TicketTypeFullError(ticketType.label)
+        }
+
+        return pid
+      })
+    } catch (err) {
+      if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+      if (err instanceof TicketTypeFullError) return NextResponse.json({ error: `Le tarif « ${err.label} » est complet`, code: "TICKET_TYPE_FULL" }, { status: 422 })
+      throw err
+    }
+
+    await writeActivityLog({
+      associationId: assoc.id, action: "PARTICIPATION_PUBLIC_CREATED", entity: "Participation", entityId: participationId,
+      label: `${firstName} ${lastName} — ${evenement.title}`,
+    })
+
+    if (!isPaid) {
+      await sendEmail(rsvpConfirmationEmail({
+        firstName, email,
         associationName: assoc.name,
         eventTitle:      evenement.title,
         eventDate:       evenement.date,
@@ -231,63 +229,223 @@ export async function POST(
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
         branding:        resolveDocumentBranding(assoc),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
+      return NextResponse.json({ ok: true })
     }
-    // Without an email the visitor has no other way to ever see this again — the
-    // confirmation screen tells them to save it, so it has to actually be here.
-    return NextResponse.json({ ok: true, cancelUrl: `${APP_URL}/annulation/${cancelToken}` })
+
+    if (existing?.stripeSessionId) {
+      const existingSession = await stripe.checkout.sessions.retrieve(existing.stripeSessionId).catch(() => null)
+      if (existingSession?.status === "open" && existingSession.url) {
+        return NextResponse.json({ url: existingSession.url })
+      }
+    }
+
+    const amountCents = Math.round(seatPrice(attendee) * 100)
+    const productName = ticketType ? `${assoc.name} — ${evenement.title} — ${ticketType.label}` : `${assoc.name} — ${evenement.title}`
+
+    const checkoutSession = await stripe.checkout.sessions.create({
+      mode: "payment",
+      line_items: [{ price_data: { currency: "eur", unit_amount: amountCents, product_data: { name: productName } }, quantity: 1 }],
+      payment_intent_data: { transfer_data: { destination: assoc.stripeConnectId! }, metadata: { orderId, associationId: assoc.id } },
+      metadata:       { orderId },
+      customer_email: email,
+      success_url:    `${APP_URL}/${slug}/evenements/${id}?ticket=success`,
+      cancel_url:     `${APP_URL}/${slug}/evenements/${id}?ticket=cancelled`,
+      expires_at:     Math.floor(Date.now() / 1000) + 30 * 60,
+    })
+
+    if (!checkoutSession.url) {
+      if (!existing) await prisma.participation.delete({ where: { id: participationId } }).catch(() => {})
+      return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
+    }
+
+    await prisma.participation.update({ where: { id: participationId }, data: { stripeSessionId: checkoutSession.id } })
+
+    return NextResponse.json({ url: checkoutSession.url })
   }
 
-  // A still-open session from a previous attempt (same email, resubmitting) can be
-  // handed back as-is — nothing about a single-seat public registration ever changes
-  // the amount, so there's no case where it needs replacing instead of reusing.
-  if (existing?.stripeSessionId) {
-    const existingSession = await stripe.checkout.sessions.retrieve(existing.stripeSessionId).catch(() => null)
-    if (existingSession?.status === "open" && existingSession.url) {
-      return NextResponse.json({ url: existingSession.url })
-    }
+  // ---- Multi-ticket order: one Participation per attendee, sharing one orderId. ----
+  // No resume/reuse here — every submission creates fresh rows; an abandoned checkout
+  // self-heals in 30min when its Stripe session expires (handled by the webhook, same
+  // as everywhere else this pattern is used).
+  const existingByEmail = await prisma.participation.findMany({
+    where:  { evenementId: id, email: { in: resolvedAttendees.map(a => a.email), mode: "insensitive" } },
+    select: { id: true, email: true, ticketPaidAt: true, rsvp: true, stripeSessionId: true, ticketTypeId: true },
+  })
+  const isBlocked = (existing: (typeof existingByEmail)[number]): boolean => {
+    const existingTicketType = existing.ticketTypeId ? evenement.ticketTypes.find(tt => tt.id === existing.ticketTypeId) : null
+    const existingWasPaid    = existingTicketType
+      ? Number(existingTicketType.price) > 0
+      : evenement.price != null && Number(evenement.price) > 0
+    // A cancelled registration (via /annulation) leaves the row in place with both
+    // ticketPaidAt and rsvp cleared — it must NOT count as "already registered" here.
+    return !!(existing.ticketPaidAt || (existing.rsvp === "CONFIRME" && !existing.stripeSessionId && !existingWasPaid))
   }
 
-  const amountCents = Math.round(Number(ticketType?.price ?? evenement.price) * 100)
-  const productName = ticketType ? `${assoc.name} — ${evenement.title} — ${ticketType.label}` : `${assoc.name} — ${evenement.title}`
+  // A mixed submission ("me + a new friend" when "me" already has a ticket from a
+  // previous visit) shouldn't fail the whole order over one no-op attendee — only the
+  // genuinely new ones get a seat here, and the response tells the buyer who was skipped.
+  const skippedEmails: string[] = []
+  const newAttendees = resolvedAttendees.filter(a => {
+    const existing = existingByEmail.find(e => e.email?.toLowerCase() === a.email)
+    if (!existing || !isBlocked(existing)) return true
+    skippedEmails.push(a.email)
+    return false
+  })
+  if (newAttendees.length === 0) {
+    return NextResponse.json({ error: `${skippedEmails[0]} est déjà inscrit(e) à cet événement.`, code: "ALREADY_REGISTERED", email: skippedEmails[0] }, { status: 409 })
+  }
+
+  // Release any abandoned (unpaid, still-held) rows among the attendees being (re)created
+  // below — otherwise the old hold would sit dangling for up to 30min, double-counting
+  // capacity, and its still-open Stripe link would remain completable in parallel with
+  // this new order (risking a duplicate charge for the same person).
+  const staleHolds = newAttendees
+    .map(a => existingByEmail.find(e => e.email?.toLowerCase() === a.email))
+    .filter((e): e is NonNullable<typeof e> => !!e && !e.ticketPaidAt && e.rsvp === "CONFIRME")
+  if (staleHolds.length) {
+    await Promise.all(staleHolds.map(h => h.stripeSessionId
+      ? stripe.checkout.sessions.expire(h.stripeSessionId).catch(() => {})
+      : Promise.resolve()))
+    await prisma.participation.updateMany({
+      where: { id: { in: staleHolds.map(h => h.id) } },
+      data:  { rsvp: null, stripeSessionId: null },
+    })
+  }
+
+  const orderId      = randomUUID()
+  const cancelTokens = newAttendees.map(() => randomBytes(20).toString("hex"))
+
+  let participationIds: string[]
+  try {
+    participationIds = await prisma.$transaction(async (tx) => {
+      if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
+        // Serialize concurrent registrations for this event — without it, two orders
+        // racing for the last spot(s) could both pass the occupancy check below.
+        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
+      }
+
+      // Sequential, not Promise.all — a transaction runs on a single connection, so
+      // concurrent queries on `tx` aren't safe (same pattern as the portal checkout route).
+      const ids: string[] = []
+      for (let i = 0; i < newAttendees.length; i++) {
+        const a = newAttendees[i]
+        const created = await tx.participation.create({
+          data: {
+            evenementId: id,
+            orderId,
+            firstName: a.firstName,
+            lastName:  a.lastName,
+            email:     a.email,
+            phone:     a.phone || null,
+            address:   a.address || null,
+            answers:   a.cleanAnswers,
+            rsvp:      "CONFIRME",
+            rsvpAt:  new Date(),
+            cancelToken:  cancelTokens[i],
+            ticketTypeId: a.ticketType?.id ?? null,
+          },
+          select: { id: true },
+        })
+        ids.push(created.id)
+      }
+
+      if (evenement.capacity != null) {
+        const occupied = await tx.participation.count({
+          where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+        })
+        if (occupied > evenement.capacity) throw new EventFullError()
+      }
+
+      // Per-tier occupancy for every distinct capped tier actually used in this order.
+      const cappedTiers = [...new Set(
+        newAttendees.map(a => a.ticketType).filter((t): t is NonNullable<typeof t> => t != null && t.capacity != null),
+      )]
+      if (cappedTiers.length) {
+        const occupancy = await tx.participation.groupBy({
+          by:     ["ticketTypeId"],
+          where:  { evenementId: id, ticketTypeId: { in: cappedTiers.map(tt => tt.id) }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+          _count: { _all: true },
+        })
+        const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
+        for (const tt of cappedTiers) {
+          if ((occupiedMap.get(tt.id) ?? 0) > tt.capacity!) throw new TicketTypeFullError(tt.label)
+        }
+      }
+
+      return ids
+    })
+  } catch (err) {
+    if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
+    if (err instanceof TicketTypeFullError) return NextResponse.json({ error: `Le tarif « ${err.label} » est complet`, code: "TICKET_TYPE_FULL" }, { status: 422 })
+    throw err
+  }
+
+  await Promise.all(newAttendees.map((a, i) => writeActivityLog({
+    associationId: assoc.id, action: "PARTICIPATION_PUBLIC_CREATED", entity: "Participation", entityId: participationIds[i],
+    label: `${a.firstName} ${a.lastName} — ${evenement.title}`,
+  })))
+
+  if (!isPaid) {
+    await Promise.all(newAttendees.map((a, i) => sendEmail(rsvpConfirmationEmail({
+      firstName: a.firstName,
+      email:     a.email,
+      associationName: assoc.name,
+      eventTitle:      evenement.title,
+      eventDate:       evenement.date,
+      eventLocation:   evenement.location,
+      portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+      cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
+      branding:        resolveDocumentBranding(assoc),
+    }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
+    return NextResponse.json({ ok: true, skippedEmails })
+  }
+
+  // One line item per distinct tier actually chosen (grouped by tier id) — including 0€
+  // tiers mixed into an otherwise-paid order as real zero-amount line items. Collapses to
+  // one line item per attendee (still grouped) for events with no ticket types.
+  const groups = new Map<string, { label: string; price: number; quantity: number }>()
+  for (const a of newAttendees) {
+    const key   = a.ticketType?.id ?? "flat"
+    const label = a.ticketType?.label ?? evenement.title
+    const g = groups.get(key)
+    if (g) g.quantity++
+    else groups.set(key, { label, price: seatPrice(a), quantity: 1 })
+  }
+  const lineItems = [...groups.values()].map(g => ({
+    price_data: {
+      currency:     "eur",
+      unit_amount:  Math.round(g.price * 100),
+      product_data: { name: hasTicketTypes ? `${assoc.name} — ${evenement.title} — ${g.label}` : `${assoc.name} — ${evenement.title}` },
+    },
+    quantity: g.quantity,
+  }))
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency:     "eur",
-          unit_amount:  amountCents,
-          product_data: { name: productName },
-        },
-        quantity: 1,
-      },
-    ],
+    line_items: lineItems,
     payment_intent_data: {
       transfer_data: { destination: assoc.stripeConnectId! },
       metadata:      { orderId, associationId: assoc.id },
     },
-    metadata:      { orderId },
-    customer_email: email || undefined,
-    success_url: `${APP_URL}/${slug}/evenements/${id}?ticket=success`,
-    cancel_url:  `${APP_URL}/${slug}/evenements/${id}?ticket=cancelled`,
-    // Same reasoning as the portal checkout: the seat is already held (rsvp: CONFIRME)
-    // before this session exists, so keep the hold window short instead of Stripe's
-    // default 24h — an abandoned checkout shouldn't tie up a spot all day.
-    expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    metadata:       { orderId },
+    customer_email: newAttendees[0].email,
+    // Carries the skipped count through the Stripe round-trip so the confirmation page can
+    // still tell the buyer about it — the JSON response's own `skippedEmails` never reaches
+    // the browser here since it redirects straight to Stripe instead of reading this reply.
+    success_url:    `${APP_URL}/${slug}/evenements/${id}?ticket=success${skippedEmails.length ? `&skipped=${skippedEmails.length}` : ""}`,
+    cancel_url:     `${APP_URL}/${slug}/evenements/${id}?ticket=cancelled`,
+    expires_at:     Math.floor(Date.now() / 1000) + 30 * 60,
   })
 
   if (!checkoutSession.url) {
-    // Best-effort cleanup — an orphaned hold is far less harmful than blocking the
-    // response on a retryable failure the visitor can just resubmit past anyway. Only
-    // safe to delete outright for a brand-new row; a reused row predates this request.
-    if (!existing) await prisma.participation.delete({ where: { id: participationId } }).catch(() => {})
+    await prisma.participation.deleteMany({ where: { id: { in: participationIds } } }).catch(() => {})
     return NextResponse.json({ error: "Impossible de créer la session de paiement" }, { status: 500 })
   }
 
-  await prisma.participation.update({
-    where: { id: participationId },
+  await prisma.participation.updateMany({
+    where: { id: { in: participationIds } },
     data:  { stripeSessionId: checkoutSession.id },
   })
 
-  return NextResponse.json({ url: checkoutSession.url })
+  return NextResponse.json({ url: checkoutSession.url, skippedEmails })
 }

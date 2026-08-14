@@ -404,30 +404,51 @@ export async function POST(req: Request) {
             label:         evenement.title,
             metadata:      { quantity, amount: totalAmount, stripeSessionId: sess.id },
           })
-          if (buyerTicket.email && evenement.association) {
+          if (evenement.association) {
             const assoc = evenement.association
             const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
-            // Only guest/public tickets (no membreId) get a cancel link — a member's own
-            // ticket is already cancellable from the authenticated portal, and a multi-seat
-            // order bought there can include companions this simple token-based flow (built
-            // for the single-seat public registration form) isn't designed to handle.
-            const cancelUrl = !buyerTicket.membreId && buyerTicket.cancelToken
-              ? `${APP_URL}/annulation/${buyerTicket.cancelToken}`
-              : undefined
-            sendEmail(ticketPurchaseEmail({
-              firstName:       buyerTicket.firstName,
-              email:           buyerTicket.email,
-              associationName: assoc.name,
-              eventTitle:      evenement.title,
-              eventDate:       evenement.date,
-              eventLocation:   evenement.location,
-              amount:          totalAmount,
-              quantity,
-              paidAt,
-              portalUrl,
-              cancelUrl,
-              branding:        resolveDocumentBranding(assoc),
-            }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
+            // A member's own ticket is already cancellable from the authenticated portal,
+            // so a Portal order (some ticket tied to a membreId) still gets a single
+            // combined confirmation sent to the buyer, same as before. A public order (no
+            // membreId on any ticket) can have several attendees with their own emails and
+            // its per-seat cancellation link (src/app/api/public/cancel-ticket/[token]/route.ts)
+            // is self-service per attendee, so each of them gets their own confirmation
+            // email with their own cancel link instead of one shared email.
+            const isPublicOrder = tickets.every(t => !t.membreId)
+            // Awaited (not fire-and-forget) — a serverless webhook handler can have its
+            // execution frozen right after it responds, which would otherwise risk some
+            // of these emails never actually going out.
+            if (isPublicOrder) {
+              await Promise.allSettled(tickets.filter(t => t.email).map(t => sendEmail(ticketPurchaseEmail({
+                firstName:       t.firstName,
+                email:           t.email!,
+                associationName: assoc.name,
+                eventTitle:      evenement.title,
+                eventDate:       evenement.date,
+                eventLocation:   evenement.location,
+                amount:          ticketAmounts.get(t.id)!,
+                quantity:        1,
+                paidAt,
+                portalUrl,
+                cancelUrl:       t.cancelToken ? `${APP_URL}/annulation/${t.cancelToken}` : undefined,
+                branding:        resolveDocumentBranding(assoc),
+              }), { associationId: evenement.associationId, source: "TRANSACTION", sourceId: orderId }).catch(() => {})))
+            } else if (buyerTicket.email) {
+              await sendEmail(ticketPurchaseEmail({
+                firstName:       buyerTicket.firstName,
+                email:           buyerTicket.email,
+                associationName: assoc.name,
+                eventTitle:      evenement.title,
+                eventDate:       evenement.date,
+                eventLocation:   evenement.location,
+                amount:          totalAmount,
+                quantity,
+                paidAt,
+                portalUrl,
+                cancelUrl:       undefined,
+                branding:        resolveDocumentBranding(assoc),
+              }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
+            }
           }
         }
       } else if (donId) {
