@@ -7,6 +7,7 @@ const AZURE_ENDPOINT = "https://api.cognitive.microsofttranslator.com/translate?
 const AZURE_LOCALE_MAP: Record<Exclude<Locale, "fr">, string> = {
   en: "en",
   pt: "pt",
+  "pt-PT": "pt-pt",
   es: "es",
 }
 
