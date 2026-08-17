@@ -1,4 +1,4 @@
-import { fr, enUS, ptBR, es } from "date-fns/locale"
+import { fr, enUS, ptBR, pt as ptPT, es } from "date-fns/locale"
 import type { Locale as DateFnsLocale } from "date-fns"
 import type { Locale } from "@/i18n/locales"
 
@@ -8,7 +8,7 @@ import type { Locale } from "@/i18n/locales"
 // language (see src/components/support/support-ticket-thread.tsx) have one place to pull a
 // correctly-matched date-fns locale from, instead of adding a fifth hardcoded `fr` import.
 const DATE_FNS_LOCALES: Record<Locale, DateFnsLocale> = {
-  fr, en: enUS, pt: ptBR, es,
+  fr, en: enUS, pt: ptBR, "pt-PT": ptPT, es,
 }
 
 export function getDateFnsLocale(locale: Locale): DateFnsLocale {
