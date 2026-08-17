@@ -17,7 +17,8 @@ import { SUPPORTED_LOCALES, type Locale } from "@/i18n/locales"
 const localeLabels: Record<Locale, string> = {
   fr: "Français",
   en: "English",
-  pt: "Português",
+  pt: "Português (Brasil)",
+  "pt-PT": "Português (Portugal)",
   es: "Español",
 }
 
