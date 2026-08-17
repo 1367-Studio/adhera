@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
 import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
@@ -12,6 +12,7 @@ import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { SelectField } from "@/components/ui/select-field"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
+import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 const MAX_QUANTITY = 10
@@ -35,6 +36,8 @@ type EventInfo = {
   past:            boolean
   isPaid:          boolean
   paymentEnabled:  boolean
+  donationsEnabled: boolean
+  canIssueTaxReceipts: boolean
   customFields:    CustomField[]
   ticketTypes:     TicketType[]
 }
@@ -165,6 +168,8 @@ function AttendeeFields({
 
 function EvenementRegisterFormInner({ slug, id }: Props) {
   const searchParams = useSearchParams()
+  const router   = useRouter()
+  const pathname = usePathname()
   const t   = useTranslations("evenements.publicRegister")
   const loc = useLocale()
   const showInAppBrowserBanner = useInAppBrowserEscape()
@@ -186,8 +191,10 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   const [attendees, setAttendees]         = useState<Attendee[]>([EMPTY_ATTENDEE])
   const [attendeeCount, setAttendeeCount] = useState(1)
   const [website, setWebsite]             = useState("") // honeypot — must stay empty
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading]     = useState(false)
+  const [submitted, setSubmitted]     = useState(false)
+  const [paidSuccess, setPaidSuccess] = useState(false)
+  const [donationCompleted, setDonationCompleted] = useState(false)
+  const [loading, setLoading]         = useState(false)
 
   useEffect(() => {
     fetch(`/api/public/${slug}/evenements/${id}`)
@@ -267,6 +274,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
     shownTicketToast.current = p
     if (p === "success") {
       toast.success(t("toastConfirmed"))
+      setPaidSuccess(true)
       // Carried through the Stripe redirect — see the `skipped` param built in the
       // inscription route — since the JSON response's own `skippedEmails` never reaches
       // this page when checkout redirects straight to Stripe instead.
@@ -274,7 +282,26 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
       if (skipped > 0) toast.info(t("attendeesSkipped", { count: skipped }))
     }
     if (p === "cancelled") toast.info(t("toastCancelled"))
-  }, [searchParams, t])
+    // Drop the param from the URL bar so a refresh, a back/forward navigation, or the
+    // visitor forwarding this exact link to someone else doesn't replay the "registration
+    // confirmed" state (and donation prompt) for a page they never actually completed.
+    router.replace(pathname, { scroll: false })
+  }, [searchParams, t, router, pathname])
+
+  // Same guard pattern as the ticket toast above, for the separate round-trip through
+  // Stripe when the visitor donates from the post-registration prompt below.
+  const shownDonationToast = useRef<string | null>(null)
+  useEffect(() => {
+    const p = searchParams.get("donation")
+    if (!p || shownDonationToast.current === p) return
+    shownDonationToast.current = p
+    if (p === "success") {
+      toast.success(t("toastDonationConfirmed"))
+      setDonationCompleted(true)
+    }
+    if (p === "cancelled") toast.info(t("toastDonationCancelled"))
+    router.replace(pathname, { scroll: false })
+  }, [searchParams, t, router, pathname])
 
   const emailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
   const canSubmit =
@@ -443,12 +470,34 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                 )}
               </div>
 
-              {submitted ? (
-                <div className="rounded-lg border p-6 text-center text-sm space-y-3">
+              {submitted || paidSuccess ? (
+                <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-3">
                   <div className="space-y-1">
                     <p className="font-medium">{t("submittedTitle")}</p>
                     <p className="text-muted-foreground">{t("submittedWithEmail")}</p>
                   </div>
+                  {event.donationsEnabled && (
+                    <EventDonationPrompt
+                      slug={slug}
+                      evenementId={event.id}
+                      associationName={event.associationName}
+                      canIssueTaxReceipts={event.canIssueTaxReceipts}
+                      inAppBrowser={showInAppBrowserBanner}
+                      donationCompleted={donationCompleted}
+                      locale={loc}
+                      t={t}
+                      // A single known attendee is silently assumed to be the donor (frictionless
+                      // for the common case) — with more than one, or none (paid path returning
+                      // from Stripe with no attendee data left in memory), the identity fields are
+                      // shown instead of guessing who's actually donating.
+                      donor={
+                        submitted && visibleAttendees[0]
+                          ? { firstName: visibleAttendees[0].firstName, lastName: visibleAttendees[0].lastName, email: visibleAttendees[0].email }
+                          : null
+                      }
+                      showIdentityFields={!(submitted && visibleAttendees.length === 1 && visibleAttendees[0])}
+                    />
+                  )}
                 </div>
               ) : event.past ? (
                 <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">

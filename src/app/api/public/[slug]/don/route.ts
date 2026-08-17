@@ -58,6 +58,7 @@ const schema = z.object({
   amount:      z.number().positive().max(100000),
   message:     z.string().trim().max(500).optional(),
   anonymous:   z.boolean().optional().default(false),
+  evenementId: z.string().trim().min(1).optional(),
 }).refine(
   d => d.donorType !== "COMPANY" || (!!d.companyName && !!d.siret),
   { message: "Nom de l'entreprise et SIRET requis pour un don d'entreprise", path: ["companyName"] },
@@ -103,11 +104,17 @@ export async function POST(
   if (!parsed.success)
     return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { donorType, firstName, lastName, companyName, siret, email, address, amount, message, anonymous } = parsed.data
+  const { donorType, firstName, lastName, companyName, siret, email, address, amount, message, anonymous, evenementId } = parsed.data
+
+  if (evenementId) {
+    const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId: assoc.id } })
+    if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 400 })
+  }
 
   const don = await prisma.don.create({
     data: {
       associationId: assoc.id,
+      evenementId:   evenementId || null,
       donorType,
       firstName,
       lastName,
@@ -142,11 +149,15 @@ export async function POST(
     ],
     payment_intent_data: {
       transfer_data: { destination: assoc.stripeConnectId },
-      metadata:      { donId: don.id, associationId: assoc.id },
+      metadata:      { donId: don.id, associationId: assoc.id, evenementId: evenementId ?? "" },
     },
-    metadata:    { donId: don.id },
-    success_url: `${APP_URL}/portal/${slug}/don?payment=success`,
-    cancel_url:  `${APP_URL}/portal/${slug}/don?payment=cancelled`,
+    metadata:    { donId: don.id, evenementId: evenementId ?? "" },
+    success_url: evenementId
+      ? `${APP_URL}/${slug}/evenements/${evenementId}?donation=success`
+      : `${APP_URL}/portal/${slug}/don?payment=success`,
+    cancel_url: evenementId
+      ? `${APP_URL}/${slug}/evenements/${evenementId}?donation=cancelled`
+      : `${APP_URL}/portal/${slug}/don?payment=cancelled`,
   })
 
   if (!checkoutSession.url)

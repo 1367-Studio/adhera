@@ -516,6 +516,7 @@ model Evenement {
   actualites     Actualite[]
   customFields   EvenementCustomField[]
   ticketTypes    EvenementTicketType[]
+  dons           Don[]
 
   @@index([associationId, date])
 }
@@ -656,6 +657,7 @@ model Don {
   id              String    @id @default(cuid())
   associationId   String
   membreId        String?
+  evenementId     String?
   donorType       DonorType @default(INDIVIDUAL)
   firstName       String
   lastName        String
@@ -676,9 +678,13 @@ model Don {
 
   association Association @relation(fields: [associationId], references: [id])
   membre      Membre?     @relation(fields: [membreId], references: [id])
+  // A donation prompted by an event registration is still a standalone association-level
+  // donation record — this is only a reporting link, so deleting the event must not delete it.
+  evenement   Evenement?  @relation(fields: [evenementId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
+  @@index([evenementId])
 }
 
 model Notification {
