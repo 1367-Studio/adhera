@@ -11,7 +11,9 @@ const PROVIDER_URLS: Record<string, string> = {
 // Exported (rather than kept private) so /api/ai/config can hand it to the settings UI —
 // a hand-duplicated copy there would silently go stale the moment a default changes here.
 export const DEFAULT_MODELS: Record<string, string> = {
-  groq:    "llama-3.3-70b-versatile",
+  // llama-3.3-70b-versatile was deprecated by Groq on 2026-08-16; openai/gpt-oss-120b is
+  // their recommended replacement (closest capability match to the retired 70B model).
+  groq:    "openai/gpt-oss-120b",
   openai:  "gpt-4o-mini",
   mistral: "mistral-small-latest",
 }
