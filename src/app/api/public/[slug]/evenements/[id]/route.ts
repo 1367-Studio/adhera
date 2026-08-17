@@ -14,7 +14,7 @@ export async function GET(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, sitePublished: true, modules: true, stripeConnectId: true },
+    select: { id: true, name: true, sitePublished: true, modules: true, stripeConnectId: true, canIssueTaxReceipts: true },
   })
   if (!assoc || !assoc.sitePublished) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -72,6 +72,18 @@ export async function GET(
     }
   }
 
+  // Separate from `paymentEnabled` above, which only reflects whether *this event's own
+  // ticket* is payable and skips the Stripe check entirely for free events — the
+  // post-registration donation prompt needs its own signal regardless of the event's price.
+  let donationsEnabled = false
+  if (mods.dons && assoc.stripeConnectId) {
+    try {
+      donationsEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
+    } catch (err) {
+      console.error(`[public-evenement] failed to check donation availability for ${slug}/${id}:`, err)
+    }
+  }
+
   const full = evenement.capacity != null && evenement._count.participations >= evenement.capacity
   const past = evenement.date < new Date()
   const remainingCapacity = evenement.capacity != null
@@ -94,6 +106,8 @@ export async function GET(
     past,
     isPaid,
     paymentEnabled,
+    donationsEnabled,
+    canIssueTaxReceipts: assoc.canIssueTaxReceipts,
     customFields,
     ticketTypes: ticketTypes.map(tt => {
       const remaining = tt.capacity != null ? Math.max(0, tt.capacity - (occupiedMap.get(tt.id) ?? 0)) : null
