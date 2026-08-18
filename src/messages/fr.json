@@ -1216,6 +1216,9 @@
       "paymentDisabled": "Le paiement en ligne n'est pas disponible pour le moment.",
       "submittedTitle": "Inscription enregistrée !",
       "submittedWithEmail": "Un e-mail de confirmation vous a été envoyé.",
+      "thankYouTitle": "Merci pour votre achat !",
+      "thankYouBody": "Votre paiement a bien été reçu. Votre billet et son QR code d'entrée vous seront envoyés par e-mail dans quelques instants.",
+      "thankYouClose": "Compris",
       "donationPrompt": {
         "title": "Envie de faire plus ?",
         "subtitle": "Soutenez {associationName} avec un don.",
@@ -1242,6 +1245,28 @@
       "errorGeneric": "Erreur",
       "errorNetwork": "Erreur réseau",
       "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur »."
+    },
+    "scanner": {
+      "openButton": "Scanner les billets",
+      "resendButton": "Envoyer les QR manquants",
+      "resendDone": "{count, plural, one {# QR code envoyé par e-mail} other {# QR codes envoyés par e-mail}}",
+      "resendNone": "Tous les participants ont déjà reçu leur QR code.",
+      "resendFailed": "{count, plural, one {# envoi a échoué} other {# envois ont échoué}}",
+      "resendError": "Erreur lors de l'envoi.",
+      "back": "Retour aux présences",
+      "title": "Scanner les billets",
+      "hint": "Placez le QR code du billet devant la caméra.",
+      "cameraError": "Impossible d'accéder à la caméra. Autorisez l'accès dans votre navigateur puis rechargez la page.",
+      "errorNetwork": "Erreur réseau — réessayez.",
+      "validCount": "{count, plural, one {# billet validé} other {# billets validés}}",
+      "statusValid": "Billet valide",
+      "statusAlready": "Billet déjà scanné",
+      "statusNotPaid": "Billet non payé",
+      "statusCancelled": "Inscription annulée",
+      "statusWrongEvent": "Billet d'un autre événement : {title}",
+      "statusInvalid": "QR code invalide",
+      "statusFull": "Capacité maximale atteinte",
+      "tapToContinue": "Touchez l'écran pour continuer"
     },
     "view": {
       "title": "Événements",

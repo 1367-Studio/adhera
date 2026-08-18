@@ -1216,6 +1216,9 @@
       "paymentDisabled": "El pago en línea no está disponible en este momento.",
       "submittedTitle": "¡Inscripción registrada!",
       "submittedWithEmail": "Se le ha enviado un correo de confirmación.",
+      "thankYouTitle": "¡Gracias por su compra!",
+      "thankYouBody": "Su pago se ha recibido correctamente. Su entrada y su código QR de acceso se le enviarán por correo electrónico en unos instantes.",
+      "thankYouClose": "Entendido",
       "donationPrompt": {
         "title": "¿Quiere hacer más?",
         "subtitle": "Apoye a {associationName} con una donación.",
@@ -1242,6 +1245,28 @@
       "errorGeneric": "Error",
       "errorNetwork": "Error de red",
       "inAppBrowserWarning": "Estás navegando desde Facebook o Instagram, lo que puede impedir que esta página funcione correctamente. Toca en ⋯ y luego en \"Abrir en el navegador\"."
+    },
+    "scanner": {
+      "openButton": "Escanear entradas",
+      "resendButton": "Enviar códigos QR pendientes",
+      "resendDone": "{count, plural, one {# código QR enviado por correo} other {# códigos QR enviados por correo}}",
+      "resendNone": "Todos los participantes ya han recibido su código QR.",
+      "resendFailed": "{count, plural, one {# envío ha fallado} other {# envíos han fallado}}",
+      "resendError": "Error al enviar.",
+      "back": "Volver a asistencias",
+      "title": "Escanear entradas",
+      "hint": "Coloque el código QR de la entrada frente a la cámara.",
+      "cameraError": "No se pudo acceder a la cámara. Permita el acceso en su navegador y recargue la página.",
+      "errorNetwork": "Error de red — inténtelo de nuevo.",
+      "validCount": "{count, plural, one {# entrada validada} other {# entradas validadas}}",
+      "statusValid": "Entrada válida",
+      "statusAlready": "Entrada ya escaneada",
+      "statusNotPaid": "Entrada no pagada",
+      "statusCancelled": "Inscripción cancelada",
+      "statusWrongEvent": "Entrada de otro evento: {title}",
+      "statusInvalid": "Código QR no válido",
+      "statusFull": "Aforo completo",
+      "tapToContinue": "Toque la pantalla para continuar"
     },
     "view": {
       "title": "Eventos",

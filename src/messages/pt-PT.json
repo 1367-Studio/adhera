@@ -1228,6 +1228,9 @@
       "paymentDisabled": "O pagamento online não está disponível de momento.",
       "submittedTitle": "Inscrição registada!",
       "submittedWithEmail": "Foi enviado um e-mail de confirmação.",
+      "thankYouTitle": "Obrigado pela sua compra!",
+      "thankYouBody": "O seu pagamento foi recebido. O seu bilhete e o respetivo código QR de entrada ser-lhe-ão enviados por e-mail dentro de instantes.",
+      "thankYouClose": "Entendido",
       "donationPrompt": {
         "title": "Quer apoiar ainda mais?",
         "subtitle": "Apoie {associationName} com um donativo.",
@@ -1254,6 +1257,28 @@
       "errorGeneric": "Erro",
       "errorNetwork": "Erro de rede",
       "inAppBrowserWarning": "Está a navegar através do Facebook ou Instagram, o que pode impedir esta página de funcionar corretamente. Toque em ⋯ e depois em \"Abrir no navegador\"."
+    },
+    "scanner": {
+      "openButton": "Validar bilhetes",
+      "resendButton": "Enviar códigos QR em falta",
+      "resendDone": "{count, plural, one {# código QR enviado por e-mail} other {# códigos QR enviados por e-mail}}",
+      "resendNone": "Todos os participantes já receberam o seu código QR.",
+      "resendFailed": "{count, plural, one {# envio falhou} other {# envios falharam}}",
+      "resendError": "Erro ao enviar.",
+      "back": "Voltar às presenças",
+      "title": "Validar bilhetes",
+      "hint": "Aponte a câmara para o código QR do bilhete.",
+      "cameraError": "Não foi possível aceder à câmara. Autorize o acesso no navegador e recarregue a página.",
+      "errorNetwork": "Erro de rede — tente novamente.",
+      "validCount": "{count, plural, one {# bilhete validado} other {# bilhetes validados}}",
+      "statusValid": "Bilhete válido",
+      "statusAlready": "Bilhete já lido",
+      "statusNotPaid": "Bilhete não pago",
+      "statusCancelled": "Inscrição cancelada",
+      "statusWrongEvent": "Bilhete de outro evento: {title}",
+      "statusInvalid": "Código QR inválido",
+      "statusFull": "Capacidade máxima atingida",
+      "tapToContinue": "Toque no ecrã para continuar"
     },
     "view": {
       "title": "Eventos",

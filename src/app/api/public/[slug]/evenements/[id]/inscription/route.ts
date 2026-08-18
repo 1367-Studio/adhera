@@ -139,7 +139,7 @@ export async function POST(
     // Dedup by email — only meaningful for the resume/reuse logic below.
     const existing = await prisma.participation.findFirst({
       where:  { evenementId: id, email: { equals: email, mode: "insensitive" } },
-      select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true },
+      select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true, ticketToken: true },
     })
 
     // Whether the EXISTING row itself was ever actually going to require payment — keyed off
@@ -157,6 +157,9 @@ export async function POST(
 
     const orderId     = existing?.orderId ?? randomUUID()
     const cancelToken = randomBytes(20).toString("hex")
+    // Reuse the existing row's ticket token when re-registering — the QR already emailed
+    // for it must keep working instead of being silently invalidated by a new token.
+    const ticketToken = existing?.ticketToken ?? randomBytes(20).toString("hex")
 
     let participationId: string
     try {
@@ -169,7 +172,7 @@ export async function POST(
         if (existing) {
           await tx.participation.update({
             where: { id: existing.id },
-            data:  { firstName, lastName, phone: phone || null, address: address || null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null },
+            data:  { firstName, lastName, phone: phone || null, address: address || null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null, ticketToken },
           })
           pid = existing.id
         } else {
@@ -184,6 +187,7 @@ export async function POST(
               rsvp:    "CONFIRME",
               rsvpAt:  new Date(),
               cancelToken,
+              ticketToken,
               ticketTypeId: ticketType?.id ?? null,
             },
             select: { id: true },
@@ -227,6 +231,10 @@ export async function POST(
         eventLocation:   evenement.location,
         portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
+        ticketQr: {
+          imageUrl: `${APP_URL}/api/public/billet/${ticketToken}/qr`,
+          pageUrl:  `${APP_URL}/billet/${ticketToken}`,
+        },
         branding:        resolveDocumentBranding(assoc),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
       return NextResponse.json({ ok: true })
@@ -314,6 +322,7 @@ export async function POST(
 
   const orderId      = randomUUID()
   const cancelTokens = newAttendees.map(() => randomBytes(20).toString("hex"))
+  const ticketTokens = newAttendees.map(() => randomBytes(20).toString("hex"))
 
   let participationIds: string[]
   try {
@@ -342,6 +351,7 @@ export async function POST(
             rsvp:      "CONFIRME",
             rsvpAt:  new Date(),
             cancelToken:  cancelTokens[i],
+            ticketToken:  ticketTokens[i],
             ticketTypeId: a.ticketType?.id ?? null,
           },
           select: { id: true },
@@ -395,6 +405,10 @@ export async function POST(
       eventLocation:   evenement.location,
       portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
       cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
+      ticketQr: {
+        imageUrl: `${APP_URL}/api/public/billet/${ticketTokens[i]}/qr`,
+        pageUrl:  `${APP_URL}/billet/${ticketTokens[i]}`,
+      },
       branding:        resolveDocumentBranding(assoc),
     }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
     return NextResponse.json({ ok: true, skippedEmails })
