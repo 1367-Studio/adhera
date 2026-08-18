@@ -1216,6 +1216,9 @@
       "paymentDisabled": "O pagamento online não está disponível no momento.",
       "submittedTitle": "Inscrição registrada!",
       "submittedWithEmail": "Um e-mail de confirmação foi enviado para você.",
+      "thankYouTitle": "Obrigado pela sua compra!",
+      "thankYouBody": "Seu pagamento foi recebido. Seu ingresso e o QR code de entrada serão enviados por e-mail em instantes.",
+      "thankYouClose": "Entendi",
       "donationPrompt": {
         "title": "Quer fazer mais?",
         "subtitle": "Apoie {associationName} com uma doação.",
@@ -1242,6 +1245,28 @@
       "errorGeneric": "Erro",
       "errorNetwork": "Erro de rede",
       "inAppBrowserWarning": "Você está navegando pelo Facebook ou Instagram, o que pode impedir esta página de funcionar corretamente. Toque em ⋯ e depois em \"Abrir no navegador\"."
+    },
+    "scanner": {
+      "openButton": "Escanear ingressos",
+      "resendButton": "Enviar QR codes faltantes",
+      "resendDone": "{count, plural, one {# QR code enviado por e-mail} other {# QR codes enviados por e-mail}}",
+      "resendNone": "Todos os participantes já receberam seu QR code.",
+      "resendFailed": "{count, plural, one {# envio falhou} other {# envios falharam}}",
+      "resendError": "Erro ao enviar.",
+      "back": "Voltar às presenças",
+      "title": "Escanear ingressos",
+      "hint": "Posicione o QR code do ingresso em frente à câmera.",
+      "cameraError": "Não foi possível acessar a câmera. Permita o acesso no navegador e recarregue a página.",
+      "errorNetwork": "Erro de rede — tente novamente.",
+      "validCount": "{count, plural, one {# ingresso validado} other {# ingressos validados}}",
+      "statusValid": "Ingresso válido",
+      "statusAlready": "Ingresso já escaneado",
+      "statusNotPaid": "Ingresso não pago",
+      "statusCancelled": "Inscrição cancelada",
+      "statusWrongEvent": "Ingresso de outro evento: {title}",
+      "statusInvalid": "QR code inválido",
+      "statusFull": "Capacidade máxima atingida",
+      "tapToContinue": "Toque na tela para continuar"
     },
     "view": {
       "title": "Eventos",

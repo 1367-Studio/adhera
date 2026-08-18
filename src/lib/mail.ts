@@ -91,26 +91,73 @@ function toResendPayload(p: BatchPayload, isDev: boolean, from: string) {
 // Sends a single chunk (≤100 emails). Returns one result per payload, in the same order —
 // a chunk-level `error` from Resend does not mean every recipient in it failed (see below),
 // so callers must not collapse this into a single pass/fail for the whole chunk.
+type SendItem = { id?: string; error?: { message: string } | null }
+
+// Caps how many individual retries run at once, and how long each may take — a validation
+// failure can affect up to a whole chunk (100), and firing all of them at once would risk
+// tripping Resend's own rate limit (turning rescuable recipients into new failures) and
+// letting one stalled request hold up every other result indefinitely.
+const INDIVIDUAL_RETRY_CONCURRENCY = 5
+const INDIVIDUAL_RETRY_TIMEOUT_MS  = 15_000
+
+async function sendIndividually(payloads: BatchPayload[], isDev: boolean, from: string): Promise<SendItem[]> {
+  const results: SendItem[] = new Array(payloads.length)
+  let cursor = 0
+  async function worker() {
+    while (cursor < payloads.length) {
+      const i = cursor++
+      results[i] = await Promise.race([
+        resend.emails.send(toResendPayload(payloads[i], isDev, from))
+          .then((r): SendItem => ({ id: r.data?.id, error: r.error ? { message: r.error.message } : null }))
+          .catch((e: unknown): SendItem => ({ error: { message: e instanceof Error ? e.message : "Erreur d'envoi" } })),
+        new Promise<SendItem>(resolve =>
+          setTimeout(() => resolve({ error: { message: "Délai d'envoi dépassé" } }), INDIVIDUAL_RETRY_TIMEOUT_MS)),
+      ])
+    }
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(INDIVIDUAL_RETRY_CONCURRENCY, payloads.length) }, worker),
+  )
+  return results
+}
+
 export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchItemResult[]> {
   const isDev = process.env.NODE_ENV !== "production"
   const from  = getFrom()
   const { data, error } = await resend.batch.send(payloads.map(p => toResendPayload(p, isDev, from)))
 
-  if (error) console.error("[mail] Resend batch error:", error)
+  // Start from whatever ids the batch call actually returned — Resend can return `error`
+  // while `data.data` still carries real ids for the items that did go out (a partial-
+  // success shape), so indexing by id here (not by the aggregate `error`) is what avoids
+  // reporting those as failed below.
+  const items: SendItem[] = payloads.map((_, i) => ({ id: data?.data?.[i]?.id }))
 
-  // Resend returns one { id } per email, in the same order as the input array — used to
-  // correlate each recipient's context back to its own row (a failed chunk has no ids, so
-  // every payload with a context still gets logged, just without a resendId to match webhooks on).
-  const ids = data?.data ?? []
-  const results: BatchItemResult[] = payloads.map((p, i) => ({ to: p.to, ok: !!ids[i]?.id }))
+  if (error) {
+    const missing = payloads.map((_, i) => i).filter(i => !items[i].id)
+    // Only retry per-recipient on a validation error (422) — the shape Resend uses for a
+    // bad "to" field (e.g. a placeholder like someone@example.com from manually-entered
+    // guest data). Any other error (bad auth, rate limit, outage) applies to the whole
+    // request equally, so resending each recipient one by one would just fail the same
+    // way N times over instead of once.
+    if (error.statusCode === 422 && missing.length) {
+      console.error("[mail] Resend batch validation error, retrying recipients individually:", error)
+      const retried = await sendIndividually(missing.map(i => payloads[i]), isDev, from)
+      missing.forEach((i, k) => { items[i] = retried[k] })
+    } else {
+      console.error("[mail] Resend batch error:", error)
+      missing.forEach(i => { items[i] = { error: { message: error.message } } })
+    }
+  }
+
+  const results: BatchItemResult[] = payloads.map((p, i) => ({ to: p.to, ok: !!items[i]?.id }))
 
   const rowsToLog = payloads
-    .map((p, i) => ({ p, id: ids[i]?.id as string | undefined }))
+    .map((p, i) => ({ p, item: items[i] as SendItem | undefined }))
     .filter(({ p }) => p.context)
 
   if (rowsToLog.length) {
     await prisma.emailMessage.createMany({
-      data: rowsToLog.map(({ p, id }) => ({
+      data: rowsToLog.map(({ p, item }) => ({
         associationId: p.context!.associationId,
         membreId:      p.context!.membreId,
         userId:        p.context!.userId,
@@ -119,12 +166,9 @@ export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchIte
         to:            p.to,
         subject:       p.subject,
         html:          p.html,
-        resendId:      id,
-        // Judged per-item on whether Resend actually returned an id for it, not on the
-        // aggregate `error` — a batch can come back with `error` set while still carrying
-        // real ids for the items that did go out, and marking those FAILED would be wrong.
-        status:        id ? "SENT" : "FAILED",
-        errorMessage:  id ? undefined : (error?.message ?? "Envoi échoué"),
+        resendId:      item?.id,
+        status:        item?.id ? "SENT" : "FAILED",
+        errorMessage:  item?.id ? undefined : (item?.error?.message ?? "Envoi échoué"),
         sentAt:        new Date(),
       })),
     }).catch((err: unknown) => console.error("[mail] failed to log EmailMessage batch:", err))

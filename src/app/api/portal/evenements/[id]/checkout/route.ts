@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { randomUUID } from "crypto"
+import { randomUUID, randomBytes } from "crypto"
 import { Prisma } from "@prisma/client"
 import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
@@ -79,7 +79,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
 
   const selfTicket = await prisma.participation.findFirst({
     where:  { membreId: membre.id, evenementId },
-    select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, ticketTypeId: true },
+    select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, ticketTypeId: true, ticketToken: true },
   })
   if (selfTicket?.ticketPaidAt)
     return NextResponse.json({ error: "Billet déjà acheté" }, { status: 422 })
@@ -89,7 +89,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     ? await prisma.participation.findMany({
         where:   { orderId, membreId: null },
         orderBy: { createdAt: "asc" },
-        select:  { id: true, ticketPaidAt: true, ticketTypeId: true },
+        select:  { id: true, ticketPaidAt: true, ticketTypeId: true, ticketToken: true },
       })
     : []
 
@@ -125,8 +125,9 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         // Backfill orderId if this row predates any order (e.g. an admin marked the
         // member present/paid before they ever RSVP'd) — otherwise the companions
         // created below end up on an orderId the member's own row doesn't share,
-        // silently breaking group check-in/cancel for this booking.
-        await tx.participation.update({ where: { id: selfTicket.id }, data: { rsvp: "CONFIRME", orderId, ticketTypeId: selfTicketType?.id ?? null } })
+        // silently breaking group check-in/cancel for this booking. ticketToken is
+        // backfilled the same way (kept when it exists — its QR was already emailed).
+        await tx.participation.update({ where: { id: selfTicket.id }, data: { rsvp: "CONFIRME", orderId, ticketTypeId: selfTicketType?.id ?? null, ticketToken: selfTicket.ticketToken ?? randomBytes(20).toString("hex") } })
         selfId = selfTicket.id
       } else {
         const created = await tx.participation.create({
@@ -134,6 +135,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
             membreId: membre.id, evenementId, orderId, rsvp: "CONFIRME",
             firstName: membre.firstName, lastName: membre.lastName, email: membre.email,
             ticketTypeId: selfTicketType?.id ?? null,
+            ticketToken:  randomBytes(20).toString("hex"),
           },
           select: { id: true },
         })
@@ -146,12 +148,12 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         if (existingCompanions[i]) {
           await tx.participation.update({
             where: { id: existingCompanions[i].id },
-            data:  { firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null },
+            data:  { firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null, ticketToken: existingCompanions[i].ticketToken ?? randomBytes(20).toString("hex") },
           })
           companionIds.push(existingCompanions[i].id)
         } else {
           const created = await tx.participation.create({
-            data:   { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null },
+            data:   { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null, ticketToken: randomBytes(20).toString("hex") },
             select: { id: true },
           })
           companionIds.push(created.id)

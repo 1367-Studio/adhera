@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getPusherClient } from "@/lib/pusher-client"
@@ -9,7 +10,7 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PaperPlaneRightIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, ScanIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
@@ -127,6 +128,7 @@ export default function PresencesPage() {
   const [editEmail,     setEditEmail]     = useState("")
   const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
   const [infoTarget, setInfoTarget]     = useState<PresenceRow | null>(null)
+  const [sendingTickets, setSendingTickets] = useState(false)
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -282,6 +284,30 @@ export default function PresencesPage() {
       toast.success(t("evenements.presences.toasts.qrGenerated"))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // Backfills + emails entry QR codes for attendees registered before the ticket-QR
+  // feature (their confirmation email carried none) — see /api/evenements/[id]/send-tickets.
+  async function handleSendMissingQr() {
+    setSendingTickets(true)
+    try {
+      const res  = await fetch(`/api/evenements/${id}/send-tickets`, { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error ?? t("evenements.scanner.resendError"))
+        return
+      }
+      if (data.sent === 0 && data.failed === 0) {
+        toast.info(t("evenements.scanner.resendNone"))
+      } else {
+        if (data.sent > 0) toast.success(t("evenements.scanner.resendDone", { count: data.sent }))
+        if (data.failed > 0) toast.error(t("evenements.scanner.resendFailed", { count: data.failed }))
+      }
+    } catch {
+      toast.error(t("evenements.scanner.resendError"))
+    } finally {
+      setSendingTickets(false)
     }
   }
 
@@ -707,6 +733,30 @@ export default function PresencesPage() {
               </Button>
             </div>
           )}
+
+          <div className="border-t pt-3 space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full"
+              render={<Link href={`/dashboard/evenements/${id}/presences/scan`} />}
+            >
+              <ScanIcon className="mr-1.5 size-3.5" />
+              {t("evenements.scanner.openButton")}
+            </Button>
+            {ev && getCheckInWindow(ev).closesAt > new Date() && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-muted-foreground"
+                onClick={handleSendMissingQr}
+                loading={sendingTickets}
+              >
+                <PaperPlaneRightIcon className="mr-1.5 size-3.5" />
+                {t("evenements.scanner.resendButton")}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Member list */}

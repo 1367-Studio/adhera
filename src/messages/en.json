@@ -1216,6 +1216,9 @@
       "paymentDisabled": "Online payment is not available at the moment.",
       "submittedTitle": "Registration saved!",
       "submittedWithEmail": "A confirmation email has been sent to you.",
+      "thankYouTitle": "Thank you for your purchase!",
+      "thankYouBody": "Your payment has been received. Your ticket and its entry QR code will be emailed to you shortly.",
+      "thankYouClose": "Got it",
       "donationPrompt": {
         "title": "Want to do more?",
         "subtitle": "Support {associationName} with a donation.",
@@ -1242,6 +1245,28 @@
       "errorGeneric": "Error",
       "errorNetwork": "Network error",
       "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\"."
+    },
+    "scanner": {
+      "openButton": "Scan tickets",
+      "resendButton": "Email missing QR codes",
+      "resendDone": "{count, plural, one {# QR code emailed} other {# QR codes emailed}}",
+      "resendNone": "Every attendee already has their QR code.",
+      "resendFailed": "{count, plural, one {# send failed} other {# sends failed}}",
+      "resendError": "Sending failed.",
+      "back": "Back to attendance",
+      "title": "Scan tickets",
+      "hint": "Hold the ticket's QR code in front of the camera.",
+      "cameraError": "Camera access failed. Allow camera access in your browser, then reload the page.",
+      "errorNetwork": "Network error — try again.",
+      "validCount": "{count, plural, one {# ticket validated} other {# tickets validated}}",
+      "statusValid": "Valid ticket",
+      "statusAlready": "Ticket already scanned",
+      "statusNotPaid": "Ticket not paid",
+      "statusCancelled": "Registration cancelled",
+      "statusWrongEvent": "Ticket for another event: {title}",
+      "statusInvalid": "Invalid QR code",
+      "statusFull": "Maximum capacity reached",
+      "tapToContinue": "Tap the screen to continue"
     },
     "view": {
       "title": "Events",
