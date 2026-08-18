@@ -585,6 +585,11 @@ model Participation {
   // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
   // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
   cancelToken     String?     @unique
+  // Jeton du billet, encodé dans le QR code envoyé par email après inscription/paiement.
+  // Scanné à l'entrée par l'organisateur (présences → scanner) pour valider le billet et
+  // marquer la présence — voir /api/evenements/[id]/scan. Null pour les rows antérieures
+  // à la fonctionnalité (pas de backfill : leur email est déjà parti sans QR).
+  ticketToken     String?     @unique
   createdAt       DateTime    @default(now())
 
   membre         Membre?              @relation(fields: [membreId], references: [id])

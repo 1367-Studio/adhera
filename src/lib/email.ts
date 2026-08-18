@@ -95,6 +95,35 @@ function btn(label: string, url: string): string {
   </table>`
 }
 
+// QR d'entrée d'un billet — image hébergée (/api/public/billet/[token]/qr, les clients
+// mail suppriment les data URIs) + lien vers la page publique du billet (/billet/[token])
+// pour les clients qui bloquent les images distantes.
+export type TicketQr = { imageUrl: string; pageUrl: string; name?: string }
+
+function ticketQrSection(qrs: TicketQr[]): string {
+  if (!qrs.length) return ""
+  const blocks = qrs.map(qr => `
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 16px;">
+      ${qrs.length > 1 && qr.name ? `<tr><td align="center" style="padding-bottom:6px;font-size:13px;font-weight:600;">${escapeHtml(qr.name)}</td></tr>` : ""}
+      <tr><td align="center">
+        <img src="${qr.imageUrl}" width="160" height="160" alt="QR code du billet" style="display:block;border:1px solid #e5e7eb;border-radius:8px;background:#fff;">
+      </td></tr>
+      <tr><td align="center" style="padding-top:6px;">
+        <a href="${qr.pageUrl}" style="font-size:12px;color:#71717a;">Voir ${qrs.length > 1 ? "ce" : "mon"} billet en ligne</a>
+      </td></tr>
+    </table>`).join("")
+  return `
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;box-sizing:border-box;">
+      <tr><td align="center" style="padding-bottom:12px;">
+        <span style="font-size:13px;color:#6b7280;">${qrs.length > 1 ? "Vos QR codes d'entrée" : "Votre QR code d'entrée"}</span>
+      </td></tr>
+      <tr><td>${blocks}</td></tr>
+      <tr><td align="center">
+        <span style="font-size:12px;color:#71717a;">Présentez ${qrs.length > 1 ? "ces QR codes" : "ce QR code"} à l'entrée de l'événement — l'organisateur ${qrs.length > 1 ? "les" : "le"} scannera pour valider votre présence.</span>
+      </td></tr>
+    </table>`
+}
+
 // ─── Templates ────────────────────────────────────────────────────────────────
 
 export function welcomeEmail(p: {
@@ -190,6 +219,8 @@ export function rsvpConfirmationEmail(p: {
   // Only set for public/guest registrations (no portal account to cancel from) — see
   // src/app/api/public/cancel-ticket/[token]/route.ts.
   cancelUrl?:      string
+  // QR d'entrée du billet — absent pour les rows créées avant la fonctionnalité.
+  ticketQr?:       TicketQr
   branding?:       EmailBranding
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -213,6 +244,7 @@ export function rsvpConfirmationEmail(p: {
         <span style="font-size:14px;">${p.eventLocation}</span>
       </td></tr>` : ""}
     </table>
+    ${p.ticketQr ? ticketQrSection([p.ticketQr]) : ""}
     ${btn("Voir l'événement", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler ma participation</a>.</p>` : ""}`
   return {
@@ -539,6 +571,10 @@ export function ticketPurchaseEmail(p: {
   // Only set for public/guest tickets (no portal account to cancel from) — see
   // src/app/api/public/cancel-ticket/[token]/route.ts.
   cancelUrl?:      string
+  // Un QR d'entrée par billet de la commande — un seul pour les emails par participant
+  // (commandes publiques), potentiellement plusieurs pour l'email combiné de l'acheteur
+  // portail (son billet + ceux de ses invités, identifiés par `name`).
+  ticketQrs?:      TicketQr[]
   branding?:       EmailBranding
 }) {
   const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -572,12 +608,58 @@ export function ticketPurchaseEmail(p: {
         <span style="font-size:16px;font-weight:700;">${amountStr}</span>
       </td></tr>
     </table>
+    ${p.ticketQrs?.length ? ticketQrSection(p.ticketQrs) : ""}
     <p style="margin:0 0 16px;font-size:13px;color:#71717a;">Conservez cet email comme preuve d'achat.</p>
     ${btn("Voir mes événements", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler et être remboursé</a>.</p>` : ""}`
   return {
     to:      p.email,
     subject: `Billet confirmé — ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Standalone "here is your entry QR" email, for tickets that already got their
+// confirmation email before QR codes existed (Participation.ticketToken was backfilled
+// afterwards) — sent per event by the organizer from présences → "Envoyer les QR
+// manquants" (/api/evenements/[id]/send-tickets).
+export function ticketQrDeliveryEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  eventLocation:   string | null
+  ticketQr:        TicketQr
+  branding?:       EmailBranding
+}) {
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre QR code d'entrée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » est bien enregistrée.
+      Voici le QR code d'entrée de votre billet — il vous sera demandé à l'entrée de l'événement.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Événement</span>
+        <span style="font-size:15px;font-weight:600;">${p.eventTitle}</span>
+      </td></tr>
+      <tr><td style="padding-bottom:${p.eventLocation ? "10px" : "0"};">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date</span>
+        <span style="font-size:14px;">${dateStr} à ${timeStr}</span>
+      </td></tr>
+      ${p.eventLocation ? `<tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Lieu</span>
+        <span style="font-size:14px;">${p.eventLocation}</span>
+      </td></tr>` : ""}
+    </table>
+    ${ticketQrSection([p.ticketQr])}
+    <p style="margin:0;font-size:13px;color:#71717a;">Conservez cet email — vous avez déjà reçu votre confirmation d'inscription, celui-ci contient uniquement votre QR code d'entrée.</p>`
+  return {
+    to:      p.email,
+    subject: `Votre QR code d'entrée — ${p.eventTitle}`,
     html:    layout(p.associationName, content, p.branding),
   }
 }

@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
 import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { Modal } from "@/components/ui/modal"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -193,6 +194,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   const [website, setWebsite]             = useState("") // honeypot — must stay empty
   const [submitted, setSubmitted]     = useState(false)
   const [paidSuccess, setPaidSuccess] = useState(false)
+  const [thankYouOpen, setThankYouOpen] = useState(false)
   const [donationCompleted, setDonationCompleted] = useState(false)
   const [loading, setLoading]         = useState(false)
 
@@ -273,7 +275,9 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
     if (!p || shownTicketToast.current === p) return
     shownTicketToast.current = p
     if (p === "success") {
-      toast.success(t("toastConfirmed"))
+      // A modal rather than a toast — the buyer just came back from Stripe and needs the
+      // "your ticket is on its way by email" message to actually register, not flash by.
+      setThankYouOpen(true)
       setPaidSuccess(true)
       // Carried through the Stripe redirect — see the `skipped` param built in the
       // inscription route — since the JSON response's own `skippedEmails` never reaches
@@ -569,6 +573,20 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={thankYouOpen}
+        onOpenChange={setThankYouOpen}
+        title={t("thankYouTitle")}
+        size="sm"
+        footer={
+          <Button className="w-full" onClick={() => setThankYouOpen(false)}>
+            {t("thankYouClose")}
+          </Button>
+        }
+      >
+        <p className="text-sm text-muted-foreground">{t("thankYouBody")}</p>
+      </Modal>
     </>
   )
 }

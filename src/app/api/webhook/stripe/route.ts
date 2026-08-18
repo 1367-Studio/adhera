@@ -415,6 +415,13 @@ export async function POST(req: Request) {
             // is self-service per attendee, so each of them gets their own confirmation
             // email with their own cancel link instead of one shared email.
             const isPublicOrder = tickets.every(t => !t.membreId)
+            const ticketQrFor = (t: (typeof tickets)[number]) => t.ticketToken
+              ? {
+                  name:     `${t.firstName} ${t.lastName}`,
+                  imageUrl: `${APP_URL}/api/public/billet/${t.ticketToken}/qr`,
+                  pageUrl:  `${APP_URL}/billet/${t.ticketToken}`,
+                }
+              : null
             // Awaited (not fire-and-forget) — a serverless webhook handler can have its
             // execution frozen right after it responds, which would otherwise risk some
             // of these emails never actually going out.
@@ -431,9 +438,14 @@ export async function POST(req: Request) {
                 paidAt,
                 portalUrl,
                 cancelUrl:       t.cancelToken ? `${APP_URL}/annulation/${t.cancelToken}` : undefined,
+                ticketQrs:       ticketQrFor(t) ? [ticketQrFor(t)!] : undefined,
                 branding:        resolveDocumentBranding(assoc),
               }), { associationId: evenement.associationId, source: "TRANSACTION", sourceId: orderId }).catch(() => {})))
             } else if (buyerTicket.email) {
+              // The buyer's single combined email carries every seat's QR (theirs + their
+              // guests') — guests may have no email of their own, and the party typically
+              // arrives together with the buyer's phone.
+              const allQrs = tickets.map(ticketQrFor).filter((qr): qr is NonNullable<typeof qr> => qr !== null)
               await sendEmail(ticketPurchaseEmail({
                 firstName:       buyerTicket.firstName,
                 email:           buyerTicket.email,
@@ -446,6 +458,7 @@ export async function POST(req: Request) {
                 paidAt,
                 portalUrl,
                 cancelUrl:       undefined,
+                ticketQrs:       allQrs.length ? allQrs : undefined,
                 branding:        resolveDocumentBranding(assoc),
               }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
             }
