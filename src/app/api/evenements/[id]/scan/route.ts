@@ -69,17 +69,25 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
     return NextResponse.json({ status: "ALREADY", attendee })
   }
 
-  // Mirrors the manual present-toggle's capacity guard (participations route POST).
+  // Mirrors the manual present-toggle's capacity guard (participations route POST). Locked
+  // (same FOR UPDATE pattern as the public inscription route) so two doors scanning at once
+  // near the limit can't both pass the count check before either marks present — without
+  // this, concurrent scanners could oversell the room by a few seats right when it matters
+  // most (a busy door near capacity).
   if (evenement.capacity != null) {
-    const occupied = await prisma.participation.count({
-      where: { evenementId, present: true, id: { not: participation.id } },
+    const marked = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenementId} FOR UPDATE`
+      const occupied = await tx.participation.count({
+        where: { evenementId, present: true, id: { not: participation.id } },
+      })
+      if (occupied + 1 > evenement.capacity!) return false
+      await tx.participation.update({ where: { id: participation.id }, data: { present: true } })
+      return true
     })
-    if (occupied + 1 > evenement.capacity) {
-      return NextResponse.json({ status: "FULL", attendee })
-    }
+    if (!marked) return NextResponse.json({ status: "FULL", attendee })
+  } else {
+    await prisma.participation.update({ where: { id: participation.id }, data: { present: true } })
   }
-
-  await prisma.participation.update({ where: { id: participation.id }, data: { present: true } })
 
   await writeActivityLog({
     associationId,

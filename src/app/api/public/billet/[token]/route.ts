@@ -1,21 +1,26 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { rateLimit } from "@/lib/rate-limit"
 
 // Public ticket lookup by ticketToken — powers the /billet/[token] page linked from the
 // QR code in confirmation emails. Access control is the token itself (160-bit, unique),
 // same model as /api/public/cancel-ticket/[token].
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params
 
-  if (!(await rateLimit(`billet-info:${requestIp(req)}`, 30, 10 * 60_000))) {
-    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
-  }
   if (!/^[0-9a-f]{40}$/.test(token)) {
     return NextResponse.json({ error: "Billet introuvable" }, { status: 404 })
+  }
+  // Keyed by token, not IP: the token is a 160-bit secret, so there's no brute-force
+  // exposure from allowing many lookups of one known token — the risk this actually
+  // guards against. Keying by IP instead breaks down at the door, where many guests on
+  // the venue's shared Wi-Fi/NAT would share one bucket and start getting 429s on each
+  // other's tickets right when they need to show them.
+  if (!(await rateLimit(`billet-info:${token}`, 30, 10 * 60_000))) {
+    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
   }
 
   const participation = await prisma.participation.findUnique({
