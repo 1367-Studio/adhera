@@ -25,7 +25,7 @@ export function usePalette() {
     dark,
     recettes:   "#008300",                  // green — identical step both modes
     // Vibrant, brand-anchored set (validated: node scripts/validate_palette.js
-    // "#008300,#e11d48,#f59e0b,#0369a1" --mode light / the dark equivalents below —
+    // "#008300,#e11d48,#f59e0b,#023D9D" --mode light / the dark equivalents below —
     // ALL CHECKS PASS in both). Replaces an earlier muted/earthy set that read as dated
     // and used a blue unrelated to the app's own primary.
     depenses:   dark ? "#f43f5e" : "#e11d48", // rose-red
@@ -36,14 +36,15 @@ export function usePalette() {
     // rows, stat card copy), so the WARN's condition is satisfied, not ignored.
     enAttente:  dark ? "#c98500" : "#f59e0b", // amber
     // Light step is the app's actual primary (--primary in globals.css) — same blue as
-    // buttons/sidebar, not a lookalike. Dark step stays a tuned sky blue rather than the
-    // brand's dark primary (--primary dark, #38bdf8): that one is optimized for text/icon
-    // contrast on near-black and sits outside the categorical lightness band as a fill.
-    exonerees:  dark ? "#3987e5" : "#0369a1", // blue
-    sequential: dark ? "#3987e5" : "#0369a1", // blue, single hue for magnitude ranking
+    // buttons/sidebar, not a lookalike. Dark step stays a mid step of the same OKLCH ramp
+    // rather than the brand's dark primary (--primary dark, #6fa2fb): that one is optimized
+    // for text/icon contrast on near-black and sits outside the categorical lightness band
+    // as a fill.
+    exonerees:  dark ? "#4b85eb" : "#023D9D", // blue
+    sequential: dark ? "#4b85eb" : "#023D9D", // blue, single hue for magnitude ranking
     // Extends the cotisation breakdown to a 5th categorical slot (PARTIELLEMENT_PAYEE) —
     // re-validated as a set with the 4 colors above: node scripts/validate_palette.js
-    // "#008300,#e11d48,#f59e0b,#0369a1,#7c3aed" --mode light --pairs all / dark equivalent
+    // "#008300,#e11d48,#f59e0b,#023D9D,#7c3aed" --mode light --pairs all / dark equivalent
     // below — ALL CHECKS PASS in both, including the stricter --pairs all (not just adjacent).
     // A 6th slot for ANNULEE was attempted but no candidate hue cleared --pairs all against
     // this set in both modes — see finance-charts.tsx, which excludes ANNULEE from this chart
