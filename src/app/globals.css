@@ -51,27 +51,31 @@
 }
 
 :root {
+  /* Bleu de marque #023D9D (le lockup formwise, public/formwise-logo.png). La rampe
+     complete est derivee en OKLCH a teinte constante (H=260.8deg) depuis cette seule
+     valeur, d'ou les pas 100/950 de --accent et le #6fa2fb du mode sombre : #023D9D
+     lui-meme ne fait que 1.96:1 sur le noir et ne peut pas servir la-bas. */
   --background: #f8fafc;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #0369a1;
+  --primary: #023D9D;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  --accent: #e0f2fe;
-  --accent-foreground: #0c4a6e;
+  --accent: #deebff;
+  --accent-foreground: #002160;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #0369a1;
-  --chart-1: #0369a1;
-  --chart-2: #38bdf8;
+  --ring: #023D9D;
+  --chart-1: #023D9D;
+  --chart-2: #4b85eb;
   --chart-3: #0891b2;
   --chart-4: #f43f5e;
   --chart-5: #64748b;
@@ -79,12 +83,12 @@
   --radius: 0.625rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #334155;
-  --sidebar-primary: #0369a1;
+  --sidebar-primary: #023D9D;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #f1f5f9;
   --sidebar-accent-foreground: #0f172a;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #0369a1;
+  --sidebar-ring: #023D9D;
 }
 
 .dark {
@@ -97,32 +101,32 @@
   --card-foreground: #fafafa;
   --popover: #141414;
   --popover-foreground: #fafafa;
-  --primary: #38bdf8;
-  --primary-foreground: #082f49;
+  --primary: #6fa2fb;
+  --primary-foreground: #002160;
   --secondary: #1f1f1f;
   --secondary-foreground: #fafafa;
   --muted: #1f1f1f;
   --muted-foreground: #a3a3a3;
-  --accent: #0c2d4a;
-  --accent-foreground: #bae6fd;
+  --accent: #112b5b;
+  --accent-foreground: #c1d8ff;
   --destructive: #f87171;
   --destructive-foreground: #450a0a;
   --border: #262626;
   --input: #262626;
-  --ring: #38bdf8;
-  --chart-1: #38bdf8;
-  --chart-2: #0ea5e9;
+  --ring: #6fa2fb;
+  --chart-1: #6fa2fb;
+  --chart-2: #4b85eb;
   --chart-3: #06b6d4;
   --chart-4: #fb7185;
   --chart-5: #94a3b8;
   --sidebar: #141414;
   --sidebar-foreground: #fafafa;
-  --sidebar-primary: #38bdf8;
-  --sidebar-primary-foreground: #082f49;
+  --sidebar-primary: #6fa2fb;
+  --sidebar-primary-foreground: #002160;
   --sidebar-accent: #1f1f1f;
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #262626;
-  --sidebar-ring: #38bdf8;
+  --sidebar-ring: #6fa2fb;
 }
 
 @layer base {

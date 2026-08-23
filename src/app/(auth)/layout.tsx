@@ -1,13 +1,12 @@
+import { APP_NAME } from "@/config/brand";
 import {
-  UsersIcon,
+  BankIcon,
   CalendarBlankIcon,
   CoinsIcon,
-  BankIcon,
+  UsersIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
-import { APP_NAME } from "@/config/brand";
-import { LogoMark } from "@/components/layout/logo-mark";
+import Image from "next/image";
 export default async function AuthLayout({
   children,
 }: {
@@ -40,14 +39,22 @@ export default async function AuthLayout({
             (desk/chair in warm tones), hurting legibility regardless of text color. */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/75 to-black/95" />
 
+        {/* Variante blanche du lockup : le logo de marque est bleu #023D9D, illisible sur le
+            zinc-950 assombri de ce panneau. width/height décrivent la taille de rendu (ratio
+            natif 13621x2048 conservé), pas les dimensions du fichier — sinon next/image
+            génère un srcset en 1920/3840px pour un logo affiché à 213px de large. */}
         <div
-          className="flex items-center gap-2.5 relative animate-in fade-in slide-in-from-left-4 duration-700"
+          className="relative animate-in fade-in slide-in-from-left-4 duration-700"
           style={{ animationFillMode: "both" }}
         >
-          <LogoMark />
-          <span className="text-lg font-semibold text-white tracking-tight">
-            {APP_NAME}
-          </span>
+          <Image
+            src="/app/formwise-logo-white.png"
+            alt={APP_NAME}
+            width={213}
+            height={32}
+            priority
+            className="h-8 w-auto"
+          />
         </div>
 
         <div className="relative space-y-10">
