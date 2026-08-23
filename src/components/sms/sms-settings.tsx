@@ -109,7 +109,7 @@ export function SmsSettings({ canEdit }: { canEdit: boolean }) {
     <div className="space-y-5">
       <div>
         <div className="flex items-center gap-2 mb-0.5">
-          <ChatTextIcon className="size-3.5 text-sky-600" />
+          <ChatTextIcon className="size-3.5 text-primary" />
           <h3 className="text-sm font-semibold">{t("heading")}</h3>
         </div>
         <p className="text-xs text-muted-foreground">

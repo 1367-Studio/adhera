@@ -1,11 +1,11 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { getTranslations } from "next-intl/server"
+import { PortalRegisterForm } from "@/components/auth/portal-register-form";
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { LogoMark } from "@/components/layout/logo-mark";
+import { APP_NAME } from "@/config/brand";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import { PortalRegisterForm } from "@/components/auth/portal-register-form"
-import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("portal.register")
