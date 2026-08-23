@@ -1,8 +1,8 @@
 "use client"
 
-import { loadStripe } from "@stripe/stripe-js"
-import type { PricingInfo, PlanTier } from "@/lib/stripe"
+import type { PlanTier, PricingInfo } from "@/lib/stripe"
 import { cn } from "@/lib/utils"
+import { loadStripe } from "@stripe/stripe-js"
 
 export const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -76,7 +76,7 @@ export function PlanPicker({
   const essentialMonthsFree = annualMonthsFree(pricing.plans.essential)
   const proMonthsFree       = annualMonthsFree(pricing.plans.pro)
   const annualBadge = essentialMonthsFree > 0 && essentialMonthsFree === proMonthsFree
-    ? `−${essentialMonthsFree} mois`
+    ? `${essentialMonthsFree} mois offerts`
     : null
 
   const cycles: { id: Plan; label: string }[] = [
