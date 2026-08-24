@@ -21,6 +21,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { FinanceNavTree } from "@/components/layout/finance-nav-tree"
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
@@ -135,14 +136,18 @@ export function AppSidebar() {
     (grouped.get(cat.key) ?? []).some(item => isActive(item.href, pathname))
   )?.key ?? null
 
-  const [openCategories, setOpenCategories] = useState<Set<CategoryKey>>(new Set())
+  // Lazily seeded from the active category so a hard navigation into e.g.
+  // /dashboard/finances/categories arrives with "Finances" already expanded on the
+  // very first paint, instead of a beat later via the effect below (which would
+  // otherwise read as a visible "closed, then pops open" flash).
+  const [openCategories, setOpenCategories] = useState<Set<CategoryKey>>(() => new Set(activeCategory ? [activeCategory] : []))
   // Tracks which category (if any) is currently open *because* it's the active route, as
   // opposed to the user having clicked it open themselves — only that one gets
   // auto-closed when the active route moves on, so browsing across every section in a
   // session doesn't leave every category permanently open (the whole point of grouping
   // them). Cleared the moment the user manually touches a category, so a deliberate
   // manual open/close is never overridden by this auto-behavior again.
-  const autoOpenedRef = useRef<CategoryKey | null>(null)
+  const autoOpenedRef = useRef<CategoryKey | null>(activeCategory)
 
   // Auto-expand the category containing the current page, so the active item is never
   // hidden inside a closed group.
@@ -297,17 +302,21 @@ export function AppSidebar() {
                             <span>{t(`categories.${cat.key}`)}</span>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent side="right" align="start">
-                            {items.map(item => (
-                              <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
-                                <item.icon />
-                                {t(item.key)}
-                                {item.key === "suporte" && supportUnreadCount > 0 && (
-                                  <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
-                                    {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
-                                  </span>
-                                )}
-                              </DropdownMenuItem>
-                            ))}
+                            {items.map(item =>
+                              item.key === "finances" ? (
+                                <FinanceNavTree key={item.href} pathname={pathname} isFlyout onNavigate={closeMobile} />
+                              ) : (
+                                <DropdownMenuItem key={item.href} render={<Link href={item.href} />}>
+                                  <item.icon />
+                                  {t(item.key)}
+                                  {item.key === "suporte" && supportUnreadCount > 0 && (
+                                    <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                                      {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
+                                    </span>
+                                  )}
+                                </DropdownMenuItem>
+                              )
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       ) : (
@@ -328,23 +337,27 @@ export function AppSidebar() {
                           </SidebarMenuButton>
                           {isOpen && (
                             <SidebarMenuSub>
-                              {items.map(item => (
-                                <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
-                                  <SidebarMenuSubButton
-                                    render={<Link href={item.href} />}
-                                    isActive={isActive(item.href, pathname)}
-                                    onClick={closeMobile}
-                                  >
-                                    <item.icon />
-                                    <span>{t(item.key)}</span>
-                                    {item.key === "suporte" && supportUnreadCount > 0 && (
-                                      <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
-                                        {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
-                                      </span>
-                                    )}
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
+                              {items.map(item =>
+                                item.key === "finances" ? (
+                                  <FinanceNavTree key={item.href} pathname={pathname} isFlyout={false} onNavigate={closeMobile} />
+                                ) : (
+                                  <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+                                    <SidebarMenuSubButton
+                                      render={<Link href={item.href} />}
+                                      isActive={isActive(item.href, pathname)}
+                                      onClick={closeMobile}
+                                    >
+                                      <item.icon />
+                                      <span>{t(item.key)}</span>
+                                      {item.key === "suporte" && supportUnreadCount > 0 && (
+                                        <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                                          {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
+                                        </span>
+                                      )}
+                                    </SidebarMenuSubButton>
+                                  </SidebarMenuSubItem>
+                                )
+                              )}
                             </SidebarMenuSub>
                           )}
                         </>
