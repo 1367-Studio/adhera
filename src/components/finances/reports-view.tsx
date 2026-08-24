@@ -125,7 +125,7 @@ export function ReportsView() {
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Rapports"
+        title="Compte de résultat"
         description="Synthèse financière par période."
         action={
           <div className="flex items-center gap-2">
