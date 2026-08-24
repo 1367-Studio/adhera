@@ -2588,11 +2588,11 @@
       "cancelAtPeriodEnd": "Votre abonnement a été résilié et prendra fin le {date}. Vous conservez l'accès complet jusqu'à cette date.",
       "updatePayment": "Mettre à jour le paiement",
       "manageSubscription": "Gérer mon abonnement",
-      "cancelPlan": "Annuler mon abonnement",
+      "cancelPlan": "Résilier mon abonnement",
       "resumeSubscription": "Annuler la résiliation",
       "resumeSuccessToast": "La résiliation programmée a été annulée. Votre abonnement continue normalement.",
       "cancelPlanDialog": {
-        "title": "Annuler votre abonnement",
+        "title": "Résilier votre abonnement",
         "description": "Votre abonnement restera actif jusqu'au terme de la période déjà payée. Aucun nouveau prélèvement ne sera effectué ensuite.",
         "descriptionTrial": "Votre accès restera actif jusqu'à la fin de votre essai gratuit. Aucun prélèvement ne sera effectué.",
         "reasonLabel": "Pourquoi souhaitez-vous annuler ?",

@@ -24,7 +24,7 @@ const badgeVariants = cva(
         // same dark-mode border rationale). Centralized here so pages stop hand-rolling
         // green/amber pills: positive/completed → success, pending/attention → warning.
         success:
-          "bg-green-600/10 text-green-700 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30 [a]:hover:bg-green-600/20",
+          "bg-green-600/10 text-green-700 border-green-600/30 dark:bg-green-500/20 dark:text-green-400 dark:border-green-500/30 [a]:hover:bg-green-600/20",
         warning:
           "bg-amber-500/15 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/30 [a]:hover:bg-amber-500/25",
         ghost:
