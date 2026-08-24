@@ -96,9 +96,10 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
                 type="button"
                 aria-expanded={isOpen}
                 onClick={() => toggleGroup(group.key)}
+                title={t(`groups.${group.key}`)}
                 className={cn(
-                  "flex h-7 w-full items-center gap-2 rounded-sm px-2 text-xs text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                  isGroupActive && !isOpen && "font-medium text-sidebar-foreground",
+                  "flex h-7 w-full items-center gap-2 rounded-sm px-2 text-xs text-sidebar-foreground transition-colors hover:bg-sidebar-accent",
+                  isGroupActive && !isOpen && "font-medium",
                 )}
               >
                 <group.icon className="size-3.5 shrink-0" />
@@ -115,6 +116,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
                         render={<Link href={leaf.href} />}
                         isActive={isFinanceLeafActive(leaf.href, pathname)}
                         onClick={onNavigate}
+                        title={t(leaf.key)}
                       >
                         <leaf.icon />
                         <span className="truncate">{t(leaf.key)}</span>
