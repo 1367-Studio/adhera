@@ -764,15 +764,31 @@
   },
   "finances": {
     "nav": {
+      "root": "Finanças",
       "overview": "Visão geral",
-      "exercices": "Exercícios",
+      "previsionnel": "Previsional",
+      "exercices": "Exercícios fiscais",
       "accounts": "Contas",
       "income": "Receitas",
       "expenses": "Despesas",
       "import": "Importar",
       "reconciliation": "Conciliação",
       "categories": "Categorias",
-      "reports": "Relatórios"
+      "reports": "Relatórios",
+      "bilan": "Balanço",
+      "compteResultat": "Demonstração de resultados",
+      "rapportsPersonnalises": "Relatórios personalizados",
+      "comingSoonTag": "(em breve)",
+      "groups": {
+        "synthese": "Síntese",
+        "transactions": "Transações",
+        "comptabilite": "Contabilidade",
+        "rapports": "Relatórios"
+      }
+    },
+    "comingSoon": {
+      "title": "Em breve",
+      "description": "Esta funcionalidade está em desenvolvimento."
     },
     "categoryForm": {
       "name": "Nome",

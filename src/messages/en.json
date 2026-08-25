@@ -764,7 +764,9 @@
   },
   "finances": {
     "nav": {
+      "root": "Finance",
       "overview": "Overview",
+      "previsionnel": "Forecast",
       "exercices": "Fiscal years",
       "accounts": "Accounts",
       "income": "Income",
@@ -772,7 +774,21 @@
       "import": "Import",
       "reconciliation": "Reconciliation",
       "categories": "Categories",
-      "reports": "Reports"
+      "reports": "Reports",
+      "bilan": "Balance sheet",
+      "compteResultat": "Income statement",
+      "rapportsPersonnalises": "Custom reports",
+      "comingSoonTag": "(coming soon)",
+      "groups": {
+        "synthese": "Summary",
+        "transactions": "Transactions",
+        "comptabilite": "Accounting",
+        "rapports": "Reports"
+      }
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "description": "This feature is currently in development."
     },
     "categoryForm": {
       "name": "Name",
