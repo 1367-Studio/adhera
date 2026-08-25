@@ -10,6 +10,8 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
     where: { id, membreId: ctx.membreId!, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
   if (!don) return NextResponse.json({ error: "Don introuvable ou remboursé" }, { status: 404 })
+  if (don.receiptMode === "NONE")
+    return NextResponse.json({ error: "Reçu fiscal non disponible" }, { status: 403 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },

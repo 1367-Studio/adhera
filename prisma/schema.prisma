@@ -210,6 +210,15 @@ enum DonorType {
   COMPANY
 }
 
+// Null on every Don predating this field (all Stripe, paidAt only ever written by the
+// webhook until offline methods existed) — treated as STRIPE by the UI, never backfilled.
+enum DonPaymentMethod {
+  STRIPE
+  ESPECES
+  CHEQUE
+  VIREMENT
+}
+
 // Catégories de l'organisme bénéficiaire cochées sur les Cerfa 11580 (2041-RD) et
 // 16216 (2041-MEC-SD) — union des deux listes, utilisée pour l'attestation imprimée
 // sur le reçu fiscal entreprise.
@@ -267,6 +276,52 @@ enum TailleTshirt {
   XL
   XXL
   XXXL
+}
+
+enum DonationFormStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DonationFieldRequirement {
+  HIDDEN
+  OPTIONAL
+  REQUIRED
+}
+
+enum DonationFieldType {
+  TEXT
+  NUMBER
+}
+
+enum DonationTierKind {
+  ONE_OFF
+  RECURRING
+}
+
+enum DonationInterval {
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum DonationReceiptMode {
+  NONE
+  FULL
+  PARTIAL
+}
+
+enum DonationVisibility {
+  LINK
+  SITE
+  PRIVATE
+}
+
+enum DonationSubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
 }
 
 // ─── Models ───────────────────────────────────────────────────────────────────
@@ -346,35 +401,37 @@ model Association {
   updatedAt               DateTime           @updatedAt
   deletedAt               DateTime?
 
-  users               User[]
-  membres             Membre[]
-  membreTypes         MembreType[]
-  evenements          Evenement[]
-  cotisations         Cotisation[]
-  actualites          Actualite[]
-  messageTemplates    MessageTemplate[]
-  automationRules     AutomationRule[]
-  materials           Material[]
-  activityLogs        ActivityLog[]
-  dons                Don[]
-  sondages            Sondage[]
-  boutiqueProduits    BoutiqueProduit[]
-  boutiqueCommandes   BoutiqueCommande[]
-  meetings            Meeting[]
-  exercicesComptables ExerciceComptable[]
-  bankAccounts        BankAccount[]
-  bankTransactions    BankTransaction[]
-  financeCategories   FinanceCategory[]
-  incomes             Income[]
-  expenses            Expense[]
-  bankReconciliations BankReconciliation[]
-  fournisseurs        Fournisseur[]
-  devis               Devis[]
-  factures            Facture[]
-  facturesRecues      FactureRecue[]
-  emailMessages       EmailMessage[]
-  smsMessages         SmsMessage[]
-  supportTickets      SupportTicket[]
+  users                 User[]
+  membres               Membre[]
+  membreTypes           MembreType[]
+  evenements            Evenement[]
+  cotisations           Cotisation[]
+  actualites            Actualite[]
+  messageTemplates      MessageTemplate[]
+  automationRules       AutomationRule[]
+  materials             Material[]
+  activityLogs          ActivityLog[]
+  dons                  Don[]
+  donationForms         DonationForm[]
+  donationSubscriptions DonationSubscription[]
+  sondages              Sondage[]
+  boutiqueProduits      BoutiqueProduit[]
+  boutiqueCommandes     BoutiqueCommande[]
+  meetings              Meeting[]
+  exercicesComptables   ExerciceComptable[]
+  bankAccounts          BankAccount[]
+  bankTransactions      BankTransaction[]
+  financeCategories     FinanceCategory[]
+  incomes               Income[]
+  expenses              Expense[]
+  bankReconciliations   BankReconciliation[]
+  fournisseurs          Fournisseur[]
+  devis                 Devis[]
+  factures              Facture[]
+  facturesRecues        FactureRecue[]
+  emailMessages         EmailMessage[]
+  smsMessages           SmsMessage[]
+  supportTickets        SupportTicket[]
 }
 
 model User {
@@ -659,37 +716,217 @@ model CotisationPayment {
 }
 
 model Don {
-  id              String    @id @default(cuid())
+  id              String            @id @default(cuid())
   associationId   String
   membreId        String?
   evenementId     String?
-  donorType       DonorType @default(INDIVIDUAL)
+  donorType       DonorType         @default(INDIVIDUAL)
   firstName       String
   lastName        String
   companyName     String?
   siret           String?
   email           String
   address         String?
-  amount          Decimal   @db.Decimal(10, 2)
+  amount          Decimal           @db.Decimal(10, 2)
   message         String?
-  anonymous       Boolean   @default(false)
+  anonymous       Boolean           @default(false)
   receiptNumber   String?
   receiptIssuedAt DateTime?
-  stripeSessionId String?   @unique
+  stripeSessionId String?           @unique
   paidAt          DateTime?
   refundedAt      DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  // Null for the standalone donation page (/portal/[slug]/don) — a Don only carries these
+  // when it came through a configurable DonationForm. Additive: existing rows are unaffected.
+  donationFormId  String?
+  tierId          String?
+  // Set only on the Don produced by a recurring donation's successful charge (invoice.paid) —
+  // null for one-off dons, whether via a DonationForm or the standalone page.
+  subscriptionId  String?
+  // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
+  // Participation.answers.
+  answers         Json?
+  // Null = Stripe (the only method before offline donations existed). Set explicitly for
+  // ESPECES/CHEQUE/VIREMENT — those are the only ones where paidAt isn't written by the
+  // webhook, see the "encaissement" flow in /api/dons/[id]/encaisser.
+  paymentMethod   DonPaymentMethod?
+  // Proof of consent when the form's requireCguvSignature is on — set server-side at
+  // checkout, never trusted from the client alone. Null when the form doesn't require it.
+  cguvAgreedAt    DateTime?
+  // Snapshotted from DonationTier at the moment this Don is created — same reasoning as
+  // `amount` already being its own column instead of being re-read from the tier. Without
+  // this, an admin editing a tier's receiptMode/deductibleAmount between "donor gave a
+  // cheque" and "admin confirms it arrived" (which can be days) silently changes what
+  // receipt gets issued, contradicting what the donor was shown on the public page. Null
+  // for the standalone /portal/[slug]/don page (no tier) — receiptMode null there means
+  // "always full", matching the pre-existing behavior.
+  receiptMode      DonationReceiptMode?
+  deductibleAmount Decimal?             @db.Decimal(10, 2)
 
-  association Association @relation(fields: [associationId], references: [id])
-  membre      Membre?     @relation(fields: [membreId], references: [id])
+  association  Association           @relation(fields: [associationId], references: [id])
+  membre       Membre?               @relation(fields: [membreId], references: [id])
   // A donation prompted by an event registration is still a standalone association-level
   // donation record — this is only a reporting link, so deleting the event must not delete it.
-  evenement   Evenement?  @relation(fields: [evenementId], references: [id], onDelete: SetNull)
+  evenement    Evenement?            @relation(fields: [evenementId], references: [id], onDelete: SetNull)
+  donationForm DonationForm?         @relation(fields: [donationFormId], references: [id], onDelete: SetNull)
+  tier         DonationTier?         @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  subscription DonationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
   @@index([evenementId])
+  @@index([membreId])
+  @@index([donationFormId])
+  @@index([subscriptionId])
+}
+
+// Formulaire de don configurable — remplace le modèle « une page de don par association »
+// par N formulaires par association, chacun avec son slug/visuel/paliers/règles. Additif :
+// les dons de la page autonome (Don.donationFormId null) continuent d'exister sans lui.
+model DonationForm {
+  id            String             @id @default(cuid())
+  associationId String
+  slug          String
+  title         String
+  status        DonationFormStatus @default(DRAFT)
+
+  // Étape 1 — Informations générales
+  imageUrl             String?
+  description          String? // HTML riche
+  conditions           String? // HTML riche
+  attachments          Json? // [{ url, filename, size }]
+  requireCguvSignature Boolean @default(false)
+  contactEmail         String?
+  contactPhone         String?
+
+  // Étape 3 — Formulaire : matrice d'exigence des champs standards
+  fieldAddress   DonationFieldRequirement @default(HIDDEN)
+  fieldBirthDate DonationFieldRequirement @default(HIDDEN)
+  fieldPhone     DonationFieldRequirement @default(HIDDEN)
+  fieldMobile    DonationFieldRequirement @default(HIDDEN)
+  fieldGender    DonationFieldRequirement @default(HIDDEN)
+
+  // Étape 4 — Paiement
+  allowOnline         Boolean @default(true)
+  allowCash           Boolean @default(false)
+  allowCheque         Boolean @default(false)
+  allowTransfer       Boolean @default(false)
+  offlineInstructions String?
+  confirmationMessage String?
+
+  // Étape 5 — Publication
+  visibility DonationVisibility @default(LINK)
+  opensAt    DateTime?
+  closesAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  association   Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tiers         DonationTier[]
+  customFields  DonationFormField[]
+  dons          Don[]
+  subscriptions DonationSubscription[]
+
+  @@unique([associationId, slug])
+  @@index([associationId, status])
+}
+
+// Palier tarifaire d'un DonationForm — ponctuel ou récurrent. Même rôle qu'EvenementTicketType,
+// avec la même propriété additive.
+model DonationTier {
+  id     String           @id @default(cuid())
+  formId String
+  order  Int
+  kind   DonationTierKind @default(ONE_OFF)
+
+  freeAmount Boolean           @default(false) // « Montant libre »
+  amount     Decimal?          @db.Decimal(10, 2) // null si freeAmount
+  interval   DonationInterval? // requis si kind = RECURRING
+
+  label            String
+  receiptMode      DonationReceiptMode @default(FULL)
+  deductibleAmount Decimal?            @db.Decimal(10, 2) // requis si receiptMode = PARTIAL
+
+  form          DonationForm           @relation(fields: [formId], references: [id], onDelete: Cascade)
+  dons          Don[]
+  subscriptions DonationSubscription[]
+
+  @@index([formId])
+}
+
+// Champ personnalisé par formulaire, répondu via Don.answers — même mécanisme
+// qu'EvenementCustomField / Participation.answers.
+model DonationFormField {
+  id       String            @id @default(cuid())
+  formId   String
+  type     DonationFieldType
+  label    String
+  required Boolean           @default(false)
+  order    Int
+
+  form DonationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+// Un don récurrent Stripe. Chaque prélèvement réussi produit une ligne Don rattachée ici
+// (Don.subscriptionId) — le reçu fiscal annuel est une agrégation des Don d'un abonnement,
+// pas un chemin parallèle. Connect est utilisé ici en destination charges : le Customer et
+// la Subscription vivent sur le compte plateforme, pas sur celui de l'association — d'où la
+// discrimination obligatoire par subscription_data.metadata.kind dans le webhook (voir
+// src/app/api/webhook/stripe/route.ts) avant tout traitement en tant qu'abonnement Formwise.
+model DonationSubscription {
+  id             String @id @default(cuid())
+  associationId  String
+  donationFormId String
+  tierId         String
+
+  stripeSubscriptionId String  @unique
+  stripeCustomerId     String
+  // Self-service cancellation link emailed at subscription start — same convention as
+  // Participation.cancelToken (donors have no portal account to authenticate an
+  // in-app cancel action with).
+  cancelToken          String? @unique
+
+  donorType   DonorType @default(INDIVIDUAL)
+  firstName   String
+  lastName    String
+  companyName String?
+  siret       String?
+  email       String
+  address     String?
+  // Carried from the checkout form onto every Don an invoice.paid event produces for
+  // this subscription — same fields a one-off Don would have captured at checkout.
+  message     String?
+  anonymous   Boolean   @default(false)
+  answers     Json?
+  // Proof of consent captured at checkout, carried onto every Don this subscription
+  // produces — same rationale as Don.cguvAgreedAt.
+  cguvAgreedAt DateTime?
+  // Snapshotted from DonationTier at subscription start and carried onto every Don an
+  // invoice.paid event produces — same rationale as Don.receiptMode/deductibleAmount, but
+  // more pressing here since a subscription can outlive tier edits by months or years.
+  receiptMode      DonationReceiptMode?
+  deductibleAmount Decimal?             @db.Decimal(10, 2)
+
+  amount   Decimal          @db.Decimal(10, 2)
+  interval DonationInterval
+
+  status DonationSubscriptionStatus @default(ACTIVE)
+
+  startedAt           DateTime  @default(now())
+  cancelledAt         DateTime?
+  currentPeriodEndsAt DateTime?
+
+  association  Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  donationForm DonationForm @relation(fields: [donationFormId], references: [id])
+  tier         DonationTier @relation(fields: [tierId], references: [id])
+  dons         Don[]
+
+  @@index([associationId, status])
+  @@index([donationFormId])
 }
 
 model Notification {

@@ -61,6 +61,15 @@ export function subscriptionPeriodEnd(sub: Stripe.Subscription): Date | null {
   return unix ? new Date(unix * 1000) : null
 }
 
+// DonationTier.interval (MONTH | QUARTER | YEAR) → Stripe's own recurring-price shape,
+// which only knows day/week/month/year — a quarter is a month billed every 3rd cycle,
+// not a native Stripe interval.
+export function stripeRecurringInterval(interval: "MONTH" | "QUARTER" | "YEAR"): { interval: "month" | "year"; interval_count: number } {
+  if (interval === "YEAR")    return { interval: "year",  interval_count: 1 }
+  if (interval === "QUARTER") return { interval: "month", interval_count: 3 }
+  return { interval: "month", interval_count: 1 }
+}
+
 export type PlanPricing = {
   monthlyAmountCents: number
   yearlyAmountCents:  number
