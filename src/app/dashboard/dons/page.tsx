@@ -10,8 +10,9 @@ import { fr } from "date-fns/locale"
 import {
   DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon, PlusIcon,
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
-  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon,
+  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { useCurrentUser } from "@/lib/user-context"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
@@ -85,6 +86,21 @@ function DonsPageInner() {
   const searchParams = useSearchParams()
   const t            = useTranslations("donationForms")
   const tCommon      = useTranslations("common")
+  const user         = useCurrentUser()
+
+  // Same "read origin at click time" reasoning as the copy-link button on the form's own
+  // detail page — no need for the SSR-safe useSyncExternalStore dance DonShareCard uses,
+  // since this action never displays the URL, only copies it.
+  async function handleCopyFormLink(f: Pick<DonationForm, "slug">) {
+    if (!user.associationSlug) return
+    const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/dons/${f.slug}`
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success(t("detail.toasts.linkCopied"))
+    } catch {
+      toast.error(t("detail.toasts.linkCopyError"))
+    }
+  }
 
   const initialTab = (searchParams.get("tab") as Tab) ?? "formulaires"
   const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
@@ -505,6 +521,9 @@ function DonsPageInner() {
                       actions={[
                         { label: t("formsView.actions.edit"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/dons/${f.id}`) },
                         { label: t("formsView.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "duplicate" }) },
+                        ...(f.status === "PUBLISHED"
+                          ? [{ label: t("detail.copyLinkButton"), icon: <LinkIcon className="size-3.5" />, onClick: () => handleCopyFormLink(f) }]
+                          : []),
                         ...(f.status !== "PUBLISHED"
                           ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "publish" }) }]
                           : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "unpublish" }) }]),

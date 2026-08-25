@@ -6,8 +6,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
-  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon,
+  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon,
 } from "@phosphor-icons/react/dist/ssr";
+import { useCurrentUser } from "@/lib/user-context"
+import { BASE_PATH } from "@/lib/env"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -84,9 +86,11 @@ export default function DonationFormDetailPage() {
   const t       = useTranslations("donationForms")
   const tSteps  = useTranslations("donationForms.detail.steps")
   const tCommon = useTranslations("common")
+  const user    = useCurrentUser()
 
   const [title, setTitle]                 = useState("")
   const [deleteConfirm, setDeleteConfirm]  = useState(false)
+  const [linkCopied, setLinkCopied]        = useState(false)
 
   // Step 1 — Informations générales
   const [imageUrl, setImageUrl]         = useState("")
@@ -266,6 +270,22 @@ export default function DonationFormDetailPage() {
     { value: "REQUIRED", label: tSteps("fields.requirement.required") },
   ]
 
+  // window.location.origin read only at click time (not during render) — sidesteps the
+  // SSR/hydration-mismatch concern DonShareCard handles with useSyncExternalStore, since
+  // this button never displays the URL itself, only copies it.
+  async function handleCopyLink() {
+    if (!user.associationSlug || !form) return
+    const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/dons/${form.slug}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setLinkCopied(true)
+      toast.success(t("detail.toasts.linkCopied"))
+      setTimeout(() => setLinkCopied(false), 2000)
+    } catch {
+      toast.error(t("detail.toasts.linkCopyError"))
+    }
+  }
+
   return (
     <div className="space-y-4">
       <BackLink href="/dashboard/dons">{t("detail.backToList")}</BackLink>
@@ -284,6 +304,12 @@ export default function DonationFormDetailPage() {
               <Button size="sm" variant="secondary" onClick={() => publishMutation.mutate("unpublish")} loading={publishMutation.isPending}>
                 <CloudArrowDownIcon className="mr-1.5 size-4" />
                 {t("detail.unpublishButton")}
+              </Button>
+            )}
+            {form.status === "PUBLISHED" && (
+              <Button size="sm" variant="ghost" onClick={handleCopyLink}>
+                {linkCopied ? <CheckIcon className="mr-1.5 size-4" /> : <LinkIcon className="mr-1.5 size-4" />}
+                {t("detail.copyLinkButton")}
               </Button>
             )}
             <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>

@@ -2259,10 +2259,13 @@
       "deleteButton": "Excluir",
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",
+      "copyLinkButton": "Copiar link",
       "archiveButton": "Arquivar",
       "toasts": {
         "saved": "Alterações salvas",
-        "saveError": "Erro ao salvar"
+        "saveError": "Erro ao salvar",
+        "linkCopied": "Link copiado",
+        "linkCopyError": "Não foi possível copiar — selecione o link manualmente."
       },
       "steps": {
         "info": {
