@@ -50,13 +50,18 @@ export function DonShareCard() {
 
   // Même endpoint public que la page de don elle-même : évite d'imprimer 500 flyers
   // pointant vers un formulaire qui refusera les paiements faute de compte Stripe
-  // connecté. staleTime élevé — la réponse coûte un appel Stripe non mis en cache côté
-  // serveur (connectAccountChargesEnabled).
-  const { data: publicInfo } = useQuery<{ paymentEnabled?: boolean; canIssueTaxReceipts?: boolean }>({
+  // connecté. Une réponse non-ok ou une erreur réseau doit rester distinguable d'un
+  // "paiements désactivés" confirmé — sinon un simple timeout affiche silencieusement
+  // rien du tout, alors qu'un QR déjà prêt à imprimer mérite au moins un avertissement.
+  const { data: publicInfo, isError: publicInfoError } = useQuery<{ paymentEnabled?: boolean; canIssueTaxReceipts?: boolean }>({
     queryKey:  ["public-don-info", slug],
-    queryFn:   () => fetch(`${BASE_PATH}/api/public/${slug}/don`).then(r => r.ok ? r.json() : {}),
+    queryFn:   async () => {
+      const res = await fetch(`${BASE_PATH}/api/public/${slug}/don`)
+      if (!res.ok) throw new Error(`public-don-info: ${res.status}`)
+      return res.json()
+    },
     enabled:   !!slug,
-    staleTime: 5 * 60_000,
+    staleTime: 60_000,
   })
 
   function exportCanvas(): HTMLCanvasElement | null {
@@ -92,41 +97,59 @@ export function DonShareCard() {
     const win = window.open("", "_blank", "width=720,height=900")
     if (!win) return toast.error("Autorisez les fenêtres pop-up pour imprimer.")
     const title = branding?.name ?? "Faire un don"
-    win.document.write(`<!doctype html><html><head><title>${escapeHtml(title)}</title>
-      <style>
-        @page { margin: 16mm }
-        body { font-family: system-ui, sans-serif; text-align: center; color: #111 }
-        h1 { font-size: 20px; margin: 0 0 4px }
-        p  { font-size: 13px; color: #555; margin: 0 0 24px }
-        img { width: 260px; height: 260px }
-        code { display: block; margin-top: 20px; font-size: 12px; color: #333; word-break: break-all }
-      </style></head><body>
-      <h1>${escapeHtml(title)}</h1>
-      <p>Scannez ce QR code pour faire un don</p>
-      <img src="${canvas.toDataURL("image/png")}" alt="" />
-      <code>${escapeHtml(donUrl)}</code>
-      <script>window.onload = function () { window.focus(); window.print() }<\/script>
-      </body></html>`)
-    win.document.close()
+    // Sur certains navigateurs mobiles (Safari iOS notamment), window.open peut renvoyer
+    // une fenêtre non nulle mais dont l'écriture est bloquée ou échoue silencieusement —
+    // mieux vaut détecter l'échec et rediriger vers le téléchargement que laisser une
+    // fenêtre vide sans explication.
+    try {
+      win.document.write(`<!doctype html><html><head><title>${escapeHtml(title)}</title>
+        <style>
+          @page { margin: 16mm }
+          body { font-family: system-ui, sans-serif; text-align: center; color: #111 }
+          h1 { font-size: 20px; margin: 0 0 4px }
+          p  { font-size: 13px; color: #555; margin: 0 0 24px }
+          img { width: 260px; height: 260px }
+          code { display: block; margin-top: 20px; font-size: 12px; color: #333; word-break: break-all }
+        </style></head><body>
+        <h1>${escapeHtml(title)}</h1>
+        <p>Scannez ce QR code pour faire un don</p>
+        <img src="${canvas.toDataURL("image/png")}" alt="" />
+        <code>${escapeHtml(donUrl)}</code>
+        <script>window.onload = function () { window.focus(); window.print() }<\/script>
+        </body></html>`)
+      win.document.close()
+    } catch {
+      win.close()
+      toast.error("Impossible d'ouvrir la fenêtre d'impression — téléchargez le QR code à la place.")
+    }
   }
 
   async function handleShare() {
     const title = branding?.name ? `Faire un don — ${branding.name}` : "Faire un don"
     const canvas = exportCanvas()
 
-    // Partager l'image du QR quand la plateforme le permet ; sinon le lien seul.
+    // Partager l'image du QR quand la plateforme le permet ; sinon le lien seul. Une fois
+    // que navigator.share() a réellement été appelé avec le fichier, un échec qui n'est
+    // pas une annulation utilisateur doit s'arrêter là — retenter avec le lien seul
+    // rouvrirait une seconde feuille de partage native juste après la première, ce qui
+    // est déroutant. Le fallback "lien seul" ne sert donc que quand le partage fichier
+    // n'a jamais pu être tenté (canvas/blob absent ou plateforme non compatible).
     if (canvas) {
+      let file: File | null = null
       try {
         const blob = await new Promise<Blob | null>(res => canvas.toBlob(res, "image/png"))
-        if (blob) {
-          const file = new File([blob], `don-${slug}.png`, { type: "image/png" })
-          if (navigator.canShare?.({ files: [file] })) {
-            await navigator.share({ title, text: donUrl, files: [file] })
-            return
-          }
+        if (blob) file = new File([blob], `don-${slug}.png`, { type: "image/png" })
+      } catch {
+        file = null
+      }
+
+      if (file && navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ title, text: donUrl, files: [file] })
+        } catch (err) {
+          if ((err as Error)?.name !== "AbortError") toast.error("Partage impossible.")
         }
-      } catch (err) {
-        if ((err as Error)?.name === "AbortError") return   // partage annulé par l'utilisateur
+        return
       }
     }
 
@@ -187,6 +210,13 @@ export function DonShareCard() {
               <WarningCircleIcon className="mt-0.5 size-3.5 shrink-0" />
               Les paiements en ligne ne sont pas encore actifs : configurez Stripe dans
               Paramètres avant de diffuser ce lien.
+            </p>
+          )}
+
+          {publicInfoError && (
+            <p className="flex items-start gap-1.5 text-xs text-muted-foreground">
+              <WarningCircleIcon className="mt-0.5 size-3.5 shrink-0" />
+              Impossible de vérifier l&apos;état des paiements pour le moment.
             </p>
           )}
         </div>

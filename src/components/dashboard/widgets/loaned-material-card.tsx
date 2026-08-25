@@ -58,7 +58,7 @@ export function LoanedMaterialCard({ materielEmpruntsListe, materielEnRetardCoun
                   href="/dashboard/materiel"
                   className={cn(
                     "flex items-center justify-between group -mx-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors",
-                    l.isOverdue && "bg-red-50",
+                    l.isOverdue && "bg-red-50 dark:bg-red-950/30",
                   )}
                 >
                   <div className="min-w-0">
