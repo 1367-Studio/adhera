@@ -103,8 +103,8 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
                   // sont les frères directs de Devis/Factures/Fournisseurs/Dons dans la
                   // même liste — en text-xs/size-3.5 ils paraissaient d'un niveau
                   // inférieur alors qu'ils sont au même.
-                  "group/nav-item flex h-7 w-full items-center gap-2 rounded-sm px-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-primary",
-                  isGroupActive && !isOpen && "bg-sidebar-accent font-medium text-sidebar-primary",
+                  "group/nav-item flex h-7 w-full items-center gap-2 rounded-sm px-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-primary/10 hover:text-sidebar-primary",
+                  isGroupActive && !isOpen && "bg-sidebar-primary font-medium text-sidebar-primary-foreground",
                 )}
               >
                 <NavIcon icon={group.icon} className="size-4" />
