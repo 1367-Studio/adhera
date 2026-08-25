@@ -2166,6 +2166,249 @@
       }
     }
   },
+  "donationForms": {
+    "title": "Dons",
+    "description": "Formulaires de dons, dons reçus et reçus fiscaux.",
+    "newForm": "Nouveau formulaire",
+    "duplicateSuffix": "(copie)",
+    "tabs": {
+      "forms": "Formulaires",
+      "donations": "Dons reçus",
+      "receipts": "Reçus fiscaux"
+    },
+    "formStatus": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "archived": "Archivé"
+    },
+    "newFormModal": {
+      "title": "Nouveau formulaire de don",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Ex. Campagne de fin d'année",
+      "createButton": "Créer"
+    },
+    "formsView": {
+      "columns": {
+        "form": "Formulaire",
+        "status": "Statut",
+        "donors": "Donateurs",
+        "total": "Total collecté",
+        "created": "Créé le"
+      },
+      "noForms": "Aucun formulaire de don",
+      "actions": {
+        "edit": "Modifier",
+        "duplicate": "Dupliquer",
+        "publish": "Publier",
+        "unpublish": "Dépublier",
+        "archive": "Archiver",
+        "delete": "Supprimer"
+      },
+      "deleteTitle": "Supprimer ce formulaire ?",
+      "deleteDescription": "Le formulaire « {title} » sera définitivement supprimé.",
+      "toasts": {
+        "created": "Formulaire créé",
+        "createError": "Erreur lors de la création",
+        "duplicated": "Formulaire dupliqué",
+        "duplicateError": "Erreur lors de la duplication",
+        "deleted": "Formulaire supprimé",
+        "deleteError": "Erreur lors de la suppression",
+        "statusUpdated": "Statut mis à jour",
+        "statusError": "Erreur lors du changement de statut"
+      }
+    },
+    "donationsView": {
+      "columns": {
+        "donor": "Donateur",
+        "form": "Formulaire",
+        "standalone": "Page autonome",
+        "message": "Message",
+        "date": "Date",
+        "amount": "Montant",
+        "method": "Moyen"
+      },
+      "noDonations": "Aucun don enregistré",
+      "totalLabel": "Total {year}",
+      "donorsLabel": "Donateurs",
+      "averageLabel": "Don moyen",
+      "pendingTitle": "En attente d'encaissement",
+      "encaisserButton": "Encaisser",
+      "paymentMethod": {
+        "especes": "Espèces",
+        "cheque": "Chèque",
+        "virement": "Virement"
+      },
+      "toasts": {
+        "encaisse": "Don encaissé"
+      }
+    },
+    "receiptsView": {
+      "columns": {
+        "receiptNumber": "N° de reçu",
+        "donor": "Donateur",
+        "issuedAt": "Émis le",
+        "amount": "Montant"
+      },
+      "noReceipts": "Aucun reçu fiscal émis"
+    },
+    "detail": {
+      "backToList": "Retour aux dons",
+      "notFound": "Formulaire introuvable",
+      "titleLabel": "Titre du formulaire",
+      "duplicateButton": "Dupliquer",
+      "deleteButton": "Supprimer",
+      "publishButton": "Publier",
+      "unpublishButton": "Dépublier",
+      "archiveButton": "Archiver",
+      "toasts": {
+        "saved": "Modifications enregistrées",
+        "saveError": "Erreur lors de l'enregistrement"
+      },
+      "steps": {
+        "info": {
+          "title": "Informations générales",
+          "imageLabel": "Visuel",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Présentez votre campagne…",
+          "conditionsLabel": "Conditions",
+          "conditionsPlaceholder": "Conditions générales du formulaire…",
+          "requireCguvLabel": "Exiger la signature des conditions générales",
+          "contactEmailLabel": "E-mail de contact",
+          "contactPhoneLabel": "Téléphone de contact"
+        },
+        "tiers": {
+          "title": "Paliers",
+          "hint": "Montants proposés au donateur pour ce formulaire.",
+          "noTiers": "Aucun palier",
+          "addTier": "Ajouter un palier",
+          "removeTier": "Supprimer le palier",
+          "labelField": "Libellé",
+          "labelPlaceholder": "Ex. Soutien ponctuel",
+          "amountField": "Montant (€)",
+          "freeAmountField": "Montant libre",
+          "receiptModeField": "Reçu fiscal",
+          "receiptNone": "Aucun",
+          "receiptFull": "Intégral",
+          "receiptPartial": "Partiel",
+          "deductibleAmountField": "Montant déductible (€)",
+          "deductibleAmountRequiredError": "Le montant déductible est requis pour un reçu partiel",
+          "deductibleAmountExceedsError": "Le montant déductible ne peut pas dépasser le montant du don",
+          "kindField": "Type",
+          "kindOneOff": "Ponctuel",
+          "kindRecurring": "Récurrent",
+          "intervalField": "Périodicité",
+          "intervalMonth": "Mensuelle",
+          "intervalQuarter": "Trimestrielle",
+          "intervalYear": "Annuelle",
+          "labelRequiredError": "Chaque palier doit avoir un libellé",
+          "amountRequiredError": "Un montant est requis pour un palier à montant fixe",
+          "intervalRequiredError": "Une périodicité est requise pour un palier récurrent",
+          "saved": "Paliers enregistrés",
+          "saveTiers": "Enregistrer les paliers"
+        },
+        "fields": {
+          "title": "Formulaire",
+          "standardFieldsHint": "Champs demandés au donateur",
+          "addressLabel": "Adresse",
+          "birthDateLabel": "Date de naissance",
+          "phoneLabel": "Téléphone",
+          "mobileLabel": "Mobile",
+          "genderLabel": "Genre",
+          "requirement": {
+            "hidden": "Masqué",
+            "optional": "Optionnel",
+            "required": "Obligatoire"
+          },
+          "customFieldsTitle": "Champs personnalisés",
+          "customFieldsHint": "Champs additionnels propres à ce formulaire.",
+          "noCustomFields": "Aucun champ personnalisé",
+          "addField": "Ajouter un champ",
+          "removeField": "Supprimer le champ",
+          "fieldLabel": "Libellé",
+          "fieldLabelPlaceholder": "Ex. Société",
+          "fieldType": "Type",
+          "fieldRequired": "Obligatoire",
+          "typeText": "Texte",
+          "typeNumber": "Nombre",
+          "labelRequiredError": "Chaque champ doit avoir un libellé",
+          "saved": "Champs enregistrés",
+          "saveFields": "Enregistrer les champs"
+        },
+        "payment": {
+          "title": "Paiement",
+          "allowOnlineLabel": "Paiement en ligne (Stripe)",
+          "allowCashLabel": "Espèces",
+          "allowChequeLabel": "Chèque",
+          "allowTransferLabel": "Virement",
+          "offlineInstructionsLabel": "Instructions pour le paiement hors ligne",
+          "offlineInstructionsPlaceholder": "Ex. Chèque à l'ordre de… / IBAN…"
+        },
+        "publish": {
+          "title": "Publication",
+          "visibilityLabel": "Visibilité",
+          "visibilityLink": "Sur lien uniquement",
+          "visibilitySite": "Sur le site internet",
+          "visibilityPrivate": "Privé",
+          "opensAtLabel": "Ouverture",
+          "closesAtLabel": "Fermeture",
+          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
+        }
+      }
+    },
+    "public": {
+      "notFound": "Formulaire introuvable",
+      "notOpenYet": "Ce formulaire n'est pas encore ouvert.",
+      "closed": "Ce formulaire est fermé.",
+      "amountLabel": "Montant",
+      "freeAmountLabel": "Montant libre",
+      "partialReceiptNotice": "Seuls {amount} sont déductibles des impôts pour ce don.",
+      "belowMinimumAmount": "Le montant minimum pour un paiement en ligne est de {amount}.",
+      "perMonth": "/ mois",
+      "perQuarter": "/ trimestre",
+      "perYear": "/ an",
+      "paymentMethodLabel": "Moyen de paiement",
+      "paymentMethodStripe": "Carte bancaire",
+      "paymentMethodCash": "Espèces",
+      "paymentMethodCheque": "Chèque",
+      "paymentMethodTransfer": "Virement",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "E-mail",
+      "addressLabel": "Adresse",
+      "birthDateLabel": "Date de naissance",
+      "phoneLabel": "Téléphone",
+      "mobileLabel": "Mobile",
+      "genderLabel": "Genre",
+      "messageLabel": "Message (optionnel)",
+      "messagePlaceholder": "Un message pour l'association…",
+      "anonymousLabel": "Je souhaite rester anonyme dans tout affichage public de donateurs",
+      "submitWithAmount": "Faire un don de {amount}",
+      "paymentUnavailable": "Le paiement en ligne n'est pas disponible pour le moment.",
+      "genericError": "Une erreur est survenue. Réessayez.",
+      "donorTypeIndividual": "Particulier",
+      "donorTypeCompany": "Entreprise",
+      "companyNameLabel": "Nom de l'entreprise",
+      "siretLabel": "SIRET",
+      "conditionsAgreeLabel": "J'accepte les conditions générales",
+      "honeypotLabel": "Ne pas remplir",
+      "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur ».",
+      "submittedTitle": "Merci pour votre don !",
+      "submittedWithEmail": "Un e-mail de confirmation vous a été envoyé.",
+      "toastCancelled": "Paiement annulé.",
+      "errorNetwork": "Erreur réseau. Réessayez."
+    },
+    "cancelSubscription": {
+      "invalidLink": "Ce lien d'annulation est invalide.",
+      "alreadyCancelled": "Ce don récurrent est déjà arrêté.",
+      "cancelledTitle": "Don récurrent arrêté.",
+      "confirmPrompt": "Confirmez que vous souhaitez arrêter ce don récurrent.",
+      "intervalMonth": "mois",
+      "intervalQuarter": "trimestre",
+      "intervalYear": "an",
+      "confirmButton": "Arrêter ce don récurrent",
+      "genericError": "Une erreur est survenue. Réessayez."
+    }
+  },
   "messages": {
     "categories": {
       "general": "Général",

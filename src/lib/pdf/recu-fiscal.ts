@@ -17,6 +17,21 @@ type DonForReceipt = {
   anonymous:    boolean
   receiptNumber: string | null
   receiptIssuedAt: Date | null
+  // Snapshotted onto the Don at creation time (see Don.receiptMode in schema.prisma) —
+  // never re-read from the live DonationTier, so an admin editing a tier after the fact
+  // can't silently change what a past donation's receipt shows. Null (standalone
+  // /portal/[slug]/don) or anything but "PARTIAL" → the receipt prints don.amount as
+  // usual. When PARTIAL, only deductibleAmount is fiscally deductible (e.g. a gala ticket
+  // where part of the price pays for the meal received in return) — that's the figure the
+  // CERFA must show, not the full amount paid.
+  receiptMode?: string | null
+  deductibleAmount?: { toString(): string } | null
+}
+
+function receiptAmount(don: DonForReceipt): number {
+  if (don.receiptMode === "PARTIAL" && don.deductibleAmount != null)
+    return parseFloat(don.deductibleAmount.toString())
+  return parseFloat(don.amount.toString())
 }
 
 type AssociationForReceipt = {
@@ -106,7 +121,7 @@ export async function generateRecuFiscal(
   const receiptNumber = don.receiptNumber
     ?? await assignReceiptNumber(don.id, association.id)
 
-  const amount    = parseFloat(don.amount.toString())
+  const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
   const dateStr   = paidAt.toLocaleDateString("fr-FR")
   const amountWords = amountToFrenchWords(amount)
@@ -216,7 +231,7 @@ export async function generateRecuFiscalEntreprise(
   const receiptNumber = don.receiptNumber
     ?? await assignReceiptNumber(don.id, association.id)
 
-  const amount    = parseFloat(don.amount.toString())
+  const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
   const dateStr   = paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
   const amountWords = amountToFrenchWords(amount)

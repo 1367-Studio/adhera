@@ -15,6 +15,10 @@ import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import type Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { APP_URL } from "@/lib/env"
+import {
+  isDonationSubscriptionEvent, handleDonationSubscriptionCheckout, handleDonationSubscriptionSynced,
+  handleDonationSubscriptionDeleted, handleDonationInvoicePaid, tryHandleDonationInvoicePaymentFailed,
+} from "@/lib/webhook/donation-subscriptions"
 
 export const dynamic = "force-dynamic"
 
@@ -39,6 +43,14 @@ export async function POST(req: Request) {
       // Stored on the Income row so a later `charge.refunded` event can find and
       // reverse the exact record it created, instead of matching on description text.
       const paymentIntentId = typeof sess.payment_intent === "string" ? sess.payment_intent : sess.payment_intent?.id ?? null
+
+      // A recurring donation's Checkout Session — routed to its own module (see the file
+      // for why this can't reuse the donId branch below: no DB row exists yet to carry an
+      // id in metadata, since a Subscription id doesn't exist until Stripe mints it here).
+      if (sess.mode === "subscription" && sess.metadata?.kind === "donation") {
+        await handleDonationSubscriptionCheckout(sess)
+        break
+      }
 
       if (commandeId) {
         const paidAt = new Date()
@@ -478,9 +490,16 @@ export async function POST(req: Request) {
 
         const don = await prisma.don.findUnique({
           where:   { id: donId },
-          include: { association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true } } },
+          include: {
+            association: { select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
+          },
         })
         if (!don) break
+
+        // Snapshotted onto the Don at creation time (see schema.prisma) — standalone dons
+        // (no tier) keep the prior behavior of always receipting when the association can
+        // issue them.
+        const issueReceipt = don.receiptMode !== "NONE"
 
         // Best-effort exercice link — never blocks, same reasoning as the other branches.
         const exercice = await resolveExerciceForDate(don.associationId, paidAt)
@@ -505,7 +524,7 @@ export async function POST(req: Request) {
           const assoc = don.association
           let pdfAttachment: { filename: string; content: Buffer } | undefined
 
-          if (assoc.canIssueTaxReceipts) {
+          if (assoc.canIssueTaxReceipts && issueReceipt) {
             const updatedDon = await prisma.don.findUnique({ where: { id: donId } })
             if (updatedDon) {
               try {
@@ -553,9 +572,10 @@ export async function POST(req: Request) {
               associationName:     assoc.name,
               amount:              Number(don.amount),
               paidAt,
-              canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+              canIssueTaxReceipts: assoc.canIssueTaxReceipts && issueReceipt,
               receiptNumber:       refreshed?.receiptNumber ?? undefined,
               donorType:           don.donorType,
+              deductibleAmount:    don.receiptMode === "PARTIAL" && don.deductibleAmount != null ? Number(don.deductibleAmount) : undefined,
               branding:            resolveDocumentBranding(assoc),
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
@@ -805,7 +825,18 @@ export async function POST(req: Request) {
     // ── SaaS subscription lifecycle ───────────────────────────────────────
     case "customer.subscription.created":
     case "customer.subscription.updated": {
-      const sub       = event.data.object as Stripe.Subscription
+      const sub = event.data.object as Stripe.Subscription
+
+      // MUST run before anything else in this handler — a donor's recurring-donation
+      // Subscription lands on this exact event type too (same platform Stripe account,
+      // Connect destination charges). Falling through into the Association logic below
+      // for one would silently overwrite an association's plan/subscriptionStatus based
+      // on a stranger's 5€/month donation. See the module for the full explanation.
+      if (isDonationSubscriptionEvent(sub)) {
+        await handleDonationSubscriptionSynced(sub)
+        break
+      }
+
       const newStatus = toSubscriptionStatus(sub.status)
 
       // Fetched (rather than a blind updateMany) so we can tell whether this transition
@@ -900,10 +931,29 @@ export async function POST(req: Request) {
     }
     case "customer.subscription.deleted": {
       const sub = event.data.object as Stripe.Subscription
+
+      // Same discrimination as customer.subscription.created/updated above — a donor
+      // stopping their recurring gift must never be able to cancel an association's
+      // Formwise subscription.
+      if (isDonationSubscriptionEvent(sub)) {
+        await handleDonationSubscriptionDeleted(sub)
+        break
+      }
+
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
         data:  { subscriptionStatus: "CANCELLED", suspendedAt: null, cancelAtPeriodEnd: false, currentPeriodEndsAt: null },
       })
+      break
+    }
+
+    // Every successful recurring-donation charge (including the very first one — see the
+    // module) — nothing here concerns platform billing, so unlike the shared subscription
+    // events above there's no existing logic to guard: this case simply doesn't exist for
+    // anything else on this endpoint.
+    case "invoice.paid": {
+      const invoice = event.data.object as Stripe.Invoice
+      await handleDonationInvoicePaid(invoice)
       break
     }
 
@@ -913,7 +963,14 @@ export async function POST(req: Request) {
     // find out once they're already locked out. This fires proactively, once per invoice
     // attempt, so they can fix the card before that happens.
     case "invoice.payment_failed": {
-      const invoice    = event.data.object as Stripe.Invoice
+      const invoice = event.data.object as Stripe.Invoice
+
+      // Discriminated by invoice.subscription → DonationSubscription lookup rather than
+      // metadata: Stripe doesn't copy a Subscription's metadata onto the invoices it
+      // generates, so metadata.kind isn't reliably present here the way it is on the
+      // Subscription object itself in the two handlers above.
+      if (await tryHandleDonationInvoicePaymentFailed(invoice, event.id)) break
+
       const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id
       if (!customerId) break
 
