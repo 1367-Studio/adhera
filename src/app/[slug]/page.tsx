@@ -6,6 +6,7 @@ import { SiteAboutSection }       from "@/components/site/sections/site-about-se
 import { SiteEventsSection }      from "@/components/site/sections/site-events-section"
 import { SiteActualitesSection }  from "@/components/site/sections/site-actualites-section"
 import { SiteMembershipSection }  from "@/components/site/sections/site-membership-section"
+import { SiteDonsSection }        from "@/components/site/sections/site-dons-section"
 import { SiteContactSection }     from "@/components/site/sections/site-contact-section"
 import { SiteNavbar }             from "@/components/site/site-navbar"
 import { SiteFooter }             from "@/components/site/site-footer"
@@ -28,7 +29,7 @@ async function getSiteData(slug: string) {
     where:  { slug },
     select: {
       name: true, slug: true, city: true, country: true,
-      sitePublished: true, siteConfig: true, modules: true,
+      sitePublished: true, siteConfig: true, modules: true, canIssueTaxReceipts: true,
       membreTypes: { select: { id: true, name: true, color: true } },
     },
   })
@@ -71,6 +72,10 @@ async function getSiteData(slug: string) {
   return {
     name:        assoc.name,
     slug:        assoc.slug,
+    // Une section "dons" peut rester dans siteConfig après désactivation du module —
+    // c'est ce drapeau, pas la présence de la section, qui décide de son affichage.
+    donsEnabled: mods.dons,
+    canIssueTaxReceipts: assoc.canIssueTaxReceipts,
     city:        assoc.city,
     country:     assoc.country,
     config:      assoc.siteConfig as SiteConfig | null,
@@ -139,6 +144,10 @@ export default async function PublicSitePage(
               return (
                 <SiteMembershipSection key={section.id} section={section} slug={slug} membreTypes={data.membreTypes} color={color} />
               )
+            case "dons":
+              return data.donsEnabled
+                ? <SiteDonsSection key={section.id} section={section} slug={slug} color={color} canIssueTaxReceipts={data.canIssueTaxReceipts} />
+                : null
             case "contact":
               return <SiteContactSection key={section.id} section={section} city={data.city} country={data.country} />
           }

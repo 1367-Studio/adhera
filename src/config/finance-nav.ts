@@ -1,4 +1,6 @@
-import type { ElementType } from "react"
+// Typé `Icon` et non `ElementType` : la nav rend ces icônes en deux graisses
+// (contour/pleine) via NavIcon, ce qui exige la prop `weight` de Phosphor.
+import type { Icon } from "@phosphor-icons/react"
 import {
   GaugeIcon, ChartLineIcon, ArrowsLeftRightIcon, TrendUpIcon, TrendDownIcon,
   UploadSimpleIcon, CalculatorIcon, BankIcon, TagIcon, CalendarBlankIcon,
@@ -10,13 +12,13 @@ export type FinanceNavGroupKey = "synthese" | "transactions" | "comptabilite" | 
 export interface FinanceNavLeaf {
   key:         string
   href:        string
-  icon:        ElementType
+  icon:        Icon
   comingSoon?: boolean
 }
 
 export interface FinanceNavGroup {
   key:   FinanceNavGroupKey
-  icon:  ElementType
+  icon:  Icon
   items: FinanceNavLeaf[]
 }
 

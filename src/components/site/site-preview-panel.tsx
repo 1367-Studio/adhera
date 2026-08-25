@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { HandshakeIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { isColorDark } from "@/lib/color"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -232,6 +232,23 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
                       {membreTypes.length > 0 && <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />}
                       <div className="h-10 rounded-lg" style={{ background: color }} />
                     </div>
+                  </div>
+                </section>
+              )
+
+            // Pas de calque "non interactif" comme pour membership : la vraie section est
+            // un simple bouton vers /portal/[slug]/don, pas un formulaire — la rendre
+            // telle quelle (sans le lien) suffit et reste fidèle au rendu public.
+            case "dons":
+              return (
+                <section key={section.id} className="py-12 px-4">
+                  <div className="max-w-sm mx-auto text-center pointer-events-none select-none">
+                    <HandshakeIcon className="size-8 mx-auto mb-3" style={{ color }} />
+                    <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Faire un don"}</h2>
+                    {"body" in section && section.body && (
+                      <p className="text-gray-500 text-sm mb-6">{section.body}</p>
+                    )}
+                    <div className="h-10 rounded-lg" style={{ background: color }} />
                   </div>
                 </section>
               )

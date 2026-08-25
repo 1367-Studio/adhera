@@ -23,12 +23,13 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
     case "about":      return { id: newId(), type: "about",      title: defaultTitles.about,      content: "" }
     case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
     case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
+    case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "" }
     case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
     case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
   }
 }
 
-const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "membership", "contact"]
+const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "membership", "dons", "contact"]
 
 // Accordion panel
 function Panel({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
@@ -74,6 +75,7 @@ export function SiteControlsPanel({
     events:     tSections("events"),
     actualites: tSections("actualites"),
     membership: tSections("membership"),
+    dons:       tSections("dons"),
     contact:    tSections("contact"),
   }
   const defaultTitles: Record<SectionType, string> = {
@@ -82,6 +84,7 @@ export function SiteControlsPanel({
     events:     tDefaults("events"),
     actualites: tDefaults("actualites"),
     membership: tDefaults("membership"),
+    dons:       tDefaults("dons"),
     contact:    tDefaults("contact"),
   }
   const [editingSection, setEditingSection] = useState<SiteSection | null>(null)

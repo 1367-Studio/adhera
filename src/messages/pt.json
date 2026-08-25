@@ -3465,6 +3465,7 @@
       "events": "Próximos eventos",
       "actualites": "Notícias",
       "membership": "Junte-se à associação",
+      "dons": "Fazer uma doação",
       "contact": "Contato"
     },
     "defaultTitles": {
@@ -3472,6 +3473,7 @@
       "about": "Sobre",
       "events": "Próximos eventos",
       "membership": "Junte-se à associação",
+      "dons": "Fazer uma doação",
       "actualites": "Notícias",
       "contact": "Contato"
     },
@@ -3541,6 +3543,9 @@
       "membershipIntro": "Texto introdutório",
       "membershipIntroPlaceholder": "Preencha este formulário para solicitar associação…",
       "membershipHint": "As solicitações aparecem na lista de membros com status \"Pendente\".",
+      "donsIntro": "Texto introdutório",
+      "donsIntroPlaceholder": "Sua doação nos ajuda a financiar nossas ações ao longo do ano…",
+      "donsHint": "O botão leva à página de doação pública, acessível sem conta. O recibo fiscal é enviado automaticamente se a associação estiver habilitada a emiti-lo.",
       "contactHint": "Esta seção exibe automaticamente a cidade e o país configurados nas configurações da associação.",
       "cancel": "Cancelar",
       "apply": "Aplicar",
