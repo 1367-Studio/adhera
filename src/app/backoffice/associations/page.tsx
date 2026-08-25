@@ -1,8 +1,8 @@
-import Link       from "next/link"
-import type { Metadata } from "next"
-import { prisma } from "@/lib/prisma/client"
-import { Badge }  from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge"
 import { APP_NAME } from "@/config/brand"
+import { prisma } from "@/lib/prisma/client"
+import type { Metadata } from "next"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: `Associations — Backoffice ${APP_NAME}`,
