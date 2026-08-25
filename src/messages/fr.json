@@ -3518,6 +3518,7 @@
       "sections": "Sections",
       "noSections": "Aucune section. Ajoutez-en une ci-dessous.",
       "addSection": "Ajouter une section",
+      "donsModuleDisabled": "Module Dons désactivé — invisible sur le site public",
       "deleteSectionTitle": "Supprimer la section",
       "deleteSectionDescription": "Cette action est irréversible."
     },
