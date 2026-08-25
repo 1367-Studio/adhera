@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { SiteControlsPanel } from "@/components/site/site-controls-panel"
@@ -25,6 +25,7 @@ export function SiteView() {
   const t           = useTranslations("site.view")
   const { role }    = useCurrentUser()
   const canEdit     = ADMINS.includes(role)
+  const modules     = useModules()
 
   const { data: siteData, isLoading } = useSiteConfig()
   const saveMutation = useSaveSiteConfig()
@@ -159,6 +160,7 @@ export function SiteView() {
           canEdit={canEdit}
           siteUrl={siteData?.slug ? `/${siteData.slug}` : null}
           isSaving={saving || saveMutation.isPending}
+          donsModuleEnabled={modules.dons}
           onChange={updateConfig}
           onSave={save}
           onTogglePublish={togglePublish}
@@ -176,6 +178,7 @@ export function SiteView() {
           country={assoc?.country ?? "France"}
           membreTypes={membreTypes}
           events={events}
+          donsEnabled={modules.dons}
         />
       </div>
     </div>

@@ -776,15 +776,31 @@
   },
   "finances": {
     "nav": {
+      "root": "Finanças",
       "overview": "Visão geral",
-      "exercices": "Exercícios",
+      "previsionnel": "Previsional",
+      "exercices": "Exercícios fiscais",
       "accounts": "Contas",
       "income": "Receitas",
       "expenses": "Despesas",
       "import": "Importar",
       "reconciliation": "Reconciliação",
       "categories": "Categorias",
-      "reports": "Relatórios"
+      "reports": "Relatórios",
+      "bilan": "Balanço",
+      "compteResultat": "Demonstração de resultados",
+      "rapportsPersonnalises": "Relatórios personalizados",
+      "comingSoonTag": "(brevemente)",
+      "groups": {
+        "synthese": "Síntese",
+        "transactions": "Transações",
+        "comptabilite": "Contabilidade",
+        "rapports": "Relatórios"
+      }
+    },
+    "comingSoon": {
+      "title": "Brevemente disponível",
+      "description": "Esta funcionalidade está em desenvolvimento."
     },
     "categoryForm": {
       "name": "Nome",
@@ -3461,6 +3477,7 @@
       "events": "Próximos eventos",
       "actualites": "Notícias",
       "membership": "Junte-se à associação",
+      "dons": "Fazer um donativo",
       "contact": "Contacto"
     },
     "defaultTitles": {
@@ -3468,6 +3485,7 @@
       "about": "Sobre",
       "events": "Próximos eventos",
       "membership": "Junte-se à associação",
+      "dons": "Fazer um donativo",
       "actualites": "Notícias",
       "contact": "Contacto"
     },
@@ -3512,6 +3530,7 @@
       "sections": "Secções",
       "noSections": "Nenhuma secção. Adicione uma abaixo.",
       "addSection": "Adicionar uma secção",
+      "donsModuleDisabled": "Módulo de donativos desativado — oculto no site público",
       "deleteSectionTitle": "Eliminar a secção",
       "deleteSectionDescription": "Esta ação é irreversível."
     },
@@ -3537,6 +3556,9 @@
       "membershipIntro": "Texto introdutório",
       "membershipIntroPlaceholder": "Preencha este formulário para solicitar associação…",
       "membershipHint": "Os pedidos aparecem na lista de membros com o estado \"Pendente\".",
+      "donsIntro": "Texto introdutório",
+      "donsIntroPlaceholder": "O seu donativo ajuda-nos a financiar as nossas ações ao longo do ano…",
+      "donsHint": "O botão remete para a página de donativos pública, acessível sem conta. O recibo fiscal é enviado automaticamente se a associação estiver habilitada a emiti-lo.",
       "contactHint": "Esta secção mostra automaticamente a cidade e o país configurados nas definições da associação.",
       "cancel": "Cancelar",
       "apply": "Aplicar",

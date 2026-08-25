@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useTranslations } from "next-intl"
-import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,12 +23,13 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
     case "about":      return { id: newId(), type: "about",      title: defaultTitles.about,      content: "" }
     case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
     case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
+    case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "" }
     case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
     case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
   }
 }
 
-const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "membership", "contact"]
+const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "membership", "dons", "contact"]
 
 // Accordion panel
 function Panel({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
@@ -49,20 +50,21 @@ function Panel({ title, children, defaultOpen = false }: { title: string; childr
 }
 
 type Props = {
-  config:           SiteConfig | null
-  published:        boolean
-  isDirty:          boolean
-  canEdit:          boolean
-  siteUrl:          string | null
-  isSaving:         boolean
-  onChange:         (patch: Partial<SiteConfig>) => void
-  onSave:           () => void
-  onTogglePublish:  () => void
-  onFilePending:    (blobUrl: string, file: File, prefix: string) => void
+  config:            SiteConfig | null
+  published:         boolean
+  isDirty:           boolean
+  canEdit:           boolean
+  siteUrl:           string | null
+  isSaving:          boolean
+  donsModuleEnabled: boolean
+  onChange:          (patch: Partial<SiteConfig>) => void
+  onSave:            () => void
+  onTogglePublish:   () => void
+  onFilePending:     (blobUrl: string, file: File, prefix: string) => void
 }
 
 export function SiteControlsPanel({
-  config, published, isDirty, canEdit, siteUrl, isSaving, onChange, onSave, onTogglePublish, onFilePending,
+  config, published, isDirty, canEdit, siteUrl, isSaving, donsModuleEnabled, onChange, onSave, onTogglePublish, onFilePending,
 }: Props) {
   const t             = useTranslations("site.controls")
   const tCommon       = useTranslations("common")
@@ -74,6 +76,7 @@ export function SiteControlsPanel({
     events:     tSections("events"),
     actualites: tSections("actualites"),
     membership: tSections("membership"),
+    dons:       tSections("dons"),
     contact:    tSections("contact"),
   }
   const defaultTitles: Record<SectionType, string> = {
@@ -82,6 +85,7 @@ export function SiteControlsPanel({
     events:     tDefaults("events"),
     actualites: tDefaults("actualites"),
     membership: tDefaults("membership"),
+    dons:       tDefaults("dons"),
     contact:    tDefaults("contact"),
   }
   const [editingSection, setEditingSection] = useState<SiteSection | null>(null)
@@ -417,6 +421,11 @@ export function SiteControlsPanel({
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium truncate">{section.title || sectionLabels[section.type]}</p>
                   <p className="text-xs text-muted-foreground">{sectionLabels[section.type]}</p>
+                  {section.type === "dons" && !donsModuleEnabled && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                      {t("donsModuleDisabled")}
+                    </p>
+                  )}
                 </div>
 
                 {canEdit && (
@@ -443,18 +452,22 @@ export function SiteControlsPanel({
                 <div className="absolute bottom-full left-0 right-0 mb-1 z-20 bg-popover border rounded-lg shadow-md py-1">
                   {SECTION_TYPES.map(type => {
                     const used = existingTypes.has(type)
+                    const moduleOff = type === "dons" && !donsModuleEnabled
                     return (
                       <button
                         key={type}
                         onClick={() => !used && addSection(type)}
                         disabled={used}
+                        title={moduleOff ? t("donsModuleDisabled") : undefined}
                         className={cn(
-                          "w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between",
+                          "w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between gap-2",
                           used ? "opacity-40 cursor-not-allowed" : "hover:bg-muted"
                         )}
                       >
-                        <span>{sectionLabels[type]}</span>
-                        {used && <CheckIcon className="size-3 shrink-0" />}
+                        <span className="truncate">{sectionLabels[type]}</span>
+                        {used
+                          ? <CheckIcon className="size-3 shrink-0" />
+                          : moduleOff && <WarningCircleIcon className="size-3 shrink-0 text-amber-600 dark:text-amber-400" />}
                       </button>
                     )
                   })}

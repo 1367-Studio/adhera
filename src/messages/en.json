@@ -764,7 +764,9 @@
   },
   "finances": {
     "nav": {
+      "root": "Finance",
       "overview": "Overview",
+      "previsionnel": "Forecast",
       "exercices": "Fiscal years",
       "accounts": "Accounts",
       "income": "Income",
@@ -772,7 +774,21 @@
       "import": "Import",
       "reconciliation": "Reconciliation",
       "categories": "Categories",
-      "reports": "Reports"
+      "reports": "Reports",
+      "bilan": "Balance sheet",
+      "compteResultat": "Income statement",
+      "rapportsPersonnalises": "Custom reports",
+      "comingSoonTag": "(coming soon)",
+      "groups": {
+        "synthese": "Summary",
+        "transactions": "Transactions",
+        "comptabilite": "Accounting",
+        "rapports": "Reports"
+      }
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "description": "This feature is currently in development."
     },
     "categoryForm": {
       "name": "Name",
@@ -3449,6 +3465,7 @@
       "events": "Upcoming events",
       "actualites": "News",
       "membership": "Join the association",
+      "dons": "Make a donation",
       "contact": "Contact"
     },
     "defaultTitles": {
@@ -3456,6 +3473,7 @@
       "about": "About",
       "events": "Upcoming events",
       "membership": "Join the association",
+      "dons": "Make a donation",
       "actualites": "News",
       "contact": "Contact"
     },
@@ -3500,6 +3518,7 @@
       "sections": "Sections",
       "noSections": "No sections. Add one below.",
       "addSection": "Add a section",
+      "donsModuleDisabled": "Donations module disabled — hidden on the public site",
       "deleteSectionTitle": "Delete the section",
       "deleteSectionDescription": "This action is irreversible."
     },
@@ -3525,6 +3544,9 @@
       "membershipIntro": "Introductory text",
       "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
+      "donsIntro": "Introductory text",
+      "donsIntroPlaceholder": "Your donation helps us fund our work throughout the year…",
+      "donsHint": "The button links to the public donation page, which works without an account. The tax receipt is sent automatically if the association is authorised to issue one.",
       "contactHint": "This section automatically displays the city and country configured in the association's settings.",
       "cancel": "Cancel",
       "apply": "Apply",

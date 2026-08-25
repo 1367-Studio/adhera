@@ -31,6 +31,7 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
     events:     tSections("events"),
     actualites: tSections("actualites"),
     membership: tSections("membership"),
+    dons:       tSections("dons"),
     contact:    tSections("contact"),
   }
   const [draft, setDraft]           = useState<SiteSection>(section)
@@ -210,6 +211,23 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                 />
                 <p className="text-xs text-muted-foreground">
                   {t("membershipHint")}
+                </p>
+              </div>
+            )}
+
+            {/* Dons */}
+            {draft.type === "dons" && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">{t("donsIntro")}</Label>
+                <Textarea
+                  value={"body" in draft ? draft.body : ""}
+                  onChange={e => set("body", e.target.value as never)}
+                  rows={4}
+                  maxLength={500}
+                  placeholder={t("donsIntroPlaceholder")}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {t("donsHint")}
                 </p>
               </div>
             )}

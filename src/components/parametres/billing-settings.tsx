@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import { CheckCircleIcon, ClockIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { apiErrorMessage } from "@/lib/api-error"
 import { CancelPlanDialog } from "@/components/parametres/cancel-plan-dialog"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { apiErrorMessage } from "@/lib/api-error"
+import { CheckCircleIcon, ClockIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 type BillingStatus = {
   subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
@@ -26,7 +26,7 @@ function useStatusConfig() {
   const t = useTranslations("parametres.billing")
   return {
     TRIAL:     { label: t("status.trial"),     variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
-    ACTIVE:    { label: t("status.active"),    variant: "default"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
+    ACTIVE:    { label: t("status.active"),    variant: "success"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
     PAST_DUE:  { label: t("status.pastDue"),   variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
     SUSPENDED: { label: t("status.suspended"), variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
     CANCELLED: { label: t("status.cancelled"), variant: "secondary"   as const, icon: <XCircleIcon       className="size-3.5" /> },
@@ -91,7 +91,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
           </p>
         </div>
         {!isLoading && cfg && (
-          <Badge variant={cfg.variant} className="gap-1.5">
+          <Badge variant={cfg.variant} className="gap-1.5 border-border ">
             {cfg.icon}
             {cfg.label}
           </Badge>
@@ -173,7 +173,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
               </Button>
 
               {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (
-                <Button size="sm" variant="outline" onClick={() => setCancelDialogOpen(true)}>
+                <Button size="sm" variant="destructive" onClick={() => setCancelDialogOpen(true)}>
                   {t("cancelPlan")}
                 </Button>
               )}

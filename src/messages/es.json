@@ -764,15 +764,31 @@
   },
   "finances": {
     "nav": {
+      "root": "Finanzas",
       "overview": "Resumen",
-      "exercices": "Ejercicios",
+      "previsionnel": "Previsional",
+      "exercices": "Ejercicios fiscales",
       "accounts": "Cuentas",
       "income": "Ingresos",
       "expenses": "Gastos",
       "import": "Importar",
       "reconciliation": "Conciliación",
       "categories": "Categorías",
-      "reports": "Informes"
+      "reports": "Informes",
+      "bilan": "Balance",
+      "compteResultat": "Cuenta de resultados",
+      "rapportsPersonnalises": "Informes personalizados",
+      "comingSoonTag": "(próximamente)",
+      "groups": {
+        "synthese": "Síntesis",
+        "transactions": "Transacciones",
+        "comptabilite": "Contabilidad",
+        "rapports": "Informes"
+      }
+    },
+    "comingSoon": {
+      "title": "Próximamente",
+      "description": "Esta funcionalidad está actualmente en desarrollo."
     },
     "categoryForm": {
       "name": "Nombre",
@@ -3449,6 +3465,7 @@
       "events": "Próximos eventos",
       "actualites": "Noticias",
       "membership": "Únete a la asociación",
+      "dons": "Hacer una donación",
       "contact": "Contacto"
     },
     "defaultTitles": {
@@ -3456,6 +3473,7 @@
       "about": "Acerca de",
       "events": "Próximos eventos",
       "membership": "Únete a la asociación",
+      "dons": "Hacer una donación",
       "actualites": "Noticias",
       "contact": "Contacto"
     },
@@ -3500,6 +3518,7 @@
       "sections": "Secciones",
       "noSections": "Ninguna sección. Añada una a continuación.",
       "addSection": "Añadir una sección",
+      "donsModuleDisabled": "Módulo de donaciones desactivado — oculto en el sitio público",
       "deleteSectionTitle": "Eliminar la sección",
       "deleteSectionDescription": "Esta acción es irreversible."
     },
@@ -3525,6 +3544,9 @@
       "membershipIntro": "Texto introductorio",
       "membershipIntroPlaceholder": "Complete este formulario para solicitar unirse a la asociación…",
       "membershipHint": "Las solicitudes aparecen en la lista de miembros con estado \"Pendiente\".",
+      "donsIntro": "Texto introductorio",
+      "donsIntroPlaceholder": "Tu donación nos ayuda a financiar nuestras acciones durante todo el año…",
+      "donsHint": "El botón enlaza con la página de donación pública, accesible sin cuenta. El recibo fiscal se envía automáticamente si la asociación está habilitada para emitirlo.",
       "contactHint": "Esta sección muestra automáticamente la ciudad y el país configurados en los ajustes de la asociación.",
       "cancel": "Cancelar",
       "apply": "Aplicar",

@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
+import { DonShareCard } from "@/components/dons/don-share-card"
 
 type Don = {
   id:            string
@@ -146,6 +147,9 @@ export default function DonsPage() {
   return (
     <div className="space-y-4">
       <PageHeader title="Dons" description="Suivi des dons reçus en ligne." />
+
+      {/* Lien + QR de la page de don publique — à diffuser sur flyers, affiches, réseaux. */}
+      <DonShareCard />
 
       {/* KPI cards */}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
