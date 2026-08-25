@@ -1,19 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-import { useForm, Controller, useFieldArray, type Resolver } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useTranslations } from "next-intl"
-import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
-import { cotisationSchema, cotisationUpdateSchema, type CotisationInput } from "@/lib/schemas"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { CurrencyField, CurrencyInput } from "@/components/ui/currency-field"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { TextareaField } from "@/components/ui/textarea-field"
-import { CurrencyField, CurrencyInput } from "@/components/ui/currency-field"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { cotisationSchema, cotisationUpdateSchema, type CotisationInput } from "@/lib/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { useTranslations } from "next-intl"
+import { useEffect, useState } from "react"
+import { Controller, useFieldArray, useForm, type Resolver } from "react-hook-form"
+import { toast } from "sonner"
 
 type MembreOption = { id: string; firstName: string; lastName: string }
 type RawCotisationStatus = "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
@@ -87,7 +87,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
   ]
 
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CotisationInput>({
-    resolver: zodResolver(editMode ? cotisationUpdateSchema : cotisationSchema) as Resolver<CotisationInput>,
+    resolver: zodResolver(editMode ? cotisationUpdateSchema : cotisationSchema) as unknown as Resolver<CotisationInput>,
     defaultValues: { status: null, year: new Date().getFullYear(), installments: [], ...defaultValues },
     mode: "onSubmit",
   })

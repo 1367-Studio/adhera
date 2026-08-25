@@ -36,8 +36,12 @@ export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, he
         {(headerShowMembres || headerShowRegister) && (
           <div className="flex items-center gap-2">
             {headerShowRegister && (
+              // Pointait vers `#inscription`, une ancre qui n'existe nulle part dans la
+              // page : le bouton rechargeait la même page sans rien faire. La page
+              // d'inscription du portail, elle, existe toujours (aucun réglage ne la
+              // désactive) et rattache le compte au membre existant s'il y en a un.
               <Link
-                href={`/${portalSlug}#inscription`}
+                href={`/portal/${portalSlug}/register`}
                 className="text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
                 style={{ color, borderColor: color }}
               >

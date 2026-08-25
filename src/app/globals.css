@@ -194,15 +194,15 @@ header.sticky {
   flex-shrink: 0 !important;
 }
 
-/* L'élément actif se signale par la couleur primaire, pas seulement par un fond gris :
-   sur --sidebar-accent (#f1f5f9) un texte quasi noir se distinguait à peine d'un élément
-   inactif. --sidebar-primary est défini par thème, donc la même règle vaut en clair
-   comme en sombre (l'ancien bloc .dark, qui ne faisait que répéter les mêmes valeurs,
-   forcerait sinon le texte à revenir en blanc ici). */
+/* L'élément actif est un aplat plein de la couleur primaire, texte en négatif.
+   --sidebar-primary et --sidebar-primary-foreground sont définis par thème et pensés
+   comme une paire : #023D9D + blanc en clair (9.74:1), #6fa2fb + #002160 en sombre —
+   du blanc sur le bleu clair du mode sombre tomberait à ~2:1, illisible. Une seule
+   règle suffit donc pour les deux thèmes. */
 [data-sidebar="menu-button"][data-active="true"],
 [data-sidebar="menu-button"][data-active] {
-  background: var(--sidebar-accent) !important;
-  color: var(--sidebar-primary) !important;
+  background: var(--sidebar-primary) !important;
+  color: var(--sidebar-primary-foreground) !important;
   font-weight: 600 !important;
 }
 
@@ -414,4 +414,115 @@ header.sticky {
 }
 .driver-popover.adhera-tour .driver-popover-arrow {
   border-color: var(--popover);
+}
+
+/* ── Fond des coquilles applicatives ──────────────────────────────────────── */
+/* Porté par le SidebarProvider du dashboard ET par celui du portail membre : les
+   deux coquilles ont la même structure (SidebarProvider > Sidebar variant="inset"
+   + SidebarInset), donc la même classe suffit et les deux rendus restent alignés.
+   Le nom `dashboard-canvas` est historique — il ne s'agit plus du seul dashboard. */
+/* L'illustration est posée sous toute la région du dashboard, recouverte d'un
+   aplat quasi opaque : c'est l'alpha de --dashboard-veil qui décide de sa
+   discrétion. Plus il est haut, plus l'image s'efface. À 92% elle se lit comme
+   un filigrane et les tableaux restent nets ; en dessous de ~90% le texte perd
+   du contraste sur les zones claires du ciel.
+
+   Le voile est écrit en rgb(... / alpha) littéral et NON en
+   color-mix(in srgb, var(--background) ...) : Lightning CSS génère pour
+   color-mix une déclaration de repli destinée aux navigateurs qui ne le
+   supportent pas, et ce repli vaut var(--background) **sans transparence** —
+   soit un aplat 100% opaque qui masquait complètement l'image. Les deux valeurs
+   ci-dessous doivent donc suivre --background si celui-ci change (#f8fafc clair,
+   #000000 sombre).
+
+   background-attachment: fixed — l'image reste calée pendant le défilement,
+   sinon un fond en `cover` se recadre à chaque scroll et attire l'oeil.
+
+   Le flou est cuit dans le fichier (logo-dashboard-blur.webp, sigma 16) plutôt
+   qu'appliqué en `filter: blur()` : un filtre sur un fond `fixed` plein écran se
+   recompose à chaque frame de défilement, et il aurait fallu un pseudo-élément
+   pour ne pas flouter aussi le contenu. Flouter en amont supprime les deux
+   problèmes — et fait tomber l'asset de 2 529 Ko à 22 Ko, une image floue se
+   compressant très bien. Pour changer l'intensité, régénérer avec sharp :
+     sharp(src).resize({width:1400}).blur(SIGMA).webp({quality:82}) */
+:root {
+  --dashboard-veil:         rgba(248, 250, 252, 0);
+  --dashboard-panel:        rgb(248 250 252 / 62%);
+  --dashboard-panel-radius: 0.75rem;
+}
+
+.dark {
+  /* Le fond sombre est noir pur : à alpha égal l'illustration ressort plus
+     qu'en clair, d'où un voile légèrement plus opaque ici. */
+  --dashboard-veil:  rgb(0 0 0 / 94%);
+  --dashboard-panel: rgb(0 0 0 / 62%);
+}
+
+.dashboard-canvas {
+  background-image:
+    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
+    url("/app/logo-dashboard-blur.webp");
+  background-size:       cover;
+  background-position:   center;
+  background-attachment: fixed;
+  background-repeat:     no-repeat;
+}
+
+/* Pas de parallaxe pour qui n'en veut pas : `fixed` produit un décalage au
+   défilement qui peut gêner. */
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-canvas { background-attachment: scroll; }
+}
+
+/* Le fond est porté par le wrapper (SidebarProvider). SidebarInset peint par-dessus
+   un `bg-background` opaque : sans le neutraliser, l'image existe mais reste
+   entièrement recouverte. On ne rend transparente QUE la zone de contenu.
+
+   La surface interne de la barre latérale garde délibérément son `bg-sidebar` : la
+   rendre transparente elle aussi posait la navigation à même l'illustration, sans
+   aucun contraste garanti derrière les libellés. La barre latérale reste donc un
+   aplat lisible, et l'image n'apparaît que dans la zone de contenu — où les cartes
+   et tableaux ont leur propre `bg-card`.
+
+   Ciblé par data-slot et scopé sous .dashboard-canvas : le portail réutilise ces
+   mêmes composants et doit conserver ses fonds opaques. */
+.dashboard-canvas [data-slot="sidebar-inset"] {
+  /* Pas totalement transparent : une surface légèrement laiteuse pose le texte brut
+     de la zone de contenu (descriptions, états vides, libellés muted) sur un fond
+     tenu, et rend surtout l'arrondi visible — un panneau transparent au-dessus de
+     la même image que le fond n'a aucun bord à arrondir. Mettre l'alpha à 0 pour
+     une image pleinement nette, au prix du contraste sur le texte. */
+  background-color: var(--dashboard-panel);
+}
+
+/* Coins arrondis : la barre latérale (variant=inset lui donne déjà un p-2, donc elle
+   flotte) et la zone de contenu deviennent deux panneaux distincts posés sur le fond.
+   Même rayon que celui que SidebarInset applique déjà en variant=inset, pour que les
+   deux angles s'accordent. */
+.dashboard-canvas [data-slot="sidebar-inner"] {
+  border-radius: var(--dashboard-panel-radius);
+}
+
+@media (min-width: 768px) {
+  .dashboard-canvas [data-slot="sidebar-inset"] {
+    border-radius: var(--dashboard-panel-radius);
+  }
+}
+
+/* Le premier enfant de la zone de contenu (le header, ou le bandeau d'impayé quand
+   il s'affiche) peint son propre aplat par-dessus les angles hauts du panneau : sans
+   ça, le haut redevient carré alors que les trois autres coins sont arrondis.
+
+   `:first-child` plutôt que de viser `header` : PastDueBanner ne rend rien du tout
+   quand l'abonnement est sain, mais passe devant le header quand il s'affiche — la
+   règle suit ce qui est réellement en tête.
+
+   Et surtout pas `overflow: hidden` sur le panneau, qui serait pourtant la solution
+   évidente : le header est `sticky top-0`, un ancêtre en overflow hidden en fait son
+   conteneur de défilement et casse le collage. */
+@media (min-width: 768px) {
+  .dashboard-canvas [data-slot="sidebar-inset"] > :first-child {
+    border-top-left-radius:  var(--dashboard-panel-radius);
+    border-top-right-radius: var(--dashboard-panel-radius);
+  }
 }

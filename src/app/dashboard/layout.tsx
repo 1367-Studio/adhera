@@ -82,7 +82,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding}>
       <TopLoader />
-      <SidebarProvider>
+      <SidebarProvider className="dashboard-canvas">
         <AppSidebar />
         <SidebarInset>
           <PastDueBanner />
