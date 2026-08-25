@@ -9,6 +9,7 @@ import { SidebarMenuSubItem, SidebarMenuSubButton } from "@/components/ui/sideba
 import {
   DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
+import { NavIcon } from "@/components/layout/nav-icon"
 import { cn } from "@/lib/utils"
 
 interface FinanceNavTreeProps {
@@ -98,11 +99,15 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
                 onClick={() => toggleGroup(group.key)}
                 title={t(`groups.${group.key}`)}
                 className={cn(
-                  "flex h-7 w-full items-center gap-2 rounded-sm px-2 text-xs text-sidebar-foreground transition-colors hover:bg-sidebar-accent",
-                  isGroupActive && !isOpen && "font-medium",
+                  // text-sm et size-4 comme SidebarMenuSubButton : ces en-têtes de groupe
+                  // sont les frères directs de Devis/Factures/Fournisseurs/Dons dans la
+                  // même liste — en text-xs/size-3.5 ils paraissaient d'un niveau
+                  // inférieur alors qu'ils sont au même.
+                  "group/nav-item flex h-7 w-full items-center gap-2 rounded-sm px-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-primary",
+                  isGroupActive && !isOpen && "bg-sidebar-accent font-medium text-sidebar-primary",
                 )}
               >
-                <group.icon className="size-3.5 shrink-0" />
+                <NavIcon icon={group.icon} className="size-4" />
                 <span className="truncate">{t(`groups.${group.key}`)}</span>
                 <CaretRightIcon className={cn("ml-auto size-3 shrink-0 transition-transform", isOpen && "rotate-90")} />
               </button>
@@ -118,7 +123,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
                         onClick={onNavigate}
                         title={t(leaf.key)}
                       >
-                        <leaf.icon />
+                        <NavIcon icon={leaf.icon} className="size-4" />
                         <span className="truncate">{t(leaf.key)}</span>
                         {leaf.comingSoon && (
                           <span className="shrink-0 text-xs text-muted-foreground/60">

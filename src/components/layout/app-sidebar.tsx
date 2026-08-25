@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FinanceNavTree } from "@/components/layout/finance-nav-tree"
+import type { Icon } from "@phosphor-icons/react"
+import { NavIcon } from "@/components/layout/nav-icon"
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
@@ -35,7 +37,7 @@ type CategoryKey = "adherents" | "communication" | "finances" | "outils"
 interface NavItem {
   key:          string
   href:         string
-  icon:         React.ElementType
+  icon:         Icon
   roles:        UserRole[]
   moduleKey?:   keyof AssocModules
   categoryKey?: CategoryKey
@@ -44,7 +46,7 @@ interface NavItem {
 const MANAGERS: UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
-const CATEGORIES: { key: CategoryKey; icon: React.ElementType }[] = [
+const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
   { key: "adherents",      icon: UsersThreeIcon },
   { key: "communication",  icon: ChatsCircleIcon },
   { key: "finances",       icon: MoneyIcon },
@@ -277,7 +279,7 @@ export function AppSidebar() {
                       tooltip={t(item.key)}
                       onClick={closeMobile}
                     >
-                      <item.icon />
+                      <NavIcon icon={item.icon} className="size-5" />
                       <span>{t(item.key)}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -298,7 +300,7 @@ export function AppSidebar() {
                       {isFlyout ? (
                         <DropdownMenu>
                           <DropdownMenuTrigger render={<SidebarMenuButton isActive={isCatActive} tooltip={t(`categories.${cat.key}`)} />}>
-                            <cat.icon />
+                            <NavIcon icon={cat.icon} className="size-5" />
                             <span>{t(`categories.${cat.key}`)}</span>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent side="right" align="start">
@@ -326,7 +328,7 @@ export function AppSidebar() {
                             aria-expanded={isOpen}
                             onClick={() => toggleCategory(cat.key)}
                           >
-                            <cat.icon />
+                            <NavIcon icon={cat.icon} className="size-5" />
                             <span>{t(`categories.${cat.key}`)}</span>
                             <span className="ml-auto flex items-center gap-1.5">
                               {cat.key === "communication" && supportUnreadCount > 0 && !isOpen && (
@@ -347,7 +349,7 @@ export function AppSidebar() {
                                       isActive={isActive(item.href, pathname)}
                                       onClick={closeMobile}
                                     >
-                                      <item.icon />
+                                      <NavIcon icon={item.icon} className="size-4" />
                                       <span>{t(item.key)}</span>
                                       {item.key === "suporte" && supportUnreadCount > 0 && (
                                         <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
@@ -378,7 +380,7 @@ export function AppSidebar() {
                       tooltip={t(item.key)}
                       onClick={closeMobile}
                     >
-                      <item.icon />
+                      <NavIcon icon={item.icon} className="size-5" />
                       <span>{t(item.key)}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

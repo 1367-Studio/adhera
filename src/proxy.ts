@@ -17,7 +17,11 @@ export async function proxy(request: NextRequest) {
   // accounts, which aren't tied to a single association's billing.
   const isLocked = isNotSuperAdmin && (user?.subscriptionStatus === "CANCELLED" || user?.subscriptionStatus === "SUSPENDED")
 
-  const isPortalPublic   = /^\/portal\/[^/]+\/(login|register)/.test(pathname)
+  // `don` is the standalone public donation page: a stranger with no account must be able
+  // to hit the URL, pay, and receive the reçu fiscal by email (POST /api/public/[slug]/don
+  // is unauthenticated and IP-rate-limited for exactly that). Anchored with (\/|$) so `don`
+  // does NOT also open up `/portal/[slug]/dons`, the members-only donation history.
+  const isPortalPublic   = /^\/portal\/[^/]+\/(login|register|don)(\/|$)/.test(pathname)
   const portalMatch      = pathname.match(/^\/portal\/([^/]+)/)
   const isDashboard      = pathname.startsWith("/dashboard")
   const isBackoffice     = pathname.startsWith("/backoffice")

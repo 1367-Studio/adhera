@@ -1,4 +1,4 @@
-export type SectionType = "hero" | "about" | "events" | "actualites" | "membership" | "contact"
+export type SectionType = "hero" | "about" | "events" | "actualites" | "membership" | "dons" | "contact"
 
 export type HeroSection = {
   id:          string
@@ -38,6 +38,17 @@ export type MembershipSection = {
   body:  string
 }
 
+// Renvoie vers /portal/[slug]/don, la page de don publique (accessible sans compte —
+// voir src/proxy.ts). Volontairement un simple appel à l'action et non un formulaire :
+// le don passe par Stripe Checkout, et dupliquer le formulaire ici dupliquerait aussi
+// la validation SIRET, le choix particulier/entreprise et la gestion du reçu fiscal.
+export type DonsSection = {
+  id:    string
+  type:  "dons"
+  title: string
+  body:  string
+}
+
 export type ContactSection = {
   id:    string
   type:  "contact"
@@ -50,6 +61,7 @@ export type SiteSection =
   | EventsSection
   | ActualitesSection
   | MembershipSection
+  | DonsSection
   | ContactSection
 
 export type FooterLink = { label: string; url: string }
@@ -81,5 +93,6 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   events:     "Prochains événements",
   actualites: "Actualités",
   membership: "Rejoindre l'association",
+  dons:       "Faire un don",
   contact:    "Contact",
 }

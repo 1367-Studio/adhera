@@ -194,17 +194,16 @@ header.sticky {
   flex-shrink: 0 !important;
 }
 
+/* L'élément actif se signale par la couleur primaire, pas seulement par un fond gris :
+   sur --sidebar-accent (#f1f5f9) un texte quasi noir se distinguait à peine d'un élément
+   inactif. --sidebar-primary est défini par thème, donc la même règle vaut en clair
+   comme en sombre (l'ancien bloc .dark, qui ne faisait que répéter les mêmes valeurs,
+   forcerait sinon le texte à revenir en blanc ici). */
 [data-sidebar="menu-button"][data-active="true"],
 [data-sidebar="menu-button"][data-active] {
   background: var(--sidebar-accent) !important;
-  color: var(--sidebar-accent-foreground) !important;
-  font-weight: 700 !important;
-}
-
-.dark [data-sidebar="menu-button"][data-active="true"],
-.dark [data-sidebar="menu-button"][data-active] {
-  background: var(--sidebar-accent) !important;
-  color: var(--sidebar-accent-foreground) !important;
+  color: var(--sidebar-primary) !important;
+  font-weight: 600 !important;
 }
 
 [data-sidebar="footer"] {

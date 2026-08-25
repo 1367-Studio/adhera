@@ -3465,6 +3465,7 @@
       "events": "Upcoming events",
       "actualites": "News",
       "membership": "Join the association",
+      "dons": "Make a donation",
       "contact": "Contact"
     },
     "defaultTitles": {
@@ -3472,6 +3473,7 @@
       "about": "About",
       "events": "Upcoming events",
       "membership": "Join the association",
+      "dons": "Make a donation",
       "actualites": "News",
       "contact": "Contact"
     },
@@ -3541,6 +3543,9 @@
       "membershipIntro": "Introductory text",
       "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
+      "donsIntro": "Introductory text",
+      "donsIntroPlaceholder": "Your donation helps us fund our work throughout the year…",
+      "donsHint": "The button links to the public donation page, which works without an account. The tax receipt is sent automatically if the association is authorised to issue one.",
       "contactHint": "This section automatically displays the city and country configured in the association's settings.",
       "cancel": "Cancel",
       "apply": "Apply",
