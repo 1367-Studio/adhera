@@ -11,7 +11,7 @@ import {
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon
 } from "@phosphor-icons/react/dist/ssr";
-import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
+import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription } from "@/hooks/use-membres"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -119,6 +119,14 @@ function getMeetingStatusBadge(t: Translator): Record<string, { label: string; v
   }
 }
 
+function getSubscriptionStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    ACTIVE:    { label: t("membres.detail.recurringSubscriptionStatus.active"),    variant: "default"     },
+    PAST_DUE:  { label: t("membres.detail.recurringSubscriptionStatus.pastDue"),   variant: "destructive" },
+    CANCELLED: { label: t("membres.detail.recurringSubscriptionStatus.cancelled"), variant: "secondary"   },
+  }
+}
+
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
 // Only what's needed to fetch a specific cotisation (via GET /api/cotisations/[id]) and open
@@ -144,6 +152,7 @@ export function MembreDetailView() {
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
+  const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
@@ -155,6 +164,7 @@ export function MembreDetailView() {
   const updateMutation          = useUpdateMembre(id)
   const deleteMutation          = useDeleteMembre()
   const createAccessMutation    = useCreateAccess()
+  const cancelSubscriptionMutation = useCancelCotisationSubscription()
   const createCotisationMutation = useCreateCotisation()
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
@@ -186,6 +196,16 @@ export function MembreDetailView() {
     try {
       await createAccessMutation.mutateAsync(id)
       toast.success(t("membres.detail.toasts.accessCreated"))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleCancelSubscription() {
+    try {
+      await cancelSubscriptionMutation.mutateAsync(id)
+      toast.success(t("membres.detail.toasts.subscriptionCancelled"))
+      setCancelSubscriptionOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -255,6 +275,7 @@ export function MembreDetailView() {
   const cotisationStatusBadge = getCotisationStatusBadge(t)
   const loanStatusBadge       = getLoanStatusBadge(t)
   const meetingStatusBadge    = getMeetingStatusBadge(t)
+  const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
   const participations        = membre.participations ?? []
@@ -448,6 +469,31 @@ export function MembreDetailView() {
           )}
         </div>
       </div>
+
+      {membre.cotisationSubscription && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 text-sm">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.recurringSubscription")}</span>
+            <span className="flex items-center gap-2">
+              <span className="font-medium tabular-nums">{t("membres.detail.recurringSubscriptionAmount", { amount: fmt(membre.cotisationSubscription.amount) })}</span>
+              <Badge variant={subscriptionStatusBadge[membre.cotisationSubscription.status].variant}>
+                {subscriptionStatusBadge[membre.cotisationSubscription.status].label}
+              </Badge>
+            </span>
+            {membre.cotisationSubscription.status !== "CANCELLED" && membre.cotisationSubscription.currentPeriodEndsAt && (
+              <span className="text-muted-foreground">
+                {t("membres.detail.recurringSubscriptionNextCharge", { date: format(new Date(membre.cotisationSubscription.currentPeriodEndsAt), "dd/MM/yyyy", { locale: fr }) })}
+              </span>
+            )}
+          </div>
+          {membre.cotisationSubscription.status !== "CANCELLED"
+            && (currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT" || currentUser.role === "TRESORIER") && (
+            <Button size="sm" variant="outline" onClick={() => setCancelSubscriptionOpen(true)}>
+              {t("membres.detail.cancelSubscriptionButton")}
+            </Button>
+          )}
+        </div>
+      )}
 
       <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : "historique"}>
         <TabsList>
@@ -670,6 +716,16 @@ export function MembreDetailView() {
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={cancelSubscriptionOpen}
+        onOpenChange={setCancelSubscriptionOpen}
+        title={t("membres.detail.cancelSubscriptionConfirmTitle")}
+        description={t("membres.detail.cancelSubscriptionConfirmDescription", { name: `${membre.firstName} ${membre.lastName}` })}
+        confirmLabel={t("membres.detail.cancelSubscriptionButton")}
+        loading={cancelSubscriptionMutation.isPending}
+        onConfirm={handleCancelSubscription}
       />
 
       {roleOpen && (

@@ -57,6 +57,7 @@
       "pageTitle": "Criar conta",
       "heading": "Criar conta",
       "subtitle": "{trialDays} dias de teste grátis · Sem compromisso · Cancelamento fácil",
+      "subtitleOffer": "Complete o seu registo para ativar a sua subscrição.",
       "alreadyAccount": "Já tem conta?",
       "signIn": "Iniciar sessão",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Erro",
         "startTrial": "Iniciar o meu teste grátis",
         "securePayment": "Pagamento seguro pela Stripe · Cancele antes de {days} dias para não pagar nada"
+      },
+      "offer": {
+        "invalidTitle": "Link inválido",
+        "invalidBody": "Este link de registo já não é válido. Contacte quem lho enviou para obter um novo.",
+        "phaseFixed": "{amount} durante {months} meses",
+        "phaseRecurring": "depois {amount}/mês",
+        "confirmButton": "Confirmar a minha subscrição",
+        "securePayment": "Pagamento seguro via Stripe."
       },
       "done": {
         "title": "Conta criada com sucesso!",
@@ -2178,6 +2187,252 @@
       }
     }
   },
+  "donationForms": {
+    "title": "Donativos",
+    "description": "Formulários de donativo, donativos recebidos e recibos fiscais.",
+    "newForm": "Novo formulário",
+    "duplicateSuffix": "(cópia)",
+    "tabs": {
+      "forms": "Formulários",
+      "donations": "Donativos recebidos",
+      "receipts": "Recibos fiscais"
+    },
+    "formStatus": {
+      "draft": "Rascunho",
+      "published": "Publicado",
+      "archived": "Arquivado"
+    },
+    "newFormModal": {
+      "title": "Novo formulário de donativo",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ex. Campanha de fim de ano",
+      "createButton": "Criar"
+    },
+    "formsView": {
+      "columns": {
+        "form": "Formulário",
+        "status": "Estado",
+        "donors": "Doadores",
+        "total": "Total angariado",
+        "created": "Criado em"
+      },
+      "noForms": "Nenhum formulário de donativo",
+      "actions": {
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "publish": "Publicar",
+        "unpublish": "Despublicar",
+        "archive": "Arquivar",
+        "delete": "Eliminar"
+      },
+      "deleteTitle": "Eliminar este formulário?",
+      "deleteDescription": "O formulário “{title}” será eliminado definitivamente.",
+      "toasts": {
+        "created": "Formulário criado",
+        "createError": "Erro ao criar",
+        "duplicated": "Formulário duplicado",
+        "duplicateError": "Erro ao duplicar",
+        "deleted": "Formulário eliminado",
+        "deleteError": "Erro ao eliminar",
+        "statusUpdated": "Estado atualizado",
+        "statusError": "Erro ao atualizar o estado"
+      }
+    },
+    "donationsView": {
+      "columns": {
+        "donor": "Doador",
+        "form": "Formulário",
+        "standalone": "Página autónoma",
+        "message": "Mensagem",
+        "date": "Data",
+        "amount": "Valor",
+        "method": "Meio"
+      },
+      "noDonations": "Nenhum donativo registado",
+      "totalLabel": "Total {year}",
+      "donorsLabel": "Doadores",
+      "averageLabel": "Donativo médio",
+      "pendingTitle": "A aguardar cobrança",
+      "encaisserButton": "Marcar como recebido",
+      "paymentMethod": {
+        "especes": "Numerário",
+        "cheque": "Cheque",
+        "virement": "Transferência"
+      },
+      "toasts": {
+        "encaisse": "Donativo marcado como recebido"
+      }
+    },
+    "receiptsView": {
+      "columns": {
+        "receiptNumber": "Nº de recibo",
+        "donor": "Doador",
+        "issuedAt": "Emitido em",
+        "amount": "Valor"
+      },
+      "noReceipts": "Nenhum recibo fiscal emitido"
+    },
+    "detail": {
+      "backToList": "Voltar aos donativos",
+      "notFound": "Formulário não encontrado",
+      "titleLabel": "Título do formulário",
+      "duplicateButton": "Duplicar",
+      "deleteButton": "Eliminar",
+      "publishButton": "Publicar",
+      "unpublishButton": "Despublicar",
+      "copyLinkButton": "Copiar link",
+      "archiveButton": "Arquivar",
+      "toasts": {
+        "saved": "Alterações guardadas",
+        "saveError": "Erro ao guardar",
+        "linkCopied": "Link copiado",
+        "linkCopyError": "Não foi possível copiar — selecione o link manualmente."
+      },
+      "steps": {
+        "info": {
+          "title": "Informações gerais",
+          "imageLabel": "Imagem",
+          "descriptionLabel": "Descrição",
+          "descriptionPlaceholder": "Apresente a sua campanha…",
+          "conditionsLabel": "Condições",
+          "conditionsPlaceholder": "Condições gerais do formulário…",
+          "requireCguvLabel": "Exigir assinatura das condições gerais",
+          "contactEmailLabel": "E-mail de contacto",
+          "contactPhoneLabel": "Telefone de contacto"
+        },
+        "tiers": {
+          "title": "Níveis",
+          "hint": "Valores propostos ao doador neste formulário.",
+          "noTiers": "Nenhum nível",
+          "addTier": "Adicionar nível",
+          "removeTier": "Remover nível",
+          "labelField": "Rótulo",
+          "labelPlaceholder": "Ex. Apoio pontual",
+          "amountField": "Valor (€)",
+          "freeAmountField": "Valor livre",
+          "receiptModeField": "Recibo fiscal",
+          "receiptNone": "Nenhum",
+          "receiptFull": "Integral",
+          "receiptPartial": "Parcial",
+          "deductibleAmountField": "Valor dedutível (€)",
+          "deductibleAmountRequiredError": "O valor dedutível é obrigatório para um recibo parcial",
+          "deductibleAmountExceedsError": "O valor dedutível não pode exceder o valor do donativo",
+          "kindField": "Tipo",
+          "kindOneOff": "Pontual",
+          "kindRecurring": "Recorrente",
+          "intervalField": "Periodicidade",
+          "intervalMonth": "Mensal",
+          "intervalQuarter": "Trimestral",
+          "intervalYear": "Anual",
+          "labelRequiredError": "Cada nível precisa de um rótulo",
+          "amountRequiredError": "É necessário um valor para um nível de valor fixo",
+          "intervalRequiredError": "É necessária uma periodicidade para um nível recorrente",
+          "saved": "Níveis guardados",
+          "saveTiers": "Guardar níveis"
+        },
+        "fields": {
+          "title": "Formulário",
+          "standardFieldsHint": "Campos solicitados ao doador",
+          "addressLabel": "Morada",
+          "birthDateLabel": "Data de nascimento",
+          "phoneLabel": "Telefone",
+          "mobileLabel": "Telemóvel",
+          "genderLabel": "Género",
+          "requirement": {
+            "hidden": "Oculto",
+            "optional": "Opcional",
+            "required": "Obrigatório"
+          },
+          "customFieldsTitle": "Campos personalizados",
+          "customFieldsHint": "Campos adicionais específicos deste formulário.",
+          "noCustomFields": "Nenhum campo personalizado",
+          "addField": "Adicionar campo",
+          "removeField": "Remover campo",
+          "fieldLabel": "Rótulo",
+          "fieldLabelPlaceholder": "Ex. Empresa",
+          "fieldType": "Tipo",
+          "fieldRequired": "Obrigatório",
+          "typeText": "Texto",
+          "typeNumber": "Número",
+          "labelRequiredError": "Cada campo precisa de um rótulo",
+          "saved": "Campos guardados",
+          "saveFields": "Guardar campos"
+        },
+        "payment": {
+          "title": "Pagamento",
+          "allowOnlineLabel": "Pagamento online (Stripe)",
+          "allowCashLabel": "Numerário",
+          "allowChequeLabel": "Cheque",
+          "allowTransferLabel": "Transferência",
+          "offlineInstructionsLabel": "Instruções para pagamento offline",
+          "offlineInstructionsPlaceholder": "Ex. Cheque à ordem de… / IBAN…"
+        },
+        "publish": {
+          "title": "Publicação",
+          "visibilityLabel": "Visibilidade",
+          "visibilityLink": "Apenas por link",
+          "visibilitySite": "No site",
+          "visibilityPrivate": "Privado",
+          "opensAtLabel": "Abertura",
+          "closesAtLabel": "Encerramento",
+          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
+        }
+      }
+    },
+    "public": {
+      "notFound": "Formulário não encontrado",
+      "notOpenYet": "Este formulário ainda não está aberto.",
+      "closed": "Este formulário está encerrado.",
+      "amountLabel": "Valor",
+      "freeAmountLabel": "Valor livre",
+      "partialReceiptNotice": "Apenas {amount} são dedutíveis de impostos para este donativo.",
+      "belowMinimumAmount": "O valor mínimo para pagamento online é {amount}.",
+      "perMonth": "/ mês",
+      "perQuarter": "/ trimestre",
+      "perYear": "/ ano",
+      "paymentMethodLabel": "Forma de pagamento",
+      "paymentMethodStripe": "Cartão",
+      "paymentMethodCash": "Numerário",
+      "paymentMethodCheque": "Cheque",
+      "paymentMethodTransfer": "Transferência",
+      "firstNameLabel": "Nome próprio",
+      "lastNameLabel": "Apelido",
+      "emailLabel": "E-mail",
+      "addressLabel": "Morada",
+      "birthDateLabel": "Data de nascimento",
+      "phoneLabel": "Telefone",
+      "mobileLabel": "Telemóvel",
+      "genderLabel": "Género",
+      "messageLabel": "Mensagem (opcional)",
+      "messagePlaceholder": "Uma mensagem para a associação…",
+      "anonymousLabel": "Desejo permanecer anónimo em qualquer exibição pública de doadores",
+      "submitWithAmount": "Doar {amount}",
+      "paymentUnavailable": "O pagamento online não está disponível de momento.",
+      "genericError": "Ocorreu um erro. Tente novamente.",
+      "donorTypeIndividual": "Particular",
+      "donorTypeCompany": "Empresa",
+      "companyNameLabel": "Nome da empresa",
+      "siretLabel": "SIRET",
+      "conditionsAgreeLabel": "Aceito as condições gerais",
+      "honeypotLabel": "Deixar em branco",
+      "inAppBrowserWarning": "Está a navegar a partir do Facebook ou Instagram, o que pode impedir que esta página funcione corretamente. Toque em ⋯ e depois em \"Abrir no navegador\".",
+      "submittedTitle": "Obrigado pelo seu donativo!",
+      "submittedWithEmail": "Foi enviado um e-mail de confirmação.",
+      "toastCancelled": "Pagamento cancelado.",
+      "errorNetwork": "Erro de rede. Tente novamente."
+    },
+    "cancelSubscription": {
+      "invalidLink": "Este link de cancelamento é inválido.",
+      "alreadyCancelled": "Este donativo recorrente já está interrompido.",
+      "cancelledTitle": "Donativo recorrente interrompido.",
+      "confirmPrompt": "Confirme que deseja interromper este donativo recorrente.",
+      "intervalMonth": "mês",
+      "intervalQuarter": "trimestre",
+      "intervalYear": "ano",
+      "confirmButton": "Interromper este donativo recorrente",
+      "genericError": "Ocorreu um erro. Tente novamente."
+    }
+  },
   "messages": {
     "categories": {
       "general": "Geral",
@@ -2515,6 +2770,10 @@
       "subtitle": "Quando é indicado um valor, é criada automaticamente uma quota pendente do ano em curso para cada novo membro — que a pode então pagar pelo portal, sem esperar que um administrador a crie. Deixe em branco para não criar nada automaticamente.",
       "defaultAmount": "Valor predefinido da quota",
       "defaultAmountHint": "0,00 € = nenhuma quota é criada automaticamente.",
+      "publicPaymentToggle": "Pagamento online para adesão pública",
+      "publicPaymentToggleDesc": "O formulário de adesão do site público exige o pagamento imediato (cobrado todos os anos) e ativa o membro automaticamente, sem validação manual.",
+      "publicPaymentRequiresAmount": "Indique um valor de quota para ativar esta opção.",
+      "connectNotReadyWarning": "O pagamento online não está ativo — o Stripe Connect não está configurado ou ainda não aceita pagamentos (separador Pagamentos). Entretanto, o formulário público volta silenciosamente para o fluxo gratuito e regista pedidos de adesão pendentes.",
       "toasts": {
         "updated": "Valor predefinido atualizado"
       }
@@ -3028,6 +3287,17 @@
       "noAccountWithEmail": "Nenhuma conta de utilizador — pode ser criado um acesso",
       "noAccountNoEmail": "Nenhuma conta de utilizador — é necessário um e-mail para criar acesso",
       "dependantsTitle": "Membros sob a sua responsabilidade:",
+      "recurringSubscription": "Adesão recorrente",
+      "recurringSubscriptionAmount": "{amount} / ano",
+      "recurringSubscriptionNextCharge": "Próxima cobrança: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Ativa",
+        "pastDue": "Pagamento em atraso",
+        "cancelled": "Interrompida"
+      },
+      "cancelSubscriptionButton": "Interromper cobrança automática",
+      "cancelSubscriptionConfirmTitle": "Interromper a cobrança automática?",
+      "cancelSubscriptionConfirmDescription": "{name} deixará de ser cobrado automaticamente pela quota. Poderá continuar a registar pagamentos manuais.",
       "tabs": {
         "cotisations": "Quotas",
         "evenements": "Eventos",
@@ -3077,7 +3347,8 @@
       "toasts": {
         "accessCreated": "Acesso criado — foi enviado um e-mail",
         "cotisationAdded": "Quota adicionada",
-        "cotisationUpdated": "Quota atualizada"
+        "cotisationUpdated": "Quota atualizada",
+        "subscriptionCancelled": "Cobrança automática interrompida"
       }
     },
     "sms": {
@@ -3933,6 +4204,7 @@
       "backoffice": "Backoffice",
       "overview": "Visão geral",
       "associations": "Associações",
+      "pricingOffers": "Ofertas de preço",
       "support": "Suporte",
       "signOut": "Terminar sessão"
     },

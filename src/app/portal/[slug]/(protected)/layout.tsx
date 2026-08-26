@@ -50,7 +50,7 @@ export default async function PortalLayout({
   return (
     <UserProvider user={sessionUser} modules={enabledModules} branding={branding}>
       <TopLoader />
-      <SidebarProvider>
+      <SidebarProvider className="dashboard-canvas">
         <PortalSidebar slug={slug} />
         <SidebarInset>
           <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} associationSlug={slug} />

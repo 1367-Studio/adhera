@@ -98,6 +98,13 @@ export type MembreDetail = {
     lastName:  string
   }[]
 
+  cotisationSubscription: {
+    id:                  string
+    amount:              string
+    status:              "ACTIVE" | "PAST_DUE" | "CANCELLED"
+    currentPeriodEndsAt: string | null
+  } | null
+
   user: {
     role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
   } | null
@@ -251,6 +258,19 @@ export function useCreateAccess() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: createAccess,
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+async function cancelCotisationSubscription(id: string) {
+  const res = await fetch(`/api/membres/${id}/cotisation-subscription`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'arrêt de l'adhésion récurrente"))
+}
+
+export function useCancelCotisationSubscription() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: cancelCotisationSubscription,
     onSuccess:  () => invalidateAll(qc),
   })
 }

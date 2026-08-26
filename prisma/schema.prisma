@@ -59,6 +59,16 @@ enum AssociationPlan {
   PRO
 }
 
+// Status of a staff-generated custom-pricing signup link (see PricingOffer) — PENDING
+// until redeemed through /register?offer=<token>, EXPIRED/REVOKED close the link without
+// ever redeeming it.
+enum PricingOfferStatus {
+  PENDING
+  USED
+  EXPIRED
+  REVOKED
+}
+
 enum MaterialStatus {
   DISPONIBLE
   EN_USE
@@ -210,6 +220,15 @@ enum DonorType {
   COMPANY
 }
 
+// Null on every Don predating this field (all Stripe, paidAt only ever written by the
+// webhook until offline methods existed) — treated as STRIPE by the UI, never backfilled.
+enum DonPaymentMethod {
+  STRIPE
+  ESPECES
+  CHEQUE
+  VIREMENT
+}
+
 // Catégories de l'organisme bénéficiaire cochées sur les Cerfa 11580 (2041-RD) et
 // 16216 (2041-MEC-SD) — union des deux listes, utilisée pour l'attestation imprimée
 // sur le reçu fiscal entreprise.
@@ -269,112 +288,219 @@ enum TailleTshirt {
   XXXL
 }
 
+enum DonationFormStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum DonationFieldRequirement {
+  HIDDEN
+  OPTIONAL
+  REQUIRED
+}
+
+enum DonationFieldType {
+  TEXT
+  NUMBER
+}
+
+enum DonationTierKind {
+  ONE_OFF
+  RECURRING
+}
+
+enum DonationInterval {
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum DonationReceiptMode {
+  NONE
+  FULL
+  PARTIAL
+}
+
+enum DonationVisibility {
+  LINK
+  SITE
+  PRIVATE
+}
+
+enum DonationSubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
+enum CotisationSubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
-  id                      String             @id @default(cuid())
-  name                    String
-  slug                    String             @unique
-  city                    String?
-  country                 String             @default("France")
-  address                 String?
-  phone                   String?
-  website                 String?
+  id                             String             @id @default(cuid())
+  name                           String
+  slug                           String             @unique
+  city                           String?
+  country                        String             @default("France")
+  address                        String?
+  phone                          String?
+  website                        String?
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
-  iban                    String?
-  bic                     String?
-  siren                   String?
-  rna                     String?
-  canIssueTaxReceipts     Boolean            @default(false)
+  iban                           String?
+  bic                            String?
+  siren                          String?
+  rna                            String?
+  canIssueTaxReceipts            Boolean            @default(false)
   // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
   // (EN_ATTENTE, current year) is created automatically for every new Membre — see
   // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
   // away instead of waiting on an admin to create one.
-  cotisationDefaultAmount Decimal?           @db.Decimal(10, 2)
-  objet                   String?
-  organismeCategory       OrganismeCategory  @default(ASSOCIATION_LOI_1901)
-  organismeCategoryDetail String?
+  cotisationDefaultAmount        Decimal?           @db.Decimal(10, 2)
+  // Off by default so turning it on is a deliberate choice, separate from
+  // cotisationDefaultAmount's original purpose above — when true, the public site's
+  // membership form (SiteMembershipSection) requires immediate payment via a recurring
+  // Stripe subscription instead of creating a PENDING request for manual approval. See
+  // CotisationSubscription and /api/public/[slug]/inscription/checkout.
+  publicMembershipPaymentEnabled Boolean            @default(false)
+  objet                          String?
+  organismeCategory              OrganismeCategory  @default(ASSOCIATION_LOI_1901)
+  organismeCategoryDetail        String?
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
   // key, see platformClient in the same file).
-  aiProvider              String?
-  aiApiKey                String?
-  aiModel                 String?
-  smsAccountSid           String?
-  smsAuthToken            String?
-  smsPhoneNumber          String?
-  livekitUrl              String?
-  livekitApiKey           String?
-  livekitApiSecret        String?
-  stripeCustomerId        String?
-  stripeSubscriptionId    String?
-  stripeConnectId         String?
-  plan                    AssociationPlan    @default(ESSENTIAL)
+  aiProvider                     String?
+  aiApiKey                       String?
+  aiModel                        String?
+  smsAccountSid                  String?
+  smsAuthToken                   String?
+  smsPhoneNumber                 String?
+  livekitUrl                     String?
+  livekitApiKey                  String?
+  livekitApiSecret               String?
+  stripeCustomerId               String?
+  stripeSubscriptionId           String?
+  // Set only when the subscription was created via a PricingOffer (custom staff-negotiated
+  // phased pricing) instead of the standard PLAN_PRICES catalog — informational/for
+  // backoffice display only. The webhook sync (customer.subscription.*) keys off
+  // stripeSubscriptionId as always, regardless of whether a Schedule manages it.
+  stripeSubscriptionScheduleId   String?
+  stripeConnectId                String?
+  plan                           AssociationPlan    @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
   // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
   // Null means "use the tier's standard limit", not "unlimited".
-  customMemberLimit       Int?
+  customMemberLimit              Int?
   // Brand identity applied to the dashboard, portal, devis/facture PDFs and the feuille
   // de présence PDF — separate from siteConfig's own logoUrl/primaryColor, which only
   // exist once the association has set up its public site. logoUrl/primaryColor also
   // seed the site builder's fields the first time it's opened.
-  logoUrl                 String?
+  logoUrl                        String?
   // No DB default on purpose — a bare column default made every Pro association look
   // branded in this color (dashboard/portal theme, PDFs, emails) before the admin ever
   // opened the branding settings. null means "use the platform's own default theme";
   // the site builder and branding-settings UI supply #6366f1 as their own form default
   // instead, only persisted once the admin actually saves.
-  primaryColor            String?
-  secondaryColor          String?
+  primaryColor                   String?
+  secondaryColor                 String?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
   // the plan default, true force-enables it for an Essentiel association.
-  customBrandingEnabled   Boolean?
-  subscriptionStatus      SubscriptionStatus @default(TRIAL)
-  trialEndsAt             DateTime?
-  suspendedAt             DateTime?
-  cancelAtPeriodEnd       Boolean            @default(false)
-  currentPeriodEndsAt     DateTime?
-  sitePublished           Boolean            @default(false)
-  siteConfig              Json?
-  modules                 Json?
-  internalNotes           String?
-  createdAt               DateTime           @default(now())
-  updatedAt               DateTime           @updatedAt
-  deletedAt               DateTime?
+  customBrandingEnabled          Boolean?
+  subscriptionStatus             SubscriptionStatus @default(TRIAL)
+  trialEndsAt                    DateTime?
+  suspendedAt                    DateTime?
+  cancelAtPeriodEnd              Boolean            @default(false)
+  currentPeriodEndsAt            DateTime?
+  sitePublished                  Boolean            @default(false)
+  siteConfig                     Json?
+  modules                        Json?
+  internalNotes                  String?
+  createdAt                      DateTime           @default(now())
+  updatedAt                      DateTime           @updatedAt
+  deletedAt                      DateTime?
 
-  users               User[]
-  membres             Membre[]
-  membreTypes         MembreType[]
-  evenements          Evenement[]
-  cotisations         Cotisation[]
-  actualites          Actualite[]
-  messageTemplates    MessageTemplate[]
-  automationRules     AutomationRule[]
-  materials           Material[]
-  activityLogs        ActivityLog[]
-  dons                Don[]
-  sondages            Sondage[]
-  boutiqueProduits    BoutiqueProduit[]
-  boutiqueCommandes   BoutiqueCommande[]
-  meetings            Meeting[]
-  exercicesComptables ExerciceComptable[]
-  bankAccounts        BankAccount[]
-  bankTransactions    BankTransaction[]
-  financeCategories   FinanceCategory[]
-  incomes             Income[]
-  expenses            Expense[]
-  bankReconciliations BankReconciliation[]
-  fournisseurs        Fournisseur[]
-  devis               Devis[]
-  factures            Facture[]
-  facturesRecues      FactureRecue[]
-  emailMessages       EmailMessage[]
-  smsMessages         SmsMessage[]
-  supportTickets      SupportTicket[]
+  users                   User[]
+  membres                 Membre[]
+  membreTypes             MembreType[]
+  evenements              Evenement[]
+  cotisations             Cotisation[]
+  actualites              Actualite[]
+  messageTemplates        MessageTemplate[]
+  automationRules         AutomationRule[]
+  materials               Material[]
+  activityLogs            ActivityLog[]
+  dons                    Don[]
+  donationForms           DonationForm[]
+  donationSubscriptions   DonationSubscription[]
+  cotisationSubscriptions CotisationSubscription[]
+  sondages                Sondage[]
+  boutiqueProduits        BoutiqueProduit[]
+  boutiqueCommandes       BoutiqueCommande[]
+  meetings                Meeting[]
+  exercicesComptables     ExerciceComptable[]
+  bankAccounts            BankAccount[]
+  bankTransactions        BankTransaction[]
+  financeCategories       FinanceCategory[]
+  incomes                 Income[]
+  expenses                Expense[]
+  bankReconciliations     BankReconciliation[]
+  fournisseurs            Fournisseur[]
+  devis                   Devis[]
+  factures                Facture[]
+  facturesRecues          FactureRecue[]
+  emailMessages           EmailMessage[]
+  smsMessages             SmsMessage[]
+  supportTickets          SupportTicket[]
+  pricingOffer            PricingOffer?
+}
+
+// A staff-generated, single-use custom-pricing signup link (see /register?offer=<token>)
+// — the "caso a caso" alternative to the fixed PLAN_PRICES catalog, for negotiated deals
+// like a discounted phase followed by a recurring price. Not a reusable named plan: one
+// row is redeemed by exactly one new Association, then closed for good.
+model PricingOffer {
+  id    String @id @default(cuid())
+  token String @unique
+
+  // Internal note for staff (e.g. "Cliente X — lançamento"), never shown to the person
+  // redeeming the link — the public lookup route only returns phases/label-free data.
+  label String
+
+  // Which Formwise tier this association gets tagged as once redeemed (member limits,
+  // module gating — see plan-limits.ts) — independent of the custom Stripe price, same
+  // decoupling as Association.customMemberLimit.
+  planTier AssociationPlan
+
+  // OfferPhase[] — see src/lib/pricing-offers.ts. Only the last phase may have
+  // months: null (open-ended/recurring forever).
+  phases Json
+
+  // One Stripe Product shared by every phase of this offer, created once when the offer
+  // itself is created (not at redemption time) — see createOfferProduct().
+  stripeProductId String
+
+  status    PricingOfferStatus @default(PENDING)
+  expiresAt DateTime?
+  usedAt    DateTime?
+
+  associationId String?      @unique
+  association   Association? @relation(fields: [associationId], references: [id])
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
 }
 
 model User {
@@ -412,6 +538,7 @@ model User {
   supportTickets        SupportTicket[]
   supportTicketMessages SupportTicketMessage[]
   emailMessages         EmailMessage[]
+  pricingOffersCreated  PricingOffer[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -470,24 +597,25 @@ model Membre {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association           Association          @relation(fields: [associationId], references: [id])
-  user                  User?                @relation(fields: [userId], references: [id])
-  type                  MembreType?          @relation(fields: [typeId], references: [id])
-  responsable           Membre?              @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
-  dependants            Membre[]             @relation("MembreResponsable")
-  cotisations           Cotisation[]
-  participations        Participation[]
-  actualiteRecipients   ActualiteRecipient[]
-  materialLoans         MaterialLoan[]
-  automationLogs        AutomationLog[]
-  dons                  Don[]
-  sondageRecipients     SondageRecipient[]
-  sondageReponses       SondageReponse[]
-  boutiqueCommandes     BoutiqueCommande[]
-  meetingsAsParticipant MeetingParticipant[]
-  incomes               Income[]
-  emailMessages         EmailMessage[]
-  smsMessages           SmsMessage[]
+  association            Association             @relation(fields: [associationId], references: [id])
+  user                   User?                   @relation(fields: [userId], references: [id])
+  type                   MembreType?             @relation(fields: [typeId], references: [id])
+  responsable            Membre?                 @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  dependants             Membre[]                @relation("MembreResponsable")
+  cotisations            Cotisation[]
+  participations         Participation[]
+  actualiteRecipients    ActualiteRecipient[]
+  materialLoans          MaterialLoan[]
+  automationLogs         AutomationLog[]
+  dons                   Don[]
+  sondageRecipients      SondageRecipient[]
+  sondageReponses        SondageReponse[]
+  boutiqueCommandes      BoutiqueCommande[]
+  meetingsAsParticipant  MeetingParticipant[]
+  incomes                Income[]
+  emailMessages          EmailMessage[]
+  smsMessages            SmsMessage[]
+  cotisationSubscription CotisationSubscription?
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -618,6 +746,9 @@ model Cotisation {
   declarationNumber   String?
   declarationIssuedAt DateTime?
   lastReminderSentAt  DateTime?
+  // Set when this year's cotisation was produced by a recurring Stripe charge (see
+  // CotisationSubscription) rather than a one-off/manual payment — mirrors Don.subscriptionId.
+  subscriptionId      String?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 
@@ -625,10 +756,12 @@ model Cotisation {
   association  Association             @relation(fields: [associationId], references: [id])
   payments     CotisationPayment[]
   installments CotisationInstallment[]
+  subscription CotisationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   @@unique([membreId, year])
   @@unique([associationId, declarationNumber])
   @@index([associationId, status])
+  @@index([subscriptionId])
 }
 
 model CotisationInstallment {
@@ -659,37 +792,248 @@ model CotisationPayment {
 }
 
 model Don {
-  id              String    @id @default(cuid())
-  associationId   String
-  membreId        String?
-  evenementId     String?
-  donorType       DonorType @default(INDIVIDUAL)
-  firstName       String
-  lastName        String
-  companyName     String?
-  siret           String?
-  email           String
-  address         String?
-  amount          Decimal   @db.Decimal(10, 2)
-  message         String?
-  anonymous       Boolean   @default(false)
-  receiptNumber   String?
-  receiptIssuedAt DateTime?
-  stripeSessionId String?   @unique
-  paidAt          DateTime?
-  refundedAt      DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id               String               @id @default(cuid())
+  associationId    String
+  membreId         String?
+  evenementId      String?
+  donorType        DonorType            @default(INDIVIDUAL)
+  firstName        String
+  lastName         String
+  companyName      String?
+  siret            String?
+  email            String
+  address          String?
+  amount           Decimal              @db.Decimal(10, 2)
+  message          String?
+  anonymous        Boolean              @default(false)
+  receiptNumber    String?
+  receiptIssuedAt  DateTime?
+  stripeSessionId  String?              @unique
+  paidAt           DateTime?
+  refundedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  // Null for the standalone donation page (/portal/[slug]/don) — a Don only carries these
+  // when it came through a configurable DonationForm. Additive: existing rows are unaffected.
+  donationFormId   String?
+  tierId           String?
+  // Set only on the Don produced by a recurring donation's successful charge (invoice.paid) —
+  // null for one-off dons, whether via a DonationForm or the standalone page.
+  subscriptionId   String?
+  // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
+  // Participation.answers.
+  answers          Json?
+  // Null = Stripe (the only method before offline donations existed). Set explicitly for
+  // ESPECES/CHEQUE/VIREMENT — those are the only ones where paidAt isn't written by the
+  // webhook, see the "encaissement" flow in /api/dons/[id]/encaisser.
+  paymentMethod    DonPaymentMethod?
+  // Proof of consent when the form's requireCguvSignature is on — set server-side at
+  // checkout, never trusted from the client alone. Null when the form doesn't require it.
+  cguvAgreedAt     DateTime?
+  // Snapshotted from DonationTier at the moment this Don is created — same reasoning as
+  // `amount` already being its own column instead of being re-read from the tier. Without
+  // this, an admin editing a tier's receiptMode/deductibleAmount between "donor gave a
+  // cheque" and "admin confirms it arrived" (which can be days) silently changes what
+  // receipt gets issued, contradicting what the donor was shown on the public page. Null
+  // for the standalone /portal/[slug]/don page (no tier) — receiptMode null there means
+  // "always full", matching the pre-existing behavior.
+  receiptMode      DonationReceiptMode?
+  deductibleAmount Decimal?             @db.Decimal(10, 2)
 
-  association Association @relation(fields: [associationId], references: [id])
-  membre      Membre?     @relation(fields: [membreId], references: [id])
+  association  Association           @relation(fields: [associationId], references: [id])
+  membre       Membre?               @relation(fields: [membreId], references: [id])
   // A donation prompted by an event registration is still a standalone association-level
   // donation record — this is only a reporting link, so deleting the event must not delete it.
-  evenement   Evenement?  @relation(fields: [evenementId], references: [id], onDelete: SetNull)
+  evenement    Evenement?            @relation(fields: [evenementId], references: [id], onDelete: SetNull)
+  donationForm DonationForm?         @relation(fields: [donationFormId], references: [id], onDelete: SetNull)
+  tier         DonationTier?         @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  subscription DonationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
   @@index([evenementId])
+  @@index([membreId])
+  @@index([donationFormId])
+  @@index([subscriptionId])
+}
+
+// Formulaire de don configurable — remplace le modèle « une page de don par association »
+// par N formulaires par association, chacun avec son slug/visuel/paliers/règles. Additif :
+// les dons de la page autonome (Don.donationFormId null) continuent d'exister sans lui.
+model DonationForm {
+  id            String             @id @default(cuid())
+  associationId String
+  slug          String
+  title         String
+  status        DonationFormStatus @default(DRAFT)
+
+  // Étape 1 — Informations générales
+  imageUrl             String?
+  description          String? // HTML riche
+  conditions           String? // HTML riche
+  attachments          Json? // [{ url, filename, size }]
+  requireCguvSignature Boolean @default(false)
+  contactEmail         String?
+  contactPhone         String?
+
+  // Étape 3 — Formulaire : matrice d'exigence des champs standards
+  fieldAddress   DonationFieldRequirement @default(HIDDEN)
+  fieldBirthDate DonationFieldRequirement @default(HIDDEN)
+  fieldPhone     DonationFieldRequirement @default(HIDDEN)
+  fieldMobile    DonationFieldRequirement @default(HIDDEN)
+  fieldGender    DonationFieldRequirement @default(HIDDEN)
+
+  // Étape 4 — Paiement
+  allowOnline         Boolean @default(true)
+  allowCash           Boolean @default(false)
+  allowCheque         Boolean @default(false)
+  allowTransfer       Boolean @default(false)
+  offlineInstructions String?
+  confirmationMessage String?
+
+  // Étape 5 — Publication
+  visibility DonationVisibility @default(LINK)
+  opensAt    DateTime?
+  closesAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  association   Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tiers         DonationTier[]
+  customFields  DonationFormField[]
+  dons          Don[]
+  subscriptions DonationSubscription[]
+
+  @@unique([associationId, slug])
+  @@index([associationId, status])
+}
+
+// Palier tarifaire d'un DonationForm — ponctuel ou récurrent. Même rôle qu'EvenementTicketType,
+// avec la même propriété additive.
+model DonationTier {
+  id     String           @id @default(cuid())
+  formId String
+  order  Int
+  kind   DonationTierKind @default(ONE_OFF)
+
+  freeAmount Boolean           @default(false) // « Montant libre »
+  amount     Decimal?          @db.Decimal(10, 2) // null si freeAmount
+  interval   DonationInterval? // requis si kind = RECURRING
+
+  label            String
+  receiptMode      DonationReceiptMode @default(FULL)
+  deductibleAmount Decimal?            @db.Decimal(10, 2) // requis si receiptMode = PARTIAL
+
+  form          DonationForm           @relation(fields: [formId], references: [id], onDelete: Cascade)
+  dons          Don[]
+  subscriptions DonationSubscription[]
+
+  @@index([formId])
+}
+
+// Champ personnalisé par formulaire, répondu via Don.answers — même mécanisme
+// qu'EvenementCustomField / Participation.answers.
+model DonationFormField {
+  id       String            @id @default(cuid())
+  formId   String
+  type     DonationFieldType
+  label    String
+  required Boolean           @default(false)
+  order    Int
+
+  form DonationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
+// Un don récurrent Stripe. Chaque prélèvement réussi produit une ligne Don rattachée ici
+// (Don.subscriptionId) — le reçu fiscal annuel est une agrégation des Don d'un abonnement,
+// pas un chemin parallèle. Connect est utilisé ici en destination charges : le Customer et
+// la Subscription vivent sur le compte plateforme, pas sur celui de l'association — d'où la
+// discrimination obligatoire par subscription_data.metadata.kind dans le webhook (voir
+// src/app/api/webhook/stripe/route.ts) avant tout traitement en tant qu'abonnement Formwise.
+model DonationSubscription {
+  id             String @id @default(cuid())
+  associationId  String
+  donationFormId String
+  tierId         String
+
+  stripeSubscriptionId String  @unique
+  stripeCustomerId     String
+  // Self-service cancellation link emailed at subscription start — same convention as
+  // Participation.cancelToken (donors have no portal account to authenticate an
+  // in-app cancel action with).
+  cancelToken          String? @unique
+
+  donorType        DonorType            @default(INDIVIDUAL)
+  firstName        String
+  lastName         String
+  companyName      String?
+  siret            String?
+  email            String
+  address          String?
+  // Carried from the checkout form onto every Don an invoice.paid event produces for
+  // this subscription — same fields a one-off Don would have captured at checkout.
+  message          String?
+  anonymous        Boolean              @default(false)
+  answers          Json?
+  // Proof of consent captured at checkout, carried onto every Don this subscription
+  // produces — same rationale as Don.cguvAgreedAt.
+  cguvAgreedAt     DateTime?
+  // Snapshotted from DonationTier at subscription start and carried onto every Don an
+  // invoice.paid event produces — same rationale as Don.receiptMode/deductibleAmount, but
+  // more pressing here since a subscription can outlive tier edits by months or years.
+  receiptMode      DonationReceiptMode?
+  deductibleAmount Decimal?             @db.Decimal(10, 2)
+
+  amount   Decimal          @db.Decimal(10, 2)
+  interval DonationInterval
+
+  status DonationSubscriptionStatus @default(ACTIVE)
+
+  startedAt           DateTime  @default(now())
+  cancelledAt         DateTime?
+  currentPeriodEndsAt DateTime?
+
+  association  Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  donationForm DonationForm @relation(fields: [donationFormId], references: [id])
+  tier         DonationTier @relation(fields: [tierId], references: [id])
+  dons         Don[]
+
+  @@index([associationId, status])
+  @@index([donationFormId])
+}
+
+// A member's recurring annual cotisation, paid via Stripe — same role as
+// DonationSubscription → Don above, but tied to an existing Membre instead of a
+// free-floating donor identity (the member already exists via the public site's paid
+// membership form; see /api/public/[slug]/inscription/checkout and
+// src/lib/webhook/cotisation-subscriptions.ts). Each successful yearly charge produces
+// one Cotisation row (Cotisation.subscriptionId), same pattern as Don.subscriptionId.
+model CotisationSubscription {
+  id            String @id @default(cuid())
+  associationId String
+  membreId      String @unique // one active recurring subscription per member
+
+  stripeSubscriptionId String  @unique
+  stripeCustomerId     String
+  // Self-service cancellation link, same convention as DonationSubscription.cancelToken —
+  // kept even though the member also gets portal access, as a no-login-required fallback.
+  cancelToken          String? @unique
+
+  amount Decimal                      @db.Decimal(10, 2)
+  status CotisationSubscriptionStatus @default(ACTIVE)
+
+  startedAt           DateTime  @default(now())
+  cancelledAt         DateTime?
+  currentPeriodEndsAt DateTime?
+
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre       @relation(fields: [membreId], references: [id])
+  cotisations Cotisation[]
+
+  @@index([associationId, status])
 }
 
 model Notification {

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { SquaresFourIcon, BuildingsIcon, SignOutIcon, LifebuoyIcon } from "@phosphor-icons/react/dist/ssr";
+import { SquaresFourIcon, BuildingsIcon, SignOutIcon, LifebuoyIcon, TagIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query"
 const navItems = [
   { key: "overview",     href: "/backoffice",              icon: SquaresFourIcon },
   { key: "associations", href: "/backoffice/associations", icon: BuildingsIcon  },
+  { key: "pricingOffers", href: "/backoffice/pricing-offers", icon: TagIcon     },
   { key: "support",      href: "/backoffice/support",      icon: LifebuoyIcon   },
 ]
 

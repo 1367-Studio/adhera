@@ -13,6 +13,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     where: { id, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
   if (!don) return NextResponse.json({ error: "Don introuvable ou remboursé" }, { status: 404 })
+  // Snapshotted onto the Don at creation time (see schema.prisma) — standalone dons have
+  // no tier and so no opt-out (null !== "NONE"), same as before this feature existed.
+  if (don.receiptMode === "NONE")
+    return NextResponse.json({ error: "Ce formulaire n'émet pas de reçu fiscal" }, { status: 403 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },

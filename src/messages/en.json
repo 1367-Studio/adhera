@@ -57,6 +57,7 @@
       "pageTitle": "Create an account",
       "heading": "Create an account",
       "subtitle": "{trialDays}-day free trial · No commitment · Cancel anytime",
+      "subtitleOffer": "Complete your sign-up to activate your subscription.",
       "alreadyAccount": "Already have an account?",
       "signIn": "Sign in",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Error",
         "startTrial": "Start my free trial",
         "securePayment": "Secure payment by Stripe · Cancel before {days} days to pay nothing"
+      },
+      "offer": {
+        "invalidTitle": "Invalid link",
+        "invalidBody": "This signup link is no longer valid. Contact whoever sent it to you for a new one.",
+        "phaseFixed": "{amount} for {months} months",
+        "phaseRecurring": "then {amount}/month",
+        "confirmButton": "Confirm my subscription",
+        "securePayment": "Secure payment powered by Stripe."
       },
       "done": {
         "title": "Account created successfully!",
@@ -2166,6 +2175,252 @@
       }
     }
   },
+  "donationForms": {
+    "title": "Donations",
+    "description": "Donation forms, received donations and tax receipts.",
+    "newForm": "New form",
+    "duplicateSuffix": "(copy)",
+    "tabs": {
+      "forms": "Forms",
+      "donations": "Donations received",
+      "receipts": "Tax receipts"
+    },
+    "formStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "newFormModal": {
+      "title": "New donation form",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. Year-end campaign",
+      "createButton": "Create"
+    },
+    "formsView": {
+      "columns": {
+        "form": "Form",
+        "status": "Status",
+        "donors": "Donors",
+        "total": "Total raised",
+        "created": "Created on"
+      },
+      "noForms": "No donation forms",
+      "actions": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "archive": "Archive",
+        "delete": "Delete"
+      },
+      "deleteTitle": "Delete this form?",
+      "deleteDescription": "The form \"{title}\" will be permanently deleted.",
+      "toasts": {
+        "created": "Form created",
+        "createError": "Error while creating",
+        "duplicated": "Form duplicated",
+        "duplicateError": "Error while duplicating",
+        "deleted": "Form deleted",
+        "deleteError": "Error while deleting",
+        "statusUpdated": "Status updated",
+        "statusError": "Error while updating status"
+      }
+    },
+    "donationsView": {
+      "columns": {
+        "donor": "Donor",
+        "form": "Form",
+        "standalone": "Standalone page",
+        "message": "Message",
+        "date": "Date",
+        "amount": "Amount",
+        "method": "Method"
+      },
+      "noDonations": "No donations recorded",
+      "totalLabel": "Total {year}",
+      "donorsLabel": "Donors",
+      "averageLabel": "Average donation",
+      "pendingTitle": "Awaiting encashment",
+      "encaisserButton": "Mark as received",
+      "paymentMethod": {
+        "especes": "Cash",
+        "cheque": "Cheque",
+        "virement": "Bank transfer"
+      },
+      "toasts": {
+        "encaisse": "Donation marked as received"
+      }
+    },
+    "receiptsView": {
+      "columns": {
+        "receiptNumber": "Receipt no.",
+        "donor": "Donor",
+        "issuedAt": "Issued on",
+        "amount": "Amount"
+      },
+      "noReceipts": "No tax receipts issued"
+    },
+    "detail": {
+      "backToList": "Back to donations",
+      "notFound": "Form not found",
+      "titleLabel": "Form title",
+      "duplicateButton": "Duplicate",
+      "deleteButton": "Delete",
+      "publishButton": "Publish",
+      "unpublishButton": "Unpublish",
+      "copyLinkButton": "Copy link",
+      "archiveButton": "Archive",
+      "toasts": {
+        "saved": "Changes saved",
+        "saveError": "Error while saving",
+        "linkCopied": "Link copied",
+        "linkCopyError": "Couldn't copy — select the link manually."
+      },
+      "steps": {
+        "info": {
+          "title": "General information",
+          "imageLabel": "Visual",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Introduce your campaign…",
+          "conditionsLabel": "Terms",
+          "conditionsPlaceholder": "General terms for this form…",
+          "requireCguvLabel": "Require terms signature",
+          "contactEmailLabel": "Contact email",
+          "contactPhoneLabel": "Contact phone"
+        },
+        "tiers": {
+          "title": "Tiers",
+          "hint": "Amounts offered to the donor on this form.",
+          "noTiers": "No tiers",
+          "addTier": "Add a tier",
+          "removeTier": "Remove tier",
+          "labelField": "Label",
+          "labelPlaceholder": "E.g. One-time support",
+          "amountField": "Amount (€)",
+          "freeAmountField": "Free amount",
+          "receiptModeField": "Tax receipt",
+          "receiptNone": "None",
+          "receiptFull": "Full",
+          "receiptPartial": "Partial",
+          "deductibleAmountField": "Deductible amount (€)",
+          "deductibleAmountRequiredError": "A deductible amount is required for a partial receipt",
+          "deductibleAmountExceedsError": "The deductible amount cannot exceed the donation amount",
+          "kindField": "Type",
+          "kindOneOff": "One-off",
+          "kindRecurring": "Recurring",
+          "intervalField": "Frequency",
+          "intervalMonth": "Monthly",
+          "intervalQuarter": "Quarterly",
+          "intervalYear": "Yearly",
+          "labelRequiredError": "Every tier must have a label",
+          "amountRequiredError": "An amount is required for a fixed-amount tier",
+          "intervalRequiredError": "A frequency is required for a recurring tier",
+          "saved": "Tiers saved",
+          "saveTiers": "Save tiers"
+        },
+        "fields": {
+          "title": "Form",
+          "standardFieldsHint": "Fields requested from the donor",
+          "addressLabel": "Address",
+          "birthDateLabel": "Date of birth",
+          "phoneLabel": "Phone",
+          "mobileLabel": "Mobile",
+          "genderLabel": "Gender",
+          "requirement": {
+            "hidden": "Hidden",
+            "optional": "Optional",
+            "required": "Required"
+          },
+          "customFieldsTitle": "Custom fields",
+          "customFieldsHint": "Additional fields specific to this form.",
+          "noCustomFields": "No custom fields",
+          "addField": "Add a field",
+          "removeField": "Remove field",
+          "fieldLabel": "Label",
+          "fieldLabelPlaceholder": "E.g. Company",
+          "fieldType": "Type",
+          "fieldRequired": "Required",
+          "typeText": "Text",
+          "typeNumber": "Number",
+          "labelRequiredError": "Every field must have a label",
+          "saved": "Fields saved",
+          "saveFields": "Save fields"
+        },
+        "payment": {
+          "title": "Payment",
+          "allowOnlineLabel": "Online payment (Stripe)",
+          "allowCashLabel": "Cash",
+          "allowChequeLabel": "Cheque",
+          "allowTransferLabel": "Bank transfer",
+          "offlineInstructionsLabel": "Offline payment instructions",
+          "offlineInstructionsPlaceholder": "E.g. Cheque payable to… / IBAN…"
+        },
+        "publish": {
+          "title": "Publishing",
+          "visibilityLabel": "Visibility",
+          "visibilityLink": "Link only",
+          "visibilitySite": "On the website",
+          "visibilityPrivate": "Private",
+          "opensAtLabel": "Opens",
+          "closesAtLabel": "Closes",
+          "datesOrderError": "The closing date must be after the opening date."
+        }
+      }
+    },
+    "public": {
+      "notFound": "Form not found",
+      "notOpenYet": "This form isn't open yet.",
+      "closed": "This form is closed.",
+      "amountLabel": "Amount",
+      "freeAmountLabel": "Free amount",
+      "partialReceiptNotice": "Only {amount} is tax-deductible for this donation.",
+      "belowMinimumAmount": "The minimum amount for an online payment is {amount}.",
+      "perMonth": "/ month",
+      "perQuarter": "/ quarter",
+      "perYear": "/ year",
+      "paymentMethodLabel": "Payment method",
+      "paymentMethodStripe": "Card",
+      "paymentMethodCash": "Cash",
+      "paymentMethodCheque": "Cheque",
+      "paymentMethodTransfer": "Bank transfer",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "addressLabel": "Address",
+      "birthDateLabel": "Date of birth",
+      "phoneLabel": "Phone",
+      "mobileLabel": "Mobile",
+      "genderLabel": "Gender",
+      "messageLabel": "Message (optional)",
+      "messagePlaceholder": "A message for the association…",
+      "anonymousLabel": "I'd like to remain anonymous in any public donor listing",
+      "submitWithAmount": "Donate {amount}",
+      "paymentUnavailable": "Online payment isn't available right now.",
+      "genericError": "Something went wrong. Please try again.",
+      "donorTypeIndividual": "Individual",
+      "donorTypeCompany": "Company",
+      "companyNameLabel": "Company name",
+      "siretLabel": "SIRET",
+      "conditionsAgreeLabel": "I accept the terms and conditions",
+      "honeypotLabel": "Leave blank",
+      "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\".",
+      "submittedTitle": "Thank you for your donation!",
+      "submittedWithEmail": "A confirmation email has been sent to you.",
+      "toastCancelled": "Payment cancelled.",
+      "errorNetwork": "Network error. Please try again."
+    },
+    "cancelSubscription": {
+      "invalidLink": "This cancellation link is invalid.",
+      "alreadyCancelled": "This recurring donation is already stopped.",
+      "cancelledTitle": "Recurring donation stopped.",
+      "confirmPrompt": "Confirm that you want to stop this recurring donation.",
+      "intervalMonth": "month",
+      "intervalQuarter": "quarter",
+      "intervalYear": "year",
+      "confirmButton": "Stop this recurring donation",
+      "genericError": "Something went wrong. Please try again."
+    }
+  },
   "messages": {
     "categories": {
       "general": "General",
@@ -2503,6 +2758,10 @@
       "subtitle": "When an amount is set, a pending membership fee for the current year is automatically created for every new member — they can then pay it themselves from the portal, without waiting for an admin to create it. Leave empty to not create anything automatically.",
       "defaultAmount": "Default membership fee amount",
       "defaultAmountHint": "$0.00 = no membership fee is created automatically.",
+      "publicPaymentToggle": "Online payment for public membership",
+      "publicPaymentToggleDesc": "The public site membership form requires immediate payment (charged every year) and activates the member automatically, with no manual review.",
+      "publicPaymentRequiresAmount": "Set a cotisation amount to enable this option.",
+      "connectNotReadyWarning": "Online payment isn't active — Stripe Connect isn't set up or can't accept payments yet (Payments tab). Until then, the public form silently falls back to the free flow and files pending membership requests.",
       "toasts": {
         "updated": "Default amount updated"
       }
@@ -3016,6 +3275,17 @@
       "noAccountWithEmail": "No user account — access can be created",
       "noAccountNoEmail": "No user account — email required to create access",
       "dependantsTitle": "Members under their guardianship:",
+      "recurringSubscription": "Recurring membership",
+      "recurringSubscriptionAmount": "{amount} / year",
+      "recurringSubscriptionNextCharge": "Next charge: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Active",
+        "pastDue": "Payment overdue",
+        "cancelled": "Cancelled"
+      },
+      "cancelSubscriptionButton": "Stop automatic charge",
+      "cancelSubscriptionConfirmTitle": "Stop the automatic charge?",
+      "cancelSubscriptionConfirmDescription": "{name} will no longer be charged automatically for their membership fee. You can still record manual payments.",
       "tabs": {
         "cotisations": "Membership fees",
         "evenements": "Events",
@@ -3065,7 +3335,8 @@
       "toasts": {
         "accessCreated": "Access created — an email was sent",
         "cotisationAdded": "Membership fee added",
-        "cotisationUpdated": "Membership fee updated"
+        "cotisationUpdated": "Membership fee updated",
+        "subscriptionCancelled": "Automatic charge stopped"
       }
     },
     "sms": {
@@ -3921,6 +4192,7 @@
       "backoffice": "Backoffice",
       "overview": "Overview",
       "associations": "Associations",
+      "pricingOffers": "Pricing offers",
       "support": "Support",
       "signOut": "Sign out"
     },

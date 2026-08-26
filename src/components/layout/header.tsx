@@ -1,8 +1,10 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { HelpButton } from "@/components/layout/help-button"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { NotificationBell } from "@/components/layout/notification-bell"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { UserMenu } from "@/components/layout/user-menu"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,16 +15,14 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { ThemeToggle } from "@/components/layout/theme-toggle"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
-import { UserMenu } from "@/components/layout/user-menu"
-import { NotificationBell } from "@/components/layout/notification-bell"
-import { HelpButton } from "@/components/layout/help-button"
-import { UserIcon, SquaresFourIcon } from "@phosphor-icons/react/dist/ssr"
-import { isManager, useModules } from "@/lib/user-context"
-import { firstEnabledPortalPath } from "@/lib/modules"
 import { useNotifications } from "@/hooks/use-notifications"
+import { firstEnabledPortalPath } from "@/lib/modules"
+import { isManager, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
+import { SquaresFourIcon, UserIcon } from "@phosphor-icons/react/dist/ssr"
+import { useTranslations } from "next-intl"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return {
@@ -106,7 +106,7 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
   const currentLabel = routeLabels[visibleSegments[visibleSegments.length - 1] ?? ""] ?? visibleSegments[visibleSegments.length - 1] ?? ""
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b bg-sidebar px-4">
+    <header className="sticky top-0 z-40 flex radius-t h-14 shrink-0 items-center gap-2 border-b bg-sidebar px-4">
       {showSidebar && (
         <>
           <SidebarTrigger className="-ml-1" />

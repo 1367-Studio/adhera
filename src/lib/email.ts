@@ -406,11 +406,14 @@ export function adminWelcomeEmail(p: {
   loginUrl:        string
   trialDays:       number
 }) {
+  // trialDays: 0 means the account started on a paid custom-pricing offer instead of the
+  // standard trial (see /api/register's offerToken branch) — no trial sentence to show.
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Votre association <strong>${p.associationName}</strong> a été créée avec succès.<br>
-      Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.
+      Votre association <strong>${p.associationName}</strong> a été créée avec succès.${p.trialDays > 0
+        ? `<br>Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.`
+        : ""}
     </p>
     ${btn("Accéder à mon tableau de bord", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`
@@ -737,20 +740,29 @@ export function donConfirmationEmail(p: {
   canIssueTaxReceipts: boolean
   receiptNumber?:      string
   donorType?:          "INDIVIDUAL" | "COMPANY"
+  // Set only when the tier's receiptMode is "PARTIAL" (e.g. a gala ticket where part of
+  // the price pays for the meal received in return) — only this portion is fiscally
+  // deductible, and the PDF receipt itself already shows this figure, not p.amount. The
+  // email must say the same thing or it contradicts its own attachment.
+  deductibleAmount?:   number
   branding?:           EmailBranding
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
 
-  const isCompany = p.donorType === "COMPANY"
+  const isCompany   = p.donorType === "COMPANY"
+  const isPartial   = p.deductibleAmount != null && p.deductibleAmount < p.amount
+  const deductibleStr = isPartial ? p.deductibleAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : amountStr
 
   const receiptBlock = p.canIssueTaxReceipts
     ? `<p style="margin:16px 0 0;font-size:13px;color:#3f3f46;">
         Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `(n° ${p.receiptNumber}) ` : ""}est joint à cet email.
+        ${isPartial ? `Seule une partie de votre don, <strong>${deductibleStr}</strong>, ouvre droit à réduction d'impôt — le solde correspond à une contrepartie reçue en échange de votre don. ` : ""}
         Conservez-le pour votre déclaration ${isCompany ? "fiscale" : "de revenus"} — il vous permet de bénéficier
         d'une réduction d'impôt ${isCompany
           ? "de <strong>60 %</strong>, dans la limite de 0,5 % de votre chiffre d'affaires HT (ou 20 000 € si ce montant est plus élevé) — Art. 238 bis du CGI."
           : "de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI)."}
+        ${isPartial ? `sur les <strong>${deductibleStr}</strong> déductibles.` : ""}
       </p>`
     : ""
 
@@ -776,6 +788,161 @@ export function donConfirmationEmail(p: {
     to:      p.email,
     subject: `Confirmation de don — ${p.associationName}`,
     html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+const INTERVAL_LABEL: Record<"MONTH" | "QUARTER" | "YEAR", string> = {
+  MONTH: "mois", QUARTER: "trimestre", YEAR: "an",
+}
+
+export function donationSubscriptionStartedEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  interval:        "MONTH" | "QUARTER" | "YEAR"
+  cancelUrl:       string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don régulier !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre don récurrent à <strong>${p.associationName}</strong> est activé. Merci pour votre soutien continu !
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant prélevé chaque ${INTERVAL_LABEL[p.interval]}</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>
+    <p style="margin:0 0 20px;font-size:13px;color:#71717a;">
+      Un reçu de confirmation vous sera envoyé à chaque prélèvement. Vous pouvez arrêter ce don à tout moment.
+    </p>
+    ${btn("Arrêter ce don récurrent", p.cancelUrl)}`
+  return {
+    to:      p.email,
+    subject: `Don récurrent activé — ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+export function donationSubscriptionPaymentFailedEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  nextAttemptAt:   Date | null
+  cancelUrl:       string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const nextAttemptStr = p.nextAttemptAt
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre don n'a pas abouti</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong> pour votre don récurrent à
+      <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
+      ${nextAttemptStr
+        ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
+        : "Vérifiez que votre moyen de paiement est à jour."}
+    </p>
+    ${btn("Arrêter ce don récurrent", p.cancelUrl)}`
+  return {
+    to:      p.email,
+    subject: `Échec de prélèvement — ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent once, right after handleCotisationSubscriptionCheckout creates the member's User —
+// no password reminder (they chose it themselves on the public form, unlike the admin-
+// generated one in invitationEmail).
+export function membershipSubscriptionStartedEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  loginUrl:        string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre adhésion est activée et votre premier paiement a été reçu.
+      Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
+      de passe que vous avez choisis.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Cotisation prélevée chaque année</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>
+    ${btn("Accéder à mon espace membre", p.loginUrl)}`
+  return {
+    to:      p.email,
+    subject: `Bienvenue chez ${p.associationName} !`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+export function cotisationSubscriptionPaymentFailedEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  nextAttemptAt:   Date | null
+  cancelUrl:       string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const nextAttemptStr = p.nextAttemptAt
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre cotisation n'a pas abouti</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong> pour votre cotisation à
+      <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
+      ${nextAttemptStr
+        ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
+        : "Vérifiez que votre moyen de paiement est à jour."}
+    </p>
+    ${btn("Gérer mon adhésion", p.cancelUrl)}`
+  return {
+    to:      p.email,
+    subject: `Échec de prélèvement — ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent alongside cotisationSubscriptionPaymentFailedEmail to every director (ADMIN/
+// PRESIDENT/TRESORIER) — the member-facing email alone leaves the association finding out
+// only once the member happens to mention it, or not at all.
+export function cotisationSubscriptionPaymentFailedAdminEmail(p: {
+  email:           string
+  associationName: string
+  memberName:      string
+  amount:          number
+  dashboardUrl:    string
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Échec de prélèvement d'une cotisation</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Le prélèvement automatique de <strong>${amountStr}</strong> pour la cotisation de
+      <strong>${p.memberName}</strong> n'a pas pu être effectué. Le membre a été prévenu et
+      Stripe va retenter automatiquement.
+    </p>
+    ${btn("Voir les membres", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `Échec de prélèvement — ${p.memberName}`,
+    html:    layout(APP_NAME, content),
   }
 }
 
