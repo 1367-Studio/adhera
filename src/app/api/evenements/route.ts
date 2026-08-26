@@ -5,6 +5,7 @@ import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { pusherServer } from "@/lib/pusher-server"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { revalidatePublicSite } from "@/lib/association/revalidate-site"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -138,6 +139,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     }),
     prisma.association.findUnique({ where: { id: associationId }, select: { slug: true } }),
   ])
+  if (association) revalidatePublicSite(association.slug)
   const notifDateStr = evenement.date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
   const notifBody    = [notifDateStr, evenement.location].filter(Boolean).join(" · ")
   void (async () => {

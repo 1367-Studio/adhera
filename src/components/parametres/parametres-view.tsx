@@ -39,6 +39,7 @@ type Association = {
   customBrandingEnabled: boolean | null
   logoUrl: string | null
   cotisationDefaultAmount: string | number | null
+  publicMembershipPaymentEnabled: boolean
 }
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations"
@@ -196,6 +197,7 @@ function ParametresViewInner() {
               <CotisationDefaultsSettings
                 canEdit={canEditFinance}
                 cotisationDefaultAmount={assoc.cotisationDefaultAmount}
+                publicMembershipPaymentEnabled={assoc.publicMembershipPaymentEnabled}
               />
             </div>
           )}

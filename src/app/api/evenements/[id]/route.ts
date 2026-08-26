@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -66,6 +67,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(capacity    !== undefined ? { capacity: capacity ?? null }       : {}),
     },
   })
+  await revalidatePublicSiteFor(associationId)
 
   const changes = computeDiff(
     existing  as Record<string, unknown>,
@@ -91,6 +93,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   }
 
   await prisma.evenement.delete({ where: { id } })
+  await revalidatePublicSiteFor(associationId)
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_DELETED", entity: "Evenement", entityId: id, label: existing.title })
   return new NextResponse(null, { status: 204 })
 }, { roles: MANAGERS, module: "evenements" })

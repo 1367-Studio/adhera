@@ -2758,6 +2758,10 @@
       "subtitle": "Quand un montant est renseigné, une cotisation en attente pour l'année en cours est créée automatiquement à chaque nouveau membre — il peut ensuite la payer lui-même depuis le portail, sans attendre qu'un admin la crée. Laissez vide pour ne rien créer automatiquement.",
       "defaultAmount": "Montant de cotisation par défaut",
       "defaultAmountHint": "0,00 € = aucune cotisation n'est créée automatiquement.",
+      "publicPaymentToggle": "Paiement en ligne pour l'adhésion publique",
+      "publicPaymentToggleDesc": "Le formulaire d'adhésion du site public exige le paiement immédiat (prélevé chaque année) et active le membre automatiquement, sans validation manuelle.",
+      "publicPaymentRequiresAmount": "Renseignez un montant de cotisation pour activer cette option.",
+      "connectNotReadyWarning": "Le paiement en ligne n'est pas actif — Stripe Connect n'est pas configuré ou n'accepte pas encore les paiements (onglet Paiements). En attendant, le formulaire public revient au flux gratuit et enregistre des demandes d'adhésion en attente.",
       "toasts": {
         "updated": "Montant par défaut mis à jour"
       }
@@ -3271,6 +3275,17 @@
       "noAccountWithEmail": "Aucun compte utilisateur — un accès peut être créé",
       "noAccountNoEmail": "Aucun compte utilisateur — email requis pour créer un accès",
       "dependantsTitle": "Membres sous sa responsabilité :",
+      "recurringSubscription": "Adhésion récurrente",
+      "recurringSubscriptionAmount": "{amount} / an",
+      "recurringSubscriptionNextCharge": "Prochain prélèvement : {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Active",
+        "pastDue": "Paiement en retard",
+        "cancelled": "Arrêtée"
+      },
+      "cancelSubscriptionButton": "Arrêter le prélèvement",
+      "cancelSubscriptionConfirmTitle": "Arrêter le prélèvement automatique ?",
+      "cancelSubscriptionConfirmDescription": "{name} ne sera plus prélevé automatiquement pour sa cotisation. Vous pourrez toujours enregistrer des paiements manuellement.",
       "tabs": {
         "cotisations": "Cotisations",
         "evenements": "Événements",
@@ -3320,7 +3335,8 @@
       "toasts": {
         "accessCreated": "Accès créé — un email a été envoyé",
         "cotisationAdded": "Cotisation ajoutée",
-        "cotisationUpdated": "Cotisation mise à jour"
+        "cotisationUpdated": "Cotisation mise à jour",
+        "subscriptionCancelled": "Prélèvement automatique arrêté"
       }
     },
     "sms": {

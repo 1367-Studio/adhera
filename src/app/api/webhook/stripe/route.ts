@@ -19,6 +19,10 @@ import {
   isDonationSubscriptionEvent, handleDonationSubscriptionCheckout, handleDonationSubscriptionSynced,
   handleDonationSubscriptionDeleted, handleDonationInvoicePaid, tryHandleDonationInvoicePaymentFailed,
 } from "@/lib/webhook/donation-subscriptions"
+import {
+  isCotisationSubscriptionEvent, handleCotisationSubscriptionCheckout, handleCotisationSubscriptionSynced,
+  handleCotisationSubscriptionDeleted, handleCotisationInvoicePaid, tryHandleCotisationInvoicePaymentFailed,
+} from "@/lib/webhook/cotisation-subscriptions"
 
 export const dynamic = "force-dynamic"
 
@@ -49,6 +53,15 @@ export async function POST(req: Request) {
       // id in metadata, since a Subscription id doesn't exist until Stripe mints it here).
       if (sess.mode === "subscription" && sess.metadata?.kind === "donation") {
         await handleDonationSubscriptionCheckout(sess)
+        break
+      }
+
+      // A recurring membership signup's Checkout Session — same reasoning as the donation
+      // branch above: no Membre exists yet to carry an id in metadata, since it's only
+      // created once Stripe mints a real subscription id (see
+      // src/lib/webhook/cotisation-subscriptions.ts).
+      if (sess.mode === "subscription" && sess.metadata?.kind === "cotisation") {
+        await handleCotisationSubscriptionCheckout(sess)
         break
       }
 
@@ -836,6 +849,10 @@ export async function POST(req: Request) {
         await handleDonationSubscriptionSynced(sub)
         break
       }
+      if (isCotisationSubscriptionEvent(sub)) {
+        await handleCotisationSubscriptionSynced(sub)
+        break
+      }
 
       const newStatus = toSubscriptionStatus(sub.status)
 
@@ -939,6 +956,10 @@ export async function POST(req: Request) {
         await handleDonationSubscriptionDeleted(sub)
         break
       }
+      if (isCotisationSubscriptionEvent(sub)) {
+        await handleCotisationSubscriptionDeleted(sub)
+        break
+      }
 
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
@@ -954,6 +975,7 @@ export async function POST(req: Request) {
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice
       await handleDonationInvoicePaid(invoice)
+      await handleCotisationInvoicePaid(invoice)
       break
     }
 
@@ -970,6 +992,7 @@ export async function POST(req: Request) {
       // generates, so metadata.kind isn't reliably present here the way it is on the
       // Subscription object itself in the two handlers above.
       if (await tryHandleDonationInvoicePaymentFailed(invoice, event.id)) break
+      if (await tryHandleCotisationInvoicePaymentFailed(invoice, event.id)) break
 
       const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id
       if (!customerId) break

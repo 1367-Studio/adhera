@@ -2758,6 +2758,10 @@
       "subtitle": "Cuando se indica un importe, se crea automáticamente una cuota pendiente del año en curso para cada nuevo miembro — luego puede pagarla él mismo desde el portal, sin esperar a que un administrador la cree. Déjelo vacío para no crear nada automáticamente.",
       "defaultAmount": "Importe predeterminado de la cuota",
       "defaultAmountHint": "0,00 € = no se crea ninguna cuota automáticamente.",
+      "publicPaymentToggle": "Pago en línea para la adhesión pública",
+      "publicPaymentToggleDesc": "El formulario de adhesión del sitio público exige el pago inmediato (cobrado cada año) y activa al miembro automáticamente, sin validación manual.",
+      "publicPaymentRequiresAmount": "Indique un importe de cuota para activar esta opción.",
+      "connectNotReadyWarning": "El pago en línea no está activo — Stripe Connect no está configurado o aún no acepta pagos (pestaña Pagos). Mientras tanto, el formulario público vuelve silenciosamente al flujo gratuito y registra solicitudes de adhesión pendientes.",
       "toasts": {
         "updated": "Importe predeterminado actualizado"
       }
@@ -3271,6 +3275,17 @@
       "noAccountWithEmail": "Sin cuenta de usuario — se puede crear un acceso",
       "noAccountNoEmail": "Sin cuenta de usuario — se requiere un email para crear acceso",
       "dependantsTitle": "Miembros bajo su responsabilidad:",
+      "recurringSubscription": "Membresía recurrente",
+      "recurringSubscriptionAmount": "{amount} / año",
+      "recurringSubscriptionNextCharge": "Próximo cobro: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Activa",
+        "pastDue": "Pago atrasado",
+        "cancelled": "Detenida"
+      },
+      "cancelSubscriptionButton": "Detener el cobro automático",
+      "cancelSubscriptionConfirmTitle": "¿Detener el cobro automático?",
+      "cancelSubscriptionConfirmDescription": "{name} ya no será cobrado automáticamente por su cuota. Aún podrá registrar pagos manualmente.",
       "tabs": {
         "cotisations": "Cuotas",
         "evenements": "Eventos",
@@ -3320,7 +3335,8 @@
       "toasts": {
         "accessCreated": "Acceso creado — se envió un correo",
         "cotisationAdded": "Cuota añadida",
-        "cotisationUpdated": "Cuota actualizada"
+        "cotisationUpdated": "Cuota actualizada",
+        "subscriptionCancelled": "Cobro automático detenido"
       }
     },
     "sms": {

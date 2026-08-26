@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
 import { isMembreAdherent, membreAdherentCotisationSelect } from "@/lib/membre-adherent"
+import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -41,6 +42,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       user:           { select: { role: true } },
       responsable:    RESPONSABLE_SELECT,
       dependants:     { select: { id: true, firstName: true, lastName: true } },
+      cotisationSubscription: { select: { id: true, amount: true, status: true, currentPeriodEndsAt: true } },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
       _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true } },
@@ -162,6 +164,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_UPDATED", entity: "Membre", entityId: id, label: `${membre.firstName} ${membre.lastName}`, metadata: { changes } })
   }
 
+  // A member losing ACTIF status (suspended, marked inactive, ...) shouldn't keep being
+  // billed by Stripe for a recurring cotisation. Only fires on an actual transition away
+  // from ACTIF (compared against the pre-update row) — cancelActiveCotisationSubscriptionForMembre
+  // is already a no-op once the subscription is CANCELLED, but comparing here avoids an
+  // unnecessary Stripe API round-trip on every single edit of an already-inactive member.
+  if (rest.status !== undefined && rest.status !== "ACTIF" && existing.status !== rest.status) {
+    await cancelActiveCotisationSubscriptionForMembre(id, { actorId: userId, label: `${membre.firstName} ${membre.lastName}` })
+  }
+
   return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
 }, { roles: MANAGERS })
 
@@ -198,6 +209,9 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_DELETED", entity: "Membre", entityId: id, label: `${existing.firstName} ${existing.lastName}` })
+
+  // A deleted member must stop being billed by Stripe for a recurring cotisation.
+  await cancelActiveCotisationSubscriptionForMembre(id, { actorId: userId, label: `${existing.firstName} ${existing.lastName}` })
 
   return NextResponse.json({ deletedId: id, unlinkedDependants })
 }, { roles: MANAGERS })
