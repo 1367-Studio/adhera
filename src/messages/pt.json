@@ -57,6 +57,7 @@
       "pageTitle": "Criar uma conta",
       "heading": "Criar uma conta",
       "subtitle": "{trialDays} dias de teste grátis · Sem compromisso · Cancelamento fácil",
+      "subtitleOffer": "Complete seu cadastro para ativar sua assinatura.",
       "alreadyAccount": "Já tem uma conta?",
       "signIn": "Entrar",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Erro",
         "startTrial": "Iniciar meu teste grátis",
         "securePayment": "Pagamento seguro pela Stripe · Cancele antes de {days} dias para não pagar nada"
+      },
+      "offer": {
+        "invalidTitle": "Link inválido",
+        "invalidBody": "Este link de cadastro não é mais válido. Entre em contato com quem te enviou para receber um novo.",
+        "phaseFixed": "{amount} por {months} meses",
+        "phaseRecurring": "depois {amount}/mês",
+        "confirmButton": "Confirmar minha assinatura",
+        "securePayment": "Pagamento seguro via Stripe."
       },
       "done": {
         "title": "Conta criada com sucesso!",
@@ -4167,6 +4176,7 @@
       "backoffice": "Backoffice",
       "overview": "Visão geral",
       "associations": "Associações",
+      "pricingOffers": "Ofertas de preço",
       "support": "Suporte",
       "signOut": "Sair"
     },

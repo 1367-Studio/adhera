@@ -59,6 +59,16 @@ enum AssociationPlan {
   PRO
 }
 
+// Status of a staff-generated custom-pricing signup link (see PricingOffer) — PENDING
+// until redeemed through /register?offer=<token>, EXPIRED/REVOKED close the link without
+// ever redeeming it.
+enum PricingOfferStatus {
+  PENDING
+  USED
+  EXPIRED
+  REVOKED
+}
+
 enum MaterialStatus {
   DISPONIBLE
   EN_USE
@@ -327,79 +337,84 @@ enum DonationSubscriptionStatus {
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
-  id                      String             @id @default(cuid())
-  name                    String
-  slug                    String             @unique
-  city                    String?
-  country                 String             @default("France")
-  address                 String?
-  phone                   String?
-  website                 String?
+  id                           String             @id @default(cuid())
+  name                         String
+  slug                         String             @unique
+  city                         String?
+  country                      String             @default("France")
+  address                      String?
+  phone                        String?
+  website                      String?
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
-  iban                    String?
-  bic                     String?
-  siren                   String?
-  rna                     String?
-  canIssueTaxReceipts     Boolean            @default(false)
+  iban                         String?
+  bic                          String?
+  siren                        String?
+  rna                          String?
+  canIssueTaxReceipts          Boolean            @default(false)
   // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
   // (EN_ATTENTE, current year) is created automatically for every new Membre — see
   // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
   // away instead of waiting on an admin to create one.
-  cotisationDefaultAmount Decimal?           @db.Decimal(10, 2)
-  objet                   String?
-  organismeCategory       OrganismeCategory  @default(ASSOCIATION_LOI_1901)
-  organismeCategoryDetail String?
+  cotisationDefaultAmount      Decimal?           @db.Decimal(10, 2)
+  objet                        String?
+  organismeCategory            OrganismeCategory  @default(ASSOCIATION_LOI_1901)
+  organismeCategoryDetail      String?
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
   // key, see platformClient in the same file).
-  aiProvider              String?
-  aiApiKey                String?
-  aiModel                 String?
-  smsAccountSid           String?
-  smsAuthToken            String?
-  smsPhoneNumber          String?
-  livekitUrl              String?
-  livekitApiKey           String?
-  livekitApiSecret        String?
-  stripeCustomerId        String?
-  stripeSubscriptionId    String?
-  stripeConnectId         String?
-  plan                    AssociationPlan    @default(ESSENTIAL)
+  aiProvider                   String?
+  aiApiKey                     String?
+  aiModel                      String?
+  smsAccountSid                String?
+  smsAuthToken                 String?
+  smsPhoneNumber               String?
+  livekitUrl                   String?
+  livekitApiKey                String?
+  livekitApiSecret             String?
+  stripeCustomerId             String?
+  stripeSubscriptionId         String?
+  // Set only when the subscription was created via a PricingOffer (custom staff-negotiated
+  // phased pricing) instead of the standard PLAN_PRICES catalog — informational/for
+  // backoffice display only. The webhook sync (customer.subscription.*) keys off
+  // stripeSubscriptionId as always, regardless of whether a Schedule manages it.
+  stripeSubscriptionScheduleId String?
+  stripeConnectId              String?
+  plan                         AssociationPlan    @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
   // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
   // Null means "use the tier's standard limit", not "unlimited".
-  customMemberLimit       Int?
+  customMemberLimit            Int?
   // Brand identity applied to the dashboard, portal, devis/facture PDFs and the feuille
   // de présence PDF — separate from siteConfig's own logoUrl/primaryColor, which only
   // exist once the association has set up its public site. logoUrl/primaryColor also
   // seed the site builder's fields the first time it's opened.
-  logoUrl                 String?
+  logoUrl                      String?
   // No DB default on purpose — a bare column default made every Pro association look
   // branded in this color (dashboard/portal theme, PDFs, emails) before the admin ever
   // opened the branding settings. null means "use the platform's own default theme";
   // the site builder and branding-settings UI supply #6366f1 as their own form default
   // instead, only persisted once the admin actually saves.
-  primaryColor            String?
-  secondaryColor          String?
+  primaryColor                 String?
+  secondaryColor               String?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
   // the plan default, true force-enables it for an Essentiel association.
-  customBrandingEnabled   Boolean?
-  subscriptionStatus      SubscriptionStatus @default(TRIAL)
-  trialEndsAt             DateTime?
-  suspendedAt             DateTime?
-  cancelAtPeriodEnd       Boolean            @default(false)
-  currentPeriodEndsAt     DateTime?
-  sitePublished           Boolean            @default(false)
-  siteConfig              Json?
-  modules                 Json?
-  internalNotes           String?
-  createdAt               DateTime           @default(now())
-  updatedAt               DateTime           @updatedAt
-  deletedAt               DateTime?
+  customBrandingEnabled        Boolean?
+  subscriptionStatus           SubscriptionStatus @default(TRIAL)
+  trialEndsAt                  DateTime?
+  suspendedAt                  DateTime?
+  cancelAtPeriodEnd            Boolean            @default(false)
+  currentPeriodEndsAt          DateTime?
+  sitePublished                Boolean            @default(false)
+  siteConfig                   Json?
+  modules                      Json?
+  internalNotes                String?
+  createdAt                    DateTime           @default(now())
+  updatedAt                    DateTime           @updatedAt
+  deletedAt                    DateTime?
 
   users                 User[]
   membres               Membre[]
@@ -432,6 +447,47 @@ model Association {
   emailMessages         EmailMessage[]
   smsMessages           SmsMessage[]
   supportTickets        SupportTicket[]
+  pricingOffer          PricingOffer?
+}
+
+// A staff-generated, single-use custom-pricing signup link (see /register?offer=<token>)
+// — the "caso a caso" alternative to the fixed PLAN_PRICES catalog, for negotiated deals
+// like a discounted phase followed by a recurring price. Not a reusable named plan: one
+// row is redeemed by exactly one new Association, then closed for good.
+model PricingOffer {
+  id    String @id @default(cuid())
+  token String @unique
+
+  // Internal note for staff (e.g. "Cliente X — lançamento"), never shown to the person
+  // redeeming the link — the public lookup route only returns phases/label-free data.
+  label String
+
+  // Which Formwise tier this association gets tagged as once redeemed (member limits,
+  // module gating — see plan-limits.ts) — independent of the custom Stripe price, same
+  // decoupling as Association.customMemberLimit.
+  planTier AssociationPlan
+
+  // OfferPhase[] — see src/lib/pricing-offers.ts. Only the last phase may have
+  // months: null (open-ended/recurring forever).
+  phases Json
+
+  // One Stripe Product shared by every phase of this offer, created once when the offer
+  // itself is created (not at redemption time) — see createOfferProduct().
+  stripeProductId String
+
+  status    PricingOfferStatus @default(PENDING)
+  expiresAt DateTime?
+  usedAt    DateTime?
+
+  associationId String?      @unique
+  association   Association? @relation(fields: [associationId], references: [id])
+
+  createdByUserId String
+  createdBy       User   @relation(fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([status])
 }
 
 model User {
@@ -469,6 +525,7 @@ model User {
   supportTickets        SupportTicket[]
   supportTicketMessages SupportTicketMessage[]
   emailMessages         EmailMessage[]
+  pricingOffersCreated  PricingOffer[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -716,44 +773,44 @@ model CotisationPayment {
 }
 
 model Don {
-  id              String            @id @default(cuid())
-  associationId   String
-  membreId        String?
-  evenementId     String?
-  donorType       DonorType         @default(INDIVIDUAL)
-  firstName       String
-  lastName        String
-  companyName     String?
-  siret           String?
-  email           String
-  address         String?
-  amount          Decimal           @db.Decimal(10, 2)
-  message         String?
-  anonymous       Boolean           @default(false)
-  receiptNumber   String?
-  receiptIssuedAt DateTime?
-  stripeSessionId String?           @unique
-  paidAt          DateTime?
-  refundedAt      DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id               String               @id @default(cuid())
+  associationId    String
+  membreId         String?
+  evenementId      String?
+  donorType        DonorType            @default(INDIVIDUAL)
+  firstName        String
+  lastName         String
+  companyName      String?
+  siret            String?
+  email            String
+  address          String?
+  amount           Decimal              @db.Decimal(10, 2)
+  message          String?
+  anonymous        Boolean              @default(false)
+  receiptNumber    String?
+  receiptIssuedAt  DateTime?
+  stripeSessionId  String?              @unique
+  paidAt           DateTime?
+  refundedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   // Null for the standalone donation page (/portal/[slug]/don) — a Don only carries these
   // when it came through a configurable DonationForm. Additive: existing rows are unaffected.
-  donationFormId  String?
-  tierId          String?
+  donationFormId   String?
+  tierId           String?
   // Set only on the Don produced by a recurring donation's successful charge (invoice.paid) —
   // null for one-off dons, whether via a DonationForm or the standalone page.
-  subscriptionId  String?
+  subscriptionId   String?
   // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
   // Participation.answers.
-  answers         Json?
+  answers          Json?
   // Null = Stripe (the only method before offline donations existed). Set explicitly for
   // ESPECES/CHEQUE/VIREMENT — those are the only ones where paidAt isn't written by the
   // webhook, see the "encaissement" flow in /api/dons/[id]/encaisser.
-  paymentMethod   DonPaymentMethod?
+  paymentMethod    DonPaymentMethod?
   // Proof of consent when the form's requireCguvSignature is on — set server-side at
   // checkout, never trusted from the client alone. Null when the form doesn't require it.
-  cguvAgreedAt    DateTime?
+  cguvAgreedAt     DateTime?
   // Snapshotted from DonationTier at the moment this Don is created — same reasoning as
   // `amount` already being its own column instead of being re-read from the tier. Without
   // this, an admin editing a tier's receiptMode/deductibleAmount between "donor gave a
@@ -890,21 +947,21 @@ model DonationSubscription {
   // in-app cancel action with).
   cancelToken          String? @unique
 
-  donorType   DonorType @default(INDIVIDUAL)
-  firstName   String
-  lastName    String
-  companyName String?
-  siret       String?
-  email       String
-  address     String?
+  donorType        DonorType            @default(INDIVIDUAL)
+  firstName        String
+  lastName         String
+  companyName      String?
+  siret            String?
+  email            String
+  address          String?
   // Carried from the checkout form onto every Don an invoice.paid event produces for
   // this subscription — same fields a one-off Don would have captured at checkout.
-  message     String?
-  anonymous   Boolean   @default(false)
-  answers     Json?
+  message          String?
+  anonymous        Boolean              @default(false)
+  answers          Json?
   // Proof of consent captured at checkout, carried onto every Don this subscription
   // produces — same rationale as Don.cguvAgreedAt.
-  cguvAgreedAt DateTime?
+  cguvAgreedAt     DateTime?
   // Snapshotted from DonationTier at subscription start and carried onto every Don an
   // invoice.paid event produces — same rationale as Don.receiptMode/deductibleAmount, but
   // more pressing here since a subscription can outlive tier edits by months or years.

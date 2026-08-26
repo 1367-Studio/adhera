@@ -406,11 +406,14 @@ export function adminWelcomeEmail(p: {
   loginUrl:        string
   trialDays:       number
 }) {
+  // trialDays: 0 means the account started on a paid custom-pricing offer instead of the
+  // standard trial (see /api/register's offerToken branch) — no trial sentence to show.
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Votre association <strong>${p.associationName}</strong> a été créée avec succès.<br>
-      Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.
+      Votre association <strong>${p.associationName}</strong> a été créée avec succès.${p.trialDays > 0
+        ? `<br>Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.`
+        : ""}
     </p>
     ${btn("Accéder à mon tableau de bord", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`

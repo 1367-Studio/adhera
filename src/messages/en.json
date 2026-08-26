@@ -57,6 +57,7 @@
       "pageTitle": "Create an account",
       "heading": "Create an account",
       "subtitle": "{trialDays}-day free trial · No commitment · Cancel anytime",
+      "subtitleOffer": "Complete your sign-up to activate your subscription.",
       "alreadyAccount": "Already have an account?",
       "signIn": "Sign in",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Error",
         "startTrial": "Start my free trial",
         "securePayment": "Secure payment by Stripe · Cancel before {days} days to pay nothing"
+      },
+      "offer": {
+        "invalidTitle": "Invalid link",
+        "invalidBody": "This signup link is no longer valid. Contact whoever sent it to you for a new one.",
+        "phaseFixed": "{amount} for {months} months",
+        "phaseRecurring": "then {amount}/month",
+        "confirmButton": "Confirm my subscription",
+        "securePayment": "Secure payment powered by Stripe."
       },
       "done": {
         "title": "Account created successfully!",
@@ -4167,6 +4176,7 @@
       "backoffice": "Backoffice",
       "overview": "Overview",
       "associations": "Associations",
+      "pricingOffers": "Pricing offers",
       "support": "Support",
       "signOut": "Sign out"
     },

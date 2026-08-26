@@ -57,6 +57,7 @@
       "pageTitle": "Crear una cuenta",
       "heading": "Crear una cuenta",
       "subtitle": "{trialDays} días de prueba gratuita · Sin compromiso · Cancelación fácil",
+      "subtitleOffer": "Complete su registro para activar su suscripción.",
       "alreadyAccount": "¿Ya tienes una cuenta?",
       "signIn": "Iniciar sesión",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Error",
         "startTrial": "Iniciar mi prueba gratuita",
         "securePayment": "Pago seguro con Stripe · Cancela antes de {days} días para no pagar nada"
+      },
+      "offer": {
+        "invalidTitle": "Enlace no válido",
+        "invalidBody": "Este enlace de registro ya no es válido. Contacte con quien se lo envió para obtener uno nuevo.",
+        "phaseFixed": "{amount} durante {months} meses",
+        "phaseRecurring": "luego {amount}/mes",
+        "confirmButton": "Confirmar mi suscripción",
+        "securePayment": "Pago seguro con Stripe."
       },
       "done": {
         "title": "¡Cuenta creada con éxito!",
@@ -4167,6 +4176,7 @@
       "backoffice": "Backoffice",
       "overview": "Resumen",
       "associations": "Asociaciones",
+      "pricingOffers": "Ofertas de precio",
       "support": "Soporte",
       "signOut": "Cerrar sesión"
     },

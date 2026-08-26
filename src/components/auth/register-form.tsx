@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import type { PricingInfo, PlanTier } from "@/lib/stripe"
+import type { OfferPhase } from "@/lib/pricing-offers"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -72,12 +73,16 @@ function StepInfo({
   existingCustomerId,
   viaGoogle,
   pricing,
+  hasOffer,
   onNext,
 }: {
   defaultValues?:      Partial<Info>
   existingCustomerId?: string
   viaGoogle?:          boolean
   pricing:             PricingInfo
+  // A custom-pricing offer link replaces the trial entirely (see /api/register's
+  // offerToken branch) — the "X jours gratuits" perk would be misleading here.
+  hasOffer?:           boolean
   onNext: (info: Info, customerId: string, clientSecret: string) => void
 }) {
   const t = useTranslations("auth.register.form")
@@ -117,11 +122,9 @@ function StepInfo({
     }
   }
 
-  const perks = [
-    t("perkTrialDays", { days: pricing.trialDays }),
-    t("perkNoCommitment"),
-    t("perkEasyCancel"),
-  ]
+  const perks = hasOffer
+    ? [t("perkNoCommitment"), t("perkEasyCancel")]
+    : [t("perkTrialDays", { days: pricing.trialDays }), t("perkNoCommitment"), t("perkEasyCancel")]
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -230,6 +233,10 @@ function StepInfo({
 
 // ─── Step 2: payment ──────────────────────────────────────────────────────────
 
+// label is deliberately absent here — it's the staff-only internal note (see
+// PricingOffer.label) and the public lookup route never sends it to the browser.
+type OfferSummary = { token: string; phases: OfferPhase[] }
+
 function PaymentForm({
   info,
   customerId,
@@ -237,19 +244,24 @@ function PaymentForm({
   tier,
   plan,
   pricing,
+  offer,
   onBack,
   onSuccess,
 }: {
   info:         Info
   customerId:   string
   clientSecret: string
-  tier:         PlanTier
-  plan:         Plan
-  pricing:      PricingInfo
+  // Standard catalog signup passes tier/plan/pricing; a custom-pricing offer link (see
+  // /api/register's offerToken branch) passes `offer` instead — never both.
+  tier?:        PlanTier
+  plan?:        Plan
+  pricing?:     PricingInfo
+  offer?:       OfferSummary
   onBack:       () => void
   onSuccess:    () => void
 }) {
-  const t = useTranslations("auth.register.payment")
+  const t  = useTranslations("auth.register.payment")
+  const tOffer = useTranslations("auth.register.offer")
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -299,8 +311,7 @@ function PaymentForm({
           acceptedTerms:   info.acceptedTerms,
           customerId,
           paymentMethodId,
-          plan,
-          tier,
+          ...(offer ? { offerToken: offer.token } : { plan, tier }),
         }),
       })
       const data = await res.json()
@@ -314,41 +325,58 @@ function PaymentForm({
     }
   }
 
-  const tierPricing  = pricing.plans[tier]
-  const monthlyPrice = euros(tierPricing.monthlyAmountCents)
-  const yearlyEquiv  = euros(Math.round(tierPricing.yearlyAmountCents / 12))
-  const yearlyTotal  = euros(tierPricing.yearlyAmountCents)
-  const discountPct  = Math.round((1 - (tierPricing.yearlyAmountCents / 12) / tierPricing.monthlyAmountCents) * 100)
+  const tierPricing  = pricing && tier ? pricing.plans[tier] : null
+  const monthlyPrice = tierPricing ? euros(tierPricing.monthlyAmountCents) : ""
+  const yearlyEquiv  = tierPricing ? euros(Math.round(tierPricing.yearlyAmountCents / 12)) : ""
+  const yearlyTotal  = tierPricing ? euros(tierPricing.yearlyAmountCents) : ""
+  const discountPct  = tierPricing ? Math.round((1 - (tierPricing.yearlyAmountCents / 12) / tierPricing.monthlyAmountCents) * 100) : 0
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="rounded-lg border bg-card p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">{APP_NAME} · {t("trialBadge")}</span>
-          <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-            {t("freeToday")}
-          </span>
-        </div>
-        <div className="h-px bg-border" />
-        <div className="space-y-1.5 text-sm">
-          <div className="flex justify-between text-muted-foreground">
-            <span>{info.associationName}</span>
-            <span>{t("trialOffered", { days: pricing.trialDays })}</span>
+      {offer ? (
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <span className="text-sm font-medium">{APP_NAME}</span>
+          <div className="h-px bg-border" />
+          <div className="space-y-1.5 text-sm">
+            <div className="text-muted-foreground">{info.associationName}</div>
+            {offer.phases.map((phase, i) => (
+              <div key={i} className="font-medium text-foreground">
+                {phase.months === null
+                  ? tOffer("phaseRecurring", { amount: euros(phase.amountCents) })
+                  : tOffer("phaseFixed", { amount: euros(phase.amountCents), months: phase.months })}
+              </div>
+            ))}
           </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>{t("afterTrial")}</span>
-            <span className="font-medium text-foreground">
-              {t("perMonth", { price: plan === "yearly" ? yearlyEquiv : monthlyPrice })}
+        </div>
+      ) : (
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">{APP_NAME} · {t("trialBadge")}</span>
+            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
+              {t("freeToday")}
             </span>
           </div>
-          {plan === "yearly" && (
-            <div className="flex justify-between text-xs text-muted-foreground">
-              <span className="text-amber-600 dark:text-amber-400">{t("billedOnce", { total: yearlyTotal })}</span>
-              <span className="text-emerald-600">{t("discount", { pct: discountPct })}</span>
+          <div className="h-px bg-border" />
+          <div className="space-y-1.5 text-sm">
+            <div className="flex justify-between text-muted-foreground">
+              <span>{info.associationName}</span>
+              <span>{t("trialOffered", { days: pricing!.trialDays })}</span>
             </div>
-          )}
+            <div className="flex justify-between text-muted-foreground">
+              <span>{t("afterTrial")}</span>
+              <span className="font-medium text-foreground">
+                {t("perMonth", { price: plan === "yearly" ? yearlyEquiv : monthlyPrice })}
+              </span>
+            </div>
+            {plan === "yearly" && (
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span className="text-amber-600 dark:text-amber-400">{t("billedOnce", { total: yearlyTotal })}</span>
+                <span className="text-emerald-600">{t("discount", { pct: discountPct })}</span>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="rounded-lg border bg-card p-4">
         <PaymentElement
@@ -369,13 +397,13 @@ function PaymentForm({
         </Button>
         <Button type="submit" className="flex-1 h-11 text-sm font-medium" disabled={loading || !stripe}>
           {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-          {t("startTrial")}
+          {offer ? tOffer("confirmButton") : t("startTrial")}
         </Button>
       </div>
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <LockIcon className="size-3" />
-        <span>{t("securePayment", { days: pricing.trialDays })}</span>
+        <span>{offer ? tOffer("securePayment") : t("securePayment", { days: pricing!.trialDays })}</span>
       </div>
     </form>
   )
@@ -399,6 +427,7 @@ export function RegisterForm({ pricing }: { pricing: PricingInfo }) {
 // `next build` fails prerendering this page — the wrapper above provides that.
 function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const t             = useTranslations("auth.register.done")
+  const tOffer         = useTranslations("auth.register.offer")
   const router        = useRouter()
   const searchParams  = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
@@ -409,6 +438,30 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const [clientSecret, setClientSecret] = useState("")
   const [googlePrefill, setGooglePrefill] = useState<Partial<Info> | null>(null)
   const [googleSigningIn, setGoogleSigningIn] = useState(false)
+
+  // A custom-pricing signup link (?offer=<token>, see /api/register's offerToken branch
+  // and src/lib/pricing-offers.ts) replaces the standard Essential/Pro plan picker with a
+  // fixed set of phases fetched from the public offer lookup route. offerToken absent =
+  // completely unaffected standard flow.
+  const offerToken = searchParams.get("offer")
+  const [offer,        setOffer]        = useState<OfferSummary | "invalid" | null>(null)
+  const [offerLoading, setOfferLoading] = useState(!!offerToken)
+
+  useEffect(() => {
+    if (!offerToken) return
+    let cancelled = false
+    fetch(`/api/public/pricing-offers/${offerToken}`)
+      .then(async res => {
+        if (cancelled) return
+        if (!res.ok) { setOffer("invalid"); return }
+        const json = await res.json() as { phases: OfferPhase[] }
+        setOffer({ token: offerToken, phases: json.phases })
+      })
+      .catch(() => { if (!cancelled) setOffer("invalid") })
+      .finally(() => { if (!cancelled) setOfferLoading(false) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Arriving from "Continuer avec Google" on /login (no matching account found there):
   // the name/email come back as query params, get stashed in sessionStorage so they
@@ -499,9 +552,29 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
     )
   }
 
+  if (offerLoading) {
+    return (
+      <div className="flex justify-center py-10">
+        <CircleNotchIcon className="size-5 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
+
+  if (offer === "invalid") {
+    return (
+      <div className="space-y-3 text-center py-6">
+        <p className="font-semibold">{tOffer("invalidTitle")}</p>
+        <p className="text-sm text-muted-foreground">{tOffer("invalidBody")}</p>
+        <Link href="/login" className="text-sm text-primary underline underline-offset-4">
+          {t("signIn")}
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
-      <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />
+      {!offer && <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />}
 
       <StepIndicator current={step as "info" | "payment"} />
 
@@ -515,6 +588,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
           existingCustomerId={customerId || undefined}
           viaGoogle={!!googlePrefill}
           pricing={pricing}
+          hasOffer={!!offer}
           onNext={(i, cid, cs) => {
             setInfo(i)
             setCustomerId(cid)
@@ -530,9 +604,10 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
             info={info}
             customerId={customerId}
             clientSecret={clientSecret}
-            tier={tier}
-            plan={plan}
-            pricing={pricing}
+            tier={offer ? undefined : tier}
+            plan={offer ? undefined : plan}
+            pricing={offer ? undefined : pricing}
+            offer={offer ?? undefined}
             onBack={() => setStep("info")}
             onSuccess={() => setStep("done")}
           />
