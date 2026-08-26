@@ -2758,6 +2758,10 @@
       "subtitle": "Quando um valor é informado, uma mensalidade pendente do ano em curso é criada automaticamente para cada novo membro — ele pode então pagá-la pelo portal, sem esperar que um admin a crie. Deixe em branco para não criar nada automaticamente.",
       "defaultAmount": "Valor padrão da mensalidade",
       "defaultAmountHint": "R$ 0,00 = nenhuma mensalidade é criada automaticamente.",
+      "publicPaymentToggle": "Pagamento online para adesão pública",
+      "publicPaymentToggleDesc": "O formulário de adesão do site público exige o pagamento imediato (cobrado todo ano) e ativa o membro automaticamente, sem validação manual.",
+      "publicPaymentRequiresAmount": "Informe um valor de mensalidade para ativar essa opção.",
+      "connectNotReadyWarning": "O pagamento online não está ativo — o Stripe Connect não está configurado ou ainda não aceita pagamentos (aba Pagamentos). Enquanto isso, o formulário público volta silenciosamente para o fluxo gratuito e registra pedidos de adesão pendentes.",
       "toasts": {
         "updated": "Valor padrão atualizado"
       }
@@ -3271,6 +3275,17 @@
       "noAccountWithEmail": "Nenhuma conta de usuário — um acesso pode ser criado",
       "noAccountNoEmail": "Nenhuma conta de usuário — email necessário para criar acesso",
       "dependantsTitle": "Membros sob sua responsabilidade:",
+      "recurringSubscription": "Associação recorrente",
+      "recurringSubscriptionAmount": "{amount} / ano",
+      "recurringSubscriptionNextCharge": "Próxima cobrança: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Ativa",
+        "pastDue": "Pagamento atrasado",
+        "cancelled": "Interrompida"
+      },
+      "cancelSubscriptionButton": "Interromper cobrança automática",
+      "cancelSubscriptionConfirmTitle": "Interromper a cobrança automática?",
+      "cancelSubscriptionConfirmDescription": "{name} não será mais cobrado automaticamente pela mensalidade. Você ainda poderá registrar pagamentos manuais.",
       "tabs": {
         "cotisations": "Mensalidades",
         "evenements": "Eventos",
@@ -3320,7 +3335,8 @@
       "toasts": {
         "accessCreated": "Acesso criado — um email foi enviado",
         "cotisationAdded": "Mensalidade adicionada",
-        "cotisationUpdated": "Cotização atualizada"
+        "cotisationUpdated": "Cotização atualizada",
+        "subscriptionCancelled": "Cobrança automática interrompida"
       }
     },
     "sms": {

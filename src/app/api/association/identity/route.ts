@@ -4,6 +4,7 @@ import { OrganismeCategory } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -82,6 +83,10 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     entity:        "Association",
     label:         "Identité juridique",
   })
+
+  // canIssueTaxReceipts is the only field here the public site page reads (drives the
+  // "reçu fiscal" mention on the dons section) — skip the cache bust otherwise.
+  if (canIssueTaxReceipts !== undefined) await revalidatePublicSiteFor(ctx.associationId)
 
   return NextResponse.json({ ok: true })
 }, { roles: ADMINS })

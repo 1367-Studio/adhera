@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementTicketTypesSchema } from "@/lib/schemas/evenement"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -83,6 +84,7 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
     throw err
   }
+  await revalidatePublicSiteFor(associationId)
 
   await writeActivityLog({
     associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id,

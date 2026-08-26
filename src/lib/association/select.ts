@@ -21,6 +21,7 @@ export const ASSOCIATION_SAFE_SELECT = {
   rna: true,
   canIssueTaxReceipts: true,
   cotisationDefaultAmount: true,
+  publicMembershipPaymentEnabled: true,
   objet: true,
   organismeCategory: true,
   organismeCategoryDetail: true,

@@ -2770,6 +2770,10 @@
       "subtitle": "Quando é indicado um valor, é criada automaticamente uma quota pendente do ano em curso para cada novo membro — que a pode então pagar pelo portal, sem esperar que um administrador a crie. Deixe em branco para não criar nada automaticamente.",
       "defaultAmount": "Valor predefinido da quota",
       "defaultAmountHint": "0,00 € = nenhuma quota é criada automaticamente.",
+      "publicPaymentToggle": "Pagamento online para adesão pública",
+      "publicPaymentToggleDesc": "O formulário de adesão do site público exige o pagamento imediato (cobrado todos os anos) e ativa o membro automaticamente, sem validação manual.",
+      "publicPaymentRequiresAmount": "Indique um valor de quota para ativar esta opção.",
+      "connectNotReadyWarning": "O pagamento online não está ativo — o Stripe Connect não está configurado ou ainda não aceita pagamentos (separador Pagamentos). Entretanto, o formulário público volta silenciosamente para o fluxo gratuito e regista pedidos de adesão pendentes.",
       "toasts": {
         "updated": "Valor predefinido atualizado"
       }
@@ -3283,6 +3287,17 @@
       "noAccountWithEmail": "Nenhuma conta de utilizador — pode ser criado um acesso",
       "noAccountNoEmail": "Nenhuma conta de utilizador — é necessário um e-mail para criar acesso",
       "dependantsTitle": "Membros sob a sua responsabilidade:",
+      "recurringSubscription": "Adesão recorrente",
+      "recurringSubscriptionAmount": "{amount} / ano",
+      "recurringSubscriptionNextCharge": "Próxima cobrança: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Ativa",
+        "pastDue": "Pagamento em atraso",
+        "cancelled": "Interrompida"
+      },
+      "cancelSubscriptionButton": "Interromper cobrança automática",
+      "cancelSubscriptionConfirmTitle": "Interromper a cobrança automática?",
+      "cancelSubscriptionConfirmDescription": "{name} deixará de ser cobrado automaticamente pela quota. Poderá continuar a registar pagamentos manuais.",
       "tabs": {
         "cotisations": "Quotas",
         "evenements": "Eventos",
@@ -3332,7 +3347,8 @@
       "toasts": {
         "accessCreated": "Acesso criado — foi enviado um e-mail",
         "cotisationAdded": "Quota adicionada",
-        "cotisationUpdated": "Quota atualizada"
+        "cotisationUpdated": "Quota atualizada",
+        "subscriptionCancelled": "Cobrança automática interrompida"
       }
     },
     "sms": {

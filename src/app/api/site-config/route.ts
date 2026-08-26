@@ -3,6 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { writeActivityLog } from "@/lib/activity-log"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -70,6 +71,7 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   data.siteConfig = { ...existingConfig, ...configFields }
 
   await prisma.association.update({ where: { id: associationId }, data })
+  await revalidatePublicSiteFor(associationId)
 
   const action = published === true ? "SITE_PUBLISHED" : published === false ? "SITE_UNPUBLISHED" : "SITE_UPDATED"
   await writeActivityLog({

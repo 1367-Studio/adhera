@@ -2758,6 +2758,10 @@
       "subtitle": "When an amount is set, a pending membership fee for the current year is automatically created for every new member — they can then pay it themselves from the portal, without waiting for an admin to create it. Leave empty to not create anything automatically.",
       "defaultAmount": "Default membership fee amount",
       "defaultAmountHint": "$0.00 = no membership fee is created automatically.",
+      "publicPaymentToggle": "Online payment for public membership",
+      "publicPaymentToggleDesc": "The public site membership form requires immediate payment (charged every year) and activates the member automatically, with no manual review.",
+      "publicPaymentRequiresAmount": "Set a cotisation amount to enable this option.",
+      "connectNotReadyWarning": "Online payment isn't active — Stripe Connect isn't set up or can't accept payments yet (Payments tab). Until then, the public form silently falls back to the free flow and files pending membership requests.",
       "toasts": {
         "updated": "Default amount updated"
       }
@@ -3271,6 +3275,17 @@
       "noAccountWithEmail": "No user account — access can be created",
       "noAccountNoEmail": "No user account — email required to create access",
       "dependantsTitle": "Members under their guardianship:",
+      "recurringSubscription": "Recurring membership",
+      "recurringSubscriptionAmount": "{amount} / year",
+      "recurringSubscriptionNextCharge": "Next charge: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Active",
+        "pastDue": "Payment overdue",
+        "cancelled": "Cancelled"
+      },
+      "cancelSubscriptionButton": "Stop automatic charge",
+      "cancelSubscriptionConfirmTitle": "Stop the automatic charge?",
+      "cancelSubscriptionConfirmDescription": "{name} will no longer be charged automatically for their membership fee. You can still record manual payments.",
       "tabs": {
         "cotisations": "Membership fees",
         "evenements": "Events",
@@ -3320,7 +3335,8 @@
       "toasts": {
         "accessCreated": "Access created — an email was sent",
         "cotisationAdded": "Membership fee added",
-        "cotisationUpdated": "Membership fee updated"
+        "cotisationUpdated": "Membership fee updated",
+        "subscriptionCancelled": "Automatic charge stopped"
       }
     },
     "sms": {
