@@ -88,7 +88,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <PastDueBanner />
           <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
-          <main className="flex flex-1 flex-col gap-4 p-4 pt-0 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
+          <main className="flex flex-1 flex-col gap-4 p-4 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>
         </SidebarInset>

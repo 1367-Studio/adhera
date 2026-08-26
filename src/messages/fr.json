@@ -57,6 +57,7 @@
       "pageTitle": "Créer un compte",
       "heading": "Créer un compte",
       "subtitle": "{trialDays} jours d'essai gratuit · Sans engagement · Annulation facile",
+      "subtitleOffer": "Complétez votre inscription pour activer votre abonnement.",
       "alreadyAccount": "Déjà un compte ?",
       "signIn": "Se connecter",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Erreur",
         "startTrial": "Démarrer mon essai gratuit",
         "securePayment": "Paiement sécurisé par Stripe · Annulez avant {days} jours pour ne rien payer"
+      },
+      "offer": {
+        "invalidTitle": "Lien non valide",
+        "invalidBody": "Ce lien d'inscription n'est plus valide. Contactez la personne qui vous l'a envoyé pour en obtenir un nouveau.",
+        "phaseFixed": "{amount} pendant {months} mois",
+        "phaseRecurring": "puis {amount}/mois",
+        "confirmButton": "Confirmer mon abonnement",
+        "securePayment": "Paiement sécurisé par Stripe."
       },
       "done": {
         "title": "Compte créé avec succès !",
@@ -4167,6 +4176,7 @@
       "backoffice": "Backoffice",
       "overview": "Vue d'ensemble",
       "associations": "Associations",
+      "pricingOffers": "Offres tarifaires",
       "support": "Support",
       "signOut": "Se déconnecter"
     },

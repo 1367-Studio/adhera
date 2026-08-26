@@ -57,6 +57,7 @@
       "pageTitle": "Criar conta",
       "heading": "Criar conta",
       "subtitle": "{trialDays} dias de teste grátis · Sem compromisso · Cancelamento fácil",
+      "subtitleOffer": "Complete o seu registo para ativar a sua subscrição.",
       "alreadyAccount": "Já tem conta?",
       "signIn": "Iniciar sessão",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Erro",
         "startTrial": "Iniciar o meu teste grátis",
         "securePayment": "Pagamento seguro pela Stripe · Cancele antes de {days} dias para não pagar nada"
+      },
+      "offer": {
+        "invalidTitle": "Link inválido",
+        "invalidBody": "Este link de registo já não é válido. Contacte quem lho enviou para obter um novo.",
+        "phaseFixed": "{amount} durante {months} meses",
+        "phaseRecurring": "depois {amount}/mês",
+        "confirmButton": "Confirmar a minha subscrição",
+        "securePayment": "Pagamento seguro via Stripe."
       },
       "done": {
         "title": "Conta criada com sucesso!",
@@ -4179,6 +4188,7 @@
       "backoffice": "Backoffice",
       "overview": "Visão geral",
       "associations": "Associações",
+      "pricingOffers": "Ofertas de preço",
       "support": "Suporte",
       "signOut": "Terminar sessão"
     },

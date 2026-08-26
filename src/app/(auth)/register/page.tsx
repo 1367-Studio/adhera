@@ -11,8 +11,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("pageTitle") }
 }
 
-export default async function RegisterPage() {
-  const [pricing, t] = await Promise.all([getPricingInfo(), getTranslations("auth.register")])
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ offer?: string }>
+}) {
+  const [{ offer }, pricing, t] = await Promise.all([searchParams, getPricingInfo(), getTranslations("auth.register")])
+  // A custom-pricing offer link (?offer=<token>) replaces the trial entirely — see
+  // /api/register's offerToken branch — so this static header must not promise "15 jours
+  // d'essai gratuit" when it doesn't apply. Checked on the query param alone (not
+  // validity, which RegisterForm resolves client-side) since even an invalid/expired
+  // link shouldn't show trial copy while RegisterForm renders its own error state below.
+  const hasOffer = !!offer
 
   return (
     <div className="w-full max-w-md">
@@ -25,7 +35,7 @@ export default async function RegisterPage() {
         <div className="space-y-1.5">
           <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">
-            {t("subtitle", { trialDays: pricing.trialDays })}
+            {hasOffer ? t("subtitleOffer") : t("subtitle", { trialDays: pricing.trialDays })}
           </p>
         </div>
 
