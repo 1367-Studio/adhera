@@ -309,7 +309,7 @@ function PublicDonPageInner() {
             type="submit"
             disabled={!canSubmit}
             loading={loading}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/85"
+            className="w-full"
           >
             <HandshakeIcon className="size-4 mr-2" />
             Faire un don{amount > 0 ? ` de ${amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}` : ""}

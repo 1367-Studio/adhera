@@ -6,6 +6,12 @@ import { loadStripe } from "@stripe/stripe-js"
 
 export const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
+// Elements renders its fields in a cross-origin iframe on js.stripe.com, so it can see
+// neither the page's CSS nor the Inter that next/font self-hosts under a hashed filename.
+// `fontFamily: "inherit"` therefore resolved against the iframe's own empty root and fell
+// back to the browser default serif — the card fields rendered in Times while the rest of
+// the page was Inter. The family below only takes effect because `stripeFonts` gives the
+// iframe somewhere to actually load Inter from.
 export const stripeAppearance = {
   theme:     "flat" as const,
   variables: {
@@ -13,7 +19,7 @@ export const stripeAppearance = {
     colorBackground: "#ffffff",
     colorText:       "#111318",
     colorDanger:     "#ef4444",
-    fontFamily:      "inherit",
+    fontFamily:      'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     borderRadius:    "8px",
     spacingUnit:     "4px",
     fontSizeBase:    "14px",
@@ -38,6 +44,12 @@ export const stripeAppearance = {
     },
   },
 }
+
+// Passed to <Elements options={{ fonts: stripeFonts }}> at every mount point. Weights are
+// the two the appearance rules above use: 400 for inputs, 500 for labels.
+export const stripeFonts = [
+  { cssSrc: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" },
+]
 
 // Single formatting helper for every euro amount shown across billing flows — all of
 // them derive from a PricingInfo fetched live from Stripe, never from a separately
@@ -100,11 +112,17 @@ export function PlanPicker({
             onClick={() => onPlanChange(c.id)}
             className={cn(
               "rounded-full px-3 py-1 text-xs font-medium transition-colors",
-              plan === c.id ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              plan === c.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {c.label}
-            {c.id === "yearly" && annualBadge && <span className="ml-1 text-emerald-600 dark:text-emerald-400">{annualBadge}</span>}
+            {c.id === "yearly" && annualBadge && (
+              // Emerald on the blue active pill fails contrast in both themes, so the
+              // badge rides the button's own foreground once selected.
+              <span className={cn("ml-1", plan === c.id ? "text-primary-foreground/80" : "text-emerald-600 dark:text-emerald-400")}>
+                {annualBadge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -130,7 +148,7 @@ export function PlanPicker({
               )}
             >
               {t.highlighted && (
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-foreground px-2 py-0.5 text-xs font-semibold text-background whitespace-nowrap">
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 rounded-full bg-primary text-primary-foreground px-2 py-0.5 text-xs font-semibold text-background whitespace-nowrap">
                   Populaire
                 </span>
               )}
