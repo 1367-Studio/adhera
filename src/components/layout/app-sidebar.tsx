@@ -12,7 +12,7 @@ import {
   SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
   EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
   ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
-  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon,
+  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon, IdentificationCardIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -62,6 +62,7 @@ const navigationItems: NavItem[] = [
 
   { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "adhesions",     href: "/dashboard/adhesions",    icon: IdentificationCardIcon, roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  categoryKey: "adherents" },
 
   { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", categoryKey: "communication" },

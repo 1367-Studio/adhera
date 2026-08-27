@@ -867,8 +867,16 @@ export function membershipSubscriptionStartedEmail(p: {
   amount:          number
   loginUrl:        string
   branding?:       EmailBranding
+  // Set only for a custom-duration MembershipTier (see MembershipTier.durationMonths) —
+  // null/undefined/12 keeps the historical "chaque année" wording. Without this, a tier
+  // billing every N<12 months would tell new members they're charged yearly, and the next
+  // (actually N-month-later) charge would land looking like a billing mistake.
+  durationMonths?: number | null
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const cadenceLabel = p.durationMonths && p.durationMonths !== 12
+    ? `Cotisation prélevée tous les ${p.durationMonths} mois`
+    : "Cotisation prélevée chaque année"
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -878,10 +886,64 @@ export function membershipSubscriptionStartedEmail(p: {
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td>
-        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Cotisation prélevée chaque année</span>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">${cadenceLabel}</span>
         <span style="font-size:20px;font-weight:700;">${amountStr}</span>
       </td></tr>
     </table>
+    ${btn("Accéder à mon espace membre", p.loginUrl)}`
+  return {
+    to:      p.email,
+    subject: `Bienvenue chez ${p.associationName} !`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent for a MembershipForm signup that's active right away with no ongoing subscription
+// behind it — a one-off paid tier, or a free tier under MembershipForm.validationMode
+// IMMEDIATE. No password reminder, same reasoning as membershipSubscriptionStartedEmail.
+export function membershipWelcomeEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  // Set when a paid tier was settled offline (espèces/chèque/virement) — the Cotisation
+  // stays EN_ATTENTE until an admin records the payment, so the wording can't claim it's
+  // already been received the way the online/free branches can.
+  offlinePending?:      boolean
+  offlineInstructions?: string | null
+  loginUrl:        string
+  branding?:       EmailBranding
+  // Full names of the other people registered in the same multi-registrant submission (see
+  // consumeMembershipCheckoutDraft, "Ajouter un autre adhérent") — when set, the amount below
+  // is the combined total for the whole group, not just this recipient, so it needs saying:
+  // otherwise a visitor who paid once for 3 people sees one price with no explanation of why
+  // it's higher than their own tier.
+  otherRegistrants?: string[]
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const statusSentence = p.offlinePending
+    ? " Il vous reste à régler votre cotisation selon les instructions ci-dessous."
+    : p.amount > 0 ? " et votre paiement a bien été reçu." : "."
+  const groupSentence = p.otherRegistrants && p.otherRegistrants.length > 0
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        Ce montant couvre votre adhésion ainsi que celle de ${p.otherRegistrants.join(", ")}.
+      </p>`
+    : ""
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre adhésion est activée${statusSentence}
+      Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
+      de passe que vous avez choisis.
+    </p>
+    ${p.amount > 0 ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">${p.offlinePending ? "Montant à régler" : "Montant réglé"}</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>` : ""}
+    ${groupSentence}
+    ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {
     to:      p.email,

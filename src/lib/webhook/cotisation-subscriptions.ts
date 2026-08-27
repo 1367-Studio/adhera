@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto"
+import { addMonths } from "date-fns"
 import Stripe from "stripe"
 import { Prisma, type CotisationSubscriptionStatus } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
@@ -14,7 +15,9 @@ import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation } from "@/lib/cotisation-payments"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
+import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
+import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -63,6 +66,13 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
   const unitAmount = sub.items.data[0]?.price.unit_amount
   const amount     = unitAmount != null ? unitAmount / 100 : 0
 
+  // Needed inside the transaction below (receiptMode on any embedded-donation addon) — fetched
+  // once here rather than twice, since the rest of this handler already needs assoc afterwards.
+  const assoc = await prisma.association.findUnique({
+    where:  { id: meta.associationId },
+    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
+  })
+
   let created
   try {
     created = await prisma.$transaction(async (tx) => {
@@ -85,10 +95,18 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           lastName:      meta.lastName ?? "",
           email:         meta.email,
           phone:         meta.phone || null,
+          // address/birthDate/sexe/answers are only ever present when meta came from a
+          // MembershipForm (see .../adhesion/[formSlug]/checkout/route.ts) — the legacy
+          // /inscription/checkout route's metadata never sets these keys, so they're
+          // undefined/"" there and every field below falls back to null exactly as before.
+          address:       meta.address || null,
+          birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
+          sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           status:        "ACTIF",
           associationId: meta.associationId,
           typeId:        meta.typeId || null,
           userId:        user.id,
+          answers:       meta.answers ? JSON.parse(meta.answers) : undefined,
         },
       })
 
@@ -102,7 +120,30 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           amount,
           status:               "ACTIVE",
           currentPeriodEndsAt:  subscriptionPeriodEnd(sub),
+          // Set only when this subscription came from a MembershipForm (see
+          // src/app/api/public/[slug]/adhesion/[formSlug]/checkout/route.ts) — null for the
+          // legacy /inscription/checkout flow. Copied onto every yearly Cotisation this
+          // subscription produces in handleCotisationInvoicePaid below.
+          membershipFormId: meta.membershipFormId || null,
+          tierId:           meta.tierId || null,
+          // Snapshotted from MembershipTier.durationMonths at signup (see checkout/route.ts's
+          // commonMeta comment) — null keeps the historical yearly-billing behavior exactly as
+          // it was before this field existed.
+          durationMonths:   meta.durationMonths ? Number(meta.durationMonths) : null,
         },
+      })
+
+      // Any paid add-on/embedded donation rides as a one-time invoice item on this same
+      // checkout — Stripe bills it once on the first invoice, never on renewals, which is
+      // exactly why this only runs here and not in handleCotisationInvoicePaid below.
+      await createMembershipAddonPurchases(tx, {
+        associationId: meta.associationId,
+        membreId:      membre.id,
+        firstName:     meta.firstName ?? "",
+        lastName:      meta.lastName ?? "",
+        email:         meta.email,
+        addonsJson:    meta.addons,
+        canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
       })
 
       return { user, membre, cotisationSubscription }
@@ -138,10 +179,6 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
     return
   }
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: meta.associationId },
-    select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
-  })
   if (assoc?.slug) {
     sendEmail(membershipSubscriptionStartedEmail({
       firstName:       created.membre.firstName,
@@ -150,7 +187,18 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       amount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       branding:        resolveDocumentBranding(assoc),
+      durationMonths:  meta.durationMonths ? Number(meta.durationMonths) : null,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisationSubscription.id }).catch(() => {})
+
+    // Not fired before this session's own edge-case review — a recurring MembershipForm
+    // signup (like the one-off/free/offline paths in checkout/route.ts) is still a real new
+    // member, and staff-configured "nouveau membre" automations should see it too.
+    fireEventRule({
+      triggerType: "MEMBER_CREATED",
+      associationId: meta.associationId,
+      association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
+      membre: { id: created.membre.id, firstName: created.membre.firstName, lastName: created.membre.lastName, email: created.membre.email, phone: created.membre.phone },
+    }).catch(() => {})
   }
 
   await writeActivityLog({
@@ -194,7 +242,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
 
   const cotisationSub = await prisma.cotisationSubscription.findUnique({
     where:  { stripeSubscriptionId: subscriptionId },
-    select: { id: true, associationId: true, membreId: true, amount: true },
+    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true },
   })
   if (!cotisationSub) return // Not a cotisation subscription — nothing here concerns this invoice.
 
@@ -203,13 +251,52 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
 
   const paidAt = invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : new Date()
   const year   = currentCotisationYear(paidAt)
+  const periodStart = cotisationSub.durationMonths ? paidAt : null
+  const periodEnd    = cotisationSub.durationMonths ? addMonths(paidAt, cotisationSub.durationMonths) : null
+
+  if (cotisationSub.durationMonths) {
+    // A custom-duration subscription (< 12 months) can renew more than once inside the same
+    // calendar year (e.g. a 6-month tier signed up for in January renews again in July) —
+    // Cotisation's @@unique([membreId, year]) has no room for a second row that same year.
+    // Detected here as a same-subscription row whose previous period has already closed by
+    // the time this new charge lands. Rather than silently reuse/overwrite January's period
+    // (which would make isMembreAdherent start reporting this member as expired the moment
+    // the July renewal actually arrives), this is deliberately left as a rare, honestly-
+    // failing edge case — see the Fase 2 plan's own scoping note — a human gets paged instead
+    // of the data quietly going wrong.
+    const existingForYear = await prisma.cotisation.findUnique({
+      where:  { membreId_year: { membreId: cotisationSub.membreId, year } },
+      select: { subscriptionId: true, periodEnd: true },
+    })
+    if (existingForYear?.subscriptionId === cotisationSub.id && existingForYear.periodEnd && existingForYear.periodEnd < paidAt) {
+      console.error(`[cotisation-subscription] a second same-year renewal landed for subscription ${cotisationSub.id} (membre ${cotisationSub.membreId}, year ${year}) — Cotisation's one-row-per-year constraint can't represent it; needs manual reconciliation.`)
+      const admins = await prisma.user.findMany({
+        where:  { associationId: cotisationSub.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+        select: { id: true },
+      })
+      if (admins.length) {
+        await prisma.notification.createMany({
+          data: admins.map(a => ({
+            userId: a.id,
+            title:  "Renouvellement d'adhésion à vérifier manuellement",
+            body:   "Un abonnement à durée personnalisée s'est renouvelé une seconde fois dans la même année civile — le paiement a bien été reçu mais nécessite une vérification manuelle.",
+            link:   `/dashboard/membres/${cotisationSub.membreId}`,
+            scope:  "GESTION",
+          })),
+          skipDuplicates: true,
+        })
+        await pusherServer.trigger(`private-association-${cotisationSub.associationId}`, "new-notification", {}).catch(() => {})
+      }
+      return
+    }
+  }
 
   // Reuses the exact upsert shape maybeCreateDefaultCotisation already uses elsewhere
   // (src/lib/cotisation-defaults.ts) — this year's row may or may not already exist
   // (e.g. an admin created one manually before the renewal charge landed).
   const cotisation = await prisma.cotisation.upsert({
     where:  { membreId_year: { membreId: cotisationSub.membreId, year } },
-    update: { subscriptionId: cotisationSub.id },
+    update: { subscriptionId: cotisationSub.id, periodStart, periodEnd },
     create: {
       membreId:       cotisationSub.membreId,
       associationId:  cotisationSub.associationId,
@@ -217,7 +304,21 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
       amount:         cotisationSub.amount,
       status:         "EN_ATTENTE",
       subscriptionId: cotisationSub.id,
+      membershipFormId: cotisationSub.membershipFormId,
+      tierId:           cotisationSub.tierId,
+      periodStart,
+      periodEnd,
     },
+  })
+
+  // Any add-on/embedded donation bought alongside this subscription's first checkout was
+  // recorded with cotisationId: null (see createMembershipAddonPurchases in
+  // handleCotisationSubscriptionCheckout above) — the Cotisation it belongs to didn't exist
+  // until just now. Safe to run on every invoice, not just the first: once linked, the where
+  // clause below simply matches nothing on later renewals.
+  await prisma.membershipAddonPurchase.updateMany({
+    where: { membreId: cotisationSub.membreId, cotisationId: null },
+    data:  { cotisationId: cotisation.id },
   })
 
   // Already fully paid (e.g. a redelivered event, or an admin recorded a manual payment in

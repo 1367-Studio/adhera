@@ -65,8 +65,11 @@ export function resolveDocumentBranding(
 // Called from every member-creation path (admin-created, initial registration, public
 // self-registration, portal self-registration) right before the write. Throws
 // MemberLimitReachedError instead of returning a boolean so a forgotten call site fails
-// loudly in review rather than silently skipping the check.
-export async function assertMemberLimit(associationId: string): Promise<void> {
+// loudly in review rather than silently skipping the check. `count` covers a multi-registrant
+// MembershipForm submission (see checkout/route.ts's "Ajouter un autre adhérent") adding more
+// than one member at once — default 1 keeps every existing single-member call site's
+// `activeCount >= limit` check exactly as it was (activeCount + 1 > limit is equivalent).
+export async function assertMemberLimit(associationId: string, count = 1): Promise<void> {
   const association = await prisma.association.findUnique({
     where:  { id: associationId },
     select: { plan: true, customMemberLimit: true },
@@ -79,5 +82,5 @@ export async function assertMemberLimit(associationId: string): Promise<void> {
   ])
 
   const limit = effectiveMemberLimit(association, pricing)
-  if (activeCount >= limit) throw new MemberLimitReachedError(limit)
+  if (activeCount + count > limit) throw new MemberLimitReachedError(limit)
 }

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server"
+import { addMonths } from "date-fns"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
-import { isMembreAdherent, membreAdherentCotisationSelect } from "@/lib/membre-adherent"
+import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear } from "@/lib/membre-adherent"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 
 const RESPONSABLE_SELECT = {
@@ -43,6 +44,19 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       responsable:    RESPONSABLE_SELECT,
       dependants:     { select: { id: true, firstName: true, lastName: true } },
       cotisationSubscription: { select: { id: true, amount: true, status: true, currentPeriodEndsAt: true } },
+      // Options bought alongside a MembershipForm signup (see membership-tiers-editor.tsx's
+      // ADDON item type) — otherwise invisible anywhere in the admin.
+      membershipAddonPurchases: { orderBy: { purchasedAt: "desc" }, take: 50 },
+      // The DONATION-item-type counterpart — a real Don, not a MembershipAddonPurchase (see
+      // Don.membershipAddonTierId). Scoped with a `where` to just that link — membre.dons in
+      // general stays out of the adhésion detail view (that's the Dons module's own list, and
+      // it isn't necessarily even enabled for this association).
+      dons: {
+        where:   { membershipAddonTierId: { not: null } },
+        orderBy: { paidAt: "desc" },
+        take:    50,
+        select:  { id: true, amount: true, paidAt: true, membershipAddonTier: { select: { label: true } } },
+      },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
       _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true } },
@@ -50,7 +64,29 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
+
+  // Membre.answers is keyed by "mobile" (fixed) or a MembershipFormField id — resolved here
+  // so membre-detail-view.tsx can render real labels without a second round-trip. "mobile"
+  // has no MembershipFormField row to look up, so it's handled separately from the rest.
+  let customFieldAnswers: { label: string; value: string }[] = []
+  const rawAnswers = membre.answers as Record<string, string> | null
+  if (rawAnswers && Object.keys(rawAnswers).length > 0) {
+    const fieldIds = Object.keys(rawAnswers).filter(k => k !== "mobile")
+    const fields = fieldIds.length
+      ? await prisma.membershipFormField.findMany({ where: { id: { in: fieldIds } }, select: { id: true, label: true } })
+      : []
+    const labelById = new Map(fields.map(f => [f.id, f.label]))
+    customFieldAnswers = Object.entries(rawAnswers)
+      .filter(([k]) => k !== "mobile")
+      .map(([k, value]) => ({ label: labelById.get(k) ?? k, value }))
+  }
+
+  return NextResponse.json({
+    ...membre,
+    mobile: rawAnswers?.mobile ?? null,
+    customFieldAnswers,
+    isAdherent: isMembreAdherent(membre),
+  })
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -121,6 +157,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
   }
 
+  // A PENDING member approved into ACTIF who requested a free MembershipForm tier (see
+  // Membre.pendingTierId) never got a Cotisation at signup time on purpose — creating one
+  // then would have made isMembreAdherent() true before an admin ever reviewed the request,
+  // defeating the whole point of "sur demande" validation. This is the one moment that
+  // matters: read the tier once, consumed and cleared right after.
+  const isApproval = existing.status === "PENDING" && rest.status === "ACTIF" && !!existing.pendingTierId
+  const pendingTier = isApproval
+    ? await prisma.membershipTier.findUnique({ where: { id: existing.pendingTierId! }, select: { id: true, free: true, formId: true, durationMonths: true } })
+    : null
+
   const membre = await prisma.$transaction(async (tx) => {
     const updated = await tx.membre.update({
       where: { id },
@@ -140,6 +186,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),
         ...(birthDate     !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
         ...(adherentOverrideValue !== undefined ? { adherentOverride: adherentOverrideValue } : {}),
+        ...(pendingTier   ? { pendingTierId: null } : {}),
       },
       include: { cotisations: membreAdherentCotisationSelect(), responsable: RESPONSABLE_SELECT },
     })
@@ -150,6 +197,30 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       if (rest.status !== undefined) userUpdate.active = rest.status === "ACTIF"
       if (Object.keys(userUpdate).length > 0) {
         await tx.user.update({ where: { id: existing.userId }, data: userUpdate })
+      }
+    }
+
+    // Only for a free tier — a paid one never leaves a member PENDING in the first place
+    // (see checkout/route.ts's willBeImmediate), so this is defensive, not the normal path.
+    if (pendingTier?.free) {
+      const year = currentCotisationYear()
+      const alreadyHasCotisation = await tx.cotisation.findUnique({
+        where: { membreId_year: { membreId: id, year } }, select: { id: true },
+      })
+      if (!alreadyHasCotisation) {
+        const now = new Date()
+        await tx.cotisation.create({
+          data: {
+            membreId: id, associationId, year,
+            amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
+            membershipFormId: pendingTier.formId, tierId: pendingTier.id,
+            // Same durationMonths → periodStart/periodEnd snapshot as checkout/route.ts —
+            // without it, a "3-month trial" tier requiring approval would silently become a
+            // full calendar-year membership the moment an admin approves it.
+            periodStart: pendingTier.durationMonths ? now : null,
+            periodEnd:   pendingTier.durationMonths ? addMonths(now, pendingTier.durationMonths) : null,
+          },
+        })
       }
     }
 

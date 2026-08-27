@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/cotisation-status-sweep",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/membership-drafts-sweep",
+      "schedule": "0 6 * * *"
     }
   ]
 }
