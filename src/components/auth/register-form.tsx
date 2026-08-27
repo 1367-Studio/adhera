@@ -1,27 +1,27 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
-import Link from "next/link"
-import { useRouter, useSearchParams, unstable_rethrow } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import { registerSchema, type RegisterInput } from "@/lib/schemas"
-import type { PricingInfo, PlanTier } from "@/lib/stripe"
-import type { OfferPhase } from "@/lib/pricing-offers"
-import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import { Button } from "@/components/ui/button"
-import { FormField } from "@/components/ui/form-field"
-import { CheckboxField } from "@/components/ui/checkbox-field"
-import { TERMS_URL, PRIVACY_URL } from "@/lib/consent"
+import { euros, PlanPicker, stripeAppearance, stripePromise, type Plan } from "@/components/billing/stripe-elements-shared"
 import { GoogleIcon } from "@/components/icons/google-icon"
-import { CircleNotchIcon, CheckCircleIcon, LockIcon, ArrowRightIcon, ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { FormField } from "@/components/ui/form-field"
 import { APP_NAME } from "@/config/brand"
-import { BASE_PATH } from "@/lib/env"
 import { signInWithGoogleDashboard } from "@/lib/auth/actions"
-import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
+import { PRIVACY_URL, TERMS_URL } from "@/lib/consent"
+import { BASE_PATH } from "@/lib/env"
+import type { OfferPhase } from "@/lib/pricing-offers"
+import { registerSchema, type RegisterInput } from "@/lib/schemas"
+import type { PlanTier, PricingInfo } from "@/lib/stripe"
+import { cn } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, CheckIcon, CircleNotchIcon, LockIcon } from "@phosphor-icons/react/dist/ssr"
+import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
+import { useTranslations } from "next-intl"
+import Link from "next/link"
+import { unstable_rethrow, useRouter, useSearchParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 
 // ─── Step indicator ───────────────────────────────────────────────────────────
 
@@ -41,11 +41,14 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
             <div className="flex items-center gap-2">
               <div className={cn(
                 "size-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all",
-                done   ? "bg-foreground text-background" :
+                // Completed reads as success, not as a second emphasis competing with the
+                // active step. Same green scale as the shared Badge's `success` variant,
+                // rather than a locally invented tint.
+                done   ? "bg-green-600 text-white dark:bg-green-500 dark:text-green-950" :
                 active ? "bg-primary text-primary-foreground" :
                          "bg-muted text-muted-foreground"
               )}>
-                {done ? <CheckCircleIcon className="size-3.5" /> : i + 1}
+                {done ? <CheckIcon className="size-3.5" weight="bold" /> : i + 1}
               </div>
               <span className={cn(
                 "text-sm transition-colors",
@@ -212,17 +215,16 @@ function StepInfo({
       )}
 
       <Button type="submit" className="w-full h-11 text-sm font-medium mt-2" disabled={loading}>
+        {t("continueToPayment")}
         {loading
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
         }
-        {t("continueToPayment")}
       </Button>
-
       <div className="flex items-center justify-center gap-4 pt-1">
         {perks.map(perk => (
           <span key={perk} className="flex items-center gap-1 text-xs text-muted-foreground">
-            <CheckCircleIcon className="size-3 text-emerald-500" />
+            <CheckCircleIcon className="size-3 bg-secondary text-secondary-foreground" />
             {perk}
           </span>
         ))}

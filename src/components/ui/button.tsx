@@ -1,7 +1,7 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button"
-import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils";
+import { Button as ButtonPrimitive } from "@base-ui/react/button";
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
-import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority";
 
 const ICON_SIZES = new Set(["icon", "icon-sm", "icon-xs", "icon-lg"])
 
@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
           "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         secondary:
@@ -70,4 +70,5 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+export { Button, buttonVariants };
+

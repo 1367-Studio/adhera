@@ -40,10 +40,40 @@ SaaS platform for managing French associations (loi 1901). Built for presidents,
 npm install
 cp .env.example .env.local
 # fill in .env.local
-
-npx prisma migrate dev
-npm run dev
 ```
+
+Then pick a database — local or staging.
+
+### Local database (recommended)
+
+Requires Docker. Postgres runs in a container defined by [`docker-compose.yml`](docker-compose.yml);
+everything else (Stripe, R2, Resend, Pusher, LiveKit) still uses `.env.local`.
+
+```bash
+npm run db:up        # start Postgres, wait until it accepts connections
+npm run db:migrate   # apply migrations
+npm run db:seed      # super admin + demo association
+npm run dev:local    # Next.js against the local database
+```
+
+Seeded accounts — password `devpass` for all three:
+
+| Account | Role |
+|---------|------|
+| `hello@1367studio.com` | `SUPER_ADMIN` |
+| `admin@demo.fr` | `ADMIN` |
+| `membre@demo.fr` | `MEMBRE` |
+
+Other commands: `db:down` (stop the container, keep the data), `db:reset` (drop, re-migrate,
+re-seed), `db:psql` (open a shell on the database).
+
+These all go through [`scripts/local-db.sh`](scripts/local-db.sh), which overrides `DATABASE_URL`
+and `DIRECT_URL` so they can only ever touch the container — never staging.
+
+### Staging database
+
+`npm run dev` uses the `DATABASE_URL` in `.env.local`, which points at staging. Handy for
+reproducing something with real data, but be aware you are writing to a shared database.
 
 ## Environment Variables
 

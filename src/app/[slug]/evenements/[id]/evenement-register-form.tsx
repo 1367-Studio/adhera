@@ -553,7 +553,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                       type="submit"
                       disabled={!canSubmit}
                       loading={loading}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/85"
+                      className="w-full"
                     >
                       <TicketIcon className="size-4 mr-2" />
                       {isPaid
