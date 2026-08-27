@@ -258,6 +258,8 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
             <p className="text-center text-sm text-muted-foreground">{t("notOpenYet")}</p>
           ) : form.closed ? (
             <p className="text-center text-sm text-muted-foreground">{t("closed")}</p>
+          ) : form.tiers.length === 0 ? (
+            <p className="text-center text-sm text-muted-foreground">{t("noTiers")}</p>
           ) : !hasAnyPaymentMethod ? (
             <p className="text-center text-sm text-muted-foreground">{t("paymentUnavailable")}</p>
           ) : (
@@ -292,16 +294,14 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                   ))}
                 </div>
                 {selectedTier?.freeAmount && (
-                  <>
-                    <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
-                    {belowMinimum && (
-                      <p className="text-xs text-destructive">
-                        {t("belowMinimumAmount", {
-                          amount: MIN_DONATION_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                        })}
-                      </p>
-                    )}
-                  </>
+                  <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                )}
+                {belowMinimum && (
+                  <p className="text-xs text-destructive">
+                    {t("belowMinimumAmount", {
+                      amount: MIN_DONATION_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                    })}
+                  </p>
                 )}
                 {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
                   <p className="text-xs text-muted-foreground">

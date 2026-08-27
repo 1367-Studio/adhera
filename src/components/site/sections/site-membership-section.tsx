@@ -1,8 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState, Suspense } from "react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { toast } from "sonner"
+import Link from "next/link"
 import type { MembershipSection } from "@/types/site-config"
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { PRIVACY_URL } from "@/lib/consent"
 type MembreType = { id: string; name: string; color: string }
 
@@ -11,6 +14,16 @@ type Props = {
   slug:        string
   membreTypes: MembreType[]
   color:       string
+  // When true, the association has turned on immediate payment for this form (see
+  // publicMembershipPaymentEnabled in parametres) — submitting redirects to a Stripe
+  // Checkout subscription instead of just filing a PENDING request. `amount` is the
+  // yearly cotisation, already resolved server-side (getSiteData in [slug]/page.tsx).
+  paymentAvailable: boolean
+  amount:           string | null
+  // A MembershipForm published with visibility SITE supersedes everything below — additive,
+  // opt-in (see getSiteData): an association that never created one keeps seeing exactly
+  // this legacy single-price inline form.
+  membershipForm: { slug: string; title: string } | null
 }
 
 type FormState = {
@@ -19,11 +32,59 @@ type FormState = {
   email:         string
   phone:         string
   typeId:        string
+  password:      string
   acceptedTerms: boolean
 }
 
-export function SiteMembershipSection({ section, slug, membreTypes, color }: Props) {
-  const [form, setForm]       = useState<FormState>({ firstName: "", lastName: "", email: "", phone: "", typeId: "", acceptedTerms: false })
+const EMPTY_FORM: FormState = { firstName: "", lastName: "", email: "", phone: "", typeId: "", password: "", acceptedTerms: false }
+
+export function SiteMembershipSection(props: Props) {
+  if (props.membershipForm) {
+    return <SiteMembershipFormCta section={props.section} slug={props.slug} color={props.color} membershipForm={props.membershipForm} />
+  }
+  return (
+    <Suspense fallback={null}>
+      <SiteMembershipSectionInner {...props} />
+    </Suspense>
+  )
+}
+
+// Mirrors SiteDonsSection's CTA-card treatment — links out to the dedicated multi-tier
+// public page instead of trying to inline a differently-shaped form here.
+function SiteMembershipFormCta({ section, slug, color, membershipForm }: {
+  section: MembershipSection
+  slug:    string
+  color:   string
+  membershipForm: { slug: string; title: string }
+}) {
+  return (
+    <section id="adhesion" className="py-16 px-4">
+      <div className="max-w-md mx-auto text-center">
+        <IdentificationCardIcon className="size-10 mx-auto mb-4" style={{ color }} />
+
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
+        {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
+
+        <Link
+          href={`/${slug}/adhesion/${membershipForm.slug}`}
+          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+          style={{ background: color }}
+        >
+          {membershipForm.title}
+        </Link>
+      </div>
+    </section>
+  )
+}
+
+// useSearchParams() (for the Stripe Checkout return) requires a Suspense boundary above
+// it — the wrapper above provides that, same pattern as donation-form-public-form.tsx.
+function SiteMembershipSectionInner({ section, slug, membreTypes, color, paymentAvailable, amount }: Props) {
+  const searchParams = useSearchParams()
+  const router        = useRouter()
+  const pathname       = usePathname()
+
+  const [form, setForm]       = useState<FormState>(EMPTY_FORM)
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState<string | null>(null)
   const [done, setDone]       = useState(false)
@@ -33,10 +94,30 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
     setError(null)
   }
 
+  // Stripe redirects back here (?payment=success/cancelled) after the hosted Checkout
+  // page — same shape as donation-form-public-form.tsx's own handling of that redirect.
+  const shownPaymentToast = useRef<string | null>(null)
+  useEffect(() => {
+    const p = searchParams.get("payment")
+    if (!p || shownPaymentToast.current === p) return
+    shownPaymentToast.current = p
+    if (p === "success") setDone(true)
+    if (p === "cancelled") toast.info("Paiement annulé — vous pouvez réessayer quand vous voulez.")
+    router.replace(pathname, { scroll: false })
+  }, [searchParams, router, pathname])
+
   async function submit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.firstName.trim() || !form.lastName.trim()) {
       setError("Le prénom et le nom sont obligatoires.")
+      return
+    }
+    if (paymentAvailable && !form.email.trim()) {
+      setError("L'email est obligatoire pour finaliser le paiement.")
+      return
+    }
+    if (paymentAvailable && form.password.length < 8) {
+      setError("Le mot de passe doit contenir au moins 8 caractères.")
       return
     }
     if (!form.acceptedTerms) {
@@ -46,15 +127,17 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/public/${slug}/inscription`, {
+      const path = paymentAvailable ? `/api/public/${slug}/inscription/checkout` : `/api/public/${slug}/inscription`
+      const res = await fetch(path, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
           firstName:     form.firstName.trim(),
           lastName:      form.lastName.trim(),
-          email:         form.email.trim() || undefined,
+          email:         paymentAvailable ? form.email.trim() : (form.email.trim() || undefined),
           phone:         form.phone.trim() || undefined,
           typeId:        form.typeId || undefined,
+          ...(paymentAvailable ? { password: form.password } : {}),
           acceptedTerms: form.acceptedTerms,
         }),
       })
@@ -62,6 +145,9 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
       if (!res.ok) {
         const msg = typeof json.error === "string" ? json.error : "Une erreur est survenue."
         setError(msg)
+      } else if (paymentAvailable && json.url) {
+        window.location.href = json.url
+        return
       } else {
         setDone(true)
       }
@@ -74,19 +160,32 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
 
   if (done) {
     return (
-      <section className="py-16 px-4">
+      <section id="adhesion" className="py-16 px-4">
         <div className="max-w-md mx-auto text-center space-y-4">
           <CheckCircleIcon className="size-12 mx-auto" style={{ color }} />
-          <h2 className="text-xl font-bold text-gray-900">Demande envoyée !</h2>
+          <h2 className="text-xl font-bold text-gray-900">
+            {paymentAvailable ? "Bienvenue !" : "Demande envoyée !"}
+          </h2>
           <p className="text-gray-500 text-sm">
-            Votre demande d&apos;adhésion a bien été reçue. L&apos;association vous contactera dans les meilleurs délais.
+            {paymentAvailable
+              ? "Votre adhésion est active et votre paiement a bien été reçu. Connectez-vous à votre espace membre avec l'email et le mot de passe que vous venez de choisir."
+              : "Votre demande d'adhésion a bien été reçue. L'association vous contactera dans les meilleurs délais."}
           </p>
+          {paymentAvailable && (
+            <a
+              href={`/portal/${slug}/login`}
+              className="inline-block text-sm font-medium text-white rounded-lg px-4 py-2 transition-opacity hover:opacity-90"
+              style={{ background: color }}
+            >
+              Accéder à mon espace membre
+            </a>
+          )}
           <button
             type="button"
-            onClick={() => { setDone(false); setForm({ firstName: "", lastName: "", email: "", phone: "", typeId: "", acceptedTerms: false }) }}
-            className="text-sm underline underline-offset-2 text-gray-400 hover:text-gray-600 transition-colors"
+            onClick={() => { setDone(false); setForm(EMPTY_FORM) }}
+            className="block mx-auto text-sm underline underline-offset-2 text-gray-400 hover:text-gray-600 transition-colors"
           >
-            Envoyer une autre demande
+            {paymentAvailable ? "Faire une nouvelle demande" : "Envoyer une autre demande"}
           </button>
         </div>
       </section>
@@ -94,10 +193,16 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
   }
 
   return (
-    <section className="py-16 px-4">
+    <section id="adhesion" className="py-16 px-4">
       <div className="max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
         {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
+
+        {paymentAvailable && amount && (
+          <div className="mb-6 rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 text-sm text-gray-700">
+            Cotisation : <strong>{Number(amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> par an, prélevée automatiquement.
+          </div>
+        )}
 
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -127,15 +232,34 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
           </div>
 
           <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700">Email</label>
+            <label className="text-xs font-medium text-gray-700">
+              Email {paymentAvailable && <span className="text-red-500">*</span>}
+            </label>
             <input
               type="email"
               value={form.email}
               onChange={e => set("email", e.target.value)}
               placeholder="marie.dupont@email.com"
               className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-offset-1"
+              required={paymentAvailable}
             />
           </div>
+
+          {paymentAvailable && (
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-700">Mot de passe <span className="text-red-500">*</span></label>
+              <input
+                type="password"
+                value={form.password}
+                onChange={e => set("password", e.target.value)}
+                placeholder="Min. 8 caractères"
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-offset-1"
+                required
+                minLength={8}
+              />
+              <p className="text-xs text-gray-400">Pour accéder à votre espace membre après le paiement.</p>
+            </div>
+          )}
 
           <div className="space-y-1">
             <label className="text-xs font-medium text-gray-700">Téléphone</label>
@@ -198,7 +322,9 @@ export function SiteMembershipSection({ section, slug, membreTypes, color }: Pro
             className="w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
             style={{ background: color }}
           >
-            {loading ? "Envoi en cours…" : "Envoyer ma demande d'adhésion"}
+            {loading
+              ? "Envoi en cours…"
+              : paymentAvailable ? "Adhérer et payer" : "Envoyer ma demande d'adhésion"}
           </button>
         </form>
       </div>

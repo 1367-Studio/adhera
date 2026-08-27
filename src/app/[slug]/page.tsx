@@ -12,6 +12,7 @@ import { SiteNavbar }             from "@/components/site/site-navbar"
 import { SiteFooter }             from "@/components/site/site-footer"
 import { prisma }                 from "@/lib/prisma/client"
 import { parseModules }           from "@/lib/modules"
+import { connectAccountChargesEnabled } from "@/lib/stripe"
 
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
@@ -30,6 +31,7 @@ async function getSiteData(slug: string) {
     select: {
       name: true, slug: true, city: true, country: true,
       sitePublished: true, siteConfig: true, modules: true, canIssueTaxReceipts: true,
+      cotisationDefaultAmount: true, publicMembershipPaymentEnabled: true, stripeConnectId: true,
       membreTypes: { select: { id: true, name: true, color: true } },
     },
   })
@@ -69,6 +71,29 @@ async function getSiteData(slug: string) {
     : []
   const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
 
+  // Same "precomputed booleans, not raw config" shape as donsEnabled/canIssueTaxReceipts
+  // above — only worth a Stripe API round-trip when the association actually turned the
+  // toggle on (see publicMembershipPaymentEnabled in parametres).
+  const membershipPaymentAvailable = !!(
+    assoc.publicMembershipPaymentEnabled && assoc.cotisationDefaultAmount && assoc.stripeConnectId
+    && await connectAccountChargesEnabled(assoc.stripeConnectId)
+  )
+
+  // A MembershipForm published with SITE visibility supersedes the legacy single-price
+  // section below — additive, opt-in: an association that never created one keeps seeing
+  // exactly today's inline form. Typically at most one such form exists at a time.
+  const membershipForm = mods.cotisations
+    ? await prisma.membershipForm.findFirst({
+        where:   { association: { slug }, status: "PUBLISHED", visibility: "SITE" },
+        // Most-recently-touched wins if an admin ever leaves two forms set to SITE at once
+        // (publishing a new one bumps updatedAt) — matches what an admin publishing a new
+        // form actually expects to see live, instead of a silent "oldest created" pick they'd
+        // have no way to notice without opening every form.
+        orderBy: { updatedAt: "desc" },
+        select:  { slug: true, title: true },
+      })
+    : null
+
   return {
     name:        assoc.name,
     slug:        assoc.slug,
@@ -76,6 +101,9 @@ async function getSiteData(slug: string) {
     // c'est ce drapeau, pas la présence de la section, qui décide de son affichage.
     donsEnabled: mods.dons,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+    membershipPaymentAvailable,
+    membershipAmount: assoc.cotisationDefaultAmount?.toString() ?? null,
+    membershipForm,
     city:        assoc.city,
     country:     assoc.country,
     config:      assoc.siteConfig as SiteConfig | null,
@@ -142,7 +170,11 @@ export default async function PublicSitePage(
               return <SiteActualitesSection key={section.id} section={section} actualites={data.actualites} color={color} />
             case "membership":
               return (
-                <SiteMembershipSection key={section.id} section={section} slug={slug} membreTypes={data.membreTypes} color={color} />
+                <SiteMembershipSection
+                  key={section.id} section={section} slug={slug} membreTypes={data.membreTypes} color={color}
+                  paymentAvailable={data.membershipPaymentAvailable} amount={data.membershipAmount}
+                  membershipForm={data.membershipForm}
+                />
               )
             case "dons":
               return data.donsEnabled

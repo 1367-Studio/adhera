@@ -32,6 +32,10 @@ export type MembreDetail = {
   termsAcceptedAt: string | null
   termsVersion:    string | null
   termsAcceptedIp: string | null
+  // Resolved server-side from Membre.answers (see GET /api/membres/[id]) — collected via a
+  // MembershipForm's "mobile" standard field and its custom MembershipFormField questions.
+  mobile:             string | null
+  customFieldAnswers: { label: string; value: string }[]
   cotisations: {
     id:     string
     year:   number
@@ -39,6 +43,10 @@ export type MembreDetail = {
     status: "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
     paidAt: string | null
     declarationNumber: string | null
+    // Set only for a custom-duration MembershipTier (see MembershipTier.durationMonths) —
+    // the status column itself never reflects this expiring (cotisation-status-sweep
+    // deliberately never touches a PAYE/EXONERE row), so the UI checks this directly.
+    periodEnd: string | null
   }[]
 
   participations: {
@@ -96,6 +104,31 @@ export type MembreDetail = {
     id:        string
     firstName: string
     lastName:  string
+  }[]
+
+  cotisationSubscription: {
+    id:                  string
+    amount:              string
+    status:              "ACTIVE" | "PAST_DUE" | "CANCELLED"
+    currentPeriodEndsAt: string | null
+  } | null
+
+  // Options achetées via un MembershipForm à côté de l'adhésion elle-même — voir
+  // MembershipTier.itemType ADDON.
+  membershipAddonPurchases: {
+    id:          string
+    label:       string
+    amount:      string
+    purchasedAt: string
+  }[]
+
+  // Le pendant itemType DONATION — un vrai Don, filtré à ceux liés à ce MembershipTier (voir
+  // Don.membershipAddonTierId) plutôt que membre.dons en général.
+  dons: {
+    id:      string
+    amount:  string
+    paidAt:  string | null
+    membershipAddonTier: { label: string } | null
   }[]
 
   user: {
@@ -251,6 +284,19 @@ export function useCreateAccess() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: createAccess,
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+async function cancelCotisationSubscription(id: string) {
+  const res = await fetch(`/api/membres/${id}/cotisation-subscription`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'arrêt de l'adhésion récurrente"))
+}
+
+export function useCancelCotisationSubscription() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: cancelCotisationSubscription,
     onSuccess:  () => invalidateAll(qc),
   })
 }

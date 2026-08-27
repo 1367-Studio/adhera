@@ -57,6 +57,7 @@
       "pageTitle": "Create an account",
       "heading": "Create an account",
       "subtitle": "{trialDays}-day free trial · No commitment · Cancel anytime",
+      "subtitleOffer": "Complete your sign-up to activate your subscription.",
       "alreadyAccount": "Already have an account?",
       "signIn": "Sign in",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Error",
         "startTrial": "Start my free trial",
         "securePayment": "Secure payment by Stripe · Cancel before {days} days to pay nothing"
+      },
+      "offer": {
+        "invalidTitle": "Invalid link",
+        "invalidBody": "This signup link is no longer valid. Contact whoever sent it to you for a new one.",
+        "phaseFixed": "{amount} for {months} months",
+        "phaseRecurring": "then {amount}/month",
+        "confirmButton": "Confirm my subscription",
+        "securePayment": "Secure payment powered by Stripe."
       },
       "done": {
         "title": "Account created successfully!",
@@ -2362,6 +2371,7 @@
       "notFound": "Form not found",
       "notOpenYet": "This form isn't open yet.",
       "closed": "This form is closed.",
+      "noTiers": "No tiers are available on this form right now.",
       "amountLabel": "Amount",
       "freeAmountLabel": "Free amount",
       "partialReceiptNotice": "Only {amount} is tax-deductible for this donation.",
@@ -2410,6 +2420,222 @@
       "intervalYear": "year",
       "confirmButton": "Stop this recurring donation",
       "genericError": "Something went wrong. Please try again."
+    }
+  },
+  "membershipForms": {
+    "title": "Memberships",
+    "description": "Membership forms and tiers.",
+    "newForm": "New form",
+    "duplicateSuffix": "(copy)",
+    "formStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "newFormModal": {
+      "title": "New membership form",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. 2026 membership",
+      "createButton": "Create"
+    },
+    "formsView": {
+      "columns": {
+        "form": "Form",
+        "status": "Status",
+        "members": "Members",
+        "total": "Total raised",
+        "created": "Created on"
+      },
+      "noForms": "No membership forms",
+      "actions": {
+        "edit": "Edit",
+        "duplicate": "Duplicate",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "archive": "Archive",
+        "delete": "Delete"
+      },
+      "deleteTitle": "Delete this form?",
+      "deleteDescription": "The form \"{title}\" will be permanently deleted.",
+      "toasts": {
+        "created": "Form created",
+        "createError": "Error while creating",
+        "duplicated": "Form duplicated",
+        "duplicateError": "Error while duplicating",
+        "deleted": "Form deleted",
+        "deleteError": "Error while deleting",
+        "statusUpdated": "Status updated",
+        "statusError": "Error while updating status"
+      }
+    },
+    "detail": {
+      "backToList": "Back to memberships",
+      "notFound": "Form not found",
+      "titleLabel": "Form title",
+      "duplicateButton": "Duplicate",
+      "deleteButton": "Delete",
+      "publishButton": "Publish",
+      "unpublishButton": "Unpublish",
+      "copyLinkButton": "Copy link",
+      "archiveButton": "Archive",
+      "toasts": {
+        "saved": "Changes saved",
+        "saveError": "Error while saving",
+        "linkCopied": "Link copied",
+        "linkCopyError": "Couldn't copy — select the link manually."
+      },
+      "steps": {
+        "info": {
+          "title": "General information",
+          "imageLabel": "Visual",
+          "descriptionLabel": "Description",
+          "descriptionPlaceholder": "Introduce your association…",
+          "conditionsLabel": "Terms",
+          "conditionsPlaceholder": "General terms for this form…",
+          "requireCguvLabel": "Require terms signature",
+          "contactEmailLabel": "Contact email",
+          "contactPhoneLabel": "Contact phone",
+          "validationModeLabel": "Validation of free memberships",
+          "validationModeImmediate": "Immediate — the member is active as soon as they sign up",
+          "validationModeRequest": "By request — you approve each signup",
+          "validationModeHint": "Only applies to free tiers — a paid tier is always immediate as soon as payment is confirmed."
+        },
+        "tiers": {
+          "title": "Tiers",
+          "hint": "Tiers offered on this membership form.",
+          "noTiers": "No tiers",
+          "addTier": "Add a tier",
+          "removeTier": "Remove tier",
+          "labelField": "Label",
+          "labelPlaceholder": "E.g. Adult tier",
+          "amountField": "Amount (€)",
+          "minAmountField": "Minimum amount (€)",
+          "freeAmountField": "Free amount",
+          "freeField": "Free",
+          "membreTypeField": "Assigned member type",
+          "durationMonthsField": "Duration (months)",
+          "durationMonthsPlaceholder": "12 (calendar year)",
+          "durationMonthsHint": "Leave empty for a calendar-year membership — a number makes it valid for that many months from payment.",
+          "durationMonthsHintRecurring": "Billed every N months instead of yearly. Capped at 12 months for a recurring tier.",
+          "durationMonthsRecurringMaxError": "A recurring tier is limited to a maximum duration of 12 months",
+          "membreTypeNone": "None",
+          "kindField": "Type",
+          "kindOneOff": "One-off",
+          "kindRecurring": "Recurring (yearly)",
+          "itemTypeField": "Nature",
+          "itemTypeMembership": "Membership tier",
+          "itemTypeAddon": "Paid option",
+          "itemTypeDonation": "Donation",
+          "labelRequiredError": "Every tier must have a label",
+          "amountRequiredError": "An amount is required for a fixed-amount tier",
+          "freeAndFreeAmountError": "A tier can't be both free and a free amount",
+          "membershipTierRequiredError": "The form must have at least one membership tier",
+          "minAmountRequiredError": "A minimum amount is required for every donation",
+          "saved": "Tiers saved",
+          "saveTiers": "Save tiers"
+        },
+        "fields": {
+          "title": "Form",
+          "standardFieldsHint": "Fields requested at signup",
+          "addressLabel": "Address",
+          "birthDateLabel": "Date of birth",
+          "phoneLabel": "Phone",
+          "mobileLabel": "Mobile",
+          "genderLabel": "Gender",
+          "requirement": {
+            "hidden": "Hidden",
+            "optional": "Optional",
+            "required": "Required"
+          },
+          "customFieldsTitle": "Custom fields",
+          "customFieldsHint": "Additional fields specific to this form.",
+          "noCustomFields": "No custom fields",
+          "addField": "Add a field",
+          "removeField": "Remove field",
+          "fieldLabel": "Label",
+          "fieldLabelPlaceholder": "E.g. Occupation",
+          "fieldType": "Type",
+          "fieldRequired": "Required",
+          "typeText": "Text",
+          "typeNumber": "Number",
+          "labelRequiredError": "Every field must have a label",
+          "saved": "Fields saved",
+          "saveFields": "Save fields"
+        },
+        "payment": {
+          "title": "Payment",
+          "hint": "Applies to paid one-off tiers — a recurring tier always goes through card payment.",
+          "allowCashLabel": "Cash",
+          "allowChequeLabel": "Cheque",
+          "allowTransferLabel": "Bank transfer",
+          "offlineInstructionsLabel": "Offline payment instructions",
+          "offlineInstructionsPlaceholder": "E.g. Cheque payable to… / IBAN…",
+          "confirmationMessageLabel": "Confirmation message"
+        },
+        "publish": {
+          "title": "Publishing",
+          "visibilityLabel": "Visibility",
+          "visibilityLink": "Link only",
+          "visibilitySite": "On the website",
+          "visibilityPrivate": "Private",
+          "opensAtLabel": "Opens",
+          "closesAtLabel": "Closes",
+          "datesOrderError": "The closing date must be after the opening date."
+        }
+      }
+    },
+    "public": {
+      "notFound": "Form not found",
+      "notOpenYet": "This form isn't open yet.",
+      "closed": "This form is closed.",
+      "noTiers": "No tiers are available on this form right now.",
+      "amountLabel": "Amount",
+      "freeAmountLabel": "Free amount",
+      "freeLabel": "Free",
+      "extrasLabel": "Additional options",
+      "registrantLabel": "Member {number}",
+      "addRegistrant": "Add another member",
+      "removeRegistrant": "Remove this member",
+      "sharedAccountHint": "The email and password below will be used to log in for the whole group.",
+      "donationBadge": "(donation)",
+      "totalLabel": "Total due",
+      "belowExtraMinimum": "The minimum amount for \"{label}\" is {amount}.",
+      "belowMinimumAmount": "The minimum amount for an online payment is {amount}.",
+      "perYear": "/ year",
+      "perNMonths": "every {months} months",
+      "validForMonths": "valid for {months} months",
+      "paymentMethodLabel": "Payment method",
+      "paymentMethodStripe": "Card",
+      "paymentMethodCash": "Cash",
+      "paymentMethodCheque": "Cheque",
+      "paymentMethodTransfer": "Bank transfer",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordHint": "To access your member portal.",
+      "addressLabel": "Address",
+      "birthDateLabel": "Date of birth",
+      "phoneLabel": "Phone",
+      "mobileLabel": "Mobile",
+      "genderLabel": "Gender",
+      "genderNone": "Prefer not to say",
+      "genderHomme": "Man",
+      "genderFemme": "Woman",
+      "conditionsAgreeLabel": "I accept the terms and conditions",
+      "honeypotLabel": "Leave blank",
+      "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\".",
+      "submitPay": "Join and pay {amount}",
+      "submitFree": "Send my membership request",
+      "submitImmediateFree": "Confirm my membership",
+      "paymentUnavailable": "Online payment isn't available right now.",
+      "genericError": "Something went wrong. Please try again.",
+      "submittedTitle": "Welcome!",
+      "submittedRequestTitle": "Request sent!",
+      "submittedWithPayment": "Your membership is active and your payment has been received.",
+      "submittedRequestBody": "Your membership request has been received. The association will contact you soon.",
+      "toastCancelled": "Payment cancelled.",
+      "errorNetwork": "Network error. Please try again."
     }
   },
   "messages": {
@@ -2749,6 +2975,10 @@
       "subtitle": "When an amount is set, a pending membership fee for the current year is automatically created for every new member — they can then pay it themselves from the portal, without waiting for an admin to create it. Leave empty to not create anything automatically.",
       "defaultAmount": "Default membership fee amount",
       "defaultAmountHint": "$0.00 = no membership fee is created automatically.",
+      "publicPaymentToggle": "Online payment for public membership",
+      "publicPaymentToggleDesc": "The public site membership form requires immediate payment (charged every year) and activates the member automatically, with no manual review.",
+      "publicPaymentRequiresAmount": "Set a cotisation amount to enable this option.",
+      "connectNotReadyWarning": "Online payment isn't active — Stripe Connect isn't set up or can't accept payments yet (Payments tab). Until then, the public form silently falls back to the free flow and files pending membership requests.",
       "toasts": {
         "updated": "Default amount updated"
       }
@@ -3255,6 +3485,7 @@
       "hasTshirtColon": "Has a t-shirt: {value}",
       "tshirtSizeColon": "T-shirt size: {value}",
       "allergiesColon": "Allergies: {value}",
+      "mobileColon": "Mobile: {value}",
       "legalGuardianColon": "Legal guardian:",
       "noInfo": "No information provided",
       "accountAccess": "Account & access",
@@ -3262,6 +3493,17 @@
       "noAccountWithEmail": "No user account — access can be created",
       "noAccountNoEmail": "No user account — email required to create access",
       "dependantsTitle": "Members under their guardianship:",
+      "recurringSubscription": "Recurring membership",
+      "recurringSubscriptionAmount": "{amount} / year",
+      "recurringSubscriptionNextCharge": "Next charge: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Active",
+        "pastDue": "Payment overdue",
+        "cancelled": "Cancelled"
+      },
+      "cancelSubscriptionButton": "Stop automatic charge",
+      "cancelSubscriptionConfirmTitle": "Stop the automatic charge?",
+      "cancelSubscriptionConfirmDescription": "{name} will no longer be charged automatically for their membership fee. You can still record manual payments.",
       "tabs": {
         "cotisations": "Membership fees",
         "evenements": "Events",
@@ -3293,7 +3535,11 @@
       },
       "noCotisation": "No membership fee recorded",
       "paidOn": "Paid on {date}",
+      "validUntil": "Valid until {date}",
+      "periodExpiredOn": "Expired on {date}",
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
+      "addonPurchasesTitle": "Options and donations purchased",
+      "donationFallbackLabel": "Donation",
       "noParticipation": "No participation recorded",
       "present": "Present",
       "showingRecentParticipations": "Showing the {count} most recent participations out of {total} total.",
@@ -3311,7 +3557,8 @@
       "toasts": {
         "accessCreated": "Access created — an email was sent",
         "cotisationAdded": "Membership fee added",
-        "cotisationUpdated": "Membership fee updated"
+        "cotisationUpdated": "Membership fee updated",
+        "subscriptionCancelled": "Automatic charge stopped"
       }
     },
     "sms": {
@@ -4142,6 +4389,7 @@
       "membres": "Members",
       "evenements": "Events",
       "cotisations": "Dues",
+      "adhesions": "Membership forms",
       "finances": "Financial tracking",
       "devis": "Quotes",
       "factures": "Invoices",
@@ -4167,6 +4415,7 @@
       "backoffice": "Backoffice",
       "overview": "Overview",
       "associations": "Associations",
+      "pricingOffers": "Pricing offers",
       "support": "Support",
       "signOut": "Sign out"
     },

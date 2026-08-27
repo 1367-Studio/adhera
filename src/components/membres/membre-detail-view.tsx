@@ -6,12 +6,13 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon
 } from "@phosphor-icons/react/dist/ssr";
-import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess } from "@/hooks/use-membres"
+import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription } from "@/hooks/use-membres"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -119,6 +120,14 @@ function getMeetingStatusBadge(t: Translator): Record<string, { label: string; v
   }
 }
 
+function getSubscriptionStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
+  return {
+    ACTIVE:    { label: t("membres.detail.recurringSubscriptionStatus.active"),    variant: "default"     },
+    PAST_DUE:  { label: t("membres.detail.recurringSubscriptionStatus.pastDue"),   variant: "destructive" },
+    CANCELLED: { label: t("membres.detail.recurringSubscriptionStatus.cancelled"), variant: "secondary"   },
+  }
+}
+
 const fmt = (n: number | string) => Number(n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
 // Only what's needed to fetch a specific cotisation (via GET /api/cotisations/[id]) and open
@@ -144,6 +153,7 @@ export function MembreDetailView() {
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
+  const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
@@ -155,6 +165,7 @@ export function MembreDetailView() {
   const updateMutation          = useUpdateMembre(id)
   const deleteMutation          = useDeleteMembre()
   const createAccessMutation    = useCreateAccess()
+  const cancelSubscriptionMutation = useCancelCotisationSubscription()
   const createCotisationMutation = useCreateCotisation()
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
@@ -186,6 +197,16 @@ export function MembreDetailView() {
     try {
       await createAccessMutation.mutateAsync(id)
       toast.success(t("membres.detail.toasts.accessCreated"))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleCancelSubscription() {
+    try {
+      await cancelSubscriptionMutation.mutateAsync(id)
+      toast.success(t("membres.detail.toasts.subscriptionCancelled"))
+      setCancelSubscriptionOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -255,6 +276,7 @@ export function MembreDetailView() {
   const cotisationStatusBadge = getCotisationStatusBadge(t)
   const loanStatusBadge       = getLoanStatusBadge(t)
   const meetingStatusBadge    = getMeetingStatusBadge(t)
+  const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
   const participations        = membre.participations ?? []
@@ -264,6 +286,13 @@ export function MembreDetailView() {
   const participationsTotal   = membre._count?.participations ?? participations.length
   const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
   const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
+  // ADDON purchases and DONATION-item-type extras live in two different tables (see
+  // Don.membershipAddonTierId) but are the same thing from this member's point of view —
+  // merged into one chronological list rather than two separate sub-sections.
+  const addonPurchases = [
+    ...membre.membershipAddonPurchases.map(p => ({ id: p.id, label: p.label, amount: p.amount, date: p.purchasedAt })),
+    ...membre.dons.map(d => ({ id: d.id, label: d.membershipAddonTier?.label ?? t("membres.detail.donationFallbackLabel"), amount: d.amount, date: d.paidAt })),
+  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
   const TAB_PAGE_SIZE         = 50
 
   return (
@@ -410,8 +439,15 @@ export function MembreDetailView() {
               </button>
             </p>
           )}
+          {membre.mobile && (
+            <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
+          )}
+          {membre.customFieldAnswers.map((a, i) => (
+            <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
+          ))}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
-            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && (
+            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable
+            && !membre.mobile && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
         </div>
@@ -449,6 +485,31 @@ export function MembreDetailView() {
         </div>
       </div>
 
+      {membre.cotisationSubscription && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 text-sm">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.recurringSubscription")}</span>
+            <span className="flex items-center gap-2">
+              <span className="font-medium tabular-nums">{t("membres.detail.recurringSubscriptionAmount", { amount: fmt(membre.cotisationSubscription.amount) })}</span>
+              <Badge variant={subscriptionStatusBadge[membre.cotisationSubscription.status].variant}>
+                {subscriptionStatusBadge[membre.cotisationSubscription.status].label}
+              </Badge>
+            </span>
+            {membre.cotisationSubscription.status !== "CANCELLED" && membre.cotisationSubscription.currentPeriodEndsAt && (
+              <span className="text-muted-foreground">
+                {t("membres.detail.recurringSubscriptionNextCharge", { date: format(new Date(membre.cotisationSubscription.currentPeriodEndsAt), "dd/MM/yyyy", { locale: fr }) })}
+              </span>
+            )}
+          </div>
+          {membre.cotisationSubscription.status !== "CANCELLED"
+            && (currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT" || currentUser.role === "TRESORIER") && (
+            <Button size="sm" variant="outline" onClick={() => setCancelSubscriptionOpen(true)}>
+              {t("membres.detail.cancelSubscriptionButton")}
+            </Button>
+          )}
+        </div>
+      )}
+
       <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : "historique"}>
         <TabsList>
           {modules.cotisations && <TabsTrigger value="cotisations">{t("membres.detail.tabs.cotisations")}</TabsTrigger>}
@@ -466,13 +527,26 @@ export function MembreDetailView() {
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCotisation")}</p>
           ) : (
             <div className="space-y-2">
-              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null; declarationNumber: string | null }) => {
+              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null; declarationNumber: string | null; periodEnd?: string | null }) => {
                 const s = cotisationStatusBadge[c.status]
+                // A custom-duration Cotisation (MembershipTier.durationMonths) keeps its PAYE/
+                // EXONERE badge forever — cotisation-status-sweep deliberately never touches a
+                // terminal status — so the badge alone can't tell an admin this row's validity
+                // window has actually closed. Surfaced here instead of silently trusting the
+                // badge, same value isMembreAdherent() already uses to decide the member's own
+                // overall status.
+                const periodEndDate = c.periodEnd ? new Date(c.periodEnd) : null
+                const periodExpired = !!periodEndDate && periodEndDate < new Date()
                 return (
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                     <div>
                       <p className="font-medium tabular-nums">{c.year}</p>
                       {c.paidAt && <p className="text-xs text-muted-foreground">{t("membres.detail.paidOn", { date: format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr }) })}</p>}
+                      {periodEndDate && (
+                        <p className={cn("text-xs", periodExpired ? "text-destructive" : "text-muted-foreground")}>
+                          {t(periodExpired ? "membres.detail.periodExpiredOn" : "membres.detail.validUntil", { date: format(periodEndDate, "dd/MM/yyyy", { locale: fr }) })}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(c.amount)}</span>
@@ -503,6 +577,22 @@ export function MembreDetailView() {
             <p className="mt-2 text-xs text-muted-foreground">
               {t("membres.detail.showingRecentCotisations", { count: TAB_PAGE_SIZE, total: cotisationsTotal })}
             </p>
+          )}
+          {addonPurchases.length > 0 && (
+            <div className="mt-4 space-y-1.5 border-t pt-3">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.addonPurchasesTitle")}</p>
+              <div className="space-y-1">
+                {addonPurchases.map(p => (
+                  <div key={p.id} className="flex items-center justify-between text-sm">
+                    <span>{p.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="tabular-nums font-medium">{fmt(p.amount)}</span>
+                      {p.date && <span className="text-xs text-muted-foreground">{format(new Date(p.date), "dd/MM/yyyy", { locale: fr })}</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </TabsContent>
         )}
@@ -670,6 +760,16 @@ export function MembreDetailView() {
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={cancelSubscriptionOpen}
+        onOpenChange={setCancelSubscriptionOpen}
+        title={t("membres.detail.cancelSubscriptionConfirmTitle")}
+        description={t("membres.detail.cancelSubscriptionConfirmDescription", { name: `${membre.firstName} ${membre.lastName}` })}
+        confirmLabel={t("membres.detail.cancelSubscriptionButton")}
+        loading={cancelSubscriptionMutation.isPending}
+        onConfirm={handleCancelSubscription}
       />
 
       {roleOpen && (

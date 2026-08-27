@@ -57,6 +57,7 @@
       "pageTitle": "Crear una cuenta",
       "heading": "Crear una cuenta",
       "subtitle": "{trialDays} días de prueba gratuita · Sin compromiso · Cancelación fácil",
+      "subtitleOffer": "Complete su registro para activar su suscripción.",
       "alreadyAccount": "¿Ya tienes una cuenta?",
       "signIn": "Iniciar sesión",
       "steps": {
@@ -100,6 +101,14 @@
         "genericError": "Error",
         "startTrial": "Iniciar mi prueba gratuita",
         "securePayment": "Pago seguro con Stripe · Cancela antes de {days} días para no pagar nada"
+      },
+      "offer": {
+        "invalidTitle": "Enlace no válido",
+        "invalidBody": "Este enlace de registro ya no es válido. Contacte con quien se lo envió para obtener uno nuevo.",
+        "phaseFixed": "{amount} durante {months} meses",
+        "phaseRecurring": "luego {amount}/mes",
+        "confirmButton": "Confirmar mi suscripción",
+        "securePayment": "Pago seguro con Stripe."
       },
       "done": {
         "title": "¡Cuenta creada con éxito!",
@@ -2362,6 +2371,7 @@
       "notFound": "Formulario no encontrado",
       "notOpenYet": "Este formulario aún no está abierto.",
       "closed": "Este formulario está cerrado.",
+      "noTiers": "Ningún nivel está disponible en este formulario por ahora.",
       "amountLabel": "Importe",
       "freeAmountLabel": "Importe libre",
       "partialReceiptNotice": "Solo {amount} son deducibles de impuestos para esta donación.",
@@ -2410,6 +2420,222 @@
       "intervalYear": "año",
       "confirmButton": "Detener esta donación recurrente",
       "genericError": "Ha ocurrido un error. Inténtalo de nuevo."
+    }
+  },
+  "membershipForms": {
+    "title": "Afiliaciones",
+    "description": "Formularios de afiliación y tarifas.",
+    "newForm": "Nuevo formulario",
+    "duplicateSuffix": "(copia)",
+    "formStatus": {
+      "draft": "Borrador",
+      "published": "Publicado",
+      "archived": "Archivado"
+    },
+    "newFormModal": {
+      "title": "Nuevo formulario de afiliación",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Ej. Afiliación 2026",
+      "createButton": "Crear"
+    },
+    "formsView": {
+      "columns": {
+        "form": "Formulario",
+        "status": "Estado",
+        "members": "Socios",
+        "total": "Total recaudado",
+        "created": "Creado el"
+      },
+      "noForms": "Ningún formulario de afiliación",
+      "actions": {
+        "edit": "Editar",
+        "duplicate": "Duplicar",
+        "publish": "Publicar",
+        "unpublish": "Despublicar",
+        "archive": "Archivar",
+        "delete": "Eliminar"
+      },
+      "deleteTitle": "¿Eliminar este formulario?",
+      "deleteDescription": "El formulario «{title}» se eliminará definitivamente.",
+      "toasts": {
+        "created": "Formulario creado",
+        "createError": "Error al crear",
+        "duplicated": "Formulario duplicado",
+        "duplicateError": "Error al duplicar",
+        "deleted": "Formulario eliminado",
+        "deleteError": "Error al eliminar",
+        "statusUpdated": "Estado actualizado",
+        "statusError": "Error al actualizar el estado"
+      }
+    },
+    "detail": {
+      "backToList": "Volver a afiliaciones",
+      "notFound": "Formulario no encontrado",
+      "titleLabel": "Título del formulario",
+      "duplicateButton": "Duplicar",
+      "deleteButton": "Eliminar",
+      "publishButton": "Publicar",
+      "unpublishButton": "Despublicar",
+      "copyLinkButton": "Copiar enlace",
+      "archiveButton": "Archivar",
+      "toasts": {
+        "saved": "Cambios guardados",
+        "saveError": "Error al guardar",
+        "linkCopied": "Enlace copiado",
+        "linkCopyError": "No se pudo copiar — seleccione el enlace manualmente."
+      },
+      "steps": {
+        "info": {
+          "title": "Información general",
+          "imageLabel": "Imagen",
+          "descriptionLabel": "Descripción",
+          "descriptionPlaceholder": "Presenta tu asociación…",
+          "conditionsLabel": "Condiciones",
+          "conditionsPlaceholder": "Condiciones generales del formulario…",
+          "requireCguvLabel": "Exigir la firma de las condiciones generales",
+          "contactEmailLabel": "Correo de contacto",
+          "contactPhoneLabel": "Teléfono de contacto",
+          "validationModeLabel": "Validación de afiliaciones gratuitas",
+          "validationModeImmediate": "Inmediata — el socio queda activo al inscribirse",
+          "validationModeRequest": "Bajo solicitud — usted valida cada inscripción",
+          "validationModeHint": "Solo se aplica a las tarifas gratuitas — una tarifa de pago es siempre inmediata en cuanto se confirma el pago."
+        },
+        "tiers": {
+          "title": "Tarifas",
+          "hint": "Tarifas propuestas en este formulario de afiliación.",
+          "noTiers": "Ninguna tarifa",
+          "addTier": "Añadir una tarifa",
+          "removeTier": "Eliminar tarifa",
+          "labelField": "Etiqueta",
+          "labelPlaceholder": "Ej. Tarifa adulto",
+          "amountField": "Importe (€)",
+          "minAmountField": "Importe mínimo (€)",
+          "freeAmountField": "Importe libre",
+          "freeField": "Gratis",
+          "membreTypeField": "Tipo de socio asignado",
+          "durationMonthsField": "Duración (meses)",
+          "durationMonthsPlaceholder": "12 (año civil)",
+          "durationMonthsHint": "Déjelo vacío para una afiliación de año civil — un número la hace válida por esa cantidad de meses desde el pago.",
+          "durationMonthsHintRecurring": "Facturado cada N meses en lugar de cada año. Limitado a 12 meses como máximo para una tarifa recurrente.",
+          "durationMonthsRecurringMaxError": "Una tarifa recurrente está limitada a una duración máxima de 12 meses",
+          "membreTypeNone": "Ninguno",
+          "kindField": "Tipo",
+          "kindOneOff": "Puntual",
+          "kindRecurring": "Recurrente (anual)",
+          "itemTypeField": "Naturaleza",
+          "itemTypeMembership": "Tarifa de afiliación",
+          "itemTypeAddon": "Opción de pago",
+          "itemTypeDonation": "Donación",
+          "labelRequiredError": "Cada tarifa debe tener una etiqueta",
+          "amountRequiredError": "Se requiere un importe para una tarifa de importe fijo",
+          "freeAndFreeAmountError": "Una tarifa no puede ser gratuita y de importe libre a la vez",
+          "membershipTierRequiredError": "El formulario debe tener al menos una tarifa de afiliación",
+          "minAmountRequiredError": "Se requiere un importe mínimo para cada donación",
+          "saved": "Tarifas guardadas",
+          "saveTiers": "Guardar tarifas"
+        },
+        "fields": {
+          "title": "Formulario",
+          "standardFieldsHint": "Campos solicitados en la inscripción",
+          "addressLabel": "Dirección",
+          "birthDateLabel": "Fecha de nacimiento",
+          "phoneLabel": "Teléfono",
+          "mobileLabel": "Móvil",
+          "genderLabel": "Género",
+          "requirement": {
+            "hidden": "Oculto",
+            "optional": "Opcional",
+            "required": "Obligatorio"
+          },
+          "customFieldsTitle": "Campos personalizados",
+          "customFieldsHint": "Campos adicionales propios de este formulario.",
+          "noCustomFields": "Ningún campo personalizado",
+          "addField": "Añadir un campo",
+          "removeField": "Eliminar campo",
+          "fieldLabel": "Etiqueta",
+          "fieldLabelPlaceholder": "Ej. Profesión",
+          "fieldType": "Tipo",
+          "fieldRequired": "Obligatorio",
+          "typeText": "Texto",
+          "typeNumber": "Número",
+          "labelRequiredError": "Cada campo debe tener una etiqueta",
+          "saved": "Campos guardados",
+          "saveFields": "Guardar campos"
+        },
+        "payment": {
+          "title": "Pago",
+          "hint": "Se aplica a las tarifas puntuales de pago — una tarifa recurrente siempre se paga con tarjeta.",
+          "allowCashLabel": "Efectivo",
+          "allowChequeLabel": "Cheque",
+          "allowTransferLabel": "Transferencia",
+          "offlineInstructionsLabel": "Instrucciones para el pago fuera de línea",
+          "offlineInstructionsPlaceholder": "Ej. Cheque a nombre de… / IBAN…",
+          "confirmationMessageLabel": "Mensaje de confirmación"
+        },
+        "publish": {
+          "title": "Publicación",
+          "visibilityLabel": "Visibilidad",
+          "visibilityLink": "Solo con enlace",
+          "visibilitySite": "En el sitio web",
+          "visibilityPrivate": "Privado",
+          "opensAtLabel": "Apertura",
+          "closesAtLabel": "Cierre",
+          "datesOrderError": "La fecha de cierre debe ser posterior a la fecha de apertura."
+        }
+      }
+    },
+    "public": {
+      "notFound": "Formulario no encontrado",
+      "notOpenYet": "Este formulario aún no está abierto.",
+      "closed": "Este formulario está cerrado.",
+      "noTiers": "Ninguna tarifa está disponible en este formulario por ahora.",
+      "amountLabel": "Importe",
+      "freeAmountLabel": "Importe libre",
+      "freeLabel": "Gratis",
+      "extrasLabel": "Opciones adicionales",
+      "registrantLabel": "Socio {number}",
+      "addRegistrant": "Añadir otro socio",
+      "removeRegistrant": "Quitar este socio",
+      "sharedAccountHint": "El email y la contraseña de abajo se usarán para iniciar sesión para todo el grupo.",
+      "donationBadge": "(donación)",
+      "totalLabel": "Total a pagar",
+      "belowExtraMinimum": "El importe mínimo para « {label} » es de {amount}.",
+      "belowMinimumAmount": "El importe mínimo para un pago en línea es de {amount}.",
+      "perYear": "/ año",
+      "perNMonths": "cada {months} meses",
+      "validForMonths": "válida por {months} meses",
+      "paymentMethodLabel": "Método de pago",
+      "paymentMethodStripe": "Tarjeta",
+      "paymentMethodCash": "Efectivo",
+      "paymentMethodCheque": "Cheque",
+      "paymentMethodTransfer": "Transferencia",
+      "firstNameLabel": "Nombre",
+      "lastNameLabel": "Apellidos",
+      "emailLabel": "Correo electrónico",
+      "passwordLabel": "Contraseña",
+      "passwordHint": "Para acceder a tu espacio de socio.",
+      "addressLabel": "Dirección",
+      "birthDateLabel": "Fecha de nacimiento",
+      "phoneLabel": "Teléfono",
+      "mobileLabel": "Móvil",
+      "genderLabel": "Género",
+      "genderNone": "Prefiero no decirlo",
+      "genderHomme": "Hombre",
+      "genderFemme": "Mujer",
+      "conditionsAgreeLabel": "Acepto las condiciones generales",
+      "honeypotLabel": "Dejar en blanco",
+      "inAppBrowserWarning": "Estás navegando desde Facebook o Instagram, lo que puede impedir que esta página funcione correctamente. Toca ⋯ y luego «Abrir en el navegador».",
+      "submitPay": "Afiliarme y pagar {amount}",
+      "submitFree": "Enviar mi solicitud de afiliación",
+      "submitImmediateFree": "Confirmar mi afiliación",
+      "paymentUnavailable": "El pago en línea no está disponible en este momento.",
+      "genericError": "Ha ocurrido un error. Inténtalo de nuevo.",
+      "submittedTitle": "¡Bienvenido/a!",
+      "submittedRequestTitle": "¡Solicitud enviada!",
+      "submittedWithPayment": "Tu afiliación está activa y tu pago se ha recibido correctamente.",
+      "submittedRequestBody": "Tu solicitud de afiliación se ha recibido. La asociación se pondrá en contacto contigo lo antes posible.",
+      "toastCancelled": "Pago cancelado.",
+      "errorNetwork": "Error de red. Inténtalo de nuevo."
     }
   },
   "messages": {
@@ -2749,6 +2975,10 @@
       "subtitle": "Cuando se indica un importe, se crea automáticamente una cuota pendiente del año en curso para cada nuevo miembro — luego puede pagarla él mismo desde el portal, sin esperar a que un administrador la cree. Déjelo vacío para no crear nada automáticamente.",
       "defaultAmount": "Importe predeterminado de la cuota",
       "defaultAmountHint": "0,00 € = no se crea ninguna cuota automáticamente.",
+      "publicPaymentToggle": "Pago en línea para la adhesión pública",
+      "publicPaymentToggleDesc": "El formulario de adhesión del sitio público exige el pago inmediato (cobrado cada año) y activa al miembro automáticamente, sin validación manual.",
+      "publicPaymentRequiresAmount": "Indique un importe de cuota para activar esta opción.",
+      "connectNotReadyWarning": "El pago en línea no está activo — Stripe Connect no está configurado o aún no acepta pagos (pestaña Pagos). Mientras tanto, el formulario público vuelve silenciosamente al flujo gratuito y registra solicitudes de adhesión pendientes.",
       "toasts": {
         "updated": "Importe predeterminado actualizado"
       }
@@ -3255,6 +3485,7 @@
       "hasTshirtColon": "Tiene camiseta: {value}",
       "tshirtSizeColon": "Talla de camiseta: {value}",
       "allergiesColon": "Alergias: {value}",
+      "mobileColon": "Móvil: {value}",
       "legalGuardianColon": "Responsable legal:",
       "noInfo": "Sin información registrada",
       "accountAccess": "Cuenta y acceso",
@@ -3262,6 +3493,17 @@
       "noAccountWithEmail": "Sin cuenta de usuario — se puede crear un acceso",
       "noAccountNoEmail": "Sin cuenta de usuario — se requiere un email para crear acceso",
       "dependantsTitle": "Miembros bajo su responsabilidad:",
+      "recurringSubscription": "Membresía recurrente",
+      "recurringSubscriptionAmount": "{amount} / año",
+      "recurringSubscriptionNextCharge": "Próximo cobro: {date}",
+      "recurringSubscriptionStatus": {
+        "active": "Activa",
+        "pastDue": "Pago atrasado",
+        "cancelled": "Detenida"
+      },
+      "cancelSubscriptionButton": "Detener el cobro automático",
+      "cancelSubscriptionConfirmTitle": "¿Detener el cobro automático?",
+      "cancelSubscriptionConfirmDescription": "{name} ya no será cobrado automáticamente por su cuota. Aún podrá registrar pagos manualmente.",
       "tabs": {
         "cotisations": "Cuotas",
         "evenements": "Eventos",
@@ -3293,7 +3535,11 @@
       },
       "noCotisation": "Ninguna cuota registrada",
       "paidOn": "Pagada el {date}",
+      "validUntil": "Válida hasta el {date}",
+      "periodExpiredOn": "Expiró el {date}",
       "showingRecentCotisations": "Mostrando las {count} cuotas más recientes de {total} en total.",
+      "addonPurchasesTitle": "Opciones y donaciones compradas",
+      "donationFallbackLabel": "Donación",
       "noParticipation": "Ninguna participación registrada",
       "present": "Presente",
       "showingRecentParticipations": "Mostrando las {count} participaciones más recientes de {total} en total.",
@@ -3311,7 +3557,8 @@
       "toasts": {
         "accessCreated": "Acceso creado — se envió un correo",
         "cotisationAdded": "Cuota añadida",
-        "cotisationUpdated": "Cuota actualizada"
+        "cotisationUpdated": "Cuota actualizada",
+        "subscriptionCancelled": "Cobro automático detenido"
       }
     },
     "sms": {
@@ -4142,6 +4389,7 @@
       "membres": "Miembros",
       "evenements": "Eventos",
       "cotisations": "Cuotas",
+      "adhesions": "Formularios de afiliación",
       "finances": "Seguimiento financiero",
       "devis": "Presupuestos",
       "factures": "Facturas",
@@ -4167,6 +4415,7 @@
       "backoffice": "Backoffice",
       "overview": "Resumen",
       "associations": "Asociaciones",
+      "pricingOffers": "Ofertas de precio",
       "support": "Soporte",
       "signOut": "Cerrar sesión"
     },

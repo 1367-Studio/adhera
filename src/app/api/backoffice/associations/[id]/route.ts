@@ -3,6 +3,7 @@ import { prisma }        from "@/lib/prisma/client"
 import { z }             from "zod"
 import { withSuperAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog, computeAssociationDiff } from "@/lib/activity-log"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const patchSchema = z.object({
   internalNotes: z.string().optional(),
@@ -60,6 +61,10 @@ export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, ctx, { id })
       return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
     }
     const updated = await prisma.association.update({ where: { id }, data: update })
+
+    // "site" is one of the toggled modules and gates whether `/[slug]` renders at all —
+    // bust its cache whenever modules change so a staff toggle takes effect immediately.
+    if (data.modules !== undefined) await revalidatePublicSiteFor(id)
 
     const changes = computeAssociationDiff(
       existing as unknown as Record<string, unknown>,
