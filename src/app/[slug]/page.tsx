@@ -79,6 +79,21 @@ async function getSiteData(slug: string) {
     && await connectAccountChargesEnabled(assoc.stripeConnectId)
   )
 
+  // A MembershipForm published with SITE visibility supersedes the legacy single-price
+  // section below — additive, opt-in: an association that never created one keeps seeing
+  // exactly today's inline form. Typically at most one such form exists at a time.
+  const membershipForm = mods.cotisations
+    ? await prisma.membershipForm.findFirst({
+        where:   { association: { slug }, status: "PUBLISHED", visibility: "SITE" },
+        // Most-recently-touched wins if an admin ever leaves two forms set to SITE at once
+        // (publishing a new one bumps updatedAt) — matches what an admin publishing a new
+        // form actually expects to see live, instead of a silent "oldest created" pick they'd
+        // have no way to notice without opening every form.
+        orderBy: { updatedAt: "desc" },
+        select:  { slug: true, title: true },
+      })
+    : null
+
   return {
     name:        assoc.name,
     slug:        assoc.slug,
@@ -88,6 +103,7 @@ async function getSiteData(slug: string) {
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
     membershipPaymentAvailable,
     membershipAmount: assoc.cotisationDefaultAmount?.toString() ?? null,
+    membershipForm,
     city:        assoc.city,
     country:     assoc.country,
     config:      assoc.siteConfig as SiteConfig | null,
@@ -157,6 +173,7 @@ export default async function PublicSitePage(
                 <SiteMembershipSection
                   key={section.id} section={section} slug={slug} membreTypes={data.membreTypes} color={color}
                   paymentAvailable={data.membershipPaymentAvailable} amount={data.membershipAmount}
+                  membershipForm={data.membershipForm}
                 />
               )
             case "dons":

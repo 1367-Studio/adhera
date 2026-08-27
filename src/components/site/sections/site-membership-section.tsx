@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
+import Link from "next/link"
 import type { MembershipSection } from "@/types/site-config"
-import { CheckCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { PRIVACY_URL } from "@/lib/consent"
 type MembreType = { id: string; name: string; color: string }
 
@@ -19,6 +20,10 @@ type Props = {
   // yearly cotisation, already resolved server-side (getSiteData in [slug]/page.tsx).
   paymentAvailable: boolean
   amount:           string | null
+  // A MembershipForm published with visibility SITE supersedes everything below — additive,
+  // opt-in (see getSiteData): an association that never created one keeps seeing exactly
+  // this legacy single-price inline form.
+  membershipForm: { slug: string; title: string } | null
 }
 
 type FormState = {
@@ -34,10 +39,41 @@ type FormState = {
 const EMPTY_FORM: FormState = { firstName: "", lastName: "", email: "", phone: "", typeId: "", password: "", acceptedTerms: false }
 
 export function SiteMembershipSection(props: Props) {
+  if (props.membershipForm) {
+    return <SiteMembershipFormCta section={props.section} slug={props.slug} color={props.color} membershipForm={props.membershipForm} />
+  }
   return (
     <Suspense fallback={null}>
       <SiteMembershipSectionInner {...props} />
     </Suspense>
+  )
+}
+
+// Mirrors SiteDonsSection's CTA-card treatment — links out to the dedicated multi-tier
+// public page instead of trying to inline a differently-shaped form here.
+function SiteMembershipFormCta({ section, slug, color, membershipForm }: {
+  section: MembershipSection
+  slug:    string
+  color:   string
+  membershipForm: { slug: string; title: string }
+}) {
+  return (
+    <section id="adhesion" className="py-16 px-4">
+      <div className="max-w-md mx-auto text-center">
+        <IdentificationCardIcon className="size-10 mx-auto mb-4" style={{ color }} />
+
+        <h2 className="text-2xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
+        {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
+
+        <Link
+          href={`/${slug}/adhesion/${membershipForm.slug}`}
+          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
+          style={{ background: color }}
+        >
+          {membershipForm.title}
+        </Link>
+      </div>
+    </section>
   )
 }
 
