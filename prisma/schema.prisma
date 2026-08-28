@@ -659,6 +659,12 @@ model Membre {
   // répète par transaction.
   answers Json?
 
+  // ID stable du contact dans le système source d'un import (ex: "ID contact" AssoConnect)
+  // — survit à un changement de nom/email entre deux exports du même client, contrairement
+  // au matching par email+nom utilisé en fallback quand ce champ est absent. Voir
+  // src/app/api/membres/import/route.ts.
+  externalId String?
+
   // Tarif gratuit demandé par un PENDING issu d'un MembershipForm en validation "sur
   // demande" — lu une seule fois par PATCH /api/membres/[id] quand un admin fait passer ce
   // membre en ACTIF, pour créer automatiquement la Cotisation EXONERE correspondante, puis
@@ -691,6 +697,7 @@ model Membre {
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
+  @@index([associationId, externalId])
 }
 
 model Evenement {

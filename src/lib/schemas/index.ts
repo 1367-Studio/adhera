@@ -31,6 +31,7 @@ export const portalRegisterSchema = z.object({
 export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>
 
 export * from "./membre"
+export * from "./membre-import"
 export * from "./evenement"
 export * from "./cotisation"
 export * from "./association"

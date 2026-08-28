@@ -1,13 +1,7 @@
 import { NextResponse } from "next/server"
-import { randomBytes } from "crypto"
-import bcrypt from "bcryptjs"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { sendEmail } from "@/lib/mail"
-import { invitationEmail } from "@/lib/email"
-import { writeActivityLog } from "@/lib/activity-log"
-import { APP_URL } from "@/lib/env"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { grantMembrePortalAccess } from "@/lib/membre-access"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -19,13 +13,6 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const membre = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-  if (membre.userId) return NextResponse.json({ error: "Ce membre a déjà un accès" }, { status: 409 })
-  if (!membre.email) return NextResponse.json({ error: "Cet membre n'a pas d'email renseigné" }, { status: 422 })
-
-  const conflict = await prisma.user.findFirst({
-    where: { email: membre.email, associationId, deletedAt: null },
-  })
-  if (conflict) return NextResponse.json({ error: "Un compte existe déjà avec cet email" }, { status: 409 })
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
@@ -33,41 +20,15 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
-  const plainPassword = randomBytes(6).toString("hex")
-  const passwordHash  = await bcrypt.hash(plainPassword, 12)
-  const email          = membre.email
-
-  await prisma.$transaction(async (tx) => {
-    const user = await tx.user.create({
-      data: {
-        email,
-        name:          `${membre.firstName} ${membre.lastName}`,
-        passwordHash,
-        role:          "MEMBRE",
-        associationId,
-      },
-    })
-    await tx.membre.update({ where: { id }, data: { userId: user.id, status: "ACTIF" } })
-  })
-
-  sendEmail(invitationEmail({
-    firstName:       membre.firstName,
-    email,
-    password:        plainPassword,
-    associationName: assoc.name,
-    role:            "MEMBRE",
-    loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
-    branding:        resolveDocumentBranding(assoc),
-  }), { associationId, membreId: id, source: "MEMBER_INVITE" }).catch(() => {})
-
-  await writeActivityLog({
-    associationId,
-    actorId:  userId,
-    action:   "MEMBRE_ACCESS_CREATED",
-    entity:   "Membre",
-    entityId: id,
-    label:    `${membre.firstName} ${membre.lastName}`,
-  })
+  const result = await grantMembrePortalAccess({ membre, associationId, actorId: userId, association: assoc })
+  if (!result.ok) {
+    if (result.reason === "already_has_access") return NextResponse.json({ error: "Ce membre a déjà un accès" }, { status: 409 })
+    if (result.reason === "no_email") return NextResponse.json({ error: "Cet membre n'a pas d'email renseigné" }, { status: 422 })
+    const error = result.conflictMembreName
+      ? `Cet email est déjà utilisé par le compte de ${result.conflictMembreName}`
+      : "Un compte existe déjà avec cet email"
+    return NextResponse.json({ error }, { status: 409 })
+  }
 
   return NextResponse.json({ ok: true })
 }, { roles: MANAGERS })

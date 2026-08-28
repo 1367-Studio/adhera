@@ -10,13 +10,14 @@ import { SelectField } from "@/components/ui/select-field"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 
-type Method = "CB" | "CHQ" | "ESP" | "En ligne"
+type Method = "CB" | "CHQ" | "ESP" | "En ligne" | "Autre"
 
 const methodOptions: { value: Method; label: string }[] = [
   { value: "CB",       label: "CB"       },
   { value: "CHQ",      label: "CHQ"      },
   { value: "ESP",      label: "ESP"      },
   { value: "En ligne", label: "En ligne" },
+  { value: "Autre",    label: "Autre"    },
 ]
 
 interface Props {

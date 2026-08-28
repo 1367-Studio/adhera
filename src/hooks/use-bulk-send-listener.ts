@@ -21,12 +21,18 @@ export function registerPendingBulkSend(jobId: string | null | undefined) {
 
 type BulkSendCompletedPayload = {
   jobId: string
-  kind:  "membres-email" | "membres-sms" | "cotisation-reminders" | "sondage-invitations"
+  kind:  "membres-email" | "membres-sms" | "cotisation-reminders" | "sondage-invitations" | "membres-import"
   sent?: number
   failed?: number
   failedNames?: string[]
   emailsSent?: number
   emailsFailed?: number
+  membersCreated?: number
+  membersMatched?: number
+  cotisationsCreated?: number
+  invitesSent?: number
+  errors?: number
+  importFailed?: boolean
 }
 
 export function useBulkSendListener() {
@@ -102,6 +108,20 @@ export function useBulkSendListener() {
         const failed = data.emailsFailed ?? 0
         if (sent > 0) toast.info(t("sondages.detail.toasts.invitationsSent", { count: sent }))
         if (failed > 0) toast.warning(t("sondages.detail.toasts.invitationsFailed", { count: failed }))
+      }
+
+      if (data.kind === "membres-import") {
+        if (data.importFailed) {
+          toast.error(t("membres.importWizard.toasts.failed"))
+        } else {
+          const created = data.membersCreated ?? 0
+          const matched = data.membersMatched ?? 0
+          const errors  = data.errors ?? 0
+          const invites = data.invitesSent ?? 0
+          toast.success(t("membres.importWizard.toasts.completed", { created, matched }))
+          if (invites > 0) toast.info(t("membres.importWizard.toasts.invitesSent", { count: invites }))
+          if (errors > 0) toast.warning(t("membres.importWizard.toasts.completedWithErrors", { count: errors }))
+        }
       }
     }
 
