@@ -18,6 +18,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -68,10 +69,15 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
 
   // Needed inside the transaction below (receiptMode on any embedded-donation addon) — fetched
   // once here rather than twice, since the rest of this handler already needs assoc afterwards.
-  const assoc = await prisma.association.findUnique({
-    where:  { id: meta.associationId },
-    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
-  })
+  const [assoc, form] = await Promise.all([
+    prisma.association.findUnique({
+      where:  { id: meta.associationId },
+      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
+    }),
+    meta.membershipFormId
+      ? prisma.membershipForm.findUnique({ where: { id: meta.membershipFormId }, select: { title: true, adminNotificationEmail: true } })
+      : Promise.resolve(null),
+  ])
 
   let created
   try {
@@ -102,6 +108,8 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           address:       meta.address || null,
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
+          photoUrl:      meta.photoUrl || null,
+          preferredLocale: meta.locale || null,
           status:        "ACTIF",
           associationId: meta.associationId,
           typeId:        meta.typeId || null,
@@ -130,6 +138,10 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           // commonMeta comment) — null keeps the historical yearly-billing behavior exactly as
           // it was before this field existed.
           durationMonths:   meta.durationMonths ? Number(meta.durationMonths) : null,
+          // Snapshotted from MembershipTier.taxReceiptEligible at signup, same reasoning as
+          // durationMonths above — copied onto every yearly Cotisation this subscription
+          // produces (see handleCotisationInvoicePaid).
+          taxReceiptEligible: meta.taxReceiptEligible === "1",
         },
       })
 
@@ -201,6 +213,13 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
     }).catch(() => {})
   }
 
+  if (form) {
+    notifyMembershipSignup({
+      associationId: meta.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: [`${created.membre.firstName} ${created.membre.lastName}`], amount, primaryMembreId: created.membre.id,
+    }).catch(() => {})
+  }
+
   await writeActivityLog({
     associationId: meta.associationId,
     action:        "COTISATION_SUBSCRIPTION_STARTED",
@@ -242,7 +261,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
 
   const cotisationSub = await prisma.cotisationSubscription.findUnique({
     where:  { stripeSubscriptionId: subscriptionId },
-    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true },
+    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, taxReceiptEligible: true },
   })
   if (!cotisationSub) return // Not a cotisation subscription — nothing here concerns this invoice.
 
@@ -296,7 +315,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
   // (e.g. an admin created one manually before the renewal charge landed).
   const cotisation = await prisma.cotisation.upsert({
     where:  { membreId_year: { membreId: cotisationSub.membreId, year } },
-    update: { subscriptionId: cotisationSub.id, periodStart, periodEnd },
+    update: { subscriptionId: cotisationSub.id, periodStart, periodEnd, taxReceiptEligible: cotisationSub.taxReceiptEligible },
     create: {
       membreId:       cotisationSub.membreId,
       associationId:  cotisationSub.associationId,
@@ -308,6 +327,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
       tierId:           cotisationSub.tierId,
       periodStart,
       periodEnd,
+      taxReceiptEligible: cotisationSub.taxReceiptEligible,
     },
   })
 

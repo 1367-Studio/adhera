@@ -10,6 +10,7 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -25,6 +26,13 @@ type Tier = {
   // null = adhésion sur l'année civile ; un nombre = validité personnalisée (voir
   // MembershipTier.durationMonths). Rare en dehors de MEMBERSHIP, mais le type le permet.
   durationMonths: number | null
+  // Alternative à durationMonths — date de fin absolue (ISO), identique pour tout le monde
+  // peu importe la date de paiement (voir MembershipTier.fixedPeriodEnd).
+  fixedPeriodEnd: string | null
+  // "Payer en plusieurs fois" — voir MembershipTier.installmentsAllowed. Only ever set on a
+  // ONE_OFF fixed-amount tier (see tiers/route.ts).
+  installmentsAllowed: boolean
+  installmentsCount: number | null
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
 
@@ -42,6 +50,7 @@ type FormInfo = {
   fieldPhone: FieldRequirement
   fieldMobile: FieldRequirement
   fieldGender: FieldRequirement
+  fieldPhoto: FieldRequirement
   confirmationMessage: string | null
   offlineInstructions: string | null
   allowCash: boolean
@@ -107,6 +116,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [tierId, setTierId]         = useState("")
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("STRIPE")
   const [freeAmount, setFreeAmount] = useState(0)
+  const [payInInstallments, setPayInInstallments] = useState(false)
   // ADDON/DONATION tiers picked alongside the (mandatory) membership tier — a set of
   // checkbox selections, each with its own free-amount input when the tier calls for one.
   const [selectedExtraIds, setSelectedExtraIds] = useState<Set<string>>(new Set())
@@ -119,6 +129,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [birthDate, setBirthDate]   = useState("")
   const [phone, setPhone]           = useState("")
   const [mobile, setMobile]         = useState("")
+  const [photoUrl, setPhotoUrl]     = useState("")
   // Mirrors Membre.sexe's own two values (see membre-form.tsx's sexeOptions) — there's no
   // "autre"/non-binary value in that enum today.
   const [sexe, setSexe]             = useState<"" | "HOMME" | "FEMME">("")
@@ -158,9 +169,14 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     tier.durationMonths && tier.durationMonths !== 12 ? t("perNMonths", { months: tier.durationMonths }) : t("perYear")
   // A ONE_OFF tier with a custom duration is still a single payment, but its validity isn't
   // "until year-end" the way a visitor would otherwise reasonably assume — this is the only
-  // place that ever gets communicated to them.
-  const oneOffDurationSuffix = (tier: Tier) =>
-    tier.kind === "ONE_OFF" && tier.durationMonths ? t("validForMonths", { months: tier.durationMonths }) : null
+  // place that ever gets communicated to them. fixedPeriodEnd is the alternative to
+  // durationMonths (mutually exclusive, see tiers/route.ts) — same end date for everyone.
+  const oneOffDurationSuffix = (tier: Tier) => {
+    if (tier.kind !== "ONE_OFF") return null
+    if (tier.fixedPeriodEnd) return t("validUntilDate", { date: new Date(tier.fixedPeriodEnd).toLocaleDateString(loc) })
+    if (tier.durationMonths) return t("validForMonths", { months: tier.durationMonths })
+    return null
+  }
   const membershipAmount = !selectedTier ? 0 : selectedTier.free ? 0 : selectedTier.freeAmount ? freeAmount : Number(selectedTier.amount ?? 0)
   // A montant-libre extra with no minimum configured by staff still needs a real floor —
   // otherwise the field defaults to €0 and nothing stops a visitor from submitting it as-is.
@@ -187,8 +203,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
+  // A required photo is only ever collected from the person filling out the form (see the
+  // ImageUpload block below) — an extra "Adhérent" block has no upload UI of its own, so
+  // multi-registrant mode can't satisfy a REQUIRED fieldPhoto for anyone past the first.
   const canAddRegistrant = !isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0 && form?.fieldPhoto !== "REQUIRED"
     : extraRegistrants.length + 1 < MAX_REGISTRANTS
 
   const amount = isMulti ? membershipAmount + extraRegistrantsAmount : membershipAmount + extrasAmount
@@ -207,17 +226,27 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     m === "ESPECES" ? form?.allowCash : m === "CHEQUE" ? form?.allowCheque : form?.allowTransfer,
   )
   const needsPayment = amount > 0
-  const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0
+  // Only the membership price itself can be split — an addon/donation riding alongside would
+  // otherwise have to be either folded into the recurring installment price (changing what
+  // each future automatic charge is for) or invoiced separately, neither of which the visitor
+  // has any way to see coming. Simplest to just not offer both at once, same restriction
+  // showOfflineChoice already applies for the same underlying reason.
+  const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0
+  const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !payInInstallments
   const hasAnyPaymentMethod = !selectedTier || !needsPayment
     || (isMulti ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0)))
+
+  useEffect(() => {
+    if (!canPayInInstallments && payInInstallments) setPayInInstallments(false)
+  }, [canPayInInstallments, payInInstallments])
 
   // Extras hide the offline radio group (see showOfflineChoice) — if a visitor had already
   // picked an offline method and then checks an extra (or adds another adhérent), fall back
   // to Stripe rather than silently submitting a payment method the UI no longer shows as
-  // selected.
+  // selected. Same for opting into "plusieurs fois", which is Stripe-only.
   useEffect(() => {
-    if (!showOfflineChoice && paymentMethod !== "STRIPE") setPaymentMethod("STRIPE")
-  }, [showOfflineChoice, paymentMethod])
+    if ((!showOfflineChoice || payInInstallments) && paymentMethod !== "STRIPE") setPaymentMethod("STRIPE")
+  }, [showOfflineChoice, paymentMethod, payInInstallments])
 
   function addRegistrant() {
     const defaultTier = oneOffMembershipTiers[0]
@@ -266,6 +295,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || sexe) &&
+    (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
     (!form.requireCguvSignature || conditionsAgreed) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
 
@@ -283,7 +313,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
                 firstName: firstName.trim(), lastName: lastName.trim(),
                 birthDate: birthDate.trim() || undefined, phone: phone.trim() || undefined, mobile: mobile.trim() || undefined,
-                sexe: sexe || undefined, address: address.trim() || undefined, answers,
+                sexe: sexe || undefined, address: address.trim() || undefined, photoUrl: photoUrl || undefined, answers,
               },
               ...extraRegistrants.map(r => {
                 const rt = registrantTier(r)
@@ -300,11 +330,14 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             password: willBeImmediate ? password : undefined,
             website,
             conditionsAgreed,
+            locale:   loc,
           }
         : {
             tierId,
             paymentMethod: needsPayment ? paymentMethod : undefined,
             amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
+            payInInstallments: canPayInInstallments && payInInstallments ? true : undefined,
+            locale: loc,
             addons: selectedExtras.map(x => ({ tierId: x.id, amount: x.freeAmount ? (extraAmounts[x.id] ?? 0) : undefined })),
             firstName: firstName.trim(),
             lastName:  lastName.trim(),
@@ -315,6 +348,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             phone:     phone.trim() || undefined,
             mobile:    mobile.trim() || undefined,
             sexe:      sexe || undefined,
+            photoUrl:  photoUrl || undefined,
             answers,
             website,
             conditionsAgreed,
@@ -455,6 +489,16 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 </div>
                 {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
                   <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                )}
+                {canPayInInstallments && selectedTier && (
+                  <CheckboxField
+                    label={t("payInInstallmentsLabel", {
+                      count: selectedTier.installmentsCount ?? 0,
+                      amount: (Number(selectedTier.amount) / (selectedTier.installmentsCount ?? 1)).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                    })}
+                    checked={payInInstallments}
+                    onChange={e => setPayInInstallments(e.target.checked)}
+                  />
                 )}
               </div>
 
@@ -648,6 +692,18 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 />
               )}
 
+              {form.fieldPhoto !== "HIDDEN" && (
+                <div className="flex justify-center">
+                  <ImageUpload
+                    value={photoUrl}
+                    onChange={setPhotoUrl}
+                    aspectRatio="square"
+                    className="w-32"
+                    compact
+                    uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                  />
+                </div>
+              )}
               {form.fieldAddress !== "HIDDEN" && (
                 <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
               )}
@@ -698,7 +754,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 {!needsPayment
                   ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
                   : t("submitPay", {
-                      amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : ""}`,
+                      amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
                     })}
               </Button>
             </form>

@@ -16,6 +16,15 @@ const tierSchema = z.object({
   // null = comportement historique (année civile). Borné à 5 ans — au-delà, un tarif ONE_OFF
   // ordinaire sans durationMonths a plus de sens qu'une "durée custom" démesurée.
   durationMonths: z.number().int().min(1).max(60).nullable().optional(),
+  // Alternative à durationMonths — une date de fin absolue, identique pour tout signataire
+  // peu importe quand il paie (ex. saison sportive). ISO string côté payload.
+  fixedPeriodEnd: z.string().datetime().nullable().optional(),
+  taxReceiptEligible: z.boolean().optional().default(false),
+  // "Payer en plusieurs fois" — voir schema.prisma. installmentsCount borné à [2, 12] : 1 fois
+  // n'est pas "plusieurs", et au-delà de 12 mensualités automatiques Stripe le découpage
+  // devient peu réaliste pour une cotisation associative.
+  installmentsAllowed: z.boolean().optional().default(false),
+  installmentsCount:   z.number().int().min(2).max(12).nullable().optional(),
   label:        z.string().trim().min(1).max(100),
   membreTypeId: z.string().nullable().optional(),
 }).refine(d => !(d.free && d.freeAmount), {
@@ -36,6 +45,26 @@ const tierSchema = z.object({
   // "year") — there's no way to express e.g. "billed every 18 months" as a single Price, so
   // a RECURRING tier's custom duration can't exceed what checkout/route.ts can actually build.
   message: "Un tarif récurrent est limité à une durée de 12 mois maximum", path: ["durationMonths"],
+}).refine(d => !(d.durationMonths && d.fixedPeriodEnd), {
+  message: "Choisissez une durée en mois ou une date de fin fixe, pas les deux", path: ["fixedPeriodEnd"],
+}).refine(d => d.kind !== "RECURRING" || !d.fixedPeriodEnd, {
+  // A RECURRING tier renews indefinitely — an absolute end date doesn't fit the Stripe
+  // Subscription model it bills through (see checkout/route.ts).
+  message: "Une date de fin fixe n'est pas disponible pour un tarif récurrent", path: ["fixedPeriodEnd"],
+}).refine(d => !d.free || !d.taxReceiptEligible, {
+  // No money changes hands on a free tier — nothing to issue a tax-deductible receipt for.
+  message: "Un tarif gratuit ne peut pas être éligible au reçu fiscal", path: ["taxReceiptEligible"],
+}).refine(d => !d.installmentsAllowed || (d.kind === "ONE_OFF" && !d.free && !d.freeAmount), {
+  // RECURRING is already spread over time by nature; free has nothing to split; freeAmount
+  // has no fixed total to divide into N equal installments up front.
+  message: "Le paiement en plusieurs fois n'est disponible que pour un tarif ponctuel à montant fixe", path: ["installmentsAllowed"],
+}).refine(d => !d.installmentsAllowed || d.installmentsCount != null, {
+  message: "Le nombre de fois est requis", path: ["installmentsCount"],
+}).refine(d => !d.installmentsAllowed || !d.installmentsCount || !d.amount || d.amount / d.installmentsCount >= 1, {
+  // Stripe refuses to charge below ~0.50€ — 1€/mensualité gives headroom above that floor
+  // rather than sitting right on it. checkout/route.ts's Math.ceil rounding means the actual
+  // per-cycle charge is always >= this, never below.
+  message: "Chaque mensualité doit être d'au moins 1€ — augmentez le montant ou réduisez le nombre de fois", path: ["installmentsCount"],
 })
 
 const tiersSchema = z.array(tierSchema).max(20)
@@ -151,6 +180,10 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         freeAmount:   t.itemType === "DONATION" ? true : (t.free ? false : t.freeAmount),
         amount:       t.free || (t.itemType !== "DONATION" && t.freeAmount) ? null : t.amount,
         durationMonths: isMembership ? (t.durationMonths || null) : null,
+        fixedPeriodEnd: isMembership && t.fixedPeriodEnd ? new Date(t.fixedPeriodEnd) : null,
+        taxReceiptEligible: isMembership && !t.free ? !!t.taxReceiptEligible : false,
+        installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount ? !!t.installmentsAllowed : false,
+        installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && t.installmentsAllowed ? t.installmentsCount : null,
         label:        t.label,
         membreTypeId: isMembership ? (t.membreTypeId || null) : null,
       }

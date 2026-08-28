@@ -7,7 +7,10 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const cotisations = await prisma.cotisation.findMany({
     where:   { membreId: ctx.membreId! },
     orderBy: { year: "desc" },
-    include: { installments: { orderBy: { dueDate: "asc" } } },
+    include: {
+      installments: { orderBy: { dueDate: "asc" } },
+      association:  { select: { canIssueTaxReceipts: true } },
+    },
   })
 
   // Computed server-side (not left to the client) so the portal page never needs its own copy

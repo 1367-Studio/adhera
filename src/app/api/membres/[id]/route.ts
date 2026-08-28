@@ -27,7 +27,11 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const membre = await prisma.membre.findFirst({
     where: { id, associationId, deletedAt: null },
     include: {
-      cotisations:    { orderBy: { year: "desc" }, take: 50 },
+      cotisations:    {
+        orderBy: { year: "desc" },
+        take:    50,
+        include: { installmentPlan: { select: { id: true, status: true, installmentsPaid: true, installmentsCount: true } } },
+      },
       participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
       // Ordered by the meeting's createdAt (always set), not scheduledAt (null for
       // "start now" instant meetings) — same reasoning as /api/meetings's own ordering:
@@ -101,7 +105,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
 
   if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
@@ -164,7 +168,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // matters: read the tier once, consumed and cleared right after.
   const isApproval = existing.status === "PENDING" && rest.status === "ACTIF" && !!existing.pendingTierId
   const pendingTier = isApproval
-    ? await prisma.membershipTier.findUnique({ where: { id: existing.pendingTierId! }, select: { id: true, free: true, formId: true, durationMonths: true } })
+    ? await prisma.membershipTier.findUnique({ where: { id: existing.pendingTierId! }, select: { id: true, free: true, formId: true, durationMonths: true, fixedPeriodEnd: true } })
     : null
 
   const membre = await prisma.$transaction(async (tx) => {
@@ -181,6 +185,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),
         ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
         ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
+        ...(preferredLocale !== undefined ? { preferredLocale: preferredLocale || null } : {}),
         ...(possedeTshirtValue !== undefined ? { possedeTshirt: possedeTshirtValue } : {}),
         ...(tailleTshirtValue  !== undefined ? { tailleTshirt:  tailleTshirtValue  } : {}),
         ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),
@@ -217,8 +222,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
             // Same durationMonths → periodStart/periodEnd snapshot as checkout/route.ts —
             // without it, a "3-month trial" tier requiring approval would silently become a
             // full calendar-year membership the moment an admin approves it.
-            periodStart: pendingTier.durationMonths ? now : null,
-            periodEnd:   pendingTier.durationMonths ? addMonths(now, pendingTier.durationMonths) : null,
+            periodStart: pendingTier.fixedPeriodEnd || pendingTier.durationMonths ? now : null,
+            periodEnd:   pendingTier.fixedPeriodEnd ?? (pendingTier.durationMonths ? addMonths(now, pendingTier.durationMonths) : null),
           },
         })
       }

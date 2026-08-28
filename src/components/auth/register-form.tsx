@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon, CheckIcon, CircleNotchIcon, LockIcon } from "@phosphor-icons/react/dist/ssr"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import Link from "next/link"
 import { unstable_rethrow, useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
@@ -264,6 +264,7 @@ function PaymentForm({
 }) {
   const t  = useTranslations("auth.register.payment")
   const tOffer = useTranslations("auth.register.offer")
+  const loc = useLocale()
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -313,6 +314,7 @@ function PaymentForm({
           acceptedTerms:   info.acceptedTerms,
           customerId,
           paymentMethodId,
+          locale: loc,
           ...(offer ? { offerToken: offer.token } : { plan, tier }),
         }),
       })

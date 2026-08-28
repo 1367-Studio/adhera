@@ -952,6 +952,43 @@ export function membershipWelcomeEmail(p: {
   }
 }
 
+// Sent to MembershipForm.adminNotificationEmail (opt-in, per formulaire — see
+// notifyMembershipSignup) each time someone joins through that specific form. Distinct from
+// the in-app Notification every ADMIN/PRESIDENT/TRESORIER already gets regardless of this
+// field: this is for a staff member who wants a real email the moment it happens, without
+// having to be logged in or watching the notification bell.
+export function membershipSignupAdminNotificationEmail(p: {
+  email:           string
+  associationName: string
+  formTitle:       string
+  memberNames:     string[] // 1 for a single registrant, N for a group submission
+  amount:          number
+  dashboardUrl:    string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const namesStr  = p.memberNames.join(", ")
+  const isGroup   = p.memberNames.length > 1
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${isGroup ? "Nouvelle inscription groupée" : "Nouvelle adhésion"}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      ${escapeHtml(namesStr)} ${isGroup ? "ont rejoint" : "a rejoint"} <strong>${escapeHtml(p.associationName)}</strong>
+      via le formulaire « ${escapeHtml(p.formTitle)} ».
+    </p>
+    ${p.amount > 0 ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>` : ""}
+    ${btn("Voir les membres", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: isGroup ? `Nouvelle inscription groupée · ${p.formTitle}` : `Nouvelle adhésion · ${p.formTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function cotisationSubscriptionPaymentFailedEmail(p: {
   firstName:       string
   email:           string
@@ -997,6 +1034,69 @@ export function cotisationSubscriptionPaymentFailedAdminEmail(p: {
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Échec de prélèvement d'une cotisation</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Le prélèvement automatique de <strong>${amountStr}</strong> pour la cotisation de
+      <strong>${p.memberName}</strong> n'a pas pu être effectué. Le membre a été prévenu et
+      Stripe va retenter automatiquement.
+    </p>
+    ${btn("Voir les membres", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `Échec de prélèvement — ${p.memberName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// Mirrors cotisationSubscriptionPaymentFailedEmail exactly, for a "payer en plusieurs fois"
+// installment charge instead of a genuine yearly renewal — see CotisationInstallmentPlan.
+export function membershipInstallmentPaymentFailedEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  installmentNumber: number
+  installmentsCount: number
+  nextAttemptAt:   Date | null
+  cancelUrl:       string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const nextAttemptStr = p.nextAttemptAt
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre mensualité n'a pas abouti</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong>
+      (mensualité ${p.installmentNumber}/${p.installmentsCount}) pour votre adhésion à
+      <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
+      ${nextAttemptStr
+        ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
+        : "Vérifiez que votre moyen de paiement est à jour."}
+    </p>
+    ${btn("Gérer mon paiement en plusieurs fois", p.cancelUrl)}`
+  return {
+    to:      p.email,
+    subject: `Échec de prélèvement — ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent alongside membershipInstallmentPaymentFailedEmail to every director, same reasoning as
+// cotisationSubscriptionPaymentFailedAdminEmail.
+export function membershipInstallmentPaymentFailedAdminEmail(p: {
+  email:           string
+  associationName: string
+  memberName:      string
+  amount:          number
+  installmentNumber: number
+  installmentsCount: number
+  dashboardUrl:    string
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Échec de prélèvement d'une mensualité</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Le prélèvement automatique de <strong>${amountStr}</strong> (mensualité
+      ${p.installmentNumber}/${p.installmentsCount}) pour l'adhésion de
       <strong>${p.memberName}</strong> n'a pas pu être effectué. Le membre a été prévenu et
       Stripe va retenter automatiquement.
     </p>

@@ -18,6 +18,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { portalFetch } from "@/lib/portal-fetch"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
 
 type Membre = {
   id:        string
@@ -32,6 +33,7 @@ type Membre = {
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   photoUrl:      string | null
+  preferredLocale: string | null
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
 }
@@ -58,6 +60,7 @@ function buildSchema(t: ReturnType<typeof useTranslations>) {
     ]).optional().or(z.literal("")),
     allergies: z.string().trim().optional().or(z.literal("")),
     photoUrl:  z.string().trim().optional().or(z.literal("")),
+    preferredLocale: z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional().or(z.literal("")),
     possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
     tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
   })
@@ -126,6 +129,7 @@ export default function ProfilPage() {
       groupeSanguin: membre.groupeSanguin ?? "",
       allergies:     membre.allergies     ?? "",
       photoUrl:      membre.photoUrl      ?? "",
+      preferredLocale: (membre.preferredLocale ?? "") as FormValues["preferredLocale"],
       possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
       tailleTshirt:  membre.tailleTshirt  ?? "",
     } : undefined,
@@ -426,6 +430,29 @@ export default function ProfilPage() {
               <Textarea id="allergies" rows={2} placeholder={t("contact.allergiesPlaceholder")} {...register("allergies")} />
               {errors.allergies && <p className="text-destructive text-xs">{errors.allergies.message}</p>}
             </div>
+
+            <Controller
+              name="preferredLocale"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-1.5">
+                  <Label>{t("contact.preferredLocale")}</Label>
+                  <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("contact.notProvided")}>
+                        {field.value ? LOCALE_LABELS[field.value as Locale] : t("contact.notProvided")}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
+                      {SUPPORTED_LOCALES.map(code => (
+                        <SelectItem key={code} value={code}>{LOCALE_LABELS[code]}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            />
 
             <Button type="submit" disabled={!isDirty || mutation.isPending} className="w-full">
               {mutation.isPending ? t("contact.saving") : t("contact.save")}

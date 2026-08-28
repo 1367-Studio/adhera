@@ -10,6 +10,7 @@ import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
+import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -23,6 +24,8 @@ export interface MembershipMultiRegistrant {
   phone?:     string
   mobile?:    string
   address?:   string
+  photoUrl?:  string
+  locale?:    string
   answers:    Record<string, string>
   // Snapshotted at submission time by checkout/route.ts (ISO strings), not recomputed here —
   // the paid path can consume this draft minutes later once the webhook fires, and a
@@ -102,6 +105,8 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
               address:       r.address || null,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
+              photoUrl:      r.photoUrl || null,
+              preferredLocale: r.locale || null,
               status:        "ACTIF",
               associationId: draft.associationId,
               typeId:        tier.membreTypeId,
@@ -119,6 +124,8 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
               address:       r.address || null,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
+              photoUrl:      r.photoUrl || null,
+              preferredLocale: r.locale || null,
               status:        "ACTIF",
               associationId: draft.associationId,
               typeId:        tier.membreTypeId,
@@ -135,7 +142,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
             membreId, associationId: draft.associationId, year: currentCotisationYear(now),
             amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd,
+            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
           },
         })
       }
@@ -196,6 +203,11 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
       }).catch(() => {})
     }
   }
+
+  notifyMembershipSignup({
+    associationId: draft.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+    memberNames: registrants.map(r => `${r.firstName} ${r.lastName}`), amount: Number(draft.totalAmount), primaryMembreId: membreIds[0],
+  }).catch(() => {})
 
   await writeActivityLog({
     associationId: draft.associationId,

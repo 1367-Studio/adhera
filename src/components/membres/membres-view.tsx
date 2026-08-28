@@ -51,6 +51,7 @@ type Membre = {
   sexe:          "HOMME" | "FEMME" | null
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
+  preferredLocale: string | null
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
@@ -548,6 +549,7 @@ export function MembresView() {
             groupeSanguin: editTarget.groupeSanguin ?? "",
             allergies:     editTarget.allergies     ?? "",
             photoUrl:      editTarget.photoUrl      ?? "",
+            preferredLocale: (editTarget.preferredLocale ?? "") as MembreInput["preferredLocale"],
             possedeTshirt: editTarget.possedeTshirt === null ? "" : String(editTarget.possedeTshirt) as "true" | "false",
             tailleTshirt:  editTarget.tailleTshirt  ?? "",
             responsableId: editTarget.responsableId ?? "",

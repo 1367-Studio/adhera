@@ -58,6 +58,7 @@ export async function GET(
     fieldPhone:           form.fieldPhone,
     fieldMobile:          form.fieldMobile,
     fieldGender:          form.fieldGender,
+    fieldPhoto:           form.fieldPhoto,
     confirmationMessage:  form.confirmationMessage,
     offlineInstructions:  form.offlineInstructions,
     allowCash:            form.allowCash,
@@ -69,6 +70,8 @@ export async function GET(
     tiers: form.tiers.map(t => ({
       id: t.id, label: t.label, itemType: t.itemType, kind: t.kind, free: t.free, freeAmount: t.freeAmount,
       amount: t.amount?.toString() ?? null, durationMonths: t.durationMonths,
+      fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
+      installmentsAllowed: t.installmentsAllowed, installmentsCount: t.installmentsCount,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
   })

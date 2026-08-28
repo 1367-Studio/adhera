@@ -16,6 +16,7 @@ export type MembreDetail = {
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
   photoUrl:      string | null
+  preferredLocale: string | null
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
@@ -297,6 +298,19 @@ export function useCancelCotisationSubscription() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: cancelCotisationSubscription,
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+async function cancelCotisationInstallmentPlan(id: string) {
+  const res = await fetch(`/api/membres/${id}/cotisation-installment`, { method: "DELETE" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'arrêt du paiement en plusieurs fois"))
+}
+
+export function useCancelCotisationInstallmentPlan() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: cancelCotisationInstallmentPlan,
     onSuccess:  () => invalidateAll(qc),
   })
 }

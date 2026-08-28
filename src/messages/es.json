@@ -2518,6 +2518,12 @@
           "durationMonthsHint": "Déjelo vacío para una afiliación de año civil — un número la hace válida por esa cantidad de meses desde el pago.",
           "durationMonthsHintRecurring": "Facturado cada N meses en lugar de cada año. Limitado a 12 meses como máximo para una tarifa recurrente.",
           "durationMonthsRecurringMaxError": "Una tarifa recurrente está limitada a una duración máxima de 12 meses",
+          "durationConflictError": "Elija una duración en meses o una fecha de fin fija, no ambas",
+          "fixedPeriodEndField": "Fecha de fin fija",
+          "fixedPeriodEndHint": "Alternativa a la duración en meses — la misma fecha de fin para todos (ej. una temporada deportiva).",
+          "taxReceiptEligibleField": "Elegible para recibo fiscal",
+          "installmentsAllowedField": "Permitir el pago en varias veces",
+          "installmentsCountField": "Número de cuotas",
           "membreTypeNone": "Ninguno",
           "kindField": "Tipo",
           "kindOneOff": "Puntual",
@@ -2542,6 +2548,7 @@
           "phoneLabel": "Teléfono",
           "mobileLabel": "Móvil",
           "genderLabel": "Género",
+          "photoLabel": "Foto",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -2570,7 +2577,10 @@
           "allowTransferLabel": "Transferencia",
           "offlineInstructionsLabel": "Instrucciones para el pago fuera de línea",
           "offlineInstructionsPlaceholder": "Ej. Cheque a nombre de… / IBAN…",
-          "confirmationMessageLabel": "Mensaje de confirmación"
+          "confirmationMessageLabel": "Mensaje de confirmación",
+          "adminNotificationEmailLabel": "Email de notificación (opcional)",
+          "adminNotificationEmailPlaceholder": "gestion@asociacion.es",
+          "adminNotificationEmailHint": "Recibe un email por cada nueva inscripción a través de este formulario, además de la notificación en la aplicación."
         },
         "publish": {
           "title": "Publicación",
@@ -2604,6 +2614,9 @@
       "perYear": "/ año",
       "perNMonths": "cada {months} meses",
       "validForMonths": "válida por {months} meses",
+      "validUntilDate": "válida hasta el {date}",
+      "payInInstallmentsLabel": "Pagar en {count} veces ({amount}/mes)",
+      "firstInstallmentSuffix": "(1ª cuota)",
       "paymentMethodLabel": "Método de pago",
       "paymentMethodStripe": "Tarjeta",
       "paymentMethodCash": "Efectivo",
@@ -3352,6 +3365,7 @@
       },
       "groupeSanguinNone": "No especificado",
       "tailleTshirtNone": "No especificado",
+      "preferredLocaleNone": "No especificado",
       "adherentOverride": {
         "auto": "Automático (según cuota)",
         "forceAdherent": "Forzar Socio",
@@ -3378,7 +3392,8 @@
         "allergiesPlaceholder": "Cacahuetes, polen…",
         "type": "Tipo de miembro",
         "address": "Dirección",
-        "addressPlaceholder": "Calle Ejemplo 123, Madrid"
+        "addressPlaceholder": "Calle Ejemplo 123, Madrid",
+        "preferredLocale": "Idioma preferido"
       },
       "invitationNotice": "Se enviará un correo de invitación con los datos de acceso a esta dirección.",
       "adherentAutoWithResponsable": "Calculado automáticamente: su propia cuota del año en curso si existe, si no la de su responsable — fuércelo solo en casos excepcionales (independiente de «Estado», que controla la cuenta).",
@@ -3504,6 +3519,10 @@
       "cancelSubscriptionButton": "Detener el cobro automático",
       "cancelSubscriptionConfirmTitle": "¿Detener el cobro automático?",
       "cancelSubscriptionConfirmDescription": "{name} ya no será cobrado automáticamente por su cuota. Aún podrá registrar pagos manualmente.",
+      "installmentProgress": "{paid}/{total} cuotas pagadas",
+      "cancelInstallmentButton": "Detener el pago en varias veces",
+      "cancelInstallmentConfirmTitle": "¿Detener los cobros restantes?",
+      "cancelInstallmentConfirmDescription": "{name} ya no será cobrado por las cuotas restantes. Aún podrá registrar pagos manualmente.",
       "tabs": {
         "cotisations": "Cuotas",
         "evenements": "Eventos",
@@ -3537,6 +3556,7 @@
       "paidOn": "Pagada el {date}",
       "validUntil": "Válida hasta el {date}",
       "periodExpiredOn": "Expiró el {date}",
+      "downloadRecuFiscal": "Descargar el recibo fiscal",
       "showingRecentCotisations": "Mostrando las {count} cuotas más recientes de {total} en total.",
       "addonPurchasesTitle": "Opciones y donaciones compradas",
       "donationFallbackLabel": "Donación",
@@ -3558,7 +3578,8 @@
         "accessCreated": "Acceso creado — se envió un correo",
         "cotisationAdded": "Cuota añadida",
         "cotisationUpdated": "Cuota actualizada",
-        "subscriptionCancelled": "Cobro automático detenido"
+        "subscriptionCancelled": "Cobro automático detenido",
+        "installmentCancelled": "Pago en varias veces detenido"
       }
     },
     "sms": {
@@ -4201,6 +4222,7 @@
       "paidOnShort": " · pagada el {date}",
       "pay": "Pagar",
       "noMemberProfile": "Ningún perfil de miembro asociado a esta cuenta.",
+      "downloadRecuFiscal": "Descargar el recibo fiscal",
       "toasts": {
         "paymentDone": "¡Pago realizado!",
         "paymentCancelled": "Pago cancelado.",
@@ -4298,6 +4320,7 @@
         "tailleTshirt": "Talla de camiseta",
         "allergies": "Alergias conocidas",
         "allergiesPlaceholder": "Cacahuetes, polen…",
+        "preferredLocale": "Idioma preferido",
         "notProvided": "No proporcionado",
         "yes": "Sí",
         "no": "No",

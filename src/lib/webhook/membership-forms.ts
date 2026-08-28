@@ -11,6 +11,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
 //
@@ -47,13 +48,18 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   })
   if (alreadyProcessed) return
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: meta.associationId },
-    select: {
-      name: true, slug: true, modules: true, plan: true, customMemberLimit: true,
-      customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true,
-    },
-  })
+  const [assoc, form] = await Promise.all([
+    prisma.association.findUnique({
+      where:  { id: meta.associationId },
+      select: {
+        name: true, slug: true, modules: true, plan: true, customMemberLimit: true,
+        customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true,
+      },
+    }),
+    meta.membershipFormId
+      ? prisma.membershipForm.findUnique({ where: { id: meta.membershipFormId }, select: { title: true, adminNotificationEmail: true } })
+      : Promise.resolve(null),
+  ])
 
   let created
   try {
@@ -80,6 +86,8 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           address:       meta.address || null,
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
+          photoUrl:      meta.photoUrl || null,
+          preferredLocale: meta.locale || null,
           status:        "ACTIF",
           associationId: meta.associationId,
           typeId:        meta.typeId || null,
@@ -101,6 +109,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           tierId:           meta.tierId || null,
           periodStart:      meta.periodStart ? new Date(meta.periodStart) : null,
           periodEnd:        meta.periodEnd ? new Date(meta.periodEnd) : null,
+          taxReceiptEligible: meta.taxReceiptEligible === "1",
         },
       })
 
@@ -170,6 +179,13 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       associationId: meta.associationId,
       association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: created.membre.id, firstName: created.membre.firstName, lastName: created.membre.lastName, email: created.membre.email, phone: created.membre.phone },
+    }).catch(() => {})
+  }
+
+  if (form) {
+    notifyMembershipSignup({
+      associationId: meta.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: [`${created.membre.firstName} ${created.membre.lastName}`], amount: totalAmount, primaryMembreId: created.membre.id,
     }).catch(() => {})
   }
 

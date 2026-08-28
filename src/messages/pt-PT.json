@@ -2530,6 +2530,12 @@
           "durationMonthsHint": "Deixe em branco para uma adesão de ano civil — um número torna-a válida por esse número de meses a partir do pagamento.",
           "durationMonthsHintRecurring": "Cobrado a cada N meses em vez de anualmente. Limitado a no máximo 12 meses para uma tarifa recorrente.",
           "durationMonthsRecurringMaxError": "Uma tarifa recorrente está limitada a uma duração máxima de 12 meses",
+          "durationConflictError": "Escolha uma duração em meses ou uma data de fim fixa, não as duas",
+          "fixedPeriodEndField": "Data de fim fixa",
+          "fixedPeriodEndHint": "Alternativa à duração em meses — a mesma data de fim para todos (ex. uma época desportiva).",
+          "taxReceiptEligibleField": "Elegível para recibo fiscal",
+          "installmentsAllowedField": "Permitir pagamento em várias prestações",
+          "installmentsCountField": "Número de prestações",
           "membreTypeNone": "Nenhum",
           "kindField": "Tipo",
           "kindOneOff": "Pontual",
@@ -2554,6 +2560,7 @@
           "phoneLabel": "Telefone",
           "mobileLabel": "Telemóvel",
           "genderLabel": "Género",
+          "photoLabel": "Foto",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -2582,7 +2589,10 @@
           "allowTransferLabel": "Transferência",
           "offlineInstructionsLabel": "Instruções para pagamento offline",
           "offlineInstructionsPlaceholder": "Ex. Cheque à ordem de… / IBAN…",
-          "confirmationMessageLabel": "Mensagem de confirmação"
+          "confirmationMessageLabel": "Mensagem de confirmação",
+          "adminNotificationEmailLabel": "Email de notificação (opcional)",
+          "adminNotificationEmailPlaceholder": "gestao@associacao.pt",
+          "adminNotificationEmailHint": "Recebe um email a cada nova adesão através deste formulário, além da notificação na aplicação."
         },
         "publish": {
           "title": "Publicação",
@@ -2616,6 +2626,9 @@
       "perYear": "/ ano",
       "perNMonths": "a cada {months} meses",
       "validForMonths": "válida por {months} meses",
+      "validUntilDate": "válida até {date}",
+      "payInInstallmentsLabel": "Pagar em {count} prestações ({amount}/mês)",
+      "firstInstallmentSuffix": "(1ª prestação)",
       "paymentMethodLabel": "Forma de pagamento",
       "paymentMethodStripe": "Cartão",
       "paymentMethodCash": "Numerário",
@@ -3364,6 +3377,7 @@
       },
       "groupeSanguinNone": "Não indicado",
       "tailleTshirtNone": "Não indicado",
+      "preferredLocaleNone": "Não indicado",
       "adherentOverride": {
         "auto": "Automático (conforme a quota)",
         "forceAdherent": "Forçar Associado",
@@ -3390,7 +3404,8 @@
         "allergiesPlaceholder": "Amendoim, pólen…",
         "type": "Tipo de membro",
         "address": "Morada",
-        "addressPlaceholder": "Rua Exemplo, n.º 123, Lisboa"
+        "addressPlaceholder": "Rua Exemplo, n.º 123, Lisboa",
+        "preferredLocale": "Idioma preferido"
       },
       "invitationNotice": "Será enviado um e-mail de convite com os dados de acesso para este endereço.",
       "adherentAutoWithResponsable": "Calculado automaticamente: a própria quota do ano em curso, se existir, senão a do responsável — só force em caso de exceção (independentemente do \"Estado\", que controla a conta).",
@@ -3516,6 +3531,10 @@
       "cancelSubscriptionButton": "Interromper cobrança automática",
       "cancelSubscriptionConfirmTitle": "Interromper a cobrança automática?",
       "cancelSubscriptionConfirmDescription": "{name} deixará de ser cobrado automaticamente pela quota. Poderá continuar a registar pagamentos manuais.",
+      "installmentProgress": "{paid}/{total} prestações pagas",
+      "cancelInstallmentButton": "Interromper o pagamento em prestações",
+      "cancelInstallmentConfirmTitle": "Interromper as cobranças restantes?",
+      "cancelInstallmentConfirmDescription": "{name} deixará de ser cobrado pelas prestações restantes. Poderá continuar a registar pagamentos manuais.",
       "tabs": {
         "cotisations": "Quotas",
         "evenements": "Eventos",
@@ -3549,6 +3568,7 @@
       "paidOn": "Paga em {date}",
       "validUntil": "Válida até {date}",
       "periodExpiredOn": "Expirou em {date}",
+      "downloadRecuFiscal": "Descarregar o recibo fiscal",
       "showingRecentCotisations": "A mostrar as {count} quotas mais recentes de {total} no total.",
       "addonPurchasesTitle": "Opções e donativos comprados",
       "donationFallbackLabel": "Donativo",
@@ -3570,7 +3590,8 @@
         "accessCreated": "Acesso criado — foi enviado um e-mail",
         "cotisationAdded": "Quota adicionada",
         "cotisationUpdated": "Quota atualizada",
-        "subscriptionCancelled": "Cobrança automática interrompida"
+        "subscriptionCancelled": "Cobrança automática interrompida",
+        "installmentCancelled": "Pagamento em prestações interrompido"
       }
     },
     "sms": {
@@ -4213,6 +4234,7 @@
       "paidOnShort": " · pago em {date}",
       "pay": "Pagar",
       "noMemberProfile": "Nenhum perfil de membro associado a esta conta.",
+      "downloadRecuFiscal": "Descarregar o recibo fiscal",
       "toasts": {
         "paymentDone": "Pagamento realizado!",
         "paymentCancelled": "Pagamento cancelado.",
@@ -4310,6 +4332,7 @@
         "tailleTshirt": "Tamanho da t-shirt",
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
+        "preferredLocale": "Idioma preferido",
         "notProvided": "Não indicado",
         "yes": "Sim",
         "no": "Não",
