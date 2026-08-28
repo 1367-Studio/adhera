@@ -3417,6 +3417,7 @@
       "sendEmail": "Enviar un correo",
       "sendSms": "Enviar un SMS",
       "export": "Exportar",
+      "import": "Importar",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
       "columns": {
@@ -3970,6 +3971,106 @@
         "livekitConfigUpdated": "Videoconferencia — configuración",
         "ticketCheckoutExpired": "Pago expirado"
       }
+    },
+    "importWizard": {
+      "title": "Importar miembros",
+      "description": "Importe sus miembros y cuotas desde una exportación de AssoConnect (o cualquier archivo CSV/Excel equivalente).",
+      "steps": {
+        "upload": "Subir",
+        "mapping": "Mapeo",
+        "preview": "Vista previa",
+        "result": "Resultado"
+      },
+      "detected": "Detectado",
+      "step1": {
+        "dropTitle": "Arrastre y suelte su exportación aquí",
+        "dropSubtitle": "CSV o Excel (.xlsx, .xls) — exportación «Adhésions et paiements» de AssoConnect"
+      },
+      "step2": {
+        "fileSelected": "Archivo seleccionado",
+        "rowsDetected": "{file} — {count} filas detectadas",
+        "adheraField": "Campo Adhera",
+        "sourceColumn": "Columna del archivo",
+        "groups": {
+          "member": "Miembro",
+          "address": "Dirección",
+          "cotisation": "Cuota / Pago"
+        },
+        "fields": {
+          "firstName": "Nombre",
+          "lastName": "Apellido",
+          "email": "Email",
+          "phoneMobile": "Teléfono móvil",
+          "phoneFixe": "Teléfono fijo",
+          "sexe": "Sexo",
+          "birthDate": "Fecha de nacimiento",
+          "civilite": "Título",
+          "addressStreet": "Dirección",
+          "addressComplement": "Complemento de dirección",
+          "postalCode": "Código postal",
+          "city": "Ciudad",
+          "region": "Región",
+          "department": "Departamento",
+          "country": "País",
+          "amount": "Importe",
+          "periodStart": "Fecha de inicio de adhesión",
+          "periodEnd": "Fecha de fin de adhesión",
+          "operationDate": "Fecha de la operación",
+          "paymentStatus": "Estado del pago",
+          "paymentMethod": "Método de pago",
+          "collecte": "Nombre de la colecta",
+          "externalId": "ID de contacto (AssoConnect)"
+        },
+        "restart": "Reiniciar",
+        "previewResult": "Vista previa del resultado"
+      },
+      "step3": {
+        "parsingResult": "Resultado del análisis",
+        "validRows": "Filas válidas",
+        "withPayment": "Con pago",
+        "inviteLabel": "Enviar invitaciones de acceso al portal",
+        "inviteHint": "Crea una cuenta y envía un email de invitación a cada miembro de este archivo (nuevo o ya existente) que aún no tenga acceso (nunca a cuentas ya existentes ni a emails inválidos).",
+        "missingName": "Sin nombre (ignoradas)",
+        "name": "Nombre",
+        "email": "Email",
+        "amount": "Importe",
+        "period": "Período",
+        "status": "Estado",
+        "paid": "Pagada",
+        "pending": "Pendiente",
+        "moreRows": "… y {count} fila(s) más",
+        "back": "Volver",
+        "importAction": "Importar {count} miembro(s)"
+      },
+      "step4": {
+        "success": "Importación exitosa",
+        "membersCreated": "Miembros creados",
+        "queuedTitle": "Importación en curso",
+        "queuedHint": "{count} fila(s) en cola. Se le notificará cuando la importación termine.",
+        "schemaErrorsHint": "{count} fila(s) se omitieron por no ser válidas y no se importaron.",
+        "membersMatched": "Miembros ya existentes",
+        "cotisationsCreated": "Cuotas creadas",
+        "cotisationsSkipped": "Cuotas ya existentes",
+        "errors": "Errores",
+        "nameOnlyMatchTitle": "{count, plural, one {# miembro identificado} other {# miembros identificados}} por nombre + email (no por ID único)",
+        "nameOnlyMatchHint": "Verifique que no se trate de una fusión incorrecta entre dos personas distintas con el mismo nombre.",
+        "nameOnlyMatchMore": " y {count} más",
+        "importAnother": "Importar otro archivo",
+        "goToMembres": "Ir a miembros"
+      },
+      "toasts": {
+        "fileReadError": "No se pudo leer el archivo",
+        "unsupportedFormat": "Formato no compatible. Use un archivo CSV, XLSX o XLS.",
+        "selectNameColumns": "Por favor mapee al menos las columnas Nombre y Apellido",
+        "completed": "Importación finalizada — {created} creado(s), {matched} ya existente(s)",
+        "invitesSent": "{count} invitación(es) de portal enviada(s)",
+        "completedWithErrors": "{count} fila(s) con error durante la importación",
+        "failed": "Error en la importación — no se pudo importar ningún dato. Vuelva a intentarlo o contacte con soporte.",
+        "noValidRows": "No se detectaron filas válidas",
+        "importError": "Error de importación",
+        "genericError": "Error"
+      },
+      "importedNote": "Importado de AssoConnect — {collecte}"
     }
   },
   "site": {

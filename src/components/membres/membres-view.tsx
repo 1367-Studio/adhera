@@ -388,6 +388,9 @@ export function MembresView() {
         description={descriptionText}
         action={
           <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={() => router.push("/dashboard/membres/import")}>
+              {t("membres.view.import")}
+            </Button>
             <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
               {t("membres.view.sendEmail")}
             </Button>
