@@ -54,7 +54,7 @@ export default async function PortalLayout({
         <PortalSidebar slug={slug} />
         <SidebarInset>
           <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} associationSlug={slug} />
-          <main className="flex flex-1 flex-col gap-4 p-4 pb-6 md:p-6 animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
+          <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 pb-6 scroll-pt-4 md:p-6 md:scroll-pt-6 md:overflow-y-auto animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>
         </SidebarInset>

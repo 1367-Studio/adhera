@@ -90,7 +90,7 @@ function DonsPortalPageInner() {
         <Button
           size="sm"
           onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
-          className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary/85 shrink-0"
+          className="gap-1.5 shrink-0"
         >
           <HandshakeIcon className="size-3.5" />
           {t("makeDonation")}

@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js"
 import type { PricingInfo, PlanTier } from "@/lib/stripe"
-import { stripePromise, stripeAppearance, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
+import { stripePromise, stripeAppearance, stripeFonts, euros, PlanPicker, type Plan } from "@/components/billing/stripe-elements-shared"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CircleNotchIcon, LockIcon, ArrowLeftIcon, ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
@@ -190,7 +190,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
         )}
 
         {clientSecret && !loadingIntent && (
-          <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts }}>
             <PaymentForm tier={tier} plan={plan} pricing={pricing} clientSecret={clientSecret} onSuccess={handleSuccess} />
           </Elements>
         )}

@@ -1,0 +1,25 @@
+# Local development database only. Staging and production run on Supabase —
+# see DATABASE_URL in .env.local and the Branches & Deployment section of the README.
+services:
+  db:
+    image: postgres:16
+    container_name: adhera-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: adhera
+    ports:
+      - "5432:5432"
+    volumes:
+      - adhera-db-data:/var/lib/postgresql/data
+    healthcheck:
+      # `db:up` uses `--wait`, which blocks until this passes, so migrations
+      # never race against a Postgres that is still starting up.
+      test: ["CMD-SHELL", "pg_isready -U postgres -d adhera"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  adhera-db-data:
