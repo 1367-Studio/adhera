@@ -2269,6 +2269,7 @@
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",
       "copyLinkButton": "Copiar link",
+      "previewButton": "Pré-visualização",
       "archiveButton": "Arquivar",
       "toasts": {
         "saved": "Alterações salvas",
@@ -2282,8 +2283,9 @@
           "imageLabel": "Imagem",
           "descriptionLabel": "Descrição",
           "descriptionPlaceholder": "Apresente sua campanha…",
-          "conditionsLabel": "Condições",
+          "conditionsLabel": "Condições gerais",
           "conditionsPlaceholder": "Condições gerais do formulário…",
+          "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
           "contactEmailLabel": "E-mail de contato",
           "contactPhoneLabel": "Telefone de contato"
@@ -2403,6 +2405,7 @@
       "companyNameLabel": "Nome da empresa",
       "siretLabel": "SIRET",
       "conditionsAgreeLabel": "Aceito os termos gerais",
+      "previewNotice": "Modo de pré-visualização — os envios estão desativados.",
       "honeypotLabel": "Deixar em branco",
       "inAppBrowserWarning": "Você está navegando pelo Facebook ou Instagram, o que pode impedir que esta página funcione corretamente. Toque em ⋯ e depois em \"Abrir no navegador\".",
       "submittedTitle": "Obrigado pela sua doação!",
@@ -2477,6 +2480,7 @@
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",
       "copyLinkButton": "Copiar link",
+      "previewButton": "Pré-visualização",
       "archiveButton": "Arquivar",
       "toasts": {
         "saved": "Alterações salvas",
@@ -2490,8 +2494,9 @@
           "imageLabel": "Imagem",
           "descriptionLabel": "Descrição",
           "descriptionPlaceholder": "Apresente sua associação…",
-          "conditionsLabel": "Condições",
+          "conditionsLabel": "Condições gerais",
           "conditionsPlaceholder": "Condições gerais do formulário…",
+          "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
           "contactEmailLabel": "E-mail de contato",
           "contactPhoneLabel": "Telefone de contato",
@@ -2549,6 +2554,7 @@
           "mobileLabel": "Celular",
           "genderLabel": "Gênero",
           "photoLabel": "Foto",
+          "languageLabel": "Idioma falado",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -2635,7 +2641,10 @@
       "genderNone": "Prefiro não dizer",
       "genderHomme": "Homem",
       "genderFemme": "Mulher",
+      "languageLabel": "Idioma falado",
+      "languageNone": "Não informado",
       "conditionsAgreeLabel": "Aceito os termos gerais",
+      "previewNotice": "Modo de pré-visualização — os envios estão desativados.",
       "honeypotLabel": "Deixar em branco",
       "inAppBrowserWarning": "Você está navegando pelo Facebook ou Instagram, o que pode impedir que esta página funcione corretamente. Toque em ⋯ e depois em \"Abrir no navegador\".",
       "submitPay": "Aderir e pagar {amount}",
@@ -3366,6 +3375,7 @@
       "groupeSanguinNone": "Não informado",
       "tailleTshirtNone": "Não informado",
       "preferredLocaleNone": "Não informado",
+      "spokenLanguageNone": "Não informado",
       "adherentOverride": {
         "auto": "Automático (conforme mensalidade)",
         "forceAdherent": "Forçar Associado",
@@ -3393,7 +3403,8 @@
         "type": "Tipo de membro",
         "address": "Endereço",
         "addressPlaceholder": "Rua Exemplo, 123, São Paulo",
-        "preferredLocale": "Idioma preferido"
+        "preferredLocale": "Idioma preferido",
+        "spokenLanguage": "Idioma falado"
       },
       "invitationNotice": "Um email de convite com os dados de acesso será enviado para este endereço.",
       "adherentAutoWithResponsable": "Calculado automaticamente: a própria mensalidade do ano em curso, se existir, senão a do responsável — só force em caso de exceção (independente de \"Status\", que controla a conta).",
@@ -3499,6 +3510,7 @@
       "groupeSanguinColon": "Tipo sanguíneo: {value}",
       "hasTshirtColon": "Possui camiseta: {value}",
       "tshirtSizeColon": "Tamanho da camiseta: {value}",
+      "spokenLanguageColon": "Idioma falado: {value}",
       "allergiesColon": "Alergias: {value}",
       "mobileColon": "Celular: {value}",
       "legalGuardianColon": "Responsável legal:",
@@ -4074,6 +4086,12 @@
       "footerText": "Texto do rodapé"
     }
   },
+  "richTextEditor": {
+    "link": "Link",
+    "urlLabel": "URL do link",
+    "apply": "Aplicar",
+    "remove": "Remover link"
+  },
   "portalMembre": {
     "sondages": {
       "title": "Enquetes",
@@ -4321,6 +4339,7 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "preferredLocale": "Idioma preferido",
+        "spokenLanguage": "Idioma falado",
         "notProvided": "Não informado",
         "yes": "Sim",
         "no": "Não",
@@ -4412,7 +4431,7 @@
       "membres": "Membros",
       "evenements": "Eventos",
       "cotisations": "Mensalidades",
-      "adhesions": "Formulários de adesão",
+      "adhesions": "Adesões",
       "finances": "Acompanhamento financeiro",
       "devis": "Orçamentos",
       "factures": "Faturas",

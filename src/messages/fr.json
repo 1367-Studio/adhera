@@ -2269,6 +2269,7 @@
       "publishButton": "Publier",
       "unpublishButton": "Dépublier",
       "copyLinkButton": "Copier le lien",
+      "previewButton": "Aperçu",
       "archiveButton": "Archiver",
       "toasts": {
         "saved": "Modifications enregistrées",
@@ -2282,8 +2283,9 @@
           "imageLabel": "Visuel",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Présentez votre campagne…",
-          "conditionsLabel": "Conditions",
+          "conditionsLabel": "Conditions générales",
           "conditionsPlaceholder": "Conditions générales du formulaire…",
+          "conditionsPdfLabel": "Document des conditions (PDF ou image)",
           "requireCguvLabel": "Exiger la signature des conditions générales",
           "contactEmailLabel": "E-mail de contact",
           "contactPhoneLabel": "Téléphone de contact"
@@ -2403,6 +2405,7 @@
       "companyNameLabel": "Nom de l'entreprise",
       "siretLabel": "SIRET",
       "conditionsAgreeLabel": "J'accepte les conditions générales",
+      "previewNotice": "Mode aperçu — les envois sont désactivés.",
       "honeypotLabel": "Ne pas remplir",
       "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur ».",
       "submittedTitle": "Merci pour votre don !",
@@ -2477,6 +2480,7 @@
       "publishButton": "Publier",
       "unpublishButton": "Dépublier",
       "copyLinkButton": "Copier le lien",
+      "previewButton": "Aperçu",
       "archiveButton": "Archiver",
       "toasts": {
         "saved": "Modifications enregistrées",
@@ -2490,8 +2494,9 @@
           "imageLabel": "Visuel",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Présentez votre association…",
-          "conditionsLabel": "Conditions",
+          "conditionsLabel": "Conditions générales",
           "conditionsPlaceholder": "Conditions générales du formulaire…",
+          "conditionsPdfLabel": "Document des conditions (PDF ou image)",
           "requireCguvLabel": "Exiger la signature des conditions générales",
           "contactEmailLabel": "E-mail de contact",
           "contactPhoneLabel": "Téléphone de contact",
@@ -2549,6 +2554,7 @@
           "mobileLabel": "Mobile",
           "genderLabel": "Genre",
           "photoLabel": "Photo",
+          "languageLabel": "Langue parlée",
           "requirement": {
             "hidden": "Masqué",
             "optional": "Optionnel",
@@ -2635,7 +2641,10 @@
       "genderNone": "Préférer ne pas préciser",
       "genderHomme": "Homme",
       "genderFemme": "Femme",
+      "languageLabel": "Langue parlée",
+      "languageNone": "Non renseignée",
       "conditionsAgreeLabel": "J'accepte les conditions générales",
+      "previewNotice": "Mode aperçu — les envois sont désactivés.",
       "honeypotLabel": "Ne pas remplir",
       "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur ».",
       "submitPay": "Adhérer et payer {amount}",
@@ -3366,6 +3375,7 @@
       "groupeSanguinNone": "Non renseigné",
       "tailleTshirtNone": "Non renseigné",
       "preferredLocaleNone": "Non renseignée",
+      "spokenLanguageNone": "Non renseignée",
       "adherentOverride": {
         "auto": "Automatique (selon cotisation)",
         "forceAdherent": "Forcer Adhérent",
@@ -3393,7 +3403,8 @@
         "type": "Type de membre",
         "address": "Adresse",
         "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
-        "preferredLocale": "Langue préférée"
+        "preferredLocale": "Langue préférée",
+        "spokenLanguage": "Langue parlée"
       },
       "invitationNotice": "Un email d'invitation avec les identifiants sera envoyé à cette adresse.",
       "adherentAutoWithResponsable": "Calculé automatiquement : sa propre cotisation de l'année en cours si elle existe, sinon celle de son responsable — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte).",
@@ -3499,6 +3510,7 @@
       "groupeSanguinColon": "Groupe sanguin : {value}",
       "hasTshirtColon": "Possède un tee-shirt : {value}",
       "tshirtSizeColon": "Taille du tee-shirt : {value}",
+      "spokenLanguageColon": "Langue parlée : {value}",
       "allergiesColon": "Allergies : {value}",
       "mobileColon": "Mobile : {value}",
       "legalGuardianColon": "Responsable légal :",
@@ -4074,6 +4086,12 @@
       "footerText": "Texte du pied de page"
     }
   },
+  "richTextEditor": {
+    "link": "Lien",
+    "urlLabel": "Adresse du lien",
+    "apply": "Appliquer",
+    "remove": "Retirer le lien"
+  },
   "portalMembre": {
     "sondages": {
       "title": "Sondages",
@@ -4321,6 +4339,7 @@
         "allergies": "Allergies connues",
         "allergiesPlaceholder": "Arachides, pollen…",
         "preferredLocale": "Langue préférée",
+        "spokenLanguage": "Langue parlée",
         "notProvided": "Non renseigné",
         "yes": "Oui",
         "no": "Non",
@@ -4412,7 +4431,7 @@
       "membres": "Membres",
       "evenements": "Événements",
       "cotisations": "Cotisations",
-      "adhesions": "Formulaires d'adhésion",
+      "adhesions": "Adhésions",
       "finances": "Suivi financier",
       "devis": "Devis",
       "factures": "Factures",

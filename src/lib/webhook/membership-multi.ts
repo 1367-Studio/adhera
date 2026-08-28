@@ -1,3 +1,4 @@
+import { isSpokenLanguage } from "@/lib/languages"
 import type Stripe from "stripe"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
@@ -21,6 +22,7 @@ export interface MembershipMultiRegistrant {
   lastName:  string
   birthDate?: string
   sexe?:      "HOMME" | "FEMME"
+  spokenLanguage?: string
   phone?:     string
   mobile?:    string
   address?:   string
@@ -87,6 +89,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
         const answers      = Object.keys(r.answers ?? {}).length ? r.answers : undefined
         const birthDateValue = r.birthDate ? new Date(r.birthDate) : null
         const sexeValue       = r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null
+        const spokenLanguageValue = isSpokenLanguage(r.spokenLanguage) ? r.spokenLanguage : null
 
         let membreId: string
         if (i === 0) {
@@ -105,6 +108,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
               address:       r.address || null,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
+              spokenLanguage: spokenLanguageValue,
               photoUrl:      r.photoUrl || null,
               preferredLocale: r.locale || null,
               status:        "ACTIF",
@@ -124,6 +128,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
               address:       r.address || null,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
+              spokenLanguage: spokenLanguageValue,
               photoUrl:      r.photoUrl || null,
               preferredLocale: r.locale || null,
               status:        "ACTIF",

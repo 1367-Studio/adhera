@@ -13,6 +13,7 @@ import { CurrencyInput } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { DataTable, type Column } from "@/components/ui/data-table"
@@ -463,27 +464,17 @@ export default function EditProduitPage() {
 
                   <div className="space-y-1.5">
                     <Label>{t("form.visibilityLabel")}</Label>
-                    <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
-                      {([
-                        { v: "DRAFT",    l: t("produitStatus.draft")    },
-                        { v: "ACTIVE",   l: t("produitStatus.active")   },
-                        { v: "ARCHIVED", l: t("produitStatus.archived") },
-                      ] as const).map(opt => (
-                        <button
-                          key={opt.v}
-                          type="button"
-                          onClick={() => setStatus(opt.v)}
-                          className={cn(
-                            "flex-1 rounded-md px-2 py-1.5 text-xs font-medium transition-all",
-                            status === opt.v
-                              ? "bg-background shadow-sm text-foreground"
-                              : "text-muted-foreground hover:text-foreground",
-                          )}
-                        >
-                          {opt.l}
-                        </button>
-                      ))}
-                    </div>
+                    <SegmentedControl
+                      size="sm"
+                      className="w-full"
+                      value={status}
+                      onChange={setStatus}
+                      options={[
+                        { value: "DRAFT",    label: t("produitStatus.draft")    },
+                        { value: "ACTIVE",   label: t("produitStatus.active")   },
+                        { value: "ARCHIVED", label: t("produitStatus.archived") },
+                      ]}
+                    />
                   </div>
 
                   <SelectField

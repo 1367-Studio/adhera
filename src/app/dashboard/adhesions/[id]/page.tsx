@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
-  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon,
+  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon, EyeIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useCurrentUser } from "@/lib/user-context"
 import { useMembreTypes } from "@/hooks/use-membre-types"
@@ -20,6 +20,7 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { DocumentUpload } from "@/components/ui/document-upload"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
@@ -31,6 +32,7 @@ import { MembershipTiersEditor } from "@/components/adhesions/membership-tiers-e
 
 type MembershipFormStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type FieldRequirement     = "HIDDEN" | "OPTIONAL" | "REQUIRED"
+type Attachment = { url: string; filename: string; size: number }
 type Visibility           = "LINK" | "SITE" | "PRIVATE"
 type ValidationMode       = "IMMEDIATE" | "REQUEST"
 
@@ -44,6 +46,7 @@ type MembershipForm = {
   imageUrl:             string | null
   description:          string | null
   conditions:            string | null
+  attachments:          Attachment[] | null
   requireCguvSignature: boolean
   contactEmail:         string | null
   contactPhone:         string | null
@@ -55,6 +58,7 @@ type MembershipForm = {
   fieldMobile:    FieldRequirement
   fieldGender:    FieldRequirement
   fieldPhoto:     FieldRequirement
+  fieldLanguage:  FieldRequirement
 
   allowCash:           boolean
   allowCheque:         boolean
@@ -102,6 +106,8 @@ export default function MembershipFormDetailPage() {
   const [imageUrl, setImageUrl]             = useState("")
   const [description, setDescription]       = useState("")
   const [conditions, setConditions]         = useState("")
+  const [attachments, setAttachments]   = useState<Attachment[]>([])
+  const [pendingPdf, setPendingPdf]     = useState<{ blobUrl: string; file: File } | null>(null)
   const [requireCguv, setRequireCguv]       = useState(false)
   const [contactEmail, setContactEmail]     = useState("")
   const [contactPhone, setContactPhone]     = useState("")
@@ -125,6 +131,7 @@ export default function MembershipFormDetailPage() {
   const [fieldMobile, setFieldMobile]       = useState<FieldRequirement>("HIDDEN")
   const [fieldGender, setFieldGender]       = useState<FieldRequirement>("HIDDEN")
   const [fieldPhoto, setFieldPhoto]         = useState<FieldRequirement>("HIDDEN")
+  const [fieldLanguage, setFieldLanguage]   = useState<FieldRequirement>("HIDDEN")
 
   // Step 4 — Paiement
   const [allowCash, setAllowCash]         = useState(false)
@@ -153,6 +160,7 @@ export default function MembershipFormDetailPage() {
     setImageUrl(form.imageUrl ?? "")
     setDescription(form.description ?? "")
     setConditions(form.conditions ?? "")
+    setAttachments(form.attachments ?? [])
     setRequireCguv(form.requireCguvSignature)
     setContactEmail(form.contactEmail ?? "")
     setContactPhone(form.contactPhone ?? "")
@@ -163,6 +171,7 @@ export default function MembershipFormDetailPage() {
     setFieldMobile(form.fieldMobile)
     setFieldGender(form.fieldGender)
     setFieldPhoto(form.fieldPhoto)
+    setFieldLanguage(form.fieldLanguage)
     setAllowCash(form.allowCash)
     setAllowCheque(form.allowCheque)
     setAllowTransfer(form.allowTransfer)
@@ -210,16 +219,34 @@ export default function MembershipFormDetailPage() {
         setUploadingImage(false)
       }
     }
+    // Same lazy pattern for the conditions document: only uploaded when the form is saved.
+    let resolvedAttachments = attachments
+    if (pendingPdf) {
+      setUploadingImage(true)
+      try {
+        const fd = new FormData()
+        fd.append("file", pendingPdf.file)
+        fd.append("prefix", "adhera/adhesions")
+        const res = await fetch("/api/upload", { method: "POST", body: fd })
+        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return }
+        const { url } = (await res.json()) as { url: string }
+        resolvedAttachments = [{ url, filename: pendingPdf.file.name, size: pendingPdf.file.size }]
+      } finally {
+        setUploadingImage(false)
+      }
+    }
     saveMutation.mutate({
       imageUrl: resolvedImageUrl,
       description: description || null,
       conditions: conditions || null,
+      attachments: resolvedAttachments,
       requireCguvSignature: requireCguv,
       contactEmail: contactEmail || null,
       contactPhone: contactPhone || null,
       validationMode,
     })
     setPendingFile(null)
+    setPendingPdf(null)
   }
 
   const publishMutation = useMutation({
@@ -278,14 +305,22 @@ export default function MembershipFormDetailPage() {
   const canDelete = form._count.cotisations === 0
 
   const requirementOptions = [
-    { value: "HIDDEN",   label: tSteps("fields.requirement.hidden") },
-    { value: "OPTIONAL", label: tSteps("fields.requirement.optional") },
     { value: "REQUIRED", label: tSteps("fields.requirement.required") },
+    { value: "OPTIONAL", label: tSteps("fields.requirement.optional") },
+    { value: "HIDDEN",   label: tSteps("fields.requirement.hidden") },
   ]
 
   // window.location.origin read only at click time (not during render) — sidesteps the
   // SSR/hydration-mismatch concern, since this button never displays the URL itself, only
   // copies it.
+  // Opens the public page with ?preview=1 — the public GET lets a logged-in manager of this
+  // association through the PUBLISHED gate for that flag (src/lib/form-preview.ts), so a
+  // draft can be checked before publishing; the page disables submission in that mode.
+  function handlePreview() {
+    if (!user.associationSlug || !form) return
+    window.open(`${BASE_PATH}/${user.associationSlug}/adhesion/${form.slug}?preview=1`, "_blank", "noopener")
+  }
+
   async function handleCopyLink() {
     if (!user.associationSlug || !form) return
     const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/adhesion/${form.slug}`
@@ -319,6 +354,10 @@ export default function MembershipFormDetailPage() {
                 {t("detail.unpublishButton")}
               </Button>
             )}
+            <Button size="sm" variant="ghost" onClick={handlePreview}>
+              <EyeIcon className="mr-1.5 size-4" />
+              {t("detail.previewButton")}
+            </Button>
             {form.status === "PUBLISHED" && (
               <Button size="sm" variant="ghost" onClick={handleCopyLink}>
                 {linkCopied ? <CheckIcon className="mr-1.5 size-4" /> : <LinkIcon className="mr-1.5 size-4" />}
@@ -381,6 +420,19 @@ export default function MembershipFormDetailPage() {
                 onChange={setConditions}
                 placeholder={tSteps("info.conditionsPlaceholder")}
               />
+              <div className="space-y-1.5">
+                <Label>{tSteps("info.conditionsPdfLabel")}</Label>
+                <DocumentUpload
+                  value={attachments[0]?.url ?? ""}
+                  onChange={(url) => { if (url === "") { setPendingPdf(null); setAttachments([]) } }}
+                  prefix="adhera/adhesions"
+                  lazy
+                  onFilePending={(blobUrl, file) => {
+                    setPendingPdf({ blobUrl, file })
+                    setAttachments([{ url: blobUrl, filename: file.name, size: file.size }])
+                  }}
+                />
+              </div>
               <CheckboxField
                 label={tSteps("info.requireCguvLabel")}
                 checked={requireCguv}
@@ -444,13 +496,14 @@ export default function MembershipFormDetailPage() {
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.photoLabel")} options={requirementOptions} value={fieldPhoto} onValueChange={v => setFieldPhoto(v as FieldRequirement)} />
+                  <SelectField label={tSteps("fields.languageLabel")} options={requirementOptions} value={fieldLanguage} onValueChange={v => setFieldLanguage(v as FieldRequirement)} />
                 </div>
                 <div className="flex justify-end mt-3">
                   <Button
                     size="sm"
                     loading={saveMutation.isPending}
                     onClick={() => saveMutation.mutate({
-                      fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto,
+                      fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage,
                     })}
                   >
                     {tCommon("save")}

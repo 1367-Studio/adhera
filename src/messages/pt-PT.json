@@ -2281,6 +2281,7 @@
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",
       "copyLinkButton": "Copiar link",
+      "previewButton": "Pré-visualização",
       "archiveButton": "Arquivar",
       "toasts": {
         "saved": "Alterações guardadas",
@@ -2294,8 +2295,9 @@
           "imageLabel": "Imagem",
           "descriptionLabel": "Descrição",
           "descriptionPlaceholder": "Apresente a sua campanha…",
-          "conditionsLabel": "Condições",
+          "conditionsLabel": "Condições gerais",
           "conditionsPlaceholder": "Condições gerais do formulário…",
+          "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
           "contactEmailLabel": "E-mail de contacto",
           "contactPhoneLabel": "Telefone de contacto"
@@ -2415,6 +2417,7 @@
       "companyNameLabel": "Nome da empresa",
       "siretLabel": "SIRET",
       "conditionsAgreeLabel": "Aceito as condições gerais",
+      "previewNotice": "Modo de pré-visualização — os envios estão desativados.",
       "honeypotLabel": "Deixar em branco",
       "inAppBrowserWarning": "Está a navegar a partir do Facebook ou Instagram, o que pode impedir que esta página funcione corretamente. Toque em ⋯ e depois em \"Abrir no navegador\".",
       "submittedTitle": "Obrigado pelo seu donativo!",
@@ -2489,6 +2492,7 @@
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",
       "copyLinkButton": "Copiar link",
+      "previewButton": "Pré-visualização",
       "archiveButton": "Arquivar",
       "toasts": {
         "saved": "Alterações guardadas",
@@ -2502,8 +2506,9 @@
           "imageLabel": "Imagem",
           "descriptionLabel": "Descrição",
           "descriptionPlaceholder": "Apresente a sua associação…",
-          "conditionsLabel": "Condições",
+          "conditionsLabel": "Condições gerais",
           "conditionsPlaceholder": "Condições gerais do formulário…",
+          "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
           "contactEmailLabel": "E-mail de contacto",
           "contactPhoneLabel": "Telefone de contacto",
@@ -2561,6 +2566,7 @@
           "mobileLabel": "Telemóvel",
           "genderLabel": "Género",
           "photoLabel": "Foto",
+          "languageLabel": "Língua falada",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -2647,7 +2653,10 @@
       "genderNone": "Prefiro não dizer",
       "genderHomme": "Homem",
       "genderFemme": "Mulher",
+      "languageLabel": "Língua falada",
+      "languageNone": "Não indicada",
       "conditionsAgreeLabel": "Aceito as condições gerais",
+      "previewNotice": "Modo de pré-visualização — os envios estão desativados.",
       "honeypotLabel": "Deixar em branco",
       "inAppBrowserWarning": "Está a navegar a partir do Facebook ou Instagram, o que pode impedir que esta página funcione corretamente. Toque em ⋯ e depois em \"Abrir no navegador\".",
       "submitPay": "Aderir e pagar {amount}",
@@ -3378,6 +3387,7 @@
       "groupeSanguinNone": "Não indicado",
       "tailleTshirtNone": "Não indicado",
       "preferredLocaleNone": "Não indicado",
+      "spokenLanguageNone": "Não indicada",
       "adherentOverride": {
         "auto": "Automático (conforme a quota)",
         "forceAdherent": "Forçar Associado",
@@ -3405,7 +3415,8 @@
         "type": "Tipo de membro",
         "address": "Morada",
         "addressPlaceholder": "Rua Exemplo, n.º 123, Lisboa",
-        "preferredLocale": "Idioma preferido"
+        "preferredLocale": "Idioma preferido",
+        "spokenLanguage": "Língua falada"
       },
       "invitationNotice": "Será enviado um e-mail de convite com os dados de acesso para este endereço.",
       "adherentAutoWithResponsable": "Calculado automaticamente: a própria quota do ano em curso, se existir, senão a do responsável — só force em caso de exceção (independentemente do \"Estado\", que controla a conta).",
@@ -3511,6 +3522,7 @@
       "groupeSanguinColon": "Grupo sanguíneo: {value}",
       "hasTshirtColon": "Tem t-shirt: {value}",
       "tshirtSizeColon": "Tamanho da t-shirt: {value}",
+      "spokenLanguageColon": "Língua falada: {value}",
       "allergiesColon": "Alergias: {value}",
       "mobileColon": "Telemóvel: {value}",
       "legalGuardianColon": "Responsável legal:",
@@ -4086,6 +4098,12 @@
       "footerText": "Texto do rodapé"
     }
   },
+  "richTextEditor": {
+    "link": "Ligação",
+    "urlLabel": "URL da ligação",
+    "apply": "Aplicar",
+    "remove": "Remover ligação"
+  },
   "portalMembre": {
     "sondages": {
       "title": "Inquéritos",
@@ -4333,6 +4351,7 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "preferredLocale": "Idioma preferido",
+        "spokenLanguage": "Língua falada",
         "notProvided": "Não indicado",
         "yes": "Sim",
         "no": "Não",
@@ -4424,7 +4443,7 @@
       "membres": "Membros",
       "evenements": "Eventos",
       "cotisations": "Quotas",
-      "adhesions": "Formulários de adesão",
+      "adhesions": "Adesões",
       "finances": "Acompanhamento financeiro",
       "devis": "Orçamentos",
       "factures": "Faturas",

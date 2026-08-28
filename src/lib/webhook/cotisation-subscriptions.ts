@@ -1,3 +1,4 @@
+import { isSpokenLanguage } from "@/lib/languages"
 import { randomBytes } from "crypto"
 import { addMonths } from "date-fns"
 import Stripe from "stripe"
@@ -108,6 +109,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           address:       meta.address || null,
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
+          spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,
           photoUrl:      meta.photoUrl || null,
           preferredLocale: meta.locale || null,
           status:        "ACTIF",

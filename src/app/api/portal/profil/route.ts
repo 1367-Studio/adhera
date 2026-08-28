@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
+import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { computeMemberDiff, writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 
@@ -26,6 +27,7 @@ const updateSchema = z.object({
   allergies: z.string().trim().optional().or(z.literal("")),
   photoUrl:  z.string().trim().optional().or(z.literal("")),
   preferredLocale: z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional().or(z.literal("")),
+  spokenLanguage:  z.enum(SPOKEN_LANGUAGE_CODES).optional().or(z.literal("")),
   possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
   tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
 })
@@ -46,7 +48,7 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { phone, address, birthDate, civilite, groupeSanguin, allergies, photoUrl, preferredLocale, possedeTshirt, tailleTshirt, ...rest } = parsed.data
+  const { phone, address, birthDate, civilite, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, ...rest } = parsed.data
 
   // Server-side backstop for the client's reactive clear (profil/page.tsx): never persist
   // "does not have a t-shirt" alongside a size, regardless of what the request body says.
@@ -65,6 +67,7 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
       ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
       ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
       ...(preferredLocale !== undefined ? { preferredLocale: preferredLocale || null } : {}),
+      ...(spokenLanguage  !== undefined ? { spokenLanguage:  spokenLanguage  || null } : {}),
       ...(possedeTshirtValue !== undefined ? { possedeTshirt: possedeTshirtValue } : {}),
       ...(tailleTshirtValue  !== undefined ? { tailleTshirt:  tailleTshirtValue  } : {}),
     },

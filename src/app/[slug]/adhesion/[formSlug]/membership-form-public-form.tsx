@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { IdentificationCardIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
+import { IdentificationCardIcon, PlusIcon, TrashIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -13,6 +13,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { cn } from "@/lib/utils"
@@ -43,6 +44,7 @@ type FormInfo = {
   imageUrl: string | null
   description: string | null
   conditions: string | null
+  attachments?: { url: string; filename: string; size: number }[] | null
   requireCguvSignature: boolean
   validationMode: ValidationMode
   fieldAddress: FieldRequirement
@@ -51,6 +53,7 @@ type FormInfo = {
   fieldMobile: FieldRequirement
   fieldGender: FieldRequirement
   fieldPhoto: FieldRequirement
+  fieldLanguage: FieldRequirement
   confirmationMessage: string | null
   offlineInstructions: string | null
   allowCash: boolean
@@ -85,6 +88,7 @@ type RegistrantDraft = {
   phone:     string
   mobile:    string
   sexe:      "" | "HOMME" | "FEMME"
+  spokenLanguage: string
   address:   string
   answers:   Record<string, string>
 }
@@ -105,6 +109,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const t   = useTranslations("membershipForms.public")
   const loc = useLocale()
   const searchParams = useSearchParams()
+  const isPreview    = searchParams.get("preview") === "1"
   const router        = useRouter()
   const pathname       = usePathname()
   const showInAppBrowserBanner = useInAppBrowserEscape()
@@ -133,13 +138,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // Mirrors Membre.sexe's own two values (see membre-form.tsx's sexeOptions) — there's no
   // "autre"/non-binary value in that enum today.
   const [sexe, setSexe]             = useState<"" | "HOMME" | "FEMME">("")
+  const [spokenLanguage, setSpokenLanguage] = useState("")
+  const languageOptions = spokenLanguageOptions()
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [answers, setAnswers]       = useState<Record<string, string>>({})
   const [website, setWebsite]       = useState("") // honeypot
   const [extraRegistrants, setExtraRegistrants] = useState<RegistrantDraft[]>([])
 
   useEffect(() => {
-    fetch(`/api/public/${slug}/adhesion/${formSlug}`)
+    fetch(`/api/public/${slug}/adhesion/${formSlug}${isPreview ? "?preview=1" : ""}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
@@ -147,7 +154,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         if (firstMembership) setTierId(firstMembership.id)
       })
       .catch(() => setForm(null))
-  }, [slug, formSlug])
+  }, [slug, formSlug, isPreview])
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -256,7 +263,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     setExtraAmounts({})
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
-      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", address: "", answers: {},
+      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", answers: {},
     }])
   }
   function removeRegistrant(key: string) {
@@ -277,10 +284,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       (form.fieldPhone     !== "REQUIRED" || r.phone.trim()) &&
       (form.fieldMobile    !== "REQUIRED" || r.mobile.trim()) &&
       (form.fieldGender    !== "REQUIRED" || !!r.sexe) &&
+      (form.fieldLanguage  !== "REQUIRED" || !!r.spokenLanguage) &&
       form.customFields.every(f => !f.required || (r.answers[f.id] ?? "").trim() !== "")
   }
   const canSubmit =
-    !loading &&
+    !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
     !!selectedTier &&
     (!isMulti || (!registrantBelowMinimum && extraRegistrants.every(registrantValid))) &&
@@ -295,6 +303,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || sexe) &&
+    (form.fieldLanguage  !== "REQUIRED" || !!spokenLanguage) &&
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
     (!form.requireCguvSignature || conditionsAgreed) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
@@ -313,7 +322,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
                 firstName: firstName.trim(), lastName: lastName.trim(),
                 birthDate: birthDate.trim() || undefined, phone: phone.trim() || undefined, mobile: mobile.trim() || undefined,
-                sexe: sexe || undefined, address: address.trim() || undefined, photoUrl: photoUrl || undefined, answers,
+                sexe: sexe || undefined, spokenLanguage: spokenLanguage || undefined, address: address.trim() || undefined, photoUrl: photoUrl || undefined, answers,
               },
               ...extraRegistrants.map(r => {
                 const rt = registrantTier(r)
@@ -322,7 +331,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   amount: rt && !rt.free && rt.freeAmount ? r.freeAmount : undefined,
                   firstName: r.firstName.trim(), lastName: r.lastName.trim(),
                   birthDate: r.birthDate.trim() || undefined, phone: r.phone.trim() || undefined, mobile: r.mobile.trim() || undefined,
-                  sexe: r.sexe || undefined, address: r.address.trim() || undefined, answers: r.answers,
+                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined, answers: r.answers,
                 }
               }),
             ],
@@ -348,6 +357,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             phone:     phone.trim() || undefined,
             mobile:    mobile.trim() || undefined,
             sexe:      sexe || undefined,
+            spokenLanguage: spokenLanguage || undefined,
             photoUrl:  photoUrl || undefined,
             answers,
             website,
@@ -404,6 +414,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
           <div className="flex justify-end">
             <LocaleSwitcher />
           </div>
+
+          {isPreview && (
+            <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
+              {t("previewNotice")}
+            </p>
+          )}
 
           {form.imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -555,6 +571,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                           ]}
                           value={r.sexe}
                           onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
+                        />
+                      )}
+                      {form.fieldLanguage !== "HIDDEN" && (
+                        <SelectField
+                          label={t("languageLabel")}
+                          required={form.fieldLanguage === "REQUIRED"}
+                          options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                          value={r.spokenLanguage}
+                          onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
                         />
                       )}
                       {form.fieldPhone !== "HIDDEN" && (
@@ -724,6 +749,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     onValueChange={v => setSexe(v as "" | "HOMME" | "FEMME")}
                   />
                 )}
+                {form.fieldLanguage !== "HIDDEN" && (
+                  <SelectField
+                    label={t("languageLabel")}
+                    required={form.fieldLanguage === "REQUIRED"}
+                    options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                    value={spokenLanguage}
+                    onValueChange={setSpokenLanguage}
+                  />
+                )}
                 {form.fieldPhone !== "HIDDEN" && (
                   <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
                 )}
@@ -745,6 +779,23 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
               {form.conditions && (
                 <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+              )}
+              {!!form.attachments?.length && (
+                <ul className="space-y-1">
+                  {form.attachments.map(a => (
+                    <li key={a.url}>
+                      <a
+                        href={a.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                      >
+                        <FileIcon className="size-3.5 shrink-0" />
+                        {a.filename}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
               {form.requireCguvSignature && (
                 <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />

@@ -17,6 +17,7 @@ import { Modal } from "@/components/ui/modal"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { SelectField } from "@/components/ui/select-field"
 import { cn } from "@/lib/utils"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 
 type Translator = ReturnType<typeof useTranslations>
@@ -400,27 +401,19 @@ function BoutiquePageInner() {
       />
 
       {/* Tabs */}
-      <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5">
-        {([
-          { key: "produits",  label: t("view.tabs.produits"),  icon: PackageIcon     },
-          { key: "commandes", label: t("view.tabs.commandes"), icon: ShoppingCartIcon },
-        ] as const).map(tabOption => (
-          <button
-            key={tabOption.key}
-            type="button"
-            onClick={() => setTab(tabOption.key)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-all",
-              tab === tabOption.key
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <tabOption.icon className="size-3.5" />
-            {tabOption.label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
+        <TabsList>
+          {([
+            { key: "produits",  label: t("view.tabs.produits"),  icon: PackageIcon     },
+            { key: "commandes", label: t("view.tabs.commandes"), icon: ShoppingCartIcon },
+          ] as const).map(tabOption => (
+            <TabsTrigger key={tabOption.key} value={tabOption.key} className="px-4">
+              <tabOption.icon className="size-3.5" />
+              {tabOption.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {tab === "produits" && (
         <DataTable

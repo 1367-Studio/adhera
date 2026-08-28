@@ -1,3 +1,4 @@
+import { isSpokenLanguage } from "@/lib/languages"
 import Stripe from "stripe"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
@@ -86,6 +87,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           address:       meta.address || null,
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
+          spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,
           photoUrl:      meta.photoUrl || null,
           preferredLocale: meta.locale || null,
           status:        "ACTIF",
