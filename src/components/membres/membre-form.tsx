@@ -14,6 +14,7 @@ import { SelectField } from "@/components/ui/select-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "../ui/image-upload"
+import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
 
 // Same role set as the PATCH /api/membres/[id] server-side check and cotisation-defaults'
 // FINANCE roles — forcing a member's adhérent status is a financial call equivalent to
@@ -89,6 +90,11 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   const groupeSanguinOptions = [
     { value: "", label: t("membres.form.groupeSanguinNone") },
     ...GROUPE_SANGUIN_VALUES.map(value => ({ value, label: GROUPE_SANGUIN_LABELS[value] })),
+  ]
+
+  const preferredLocaleOptions = [
+    { value: "", label: t("membres.form.preferredLocaleNone") },
+    ...SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] })),
   ]
 
   const adherentOverrideOptions = [
@@ -345,6 +351,20 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       )}
+
+      <Controller
+        name="preferredLocale"
+        control={control}
+        render={({ field }) => (
+          <SelectField
+            label={t("membres.form.fields.preferredLocale")}
+            options={preferredLocaleOptions}
+            value={field.value ?? ""}
+            onValueChange={field.onChange}
+            error={errors.preferredLocale?.message}
+          />
+        )}
+      />
 
       <TextareaField
         label={t("membres.form.fields.allergies")}

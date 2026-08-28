@@ -6,7 +6,7 @@ import { useRouter, useSearchParams, unstable_rethrow } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import type { PricingInfo, PlanTier } from "@/lib/stripe"
 import type { OfferPhase } from "@/lib/pricing-offers"
@@ -262,6 +262,7 @@ function PaymentForm({
 }) {
   const t  = useTranslations("auth.register.payment")
   const tOffer = useTranslations("auth.register.offer")
+  const loc = useLocale()
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -311,6 +312,7 @@ function PaymentForm({
           acceptedTerms:   info.acceptedTerms,
           customerId,
           paymentMethodId,
+          locale: loc,
           ...(offer ? { offerToken: offer.token } : { plan, tier }),
         }),
       })

@@ -47,38 +47,42 @@ type AssociationForReceipt = {
   organismeCategoryDetail?: string | null
 }
 
-async function assignReceiptNumber(donId: string, associationId: string): Promise<string> {
+// Shared across Don AND Cotisation (see generateRecuFiscalForCotisation below) — a cotisation
+// tax receipt is legally the same "reçu fiscal" as a donation one, so both must draw from one
+// sequence per association/year rather than each keeping its own (which could otherwise hand
+// out the same number to a Don and a Cotisation).
+async function assignReceiptNumber(associationId: string, source: "don" | "cotisation", id: string): Promise<string> {
   const year   = new Date().getFullYear()
   const prefix = `${year}-`
 
-  // Read-max-then-write-next races when two donations for the same association are
-  // receipted concurrently. `@@unique([associationId, receiptNumber])` turns that race
-  // into a constraint violation instead of a silent duplicate — retry with a freshly
-  // re-read max on conflict.
+  // Read-max-then-write-next races when two receipts for the same association are issued
+  // concurrently. `@@unique([associationId, receiptNumber])` (on both Don and Cotisation)
+  // turns that race into a constraint violation instead of a silent duplicate — retry with a
+  // freshly re-read max on conflict.
   for (let attempt = 0; attempt < 5; attempt++) {
-    const last = await prisma.don.findFirst({
-      where: {
-        associationId,
-        receiptNumber: { startsWith: prefix },
-        paidAt: { not: null },
-      },
-      orderBy: { receiptNumber: "desc" },
-      select: { receiptNumber: true },
-    })
+    const [lastDon, lastCotisation] = await Promise.all([
+      prisma.don.findFirst({
+        where:   { associationId, receiptNumber: { startsWith: prefix }, paidAt: { not: null } },
+        orderBy: { receiptNumber: "desc" },
+        select:  { receiptNumber: true },
+      }),
+      prisma.cotisation.findFirst({
+        where:   { associationId, receiptNumber: { startsWith: prefix }, paidAt: { not: null } },
+        orderBy: { receiptNumber: "desc" },
+        select:  { receiptNumber: true },
+      }),
+    ])
 
-    let seq = 1
-    if (last?.receiptNumber) {
-      const num = parseInt(last.receiptNumber.split("-")[1] ?? "0", 10)
-      seq = num + 1
-    }
-
+    const seqOf = (rn?: string | null) => rn ? parseInt(rn.split("-")[1] ?? "0", 10) : 0
+    const seq = Math.max(seqOf(lastDon?.receiptNumber), seqOf(lastCotisation?.receiptNumber)) + 1
     const receiptNumber = `${prefix}${String(seq).padStart(4, "0")}`
 
     try {
-      await prisma.don.update({
-        where: { id: donId },
-        data:  { receiptNumber, receiptIssuedAt: new Date() },
-      })
+      if (source === "don") {
+        await prisma.don.update({ where: { id }, data: { receiptNumber, receiptIssuedAt: new Date() } })
+      } else {
+        await prisma.cotisation.update({ where: { id }, data: { receiptNumber, receiptIssuedAt: new Date() } })
+      }
       return receiptNumber
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") continue
@@ -119,7 +123,7 @@ export async function generateRecuFiscal(
   association: AssociationForReceipt,
 ): Promise<Buffer> {
   const receiptNumber = don.receiptNumber
-    ?? await assignReceiptNumber(don.id, association.id)
+    ?? await assignReceiptNumber(association.id, "don", don.id)
 
   const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
@@ -229,7 +233,7 @@ export async function generateRecuFiscalEntreprise(
   association: AssociationForReceipt,
 ): Promise<Buffer> {
   const receiptNumber = don.receiptNumber
-    ?? await assignReceiptNumber(don.id, association.id)
+    ?? await assignReceiptNumber(association.id, "don", don.id)
 
   const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
@@ -299,4 +303,44 @@ export async function generateRecuFiscalForDon(
   return don.donorType === "COMPANY"
     ? generateRecuFiscalEntreprise(don, association)
     : generateRecuFiscal(don, association)
+}
+
+type CotisationForReceipt = {
+  id:              string
+  amount:          { toString(): string }
+  paidAt:          Date | null
+  receiptNumber:   string | null
+  receiptIssuedAt: DateTime_ | null
+}
+type DateTime_ = Date
+
+type MembreForReceipt = {
+  firstName: string
+  lastName:  string
+  address:   string | null
+}
+
+// A cotisation is always an individual — MembershipTier has no entreprise/SIRET concept, unlike
+// DonationTier — so this always goes through the individual template (generateRecuFiscal), never
+// generateRecuFiscalEntreprise. The receipt number is resolved here (not left to generateRecuFiscal's
+// own null-fallback) since that fallback is hardcoded to the Don table.
+export async function generateRecuFiscalForCotisation(
+  cotisation: CotisationForReceipt,
+  membre: MembreForReceipt,
+  association: AssociationForReceipt,
+): Promise<Buffer> {
+  const receiptNumber = cotisation.receiptNumber
+    ?? await assignReceiptNumber(association.id, "cotisation", cotisation.id)
+
+  return generateRecuFiscal({
+    id:              cotisation.id,
+    firstName:       membre.firstName,
+    lastName:        membre.lastName,
+    address:         membre.address,
+    amount:          cotisation.amount,
+    paidAt:          cotisation.paidAt,
+    anonymous:       false,
+    receiptNumber,
+    receiptIssuedAt: cotisation.receiptIssuedAt,
+  }, association)
 }

@@ -12,15 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { setLocale } from "@/lib/i18n/actions"
-import { SUPPORTED_LOCALES, type Locale } from "@/i18n/locales"
-
-const localeLabels: Record<Locale, string> = {
-  fr: "Français",
-  en: "English",
-  pt: "Português (Brasil)",
-  "pt-PT": "Português (Portugal)",
-  es: "Español",
-}
+import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
 
 export function LocaleSwitcher() {
   const locale = useLocale() as Locale
@@ -48,12 +40,12 @@ export function LocaleSwitcher() {
         }
       >
         <GlobeIcon className="size-4" />
-        <span className="sr-only">{localeLabels[locale]}</span>
+        <span className="sr-only">{LOCALE_LABELS[locale]}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {SUPPORTED_LOCALES.map((code) => (
           <DropdownMenuItem key={code} onClick={() => handleSelect(code)} disabled={code === locale}>
-            {localeLabels[code]}
+            {LOCALE_LABELS[code]}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

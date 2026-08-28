@@ -25,6 +25,7 @@ export const portalRegisterSchema = z.object({
   email:         z.string().email("Email invalide"),
   typeId:        z.string().optional(),
   acceptedTerms: z.literal(true, { message: "Vous devez accepter la politique de confidentialité" }),
+  locale:        z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
 })
 
 export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>

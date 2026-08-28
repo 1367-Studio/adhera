@@ -10,9 +10,9 @@ import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
-  DownloadSimpleIcon
+  DownloadSimpleIcon, ReceiptIcon, XCircleIcon
 } from "@phosphor-icons/react/dist/ssr";
-import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription } from "@/hooks/use-membres"
+import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -154,6 +154,7 @@ export function MembreDetailView() {
   const [deleteOpen, setDeleteOpen]             = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
+  const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
@@ -166,6 +167,7 @@ export function MembreDetailView() {
   const deleteMutation          = useDeleteMembre()
   const createAccessMutation    = useCreateAccess()
   const cancelSubscriptionMutation = useCancelCotisationSubscription()
+  const cancelInstallmentMutation = useCancelCotisationInstallmentPlan()
   const createCotisationMutation = useCreateCotisation()
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
@@ -209,6 +211,39 @@ export function MembreDetailView() {
       setCancelSubscriptionOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleCancelInstallment() {
+    try {
+      await cancelInstallmentMutation.mutateAsync(id)
+      toast.success(t("membres.detail.toasts.installmentCancelled"))
+      setCancelInstallmentOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // Fetch-and-save instead of window.open — a non-2xx response (fiscal receipts not enabled,
+  // cotisation not eligible, etc.) would otherwise just open a new tab showing raw JSON instead
+  // of any legible feedback, same reasoning as dashboard/dons/page.tsx's own downloadRecu.
+  async function downloadCotisationRecu(cotisationId: string) {
+    try {
+      const res = await fetch(`${BASE_PATH}/api/membres/${id}/cotisations/${cotisationId}/recu`)
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        toast.error(body?.error ?? t("common.error"))
+        return
+      }
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement("a")
+      a.href = url
+      a.download = res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ?? `recu-fiscal-${cotisationId}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error(t("common.error"))
     }
   }
 
@@ -527,7 +562,11 @@ export function MembreDetailView() {
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCotisation")}</p>
           ) : (
             <div className="space-y-2">
-              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null; declarationNumber: string | null; periodEnd?: string | null }) => {
+              {cotisations.map((c: {
+                id: string; year: number; amount: string; status: string; paidAt: string | null
+                declarationNumber: string | null; periodEnd?: string | null; taxReceiptEligible?: boolean
+                installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
+              }) => {
                 const s = cotisationStatusBadge[c.status]
                 // A custom-duration Cotisation (MembershipTier.durationMonths) keeps its PAYE/
                 // EXONERE badge forever — cotisation-status-sweep deliberately never touches a
@@ -545,6 +584,11 @@ export function MembreDetailView() {
                       {periodEndDate && (
                         <p className={cn("text-xs", periodExpired ? "text-destructive" : "text-muted-foreground")}>
                           {t(periodExpired ? "membres.detail.periodExpiredOn" : "membres.detail.validUntil", { date: format(periodEndDate, "dd/MM/yyyy", { locale: fr }) })}
+                        </p>
+                      )}
+                      {c.installmentPlan && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("membres.detail.installmentProgress", { paid: c.installmentPlan.installmentsPaid, total: c.installmentPlan.installmentsCount })}
                         </p>
                       )}
                     </div>
@@ -566,6 +610,30 @@ export function MembreDetailView() {
                         >
                           <DownloadSimpleIcon className="size-3.5" />
                         </Button>
+                      )}
+                      {c.taxReceiptEligible && c.paidAt && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <Button size="sm" variant="outline" onClick={() => downloadCotisationRecu(c.id)}>
+                                <ReceiptIcon className="size-3.5" />
+                              </Button>
+                            } />
+                            <TooltipContent>{t("membres.detail.downloadRecuFiscal")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {c.installmentPlan?.status === "ACTIVE" && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <Button size="sm" variant="outline" onClick={() => setCancelInstallmentOpen(true)}>
+                                <XCircleIcon className="size-3.5" />
+                              </Button>
+                            } />
+                            <TooltipContent>{t("membres.detail.cancelInstallmentButton")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
                   </div>
@@ -733,6 +801,7 @@ export function MembreDetailView() {
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
             photoUrl:      membre.photoUrl      ?? "",
+            preferredLocale: (membre.preferredLocale ?? "") as MembreInput["preferredLocale"],
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",
@@ -770,6 +839,16 @@ export function MembreDetailView() {
         confirmLabel={t("membres.detail.cancelSubscriptionButton")}
         loading={cancelSubscriptionMutation.isPending}
         onConfirm={handleCancelSubscription}
+      />
+
+      <ConfirmDialog
+        open={cancelInstallmentOpen}
+        onOpenChange={setCancelInstallmentOpen}
+        title={t("membres.detail.cancelInstallmentConfirmTitle")}
+        description={t("membres.detail.cancelInstallmentConfirmDescription", { name: `${membre.firstName} ${membre.lastName}` })}
+        confirmLabel={t("membres.detail.cancelInstallmentButton")}
+        loading={cancelInstallmentMutation.isPending}
+        onConfirm={handleCancelInstallment}
       />
 
       {roleOpen && (

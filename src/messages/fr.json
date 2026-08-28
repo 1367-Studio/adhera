@@ -2518,6 +2518,12 @@
           "durationMonthsHint": "Laissez vide pour une adhésion sur l'année civile — un nombre rend l'adhésion valable ce nombre de mois à partir du paiement.",
           "durationMonthsHintRecurring": "Facturé tous les N mois au lieu de chaque année. Limité à 12 mois maximum pour un tarif récurrent.",
           "durationMonthsRecurringMaxError": "Un tarif récurrent est limité à une durée de 12 mois maximum",
+          "durationConflictError": "Choisissez une durée en mois ou une date de fin fixe, pas les deux",
+          "fixedPeriodEndField": "Date de fin fixe",
+          "fixedPeriodEndHint": "Alternative à la durée en mois — même date de fin pour tout le monde (ex. saison sportive).",
+          "taxReceiptEligibleField": "Éligible au reçu fiscal",
+          "installmentsAllowedField": "Autoriser le paiement en plusieurs fois",
+          "installmentsCountField": "Nombre de fois",
           "membreTypeNone": "Aucun",
           "kindField": "Type",
           "kindOneOff": "Ponctuel",
@@ -2542,6 +2548,7 @@
           "phoneLabel": "Téléphone",
           "mobileLabel": "Mobile",
           "genderLabel": "Genre",
+          "photoLabel": "Photo",
           "requirement": {
             "hidden": "Masqué",
             "optional": "Optionnel",
@@ -2570,7 +2577,10 @@
           "allowTransferLabel": "Virement",
           "offlineInstructionsLabel": "Instructions pour le paiement hors ligne",
           "offlineInstructionsPlaceholder": "Ex. Chèque à l'ordre de… / IBAN…",
-          "confirmationMessageLabel": "Message de confirmation"
+          "confirmationMessageLabel": "Message de confirmation",
+          "adminNotificationEmailLabel": "Email de notification (optionnel)",
+          "adminNotificationEmailPlaceholder": "gestion@association.fr",
+          "adminNotificationEmailHint": "Reçoit un email à chaque nouvelle adhésion via ce formulaire, en plus de la notification dans l'application."
         },
         "publish": {
           "title": "Publication",
@@ -2604,6 +2614,9 @@
       "perYear": "/ an",
       "perNMonths": "tous les {months} mois",
       "validForMonths": "valable {months} mois",
+      "validUntilDate": "valable jusqu'au {date}",
+      "payInInstallmentsLabel": "Payer en {count} fois ({amount}/mois)",
+      "firstInstallmentSuffix": "(1ère mensualité)",
       "paymentMethodLabel": "Moyen de paiement",
       "paymentMethodStripe": "Carte bancaire",
       "paymentMethodCash": "Espèces",
@@ -3352,6 +3365,7 @@
       },
       "groupeSanguinNone": "Non renseigné",
       "tailleTshirtNone": "Non renseigné",
+      "preferredLocaleNone": "Non renseignée",
       "adherentOverride": {
         "auto": "Automatique (selon cotisation)",
         "forceAdherent": "Forcer Adhérent",
@@ -3378,7 +3392,8 @@
         "allergiesPlaceholder": "Arachides, pollen…",
         "type": "Type de membre",
         "address": "Adresse",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris"
+        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
+        "preferredLocale": "Langue préférée"
       },
       "invitationNotice": "Un email d'invitation avec les identifiants sera envoyé à cette adresse.",
       "adherentAutoWithResponsable": "Calculé automatiquement : sa propre cotisation de l'année en cours si elle existe, sinon celle de son responsable — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte).",
@@ -3504,6 +3519,10 @@
       "cancelSubscriptionButton": "Arrêter le prélèvement",
       "cancelSubscriptionConfirmTitle": "Arrêter le prélèvement automatique ?",
       "cancelSubscriptionConfirmDescription": "{name} ne sera plus prélevé automatiquement pour sa cotisation. Vous pourrez toujours enregistrer des paiements manuellement.",
+      "installmentProgress": "{paid}/{total} mensualités réglées",
+      "cancelInstallmentButton": "Arrêter le paiement en plusieurs fois",
+      "cancelInstallmentConfirmTitle": "Arrêter les prélèvements restants ?",
+      "cancelInstallmentConfirmDescription": "{name} ne sera plus prélevé pour les mensualités restantes. Vous pourrez toujours enregistrer des paiements manuellement.",
       "tabs": {
         "cotisations": "Cotisations",
         "evenements": "Événements",
@@ -3537,6 +3556,7 @@
       "paidOn": "Payée le {date}",
       "validUntil": "Valable jusqu'au {date}",
       "periodExpiredOn": "Expirée le {date}",
+      "downloadRecuFiscal": "Télécharger le reçu fiscal",
       "showingRecentCotisations": "Affichage des {count} cotisations les plus récentes sur {total} au total.",
       "addonPurchasesTitle": "Options et donations achetées",
       "donationFallbackLabel": "Donation",
@@ -3558,7 +3578,8 @@
         "accessCreated": "Accès créé — un email a été envoyé",
         "cotisationAdded": "Cotisation ajoutée",
         "cotisationUpdated": "Cotisation mise à jour",
-        "subscriptionCancelled": "Prélèvement automatique arrêté"
+        "subscriptionCancelled": "Prélèvement automatique arrêté",
+        "installmentCancelled": "Paiement en plusieurs fois arrêté"
       }
     },
     "sms": {
@@ -4201,6 +4222,7 @@
       "paidOnShort": " · payé le {date}",
       "pay": "Payer",
       "noMemberProfile": "Aucun profil membre associé à ce compte.",
+      "downloadRecuFiscal": "Télécharger le reçu fiscal",
       "toasts": {
         "paymentDone": "Paiement effectué !",
         "paymentCancelled": "Paiement annulé.",
@@ -4298,6 +4320,7 @@
         "tailleTshirt": "Taille du tee-shirt",
         "allergies": "Allergies connues",
         "allergiesPlaceholder": "Arachides, pollen…",
+        "preferredLocale": "Langue préférée",
         "notProvided": "Non renseigné",
         "yes": "Oui",
         "no": "Non",

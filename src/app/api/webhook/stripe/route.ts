@@ -25,6 +25,10 @@ import {
 } from "@/lib/webhook/cotisation-subscriptions"
 import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
 import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
+import {
+  isMembershipInstallmentEvent, handleMembershipInstallmentCheckout, handleInstallmentInvoicePaid,
+  tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
+} from "@/lib/webhook/membership-installments"
 
 export const dynamic = "force-dynamic"
 
@@ -82,6 +86,13 @@ export async function POST(req: Request) {
       // nothing to reconstruct from Stripe metadata alone.
       if (sess.mode === "payment" && sess.metadata?.kind === "membership-multi") {
         await handleMembershipMultiCheckout(sess)
+        break
+      }
+
+      // A ONE_OFF membership tier paid in installments — same reasoning as the two
+      // subscription branches above, no Membre exists yet to carry an id in metadata.
+      if (sess.mode === "subscription" && sess.metadata?.kind === "membership-installment") {
+        await handleMembershipInstallmentCheckout(sess)
         break
       }
 
@@ -901,6 +912,12 @@ export async function POST(req: Request) {
         await handleCotisationSubscriptionSynced(sub)
         break
       }
+      // Nothing to sync — an installment plan's own status (ACTIVE/COMPLETED/CANCELLED) is
+      // driven entirely by invoice.paid/customer.subscription.deleted, not by Stripe's
+      // subscription status field. Still needs to short-circuit here, same reasoning as the
+      // two branches above: falling through would otherwise try to match this Subscription's
+      // id against Association.stripeSubscriptionId.
+      if (isMembershipInstallmentEvent(sub)) break
 
       const newStatus = toSubscriptionStatus(sub.status)
 
@@ -1008,6 +1025,10 @@ export async function POST(req: Request) {
         await handleCotisationSubscriptionDeleted(sub)
         break
       }
+      if (isMembershipInstallmentEvent(sub)) {
+        await handleMembershipInstallmentDeleted(sub)
+        break
+      }
 
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
@@ -1024,6 +1045,7 @@ export async function POST(req: Request) {
       const invoice = event.data.object as Stripe.Invoice
       await handleDonationInvoicePaid(invoice)
       await handleCotisationInvoicePaid(invoice)
+      await handleInstallmentInvoicePaid(invoice)
       break
     }
 
@@ -1041,6 +1063,7 @@ export async function POST(req: Request) {
       // Subscription object itself in the two handlers above.
       if (await tryHandleDonationInvoicePaymentFailed(invoice, event.id)) break
       if (await tryHandleCotisationInvoicePaymentFailed(invoice, event.id)) break
+      if (await tryHandleInstallmentInvoicePaymentFailed(invoice, event.id)) break
 
       const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id
       if (!customerId) break

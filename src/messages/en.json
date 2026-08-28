@@ -2518,6 +2518,12 @@
           "durationMonthsHint": "Leave empty for a calendar-year membership — a number makes it valid for that many months from payment.",
           "durationMonthsHintRecurring": "Billed every N months instead of yearly. Capped at 12 months for a recurring tier.",
           "durationMonthsRecurringMaxError": "A recurring tier is limited to a maximum duration of 12 months",
+          "durationConflictError": "Choose either a duration in months or a fixed end date, not both",
+          "fixedPeriodEndField": "Fixed end date",
+          "fixedPeriodEndHint": "Alternative to a duration in months — the same end date for everyone (e.g. a sports season).",
+          "taxReceiptEligibleField": "Eligible for tax receipt",
+          "installmentsAllowedField": "Allow payment in installments",
+          "installmentsCountField": "Number of installments",
           "membreTypeNone": "None",
           "kindField": "Type",
           "kindOneOff": "One-off",
@@ -2542,6 +2548,7 @@
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
           "genderLabel": "Gender",
+          "photoLabel": "Photo",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -2570,7 +2577,10 @@
           "allowTransferLabel": "Bank transfer",
           "offlineInstructionsLabel": "Offline payment instructions",
           "offlineInstructionsPlaceholder": "E.g. Cheque payable to… / IBAN…",
-          "confirmationMessageLabel": "Confirmation message"
+          "confirmationMessageLabel": "Confirmation message",
+          "adminNotificationEmailLabel": "Notification email (optional)",
+          "adminNotificationEmailPlaceholder": "team@association.org",
+          "adminNotificationEmailHint": "Receives an email for every new signup through this form, in addition to the in-app notification."
         },
         "publish": {
           "title": "Publishing",
@@ -2604,6 +2614,9 @@
       "perYear": "/ year",
       "perNMonths": "every {months} months",
       "validForMonths": "valid for {months} months",
+      "validUntilDate": "valid until {date}",
+      "payInInstallmentsLabel": "Pay in {count} installments ({amount}/month)",
+      "firstInstallmentSuffix": "(first installment)",
       "paymentMethodLabel": "Payment method",
       "paymentMethodStripe": "Card",
       "paymentMethodCash": "Cash",
@@ -3352,6 +3365,7 @@
       },
       "groupeSanguinNone": "Not specified",
       "tailleTshirtNone": "Not specified",
+      "preferredLocaleNone": "Not specified",
       "adherentOverride": {
         "auto": "Automatic (based on membership fee)",
         "forceAdherent": "Force member status",
@@ -3378,7 +3392,8 @@
         "allergiesPlaceholder": "Peanuts, pollen…",
         "type": "Member type",
         "address": "Address",
-        "addressPlaceholder": "123 Main St, Springfield"
+        "addressPlaceholder": "123 Main St, Springfield",
+        "preferredLocale": "Preferred language"
       },
       "invitationNotice": "An invitation email with login details will be sent to this address.",
       "adherentAutoWithResponsable": "Computed automatically: their own current-year membership fee if it exists, otherwise their guardian's — only override for exceptions (independent of \"Status\", which controls the account).",
@@ -3504,6 +3519,10 @@
       "cancelSubscriptionButton": "Stop automatic charge",
       "cancelSubscriptionConfirmTitle": "Stop the automatic charge?",
       "cancelSubscriptionConfirmDescription": "{name} will no longer be charged automatically for their membership fee. You can still record manual payments.",
+      "installmentProgress": "{paid}/{total} installments paid",
+      "cancelInstallmentButton": "Stop the installment plan",
+      "cancelInstallmentConfirmTitle": "Stop the remaining charges?",
+      "cancelInstallmentConfirmDescription": "{name} will no longer be charged for the remaining installments. You can still record manual payments.",
       "tabs": {
         "cotisations": "Membership fees",
         "evenements": "Events",
@@ -3537,6 +3556,7 @@
       "paidOn": "Paid on {date}",
       "validUntil": "Valid until {date}",
       "periodExpiredOn": "Expired on {date}",
+      "downloadRecuFiscal": "Download the tax receipt",
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
       "addonPurchasesTitle": "Options and donations purchased",
       "donationFallbackLabel": "Donation",
@@ -3558,7 +3578,8 @@
         "accessCreated": "Access created — an email was sent",
         "cotisationAdded": "Membership fee added",
         "cotisationUpdated": "Membership fee updated",
-        "subscriptionCancelled": "Automatic charge stopped"
+        "subscriptionCancelled": "Automatic charge stopped",
+        "installmentCancelled": "Installment plan stopped"
       }
     },
     "sms": {
@@ -4201,6 +4222,7 @@
       "paidOnShort": " · paid on {date}",
       "pay": "Pay",
       "noMemberProfile": "No member profile linked to this account.",
+      "downloadRecuFiscal": "Download the tax receipt",
       "toasts": {
         "paymentDone": "Payment successful!",
         "paymentCancelled": "Payment cancelled.",
@@ -4298,6 +4320,7 @@
         "tailleTshirt": "T-shirt size",
         "allergies": "Known allergies",
         "allergiesPlaceholder": "Peanuts, pollen…",
+        "preferredLocale": "Preferred language",
         "notProvided": "Not provided",
         "yes": "Yes",
         "no": "No",

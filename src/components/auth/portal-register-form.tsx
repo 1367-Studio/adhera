@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { signInWithGooglePortal } from "@/lib/auth/actions"
@@ -30,6 +30,7 @@ export function PortalRegisterForm({ slug }: { slug: string }) {
 // boundary above it, same reasoning as the dashboard's register-form.tsx.
 function PortalRegisterFormInner({ slug }: { slug: string }) {
   const t = useTranslations("portal.register")
+  const loc = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [types, setTypes] = useState<MembreType[]>([])
@@ -65,7 +66,7 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
     const res = await fetch("/api/portal/register", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ slug, ...data }),
+      body:    JSON.stringify({ slug, ...data, locale: loc }),
     })
 
     if (!res.ok) {

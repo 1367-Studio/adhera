@@ -17,6 +17,7 @@ import { membershipWelcomeEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
+import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -42,6 +43,12 @@ const schema = z.object({
   // to live on Membre, so the public form now offers the same two options as the admin's
   // own membre-form.tsx (sexeOptions) instead of a string headed for a Json blob.
   sexe:        z.enum(["HOMME", "FEMME"]).optional(),
+  photoUrl:    z.string().url().max(500).optional(),
+  payInInstallments: z.boolean().optional().default(false),
+  // The page's own locale (LocaleSwitcher, next-intl) — the visitor already picked it to view
+  // the form, so it's captured here rather than asking again. Not yet used to localize any
+  // outbound email — see Membre.preferredLocale in schema.prisma.
+  locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
   answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
   addons:      z.array(z.object({
     tierId: z.string().min(1),
@@ -66,6 +73,7 @@ const registrantSchema = z.object({
   mobile:    z.string().trim().max(30).optional(),
   sexe:      z.enum(["HOMME", "FEMME"]).optional(),
   address:   z.string().trim().max(300).optional(),
+  photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
 })
 
@@ -81,6 +89,7 @@ const multiSchema = z.object({
   password:    z.string().min(8).optional(), // requis seulement si l'adhésion sera immédiate
   conditionsAgreed: z.boolean().optional().default(false),
   website:     z.string().optional().or(z.literal("")),
+  locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
 })
 
 export async function POST(
@@ -140,9 +149,11 @@ export async function POST(
   // null = comportement historique (année civile, aucune borne explicite). Un
   // MembershipTier.durationMonths rend l'adhésion valable ce nombre de mois à partir de
   // maintenant plutôt que jusqu'au 31 décembre — voir src/lib/membre-adherent.ts, qui traite
-  // periodEnd comme prioritaire sur `year` dès qu'il est posé.
-  const periodStart = tier.durationMonths ? now : null
-  const periodEnd    = tier.durationMonths ? addMonths(now, tier.durationMonths) : null
+  // periodEnd comme prioritaire sur `year` dès qu'il est posé. fixedPeriodEnd est l'alternative
+  // à durationMonths (mutuellement exclusifs, voir tiers/route.ts) — même date de fin pour
+  // tout le monde peu importe la date de paiement.
+  const periodStart = tier.fixedPeriodEnd || tier.durationMonths ? now : null
+  const periodEnd    = tier.fixedPeriodEnd ?? (tier.durationMonths ? addMonths(now, tier.durationMonths) : null)
 
   // Options (add-ons/don embarqué) — validées et re-tarifées server-side, jamais reprises
   // telles quelles du payload, même raisonnement que le montant de la tarif principale.
@@ -178,13 +189,14 @@ export async function POST(
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les DonationFormField.
-  const { address, birthDate, phone, mobile, sexe } = parsed.data
+  const { address, birthDate, phone, mobile, sexe, photoUrl: photoUrlValue } = parsed.data
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldAddress,   address,   "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
     [form.fieldGender,    sexe,      "Genre"],
+    [form.fieldPhoto,     photoUrlValue, "Photo"],
   ]
   for (const [requirement, value, label] of standardChecks) {
     if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -207,7 +219,7 @@ export async function POST(
   }
   const birthDateValue = birthDate ? new Date(birthDate) : null
 
-  const { firstName, lastName, email, address: addressValue } = parsed.data
+  const { firstName, lastName, email, address: addressValue, photoUrl, locale } = parsed.data
   const acceptedIp = consentIp(req)
 
   const existing = await prisma.membre.findFirst({
@@ -234,6 +246,8 @@ export async function POST(
           address:       addressValue || null,
           birthDate:     birthDateValue,
           sexe:          sexe || null,
+          photoUrl:      photoUrl || null,
+          preferredLocale: locale || null,
           status:        "PENDING",
           associationId: assoc.id,
           typeId:        tier.membreTypeId,
@@ -273,6 +287,8 @@ export async function POST(
             address:       addressValue || null,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
+            photoUrl:      photoUrl || null,
+            preferredLocale: locale || null,
             status:        "ACTIF",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -285,7 +301,7 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd,
+            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
           },
         })
         return { user, membre }
@@ -316,6 +332,11 @@ export async function POST(
       associationId: assoc.id,
       association: { name: assoc.name, slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
+    }).catch(() => {})
+
+    notifyMembershipSignup({
+      associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: [`${firstName} ${lastName}`], amount: 0, primaryMembreId: membre.id,
     }).catch(() => {})
 
     return NextResponse.json({ immediate: true })
@@ -379,6 +400,8 @@ export async function POST(
             address:       addressValue || null,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
+            photoUrl:      photoUrl || null,
+            preferredLocale: locale || null,
             status:        "ACTIF",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -391,7 +414,7 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd,
+            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
           },
         })
         return { user, membre }
@@ -423,6 +446,11 @@ export async function POST(
       membre: { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
     }).catch(() => {})
 
+    notifyMembershipSignup({
+      associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: [`${firstName} ${lastName}`], amount, primaryMembreId: membre.id,
+    }).catch(() => {})
+
     return NextResponse.json({ offline: true })
   }
 
@@ -442,6 +470,8 @@ export async function POST(
     address:          addressValue || "",
     birthDate:        birthDate || "",
     sexe:             sexe || "",
+    photoUrl:         photoUrl || "",
+    locale:           locale || "",
     answers:          JSON.stringify(answers),
     termsAcceptedIp:  acceptedIp ?? "",
     termsVersion:     CURRENT_TERMS_VERSION,
@@ -458,6 +488,7 @@ export async function POST(
     periodStart:      periodStart ? periodStart.toISOString() : "",
     periodEnd:        periodEnd ? periodEnd.toISOString() : "",
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
+    taxReceiptEligible: tier.taxReceiptEligible ? "1" : "",
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -473,6 +504,64 @@ export async function POST(
     },
     quantity: 1,
   }))
+
+  // ─── Tarif ponctuel, payé en plusieurs fois ────────────────────────────────────
+  // A Stripe Subscription rather than a genuine recurring membership — see MembershipTier.
+  // installmentsAllowed. Checkout's subscription_data has no cancel_at field (only settable
+  // on the Subscription resource once it exists), so capping it at installmentsCount cycles
+  // happens in handleMembershipInstallmentCheckout (src/lib/webhook/membership-installments.ts)
+  // right after checkout.session.completed, not here. Never combined with addons/extras (see
+  // canPayInInstallments in membership-form-public-form.tsx) — the client already hides the
+  // option once any extra is selected, this re-checks server-side.
+  if (effectiveKind === "ONE_OFF" && parsed.data.payInInstallments && tier.installmentsAllowed && tier.installmentsCount && resolvedAddons.length === 0) {
+    const totalCents = Math.round((membershipAmount ?? 0) * 100)
+    // ceil, not round: the last cycle can't carry a smaller top-up amount the way a one-off
+    // charge could, so every cycle is priced to guarantee at least the tier's nominal amount
+    // is collected across installmentsCount cycles — the (at most installmentsCount - 1
+    // cents) overage is stored as the Cotisation's real amount below, never tier.amount
+    // itself, so recordCotisationPayment's overpayment guard never misfires on the last one.
+    const perInstallmentCents = Math.ceil(totalCents / tier.installmentsCount)
+
+    const installmentMeta = {
+      kind: "membership-installment", ...commonMeta,
+      installmentsCount: String(tier.installmentsCount),
+      perInstallmentAmount: String(perInstallmentCents / 100),
+    }
+
+    let checkoutSession: Stripe.Checkout.Session
+    try {
+      checkoutSession = await stripe.checkout.sessions.create({
+        mode: "subscription",
+        line_items: [
+          {
+            price_data: {
+              currency:     "eur",
+              unit_amount:  perInstallmentCents,
+              recurring:    { interval: "month", interval_count: 1 },
+              product_data: { name: `${form.title} — ${assoc.name} (${tier.installmentsCount}x)` },
+            },
+            quantity: 1,
+          },
+        ],
+        subscription_data: {
+          transfer_data: { destination: assoc.stripeConnectId! },
+          metadata:      installmentMeta,
+        },
+        metadata:       installmentMeta,
+        customer_email: email,
+        success_url:    successUrl,
+        cancel_url:     cancelUrl,
+      })
+    } catch (err) {
+      console.error(`[membership-checkout] Stripe session creation failed for form ${form.id}:`, err)
+      return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
+    }
+
+    if (!checkoutSession.url)
+      return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
+
+    return NextResponse.json({ url: checkoutSession.url })
+  }
 
   // ─── Tarif ponctuel (paiement unique) ──────────────────────────────────────────
   if (effectiveKind === "ONE_OFF") {
@@ -609,6 +698,12 @@ async function handleMultiRegistrantCheckout(
   if (form.requireCguvSignature && !data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
+  // A required photo is only ever collected from the person filling out the form (see
+  // membership-form-public-form.tsx) — the client already hides "Ajouter un autre adhérent"
+  // for such forms, this rejects a direct API call that bypasses that.
+  if (form.fieldPhoto === "REQUIRED")
+    return NextResponse.json({ error: "Une inscription groupée n'est pas disponible pour ce formulaire." }, { status: 422 })
+
   // Resolve + validate every registrant's tier — MEMBERSHIP/ONE_OFF only. A Stripe
   // Subscription is tied to exactly one Membre, so a single group checkout can't "split" a
   // recurring tier across N people (same reasoning the public form uses to hide "Ajouter un
@@ -697,6 +792,10 @@ async function handleMultiRegistrantCheckout(
             address:       r.address || null,
             birthDate:     r.birthDate ? new Date(r.birthDate) : null,
             sexe:          r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null,
+            photoUrl:      r.photoUrl || null,
+            // Same page, same session for every registrant in this submission — unlike
+            // email (person-specific login identity), the locale applies to the whole group.
+            preferredLocale: data.locale || null,
             status:        "PENDING",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -744,9 +843,12 @@ async function handleMultiRegistrantCheckout(
         tierId: tier.id, amount: r.amount,
         firstName: r.firstName, lastName: r.lastName,
         birthDate: r.birthDate, sexe: r.sexe, phone: r.phone, mobile: r.mobile, address: r.address,
+        photoUrl: r.photoUrl,
+        // Same page, same session for every registrant — see the equivalent PENDING branch.
+        locale: data.locale,
         answers,
-        periodStart: tier.durationMonths ? now.toISOString() : null,
-        periodEnd:   tier.durationMonths ? addMonths(now, tier.durationMonths).toISOString() : null,
+        periodStart: tier.fixedPeriodEnd || tier.durationMonths ? now.toISOString() : null,
+        periodEnd:   tier.fixedPeriodEnd?.toISOString() ?? (tier.durationMonths ? addMonths(now, tier.durationMonths).toISOString() : null),
       })),
       totalAmount,
       expiresAt: new Date(now.getTime() + 30 * 60_000),

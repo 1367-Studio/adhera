@@ -54,12 +54,14 @@ type MembershipForm = {
   fieldPhone:     FieldRequirement
   fieldMobile:    FieldRequirement
   fieldGender:    FieldRequirement
+  fieldPhoto:     FieldRequirement
 
   allowCash:           boolean
   allowCheque:         boolean
   allowTransfer:       boolean
   offlineInstructions: string | null
   confirmationMessage: string | null
+  adminNotificationEmail: string | null
 
   visibility: Visibility
   opensAt:    string | null
@@ -122,6 +124,7 @@ export default function MembershipFormDetailPage() {
   const [fieldPhone, setFieldPhone]         = useState<FieldRequirement>("HIDDEN")
   const [fieldMobile, setFieldMobile]       = useState<FieldRequirement>("HIDDEN")
   const [fieldGender, setFieldGender]       = useState<FieldRequirement>("HIDDEN")
+  const [fieldPhoto, setFieldPhoto]         = useState<FieldRequirement>("HIDDEN")
 
   // Step 4 — Paiement
   const [allowCash, setAllowCash]         = useState(false)
@@ -129,6 +132,7 @@ export default function MembershipFormDetailPage() {
   const [allowTransfer, setAllowTransfer] = useState(false)
   const [offlineInstructions, setOfflineInstructions] = useState("")
   const [confirmationMessage, setConfirmationMessage] = useState("")
+  const [adminNotificationEmail, setAdminNotificationEmail] = useState("")
 
   // Step 5 — Publication
   const [visibility, setVisibility] = useState<Visibility>("LINK")
@@ -158,11 +162,13 @@ export default function MembershipFormDetailPage() {
     setFieldPhone(form.fieldPhone)
     setFieldMobile(form.fieldMobile)
     setFieldGender(form.fieldGender)
+    setFieldPhoto(form.fieldPhoto)
     setAllowCash(form.allowCash)
     setAllowCheque(form.allowCheque)
     setAllowTransfer(form.allowTransfer)
     setOfflineInstructions(form.offlineInstructions ?? "")
     setConfirmationMessage(form.confirmationMessage ?? "")
+    setAdminNotificationEmail(form.adminNotificationEmail ?? "")
     setVisibility(form.visibility)
     setOpensAt(toDatetimeLocal(form.opensAt))
     setClosesAt(toDatetimeLocal(form.closesAt))
@@ -437,13 +443,14 @@ export default function MembershipFormDetailPage() {
                   <SelectField label={tSteps("fields.phoneLabel")} options={requirementOptions} value={fieldPhone} onValueChange={v => setFieldPhone(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
+                  <SelectField label={tSteps("fields.photoLabel")} options={requirementOptions} value={fieldPhoto} onValueChange={v => setFieldPhoto(v as FieldRequirement)} />
                 </div>
                 <div className="flex justify-end mt-3">
                   <Button
                     size="sm"
                     loading={saveMutation.isPending}
                     onClick={() => saveMutation.mutate({
-                      fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender,
+                      fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto,
                     })}
                   >
                     {tCommon("save")}
@@ -491,6 +498,14 @@ export default function MembershipFormDetailPage() {
                 value={confirmationMessage}
                 onChange={setConfirmationMessage}
               />
+              <FormField
+                label={tSteps("payment.adminNotificationEmailLabel")}
+                type="email"
+                placeholder={tSteps("payment.adminNotificationEmailPlaceholder")}
+                hint={tSteps("payment.adminNotificationEmailHint")}
+                value={adminNotificationEmail}
+                onChange={(e) => setAdminNotificationEmail(e.target.value)}
+              />
               <div className="flex justify-end">
                 <Button
                   size="sm"
@@ -499,6 +514,7 @@ export default function MembershipFormDetailPage() {
                     allowCash, allowCheque, allowTransfer,
                     offlineInstructions: offlineInstructions || null,
                     confirmationMessage: confirmationMessage || null,
+                    adminNotificationEmail: adminNotificationEmail || null,
                   })}
                 >
                   {tCommon("save")}
