@@ -627,6 +627,10 @@ model Membre {
   // LocaleSwitcher there, so there's no separate input for it — see checkout/route.ts).
   // Not yet read by any email-sending code; captured now for that future use.
   preferredLocale  String?
+  // Langue parlée (code ISO 639-1, liste dans src/lib/languages.ts) — distinct de
+  // preferredLocale, qui est la langue de l'interface/des e-mails. Saisie par l'admin,
+  // par le membre sur le portail, ou sur un MembershipForm quand fieldLanguage l'expose.
+  spokenLanguage   String?
   possedeTshirt    Boolean?
   tailleTshirt     TailleTshirt?
   status           MembreStatus   @default(ACTIF)
@@ -1136,6 +1140,7 @@ model MembershipForm {
   fieldMobile    MembershipFieldRequirement @default(HIDDEN)
   fieldGender    MembershipFieldRequirement @default(HIDDEN)
   fieldPhoto     MembershipFieldRequirement @default(HIDDEN)
+  fieldLanguage  MembershipFieldRequirement @default(HIDDEN)
 
   // Étape 4 — Paiement. Pas de champ "allowOnline" (contrairement à DonationForm) : un tier
   // payant passe toujours par Stripe, ces 3 flags n'activent que le règlement hors-ligne des

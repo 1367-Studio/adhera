@@ -2269,6 +2269,7 @@
       "publishButton": "Publish",
       "unpublishButton": "Unpublish",
       "copyLinkButton": "Copy link",
+      "previewButton": "Preview",
       "archiveButton": "Archive",
       "toasts": {
         "saved": "Changes saved",
@@ -2282,8 +2283,9 @@
           "imageLabel": "Visual",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Introduce your campaign…",
-          "conditionsLabel": "Terms",
+          "conditionsLabel": "Terms and conditions",
           "conditionsPlaceholder": "General terms for this form…",
+          "conditionsPdfLabel": "Terms document (PDF or image)",
           "requireCguvLabel": "Require terms signature",
           "contactEmailLabel": "Contact email",
           "contactPhoneLabel": "Contact phone"
@@ -2403,6 +2405,7 @@
       "companyNameLabel": "Company name",
       "siretLabel": "SIRET",
       "conditionsAgreeLabel": "I accept the terms and conditions",
+      "previewNotice": "Preview mode — submissions are disabled.",
       "honeypotLabel": "Leave blank",
       "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\".",
       "submittedTitle": "Thank you for your donation!",
@@ -2477,6 +2480,7 @@
       "publishButton": "Publish",
       "unpublishButton": "Unpublish",
       "copyLinkButton": "Copy link",
+      "previewButton": "Preview",
       "archiveButton": "Archive",
       "toasts": {
         "saved": "Changes saved",
@@ -2490,8 +2494,9 @@
           "imageLabel": "Visual",
           "descriptionLabel": "Description",
           "descriptionPlaceholder": "Introduce your association…",
-          "conditionsLabel": "Terms",
+          "conditionsLabel": "Terms and conditions",
           "conditionsPlaceholder": "General terms for this form…",
+          "conditionsPdfLabel": "Terms document (PDF or image)",
           "requireCguvLabel": "Require terms signature",
           "contactEmailLabel": "Contact email",
           "contactPhoneLabel": "Contact phone",
@@ -2549,6 +2554,7 @@
           "mobileLabel": "Mobile",
           "genderLabel": "Gender",
           "photoLabel": "Photo",
+          "languageLabel": "Spoken language",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -2635,7 +2641,10 @@
       "genderNone": "Prefer not to say",
       "genderHomme": "Man",
       "genderFemme": "Woman",
+      "languageLabel": "Spoken language",
+      "languageNone": "Not provided",
       "conditionsAgreeLabel": "I accept the terms and conditions",
+      "previewNotice": "Preview mode — submissions are disabled.",
       "honeypotLabel": "Leave blank",
       "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\".",
       "submitPay": "Join and pay {amount}",
@@ -3366,6 +3375,7 @@
       "groupeSanguinNone": "Not specified",
       "tailleTshirtNone": "Not specified",
       "preferredLocaleNone": "Not specified",
+      "spokenLanguageNone": "Not provided",
       "adherentOverride": {
         "auto": "Automatic (based on membership fee)",
         "forceAdherent": "Force member status",
@@ -3393,7 +3403,8 @@
         "type": "Member type",
         "address": "Address",
         "addressPlaceholder": "123 Main St, Springfield",
-        "preferredLocale": "Preferred language"
+        "preferredLocale": "Preferred language",
+        "spokenLanguage": "Spoken language"
       },
       "invitationNotice": "An invitation email with login details will be sent to this address.",
       "adherentAutoWithResponsable": "Computed automatically: their own current-year membership fee if it exists, otherwise their guardian's — only override for exceptions (independent of \"Status\", which controls the account).",
@@ -3500,6 +3511,7 @@
       "groupeSanguinColon": "Blood type: {value}",
       "hasTshirtColon": "Has a t-shirt: {value}",
       "tshirtSizeColon": "T-shirt size: {value}",
+      "spokenLanguageColon": "Spoken language: {value}",
       "allergiesColon": "Allergies: {value}",
       "mobileColon": "Mobile: {value}",
       "legalGuardianColon": "Legal guardian:",
@@ -4175,6 +4187,12 @@
       "footerText": "Footer text"
     }
   },
+  "richTextEditor": {
+    "link": "Link",
+    "urlLabel": "Link URL",
+    "apply": "Apply",
+    "remove": "Remove link"
+  },
   "portalMembre": {
     "sondages": {
       "title": "Surveys",
@@ -4422,6 +4440,7 @@
         "allergies": "Known allergies",
         "allergiesPlaceholder": "Peanuts, pollen…",
         "preferredLocale": "Preferred language",
+        "spokenLanguage": "Spoken language",
         "notProvided": "Not provided",
         "yes": "Yes",
         "no": "No",
@@ -4513,7 +4532,7 @@
       "membres": "Members",
       "evenements": "Events",
       "cotisations": "Dues",
-      "adhesions": "Membership forms",
+      "adhesions": "Memberships",
       "finances": "Financial tracking",
       "devis": "Quotes",
       "factures": "Invoices",

@@ -13,6 +13,7 @@ import {
   DownloadSimpleIcon, ReceiptIcon, XCircleIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
+import { spokenLanguageLabel } from "@/lib/languages"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -456,6 +457,9 @@ export function MembreDetailView() {
           {membre.tailleTshirt && (
             <p className="text-muted-foreground">{t("membres.detail.tshirtSizeColon", { value: TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt })}</p>
           )}
+          {membre.spokenLanguage && (
+            <p className="text-muted-foreground">{t("membres.detail.spokenLanguageColon", { value: spokenLanguageLabel(membre.spokenLanguage) })}</p>
+          )}
           {membre.allergies && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
               <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
@@ -481,7 +485,7 @@ export function MembreDetailView() {
             <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
           ))}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
-            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable
+            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
             && !membre.mobile && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
@@ -802,6 +806,7 @@ export function MembreDetailView() {
             allergies:     membre.allergies     ?? "",
             photoUrl:      membre.photoUrl      ?? "",
             preferredLocale: (membre.preferredLocale ?? "") as MembreInput["preferredLocale"],
+            spokenLanguage:  (membre.spokenLanguage  ?? "") as MembreInput["spokenLanguage"],
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { HandHeartIcon } from "@phosphor-icons/react/dist/ssr";
+import { HandHeartIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
@@ -30,6 +30,7 @@ type FormInfo = {
   imageUrl: string | null
   description: string | null
   conditions: string | null
+  attachments?: { url: string; filename: string; size: number }[] | null
   requireCguvSignature: boolean
   fieldAddress: FieldRequirement
   fieldBirthDate: FieldRequirement
@@ -69,6 +70,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const t   = useTranslations("donationForms.public")
   const loc = useLocale()
   const searchParams = useSearchParams()
+  const isPreview    = searchParams.get("preview") === "1"
   const router        = useRouter()
   const pathname       = usePathname()
   const showInAppBrowserBanner = useInAppBrowserEscape()
@@ -99,14 +101,14 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const [website, setWebsite]       = useState("") // honeypot
 
   useEffect(() => {
-    fetch(`/api/public/${slug}/dons/${formSlug}`)
+    fetch(`/api/public/${slug}/dons/${formSlug}${isPreview ? "?preview=1" : ""}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
         if (data?.tiers.length) setTierId(data.tiers[0].id)
       })
       .catch(() => setForm(null))
-  }, [slug, formSlug])
+  }, [slug, formSlug, isPreview])
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -138,7 +140,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   // applies online: a small cash/cheque/transfer gift has no such constraint.
   const belowMinimum = paymentMethod === "STRIPE" && amount > 0 && amount < MIN_DONATION_AMOUNT
   const canSubmit =
-    !loading &&
+    !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
     (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier?.kind === "ONE_OFF") &&
     !!selectedTier && amount > 0 && !belowMinimum &&
@@ -226,6 +228,12 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
           <div className="flex justify-end">
             <LocaleSwitcher />
           </div>
+
+          {isPreview && (
+            <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
+              {t("previewNotice")}
+            </p>
+          )}
 
           {form.imageUrl && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -398,6 +406,23 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
 
               {form.conditions && (
                 <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+              )}
+              {!!form.attachments?.length && (
+                <ul className="space-y-1">
+                  {form.attachments.map(a => (
+                    <li key={a.url}>
+                      <a
+                        href={a.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                      >
+                        <FileIcon className="size-3.5 shrink-0" />
+                        {a.filename}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
               {form.requireCguvSignature && (
                 <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />

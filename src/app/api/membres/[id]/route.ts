@@ -105,7 +105,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
 
   if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
@@ -186,6 +186,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(allergies     !== undefined ? { allergies:     allergies     || null } : {}),
         ...(photoUrl      !== undefined ? { photoUrl:      photoUrl      || null } : {}),
         ...(preferredLocale !== undefined ? { preferredLocale: preferredLocale || null } : {}),
+        ...(spokenLanguage  !== undefined ? { spokenLanguage:  spokenLanguage  || null } : {}),
         ...(possedeTshirtValue !== undefined ? { possedeTshirt: possedeTshirtValue } : {}),
         ...(tailleTshirtValue  !== undefined ? { tailleTshirt:  tailleTshirtValue  } : {}),
         ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),

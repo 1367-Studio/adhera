@@ -17,6 +17,7 @@ export type MembreDetail = {
   allergies:     string | null
   photoUrl:      string | null
   preferredLocale: string | null
+  spokenLanguage: string | null
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"

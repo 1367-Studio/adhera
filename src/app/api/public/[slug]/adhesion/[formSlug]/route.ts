@@ -2,9 +2,10 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
+import { canPreviewForm } from "@/lib/form-preview"
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string; formSlug: string }> },
 ) {
   const { slug, formSlug } = await params
@@ -18,8 +19,12 @@ export async function GET(
   const modules = parseModules(assoc.modules)
   if (!modules.cotisations) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
+  const preview = await canPreviewForm(req, assoc.id)
   const form = await prisma.membershipForm.findFirst({
-    where: { slug: formSlug, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
+    where: {
+      slug: formSlug, associationId: assoc.id,
+      ...(preview ? {} : { status: "PUBLISHED" as const, visibility: { not: "PRIVATE" as const } }),
+    },
     include: {
       tiers:        { orderBy: { order: "asc" } },
       customFields: { orderBy: { order: "asc" } },
@@ -49,6 +54,7 @@ export async function GET(
     imageUrl:             form.imageUrl,
     description:          form.description,
     conditions:           form.conditions,
+    attachments:           form.attachments ?? [],
     requireCguvSignature: form.requireCguvSignature,
     contactEmail:         form.contactEmail,
     contactPhone:         form.contactPhone,
@@ -59,6 +65,7 @@ export async function GET(
     fieldMobile:          form.fieldMobile,
     fieldGender:          form.fieldGender,
     fieldPhoto:           form.fieldPhoto,
+    fieldLanguage:        form.fieldLanguage,
     confirmationMessage:  form.confirmationMessage,
     offlineInstructions:  form.offlineInstructions,
     allowCash:            form.allowCash,

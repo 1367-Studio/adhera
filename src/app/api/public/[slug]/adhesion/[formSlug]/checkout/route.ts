@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
+import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { Prisma } from "@prisma/client"
 import type Stripe from "stripe"
 import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
@@ -43,6 +44,7 @@ const schema = z.object({
   // to live on Membre, so the public form now offers the same two options as the admin's
   // own membre-form.tsx (sexeOptions) instead of a string headed for a Json blob.
   sexe:        z.enum(["HOMME", "FEMME"]).optional(),
+  spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   photoUrl:    z.string().url().max(500).optional(),
   payInInstallments: z.boolean().optional().default(false),
   // The page's own locale (LocaleSwitcher, next-intl) — the visitor already picked it to view
@@ -72,6 +74,7 @@ const registrantSchema = z.object({
   phone:     z.string().trim().max(30).optional(),
   mobile:    z.string().trim().max(30).optional(),
   sexe:      z.enum(["HOMME", "FEMME"]).optional(),
+  spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   address:   z.string().trim().max(300).optional(),
   photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
@@ -189,13 +192,14 @@ export async function POST(
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les DonationFormField.
-  const { address, birthDate, phone, mobile, sexe, photoUrl: photoUrlValue } = parsed.data
+  const { address, birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue } = parsed.data
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldAddress,   address,   "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
     [form.fieldGender,    sexe,      "Genre"],
+    [form.fieldLanguage,  spokenLanguage, "Langue parlée"],
     [form.fieldPhoto,     photoUrlValue, "Photo"],
   ]
   for (const [requirement, value, label] of standardChecks) {
@@ -246,6 +250,7 @@ export async function POST(
           address:       addressValue || null,
           birthDate:     birthDateValue,
           sexe:          sexe || null,
+          spokenLanguage: spokenLanguage || null,
           photoUrl:      photoUrl || null,
           preferredLocale: locale || null,
           status:        "PENDING",
@@ -287,6 +292,7 @@ export async function POST(
             address:       addressValue || null,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
+            spokenLanguage: spokenLanguage || null,
             photoUrl:      photoUrl || null,
             preferredLocale: locale || null,
             status:        "ACTIF",
@@ -400,6 +406,7 @@ export async function POST(
             address:       addressValue || null,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
+            spokenLanguage: spokenLanguage || null,
             photoUrl:      photoUrl || null,
             preferredLocale: locale || null,
             status:        "ACTIF",
@@ -470,6 +477,7 @@ export async function POST(
     address:          addressValue || "",
     birthDate:        birthDate || "",
     sexe:             sexe || "",
+    spokenLanguage:   spokenLanguage || "",
     photoUrl:         photoUrl || "",
     locale:           locale || "",
     answers:          JSON.stringify(answers),
@@ -733,6 +741,7 @@ async function handleMultiRegistrantCheckout(
       [form.fieldPhone,     r.phone,     "Téléphone"],
       [form.fieldMobile,    r.mobile,    "Mobile"],
       [form.fieldGender,    r.sexe,      "Genre"],
+      [form.fieldLanguage,  r.spokenLanguage, "Langue parlée"],
     ]
     for (const [requirement, value, label] of standardChecks) {
       if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -792,6 +801,7 @@ async function handleMultiRegistrantCheckout(
             address:       r.address || null,
             birthDate:     r.birthDate ? new Date(r.birthDate) : null,
             sexe:          r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null,
+            spokenLanguage: r.spokenLanguage || null,
             photoUrl:      r.photoUrl || null,
             // Same page, same session for every registrant in this submission — unlike
             // email (person-specific login identity), the locale applies to the whole group.
@@ -842,7 +852,7 @@ async function handleMultiRegistrantCheckout(
       registrants: resolved.map(({ tier, r, answers }) => ({
         tierId: tier.id, amount: r.amount,
         firstName: r.firstName, lastName: r.lastName,
-        birthDate: r.birthDate, sexe: r.sexe, phone: r.phone, mobile: r.mobile, address: r.address,
+        birthDate: r.birthDate, sexe: r.sexe, spokenLanguage: r.spokenLanguage, phone: r.phone, mobile: r.mobile, address: r.address,
         photoUrl: r.photoUrl,
         // Same page, same session for every registrant — see the equivalent PENDING branch.
         locale: data.locale,
