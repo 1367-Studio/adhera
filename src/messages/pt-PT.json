@@ -2494,6 +2494,12 @@
     },
     "detail": {
       "backToList": "Voltar às adesões",
+      "draftNotice": "Não visível publicamente enquanto o formulário não for publicado.",
+      "leaveWarning": {
+        "title": "Alterações não guardadas",
+        "description": "Algumas secções foram alteradas sem serem guardadas. Se sair agora, essas alterações serão perdidas.",
+        "confirm": "Sair sem guardar"
+      },
       "notFound": "Formulário não encontrado",
       "titleLabel": "Título do formulário",
       "duplicateButton": "Duplicar",

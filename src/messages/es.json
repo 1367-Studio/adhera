@@ -2482,6 +2482,12 @@
     },
     "detail": {
       "backToList": "Volver a afiliaciones",
+      "draftNotice": "No visible públicamente mientras el formulario no esté publicado.",
+      "leaveWarning": {
+        "title": "Cambios sin guardar",
+        "description": "Algunas secciones se modificaron sin guardarse. Si sales ahora, esos cambios se perderán.",
+        "confirm": "Salir sin guardar"
+      },
       "notFound": "Formulario no encontrado",
       "titleLabel": "Título del formulario",
       "duplicateButton": "Duplicar",

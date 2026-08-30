@@ -2482,6 +2482,12 @@
     },
     "detail": {
       "backToList": "Retour aux adhésions",
+      "draftNotice": "Non visible publiquement tant que le formulaire n'est pas publié.",
+      "leaveWarning": {
+        "title": "Modifications non enregistrées",
+        "description": "Certaines sections ont été modifiées sans être enregistrées. Si vous quittez maintenant, ces changements seront perdus.",
+        "confirm": "Quitter sans enregistrer"
+      },
       "notFound": "Formulaire introuvable",
       "titleLabel": "Titre du formulaire",
       "duplicateButton": "Dupliquer",

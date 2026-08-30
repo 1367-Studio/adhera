@@ -2482,6 +2482,12 @@
     },
     "detail": {
       "backToList": "Back to memberships",
+      "draftNotice": "Not publicly visible until the form is published.",
+      "leaveWarning": {
+        "title": "Unsaved changes",
+        "description": "Some sections were edited but not saved. If you leave now, those changes will be lost.",
+        "confirm": "Leave without saving"
+      },
       "notFound": "Form not found",
       "titleLabel": "Form title",
       "duplicateButton": "Duplicate",

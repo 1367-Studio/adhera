@@ -15,7 +15,15 @@ type MembershipFormField      = MembershipFormFieldDraft & { id: string }
 
 let nextTempId = 0
 
-export function MembershipFormFieldsEditor({ formId }: { formId: string }) {
+// Mirrors the handleSave() payload — see the same helper in membership-tiers-editor.tsx.
+function fieldsSignature(rows: MembershipFormFieldDraft[]): string {
+  return JSON.stringify(rows.map(f => [f.type, f.label, f.required]))
+}
+
+export function MembershipFormFieldsEditor({ formId, onDirtyChange }: {
+  formId: string
+  onDirtyChange?: (dirty: boolean) => void
+}) {
   const t       = useTranslations("membershipForms.detail.steps.fields")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -41,6 +49,10 @@ export function MembershipFormFieldsEditor({ formId }: { formId: string }) {
   const [fields, setFields] = useState<(MembershipFormFieldDraft & { key: string })[]>([])
 
   useEffect(() => { if (data) setFields(data.map(f => ({ ...f, key: f.id }))) }, [data])
+
+  const isDirty = fieldsSignature(fields) !== fieldsSignature(data ?? [])
+  useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
 
   function addField() {
     setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false }])

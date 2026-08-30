@@ -109,6 +109,11 @@ export default function MembershipFormDetailPage() {
 
   const [title, setTitle]                 = useState("")
   const [deleteConfirm, setDeleteConfirm]  = useState(false)
+  // The Tarifs / Champs personnalisés editors own their own drafts, so they report dirtiness
+  // up rather than the page trying to read it out of them.
+  const [tiersDirty, setTiersDirty]        = useState(false)
+  const [fieldsDirty, setFieldsDirty]      = useState(false)
+  const [leaveConfirm, setLeaveConfirm]    = useState(false)
   const [linkCopied, setLinkCopied]        = useState(false)
 
   // Step 1 — Informations générales
@@ -296,6 +301,38 @@ export default function MembershipFormDetailPage() {
     onError: (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.deleteError")),
   })
 
+  // Every value a Save button on this page persists, in one comparable shape. Must stay in
+  // sync with handleSaveInfo and the three saveMutation.mutate calls below: a field that is
+  // editable but missing here would be dropped on navigation with no warning at all.
+  const editedSnapshot = JSON.stringify([
+    title, imageUrl, description, conditions, attachments, requireCguv, contactEmail, contactPhone, validationMode,
+    fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage,
+    allowCash, allowCheque, allowTransfer, offlineInstructions, confirmationMessage, adminNotificationEmail,
+    visibility, opensAt, closesAt,
+  ])
+  const savedSnapshot = form ? JSON.stringify([
+    form.title, form.imageUrl ?? "", form.description ?? "", form.conditions ?? "", form.attachments ?? [],
+    form.requireCguvSignature, form.contactEmail ?? "", form.contactPhone ?? "", form.validationMode,
+    form.fieldAddress, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender, form.fieldPhoto, form.fieldLanguage,
+    form.allowCash, form.allowCheque, form.allowTransfer, form.offlineInstructions ?? "", form.confirmationMessage ?? "", form.adminNotificationEmail ?? "",
+    form.visibility, toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt),
+  ]) : editedSnapshot
+
+  // A picked-but-not-yet-uploaded file only lives in memory (see the lazy-upload pattern
+  // above), so it counts as unsaved work even though no persisted field changed yet.
+  const isDirty = !!form
+    && (editedSnapshot !== savedSnapshot || !!pendingFile || !!pendingPdf || tiersDirty || fieldsDirty)
+
+  // Covers tab close / reload / external links, which client-side routing never sees. The
+  // browser shows its own generic wording here — returnValue only has to be set, its text
+  // is ignored by every current browser.
+  useEffect(() => {
+    if (!isDirty) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = "" }
+    window.addEventListener("beforeunload", onBeforeUnload)
+    return () => window.removeEventListener("beforeunload", onBeforeUnload)
+  }, [isDirty])
+
   if (isLoading) return <DetailLoadingSkeleton />
   if (isError || !form) {
     return (
@@ -345,11 +382,23 @@ export default function MembershipFormDetailPage() {
 
   return (
     <div className="space-y-4">
-      <BackLink href="/dashboard/adhesions">{t("detail.backToList")}</BackLink>
+      <BackLink
+        href="/dashboard/adhesions"
+        onClick={e => { if (isDirty) { e.preventDefault(); setLeaveConfirm(true) } }}
+      >
+        {t("detail.backToList")}
+      </BackLink>
 
       <PageHeader
         title={form.title}
-        description={<Badge variant={STATUS_VARIANT[form.status]}>{STATUS_LABEL[form.status]}</Badge>}
+        description={
+          <span className="flex flex-wrap items-center gap-2">
+            <Badge variant={STATUS_VARIANT[form.status]}>{STATUS_LABEL[form.status]}</Badge>
+            {form.status === "DRAFT" && (
+              <span className="text-xs text-muted-foreground">{t("detail.draftNotice")}</span>
+            )}
+          </span>
+        }
         action={
           <div className="flex gap-2">
             {form.status !== "PUBLISHED" ? (
@@ -401,7 +450,9 @@ export default function MembershipFormDetailPage() {
         />
       </div>
 
-      <Accordion multiple defaultValue={[]}>
+      {/* keepMounted: Base UI unmounts a closed panel by default, which threw away whatever
+          the Tarifs / Champs editors held in local state the moment you collapsed them. */}
+      <Accordion multiple defaultValue={[]} keepMounted>
         <AccordionItem value="info">
           <AccordionTrigger>{tSteps("info.title")}</AccordionTrigger>
           <AccordionPanel>
@@ -504,7 +555,7 @@ export default function MembershipFormDetailPage() {
         <AccordionItem value="tiers">
           <AccordionTrigger>{tSteps("tiers.title")}</AccordionTrigger>
           <AccordionPanel>
-            <MembershipTiersEditor formId={id} membreTypes={membreTypes} />
+            <MembershipTiersEditor formId={id} membreTypes={membreTypes} onDirtyChange={setTiersDirty} />
           </AccordionPanel>
         </AccordionItem>
 
@@ -537,7 +588,7 @@ export default function MembershipFormDetailPage() {
               </div>
 
               <div className="border-t pt-4">
-                <MembershipFormFieldsEditor formId={id} />
+                <MembershipFormFieldsEditor formId={id} onDirtyChange={setFieldsDirty} />
               </div>
             </div>
           </AccordionPanel>
@@ -653,6 +704,15 @@ export default function MembershipFormDetailPage() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+
+      <ConfirmDialog
+        open={leaveConfirm}
+        onOpenChange={setLeaveConfirm}
+        title={t("detail.leaveWarning.title")}
+        description={t("detail.leaveWarning.description")}
+        confirmLabel={t("detail.leaveWarning.confirm")}
+        onConfirm={() => router.push("/dashboard/adhesions")}
+      />
 
       <ConfirmDialog
         open={deleteConfirm}

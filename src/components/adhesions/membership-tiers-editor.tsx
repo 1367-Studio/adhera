@@ -38,7 +38,23 @@ type MembershipTier = MembershipTierDraft & { id: string; order: number }
 
 let nextTempId = 0
 
-export function MembershipTiersEditor({ formId, membreTypes }: { formId: string; membreTypes: MembreType[] }) {
+// Exactly the fields handleSave() persists, in list order (the order itself is saved as
+// `order`). Anything editable but missing here would be silently lost by the unsaved-changes
+// guard in the parent page, so this must stay in sync with the mutation payload below.
+function tiersSignature(rows: MembershipTierDraft[]): string {
+  return JSON.stringify(rows.map(t => [
+    t.itemType, t.kind, t.free, t.freeAmount, t.amount, t.durationMonths, t.fixedPeriodEnd,
+    t.taxReceiptEligible, t.installmentsAllowed, t.installmentsCount, t.label, t.membreTypeId,
+  ]))
+}
+
+export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
+  formId: string
+  membreTypes: MembreType[]
+  // Reported up so the page can warn before navigating away — see the guard in
+  // src/app/dashboard/adhesions/[id]/page.tsx.
+  onDirtyChange?: (dirty: boolean) => void
+}) {
   const t       = useTranslations("membershipForms.detail.steps.tiers")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -77,6 +93,16 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
   useEffect(() => {
     if (data) setTiers(data.map(t => ({ ...t, key: t.id, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })))
   }, [data])
+
+  // Same normalization the hydration effect above applies, so an untouched list compares
+  // equal (fixedPeriodEnd arrives as a full ISO datetime but is edited as YYYY-MM-DD).
+  const isDirty = tiersSignature(tiers) !== tiersSignature(
+    (data ?? []).map(t => ({ ...t, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })),
+  )
+  useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
+  // Unmounting means the local edits are gone anyway — leaving the flag set would block
+  // navigation over work that no longer exists.
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
 
   function addTier() {
     setTiers(prev => [...prev, {
