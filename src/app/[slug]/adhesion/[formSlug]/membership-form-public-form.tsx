@@ -389,7 +389,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-        <div className="min-h-screen flex items-center justify-center" />
+        <div className="dashboard-canvas public-canvas min-h-screen p-3">
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center" />
+        </div>
       </>
     )
   }
@@ -398,9 +400,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-        <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
-          <p className="text-muted-foreground">{t("notFound")}</p>
-          <LocaleSwitcher />
+        <div className="dashboard-canvas public-canvas min-h-screen p-3">
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
+            <p className="text-muted-foreground">{t("notFound")}</p>
+            <LocaleSwitcher />
+          </div>
         </div>
       </>
     )
@@ -409,407 +413,409 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   return (
     <>
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
-        <div className="w-full max-w-md space-y-6">
-          <div className="flex justify-end">
-            <LocaleSwitcher />
-          </div>
-
-          {isPreview && (
-            <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
-              {t("previewNotice")}
-            </p>
-          )}
-
-          {form.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
-          )}
-
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
-              <IdentificationCardIcon className="size-6 text-primary" />
+      <div className="dashboard-canvas public-canvas min-h-screen p-3">
+        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
+          <div className="w-full max-w-md space-y-6">
+            <div className="flex justify-end">
+              <LocaleSwitcher />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">{form.title}</h1>
-            <p className="text-muted-foreground text-sm">{form.associationName}</p>
-          </div>
 
-          {form.description && (
-            <div className="rounded-lg border bg-card p-4 text-sm">
-              <RichTextView content={form.description} className="text-foreground/90" />
-            </div>
-          )}
-
-          {outcome ? (
-            <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
-              <p className="font-medium">
-                {outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
+            {isPreview && (
+              <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
+                {t("previewNotice")}
               </p>
-              <p className="text-muted-foreground">
-                {outcome === "pending"
-                  ? (form.confirmationMessage || t("submittedRequestBody"))
-                  : (form.confirmationMessage || t("submittedWithPayment"))}
-              </p>
-              {outcome === "offline" && form.offlineInstructions && (
-                <p className="text-muted-foreground pt-2 border-t mt-3">{form.offlineInstructions}</p>
-              )}
-            </div>
-          ) : form.notOpenYet ? (
-            <p className="text-center text-sm text-muted-foreground">{t("notOpenYet")}</p>
-          ) : form.closed ? (
-            <p className="text-center text-sm text-muted-foreground">{t("closed")}</p>
-          ) : membershipTiers.length === 0 ? (
-            <p className="text-center text-sm text-muted-foreground">{t("noTiers")}</p>
-          ) : !hasAnyPaymentMethod ? (
-            <p className="text-center text-sm text-muted-foreground">{t("paymentUnavailable")}</p>
-          ) : (
-            <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-4 space-y-4">
-              {/* Honeypot — jamais visible pour un vrai visiteur */}
-              <div className="absolute -left-[9999px]" aria-hidden>
-                <label htmlFor="website">{t("honeypotLabel")}</label>
-                <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
+            )}
+
+            {form.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
+            )}
+
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+                <IdentificationCardIcon className="size-6 text-primary" />
               </div>
+              <h1 className="text-2xl font-bold tracking-tight">{form.title}</h1>
+              <p className="text-muted-foreground text-sm">{form.associationName}</p>
+            </div>
 
-              <div className="space-y-2">
-                {isMulti && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("registrantLabel", { number: 1 })}</p>}
-                <p className="text-sm font-medium">{t("amountLabel")}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {membershipTiers.map(tier => {
-                    // Une adhésion groupée ne peut pas s'appuyer sur un tarif récurrent — un
-                    // Stripe Subscription est lié à un seul Membre, impossible à répartir
-                    // entre N personnes (voir checkout/route.ts).
-                    const disabled = isMulti && tier.kind === "RECURRING"
-                    return (
-                    <button
-                      key={tier.id}
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => { setTierId(tier.id); if (tier.free || tier.kind === "RECURRING") setPaymentMethod("STRIPE") }}
-                      className={cn(
-                        "rounded-md border px-3 py-2 text-sm font-medium transition-colors text-left",
-                        disabled ? "opacity-40 cursor-not-allowed" :
-                        tierId === tier.id ? "border-primary bg-primary/5 text-primary" : "hover:border-foreground/40",
-                      )}
-                    >
-                      <div>{tier.label}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                        {tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
-                      </div>
-                      {oneOffDurationSuffix(tier) && (
-                        <div className="text-xs text-muted-foreground">{oneOffDurationSuffix(tier)}</div>
-                      )}
-                    </button>
-                    )
-                  })}
+            {form.description && (
+              <div className="rounded-lg border bg-card p-4 text-sm">
+                <RichTextView content={form.description} className="text-foreground/90" />
+              </div>
+            )}
+
+            {outcome ? (
+              <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
+                <p className="font-medium">
+                  {outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
+                </p>
+                <p className="text-muted-foreground">
+                  {outcome === "pending"
+                    ? (form.confirmationMessage || t("submittedRequestBody"))
+                    : (form.confirmationMessage || t("submittedWithPayment"))}
+                </p>
+                {outcome === "offline" && form.offlineInstructions && (
+                  <p className="text-muted-foreground pt-2 border-t mt-3">{form.offlineInstructions}</p>
+                )}
+              </div>
+            ) : form.notOpenYet ? (
+              <p className="text-center text-sm text-muted-foreground">{t("notOpenYet")}</p>
+            ) : form.closed ? (
+              <p className="text-center text-sm text-muted-foreground">{t("closed")}</p>
+            ) : membershipTiers.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground">{t("noTiers")}</p>
+            ) : !hasAnyPaymentMethod ? (
+              <p className="text-center text-sm text-muted-foreground">{t("paymentUnavailable")}</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-4 space-y-4">
+                {/* Honeypot — jamais visible pour un vrai visiteur */}
+                <div className="absolute -left-[9999px]" aria-hidden>
+                  <label htmlFor="website">{t("honeypotLabel")}</label>
+                  <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
                 </div>
-                {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
-                  <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
-                )}
-                {canPayInInstallments && selectedTier && (
-                  <CheckboxField
-                    label={t("payInInstallmentsLabel", {
-                      count: selectedTier.installmentsCount ?? 0,
-                      amount: (Number(selectedTier.amount) / (selectedTier.installmentsCount ?? 1)).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                    })}
-                    checked={payInInstallments}
-                    onChange={e => setPayInInstallments(e.target.checked)}
-                  />
-                )}
-              </div>
 
-              {extraRegistrants.map((r, idx) => {
-                const rt = registrantTier(r)
-                return (
-                  <div key={r.key} className="space-y-3 rounded-md border p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
-                        <TrashIcon className="size-4" />
-                      </Button>
-                    </div>
-                    <SelectField
-                      label={t("amountLabel")}
-                      options={oneOffMembershipTiers.map(x => ({
-                        value: x.id,
-                        label: x.free
-                          ? `${x.label} — ${t("freeLabel")}`
-                          : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
-                      }))}
-                      value={r.tierId}
-                      onValueChange={v => updateRegistrant(r.key, { tierId: v })}
-                    />
-                    {rt && !rt.free && rt.freeAmount && (
-                      <>
-                        <CurrencyField label={t("freeAmountLabel")} value={r.freeAmount} onChange={v => updateRegistrant(r.key, { freeAmount: v })} />
-                        {registrantAmount(r) < tierMinimum(rt) && (
-                          <p className="text-xs text-destructive">
-                            {t("belowMinimumAmount", { amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                          </p>
-                        )}
-                      </>
-                    )}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
-                      <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
-                    </div>
-                    {form.fieldAddress !== "HIDDEN" && (
-                      <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
-                    )}
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {form.fieldBirthDate !== "HIDDEN" && (
-                        <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
-                      )}
-                      {form.fieldGender !== "HIDDEN" && (
-                        <SelectField
-                          label={t("genderLabel")}
-                          required={form.fieldGender === "REQUIRED"}
-                          options={[
-                            { value: "",       label: t("genderNone") },
-                            { value: "HOMME",  label: t("genderHomme") },
-                            { value: "FEMME",  label: t("genderFemme") },
-                          ]}
-                          value={r.sexe}
-                          onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
-                        />
-                      )}
-                      {form.fieldLanguage !== "HIDDEN" && (
-                        <SelectField
-                          label={t("languageLabel")}
-                          required={form.fieldLanguage === "REQUIRED"}
-                          options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
-                          value={r.spokenLanguage}
-                          onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
-                        />
-                      )}
-                      {form.fieldPhone !== "HIDDEN" && (
-                        <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
-                      )}
-                      {form.fieldMobile !== "HIDDEN" && (
-                        <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
-                      )}
-                    </div>
-                    {form.customFields.map(field => (
-                      <FormField
-                        key={field.id}
-                        label={field.label}
-                        required={field.required}
-                        type={field.type === "NUMBER" ? "number" : "text"}
-                        value={r.answers[field.id] ?? ""}
-                        onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
-                      />
-                    ))}
-                  </div>
-                )
-              })}
-
-              {canAddRegistrant && (
-                <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
-                  <PlusIcon className="mr-1.5 size-4" />
-                  {t("addRegistrant")}
-                </Button>
-              )}
-
-              {!isMulti && extraTiers.length > 0 && (
-                <div className="space-y-2 border-t pt-4">
-                  <p className="text-sm font-medium">{t("extrasLabel")}</p>
-                  <div className="space-y-2">
-                    {extraTiers.map(extra => {
-                      const checked = selectedExtraIds.has(extra.id)
+                <div className="space-y-2">
+                  {isMulti && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("registrantLabel", { number: 1 })}</p>}
+                  <p className="text-sm font-medium">{t("amountLabel")}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {membershipTiers.map(tier => {
+                      // Une adhésion groupée ne peut pas s'appuyer sur un tarif récurrent — un
+                      // Stripe Subscription est lié à un seul Membre, impossible à répartir
+                      // entre N personnes (voir checkout/route.ts).
+                      const disabled = isMulti && tier.kind === "RECURRING"
                       return (
-                        <div key={extra.id} className="space-y-1.5">
-                          <label className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm cursor-pointer hover:border-foreground/40">
-                            <span className="flex items-center gap-2">
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={e => setSelectedExtraIds(prev => {
-                                  const next = new Set(prev)
-                                  if (e.target.checked) next.add(extra.id); else next.delete(extra.id)
-                                  return next
-                                })}
-                              />
-                              {extra.label}
-                              {extra.itemType === "DONATION" && (
-                                <span className="text-xs text-muted-foreground">{t("donationBadge")}</span>
-                              )}
-                            </span>
-                            {!extra.freeAmount && (
-                              <span className="text-muted-foreground">
-                                {Number(extra.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                              </span>
-                            )}
-                          </label>
-                          {checked && extra.freeAmount && (
-                            <>
-                              <CurrencyField
-                                label={extra.itemType === "DONATION" ? t("freeAmountLabel") : t("amountLabel")}
-                                value={extraAmounts[extra.id] ?? tierMinimum(extra)}
-                                onChange={v => setExtraAmounts(prev => ({ ...prev, [extra.id]: v }))}
-                              />
-                              {(extraAmounts[extra.id] ?? tierMinimum(extra)) < tierMinimum(extra) && (
-                                <p className="text-xs text-destructive">
-                                  {t("belowExtraMinimum", {
-                                    label: extra.label,
-                                    amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                                  })}
-                                </p>
-                              )}
-                            </>
-                          )}
+                      <button
+                        key={tier.id}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => { setTierId(tier.id); if (tier.free || tier.kind === "RECURRING") setPaymentMethod("STRIPE") }}
+                        className={cn(
+                          "rounded-md border px-3 py-2 text-sm font-medium transition-colors text-left",
+                          disabled ? "opacity-40 cursor-not-allowed" :
+                          tierId === tier.id ? "border-primary bg-primary/5 text-primary" : "hover:border-foreground/40",
+                        )}
+                      >
+                        <div>{tier.label}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                          {tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
                         </div>
+                        {oneOffDurationSuffix(tier) && (
+                          <div className="text-xs text-muted-foreground">{oneOffDurationSuffix(tier)}</div>
+                        )}
+                      </button>
                       )
                     })}
                   </div>
-                </div>
-              )}
-
-              {needsPayment && (
-                <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
-                  <span>{t("totalLabel")}</span>
-                  <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
-                </div>
-              )}
-              {belowMinimum && (
-                <p className="text-xs text-destructive">
-                  {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                </p>
-              )}
-
-              {showOfflineChoice && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
-                  <div className="flex flex-wrap gap-3 text-sm">
-                    {form.paymentEnabled && (
-                      <label className="flex items-center gap-1.5">
-                        <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
-                        {t("paymentMethodStripe")}
-                      </label>
-                    )}
-                    {offlineMethods.map(m => (
-                      <label key={m} className="flex items-center gap-1.5">
-                        <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
-                        {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
-                      </label>
-                    ))}
-                  </div>
-                  {paymentMethod !== "STRIPE" && form.offlineInstructions && (
-                    <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
+                  {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
+                    <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                  )}
+                  {canPayInInstallments && selectedTier && (
+                    <CheckboxField
+                      label={t("payInInstallmentsLabel", {
+                        count: selectedTier.installmentsCount ?? 0,
+                        amount: (Number(selectedTier.amount) / (selectedTier.installmentsCount ?? 1)).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                      })}
+                      checked={payInInstallments}
+                      onChange={e => setPayInInstallments(e.target.checked)}
+                    />
                   )}
                 </div>
-              )}
 
-              {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <FormField label={t("firstNameLabel")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                <FormField label={t("lastNameLabel")} required value={lastName} onChange={e => setLastName(e.target.value)} />
-              </div>
-              <FormField label={t("emailLabel")} type="email" required value={email} onChange={e => setEmail(e.target.value)} />
-              {willBeImmediate && (
-                <FormField
-                  label={t("passwordLabel")}
-                  type="password"
-                  required
-                  minLength={8}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  hint={t("passwordHint")}
-                />
-              )}
+                {extraRegistrants.map((r, idx) => {
+                  const rt = registrantTier(r)
+                  return (
+                    <div key={r.key} className="space-y-3 rounded-md border p-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
+                          <TrashIcon className="size-4" />
+                        </Button>
+                      </div>
+                      <SelectField
+                        label={t("amountLabel")}
+                        options={oneOffMembershipTiers.map(x => ({
+                          value: x.id,
+                          label: x.free
+                            ? `${x.label} — ${t("freeLabel")}`
+                            : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
+                        }))}
+                        value={r.tierId}
+                        onValueChange={v => updateRegistrant(r.key, { tierId: v })}
+                      />
+                      {rt && !rt.free && rt.freeAmount && (
+                        <>
+                          <CurrencyField label={t("freeAmountLabel")} value={r.freeAmount} onChange={v => updateRegistrant(r.key, { freeAmount: v })} />
+                          {registrantAmount(r) < tierMinimum(rt) && (
+                            <p className="text-xs text-destructive">
+                              {t("belowMinimumAmount", { amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                            </p>
+                          )}
+                        </>
+                      )}
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
+                        <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
+                      </div>
+                      {form.fieldAddress !== "HIDDEN" && (
+                        <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
+                      )}
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {form.fieldBirthDate !== "HIDDEN" && (
+                          <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
+                        )}
+                        {form.fieldGender !== "HIDDEN" && (
+                          <SelectField
+                            label={t("genderLabel")}
+                            required={form.fieldGender === "REQUIRED"}
+                            options={[
+                              { value: "",       label: t("genderNone") },
+                              { value: "HOMME",  label: t("genderHomme") },
+                              { value: "FEMME",  label: t("genderFemme") },
+                            ]}
+                            value={r.sexe}
+                            onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
+                          />
+                        )}
+                        {form.fieldLanguage !== "HIDDEN" && (
+                          <SelectField
+                            label={t("languageLabel")}
+                            required={form.fieldLanguage === "REQUIRED"}
+                            options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                            value={r.spokenLanguage}
+                            onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
+                          />
+                        )}
+                        {form.fieldPhone !== "HIDDEN" && (
+                          <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
+                        )}
+                        {form.fieldMobile !== "HIDDEN" && (
+                          <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
+                        )}
+                      </div>
+                      {form.customFields.map(field => (
+                        <FormField
+                          key={field.id}
+                          label={field.label}
+                          required={field.required}
+                          type={field.type === "NUMBER" ? "number" : "text"}
+                          value={r.answers[field.id] ?? ""}
+                          onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
+                        />
+                      ))}
+                    </div>
+                  )
+                })}
 
-              {form.fieldPhoto !== "HIDDEN" && (
-                <div className="flex justify-center">
-                  <ImageUpload
-                    value={photoUrl}
-                    onChange={setPhotoUrl}
-                    aspectRatio="square"
-                    className="w-32"
-                    compact
-                    uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
-                  />
+                {canAddRegistrant && (
+                  <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
+                    <PlusIcon className="mr-1.5 size-4" />
+                    {t("addRegistrant")}
+                  </Button>
+                )}
+
+                {!isMulti && extraTiers.length > 0 && (
+                  <div className="space-y-2 border-t pt-4">
+                    <p className="text-sm font-medium">{t("extrasLabel")}</p>
+                    <div className="space-y-2">
+                      {extraTiers.map(extra => {
+                        const checked = selectedExtraIds.has(extra.id)
+                        return (
+                          <div key={extra.id} className="space-y-1.5">
+                            <label className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm cursor-pointer hover:border-foreground/40">
+                              <span className="flex items-center gap-2">
+                                <input
+                                  type="checkbox"
+                                  checked={checked}
+                                  onChange={e => setSelectedExtraIds(prev => {
+                                    const next = new Set(prev)
+                                    if (e.target.checked) next.add(extra.id); else next.delete(extra.id)
+                                    return next
+                                  })}
+                                />
+                                {extra.label}
+                                {extra.itemType === "DONATION" && (
+                                  <span className="text-xs text-muted-foreground">{t("donationBadge")}</span>
+                                )}
+                              </span>
+                              {!extra.freeAmount && (
+                                <span className="text-muted-foreground">
+                                  {Number(extra.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                </span>
+                              )}
+                            </label>
+                            {checked && extra.freeAmount && (
+                              <>
+                                <CurrencyField
+                                  label={extra.itemType === "DONATION" ? t("freeAmountLabel") : t("amountLabel")}
+                                  value={extraAmounts[extra.id] ?? tierMinimum(extra)}
+                                  onChange={v => setExtraAmounts(prev => ({ ...prev, [extra.id]: v }))}
+                                />
+                                {(extraAmounts[extra.id] ?? tierMinimum(extra)) < tierMinimum(extra) && (
+                                  <p className="text-xs text-destructive">
+                                    {t("belowExtraMinimum", {
+                                      label: extra.label,
+                                      amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                                    })}
+                                  </p>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {needsPayment && (
+                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
+                    <span>{t("totalLabel")}</span>
+                    <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                  </div>
+                )}
+                {belowMinimum && (
+                  <p className="text-xs text-destructive">
+                    {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                  </p>
+                )}
+
+                {showOfflineChoice && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
+                    <div className="flex flex-wrap gap-3 text-sm">
+                      {form.paymentEnabled && (
+                        <label className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
+                          {t("paymentMethodStripe")}
+                        </label>
+                      )}
+                      {offlineMethods.map(m => (
+                        <label key={m} className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
+                          {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
+                        </label>
+                      ))}
+                    </div>
+                    {paymentMethod !== "STRIPE" && form.offlineInstructions && (
+                      <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
+                    )}
+                  </div>
+                )}
+
+                {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
+                {form.fieldPhoto !== "HIDDEN" && (
+                  <div className="flex justify-center">
+                    <ImageUpload
+                      value={photoUrl}
+                      onChange={setPhotoUrl}
+                      aspectRatio="square"
+                      className="w-32"
+                      compact
+                      uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                    />
+                  </div>
+                )}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <FormField label={t("firstNameLabel")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
+                  <FormField label={t("lastNameLabel")} required value={lastName} onChange={e => setLastName(e.target.value)} />
                 </div>
-              )}
-              {form.fieldAddress !== "HIDDEN" && (
-                <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
-              )}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {form.fieldBirthDate !== "HIDDEN" && (
-                  <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
-                )}
-                {form.fieldGender !== "HIDDEN" && (
-                  <SelectField
-                    label={t("genderLabel")}
-                    required={form.fieldGender === "REQUIRED"}
-                    options={[
-                      { value: "",       label: t("genderNone") },
-                      { value: "HOMME",  label: t("genderHomme") },
-                      { value: "FEMME",  label: t("genderFemme") },
-                    ]}
-                    value={sexe}
-                    onValueChange={v => setSexe(v as "" | "HOMME" | "FEMME")}
+                <FormField label={t("emailLabel")} type="email" required value={email} onChange={e => setEmail(e.target.value)} />
+                {willBeImmediate && (
+                  <FormField
+                    label={t("passwordLabel")}
+                    type="password"
+                    required
+                    minLength={8}
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    hint={t("passwordHint")}
                   />
                 )}
-                {form.fieldLanguage !== "HIDDEN" && (
-                  <SelectField
-                    label={t("languageLabel")}
-                    required={form.fieldLanguage === "REQUIRED"}
-                    options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
-                    value={spokenLanguage}
-                    onValueChange={setSpokenLanguage}
+
+                {form.fieldAddress !== "HIDDEN" && (
+                  <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                )}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {form.fieldBirthDate !== "HIDDEN" && (
+                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
+                  )}
+                  {form.fieldGender !== "HIDDEN" && (
+                    <SelectField
+                      label={t("genderLabel")}
+                      required={form.fieldGender === "REQUIRED"}
+                      options={[
+                        { value: "",       label: t("genderNone") },
+                        { value: "HOMME",  label: t("genderHomme") },
+                        { value: "FEMME",  label: t("genderFemme") },
+                      ]}
+                      value={sexe}
+                      onValueChange={v => setSexe(v as "" | "HOMME" | "FEMME")}
+                    />
+                  )}
+                  {form.fieldLanguage !== "HIDDEN" && (
+                    <SelectField
+                      label={t("languageLabel")}
+                      required={form.fieldLanguage === "REQUIRED"}
+                      options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                      value={spokenLanguage}
+                      onValueChange={setSpokenLanguage}
+                    />
+                  )}
+                  {form.fieldPhone !== "HIDDEN" && (
+                    <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                  )}
+                  {form.fieldMobile !== "HIDDEN" && (
+                    <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                  )}
+                </div>
+
+                {form.customFields.map(field => (
+                  <FormField
+                    key={field.id}
+                    label={field.label}
+                    required={field.required}
+                    type={field.type === "NUMBER" ? "number" : "text"}
+                    value={answers[field.id] ?? ""}
+                    onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
                   />
-                )}
-                {form.fieldPhone !== "HIDDEN" && (
-                  <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
-                )}
-                {form.fieldMobile !== "HIDDEN" && (
-                  <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
-                )}
-              </div>
+                ))}
 
-              {form.customFields.map(field => (
-                <FormField
-                  key={field.id}
-                  label={field.label}
-                  required={field.required}
-                  type={field.type === "NUMBER" ? "number" : "text"}
-                  value={answers[field.id] ?? ""}
-                  onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
-                />
-              ))}
+                {form.conditions && (
+                  <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+                )}
+                {!!form.attachments?.length && (
+                  <ul className="space-y-1">
+                    {form.attachments.map(a => (
+                      <li key={a.url}>
+                        <a
+                          href={a.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                        >
+                          <FileIcon className="size-3.5 shrink-0" />
+                          {a.filename}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {form.requireCguvSignature && (
+                  <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
+                )}
 
-              {form.conditions && (
-                <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
-              )}
-              {!!form.attachments?.length && (
-                <ul className="space-y-1">
-                  {form.attachments.map(a => (
-                    <li key={a.url}>
-                      <a
-                        href={a.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                      >
-                        <FileIcon className="size-3.5 shrink-0" />
-                        {a.filename}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {form.requireCguvSignature && (
-                <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-              )}
-
-              <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                {!needsPayment
-                  ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
-                  : t("submitPay", {
-                      amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
-                    })}
-              </Button>
-            </form>
-          )}
+                <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                  {!needsPayment
+                    ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
+                    : t("submitPay", {
+                        amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
+                      })}
+                </Button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
     </>
