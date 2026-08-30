@@ -1,34 +1,43 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import {
-  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon, EyeIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser } from "@/lib/user-context"
-import { useMembreTypes } from "@/hooks/use-membre-types"
-import { BASE_PATH } from "@/lib/env"
-import { PageHeader } from "@/components/ui/page-header"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { FormField } from "@/components/ui/form-field"
-import { SelectField } from "@/components/ui/select-field"
-import { CheckboxField } from "@/components/ui/checkbox-field"
-import { ImageUpload } from "@/components/ui/image-upload"
-import { DocumentUpload } from "@/components/ui/document-upload"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion"
-import { BackLink } from "@/components/ui/back-link"
-import { DetailNotFound } from "@/components/ui/detail-not-found"
-import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MembershipFormFieldsEditor } from "@/components/adhesions/membership-form-fields-editor"
 import { MembershipTiersEditor } from "@/components/adhesions/membership-tiers-editor"
+import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
+import { BackLink } from "@/components/ui/back-link"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DocumentUpload } from "@/components/ui/document-upload"
+import { FormField } from "@/components/ui/form-field"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { PageHeader } from "@/components/ui/page-header"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { SelectField } from "@/components/ui/select-field"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useMembreTypes } from "@/hooks/use-membre-types"
+import { BASE_PATH } from "@/lib/env"
+import { useCurrentUser } from "@/lib/user-context"
+import {
+  ArchiveIcon,
+  CheckIcon,
+  CloudArrowDownIcon,
+  CloudArrowUpIcon,
+  CopyIcon,
+  EyeIcon,
+  InfoIcon,
+  LinkIcon,
+  TrashIcon,
+} from "@phosphor-icons/react/dist/ssr"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 type MembershipFormStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type FieldRequirement     = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -438,18 +447,34 @@ export default function MembershipFormDetailPage() {
                 checked={requireCguv}
                 onChange={(e) => setRequireCguv(e.target.checked)}
               />
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField
-                  label={tSteps("info.contactEmailLabel")}
-                  type="email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                />
-                <FormField
-                  label={tSteps("info.contactPhoneLabel")}
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                />
+              <div className="space-y-3">
+                <p className="flex items-center gap-1.5 text-sm font-semibold">
+                  {tSteps("info.contactSectionTitle")}
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="text-muted-foreground hover:text-foreground"
+                      aria-label={tSteps("info.contactSectionHintAria")}
+                    >
+                      <InfoIcon className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="max-w-64 whitespace-normal text-left">
+                      {tSteps("info.contactSectionHint")}
+                    </TooltipContent>
+                  </Tooltip>
+                </p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    label={tSteps("info.contactEmailLabel")}
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                  />
+                  <FormField
+                    label={tSteps("info.contactPhoneLabel")}
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                  />
+                </div>
               </div>
               <div className="max-w-sm space-y-1.5">
                 <SelectField
