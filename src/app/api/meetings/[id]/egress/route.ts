@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server"
-import { EgressClient, RoomServiceClient, EncodedFileOutput, EncodedFileType, S3Upload, TrackType } from "livekit-server-sdk"
+import { RoomServiceClient, TrackType } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { getLiveKitConfigForMeeting, LiveKitConfigError, type LiveKitConfig } from "@/lib/livekit/config"
+import { makeEgressClient, startParticipantAudioEgress, type StartedRecording } from "@/lib/livekit/egress"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
-function makeEgressClient(livekit: LiveKitConfig) {
-  return new EgressClient(livekit.url, livekit.apiKey, livekit.apiSecret)
-}
 
 function makeRoomServiceClient(livekit: LiveKitConfig) {
   return new RoomServiceClient(livekit.url, livekit.apiKey, livekit.apiSecret)
@@ -27,21 +24,10 @@ async function setRoomRecordingMetadata(livekit: LiveKitConfig, roomName: string
   }
 }
 
-function makeS3Upload() {
-  return new S3Upload({
-    accessKey:      process.env.R2_ACCESS_KEY_ID!,
-    secret:         process.env.R2_SECRET_ACCESS_KEY!,
-    bucket:         process.env.R2_BUCKET_NAME!,
-    region:         "auto",
-    endpoint:       `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    forcePathStyle: true,
-  })
-}
-
 // POST — start recording: one egress per participant currently in the room, so each
 // person's audio ends up in its own file — needed to later attribute transcript text to
-// whoever actually said it. Anyone who joins after this point isn't captured individually;
-// that's a known gap, tracked for a follow-up rather than solved here.
+// whoever actually said it. Participants who join *after* this point are picked up by the
+// `track_published` handler in the LiveKit webhook, which starts the same egress for them.
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -62,33 +48,22 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   const roomClient   = makeRoomServiceClient(livekit)
-  const egressClient = makeEgressClient(livekit)
   const participants = await roomClient.listParticipants(meeting.roomName)
 
-  const started: { identity: string; displayName: string; egressId: string; recordingKey: string }[] = []
+  const started: StartedRecording[] = []
 
   for (const participant of participants) {
     const audioTrack = participant.tracks.find(t => t.type === TrackType.AUDIO)
     if (!audioTrack) continue // joined without publishing a mic track — nothing to record
 
-    const recordingKey = `meetings/${id}/recording-${participant.identity}-${Date.now()}.ogg`
-
-    const info = await egressClient.startTrackCompositeEgress(
-      meeting.roomName,
-      new EncodedFileOutput({
-        fileType: EncodedFileType.OGG,
-        filepath: recordingKey,
-        output:   { case: "s3", value: makeS3Upload() },
-      }),
-      { audioTrackId: audioTrack.sid },
-    )
-
-    started.push({
-      identity:    participant.identity,
-      displayName: participant.name || participant.identity,
-      egressId:    info.egressId,
-      recordingKey,
-    })
+    started.push(await startParticipantAudioEgress({
+      livekit,
+      roomName:     meeting.roomName,
+      meetingId:    id,
+      identity:     participant.identity,
+      displayName:  participant.name || participant.identity,
+      audioTrackId: audioTrack.sid,
+    }))
   }
 
   if (started.length === 0) {
