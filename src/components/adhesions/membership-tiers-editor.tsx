@@ -233,6 +233,7 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                   </div>
                   <div className="w-40">
                     <FormField
+                      id={`tier-duration-${tier.key}`}
                       label={t("durationMonthsField")}
                       type="number"
                       min={1}
@@ -244,12 +245,13 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                         fixedPeriodEnd: e.target.value ? null : tier.fixedPeriodEnd,
                       })}
                       disabled={!!tier.fixedPeriodEnd}
-                      hint={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
+                      hintTooltip={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
                     />
                   </div>
                   {tier.kind === "ONE_OFF" && (
                     <div className="w-44">
                       <FormField
+                        id={`tier-fixed-period-end-${tier.key}`}
                         label={t("fixedPeriodEndField")}
                         type="date"
                         value={tier.fixedPeriodEnd ?? ""}
@@ -258,7 +260,7 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                           durationMonths: e.target.value ? null : tier.durationMonths,
                         })}
                         disabled={!!tier.durationMonths}
-                        hint={t("fixedPeriodEndHint")}
+                        hintTooltip={t("fixedPeriodEndHint")}
                       />
                     </div>
                   )}
