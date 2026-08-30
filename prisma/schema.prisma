@@ -340,6 +340,50 @@ enum CotisationSubscriptionStatus {
   CANCELLED
 }
 
+enum MembershipFormStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MembershipFieldRequirement {
+  HIDDEN
+  OPTIONAL
+  REQUIRED
+}
+
+enum MembershipFieldType {
+  TEXT
+  NUMBER
+}
+
+enum MembershipTierKind {
+  ONE_OFF
+  RECURRING
+}
+
+// MEMBERSHIP defines the resulting Membre's duration/status (exactly what MembershipTier
+// already did before this enum existed) — exactly one MEMBERSHIP tier is selected per
+// checkout. ADDON and DONATION are optional extras selectable alongside it: ADDON produces a
+// MembershipAddonPurchase, DONATION produces a real Don (Don.membreId/donationFormId/tierId
+// are already nullable — see Don model — so this needs no changes there).
+enum MembershipTierItemType {
+  MEMBERSHIP
+  ADDON
+  DONATION
+}
+
+enum MembershipVisibility {
+  LINK
+  SITE
+  PRIVATE
+}
+
+enum MembershipValidationMode {
+  IMMEDIATE
+  REQUEST
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
@@ -428,39 +472,43 @@ model Association {
   updatedAt                      DateTime           @updatedAt
   deletedAt                      DateTime?
 
-  users                   User[]
-  membres                 Membre[]
-  membreTypes             MembreType[]
-  evenements              Evenement[]
-  cotisations             Cotisation[]
-  actualites              Actualite[]
-  messageTemplates        MessageTemplate[]
-  automationRules         AutomationRule[]
-  materials               Material[]
-  activityLogs            ActivityLog[]
-  dons                    Don[]
-  donationForms           DonationForm[]
-  donationSubscriptions   DonationSubscription[]
-  cotisationSubscriptions CotisationSubscription[]
-  sondages                Sondage[]
-  boutiqueProduits        BoutiqueProduit[]
-  boutiqueCommandes       BoutiqueCommande[]
-  meetings                Meeting[]
-  exercicesComptables     ExerciceComptable[]
-  bankAccounts            BankAccount[]
-  bankTransactions        BankTransaction[]
-  financeCategories       FinanceCategory[]
-  incomes                 Income[]
-  expenses                Expense[]
-  bankReconciliations     BankReconciliation[]
-  fournisseurs            Fournisseur[]
-  devis                   Devis[]
-  factures                Facture[]
-  facturesRecues          FactureRecue[]
-  emailMessages           EmailMessage[]
-  smsMessages             SmsMessage[]
-  supportTickets          SupportTicket[]
-  pricingOffer            PricingOffer?
+  users                    User[]
+  membres                  Membre[]
+  membreTypes              MembreType[]
+  evenements               Evenement[]
+  cotisations              Cotisation[]
+  actualites               Actualite[]
+  messageTemplates         MessageTemplate[]
+  automationRules          AutomationRule[]
+  materials                Material[]
+  activityLogs             ActivityLog[]
+  dons                     Don[]
+  donationForms            DonationForm[]
+  donationSubscriptions    DonationSubscription[]
+  cotisationSubscriptions  CotisationSubscription[]
+  cotisationInstallmentPlans CotisationInstallmentPlan[]
+  membershipForms          MembershipForm[]
+  membershipAddonPurchases MembershipAddonPurchase[]
+  membershipCheckoutDrafts MembershipCheckoutDraft[]
+  sondages                 Sondage[]
+  boutiqueProduits         BoutiqueProduit[]
+  boutiqueCommandes        BoutiqueCommande[]
+  meetings                 Meeting[]
+  exercicesComptables      ExerciceComptable[]
+  bankAccounts             BankAccount[]
+  bankTransactions         BankTransaction[]
+  financeCategories        FinanceCategory[]
+  incomes                  Income[]
+  expenses                 Expense[]
+  bankReconciliations      BankReconciliation[]
+  fournisseurs             Fournisseur[]
+  devis                    Devis[]
+  factures                 Facture[]
+  facturesRecues           FactureRecue[]
+  emailMessages            EmailMessage[]
+  smsMessages              SmsMessage[]
+  supportTickets           SupportTicket[]
+  pricingOffer             PricingOffer?
 }
 
 // A staff-generated, single-use custom-pricing signup link (see /register?offer=<token>)
@@ -553,8 +601,9 @@ model MembreType {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  association Association @relation(fields: [associationId], references: [id])
-  membres     Membre[]
+  association     Association      @relation(fields: [associationId], references: [id])
+  membres         Membre[]
+  membershipTiers MembershipTier[]
 
   @@unique([name, associationId])
 }
@@ -572,6 +621,16 @@ model Membre {
   sexe             Sexe?
   allergies        String?
   photoUrl         String?
+  // Not defaulted to "fr" the way User.locale is — null means "never asked", not "assumed
+  // French". Set explicitly by an admin/the member themselves, or auto-captured from the
+  // page's own locale on a public signup form (the visitor already picked it via
+  // LocaleSwitcher there, so there's no separate input for it — see checkout/route.ts).
+  // Not yet read by any email-sending code; captured now for that future use.
+  preferredLocale  String?
+  // Langue parlée (code ISO 639-1, liste dans src/lib/languages.ts) — distinct de
+  // preferredLocale, qui est la langue de l'interface/des e-mails. Saisie par l'admin,
+  // par le membre sur le portail, ou sur un MembershipForm quand fieldLanguage l'expose.
+  spokenLanguage   String?
   possedeTshirt    Boolean?
   tailleTshirt     TailleTshirt?
   status           MembreStatus   @default(ACTIF)
@@ -597,28 +656,52 @@ model Membre {
   termsVersion    String?
   termsAcceptedIp String?
 
-  association            Association             @relation(fields: [associationId], references: [id])
-  user                   User?                   @relation(fields: [userId], references: [id])
-  type                   MembreType?             @relation(fields: [typeId], references: [id])
-  responsable            Membre?                 @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
-  dependants             Membre[]                @relation("MembreResponsable")
-  cotisations            Cotisation[]
-  participations         Participation[]
-  actualiteRecipients    ActualiteRecipient[]
-  materialLoans          MaterialLoan[]
-  automationLogs         AutomationLog[]
-  dons                   Don[]
-  sondageRecipients      SondageRecipient[]
-  sondageReponses        SondageReponse[]
-  boutiqueCommandes      BoutiqueCommande[]
-  meetingsAsParticipant  MeetingParticipant[]
-  incomes                Income[]
-  emailMessages          EmailMessage[]
-  smsMessages            SmsMessage[]
-  cotisationSubscription CotisationSubscription?
+  // Réponses aux MembershipFormField du MembershipForm utilisé à l'inscription, keyed by
+  // field id (plus la clé fixe "mobile" — birthDate/sexe ont leurs propres colonnes
+  // ci-dessus) — même convention que Don.answers. Vit sur le profil (pas sur la Cotisation)
+  // car une personne ne s'inscrit comme membre qu'une fois, contrairement à un don qui se
+  // répète par transaction.
+  answers Json?
+
+  // ID stable du contact dans le système source d'un import (ex: "ID contact" AssoConnect)
+  // — survit à un changement de nom/email entre deux exports du même client, contrairement
+  // au matching par email+nom utilisé en fallback quand ce champ est absent. Voir
+  // src/app/api/membres/import/route.ts.
+  externalId String?
+
+  // Tarif gratuit demandé par un PENDING issu d'un MembershipForm en validation "sur
+  // demande" — lu une seule fois par PATCH /api/membres/[id] quand un admin fait passer ce
+  // membre en ACTIF, pour créer automatiquement la Cotisation EXONERE correspondante, puis
+  // remis à null. Reste null pour un PENDING créé par n'importe quelle autre voie (ancien
+  // flux /inscription, etc.) — celles-là gardent leur comportement actuel, sans cotisation
+  // auto-créée à l'approbation.
+  pendingTierId String?
+
+  association              Association               @relation(fields: [associationId], references: [id])
+  user                     User?                     @relation(fields: [userId], references: [id])
+  type                     MembreType?               @relation(fields: [typeId], references: [id])
+  pendingTier              MembershipTier?           @relation(fields: [pendingTierId], references: [id], onDelete: SetNull)
+  responsable              Membre?                   @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
+  dependants               Membre[]                  @relation("MembreResponsable")
+  cotisations              Cotisation[]
+  participations           Participation[]
+  actualiteRecipients      ActualiteRecipient[]
+  materialLoans            MaterialLoan[]
+  automationLogs           AutomationLog[]
+  dons                     Don[]
+  membershipAddonPurchases MembershipAddonPurchase[]
+  sondageRecipients        SondageRecipient[]
+  sondageReponses          SondageReponse[]
+  boutiqueCommandes        BoutiqueCommande[]
+  meetingsAsParticipant    MeetingParticipant[]
+  incomes                  Income[]
+  emailMessages            EmailMessage[]
+  smsMessages              SmsMessage[]
+  cotisationSubscription   CotisationSubscription?
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
+  @@index([associationId, externalId])
 }
 
 model Evenement {
@@ -745,23 +828,85 @@ model Cotisation {
   stripeSessionId     String?
   declarationNumber   String?
   declarationIssuedAt DateTime?
+  // The real, tax-deductible "reçu fiscal" (CERFA) — distinct from declarationNumber above,
+  // which is a non-deductible attestation always available for any PAYE cotisation. This one
+  // only exists when taxReceiptEligible is true (see below) and the association has
+  // canIssueTaxReceipts — mirrors Don.receiptNumber/receiptIssuedAt exactly, and shares the
+  // same per-association/per-year numbering sequence (see assignReceiptNumber in
+  // src/lib/pdf/recu-fiscal.ts) so no two receipts — Don or Cotisation — ever collide.
+  receiptNumber       String?
+  receiptIssuedAt     DateTime?
   lastReminderSentAt  DateTime?
   // Set when this year's cotisation was produced by a recurring Stripe charge (see
   // CotisationSubscription) rather than a one-off/manual payment — mirrors Don.subscriptionId.
   subscriptionId      String?
+  // Reporting-only link to whichever MembershipForm/MembershipTier produced this cotisation
+  // (one-off or the first year of a recurring one) — mirrors Don.donationFormId/tierId. Null
+  // for cotisations created any other way (admin manual add, legacy /inscription flow).
+  membershipFormId    String?
+  tierId              String?
+  // Snapshotted from MembershipTier.taxReceiptEligible at creation — never re-derived if the
+  // tier changes afterward, same reasoning as membershipFormId/tierId already being frozen
+  // copies. Governs whether this Cotisation can ever get a receiptNumber above — unrelated to
+  // declarationNumber, which every PAYE cotisation can get regardless of this flag.
+  taxReceiptEligible  Boolean          @default(false)
+  // Set only when this Cotisation came from a custom-duration MembershipTier (see
+  // MembershipTier.durationMonths) — null for the ordinary calendar-year row, where validity
+  // is implicitly Jan 1–Dec 31 of `year`. periodEnd, when set, is what src/lib/membre-
+  // adherent.ts actually checks instead of `year` to decide if this row still covers today.
+  periodStart         DateTime?
+  periodEnd           DateTime?
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 
-  membre       Membre                  @relation(fields: [membreId], references: [id])
-  association  Association             @relation(fields: [associationId], references: [id])
-  payments     CotisationPayment[]
-  installments CotisationInstallment[]
-  subscription CotisationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  membre          Membre                    @relation(fields: [membreId], references: [id])
+  association     Association               @relation(fields: [associationId], references: [id])
+  payments        CotisationPayment[]
+  installments    CotisationInstallment[]
+  subscription    CotisationSubscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  membershipForm  MembershipForm?           @relation(fields: [membershipFormId], references: [id], onDelete: SetNull)
+  tier            MembershipTier?           @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  addonPurchases  MembershipAddonPurchase[]
+  installmentPlan CotisationInstallmentPlan?
 
   @@unique([membreId, year])
   @@unique([associationId, declarationNumber])
+  @@unique([associationId, receiptNumber])
   @@index([associationId, status])
   @@index([subscriptionId])
+  @@index([membershipFormId])
+  @@index([tierId])
+}
+
+// Le pendant "N fois puis stop" de CotisationSubscription (qui, elle, se renouvelle
+// indéfiniment) — un Stripe Subscription plafonné à installmentsCount cycles via
+// subscription_data.cancel_at (voir checkout/route.ts), dont CHAQUE prélèvement s'applique à
+// la MÊME Cotisation via recordCotisationPayment (src/lib/webhook/membership-installments.ts),
+// contrairement à handleCotisationInvoicePaid qui crée une nouvelle Cotisation par an.
+model CotisationInstallmentPlan {
+  id                   String   @id @default(cuid())
+  associationId        String
+  cotisationId         String   @unique
+  stripeSubscriptionId String   @unique
+  stripeCustomerId     String
+  // Self-service cancellation link, same convention as CotisationSubscription.cancelToken —
+  // emailed on a failed installment charge (see membershipInstallmentPaymentFailedEmail), not
+  // proactively at signup, mirroring how the recurring-membership flow already only surfaces
+  // its own cancel link reactively rather than in the welcome email.
+  cancelToken          String?  @unique
+  installmentsCount    Int
+  installmentsPaid     Int      @default(0)
+  // ACTIVE tant que Stripe continue de prélever ; COMPLETED une fois les installmentsCount
+  // prélèvements reçus ; CANCELLED si annulé avant terme (échec de paiement épuisant les
+  // relances Stripe, ou annulation manuelle) — jamais réécrit en CANCELLED une fois COMPLETED,
+  // voir handleMembershipInstallmentDeleted.
+  status               String   @default("ACTIVE")
+  createdAt            DateTime @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  cotisation  Cotisation  @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
 }
 
 model CotisationInstallment {
@@ -820,6 +965,15 @@ model Don {
   // Set only on the Don produced by a recurring donation's successful charge (invoice.paid) —
   // null for one-off dons, whether via a DonationForm or the standalone page.
   subscriptionId   String?
+  // Set only when this Don was the embedded-donation extra on a MembershipForm signup (see
+  // MembershipTier.itemType == DONATION, src/lib/webhook/membership-addons.ts). Distinct from
+  // `tierId` above, which points at the unrelated DonationTier model — a donation bought this
+  // way never has a DonationTier, so `tierId` stays null and this field carries the link
+  // instead. Without it, nothing traces this Don back to the MembershipTier that produced it:
+  // membre-detail-view.tsx can't show it next to the member's other adhésion purchases, and
+  // the tiers API can't tell a still-referenced DONATION tier from an unused one before
+  // allowing its itemType to change or the tier to be deleted.
+  membershipAddonTierId String?
   // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
   // Participation.answers.
   answers          Json?
@@ -848,6 +1002,10 @@ model Don {
   donationForm DonationForm?         @relation(fields: [donationFormId], references: [id], onDelete: SetNull)
   tier         DonationTier?         @relation(fields: [tierId], references: [id], onDelete: SetNull)
   subscription DonationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  // SetNull, not Cascade — a Don is a real financial/receipt record and must survive even if
+  // the MembershipTier that generated it is later deleted (unlike MembershipAddonPurchase,
+  // which is a lightweight purchase log with no receipt of its own).
+  membershipAddonTier MembershipTier? @relation(fields: [membershipAddonTierId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
@@ -855,6 +1013,7 @@ model Don {
   @@index([membreId])
   @@index([donationFormId])
   @@index([subscriptionId])
+  @@index([membershipAddonTierId])
 }
 
 // Formulaire de don configurable — remplace le modèle « une page de don par association »
@@ -947,6 +1106,228 @@ model DonationFormField {
   @@index([formId])
 }
 
+// Formulaire d'adhésion configurable — même rôle que DonationForm mais le checkout produit
+// un Membre/Cotisation/CotisationSubscription au lieu d'un Don. Additif : le flux public fixe
+// existant (Association.cotisationDefaultAmount/publicMembershipPaymentEnabled, voir
+// /api/public/[slug]/inscription) continue de fonctionner tel quel pour les associations qui
+// n'ont créé aucun MembershipForm — la section site préfère un formulaire PUBLISHED+SITE s'il
+// en existe un, sinon retombe sur l'ancien flux.
+model MembershipForm {
+  id            String               @id @default(cuid())
+  associationId String
+  slug          String
+  title         String
+  status        MembershipFormStatus @default(DRAFT)
+
+  // Étape 1 — Informations générales
+  imageUrl             String?
+  description          String? // HTML riche
+  conditions           String? // HTML riche
+  attachments          Json? // [{ url, filename, size }]
+  requireCguvSignature Boolean                  @default(false)
+  contactEmail         String?
+  contactPhone         String?
+  // Remplace le premier écran de décision de l'assistant AssoConnect ("Adhésion immédiate" vs
+  // "Demande d'adhésion") — devient un simple champ de cette étape. Ne s'applique qu'aux tiers
+  // gratuits : un tier payant est toujours IMMEDIATE dès que Stripe confirme le paiement (il
+  // n'y a rien de sensé à "mettre en attente" un paiement déjà capturé).
+  validationMode       MembershipValidationMode @default(IMMEDIATE)
+
+  // Étape 3 — Formulaire : matrice d'exigence des champs standards
+  fieldAddress   MembershipFieldRequirement @default(HIDDEN)
+  fieldBirthDate MembershipFieldRequirement @default(HIDDEN)
+  fieldPhone     MembershipFieldRequirement @default(HIDDEN)
+  fieldMobile    MembershipFieldRequirement @default(HIDDEN)
+  fieldGender    MembershipFieldRequirement @default(HIDDEN)
+  fieldPhoto     MembershipFieldRequirement @default(HIDDEN)
+  fieldLanguage  MembershipFieldRequirement @default(HIDDEN)
+
+  // Étape 4 — Paiement. Pas de champ "allowOnline" (contrairement à DonationForm) : un tier
+  // payant passe toujours par Stripe, ces 3 flags n'activent que le règlement hors-ligne des
+  // tiers ONE_OFF (encaissement manuel par un admin, comme pour les dons).
+  allowCash           Boolean @default(false)
+  allowCheque         Boolean @default(false)
+  allowTransfer       Boolean @default(false)
+  offlineInstructions String?
+  confirmationMessage String?
+  // Optionnel — un admin doit explicitement le renseigner pour recevoir un email à chaque
+  // nouvelle adhésion via ce formulaire (voir notifyMembershipSignup). Distinct de
+  // contactEmail, qui est montré aux visiteurs comme point de contact, jamais utilisé pour
+  // recevoir quoi que ce soit en interne. Sans ce champ, une adhésion réussie ne produit
+  // aujourd'hui qu'une ligne dans le journal d'activité — rien de proactif.
+  adminNotificationEmail String?
+
+  // Étape 5 — Publication
+  visibility MembershipVisibility @default(LINK)
+  opensAt    DateTime?
+  closesAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tiers         MembershipTier[]
+  customFields  MembershipFormField[]
+  cotisations   Cotisation[]
+  subscriptions CotisationSubscription[]
+  checkoutDrafts MembershipCheckoutDraft[]
+
+  @@unique([associationId, slug])
+  @@index([associationId, status])
+}
+
+// Holds a multi-registrant MembershipForm submission (N>1 "Adhérent" blocks in the same
+// checkout, see membership-form-public-form.tsx's "Ajouter un autre adhérent") between the
+// visitor submitting the form and their payment actually completing. Unlike the single-
+// registrant flow, N full identities don't fit in Stripe's metadata (a single person already
+// uses ~10 keys — see checkout/route.ts's commonMeta), so this row is what the checkout
+// session's metadata.draftId points at instead, and consumeMembershipCheckoutDraft (src/lib/
+// webhook/membership-multi.ts) is what turns it into real Membre/Cotisation rows once
+// payment is confirmed (or immediately, for an all-free submission — see checkout/route.ts).
+model MembershipCheckoutDraft {
+  id            String   @id @default(cuid())
+  associationId String
+  formId        String
+  email         String
+  // Null when every registrant's tier was free and validationMode routed this to the
+  // PENDING-approval path instead of ever reaching this table — see checkout/route.ts.
+  passwordHash  String?
+
+  conditionsAgreedAt DateTime?
+  termsAcceptedIp    String?
+  // [{ tierId, amount?, firstName, lastName, birthDate?, sexe?, phone?, mobile?, address?,
+  // answers }] — one entry per "Adhérent" block on the public form, in submission order.
+  // registrants[0] is the person who filled the form (gets the User/login); the rest become
+  // Membre-only dependants of them (Membre.responsableId) — see consumeMembershipCheckoutDraft.
+  registrants Json
+  totalAmount Decimal  @db.Decimal(10, 2)
+
+  createdAt DateTime  @default(now())
+  // Swept by /api/cron/membership-drafts-sweep once past this without ever being consumed —
+  // an abandoned checkout (closed tab, expired Stripe session) shouldn't sit here forever.
+  expiresAt DateTime
+  // Set by consumeMembershipCheckoutDraft once the Membre/Cotisation rows exist — both the
+  // idempotency guard against a redelivered webhook event and what excludes this row from
+  // the sweep above.
+  consumedAt DateTime?
+
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  form        MembershipForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([associationId])
+  @@index([formId])
+  @@index([expiresAt])
+}
+
+// Palier tarifaire d'un MembershipForm — même rôle que DonationTier. Pas de champ "interval"
+// séparé : un tier RECURRING facture toujours tous les durationMonths (12 par défaut), jamais
+// un autre découpage (mensuel, trimestriel) — voir durationMonths ci-dessous.
+model MembershipTier {
+  id       String                 @id @default(cuid())
+  formId   String
+  order    Int
+  kind     MembershipTierKind     @default(ONE_OFF)
+  // MEMBERSHIP (default) is a full-fledged adhésion tier, exactly as before this field
+  // existed. ADDON forces kind to ONE_OFF and ignores membreTypeId in the admin UI (no
+  // recurring add-on, doesn't tag a member category). DONATION forces freeAmount to true and
+  // requires amount as a minimum, same UI-level rules as DonationTier's own montant libre.
+  itemType MembershipTierItemType @default(MEMBERSHIP)
+
+  // "Gratuit" — ignore freeAmount/amount, aucun passage par Stripe (mutuellement exclusif
+  // avec freeAmount).
+  free       Boolean  @default(false)
+  freeAmount Boolean  @default(false) // « Montant libre »
+  amount     Decimal? @db.Decimal(10, 2) // null si free ou freeAmount
+
+  // null = comportement historique, période = année civile de `Cotisation.year`. Un nombre =
+  // adhésion valable durationMonths à partir de la date de paiement plutôt que du 1er janvier
+  // — voir Cotisation.periodStart/periodEnd et src/lib/membre-adherent.ts. Seulement pertinent
+  // pour itemType MEMBERSHIP ; ignoré (forcé null) pour ADDON/DONATION comme les autres champs
+  // propres à l'adhésion elle-même. Mutuellement exclusif avec fixedPeriodEnd ci-dessous.
+  durationMonths Int?
+  // Alternative à durationMonths : une date de fin absolue, identique pour tout le monde peu
+  // importe la date de paiement (ex. "saison 2026-2027, valable jusqu'au 31 août 2027") plutôt
+  // qu'un nombre de mois relatif à l'inscription. Seulement pour un tier ONE_OFF — un tier
+  // RECURRING se renouvelle indéfiniment, une date de fin absolue n'a pas de sens pour lui
+  // (voir tiers/route.ts pour la validation d'exclusion mutuelle).
+  fixedPeriodEnd DateTime?
+  // Un tier MEMBERSHIP peut être marqué éligible au reçu fiscal — rare en France (une
+  // cotisation n'est pas un don), mais certaines associations le permettent dans des cas
+  // précis. Répercuté sur chaque Cotisation qu'il produit (voir Cotisation.taxReceiptEligible),
+  // jamais réévalué a posteriori si le tier change après coup — même logique de snapshot que
+  // membershipFormId/tierId déjà copiés sur Cotisation.
+  taxReceiptEligible Boolean @default(false)
+  // "Payer en plusieurs fois" — offre au visiteur, au moment du paiement, le choix de régler
+  // en installmentsCount mensualités automatiques plutôt qu'en une fois. Implémenté comme un
+  // Stripe Subscription plafonné à N cycles (subscription_data.cancel_at, voir checkout/
+  // route.ts) plutôt qu'une vraie adhésion récurrente — chaque prélèvement s'applique à la
+  // MÊME Cotisation (voir CotisationInstallmentPlan), pas une nouvelle par an comme
+  // CotisationSubscription. Seulement pour un tier ONE_OFF à montant fixe (pas RECURRING —
+  // déjà étalé dans le temps par nature ; pas free/freeAmount, ça ne se divise pas proprement
+  // en N parts égales) — voir tiers/route.ts pour la validation.
+  installmentsAllowed Boolean @default(false)
+  // Bornée à [2, 12] — 1 fois n'est pas un "plusieurs fois", et au-delà de 12 mensualités le
+  // découpage devient peu réaliste pour une cotisation associative.
+  installmentsCount   Int?    @default(3)
+
+  label        String
+  // Tag automatique du Membre créé par ce tier — remplace le menu déroulant de MembreType
+  // aujourd'hui totalement indépendant du prix choisi sur le formulaire public actuel.
+  // Seulement pertinent pour itemType MEMBERSHIP.
+  membreTypeId String?
+
+  form           MembershipForm            @relation(fields: [formId], references: [id], onDelete: Cascade)
+  membreType     MembreType?               @relation(fields: [membreTypeId], references: [id], onDelete: SetNull)
+  cotisations    Cotisation[]
+  subscriptions  CotisationSubscription[]
+  pendingMembres Membre[]
+  addonPurchases MembershipAddonPurchase[]
+  // Dons produits par ce tier quand itemType == DONATION — voir Don.membershipAddonTierId.
+  donsGenerated  Don[]
+
+  @@index([formId])
+  @@index([membreTypeId])
+}
+
+// Un achat d'option ADDON réglé au moment d'une adhésion — séparé de Cotisation.amount pour
+// que ce dernier continue de représenter uniquement le prix de l'adhésion elle-même (pas la
+// somme adhésion+options), afin de ne pas fausser les rapports financiers déjà construits sur
+// cette hypothèse. cotisationId est nullable : un ADDON peut accompagner une adhésion gratuite
+// (Cotisation.amount = 0) sans que l'achat lui-même soit gratuit.
+model MembershipAddonPurchase {
+  id            String   @id @default(cuid())
+  associationId String
+  membreId      String
+  tierId        String
+  cotisationId  String?
+  label         String // snapshot du MembershipTier.label au moment de l'achat
+  amount        Decimal  @db.Decimal(10, 2)
+  purchasedAt   DateTime @default(now())
+
+  association Association    @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre         @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  tier        MembershipTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+  cotisation  Cotisation?    @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
+
+  @@index([membreId])
+  @@index([associationId])
+}
+
+// Champ personnalisé par formulaire, répondu via Membre.answers — même mécanisme que
+// DonationFormField / Don.answers.
+model MembershipFormField {
+  id       String              @id @default(cuid())
+  formId   String
+  type     MembershipFieldType
+  label    String
+  required Boolean             @default(false)
+  order    Int
+
+  form MembershipForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}
+
 // Un don récurrent Stripe. Chaque prélèvement réussi produit une ligne Don rattachée ici
 // (Don.subscriptionId) — le reçu fiscal annuel est une agrégation des Don d'un abonnement,
 // pas un chemin parallèle. Connect est utilisé ici en destination charges : le Customer et
@@ -1029,11 +1410,34 @@ model CotisationSubscription {
   cancelledAt         DateTime?
   currentPeriodEndsAt DateTime?
 
-  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre      Membre       @relation(fields: [membreId], references: [id])
-  cotisations Cotisation[]
+  // Reporting-only link to whichever MembershipForm/MembershipTier started this recurring
+  // subscription — null for one created any other way (legacy /inscription/checkout, admin).
+  // Copied onto every yearly Cotisation this subscription produces (see
+  // handleCotisationInvoicePaid) since a Cotisation row, not this row, is what the
+  // MembershipForm list page's "total collected" figure actually sums.
+  membershipFormId String?
+  tierId           String?
+  // Snapshotted from MembershipTier.durationMonths at signup — same reasoning as
+  // membershipFormId/tierId already being snapshots: the tier can change later without
+  // affecting an already-running subscription. Null = ordinary yearly billing (Stripe
+  // `interval: "year"`); a number = `interval_count` months instead (see checkout/route.ts
+  // and handleCotisationInvoicePaid, src/lib/webhook/cotisation-subscriptions.ts).
+  durationMonths   Int?
+  // Snapshotted from MembershipTier.taxReceiptEligible at signup, same reasoning as
+  // durationMonths above — copied onto every yearly Cotisation this subscription produces
+  // (see handleCotisationInvoicePaid) so a tier edited after signup can't change what an
+  // already-running subscription's past or future receipts are eligible for.
+  taxReceiptEligible Boolean @default(false)
+
+  association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre         Membre          @relation(fields: [membreId], references: [id])
+  membershipForm MembershipForm? @relation(fields: [membershipFormId], references: [id], onDelete: SetNull)
+  tier           MembershipTier? @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  cotisations    Cotisation[]
 
   @@index([associationId, status])
+  @@index([membershipFormId])
+  @@index([tierId])
 }
 
 model Notification {

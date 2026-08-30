@@ -9,6 +9,7 @@ import { CheckCircleIcon, LockIcon, ChartBarIcon, PencilSimpleIcon, ArrowsClockw
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -410,27 +411,20 @@ function SondageDetailPageInner() {
 
                   <div className="space-y-1.5">
                     <Label>Destinataires</Label>
-                    <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
-                      {(["ALL", "SELECTED"] as const).map(mode => (
-                        <button
-                          key={mode}
-                          type="button"
-                          disabled={!editable}
-                          onClick={() => {
-                            setRecipientMode(mode)
-                            if (mode === "ALL") setRecipientIds([])
-                          }}
-                          className={cn(
-                            "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all disabled:opacity-60",
-                            recipientMode === mode
-                              ? "bg-background shadow-sm text-foreground"
-                              : "text-muted-foreground hover:text-foreground",
-                          )}
-                        >
-                          {mode === "ALL" ? "Tous les membres" : "Sélection manuelle"}
-                        </button>
-                      ))}
-                    </div>
+                    <SegmentedControl
+                      size="sm"
+                      className="w-full"
+                      disabled={!editable}
+                      value={recipientMode}
+                      onChange={(mode) => {
+                        setRecipientMode(mode)
+                        if (mode === "ALL") setRecipientIds([])
+                      }}
+                      options={[
+                        { value: "ALL",      label: "Tous les membres" },
+                        { value: "SELECTED", label: "Sélection manuelle" },
+                      ]}
+                    />
                   </div>
 
                   {recipientMode === "SELECTED" && (

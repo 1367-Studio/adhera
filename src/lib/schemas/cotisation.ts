@@ -49,7 +49,7 @@ export const cotisationUpdateSchema = cotisationBase.omit({ membreId: true, year
 
 export const cotisationPaymentSchema = z.object({
   amount: z.number().positive("Montant invalide"),
-  method: z.enum(["CB", "CHQ", "ESP", "En ligne"]),
+  method: z.enum(["CB", "CHQ", "ESP", "En ligne", "Autre"]),
   paidAt: z.string().optional().or(z.literal("")),
   note:   z.string().trim().optional().or(z.literal("")),
 })

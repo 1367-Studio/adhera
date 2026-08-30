@@ -14,6 +14,7 @@ const schema = z.object({
   phone:         z.string().max(30).optional().or(z.literal("")),
   typeId:        z.string().optional(),
   acceptedTerms: z.literal(true),
+  locale:        z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
 })
 
 export async function POST(
@@ -40,7 +41,7 @@ export async function POST(
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { firstName, lastName, email, phone, typeId } = parsed.data
+  const { firstName, lastName, email, phone, typeId, locale } = parsed.data
   const acceptedIp = consentIp(req)
 
   // Prevent duplicate by email
@@ -85,6 +86,7 @@ export async function POST(
       lastName,
       email:           email || null,
       phone:           phone || null,
+      preferredLocale: locale || null,
       status:          "PENDING",
       associationId:   assoc.id,
       typeId:          typeId ?? null,

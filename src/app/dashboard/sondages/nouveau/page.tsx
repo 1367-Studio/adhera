@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { SondageFormBuilder } from "@/components/sondages/sondage-form-builder"
 import type { BuilderQuestion } from "@/components/sondages/sondage-form-builder"
 
@@ -164,26 +165,19 @@ export default function NouveauSondagePage() {
 
             <div className="space-y-1.5">
               <Label>{t("actualites.form.recipients")}</Label>
-              <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
-                {(["ALL", "SELECTED"] as const).map(mode => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => {
-                      setRecipientMode(mode)
-                      if (mode === "ALL") setRecipientIds([])
-                    }}
-                    className={cn(
-                      "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-                      recipientMode === mode
-                        ? "bg-background shadow-sm text-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {mode === "ALL" ? t("actualites.form.recipientsAll") : t("sondages.newSurveyPage.recipientsManual")}
-                  </button>
-                ))}
-              </div>
+              <SegmentedControl
+                size="sm"
+                className="w-full"
+                value={recipientMode}
+                onChange={(mode) => {
+                  setRecipientMode(mode)
+                  if (mode === "ALL") setRecipientIds([])
+                }}
+                options={[
+                  { value: "ALL",      label: t("actualites.form.recipientsAll") },
+                  { value: "SELECTED", label: t("sondages.newSurveyPage.recipientsManual") },
+                ]}
+              />
             </div>
 
             {/* Member picker (only when SELECTED) */}

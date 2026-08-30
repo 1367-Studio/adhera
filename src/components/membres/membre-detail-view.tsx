@@ -6,12 +6,14 @@ import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
-  DownloadSimpleIcon
+  DownloadSimpleIcon, ReceiptIcon, XCircleIcon
 } from "@phosphor-icons/react/dist/ssr";
-import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription } from "@/hooks/use-membres"
+import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
+import { spokenLanguageLabel } from "@/lib/languages"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -153,6 +155,7 @@ export function MembreDetailView() {
   const [deleteOpen, setDeleteOpen]             = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
+  const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
@@ -165,6 +168,7 @@ export function MembreDetailView() {
   const deleteMutation          = useDeleteMembre()
   const createAccessMutation    = useCreateAccess()
   const cancelSubscriptionMutation = useCancelCotisationSubscription()
+  const cancelInstallmentMutation = useCancelCotisationInstallmentPlan()
   const createCotisationMutation = useCreateCotisation()
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
@@ -208,6 +212,39 @@ export function MembreDetailView() {
       setCancelSubscriptionOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleCancelInstallment() {
+    try {
+      await cancelInstallmentMutation.mutateAsync(id)
+      toast.success(t("membres.detail.toasts.installmentCancelled"))
+      setCancelInstallmentOpen(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // Fetch-and-save instead of window.open — a non-2xx response (fiscal receipts not enabled,
+  // cotisation not eligible, etc.) would otherwise just open a new tab showing raw JSON instead
+  // of any legible feedback, same reasoning as dashboard/dons/page.tsx's own downloadRecu.
+  async function downloadCotisationRecu(cotisationId: string) {
+    try {
+      const res = await fetch(`${BASE_PATH}/api/membres/${id}/cotisations/${cotisationId}/recu`)
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        toast.error(body?.error ?? t("common.error"))
+        return
+      }
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement("a")
+      a.href = url
+      a.download = res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ?? `recu-fiscal-${cotisationId}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error(t("common.error"))
     }
   }
 
@@ -285,6 +322,13 @@ export function MembreDetailView() {
   const participationsTotal   = membre._count?.participations ?? participations.length
   const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
   const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
+  // ADDON purchases and DONATION-item-type extras live in two different tables (see
+  // Don.membershipAddonTierId) but are the same thing from this member's point of view —
+  // merged into one chronological list rather than two separate sub-sections.
+  const addonPurchases = [
+    ...membre.membershipAddonPurchases.map(p => ({ id: p.id, label: p.label, amount: p.amount, date: p.purchasedAt })),
+    ...membre.dons.map(d => ({ id: d.id, label: d.membershipAddonTier?.label ?? t("membres.detail.donationFallbackLabel"), amount: d.amount, date: d.paidAt })),
+  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
   const TAB_PAGE_SIZE         = 50
 
   return (
@@ -413,6 +457,9 @@ export function MembreDetailView() {
           {membre.tailleTshirt && (
             <p className="text-muted-foreground">{t("membres.detail.tshirtSizeColon", { value: TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt })}</p>
           )}
+          {membre.spokenLanguage && (
+            <p className="text-muted-foreground">{t("membres.detail.spokenLanguageColon", { value: spokenLanguageLabel(membre.spokenLanguage) })}</p>
+          )}
           {membre.allergies && (
             <p className="flex items-start gap-1.5 text-muted-foreground">
               <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
@@ -431,8 +478,15 @@ export function MembreDetailView() {
               </button>
             </p>
           )}
+          {membre.mobile && (
+            <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
+          )}
+          {membre.customFieldAnswers.map((a, i) => (
+            <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
+          ))}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
-            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && (
+            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
+            && !membre.mobile && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
         </div>
@@ -512,13 +566,35 @@ export function MembreDetailView() {
             <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCotisation")}</p>
           ) : (
             <div className="space-y-2">
-              {cotisations.map((c: { id: string; year: number; amount: string; status: string; paidAt: string | null; declarationNumber: string | null }) => {
+              {cotisations.map((c: {
+                id: string; year: number; amount: string; status: string; paidAt: string | null
+                declarationNumber: string | null; periodEnd?: string | null; taxReceiptEligible?: boolean
+                installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
+              }) => {
                 const s = cotisationStatusBadge[c.status]
+                // A custom-duration Cotisation (MembershipTier.durationMonths) keeps its PAYE/
+                // EXONERE badge forever — cotisation-status-sweep deliberately never touches a
+                // terminal status — so the badge alone can't tell an admin this row's validity
+                // window has actually closed. Surfaced here instead of silently trusting the
+                // badge, same value isMembreAdherent() already uses to decide the member's own
+                // overall status.
+                const periodEndDate = c.periodEnd ? new Date(c.periodEnd) : null
+                const periodExpired = !!periodEndDate && periodEndDate < new Date()
                 return (
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                     <div>
                       <p className="font-medium tabular-nums">{c.year}</p>
                       {c.paidAt && <p className="text-xs text-muted-foreground">{t("membres.detail.paidOn", { date: format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr }) })}</p>}
+                      {periodEndDate && (
+                        <p className={cn("text-xs", periodExpired ? "text-destructive" : "text-muted-foreground")}>
+                          {t(periodExpired ? "membres.detail.periodExpiredOn" : "membres.detail.validUntil", { date: format(periodEndDate, "dd/MM/yyyy", { locale: fr }) })}
+                        </p>
+                      )}
+                      {c.installmentPlan && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("membres.detail.installmentProgress", { paid: c.installmentPlan.installmentsPaid, total: c.installmentPlan.installmentsCount })}
+                        </p>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(c.amount)}</span>
@@ -539,6 +615,30 @@ export function MembreDetailView() {
                           <DownloadSimpleIcon className="size-3.5" />
                         </Button>
                       )}
+                      {c.taxReceiptEligible && c.paidAt && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <Button size="sm" variant="outline" onClick={() => downloadCotisationRecu(c.id)}>
+                                <ReceiptIcon className="size-3.5" />
+                              </Button>
+                            } />
+                            <TooltipContent>{t("membres.detail.downloadRecuFiscal")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {c.installmentPlan?.status === "ACTIVE" && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <Button size="sm" variant="outline" onClick={() => setCancelInstallmentOpen(true)}>
+                                <XCircleIcon className="size-3.5" />
+                              </Button>
+                            } />
+                            <TooltipContent>{t("membres.detail.cancelInstallmentButton")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                     </div>
                   </div>
                 )
@@ -549,6 +649,22 @@ export function MembreDetailView() {
             <p className="mt-2 text-xs text-muted-foreground">
               {t("membres.detail.showingRecentCotisations", { count: TAB_PAGE_SIZE, total: cotisationsTotal })}
             </p>
+          )}
+          {addonPurchases.length > 0 && (
+            <div className="mt-4 space-y-1.5 border-t pt-3">
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.addonPurchasesTitle")}</p>
+              <div className="space-y-1">
+                {addonPurchases.map(p => (
+                  <div key={p.id} className="flex items-center justify-between text-sm">
+                    <span>{p.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="tabular-nums font-medium">{fmt(p.amount)}</span>
+                      {p.date && <span className="text-xs text-muted-foreground">{format(new Date(p.date), "dd/MM/yyyy", { locale: fr })}</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </TabsContent>
         )}
@@ -689,6 +805,8 @@ export function MembreDetailView() {
             groupeSanguin: membre.groupeSanguin ?? "",
             allergies:     membre.allergies     ?? "",
             photoUrl:      membre.photoUrl      ?? "",
+            preferredLocale: (membre.preferredLocale ?? "") as MembreInput["preferredLocale"],
+            spokenLanguage:  (membre.spokenLanguage  ?? "") as MembreInput["spokenLanguage"],
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",
@@ -726,6 +844,16 @@ export function MembreDetailView() {
         confirmLabel={t("membres.detail.cancelSubscriptionButton")}
         loading={cancelSubscriptionMutation.isPending}
         onConfirm={handleCancelSubscription}
+      />
+
+      <ConfirmDialog
+        open={cancelInstallmentOpen}
+        onOpenChange={setCancelInstallmentOpen}
+        title={t("membres.detail.cancelInstallmentConfirmTitle")}
+        description={t("membres.detail.cancelInstallmentConfirmDescription", { name: `${membre.firstName} ${membre.lastName}` })}
+        confirmLabel={t("membres.detail.cancelInstallmentButton")}
+        loading={cancelInstallmentMutation.isPending}
+        onConfirm={handleCancelInstallment}
       />
 
       {roleOpen && (

@@ -15,6 +15,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { cn } from "@/lib/utils"
 
 interface ActualiteFormProps {
@@ -192,26 +193,17 @@ export function ActualiteForm({ defaultValues, onSubmit, onCancel, loading }: Ac
         <Label>{t("recipients")}</Label>
 
         {/* Toggle */}
-        <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5">
-          {(["ALL", "SELECTED"] as const).map(mode => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => {
-                setValue("recipientMode", mode, { shouldValidate: false })
-                if (mode === "ALL") setValue("recipientIds", [], { shouldValidate: false })
-              }}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-all",
-                recipientMode === mode
-                  ? "bg-background shadow-sm text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {mode === "ALL" ? t("recipientsAll") : t("recipientsSelected")}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          value={recipientMode}
+          onChange={(mode) => {
+            setValue("recipientMode", mode, { shouldValidate: false })
+            if (mode === "ALL") setValue("recipientIds", [], { shouldValidate: false })
+          }}
+          options={[
+            { value: "ALL",      label: t("recipientsAll") },
+            { value: "SELECTED", label: t("recipientsSelected") },
+          ]}
+        />
 
         {/* Member picker (only when SELECTED) */}
         {recipientMode === "SELECTED" && (

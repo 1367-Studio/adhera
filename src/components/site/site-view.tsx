@@ -150,7 +150,7 @@ export function SiteView() {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden -mx-4 -mb-4 lg:flex-row" style={{ height: "calc(100vh - 56px)" }}>
+    <div className="flex h-[calc(100vh-3.5rem)] flex-col overflow-hidden -mx-4 -mb-4 md:h-auto md:min-h-0 md:flex-1 lg:flex-row">
       {/* Left/top — controls */}
       <aside className="h-1/2 w-full shrink-0 border-b flex flex-col overflow-hidden bg-background lg:h-full lg:w-[360px] lg:border-b-0 lg:border-r">
         <SiteControlsPanel

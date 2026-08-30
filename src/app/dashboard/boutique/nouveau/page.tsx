@@ -9,11 +9,11 @@ import { ArrowLeftIcon, PlusIcon, TrashIcon, ShoppingBagIcon } from "@phosphor-i
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { SegmentedControl } from "@/components/ui/segmented-control"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { SelectField } from "@/components/ui/select-field"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
-import { cn } from "@/lib/utils"
 
 type VarianteRow = { _key: string; label: string; price: number; stock: string }
 
@@ -146,26 +146,16 @@ export default function NouveauProduitPage() {
 
             <div className="space-y-1.5">
               <Label>{t("form.visibilityLabel")}</Label>
-              <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5 w-full">
-                {([
-                  { v: "DRAFT",  l: t("produitStatus.draft")  },
-                  { v: "ACTIVE", l: t("produitStatus.active") },
-                ] as const).map(opt => (
-                  <button
-                    key={opt.v}
-                    type="button"
-                    onClick={() => setStatus(opt.v)}
-                    className={cn(
-                      "flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all",
-                      status === opt.v
-                        ? "bg-background shadow-sm text-foreground"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {opt.l}
-                  </button>
-                ))}
-              </div>
+              <SegmentedControl
+                size="sm"
+                className="w-full"
+                value={status}
+                onChange={setStatus}
+                options={[
+                  { value: "DRAFT",  label: t("produitStatus.draft")  },
+                  { value: "ACTIVE", label: t("produitStatus.active") },
+                ]}
+              />
             </div>
 
             <SelectField

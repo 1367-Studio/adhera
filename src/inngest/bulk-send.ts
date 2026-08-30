@@ -10,7 +10,7 @@ import { APP_URL } from "@/lib/env"
 
 const EMAIL_CHUNK_SIZE = 100
 
-function notifyBulkSendCompleted(associationId: string, payload: Record<string, unknown>) {
+export function notifyBulkSendCompleted(associationId: string, payload: Record<string, unknown>) {
   return pusherServer.trigger(`private-association-${associationId}`, "bulk-send-completed", payload).catch(() => {})
 }
 

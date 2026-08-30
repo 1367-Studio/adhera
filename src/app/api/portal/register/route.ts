@@ -27,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 422 })
   }
 
-  const { firstName, lastName, email, typeId } = parsed.data
+  const { firstName, lastName, email, typeId, locale } = parsed.data
   const acceptedIp = consentIp(req)
 
   const association = await prisma.association.findUnique({
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
     if (existingMembre) {
       await tx.membre.update({
         where: { id: existingMembre.id },
-        data:  { userId: user.id, firstName, lastName, status: "ACTIF" },
+        data:  { userId: user.id, firstName, lastName, status: "ACTIF", preferredLocale: locale || undefined },
       })
       membreId = existingMembre.id
     } else {
@@ -100,6 +100,7 @@ export async function POST(req: Request) {
           userId:        user.id,
           status:        "ACTIF",
           typeId:        typeId || null,
+          preferredLocale: locale || null,
         },
       })
       membreId = membre.id

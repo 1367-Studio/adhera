@@ -27,6 +27,7 @@ const schema = z.object({
   plan:            z.enum(["monthly", "yearly"]).optional(),
   tier:            z.enum(["essential", "pro"]).optional(),
   offerToken:      z.string().optional(),
+  locale:          z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
 }).refine(
   d => (d.offerToken != null) !== (d.plan != null && d.tier != null),
   { message: "Choisissez soit un plan, soit un lien d'offre, pas les deux." },
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan, tier, offerToken } = parsed.data
+  const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan, tier, offerToken, locale } = parsed.data
   const acceptedIp = consentIp(req)
 
   // Custom-pricing signup link: claimed atomically (PENDING → USED) before anything else
@@ -165,6 +166,7 @@ export async function POST(req: Request) {
           lastName,
           email:         email.toLowerCase(),
           status:        "ACTIF",
+          preferredLocale: locale || null,
           associationId: association.id,
           userId:        user.id,
         },

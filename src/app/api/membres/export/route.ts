@@ -76,6 +76,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     ...(full ? {
       "Possède un tee-shirt": m.possedeTshirt == null ? "" : (m.possedeTshirt ? "Oui" : "Non"),
       "Taille tee-shirt":     m.tailleTshirt ?? "",
+      "Langue parlée":        m.spokenLanguage ?? "",
       "Responsable légal":    m.responsable ? `${sanitizeCell(m.responsable.firstName)} ${sanitizeCell(m.responsable.lastName)}` : "",
     } : {}),
     Statut:            STATUS_LABELS[m.status] ?? m.status,

@@ -23,6 +23,12 @@ import {
   isCotisationSubscriptionEvent, handleCotisationSubscriptionCheckout, handleCotisationSubscriptionSynced,
   handleCotisationSubscriptionDeleted, handleCotisationInvoicePaid, tryHandleCotisationInvoicePaymentFailed,
 } from "@/lib/webhook/cotisation-subscriptions"
+import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
+import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
+import {
+  isMembershipInstallmentEvent, handleMembershipInstallmentCheckout, handleInstallmentInvoicePaid,
+  tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
+} from "@/lib/webhook/membership-installments"
 
 export const dynamic = "force-dynamic"
 
@@ -62,6 +68,31 @@ export async function POST(req: Request) {
       // src/lib/webhook/cotisation-subscriptions.ts).
       if (sess.mode === "subscription" && sess.metadata?.kind === "cotisation") {
         await handleCotisationSubscriptionCheckout(sess)
+        break
+      }
+
+      // A one-off (non-recurring) paid membership tier — same reasoning as the two branches
+      // above: no Membre exists yet to carry an id in metadata, so identity rides through
+      // Stripe metadata instead (see src/lib/webhook/membership-forms.ts). Unlike a one-off
+      // Don, there's no pre-created row to flip paidAt on below.
+      if (sess.mode === "payment" && sess.metadata?.kind === "membership-oneoff") {
+        await handleMembershipOneOffCheckout(sess)
+        break
+      }
+
+      // A paid multi-registrant MembershipForm submission — the draft referenced by
+      // metadata.draftId already carries every registrant's identity (see checkout/route.ts
+      // and src/lib/webhook/membership-multi.ts), so unlike the branches above there's
+      // nothing to reconstruct from Stripe metadata alone.
+      if (sess.mode === "payment" && sess.metadata?.kind === "membership-multi") {
+        await handleMembershipMultiCheckout(sess)
+        break
+      }
+
+      // A ONE_OFF membership tier paid in installments — same reasoning as the two
+      // subscription branches above, no Membre exists yet to carry an id in metadata.
+      if (sess.mode === "subscription" && sess.metadata?.kind === "membership-installment") {
+        await handleMembershipInstallmentCheckout(sess)
         break
       }
 
@@ -671,7 +702,7 @@ export async function POST(req: Request) {
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId).catch(() => null)
       if (!paymentIntent) break
 
-      const { cotisationId, orderId, donId, commandeId, associationId } = paymentIntent.metadata
+      const { cotisationId, orderId, donId, commandeId, associationId, draftId } = paymentIntent.metadata
 
       // A single checkout (cotisation, ticket order, don, commande) can bundle several
       // paid seats/items behind one PaymentIntent. When the refund is partial (e.g. the
@@ -831,6 +862,34 @@ export async function POST(req: Request) {
             await writeActivityLog({ associationId, action: "COMMANDE_REFUNDED", entity: "BoutiqueCommande", entityId: commandeId })
           }
         }
+      } else if (draftId && associationId) {
+        // A fully-refunded multi-registrant MembershipForm payment (see checkout/route.ts's
+        // "Ajouter un autre adhérent" and src/lib/webhook/membership-multi.ts) — unlike the
+        // branches above, there's no single Cotisation/Don id to flip back: the draft already
+        // fanned out into N Membre/Cotisation rows by the time a refund could happen. Auto-
+        // reversing all of them safely (without also undoing a since-independent status
+        // change on one of them) is out of scope here — this is the same "make sure a human
+        // finds out" fallback the partial-refund branch above already uses, just for the case
+        // where nothing above applies.
+        await writeActivityLog({ associationId, action: "MEMBERSHIP_GROUP_REFUNDED", entity: "MembershipCheckoutDraft", entityId: draftId })
+        const admins = await prisma.user.findMany({
+          where:  { associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+          select: { id: true },
+        })
+        if (admins.length) {
+          const amountLabel = (charge.amount_refunded / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+          await prisma.notification.createMany({
+            data: admins.map(a => ({
+              userId: a.id,
+              title:  "Adhésion groupée remboursée",
+              body:   `Un remboursement total de ${amountLabel} a été reçu pour une inscription groupée. Les comptes créés n'ont pas été annulés automatiquement — vérifiez et corrigez manuellement si besoin.`,
+              link:   "/dashboard/membres",
+              scope:  "GESTION",
+            })),
+            skipDuplicates: true,
+          })
+          await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+        }
       }
       break
     }
@@ -853,6 +912,12 @@ export async function POST(req: Request) {
         await handleCotisationSubscriptionSynced(sub)
         break
       }
+      // Nothing to sync — an installment plan's own status (ACTIVE/COMPLETED/CANCELLED) is
+      // driven entirely by invoice.paid/customer.subscription.deleted, not by Stripe's
+      // subscription status field. Still needs to short-circuit here, same reasoning as the
+      // two branches above: falling through would otherwise try to match this Subscription's
+      // id against Association.stripeSubscriptionId.
+      if (isMembershipInstallmentEvent(sub)) break
 
       const newStatus = toSubscriptionStatus(sub.status)
 
@@ -960,6 +1025,10 @@ export async function POST(req: Request) {
         await handleCotisationSubscriptionDeleted(sub)
         break
       }
+      if (isMembershipInstallmentEvent(sub)) {
+        await handleMembershipInstallmentDeleted(sub)
+        break
+      }
 
       await prisma.association.updateMany({
         where: { stripeSubscriptionId: sub.id },
@@ -976,6 +1045,7 @@ export async function POST(req: Request) {
       const invoice = event.data.object as Stripe.Invoice
       await handleDonationInvoicePaid(invoice)
       await handleCotisationInvoicePaid(invoice)
+      await handleInstallmentInvoicePaid(invoice)
       break
     }
 
@@ -993,6 +1063,7 @@ export async function POST(req: Request) {
       // Subscription object itself in the two handlers above.
       if (await tryHandleDonationInvoicePaymentFailed(invoice, event.id)) break
       if (await tryHandleCotisationInvoicePaymentFailed(invoice, event.id)) break
+      if (await tryHandleInstallmentInvoicePaymentFailed(invoice, event.id)) break
 
       const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id
       if (!customerId) break

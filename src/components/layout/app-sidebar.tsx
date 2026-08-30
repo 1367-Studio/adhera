@@ -12,7 +12,7 @@ import {
   SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
   EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
   ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
-  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon,
+  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon, UserPlusIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -61,7 +61,9 @@ const navigationItems: NavItem[] = [
   { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon,   roles: MANAGERS },
 
   { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
+  { key: "adhesions",     href: "/dashboard/adhesions",    icon: UserPlusIcon,        roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,         roles: FINANCE, moduleKey: "dons",        categoryKey: "adherents" },
   { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  categoryKey: "adherents" },
 
   { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", categoryKey: "communication" },
@@ -76,7 +78,6 @@ const navigationItems: NavItem[] = [
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
   { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon,    roles: FINANCE, moduleKey: "factures",     categoryKey: "finances" },
   { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,  roles: FINANCE, moduleKey: "fournisseurs", categoryKey: "finances" },
-  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,      roles: FINANCE, moduleKey: "dons",         categoryKey: "finances" },
 
   { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon,     roles: MANAGERS, moduleKey: "materiel", categoryKey: "outils" },
   { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", categoryKey: "outils" },

@@ -25,6 +25,7 @@ import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
 
@@ -449,28 +450,20 @@ function DonsPageInner() {
       />
 
       {/* Tabs */}
-      <div className="inline-flex rounded-lg border bg-muted/30 p-0.5 gap-0.5">
-        {([
-          { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
-          { key: "dons",        label: t("tabs.donations"), icon: HandshakeIcon },
-          { key: "recus",       label: t("tabs.receipts"),  icon: ReceiptIcon },
-        ] as const).map(tabOption => (
-          <button
-            key={tabOption.key}
-            type="button"
-            onClick={() => changeTab(tabOption.key)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm font-medium transition-all",
-              tab === tabOption.key
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            <tabOption.icon className="size-3.5" />
-            {tabOption.label}
-          </button>
-        ))}
-      </div>
+      <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
+        <TabsList>
+          {([
+            { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
+            { key: "dons",        label: t("tabs.donations"), icon: HandshakeIcon },
+            { key: "recus",       label: t("tabs.receipts"),  icon: ReceiptIcon },
+          ] as const).map(tabOption => (
+            <TabsTrigger key={tabOption.key} value={tabOption.key} className="px-4">
+              <tabOption.icon className="size-3.5" />
+              {tabOption.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       {tab === "formulaires" && (
         loadingForms ? (

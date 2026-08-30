@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
-  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon,
+  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon, EyeIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useCurrentUser } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
@@ -19,6 +19,7 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { DocumentUpload } from "@/components/ui/document-upload"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
@@ -30,6 +31,7 @@ import { DonationTiersEditor } from "@/components/dons/donation-tiers-editor"
 
 type DonationFormStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type FieldRequirement   = "HIDDEN" | "OPTIONAL" | "REQUIRED"
+type Attachment = { url: string; filename: string; size: number }
 type Visibility         = "LINK" | "SITE" | "PRIVATE"
 
 type DonationForm = {
@@ -42,6 +44,7 @@ type DonationForm = {
   imageUrl:             string | null
   description:          string | null
   conditions:            string | null
+  attachments:          Attachment[] | null
   requireCguvSignature: boolean
   contactEmail:         string | null
   contactPhone:         string | null
@@ -96,6 +99,8 @@ export default function DonationFormDetailPage() {
   const [imageUrl, setImageUrl]         = useState("")
   const [description, setDescription]   = useState("")
   const [conditions, setConditions]     = useState("")
+  const [attachments, setAttachments]   = useState<Attachment[]>([])
+  const [pendingPdf, setPendingPdf]     = useState<{ blobUrl: string; file: File } | null>(null)
   const [requireCguv, setRequireCguv]   = useState(false)
   const [contactEmail, setContactEmail] = useState("")
   const [contactPhone, setContactPhone] = useState("")
@@ -144,6 +149,7 @@ export default function DonationFormDetailPage() {
     setImageUrl(form.imageUrl ?? "")
     setDescription(form.description ?? "")
     setConditions(form.conditions ?? "")
+    setAttachments(form.attachments ?? [])
     setRequireCguv(form.requireCguvSignature)
     setContactEmail(form.contactEmail ?? "")
     setContactPhone(form.contactPhone ?? "")
@@ -198,15 +204,33 @@ export default function DonationFormDetailPage() {
         setUploadingImage(false)
       }
     }
+    // Same lazy pattern for the conditions document: only uploaded when the form is saved.
+    let resolvedAttachments = attachments
+    if (pendingPdf) {
+      setUploadingImage(true)
+      try {
+        const fd = new FormData()
+        fd.append("file", pendingPdf.file)
+        fd.append("prefix", "adhera/dons")
+        const res = await fetch("/api/upload", { method: "POST", body: fd })
+        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return }
+        const { url } = (await res.json()) as { url: string }
+        resolvedAttachments = [{ url, filename: pendingPdf.file.name, size: pendingPdf.file.size }]
+      } finally {
+        setUploadingImage(false)
+      }
+    }
     saveMutation.mutate({
       imageUrl: resolvedImageUrl,
       description: description || null,
       conditions: conditions || null,
+      attachments: resolvedAttachments,
       requireCguvSignature: requireCguv,
       contactEmail: contactEmail || null,
       contactPhone: contactPhone || null,
     })
     setPendingFile(null)
+    setPendingPdf(null)
   }
 
   const publishMutation = useMutation({
@@ -265,14 +289,22 @@ export default function DonationFormDetailPage() {
   const canDelete = form._count.dons === 0 && form._count.subscriptions === 0
 
   const requirementOptions = [
-    { value: "HIDDEN",   label: tSteps("fields.requirement.hidden") },
-    { value: "OPTIONAL", label: tSteps("fields.requirement.optional") },
     { value: "REQUIRED", label: tSteps("fields.requirement.required") },
+    { value: "OPTIONAL", label: tSteps("fields.requirement.optional") },
+    { value: "HIDDEN",   label: tSteps("fields.requirement.hidden") },
   ]
 
   // window.location.origin read only at click time (not during render) — sidesteps the
   // SSR/hydration-mismatch concern DonShareCard handles with useSyncExternalStore, since
   // this button never displays the URL itself, only copies it.
+  // Opens the public page with ?preview=1 — the public GET lets a logged-in manager of this
+  // association through the PUBLISHED gate for that flag (src/lib/form-preview.ts), so a
+  // draft can be checked before publishing; the page disables submission in that mode.
+  function handlePreview() {
+    if (!user.associationSlug || !form) return
+    window.open(`${BASE_PATH}/${user.associationSlug}/dons/${form.slug}?preview=1`, "_blank", "noopener")
+  }
+
   async function handleCopyLink() {
     if (!user.associationSlug || !form) return
     const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/dons/${form.slug}`
@@ -306,6 +338,10 @@ export default function DonationFormDetailPage() {
                 {t("detail.unpublishButton")}
               </Button>
             )}
+            <Button size="sm" variant="ghost" onClick={handlePreview}>
+              <EyeIcon className="mr-1.5 size-4" />
+              {t("detail.previewButton")}
+            </Button>
             {form.status === "PUBLISHED" && (
               <Button size="sm" variant="ghost" onClick={handleCopyLink}>
                 {linkCopied ? <CheckIcon className="mr-1.5 size-4" /> : <LinkIcon className="mr-1.5 size-4" />}
@@ -368,6 +404,19 @@ export default function DonationFormDetailPage() {
                 onChange={setConditions}
                 placeholder={tSteps("info.conditionsPlaceholder")}
               />
+              <div className="space-y-1.5">
+                <Label>{tSteps("info.conditionsPdfLabel")}</Label>
+                <DocumentUpload
+                  value={attachments[0]?.url ?? ""}
+                  onChange={(url) => { if (url === "") { setPendingPdf(null); setAttachments([]) } }}
+                  prefix="adhera/dons"
+                  lazy
+                  onFilePending={(blobUrl, file) => {
+                    setPendingPdf({ blobUrl, file })
+                    setAttachments([{ url: blobUrl, filename: file.name, size: file.size }])
+                  }}
+                />
+              </div>
               <CheckboxField
                 label={tSteps("info.requireCguvLabel")}
                 checked={requireCguv}

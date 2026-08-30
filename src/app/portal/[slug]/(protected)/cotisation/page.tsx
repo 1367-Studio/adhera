@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
-import { CheckCircleIcon, ClockIcon, CircleHalfIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CheckCircleIcon, ClockIcon, CircleHalfIcon, GiftIcon, CreditCardIcon, DownloadSimpleIcon, WarningCircleIcon, XCircleIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,6 +28,8 @@ type Cotisation = {
   paidAt:     string | null
   note:       string | null
   declarationNumber: string | null
+  taxReceiptEligible: boolean
+  association: { canIssueTaxReceipts: boolean }
   installments: Installment[]
   // Server-computed (src/lib/cotisation-status.ts's nextAmountDue) — the amount that would
   // actually be charged right now, which is only the next unpaid échéance when a schedule
@@ -174,6 +176,29 @@ function CotisationPortalPageInner() {
     onError:   (err) => toast.error(err instanceof Error ? err.message : t("toasts.paymentError")),
   })
 
+  // Fetch-and-save instead of window.open — a non-2xx response (fiscal receipts not enabled,
+  // cotisation not eligible, etc.) would otherwise just open a new tab showing raw JSON instead
+  // of any legible feedback, same reasoning the declaration button intentionally skips (it's
+  // never shown unless declarationNumber already exists, so it can't 404).
+  async function downloadRecu(cotisationId: string) {
+    try {
+      const res = await fetch(`${BASE_PATH}/api/portal/cotisation/${cotisationId}/recu`)
+      if (!res.ok) {
+        toast.error(await apiErrorMessage(res, tCommon("error")))
+        return
+      }
+      const blob = await res.blob()
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement("a")
+      a.href = url
+      a.download = res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ?? `recu-fiscal-${cotisationId}.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      toast.error(tCommon("error"))
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="w-full space-y-6 animate-pulse">
@@ -267,6 +292,18 @@ function CotisationPortalPageInner() {
                   <DownloadSimpleIcon className="size-3.5" />
                 </Button>
               )}
+              {thisYear.taxReceiptEligible && thisYear.paidAt && thisYear.association.canIssueTaxReceipts && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger render={
+                      <Button size="sm" variant="ghost" className="hover:bg-muted/10" onClick={() => downloadRecu(thisYear.id)}>
+                        <ReceiptIcon className="size-3.5" />
+                      </Button>
+                    } />
+                    <TooltipContent>{t("downloadRecuFiscal")}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
               </div>
             </div>
 
@@ -347,6 +384,18 @@ function CotisationPortalPageInner() {
                       >
                         <DownloadSimpleIcon className="size-3.5" />
                       </Button>
+                    )}
+                    {c.taxReceiptEligible && c.paidAt && c.association.canIssueTaxReceipts && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger render={
+                            <Button size="sm" variant="outline" onClick={() => downloadRecu(c.id)}>
+                              <ReceiptIcon className="size-3.5" />
+                            </Button>
+                          } />
+                          <TooltipContent>{t("downloadRecuFiscal")}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                     {owesSomething && paymentEnabled && (
                       <Button

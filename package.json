@@ -10,6 +10,13 @@
     "check-types": "tsc --noEmit",
     "validate": "npm run check-types && npx eslint . --no-cache && npm run build",
     "seed": "npx tsx prisma/seed.ts",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose stop",
+    "db:migrate": "./scripts/local-db.sh npx prisma migrate dev",
+    "db:seed": "./scripts/local-db.sh npm run seed",
+    "db:reset": "./scripts/local-db.sh npx prisma migrate reset",
+    "db:psql": "docker compose exec db psql -U postgres -d adhera",
+    "dev:local": "./scripts/local-db.sh next dev",
     "postinstall": "prisma generate"
   },
   "prisma": {

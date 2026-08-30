@@ -85,7 +85,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -126,6 +126,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     sexe:          sexe          || null,
     groupeSanguin: groupeSanguin || null,
     allergies:     allergies     || null,
+    spokenLanguage: spokenLanguage || null,
     // Never persist "does not have a t-shirt" alongside a size (see membre-form.tsx's
     // matching reactive clear on the client — this is the server-side backstop).
     possedeTshirt: possedeTshirt === undefined || possedeTshirt === "" ? null : possedeTshirt === "true",
