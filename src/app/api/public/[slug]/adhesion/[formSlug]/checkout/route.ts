@@ -713,12 +713,6 @@ async function handleMultiRegistrantCheckout(
   if (form.requireCguvSignature && !data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
-  // A required photo is only ever collected from the person filling out the form (see
-  // membership-form-public-form.tsx) — the client already hides "Ajouter un autre adhérent"
-  // for such forms, this rejects a direct API call that bypasses that.
-  if (form.fieldPhoto === "REQUIRED")
-    return NextResponse.json({ error: "Une inscription groupée n'est pas disponible pour ce formulaire." }, { status: 422 })
-
   // Resolve + validate every registrant's tier — MEMBERSHIP/ONE_OFF only. A Stripe
   // Subscription is tied to exactly one Membre, so a single group checkout can't "split" a
   // recurring tier across N people (same reasoning the public form uses to hide "Ajouter un
@@ -749,6 +743,7 @@ async function handleMultiRegistrantCheckout(
       [form.fieldMobile,    r.mobile,    "Mobile"],
       [form.fieldGender,    r.sexe,      "Genre"],
       [form.fieldLanguage,  r.spokenLanguage, "Langue parlée"],
+      [form.fieldPhoto,     r.photoUrl,  "Photo"],
     ]
     for (const [requirement, value, label] of standardChecks) {
       if (requirement === "REQUIRED" && (!value || !value.trim()))
