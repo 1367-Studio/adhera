@@ -2636,6 +2636,17 @@
           "siteSectionCreateOption": "+ Créer une nouvelle section",
           "siteSectionCreateError": "Erreur lors de la création de la section du site.",
           "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire."
+        },
+        "products": {
+          "title": "Produits",
+          "hint": "Produits de la Boutique proposés à l'achat en fin d'adhésion. Le stock est partagé avec le module Boutique.",
+          "noProducts": "Aucun produit actif dans la Boutique. Activez le module Boutique et créez au moins un produit pour en proposer ici.",
+          "stockCount": "{count, plural, one {# en stock} other {# en stock}}",
+          "outOfStock": "Épuisé",
+          "selectedCount": "{count}/{max} produits sélectionnés",
+          "maxProductsError": "Vous pouvez proposer au maximum {max} produits",
+          "saved": "Produits enregistrés",
+          "saveProducts": "Enregistrer les produits"
         }
       }
     },
@@ -2697,7 +2708,11 @@
       "submittedWithPayment": "Votre adhésion est active et votre paiement a bien été reçu.",
       "submittedRequestBody": "Votre demande d'adhésion a bien été reçue. L'association vous contactera dans les meilleurs délais.",
       "toastCancelled": "Paiement annulé.",
-      "errorNetwork": "Erreur réseau. Réessayez."
+      "errorNetwork": "Erreur réseau. Réessayez.",
+      "productsLabel": "Produits",
+      "outOfStock": "Épuisé",
+      "decreaseQuantityLabel": "Diminuer la quantité",
+      "increaseQuantityLabel": "Augmenter la quantité"
     }
   },
   "messages": {

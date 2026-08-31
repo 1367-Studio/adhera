@@ -2636,6 +2636,17 @@
           "siteSectionCreateOption": "+ Create new section",
           "siteSectionCreateError": "Error creating the site section.",
           "siteSectionRequiredError": "Choose which site section this form should be published on."
+        },
+        "products": {
+          "title": "Products",
+          "hint": "Boutique products offered for purchase at the end of the signup. Stock is shared with the Boutique module.",
+          "noProducts": "No active product in the Boutique. Enable the Boutique module and create at least one product to offer here.",
+          "stockCount": "{count, plural, one {# in stock} other {# in stock}}",
+          "outOfStock": "Out of stock",
+          "selectedCount": "{count}/{max} products selected",
+          "maxProductsError": "You can offer at most {max} products",
+          "saved": "Products saved",
+          "saveProducts": "Save products"
         }
       }
     },
@@ -2697,7 +2708,11 @@
       "submittedWithPayment": "Your membership is active and your payment has been received.",
       "submittedRequestBody": "Your membership request has been received. The association will contact you soon.",
       "toastCancelled": "Payment cancelled.",
-      "errorNetwork": "Network error. Please try again."
+      "errorNetwork": "Network error. Please try again.",
+      "productsLabel": "Products",
+      "outOfStock": "Out of stock",
+      "decreaseQuantityLabel": "Decrease quantity",
+      "increaseQuantityLabel": "Increase quantity"
     }
   },
   "messages": {

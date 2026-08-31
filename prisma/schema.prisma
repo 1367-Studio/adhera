@@ -870,6 +870,7 @@ model Cotisation {
   tier            MembershipTier?           @relation(fields: [tierId], references: [id], onDelete: SetNull)
   addonPurchases  MembershipAddonPurchase[]
   installmentPlan CotisationInstallmentPlan?
+  boutiqueCommandes BoutiqueCommande[]
 
   @@unique([membreId, year])
   @@unique([associationId, declarationNumber])
@@ -1175,6 +1176,7 @@ model MembershipForm {
 
   association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
   tiers         MembershipTier[]
+  products      MembershipFormProduct[]
   customFields  MembershipFormField[]
   cotisations   Cotisation[]
   subscriptions CotisationSubscription[]
@@ -1298,6 +1300,26 @@ model MembershipTier {
 
   @@index([formId])
   @@index([membreTypeId])
+}
+
+// Un produit Boutique proposé à la vente en fin de MembershipForm — l'admin choisit
+// directement une (ou plusieurs) BoutiqueVariante précise(s), pas un BoutiqueProduit dont
+// l'acheteur choisirait ensuite la variante. Pur pointeur d'offre, sans signification
+// financière propre : onDelete Cascade (pas Restrict comme BoutiqueCommandeItem) — supprimer
+// la variante côté Boutique doit juste arrêter de la proposer ici, jamais bloquer sa
+// suppression. Voir membership-form-products.ts pour l'achat effectif (BoutiqueCommande).
+model MembershipFormProduct {
+  id         String   @id @default(cuid())
+  formId     String
+  varianteId String
+  order      Int
+  createdAt  DateTime @default(now())
+
+  form     MembershipForm   @relation(fields: [formId], references: [id], onDelete: Cascade)
+  variante BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Cascade)
+
+  @@unique([formId, varianteId])
+  @@index([formId])
 }
 
 // Un achat d'option ADDON réglé au moment d'une adhésion — séparé de Cotisation.amount pour
@@ -1866,6 +1888,12 @@ model BoutiqueVariante {
 
   produit       BoutiqueProduit        @relation(fields: [produitId], references: [id], onDelete: Cascade)
   commandeItems BoutiqueCommandeItem[]
+  formOffers    MembershipFormProduct[]
+}
+
+enum BoutiqueCommandeSource {
+  STOREFRONT
+  MEMBERSHIP_FORM
 }
 
 model BoutiqueCommande {
@@ -1877,6 +1905,15 @@ model BoutiqueCommande {
   status                BoutiqueCommandeStatus @default(PENDING)
   paymentMethod         BoutiquePaymentMethod  @default(MANUAL)
   manualPaymentType     BoutiquePaymentMethod?
+  // STOREFRONT (défaut, historique) = vente créée depuis le module Boutique lui-même
+  // (dashboard ou /api/portal/boutique/checkout). MEMBERSHIP_FORM = vente rattachée à une
+  // adhésion via MembershipFormProduct — même stock, même liste de commandes, juste une
+  // origine différente pour pouvoir filtrer/reporter dessus.
+  source                BoutiqueCommandeSource @default(STOREFRONT)
+  // Renseigné uniquement pour source = MEMBERSHIP_FORM — traçabilité vers l'adhésion qui a
+  // accompagné cet achat. SetNull (pas Cascade) : supprimer la Cotisation ne doit pas
+  // supprimer une vente déjà comptabilisée (Income déjà émis).
+  cotisationId          String?
   // Assigned once, the moment the commande first becomes PAID — never reassigned by the
   // manualPaymentType correction flow, so a reçu already handed to a buyer keeps its number.
   receiptNumber         String?
@@ -1892,6 +1929,7 @@ model BoutiqueCommande {
 
   association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  cotisation  Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
   items       BoutiqueCommandeItem[]
 
   @@unique([associationId, receiptNumber])

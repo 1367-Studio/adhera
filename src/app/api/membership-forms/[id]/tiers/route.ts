@@ -181,6 +181,9 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       // trust that alone — normalize server-side too so a stale/tampered payload can't leave
       // e.g. a recurring ADDON or a membre-type-tagging DONATION in the database.
       const isMembership = t.itemType === "MEMBERSHIP"
+      // Une donation reste éligible au reçu fiscal, comme sur AssoConnect ("Reçus fiscaux" sur
+      // sa formule de type Dons) — seule une option (ADDON) n'a jamais de sens fiscalement.
+      const receiptEligible = t.itemType !== "ADDON"
       const data = {
         order:        t.order,
         itemType:     t.itemType,
@@ -190,7 +193,7 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amount:       t.free || (t.itemType !== "DONATION" && t.freeAmount) ? null : t.amount,
         durationMonths: isMembership ? (t.durationMonths || null) : null,
         fixedPeriodEnd: isMembership && t.fixedPeriodEnd ? new Date(t.fixedPeriodEnd) : null,
-        receiptMode:      isMembership && !t.free ? t.receiptMode : "NONE" as const,
+        receiptMode:      receiptEligible && !t.free ? t.receiptMode : "NONE" as const,
         deductibleAmount: isMembership && !t.free && t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
         installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount ? !!t.installmentsAllowed : false,
         installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && t.installmentsAllowed ? t.installmentsCount : null,
