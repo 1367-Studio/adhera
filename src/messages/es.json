@@ -2712,7 +2712,8 @@
       "productsLabel": "Productos",
       "outOfStock": "Agotado",
       "decreaseQuantityLabel": "Disminuir cantidad",
-      "increaseQuantityLabel": "Aumentar cantidad"
+      "increaseQuantityLabel": "Aumentar cantidad",
+      "productsMultiHint": "Los productos elegidos se atribuirán a la cuenta de la persona que completa este formulario."
     }
   },
   "messages": {

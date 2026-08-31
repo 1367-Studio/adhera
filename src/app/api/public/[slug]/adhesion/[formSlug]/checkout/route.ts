@@ -101,7 +101,43 @@ const multiSchema = z.object({
   conditionsAgreed: z.boolean().optional().default(false),
   website:     z.string().optional().or(z.literal("")),
   locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  // Contrairement au reste de ce schéma, jamais rattaché à un registrant précis : le groupe
+  // n'a qu'un seul email/login réel (registrants[0], voir handleMultiRegistrantCheckout), donc
+  // le produit lui est toujours attribué en entier plutôt que d'être réparti entre les
+  // personnes du groupe.
+  products:    z.array(z.object({
+    varianteId: z.string().min(1),
+    quantity:   z.number().int().min(1).max(99),
+  })).max(10).optional().default([]),
 })
+
+type ResolvedProduct = { varianteId: string; produitId: string; label: string; quantity: number; unitPriceCents: number }
+
+// Partagé entre le parcours à un seul adhérent et l'inscription groupée — mêmes règles de
+// validation/re-tarification server-side dans les deux cas (voir le commentaire détaillé sur
+// resolvedProducts dans le parcours à un seul adhérent, plus bas, pour le raisonnement complet).
+function resolveRequestedProducts(
+  form: { products: { varianteId: string; variante: { id: string; produitId: string; label: string; price: number; stock: number; produit: { status: string } } }[] },
+  modules: { boutique: boolean },
+  requested: { varianteId: string; quantity: number }[],
+): { error: string } | { products: ResolvedProduct[]; totalCents: number } {
+  const varianteIds = new Set(requested.map(p => p.varianteId))
+  if (varianteIds.size !== requested.length) return { error: "Produits en double" }
+
+  const products: ResolvedProduct[] = []
+  for (const p of requested) {
+    const offer = modules.boutique ? form.products.find(fp => fp.varianteId === p.varianteId) : undefined
+    if (!offer || offer.variante.produit.status !== "ACTIVE")
+      return { error: "Produit invalide" }
+    if (offer.variante.stock < p.quantity)
+      return { error: `Stock insuffisant pour « ${offer.variante.label} » (disponible : ${offer.variante.stock})` }
+    products.push({
+      varianteId: offer.variante.id, produitId: offer.variante.produitId, label: offer.variante.label,
+      quantity: p.quantity, unitPriceCents: offer.variante.price,
+    })
+  }
+  return { products, totalCents: products.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0) }
+}
 
 export async function POST(
   req: Request,
@@ -201,35 +237,15 @@ export async function POST(
   // options ci-dessus. Toujours vide en dehors du rail ONE_OFF/paiement unique (voir le
   // garde-fou juste après) — c'est le seul chemin dont le webhook décompte réellement le
   // stock (voir membership-form-products.ts).
-  const productVarianteIds = new Set(parsed.data.products.map(p => p.varianteId))
-  if (productVarianteIds.size !== parsed.data.products.length)
-    return NextResponse.json({ error: "Produits en double" }, { status: 422 })
-
-  const resolvedProducts: { varianteId: string; produitId: string; label: string; quantity: number; unitPriceCents: number }[] = []
-  for (const p of parsed.data.products) {
-    // Le module Boutique a pu être désactivé depuis que le formulaire a été configuré (voir
-    // le même garde-fou côté GET public) — dans ce cas plus aucune offre n'est valide, même
-    // si MembershipFormProduct la référence encore.
-    const offer = modules.boutique ? form.products.find(fp => fp.varianteId === p.varianteId) : undefined
-    if (!offer || offer.variante.produit.status !== "ACTIVE")
-      return NextResponse.json({ error: "Produit invalide" }, { status: 422 })
-    // Contrôle en amont, pour un message d'erreur clair — le webhook refait le même contrôle
-    // de façon atomique au moment du paiement (voir membership-form-products.ts), seul
-    // moment qui compte vraiment puisque le stock peut bouger entre les deux.
-    if (offer.variante.stock < p.quantity)
-      return NextResponse.json({ error: `Stock insuffisant pour « ${offer.variante.label} » (disponible : ${offer.variante.stock})` }, { status: 422 })
-    resolvedProducts.push({
-      varianteId: offer.variante.id, produitId: offer.variante.produitId, label: offer.variante.label,
-      quantity: p.quantity, unitPriceCents: offer.variante.price,
-    })
-  }
+  const productsResult = resolveRequestedProducts(form, modules, parsed.data.products)
+  if ("error" in productsResult) return NextResponse.json({ error: productsResult.error }, { status: 422 })
+  const { products: resolvedProducts, totalCents: totalProductsCents } = productsResult
   // Défense en profondeur : structurellement, resolvedProducts ne peut déjà rejoindre que le
   // rail ONE_OFF/paiement unique plus bas (aucun autre branch n'y touche), mais un payload
   // trafiqué pourrait combiner un tarif RECURRING ou "plusieurs fois" avec des produits —
   // un tarif gratuit reste ONE_OFF pour le paiement (voir effectiveKind plus bas).
   if (resolvedProducts.length > 0 && ((tier.free ? "ONE_OFF" : tier.kind) !== "ONE_OFF" || parsed.data.payInInstallments))
     return NextResponse.json({ error: "Les produits ne sont pas disponibles avec ce mode de paiement." }, { status: 422 })
-  const totalProductsCents = resolvedProducts.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0)
 
   // A paid tier — or a free tier picking up a paid extra — is always immediate as soon as
   // payment is confirmed; there's nothing sensible to "hold for approval" once money has
@@ -790,7 +806,10 @@ async function handleMultiRegistrantCheckout(
 
   const form = await prisma.membershipForm.findFirst({
     where:   { slug: formSlug, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
-    include: { tiers: true, customFields: true },
+    include: {
+      tiers: true, customFields: true,
+      products: { include: { variante: { include: { produit: { select: { status: true } } } } } },
+    },
   })
   if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
 
@@ -798,6 +817,14 @@ async function handleMultiRegistrantCheckout(
   if (form.closesAt && form.closesAt < now) return NextResponse.json({ error: "Ce formulaire est fermé." }, { status: 422 })
   if (form.requireCguvSignature && !data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
+
+  // Toujours attribué en entier à registrants[0] une fois consommé (voir
+  // MembershipCheckoutDraft.products dans schema.prisma) — jamais réparti entre les personnes
+  // du groupe, même raisonnement de re-tarification server-side que le parcours à un seul
+  // adhérent.
+  const productsResult = resolveRequestedProducts(form, modules, data.products)
+  if ("error" in productsResult) return NextResponse.json({ error: productsResult.error }, { status: 422 })
+  const { products: resolvedProducts, totalCents: totalProductsCents } = productsResult
 
   // Resolve + validate every registrant's tier — MEMBERSHIP/ONE_OFF only. A Stripe
   // Subscription is tied to exactly one Membre, so a single group checkout can't "split" a
@@ -852,10 +879,19 @@ async function handleMultiRegistrantCheckout(
     resolved.push({ tier, amount, r, answers })
   }
 
-  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0)
+  // totalProductsCents/100 inclus ici même s'il n'existe pas de tarif payant dans le groupe :
+  // sans ça, un groupe entièrement gratuit + un produit payant retombait dans la branche
+  // "tous gratuits" plus bas, qui ne passe jamais par Stripe — même bug de contournement que
+  // celui corrigé sur le parcours à un seul adhérent (voir le commentaire sur tier.free plus
+  // haut dans ce fichier).
+  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0) + totalProductsCents / 100
   // Same reasoning as the single-registrant path's willBeImmediate: any money changing hands
   // is always immediate, only a fully-free group ever goes through the form's validationMode.
-  const willBeImmediate = totalAmount > 0 || form.validationMode === "IMMEDIATE"
+  // resolvedProducts.length > 0 is checked on its own, not just via totalAmount — a €0-priced
+  // product would otherwise still slip into the "tous gratuits" branch below, which never
+  // touches stock/BoutiqueCommande at all (same edge case the single-registrant path's own
+  // `resolvedProducts.length === 0` guard closes).
+  const willBeImmediate = totalAmount > 0 || resolvedProducts.length > 0 || form.validationMode === "IMMEDIATE"
   if (willBeImmediate && !data.password)
     return NextResponse.json({ error: "Un mot de passe est requis." }, { status: 422 })
 
@@ -962,6 +998,12 @@ async function handleMultiRegistrantCheckout(
         periodStart: tier.fixedPeriodEnd || tier.durationMonths ? now.toISOString() : null,
         periodEnd:   tier.fixedPeriodEnd?.toISOString() ?? (tier.durationMonths ? addMonths(now, tier.durationMonths).toISOString() : null),
       })),
+      // [{ v: varianteId, q: quantity }] — mêmes clés minimales que commonMeta.products du
+      // parcours à un seul adhérent (voir schema.prisma, MembershipCheckoutDraft.products),
+      // toujours attribué à registrants[0] une fois consommé (voir consumeMembershipCheckoutDraft).
+      products: resolvedProducts.length
+        ? resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))
+        : undefined,
       totalAmount,
       expiresAt: new Date(now.getTime() + 30 * 60_000),
     },
@@ -993,6 +1035,19 @@ async function handleMultiRegistrantCheckout(
       },
       quantity: 1,
     }))
+  // Toujours attribués à registrants[0] (voir le commentaire sur MembershipCheckoutDraft.products
+  // plus haut) — le nom de la ligne ne mentionne donc personne en particulier, contrairement
+  // aux lignes de tarif ci-dessus.
+  for (const p of resolvedProducts) {
+    lineItems.push({
+      price_data: {
+        currency:     "eur" as const,
+        unit_amount:  p.unitPriceCents,
+        product_data: { name: `${p.label} — ${assoc.name}` },
+      },
+      quantity: p.quantity,
+    })
+  }
 
   const successUrl = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=success`
   const cancelUrl  = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=cancelled`

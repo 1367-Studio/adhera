@@ -2712,7 +2712,8 @@
       "productsLabel": "Products",
       "outOfStock": "Out of stock",
       "decreaseQuantityLabel": "Decrease quantity",
-      "increaseQuantityLabel": "Increase quantity"
+      "increaseQuantityLabel": "Increase quantity",
+      "productsMultiHint": "Chosen products will be attributed to the account of the person filling out this form."
     }
   },
   "messages": {

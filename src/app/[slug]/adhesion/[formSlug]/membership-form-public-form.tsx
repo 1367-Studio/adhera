@@ -246,11 +246,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   }
   const extraRegistrantsAmount = extraRegistrants.reduce((sum, r) => sum + registrantAmount(r), 0)
 
-  // Produits Boutique — jamais en mode multi-inscrit (impossible à répartir entre N
-  // personnes, même raisonnement que les extras) ni avec un tarif récurrent ou un paiement
-  // échelonné (le stock est décompté une seule fois, au moment du paiement unique — voir
-  // checkout/route.ts).
-  const canBuyProducts = !isMulti && !!selectedTier && selectedTier.kind === "ONE_OFF" && !payInInstallments
+  // Produits Boutique — disponibles aussi en mode multi-inscrit, toujours attribués en entier
+  // au registrant 0 (seule personne du groupe avec un email/login réel — voir
+  // consumeMembershipCheckoutDraft) plutôt que répartis entre les N personnes. Jamais avec un
+  // tarif récurrent ou un paiement échelonné (le stock est décompté une seule fois, au moment
+  // du paiement unique — voir checkout/route.ts). En mode multi, tous les tarifs sont déjà
+  // ONE_OFF (RECURRING y est exclu plus haut), donc seul selectedTier (registrant 0) compte ici.
+  const canBuyProducts = !!selectedTier && selectedTier.kind === "ONE_OFF" && !payInInstallments
   const offeredProducts = form?.products ?? []
   // price est en centimes (BoutiqueVariante.price) — converti ici, une seule fois, avant de
   // rejoindre membershipAmount/extrasAmount qui sont en euros décimaux.
@@ -266,7 +268,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
     : extraRegistrants.length + 1 < MAX_REGISTRANTS
 
-  const amount = isMulti ? membershipAmount + extraRegistrantsAmount : membershipAmount + extrasAmount + productsAmount
+  const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
   // paid extra/registrant riding along with an otherwise-free membership (there's nothing
   // sensible to "hold for approval" once money changed hands) — mirrors willBeImmediate in
@@ -318,12 +320,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
   function addRegistrant() {
     const defaultTier = oneOffMembershipTiers[0]
-    // Addons/donations/produits aren't offered in multi-registrant mode — cleared so a stale
-    // selection from before "Ajouter un autre adhérent" can't silently resurrect if extras
-    // are removed.
+    // Addons/donations ne sont pas offerts en mode multi-inscrit (impossible à répartir entre
+    // N personnes) — cleared so a stale selection from before "Ajouter un autre adhérent" can't
+    // silently resurrect if extras are removed. Les produits Boutique restent disponibles en
+    // mode multi (toujours attribués au registrant 0), donc productQuantities n'est pas vidé ici.
     setSelectedExtraIds(new Set())
     setExtraAmounts({})
-    setProductQuantities({})
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
       firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
@@ -405,6 +407,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             website,
             conditionsAgreed,
             locale:   loc,
+            // Jamais rattaché à un registrant précis — toujours attribué en entier au
+            // registrant 0 une fois consommé (voir consumeMembershipCheckoutDraft).
+            products: Object.entries(productQuantities)
+              .filter(([, quantity]) => quantity > 0)
+              .map(([varianteId, quantity]) => ({ varianteId, quantity })),
           }
         : {
             tierId,
@@ -767,89 +774,6 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   </div>
                 )}
 
-                {canBuyProducts && offeredProducts.length > 0 && (
-                  <div className="space-y-2 border-t pt-4">
-                    <p className="text-sm font-medium">{t("productsLabel")}</p>
-                    <div className="space-y-2">
-                      {offeredProducts.map(product => {
-                        const quantity = productQuantities[product.varianteId] ?? 0
-                        return (
-                          <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                            <div>
-                              <div>{product.productName} — {product.variantLabel}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                              </div>
-                            </div>
-                            {product.stock === 0 ? (
-                              <span className="text-xs text-muted-foreground">{t("outOfStock")}</span>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon-sm"
-                                  disabled={quantity === 0}
-                                  aria-label={t("decreaseQuantityLabel")}
-                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.max(0, quantity - 1) }))}
-                                >
-                                  <MinusIcon className="size-3.5" />
-                                </Button>
-                                <span className="w-4 text-center tabular-nums">{quantity}</span>
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon-sm"
-                                  disabled={quantity >= product.stock}
-                                  aria-label={t("increaseQuantityLabel")}
-                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.min(product.stock, quantity + 1) }))}
-                                >
-                                  <PlusIcon className="size-3.5" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {needsPayment && (
-                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
-                    <span>{t("totalLabel")}</span>
-                    <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
-                  </div>
-                )}
-                {belowMinimum && (
-                  <p className="text-xs text-destructive">
-                    {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                  </p>
-                )}
-
-                {showOfflineChoice && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
-                    <div className="flex flex-wrap gap-3 text-sm">
-                      {form.paymentEnabled && (
-                        <label className="flex items-center gap-1.5">
-                          <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
-                          {t("paymentMethodStripe")}
-                        </label>
-                      )}
-                      {offlineMethods.map(m => (
-                        <label key={m} className="flex items-center gap-1.5">
-                          <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
-                          {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
-                        </label>
-                      ))}
-                    </div>
-                    {paymentMethod !== "STRIPE" && form.offlineInstructions && (
-                      <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
-                    )}
-                  </div>
-                )}
-
                 {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
                 {form.fieldPhoto !== "HIDDEN" && (
                   <div className="flex justify-center">
@@ -950,6 +874,90 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
                 {form.requireCguvSignature && (
                   <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
+                )}
+
+                {canBuyProducts && offeredProducts.length > 0 && (
+                  <div className="space-y-2 border-t pt-4">
+                    <p className="text-sm font-medium">{t("productsLabel")}</p>
+                    {isMulti && <p className="text-xs text-muted-foreground">{t("productsMultiHint")}</p>}
+                    <div className="space-y-2">
+                      {offeredProducts.map(product => {
+                        const quantity = productQuantities[product.varianteId] ?? 0
+                        return (
+                          <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                            <div>
+                              <div>{product.productName} — {product.variantLabel}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                              </div>
+                            </div>
+                            {product.stock === 0 ? (
+                              <span className="text-xs text-muted-foreground">{t("outOfStock")}</span>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon-sm"
+                                  disabled={quantity === 0}
+                                  aria-label={t("decreaseQuantityLabel")}
+                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.max(0, quantity - 1) }))}
+                                >
+                                  <MinusIcon className="size-3.5" />
+                                </Button>
+                                <span className="w-4 text-center tabular-nums">{quantity}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon-sm"
+                                  disabled={quantity >= product.stock}
+                                  aria-label={t("increaseQuantityLabel")}
+                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.min(product.stock, quantity + 1) }))}
+                                >
+                                  <PlusIcon className="size-3.5" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {needsPayment && (
+                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
+                    <span>{t("totalLabel")}</span>
+                    <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                  </div>
+                )}
+                {belowMinimum && (
+                  <p className="text-xs text-destructive">
+                    {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                  </p>
+                )}
+
+                {showOfflineChoice && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
+                    <div className="flex flex-wrap gap-3 text-sm">
+                      {form.paymentEnabled && (
+                        <label className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
+                          {t("paymentMethodStripe")}
+                        </label>
+                      )}
+                      {offlineMethods.map(m => (
+                        <label key={m} className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
+                          {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
+                        </label>
+                      ))}
+                    </div>
+                    {paymentMethod !== "STRIPE" && form.offlineInstructions && (
+                      <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
+                    )}
+                  </div>
                 )}
 
                 <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>

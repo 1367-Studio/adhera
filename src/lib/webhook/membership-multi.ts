@@ -12,6 +12,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -51,7 +52,7 @@ export type ConsumeDraftResult =
 // the form: they get the User/login and the account email. Everyone else becomes a Membre-only
 // dependant of them (Membre.responsableId) — mirrors how a family member added by an admin
 // commonly has no login of their own until someone uses "Créer un accès" on their profile.
-export async function consumeMembershipCheckoutDraft(draftId: string): Promise<ConsumeDraftResult> {
+export async function consumeMembershipCheckoutDraft(draftId: string, paymentIntentId: string | null = null): Promise<ConsumeDraftResult> {
   const draft = await prisma.membershipCheckoutDraft.findUnique({ where: { id: draftId } })
   if (!draft) return { status: "not-found" }
   if (draft.consumedAt) return { status: "already-consumed" } // redelivered webhook event
@@ -66,10 +67,12 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
   const now = new Date()
 
   let membreIds: string[]
+  let firstCotisationId: string
   try {
-    membreIds = await prisma.$transaction(async (tx) => {
+    ({ membreIds, firstCotisationId } = await prisma.$transaction(async (tx) => {
       const ids: string[] = []
       let firstMembreId: string | undefined
+      let firstCotisationId: string | undefined
 
       for (let i = 0; i < registrants.length; i++) {
         const r    = registrants[i]
@@ -142,7 +145,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
         }
         ids.push(membreId)
 
-        await tx.cotisation.create({
+        const cotisation = await tx.cotisation.create({
           data: {
             membreId, associationId: draft.associationId, year: currentCotisationYear(now),
             amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
@@ -151,11 +154,13 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
             deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
+        if (i === 0) firstCotisationId = cotisation.id
       }
 
       await tx.membershipCheckoutDraft.update({ where: { id: draftId }, data: { consumedAt: now } })
-      return ids
-    })
+      // Non-null : registrants.length ≥ 2 (voir multiSchema), donc i === 0 s'exécute toujours.
+      return { membreIds: ids, firstCotisationId: firstCotisationId! }
+    }))
   } catch (err) {
     // Same "money (if any) already moved, a human must reconcile" reasoning as
     // handleMembershipOneOffCheckout's own catch block — a redelivered event or a genuine
@@ -182,6 +187,62 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
     return isDuplicateEmail ? { status: "duplicate-email" } : { status: "error" }
   }
 
+  // Étape séparée délibérée, après que le groupe a été créé avec succès — même raisonnement
+  // que handleMembershipOneOffCheckout (voir le commentaire de createMembershipFormProductPurchase) :
+  // toujours attribuée à membreIds[0]/firstCotisationId (le seul registrant avec un email/login
+  // réel), jamais répartie entre le groupe. Un échec ici n'annule jamais les adhésions déjà créées.
+  let purchasedProducts: { label: string; quantity: number; amount: number }[] = []
+  if (draft.products) {
+    try {
+      const productResult = await createMembershipFormProductPurchase({
+        associationId:   draft.associationId,
+        membreId:        membreIds[0],
+        cotisationId:    firstCotisationId,
+        paymentIntentId,
+        productsJson:    JSON.stringify(draft.products),
+      })
+      purchasedProducts = productResult?.purchased ?? []
+      if (productResult?.flaggedOversells.length) {
+        const admins = await prisma.user.findMany({
+          where:  { associationId: draft.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+          select: { id: true },
+        })
+        if (admins.length) {
+          await prisma.notification.createMany({
+            data: admins.map(a => ({
+              userId: a.id,
+              title:  "Vente boutique en rupture de stock lors d'une adhésion",
+              body:   `${registrants[0].firstName} ${registrants[0].lastName} a payé pour ${productResult.flaggedOversells.length} produit(s) boutique devenu(s) indisponible(s) entre-temps. Le montant a été encaissé — contactez le membre pour convenir d'un arrangement.`,
+              link:   "/dashboard/boutique",
+              scope:  "GESTION",
+            })),
+            skipDuplicates: true,
+          })
+          await pusherServer.trigger(`private-association-${draft.associationId}`, "new-notification", {}).catch(() => {})
+        }
+      }
+    } catch (err) {
+      console.error(`[membership-multi] failed to record boutique product purchase for draft ${draftId} (association ${draft.associationId}):`, err)
+      const admins = await prisma.user.findMany({
+        where:  { associationId: draft.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+        select: { id: true },
+      })
+      if (admins.length) {
+        await prisma.notification.createMany({
+          data: admins.map(a => ({
+            userId: a.id,
+            title:  "Vente boutique non enregistrée lors d'une adhésion",
+            body:   `${registrants[0].firstName} ${registrants[0].lastName} a payé pour des produits boutique, mais l'achat n'a pas pu être enregistré automatiquement. L'adhésion elle-même est bien créée — vérifiez et enregistrez la vente manuellement si besoin.`,
+            link:   "/dashboard/boutique",
+            scope:  "GESTION",
+          })),
+          skipDuplicates: true,
+        })
+        await pusherServer.trigger(`private-association-${draft.associationId}`, "new-notification", {}).catch(() => {})
+      }
+    }
+  }
+
   const assoc = await prisma.association.findUnique({
     where:  { id: draft.associationId },
     select: { name: true, slug: true, modules: true, plan: true, customMemberLimit: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
@@ -204,6 +265,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
       receiptMode:         primaryTier?.receiptMode,
       deductibleAmount:    primaryTier?.deductibleAmount != null ? Number(primaryTier.deductibleAmount) : undefined,
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
+      products:            purchasedProducts.length ? purchasedProducts : undefined,
     }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})
 
     for (let i = 0; i < registrants.length; i++) {
@@ -273,7 +335,12 @@ export async function handleMembershipMultiCheckout(session: Stripe.Checkout.Ses
   const draftId = session.metadata?.draftId
   if (!session.metadata?.kind || session.metadata.kind !== "membership-multi" || !draftId) return
 
-  const result = await consumeMembershipCheckoutDraft(draftId)
+  // Backfilled onto any purchased BoutiqueCommande's stripePaymentIntentId (see
+  // createMembershipFormProductPurchase) — same refund-reconciliation reasoning as
+  // handleMembershipOneOffCheckout's own paymentIntentId, just never patched back onto the
+  // Cotisation itself here since the multi-registrant path has no equivalent metadata backfill.
+  const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? null
+  const result = await consumeMembershipCheckoutDraft(draftId, paymentIntentId)
   if (result.status === "error" || result.status === "duplicate-email") {
     // consumeMembershipCheckoutDraft already logged and notified admins for both — nothing
     // left to do here besides not silently swallowing a truly unexpected "not-found" (a
