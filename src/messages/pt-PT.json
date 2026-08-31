@@ -2640,7 +2640,12 @@
           "visibilityPrivate": "Privado",
           "opensAtLabel": "Abertura",
           "closesAtLabel": "Encerramento",
-          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
+          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura.",
+          "siteSectionLabel": "Secção do site",
+          "siteSectionPlaceholder": "Escolher…",
+          "siteSectionCreateOption": "+ Criar nova secção",
+          "siteSectionCreateError": "Erro ao criar a secção do site.",
+          "siteSectionRequiredError": "Escolha em que secção do site este formulário será publicado."
         }
       }
     },
@@ -4180,7 +4185,7 @@
       "headerBgColor": "Cor de fundo",
       "headerBgPlaceholder": "#ffffff (branco por predefinição)",
       "loginButton": "Botão \"Iniciar sessão\"",
-      "registerButton": "Botão \"Registar\"",
+      "registerButton": "Botão \"Aderir\"",
       "footer": "Rodapé",
       "footerTextLabel": "Texto",
       "footerTextPlaceholder": "© {year} A Minha Associação",

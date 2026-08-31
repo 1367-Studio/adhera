@@ -2628,7 +2628,12 @@
           "visibilityPrivate": "Privé",
           "opensAtLabel": "Ouverture",
           "closesAtLabel": "Fermeture",
-          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
+          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture.",
+          "siteSectionLabel": "Section du site",
+          "siteSectionPlaceholder": "Choisir…",
+          "siteSectionCreateOption": "+ Créer une nouvelle section",
+          "siteSectionCreateError": "Erreur lors de la création de la section du site.",
+          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire."
         }
       }
     },
@@ -4168,7 +4173,7 @@
       "headerBgColor": "Couleur de fond",
       "headerBgPlaceholder": "#ffffff (blanc par défaut)",
       "loginButton": "Bouton \"Se connecter\"",
-      "registerButton": "Bouton \"S'inscrire\"",
+      "registerButton": "Bouton \"Adhérer\"",
       "footer": "Pied de page",
       "footerTextLabel": "Texte",
       "footerTextPlaceholder": "© {year} Mon Association",

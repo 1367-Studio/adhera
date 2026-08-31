@@ -20,7 +20,9 @@ import { PageHeader } from "@/components/ui/page-header"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { SECTION_LABELS } from "@/types/site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { BASE_PATH } from "@/lib/env"
 import { useCurrentUser } from "@/lib/user-context"
 import {
@@ -77,9 +79,10 @@ type MembershipForm = {
   confirmationMessage: string | null
   adminNotificationEmail: string | null
 
-  visibility: Visibility
-  opensAt:    string | null
-  closesAt:   string | null
+  visibility:    Visibility
+  siteSectionId: string | null
+  opensAt:       string | null
+  closesAt:      string | null
 }
 
 type SaveableFields = Partial<Omit<MembershipForm, "id" | "slug" | "status" | "_count">>
@@ -87,6 +90,9 @@ type SaveableFields = Partial<Omit<MembershipForm, "id" | "slug" | "status" | "_
 // One entry per accordion step below, in display order. Each step has its own Save button,
 // so unsaved work is tracked per step — see stepDirty / stepIssue in the component.
 const STEP_KEYS = ["info", "tiers", "fields", "payment", "publish"] as const
+// Sentinel option value in the site-section picker — selecting it creates a new "membership"
+// section instead of picking an existing one. Never a real cuid/uuid, so it can't collide.
+const CREATE_SITE_SECTION_VALUE = "__create__"
 type StepKey = typeof STEP_KEYS[number]
 
 // datetime-local inputs have no timezone — the value IS wall-clock local time, so this
@@ -110,6 +116,10 @@ export default function MembershipFormDetailPage() {
   const t       = useTranslations("membershipForms")
   const tSteps  = useTranslations("membershipForms.detail.steps")
   const tCommon = useTranslations("common")
+  // Same key the site editor itself uses as the default title for a newly added "membership"
+  // section — reused here so a section created from this picker looks identical to one
+  // created the old way, before "membership" was removed from the editor's add-section menu.
+  const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
   const { data: membreTypes = [] } = useMembreTypes()
 
@@ -173,9 +183,10 @@ export default function MembershipFormDetailPage() {
   const [adminNotificationEmail, setAdminNotificationEmail] = useState("")
 
   // Step 5 — Publication
-  const [visibility, setVisibility] = useState<Visibility>("LINK")
-  const [opensAt, setOpensAt]       = useState("")
-  const [closesAt, setClosesAt]     = useState("")
+  const [visibility, setVisibility]       = useState<Visibility>("LINK")
+  const [siteSectionId, setSiteSectionId] = useState<string>("")
+  const [opensAt, setOpensAt]             = useState("")
+  const [closesAt, setClosesAt]           = useState("")
 
   const { data: form, isLoading, isError } = useQuery<MembershipForm>({
     queryKey: ["membership-form", id],
@@ -193,6 +204,32 @@ export default function MembershipFormDetailPage() {
     queryKey: ["membership-form", id, "tiers"],
     queryFn:  () => fetch(`/api/membership-forms/${id}/tiers`).then(r => r.json()),
   })
+
+  // Feeds the Publication step's section picker — same query key/hook the site editor
+  // itself uses (useSiteConfig), so the list always matches what an admin sees under Site
+  // internet, and stays in sync when this page creates a new section below.
+  const { data: siteConfigData } = useSiteConfig()
+  const saveSiteConfig = useSaveSiteConfig()
+  const membershipSiteSections = (siteConfigData?.config?.sections ?? []).filter(s => s.type === "membership")
+  const [creatingSection, setCreatingSection] = useState(false)
+
+  // AssoConnect's own publication step lets an admin create the target page inline instead
+  // of forcing a detour to the site editor first — same idea here: a "membership" section is
+  // now only ever created from this picker (see the site editor's add-section menu, which no
+  // longer offers it), so this is the one and only place a fresh association gets its first one.
+  async function createMembershipSection() {
+    setCreatingSection(true)
+    try {
+      const newSection = { id: crypto.randomUUID(), type: "membership" as const, title: tSiteDefaults("membership"), body: "" }
+      const sections = [...(siteConfigData?.config?.sections ?? []), newSection]
+      await saveSiteConfig.mutateAsync({ sections })
+      setSiteSectionId(newSection.id)
+    } catch {
+      toast.error(tSteps("publish.siteSectionCreateError"))
+    } finally {
+      setCreatingSection(false)
+    }
+  }
 
   useEffect(() => {
     if (!form) return
@@ -219,6 +256,7 @@ export default function MembershipFormDetailPage() {
     setConfirmationMessage(form.confirmationMessage ?? "")
     setAdminNotificationEmail(form.adminNotificationEmail ?? "")
     setVisibility(form.visibility)
+    setSiteSectionId(form.siteSectionId ?? "")
     setOpensAt(toDatetimeLocal(form.opensAt))
     setClosesAt(toDatetimeLocal(form.closesAt))
   }, [form])
@@ -310,7 +348,16 @@ export default function MembershipFormDetailPage() {
       toast.error(tSteps("publish.datesOrderError"))
       return null
     }
-    return { visibility, opensAt: fromDatetimeLocal(opensAt), closesAt: fromDatetimeLocal(closesAt) }
+    if (visibility === "SITE" && !siteSectionId) {
+      toast.error(tSteps("publish.siteSectionRequiredError"))
+      return null
+    }
+    return {
+      visibility,
+      siteSectionId: visibility === "SITE" ? siteSectionId : null,
+      opensAt:  fromDatetimeLocal(opensAt),
+      closesAt: fromDatetimeLocal(closesAt),
+    }
   }
 
   async function handleSaveInfo() {
@@ -385,8 +432,8 @@ export default function MembershipFormDetailPage() {
       [form.allowCash, form.allowCheque, form.allowTransfer, form.offlineInstructions ?? "", form.confirmationMessage ?? "", form.adminNotificationEmail ?? ""],
     ),
     publish: !!form && changed(
-      [visibility, opensAt, closesAt],
-      [form.visibility, toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt)],
+      [visibility, siteSectionId, opensAt, closesAt],
+      [form.visibility, form.siteSectionId ?? "", toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt)],
     ),
   }
 
@@ -821,6 +868,23 @@ export default function MembershipFormDetailPage() {
                 value={visibility}
                 onValueChange={v => setVisibility(v as Visibility)}
               />
+              {visibility === "SITE" && (
+                <SelectField
+                  label={tSteps("publish.siteSectionLabel")}
+                  required
+                  disabled={creatingSection}
+                  placeholder={tSteps("publish.siteSectionPlaceholder")}
+                  options={[
+                    ...membershipSiteSections.map(s => ({ value: s.id, label: s.title || SECTION_LABELS.membership })),
+                    { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
+                  ]}
+                  value={siteSectionId}
+                  onValueChange={v => {
+                    if (v === CREATE_SITE_SECTION_VALUE) createMembershipSection()
+                    else setSiteSectionId(v)
+                  }}
+                />
+              )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField
                   label={tSteps("publish.opensAtLabel")}
