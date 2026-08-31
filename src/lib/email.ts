@@ -991,6 +991,40 @@ export function membershipWelcomeEmail(p: {
   }
 }
 
+// Sent instead of membershipWelcomeEmail when MembershipForm.validationMode is "REQUEST" and
+// the tier is free (see checkout/route.ts's willBeImmediate) — no User/password exists yet at
+// this point, so unlike membershipWelcomeEmail there is no login link here: the account only
+// gets created once an admin approves the request (see PATCH /api/membres/[id]'s isApproval
+// branch, which sends its own invitationEmail with real credentials at that point).
+export function membershipPendingValidationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  formTitle:       string
+  branding?:       EmailBranding
+  // Same reasoning as membershipWelcomeEmail's own field — see there.
+  otherRegistrants?: string[]
+}) {
+  const groupSentence = p.otherRegistrants && p.otherRegistrants.length > 0
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        Cette demande couvre également ${p.otherRegistrants.join(", ")}.
+      </p>`
+    : ""
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande bien reçue</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre demande d'adhésion à ${p.associationName} via « ${p.formTitle} »
+      a bien été reçue. Elle est en attente de validation par un responsable de l'association —
+      vous serez prévenu(e) par email dès qu'elle sera validée.
+    </p>
+    ${groupSentence}`
+  return {
+    to:      p.email,
+    subject: `Votre demande d'adhésion à ${p.associationName} est en attente de validation`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 // Sent to MembershipForm.adminNotificationEmail (opt-in, per formulaire — see
 // notifyMembershipSignup) each time someone joins through that specific form. Distinct from
 // the in-app Notification every ADMIN/PRESIDENT/TRESORIER already gets regardless of this
@@ -1004,15 +1038,27 @@ export function membershipSignupAdminNotificationEmail(p: {
   amount:          number
   dashboardUrl:    string
   branding?:       EmailBranding
+  // Set when this signup requires manual validation (MembershipForm.validationMode ===
+  // "REQUEST") before it becomes a real Membre — see notifyMembershipSignup. Swaps the
+  // wording from "joined" to "is waiting for your review" so this reads as an action item
+  // rather than a done deal.
+  pendingValidation?: boolean
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const namesStr  = p.memberNames.join(", ")
   const isGroup   = p.memberNames.length > 1
+  const heading    = p.pendingValidation
+    ? (isGroup ? "Demande d'inscription groupée à valider" : "Demande d'adhésion à valider")
+    : (isGroup ? "Nouvelle inscription groupée" : "Nouvelle adhésion")
+  const bodySentence = p.pendingValidation
+    ? `${escapeHtml(namesStr)} ${isGroup ? "souhaitent rejoindre" : "souhaite rejoindre"} <strong>${escapeHtml(p.associationName)}</strong>
+       via le formulaire « ${escapeHtml(p.formTitle)} » et ${isGroup ? "attendent" : "attend"} votre validation.`
+    : `${escapeHtml(namesStr)} ${isGroup ? "ont rejoint" : "a rejoint"} <strong>${escapeHtml(p.associationName)}</strong>
+       via le formulaire « ${escapeHtml(p.formTitle)} ».`
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${isGroup ? "Nouvelle inscription groupée" : "Nouvelle adhésion"}</h2>
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      ${escapeHtml(namesStr)} ${isGroup ? "ont rejoint" : "a rejoint"} <strong>${escapeHtml(p.associationName)}</strong>
-      via le formulaire « ${escapeHtml(p.formTitle)} ».
+      ${bodySentence}
     </p>
     ${p.amount > 0 ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td>
@@ -1020,10 +1066,12 @@ export function membershipSignupAdminNotificationEmail(p: {
         <span style="font-size:20px;font-weight:700;">${amountStr}</span>
       </td></tr>
     </table>` : ""}
-    ${btn("Voir les membres", p.dashboardUrl)}`
+    ${btn(p.pendingValidation ? "Valider la demande" : "Voir les membres", p.dashboardUrl)}`
   return {
     to:      p.email,
-    subject: isGroup ? `Nouvelle inscription groupée · ${p.formTitle}` : `Nouvelle adhésion · ${p.formTitle}`,
+    subject: p.pendingValidation
+      ? `Demande d'adhésion à valider · ${p.formTitle}`
+      : (isGroup ? `Nouvelle inscription groupée · ${p.formTitle}` : `Nouvelle adhésion · ${p.formTitle}`),
     html:    layout(p.associationName, content, p.branding),
   }
 }
