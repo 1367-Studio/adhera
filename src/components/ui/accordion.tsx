@@ -36,7 +36,7 @@ function AccordionTrigger({ className, children, ...props }: AccordionPrimitive.
         {...props}
       >
         {children}
-        <CaretDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform group-data-[panel-open]/accordion-item:rotate-180" />
+        <CaretDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 ease-in-out group-data-[panel-open]/accordion-item:rotate-180" />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>
   )
@@ -47,7 +47,9 @@ function AccordionPanel({ className, children, ...props }: AccordionPrimitive.Pa
     <AccordionPrimitive.Panel
       data-slot="accordion-panel"
       className={cn(
-        "overflow-hidden text-sm data-[starting-style]:h-0 data-[ending-style]:h-0 h-[var(--accordion-panel-height)] transition-[height] duration-200 ease-out",
+        // Duration scales with panel height (tan(atan2()) strips the px unit) so tall panels
+        // don't fly open at the fixed-duration speed; clamped to 250–500ms.
+        "overflow-hidden text-sm data-[starting-style]:h-0 data-[ending-style]:h-0 h-[var(--accordion-panel-height)] transition-[height] ease-in-out [transition-duration:clamp(250ms,calc(150ms+tan(atan2(var(--accordion-panel-height,400px),1px))*0.25ms),500ms)]",
         className
       )}
       {...props}

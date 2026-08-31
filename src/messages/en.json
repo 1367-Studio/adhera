@@ -2626,6 +2626,8 @@
           "visibilityLink": "Link only",
           "visibilitySite": "On the website",
           "visibilityPrivate": "Private",
+          "schedulePeriodLabel": "Limit the registration period",
+          "schedulePeriodHint": "Without a set period, the form stays open for as long as it is published.",
           "opensAtLabel": "Opens",
           "closesAtLabel": "Closes",
           "datesOrderError": "The closing date must be after the opening date.",
