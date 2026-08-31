@@ -584,11 +584,13 @@ export default function MembershipFormDetailPage() {
       "overflow-hidden rounded-lg border bg-card",
       publishAttempted && stepIssue(key) && "bg-destructive/10",
     )
-  // A flagged step keeps the transparent header so the destructive tint and tag stay legible.
+  // Off-white header at full --muted (the /50 tints read as white on bg-card); hover eases
+  // toward the card like the secondary button's own hover:bg-secondary/80. A flagged step
+  // keeps the transparent header so the item's destructive tint and tag stay legible.
   const stepHeaderClass = (key: StepKey) =>
     publishAttempted && stepIssue(key)
       ? undefined
-      : "bg-primary text-primary-foreground hover:bg-primary/90 [&>svg]:text-primary-foreground/80"
+      : "bg-muted hover:bg-muted/80"
   function stepTrigger(key: StepKey) {
     const issue = publishAttempted ? stepIssue(key) : null
     return (
