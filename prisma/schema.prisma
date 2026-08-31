@@ -1210,6 +1210,13 @@ model MembershipCheckoutDraft {
   // registrants[0] is the person who filled the form (gets the User/login); the rest become
   // Membre-only dependants of them (Membre.responsableId) — see consumeMembershipCheckoutDraft.
   registrants Json
+  // [{ v: varianteId, q: quantity }] — Boutique products chosen alongside the group signup,
+  // always attributed to registrants[0] (the one person with a real email/login in the
+  // submission) once consumed, never split across the group. Same minimal-keys shape as
+  // checkout/route.ts's single-registrant commonMeta.products, kept consistent even though
+  // this rides in a real Json column (no Stripe metadata size cap to economize for) rather
+  // than a stringified value.
+  products    Json?
   totalAmount Decimal  @db.Decimal(10, 2)
 
   createdAt DateTime  @default(now())
