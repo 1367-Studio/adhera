@@ -53,6 +53,7 @@ type Don = {
   paidAt:        string | null
   receiptNumber: string | null
   receiptMode:   "NONE" | "FULL" | "PARTIAL" | null
+  deductibleAmount: string | null
   paymentMethod: "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT" | null
   donationForm:  { id: string; title: string } | null
 }
@@ -356,7 +357,14 @@ function DonsPageInner() {
       // error toast covers the remaining reasons a receipt might not be available
       // (fiscal receipts not enabled for the association, etc).
       cell: (d) => d.paidAt && d.receiptMode !== "NONE" ? (
-        <Button size="icon-sm" variant="ghost" onClick={() => downloadRecu(d.id)} title="Générer le reçu fiscal">
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          onClick={() => downloadRecu(d.id)}
+          title={d.receiptMode === "PARTIAL" && d.deductibleAmount
+            ? `Générer le reçu fiscal (partiel : ${parseFloat(d.deductibleAmount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })} déductible)`
+            : "Générer le reçu fiscal"}
+        >
           <DownloadSimpleIcon className="size-3.5" />
         </Button>
       ) : null,

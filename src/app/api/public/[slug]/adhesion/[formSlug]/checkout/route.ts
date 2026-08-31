@@ -124,7 +124,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -307,7 +307,8 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
+            periodStart, periodEnd, receiptMode: tier.receiptMode,
+            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
         return { user, membre }
@@ -326,6 +327,8 @@ export async function POST(
     sendEmail(membershipWelcomeEmail({
       firstName, email, associationName: assoc.name, amount: 0,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
+      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -421,7 +424,8 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
+            periodStart, periodEnd, receiptMode: tier.receiptMode,
+            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
         return { user, membre }
@@ -439,6 +443,8 @@ export async function POST(
       firstName, email, associationName: assoc.name, amount,
       offlinePending: true, offlineInstructions: form.offlineInstructions,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
+      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -496,7 +502,8 @@ export async function POST(
     periodStart:      periodStart ? periodStart.toISOString() : "",
     periodEnd:        periodEnd ? periodEnd.toISOString() : "",
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
-    taxReceiptEligible: tier.taxReceiptEligible ? "1" : "",
+    receiptMode:      tier.receiptMode,
+    deductibleAmount: tier.receiptMode === "PARTIAL" && tier.deductibleAmount != null ? tier.deductibleAmount.toString() : "",
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -688,7 +695,7 @@ async function handleMultiRegistrantCheckout(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 

@@ -79,6 +79,7 @@ export async function GET(
       amount: t.amount?.toString() ?? null, durationMonths: t.durationMonths,
       fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
       installmentsAllowed: t.installmentsAllowed, installmentsCount: t.installmentsCount,
+      receiptMode: t.receiptMode, deductibleAmount: t.deductibleAmount?.toString() ?? null,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
   })

@@ -872,11 +872,26 @@ export function membershipSubscriptionStartedEmail(p: {
   // billing every N<12 months would tell new members they're charged yearly, and the next
   // (actually N-month-later) charge would land looking like a billing mistake.
   durationMonths?: number | null
+  // Same reasoning as membershipWelcomeEmail's own fields — see there.
+  canIssueTaxReceipts?: boolean
+  receiptMode?:         "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount?:    number
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const cadenceLabel = p.durationMonths && p.durationMonths !== 12
     ? `Cotisation prélevée tous les ${p.durationMonths} mois`
     : "Cotisation prélevée chaque année"
+  const showReceiptNotice = p.canIssueTaxReceipts && p.receiptMode && p.receiptMode !== "NONE"
+  const isPartial      = p.receiptMode === "PARTIAL" && p.deductibleAmount != null
+  const deductibleStr  = isPartial ? p.deductibleAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : amountStr
+  const receiptSentence = showReceiptNotice
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        ${isPartial
+          ? `Seule une partie de votre cotisation, <strong>${deductibleStr}</strong>, ouvre droit à un reçu fiscal — le solde correspond à une contrepartie.`
+          : `Votre cotisation ouvre droit à un <strong>reçu fiscal</strong>.`}
+        Vous pourrez le télécharger depuis votre espace membre après chaque prélèvement.
+      </p>`
+    : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -890,6 +905,7 @@ export function membershipSubscriptionStartedEmail(p: {
         <span style="font-size:20px;font-weight:700;">${amountStr}</span>
       </td></tr>
     </table>
+    ${receiptSentence}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {
     to:      p.email,
@@ -919,6 +935,14 @@ export function membershipWelcomeEmail(p: {
   // otherwise a visitor who paid once for 3 people sees one price with no explanation of why
   // it's higher than their own tier.
   otherRegistrants?: string[]
+  // Snapshotted from MembershipTier.receiptMode/deductibleAmount at signup (see
+  // checkout/route.ts and the webhook handlers) — mirrors donConfirmationEmail's own
+  // isPartial/deductibleAmount reasoning. Unlike a Don, no PDF is generated yet at this
+  // point (see recu-fiscal.ts — a Cotisation's receipt is only ever built on demand from
+  // the portal), so this only announces eligibility, it never claims one is attached.
+  canIssueTaxReceipts?: boolean
+  receiptMode?:         "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount?:    number
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const statusSentence = p.offlinePending
@@ -927,6 +951,20 @@ export function membershipWelcomeEmail(p: {
   const groupSentence = p.otherRegistrants && p.otherRegistrants.length > 0
     ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
         Ce montant couvre votre adhésion ainsi que celle de ${p.otherRegistrants.join(", ")}.
+      </p>`
+    : ""
+  // Only announced once payment has actually settled (never for offlinePending, where
+  // nothing's been received yet) and the association can even issue one at all.
+  const showReceiptNotice = !p.offlinePending && p.amount > 0 && p.canIssueTaxReceipts
+    && p.receiptMode && p.receiptMode !== "NONE"
+  const isPartial      = p.receiptMode === "PARTIAL" && p.deductibleAmount != null
+  const deductibleStr  = isPartial ? p.deductibleAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : amountStr
+  const receiptSentence = showReceiptNotice
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        ${isPartial
+          ? `Seule une partie de votre cotisation, <strong>${deductibleStr}</strong>, ouvre droit à un reçu fiscal — le solde correspond à une contrepartie.`
+          : `Votre cotisation ouvre droit à un <strong>reçu fiscal</strong>.`}
+        Vous pourrez le télécharger depuis votre espace membre.
       </p>`
     : ""
   const content = `
@@ -943,6 +981,7 @@ export function membershipWelcomeEmail(p: {
       </td></tr>
     </table>` : ""}
     ${groupSentence}
+    ${receiptSentence}
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {

@@ -147,7 +147,8 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
             membreId, associationId: draft.associationId, year: currentCotisationYear(now),
             amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
+            periodStart, periodEnd, receiptMode: tier.receiptMode,
+            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
       }
@@ -183,11 +184,14 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
 
   const assoc = await prisma.association.findUnique({
     where:  { id: draft.associationId },
-    select: { name: true, slug: true, modules: true, plan: true, customMemberLimit: true, customBrandingEnabled: true, logoUrl: true },
+    select: { name: true, slug: true, modules: true, plan: true, customMemberLimit: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
   })
 
   if (assoc?.slug) {
     const primary = registrants[0]
+    // Only reflects the primary registrant's own tier — same simplification as the amount
+    // above already being the combined group total rather than a per-person breakdown.
+    const primaryTier = form.tiers.find(t => t.id === primary.tierId)
 
     sendEmail(membershipWelcomeEmail({
       firstName:       primary.firstName,
@@ -196,6 +200,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string): Promise<C
       amount:          Number(draft.totalAmount),
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       branding:        resolveDocumentBranding(assoc),
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+      receiptMode:         primaryTier?.receiptMode,
+      deductibleAmount:    primaryTier?.deductibleAmount != null ? Number(primaryTier.deductibleAmount) : undefined,
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
     }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})
 

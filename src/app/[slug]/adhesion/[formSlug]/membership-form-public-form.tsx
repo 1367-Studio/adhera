@@ -34,6 +34,8 @@ type Tier = {
   // ONE_OFF fixed-amount tier (see tiers/route.ts).
   installmentsAllowed: boolean
   installmentsCount: number | null
+  receiptMode: "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: string | null
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
 
@@ -511,6 +513,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
                     <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
                   )}
+                  {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("partialReceiptNotice", {
+                        amount: Number(selectedTier.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                      })}
+                    </p>
+                  )}
                   {canPayInInstallments && selectedTier && (
                     <CheckboxField
                       label={t("payInInstallmentsLabel", {
@@ -553,6 +562,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                             </p>
                           )}
                         </>
+                      )}
+                      {rt?.receiptMode === "PARTIAL" && rt.deductibleAmount && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("partialReceiptNotice", {
+                            amount: Number(rt.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                          })}
+                        </p>
                       )}
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />

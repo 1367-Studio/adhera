@@ -140,10 +140,11 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           // commonMeta comment) — null keeps the historical yearly-billing behavior exactly as
           // it was before this field existed.
           durationMonths:   meta.durationMonths ? Number(meta.durationMonths) : null,
-          // Snapshotted from MembershipTier.taxReceiptEligible at signup, same reasoning as
-          // durationMonths above — copied onto every yearly Cotisation this subscription
-          // produces (see handleCotisationInvoicePaid).
-          taxReceiptEligible: meta.taxReceiptEligible === "1",
+          // Snapshotted from MembershipTier.receiptMode/deductibleAmount at signup, same
+          // reasoning as durationMonths above — copied onto every yearly Cotisation this
+          // subscription produces (see handleCotisationInvoicePaid).
+          receiptMode:      (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",
+          deductibleAmount: meta.deductibleAmount ? Number(meta.deductibleAmount) : null,
         },
       })
 
@@ -202,6 +203,9 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       branding:        resolveDocumentBranding(assoc),
       durationMonths:  meta.durationMonths ? Number(meta.durationMonths) : null,
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+      receiptMode:         (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",
+      deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisationSubscription.id }).catch(() => {})
 
     // Not fired before this session's own edge-case review — a recurring MembershipForm
@@ -263,7 +267,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
 
   const cotisationSub = await prisma.cotisationSubscription.findUnique({
     where:  { stripeSubscriptionId: subscriptionId },
-    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, taxReceiptEligible: true },
+    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, receiptMode: true, deductibleAmount: true },
   })
   if (!cotisationSub) return // Not a cotisation subscription — nothing here concerns this invoice.
 
@@ -317,7 +321,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
   // (e.g. an admin created one manually before the renewal charge landed).
   const cotisation = await prisma.cotisation.upsert({
     where:  { membreId_year: { membreId: cotisationSub.membreId, year } },
-    update: { subscriptionId: cotisationSub.id, periodStart, periodEnd, taxReceiptEligible: cotisationSub.taxReceiptEligible },
+    update: { subscriptionId: cotisationSub.id, periodStart, periodEnd, receiptMode: cotisationSub.receiptMode, deductibleAmount: cotisationSub.deductibleAmount },
     create: {
       membreId:       cotisationSub.membreId,
       associationId:  cotisationSub.associationId,
@@ -329,7 +333,8 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
       tierId:           cotisationSub.tierId,
       periodStart,
       periodEnd,
-      taxReceiptEligible: cotisationSub.taxReceiptEligible,
+      receiptMode:      cotisationSub.receiptMode,
+      deductibleAmount: cotisationSub.deductibleAmount,
     },
   })
 

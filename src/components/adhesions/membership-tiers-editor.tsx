@@ -28,7 +28,8 @@ type MembershipTierDraft = {
   // Alternative à durationMonths — date de fin absolue (YYYY-MM-DD), identique pour tout le
   // monde peu importe la date de paiement (ex. saison sportive).
   fixedPeriodEnd: string | null
-  taxReceiptEligible: boolean
+  receiptMode: "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: number | null
   installmentsAllowed: boolean
   installmentsCount: number | null
   label: string
@@ -44,7 +45,7 @@ let nextTempId = 0
 function tiersSignature(rows: MembershipTierDraft[]): string {
   return JSON.stringify(rows.map(t => [
     t.itemType, t.kind, t.free, t.freeAmount, t.amount, t.durationMonths, t.fixedPeriodEnd,
-    t.taxReceiptEligible, t.installmentsAllowed, t.installmentsCount, t.label, t.membreTypeId,
+    t.receiptMode, t.deductibleAmount, t.installmentsAllowed, t.installmentsCount, t.label, t.membreTypeId,
   ]))
 }
 
@@ -95,15 +96,27 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
 
   // fixedPeriodEnd comes back from the API as a full ISO datetime — sliced to YYYY-MM-DD for
   // the <input type="date"> below, re-expanded to end-of-day ISO on save (see handleSave).
+  // amount/deductibleAmount come back as strings too — Prisma's Decimal serializes to JSON
+  // as a string, not a number, so the PUT below would 422 ("expected number, received
+  // string") the moment a tier is saved again without its CurrencyField ever being touched
+  // (which is the only place that turns the value back into a real number — see onChange).
+  function normalizeTier(t: MembershipTier) {
+    return {
+      ...t,
+      amount:           t.amount != null ? Number(t.amount) : null,
+      deductibleAmount: t.deductibleAmount != null ? Number(t.deductibleAmount) : null,
+      fixedPeriodEnd:   t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null,
+    }
+  }
+
   useEffect(() => {
-    if (data) setTiers(data.map(t => ({ ...t, key: t.id, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })))
+    if (data) setTiers(data.map(t => ({ ...normalizeTier(t), key: t.id })))
   }, [data])
 
   // Same normalization the hydration effect above applies, so an untouched list compares
-  // equal (fixedPeriodEnd arrives as a full ISO datetime but is edited as YYYY-MM-DD).
-  const isDirty = tiersSignature(tiers) !== tiersSignature(
-    (data ?? []).map(t => ({ ...t, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })),
-  )
+  // equal (fixedPeriodEnd arrives as a full ISO datetime but is edited as YYYY-MM-DD, amount/
+  // deductibleAmount arrive as Decimal strings but are edited as numbers).
+  const isDirty = tiersSignature(tiers) !== tiersSignature((data ?? []).map(normalizeTier))
   useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
   // Unmounting means the local edits are gone anyway — leaving the flag set would block
   // navigation over work that no longer exists.
@@ -113,7 +126,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
   function addTier() {
     setTiers(prev => [...prev, {
       key: `new-${nextTempId++}`, itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false, freeAmount: false, amount: null,
-      durationMonths: null, fixedPeriodEnd: null, taxReceiptEligible: false,
+      durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE", deductibleAmount: null,
       installmentsAllowed: false, installmentsCount: 3, label: "", membreTypeId: null,
     }])
   }
@@ -126,8 +139,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
     setTiers(prev => prev.map(t => {
       if (t.key !== key) return t
       if (itemType === "MEMBERSHIP") return { ...t, itemType }
-      if (itemType === "ADDON") return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, durationMonths: null, fixedPeriodEnd: null, taxReceiptEligible: false, installmentsAllowed: false, installmentsCount: null }
-      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, taxReceiptEligible: false, installmentsAllowed: false, installmentsCount: null }
+      if (itemType === "ADDON") return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, deductibleAmount: null, installmentsAllowed: false, installmentsCount: null }
+      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, deductibleAmount: null, installmentsAllowed: false, installmentsCount: null }
     }))
   }
   function removeTier(key: string) {
@@ -168,6 +181,14 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       toast.error(t("durationConflictError"))
       return false
     }
+    if (tiers.some(t => t.receiptMode === "PARTIAL" && !t.deductibleAmount)) {
+      toast.error(t("deductibleAmountRequiredError"))
+      return false
+    }
+    if (tiers.some(t => t.receiptMode === "PARTIAL" && t.amount != null && t.deductibleAmount != null && t.deductibleAmount > t.amount)) {
+      toast.error(t("deductibleAmountExceedsError"))
+      return false
+    }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
         id: t.id, order, itemType: t.itemType, kind: t.kind, free: t.free,
@@ -177,7 +198,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
         // End-of-day, not midnight-at-the-start — "valable jusqu'au 31 août" should cover the
         // whole 31st, not expire the instant it begins.
         fixedPeriodEnd: t.itemType === "MEMBERSHIP" && t.fixedPeriodEnd ? new Date(`${t.fixedPeriodEnd}T23:59:59`).toISOString() : null,
-        taxReceiptEligible: t.itemType === "MEMBERSHIP" ? t.taxReceiptEligible : false,
+        receiptMode:      t.itemType === "MEMBERSHIP" ? t.receiptMode : "NONE" as const,
+        deductibleAmount: t.itemType === "MEMBERSHIP" && t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
         installmentsAllowed: t.itemType === "MEMBERSHIP" ? t.installmentsAllowed : false,
         installmentsCount:   t.itemType === "MEMBERSHIP" && t.installmentsAllowed ? t.installmentsCount : null,
         label: t.label, membreTypeId: t.membreTypeId,
@@ -202,6 +224,11 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
   const membreTypeOptions = [
     { value: "", label: t("membreTypeNone") },
     ...membreTypes.map(mt => ({ value: mt.id, label: mt.name })),
+  ]
+  const receiptOptions = [
+    { value: "NONE",    label: t("receiptNone") },
+    { value: "FULL",    label: t("receiptFull") },
+    { value: "PARTIAL", label: t("receiptPartial") },
   ]
 
   if (isLoading) return <p className="text-sm text-muted-foreground">{tCommon("loading")}</p>
@@ -318,6 +345,9 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                         freeAmount: e.target.checked, free: e.target.checked ? false : tier.free,
                         // A variable amount has no fixed total to divide into N equal parts.
                         installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
+                        // Le montant déductible est une valeur fixe attachée au tarif — n'a
+                        // pas de sens dès que l'adhérent choisit lui-même le montant versé.
+                        receiptMode: e.target.checked && tier.receiptMode === "PARTIAL" ? "FULL" : tier.receiptMode,
                       })}
                       disabled={tier.free}
                     />
@@ -332,18 +362,31 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                         kind: e.target.checked ? "ONE_OFF" : tier.kind,
                         // No money changes hands on a free tier — nothing to issue a
                         // tax-deductible receipt for (see tiers/route.ts).
-                        taxReceiptEligible: e.target.checked ? false : tier.taxReceiptEligible,
+                        receiptMode: e.target.checked ? "NONE" : tier.receiptMode,
+                        deductibleAmount: e.target.checked ? null : tier.deductibleAmount,
                         installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
                       })}
                     />
                   )}
                   {tier.itemType === "MEMBERSHIP" && (
-                    <CheckboxField
-                      label={t("taxReceiptEligibleField")}
-                      checked={tier.taxReceiptEligible}
-                      onChange={e => updateTier(tier.key, { taxReceiptEligible: e.target.checked })}
-                      disabled={tier.free}
-                    />
+                    <div className="w-52">
+                      <SelectField
+                        label={t("receiptModeField")}
+                        options={tier.freeAmount ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
+                        value={tier.receiptMode}
+                        onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
+                        disabled={tier.free}
+                      />
+                    </div>
+                  )}
+                  {tier.itemType === "MEMBERSHIP" && tier.receiptMode === "PARTIAL" && (
+                    <div className="w-40">
+                      <CurrencyField
+                        label={t("deductibleAmountField")}
+                        value={tier.deductibleAmount ?? 0}
+                        onChange={v => updateTier(tier.key, { deductibleAmount: v })}
+                      />
+                    </div>
                   )}
                   {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && (
                     <CheckboxField

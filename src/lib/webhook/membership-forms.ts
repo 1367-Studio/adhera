@@ -111,7 +111,8 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           tierId:           meta.tierId || null,
           periodStart:      meta.periodStart ? new Date(meta.periodStart) : null,
           periodEnd:        meta.periodEnd ? new Date(meta.periodEnd) : null,
-          taxReceiptEligible: meta.taxReceiptEligible === "1",
+          receiptMode:      meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
+          deductibleAmount: meta.deductibleAmount ? Number(meta.deductibleAmount) : null,
         },
       })
 
@@ -174,6 +175,9 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       branding:        resolveDocumentBranding(assoc),
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+      receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
+      deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
 
     fireEventRule({

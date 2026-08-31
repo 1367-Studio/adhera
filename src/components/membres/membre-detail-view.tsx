@@ -568,7 +568,8 @@ export function MembreDetailView() {
             <div className="space-y-2">
               {cotisations.map((c: {
                 id: string; year: number; amount: string; status: string; paidAt: string | null
-                declarationNumber: string | null; periodEnd?: string | null; taxReceiptEligible?: boolean
+                declarationNumber: string | null; periodEnd?: string | null; receiptMode?: "NONE" | "FULL" | "PARTIAL"
+                deductibleAmount?: string | null
                 installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
               }) => {
                 const s = cotisationStatusBadge[c.status]
@@ -615,7 +616,7 @@ export function MembreDetailView() {
                           <DownloadSimpleIcon className="size-3.5" />
                         </Button>
                       )}
-                      {c.taxReceiptEligible && c.paidAt && (
+                      {c.receiptMode && c.receiptMode !== "NONE" && c.paidAt && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger render={
@@ -623,7 +624,11 @@ export function MembreDetailView() {
                                 <ReceiptIcon className="size-3.5" />
                               </Button>
                             } />
-                            <TooltipContent>{t("membres.detail.downloadRecuFiscal")}</TooltipContent>
+                            <TooltipContent>
+                              {c.receiptMode === "PARTIAL" && c.deductibleAmount
+                                ? t("membres.detail.downloadRecuFiscalPartial", { amount: fmt(c.deductibleAmount) })
+                                : t("membres.detail.downloadRecuFiscal")}
+                            </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
                       )}
