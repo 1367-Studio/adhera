@@ -95,7 +95,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-sm font-medium">{t("customFieldsTitle")}</p>
+        <p className="text-sm font-medium text-primary">{t("customFieldsTitle")}</p>
         <p className="text-xs text-muted-foreground">{t("customFieldsHint")}</p>
       </div>
 

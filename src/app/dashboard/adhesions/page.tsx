@@ -20,7 +20,9 @@ import { Label } from "@/components/ui/label"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { RowActions } from "@/components/ui/row-actions"
+import { Switch } from "@/components/ui/switch"
 import { BASE_PATH } from "@/lib/env"
+import { cn } from "@/lib/utils"
 
 type MembershipForm = {
   id:          string
@@ -156,9 +158,9 @@ export default function AdhesionsPage() {
               >
                 {f.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={f.imageUrl} alt="" className="aspect-[3/1] w-full object-cover bg-muted" />
+                  <img src={f.imageUrl} alt="" className={cn("aspect-[3/1] w-full object-cover bg-muted", f.status !== "PUBLISHED" && "opacity-60 grayscale")} />
                 ) : (
-                  <div className="aspect-[3/1] w-full bg-muted flex items-center justify-center">
+                  <div className={cn("aspect-[3/1] w-full bg-muted flex items-center justify-center", f.status !== "PUBLISHED" && "opacity-60")}>
                     <IdentificationCardIcon className="size-6 text-muted-foreground" />
                   </div>
                 )}
@@ -170,7 +172,7 @@ export default function AdhesionsPage() {
                     onClick={() => router.push(`/dashboard/adhesions/${f.id}`)}
                     className="min-w-0 text-left hover:underline decoration-muted-foreground/40 underline-offset-2"
                   >
-                    <p className="font-medium truncate">{f.title}</p>
+                    <p className={cn("font-medium truncate", f.status !== "PUBLISHED" && "text-muted-foreground")}>{f.title}</p>
                     <p className="text-xs text-muted-foreground truncate">/{f.slug}</p>
                   </button>
                   <RowActions
@@ -198,7 +200,19 @@ export default function AdhesionsPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Badge variant={STATUS_VARIANT[f.status]}>{STATUS_LABEL[f.status]}</Badge>
+                  {f.status === "ARCHIVED" ? (
+                    <Badge variant={STATUS_VARIANT.ARCHIVED}>{STATUS_LABEL.ARCHIVED}</Badge>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={f.status === "PUBLISHED"}
+                        aria-label={STATUS_LABEL[f.status]}
+                        disabled={publishMutation.isPending}
+                        onCheckedChange={(checked) => publishMutation.mutate({ id: f.id, action: checked ? "publish" : "unpublish" })}
+                      />
+                      <span className="text-xs text-muted-foreground">{STATUS_LABEL[f.status]}</span>
+                    </div>
+                  )}
                   <span className="text-xs text-muted-foreground">{format(new Date(f.createdAt), "dd/MM/yyyy", { locale: fr })}</span>
                 </div>
                 <div className="flex items-center justify-between border-t pt-3 text-sm">

@@ -243,8 +243,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
 
       <div className="space-y-3">
         {tiers.map(tier => (
-          <div key={tier.key} className="flex items-start gap-2 rounded-md border border-input p-3">
-            <div className="flex-1 space-y-2">
+          <div key={tier.key} className="rounded-md border border-input p-3">
+            <div className="space-y-2">
               <div className="flex items-end gap-3 flex-wrap">
                 <div className="max-w-sm flex-1 min-w-48">
                   <FormField
@@ -262,6 +262,9 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                     onValueChange={v => updateItemType(tier.key, v as ItemType)}
                   />
                 </div>
+                <Button type="button" variant="ghost" size="icon" className="ml-auto" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
+                  <TrashIcon className="size-4" />
+                </Button>
               </div>
               {tier.itemType === "MEMBERSHIP" && (
                 <div className="flex items-end gap-3 flex-wrap">
@@ -327,6 +330,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                   )}
                 </div>
               )}
+              {/* Every control is a direct child of the items-end row so inputs, selects and
+                  checkbox bands (h-9 to match control height) share one bottom line. */}
               <div className="flex items-end gap-3 flex-wrap">
                 <div className="w-40">
                   <CurrencyField
@@ -336,8 +341,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                     disabled={tier.free || (tier.freeAmount && tier.itemType !== "DONATION")}
                   />
                 </div>
-                <div className="pb-2.5 flex items-center gap-3">
-                  {tier.itemType !== "DONATION" && (
+                {tier.itemType !== "DONATION" && (
+                  <div className="flex h-9 items-center">
                     <CheckboxField
                       label={t("freeAmountField")}
                       checked={tier.freeAmount}
@@ -351,8 +356,10 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                       })}
                       disabled={tier.free}
                     />
-                  )}
-                  {tier.itemType === "MEMBERSHIP" && (
+                  </div>
+                )}
+                {tier.itemType === "MEMBERSHIP" && (
+                  <div className="flex h-9 items-center">
                     <CheckboxField
                       label={t("freeField")}
                       checked={tier.free}
@@ -367,58 +374,57 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                         installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
                       })}
                     />
-                  )}
-                  {tier.itemType === "MEMBERSHIP" && (
-                    <div className="w-52">
-                      <SelectField
-                        label={t("receiptModeField")}
-                        options={tier.freeAmount ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
-                        value={tier.receiptMode}
-                        onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
-                        disabled={tier.free}
-                      />
-                    </div>
-                  )}
-                  {tier.itemType === "MEMBERSHIP" && tier.receiptMode === "PARTIAL" && (
-                    <div className="w-40">
-                      <CurrencyField
-                        label={t("deductibleAmountField")}
-                        value={tier.deductibleAmount ?? 0}
-                        onChange={v => updateTier(tier.key, { deductibleAmount: v })}
-                      />
-                    </div>
-                  )}
-                  {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && (
+                  </div>
+                )}
+                {tier.itemType === "MEMBERSHIP" && (
+                  <div className="w-52">
+                    <SelectField
+                      label={t("receiptModeField")}
+                      options={tier.freeAmount ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
+                      value={tier.receiptMode}
+                      onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
+                      disabled={tier.free}
+                    />
+                  </div>
+                )}
+                {tier.itemType === "MEMBERSHIP" && tier.receiptMode === "PARTIAL" && (
+                  <div className="w-40">
+                    <CurrencyField
+                      label={t("deductibleAmountField")}
+                      value={tier.deductibleAmount ?? 0}
+                      onChange={v => updateTier(tier.key, { deductibleAmount: v })}
+                    />
+                  </div>
+                )}
+                {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && (
+                  <div className="flex h-9 items-center">
                     <CheckboxField
                       label={t("installmentsAllowedField")}
                       checked={tier.installmentsAllowed}
                       onChange={e => updateTier(tier.key, { installmentsAllowed: e.target.checked, installmentsCount: e.target.checked ? (tier.installmentsCount ?? 3) : tier.installmentsCount })}
                       disabled={tier.free}
                     />
-                  )}
-                  {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && tier.installmentsAllowed && (
-                    <div className="w-28">
-                      <FormField
-                        label={t("installmentsCountField")}
-                        type="number"
-                        min={2}
-                        max={12}
-                        value={tier.installmentsCount ?? 3}
-                        onChange={e => updateTier(tier.key, { installmentsCount: e.target.value ? Number(e.target.value) : null })}
-                      />
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
+                {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && tier.installmentsAllowed && (
+                  <div className="w-28">
+                    <FormField
+                      label={t("installmentsCountField")}
+                      type="number"
+                      min={2}
+                      max={12}
+                      value={tier.installmentsCount ?? 3}
+                      onChange={e => updateTier(tier.key, { installmentsCount: e.target.value ? Number(e.target.value) : null })}
+                    />
+                  </div>
+                )}
               </div>
             </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
-              <TrashIcon className="size-4" />
-            </Button>
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-1">
+      <div className="flex items-center justify-end gap-2 pt-1">
         <Button type="button" variant="outline" size="sm" onClick={addTier}>
           <PlusIcon className="mr-1.5 size-4" />
           {t("addTier")}

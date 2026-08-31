@@ -2626,6 +2626,8 @@
           "visibilityLink": "Solo con enlace",
           "visibilitySite": "En el sitio web",
           "visibilityPrivate": "Privado",
+          "schedulePeriodLabel": "Limitar el período de inscripción",
+          "schedulePeriodHint": "Sin un período definido, el formulario permanece abierto mientras esté publicado.",
           "opensAtLabel": "Apertura",
           "closesAtLabel": "Cierre",
           "datesOrderError": "La fecha de cierre debe ser posterior a la fecha de apertura.",

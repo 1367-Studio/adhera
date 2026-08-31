@@ -24,6 +24,7 @@ import { SECTION_LABELS } from "@/types/site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { BASE_PATH } from "@/lib/env"
+import { cn } from "@/lib/utils"
 import { useCurrentUser } from "@/lib/user-context"
 import {
   ArchiveIcon,
@@ -187,6 +188,9 @@ export default function MembershipFormDetailPage() {
   const [siteSectionId, setSiteSectionId] = useState<string>("")
   const [opensAt, setOpensAt]             = useState("")
   const [closesAt, setClosesAt]           = useState("")
+  // Pure UI state: whether the opening/closing date fields are shown. Off = form stays
+  // open while published (both dates saved as null).
+  const [scheduleEnabled, setScheduleEnabled] = useState(false)
 
   const { data: form, isLoading, isError } = useQuery<MembershipForm>({
     queryKey: ["membership-form", id],
@@ -259,6 +263,7 @@ export default function MembershipFormDetailPage() {
     setSiteSectionId(form.siteSectionId ?? "")
     setOpensAt(toDatetimeLocal(form.opensAt))
     setClosesAt(toDatetimeLocal(form.closesAt))
+    setScheduleEnabled(!!(form.opensAt || form.closesAt))
   }, [form])
 
   const saveMutation = useMutation({
@@ -569,7 +574,15 @@ export default function MembershipFormDetailPage() {
   // Tint + inline tag on a step that blocked the last publish attempt. A plain background on
   // the item (no border, no badge) keeps the accordion reading as one surface.
   const stepClass = (key: StepKey) =>
-    publishAttempted && stepIssue(key) ? "bg-destructive/10 first:rounded-t-lg last:rounded-b-lg" : undefined
+    cn(
+      "overflow-hidden rounded-lg border bg-card",
+      publishAttempted && stepIssue(key) && "bg-destructive/10",
+    )
+  // A flagged step keeps the transparent header so the destructive tint and tag stay legible.
+  const stepHeaderClass = (key: StepKey) =>
+    publishAttempted && stepIssue(key)
+      ? undefined
+      : "bg-primary text-primary-foreground hover:bg-primary/90 [&>svg]:text-primary-foreground/80"
   function stepTrigger(key: StepKey) {
     const issue = publishAttempted ? stepIssue(key) : null
     return (
@@ -606,7 +619,7 @@ export default function MembershipFormDetailPage() {
         action={
           <div className="flex gap-2">
             {form.status !== "PUBLISHED" ? (
-              <Button size="sm" variant="secondary" onClick={handlePublish} loading={publishMutation.isPending}>
+              <Button size="sm" onClick={handlePublish} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
               </Button>
@@ -636,7 +649,7 @@ export default function MembershipFormDetailPage() {
                 {t("detail.archiveButton")}
               </Button>
             )}
-            <Button size="sm" variant="ghost" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
+            <Button size="sm" variant="destructive" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
               <TrashIcon className="mr-1.5 size-4" />
               {t("detail.deleteButton")}
             </Button>
@@ -646,9 +659,10 @@ export default function MembershipFormDetailPage() {
 
       {/* keepMounted: Base UI unmounts a closed panel by default, which threw away whatever
           the Tarifs / Champs editors held in local state the moment you collapsed them. */}
-      <Accordion multiple value={openSteps} onValueChange={v => setOpenSteps(v as StepKey[])} keepMounted>
+      {/* Detached steps: the shared joined-container chrome moves onto each item instead. */}
+      <Accordion multiple value={openSteps} onValueChange={v => setOpenSteps(v as StepKey[])} keepMounted className="space-y-3 rounded-none border-0 bg-transparent divide-y-0">
         <AccordionItem id="step-info" value="info" className={stepClass("info")}>
-          <AccordionTrigger>{stepTrigger("info")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("info")}>{stepTrigger("info")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
               {/* The title used to save itself on blur — which also fired when clicking the
@@ -704,7 +718,7 @@ export default function MembershipFormDetailPage() {
                 onChange={(e) => setRequireCguv(e.target.checked)}
               />
               <div className="space-y-3">
-                <p className="flex items-center gap-1.5 text-sm font-semibold">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-primary">
                   {tSteps("info.contactSectionTitle")}
                   <Tooltip>
                     <TooltipTrigger
@@ -759,18 +773,18 @@ export default function MembershipFormDetailPage() {
         </AccordionItem>
 
         <AccordionItem id="step-tiers" value="tiers" className={stepClass("tiers")}>
-          <AccordionTrigger>{stepTrigger("tiers")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("tiers")}>{stepTrigger("tiers")}</AccordionTrigger>
           <AccordionPanel>
             <MembershipTiersEditor ref={tiersRef} formId={id} membreTypes={membreTypes} onDirtyChange={setTiersDirty} />
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-fields" value="fields" className={stepClass("fields")}>
-          <AccordionTrigger>{stepTrigger("fields")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("fields")}>{stepTrigger("fields")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-5">
               <div>
-                <p className="text-sm font-medium">{tSteps("fields.standardFieldsHint")}</p>
+                <p className="text-sm font-medium text-primary">{tSteps("fields.standardFieldsHint")}</p>
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <SelectField label={tSteps("fields.addressLabel")} options={requirementOptions} value={fieldAddress} onValueChange={v => setFieldAddress(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.birthDateLabel")} options={requirementOptions} value={fieldBirthDate} onValueChange={v => setFieldBirthDate(v as FieldRequirement)} />
@@ -800,7 +814,7 @@ export default function MembershipFormDetailPage() {
         </AccordionItem>
 
         <AccordionItem id="step-payment" value="payment" className={stepClass("payment")}>
-          <AccordionTrigger>{stepTrigger("payment")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("payment")}>{stepTrigger("payment")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">{tSteps("payment.hint")}</p>
@@ -855,7 +869,7 @@ export default function MembershipFormDetailPage() {
         </AccordionItem>
 
         <AccordionItem id="step-publish" value="publish" className={stepClass("publish")}>
-          <AccordionTrigger>{stepTrigger("publish")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("publish")}>{stepTrigger("publish")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
               <SelectField
@@ -885,20 +899,31 @@ export default function MembershipFormDetailPage() {
                   }}
                 />
               )}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField
-                  label={tSteps("publish.opensAtLabel")}
-                  type="datetime-local"
-                  value={opensAt}
-                  onChange={(e) => setOpensAt(e.target.value)}
-                />
-                <FormField
-                  label={tSteps("publish.closesAtLabel")}
-                  type="datetime-local"
-                  value={closesAt}
-                  onChange={(e) => setClosesAt(e.target.value)}
-                />
-              </div>
+              <CheckboxField
+                label={tSteps("publish.schedulePeriodLabel")}
+                hint={tSteps("publish.schedulePeriodHint")}
+                checked={scheduleEnabled}
+                onChange={(e) => {
+                  setScheduleEnabled(e.target.checked)
+                  if (!e.target.checked) { setOpensAt(""); setClosesAt("") }
+                }}
+              />
+              {scheduleEnabled && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    label={tSteps("publish.opensAtLabel")}
+                    type="datetime-local"
+                    value={opensAt}
+                    onChange={(e) => setOpensAt(e.target.value)}
+                  />
+                  <FormField
+                    label={tSteps("publish.closesAtLabel")}
+                    type="datetime-local"
+                    value={closesAt}
+                    onChange={(e) => setClosesAt(e.target.value)}
+                  />
+                </div>
+              )}
               <div className="flex justify-end">
                 <Button
                   size="sm"
