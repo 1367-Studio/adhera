@@ -14,7 +14,7 @@ import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
-import { membershipWelcomeEmail } from "@/lib/email"
+import { membershipWelcomeEmail, membershipPendingValidationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
@@ -270,6 +270,16 @@ export async function POST(
         associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED", entity: "Membre", entityId: membre.id,
         label: `${firstName} ${lastName} (${form.title})`,
       })
+
+      sendEmail(membershipPendingValidationEmail({
+        firstName, email, associationName: assoc.name, formTitle: form.title,
+        branding: resolveDocumentBranding(assoc),
+      }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION" }).catch(() => {})
+
+      notifyMembershipSignup({
+        associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+        memberNames: [`${firstName} ${lastName}`], amount: 0, primaryMembreId: membre.id, pendingValidation: true,
+      }).catch(() => {})
 
       return NextResponse.json({ pending: true })
     }
@@ -827,6 +837,20 @@ async function handleMultiRegistrantCheckout(
       associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED", entity: "Membre", entityId: firstMembreId!,
       label: `${resolved[0].r.firstName} ${resolved[0].r.lastName} + ${resolved.length - 1} (${form.title})`,
     })
+
+    const allNames = resolved.map(({ r }) => `${r.firstName} ${r.lastName}`)
+
+    // Only registrant 0 (data.email) has an email on file in a group submission — see the
+    // create loop above — so that's the one and only person who can be reached here.
+    sendEmail(membershipPendingValidationEmail({
+      firstName: resolved[0].r.firstName, email: data.email, associationName: assoc.name, formTitle: form.title,
+      branding: resolveDocumentBranding(assoc), otherRegistrants: allNames.slice(1),
+    }), { associationId: assoc.id, membreId: firstMembreId, source: "TRANSACTION" }).catch(() => {})
+
+    notifyMembershipSignup({
+      associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: allNames, amount: 0, primaryMembreId: firstMembreId, pendingValidation: true,
+    }).catch(() => {})
 
     return NextResponse.json({ pending: true })
   }

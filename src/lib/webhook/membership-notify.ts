@@ -24,6 +24,10 @@ export async function notifyMembershipSignup(params: {
   // Only used to link the email's audit log entry to a real Membre — omit for a group
   // submission's admin email, which already names everyone in the body.
   primaryMembreId?: string
+  // Set when this signup is a MembershipForm.validationMode === "REQUEST" free-tier request
+  // (see checkout/route.ts's willBeImmediate) — the Membre exists as PENDING, not yet a real
+  // member, so both channels below need to read as "review this" rather than "FYI, done".
+  pendingValidation?: boolean
 }): Promise<void> {
   const admins = await prisma.user.findMany({
     where:  { associationId: params.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
@@ -31,8 +35,12 @@ export async function notifyMembershipSignup(params: {
   })
 
   const isGroup = params.memberNames.length > 1
-  const title   = isGroup ? "Nouvelle inscription groupée" : "Nouvelle adhésion"
-  const body    = `${params.memberNames.join(", ")} ${isGroup ? "ont rejoint" : "a rejoint"} via « ${params.formTitle} ».`
+  const title   = params.pendingValidation
+    ? (isGroup ? "Demande d'inscription groupée à valider" : "Demande d'adhésion à valider")
+    : (isGroup ? "Nouvelle inscription groupée" : "Nouvelle adhésion")
+  const body    = params.pendingValidation
+    ? `${params.memberNames.join(", ")} ${isGroup ? "attendent" : "attend"} votre validation pour rejoindre via « ${params.formTitle} ».`
+    : `${params.memberNames.join(", ")} ${isGroup ? "ont rejoint" : "a rejoint"} via « ${params.formTitle} ».`
 
   if (admins.length) {
     await prisma.notification.createMany({
@@ -58,5 +66,6 @@ export async function notifyMembershipSignup(params: {
     amount:          params.amount,
     dashboardUrl:    `${APP_URL}/dashboard/membres`,
     branding:        resolveDocumentBranding(assoc),
+    pendingValidation: params.pendingValidation,
   }), { associationId: params.associationId, membreId: params.primaryMembreId, source: "TRANSACTION" }).catch(() => {})
 }
