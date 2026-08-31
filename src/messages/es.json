@@ -1782,6 +1782,7 @@
         "stopRecordingError": "No se pudo detener la grabación.",
         "startRecordingError": "No se pudo iniciar la grabación.",
         "recordingError": "Error al gestionar la grabación.",
+        "blurError": "No se pudo aplicar el desenfoque de fondo.",
         "endMeetingError": "No se pudo finalizar la reunión. Inténtelo de nuevo.",
         "unexpectedDisconnect": "La conexión a la reunión se interrumpió de forma inesperada."
       },
@@ -1789,6 +1790,14 @@
       "record": "Grabar",
       "stopRecordingTooltip": "Detener la grabación de la reunión",
       "startRecordingTooltip": "Iniciar la grabación (visible para los participantes)",
+      "blurOn": "Difuminar el fondo",
+      "blurOff": "Desactivar el desenfoque",
+      "recordPrompt": {
+        "title": "¿Grabar la reunión?",
+        "description": "La grabación es necesaria para generar la transcripción y el acta. Se informa a los participantes de que la reunión se está grabando.",
+        "confirm": "Iniciar la grabación",
+        "decline": "Continuar sin grabar"
+      },
       "end": "Finalizar",
       "ending": "Finalizando la reunión…",
       "recordingBanner": "Esta reunión se está grabando",
@@ -2473,8 +2482,16 @@
     },
     "detail": {
       "backToList": "Volver a afiliaciones",
+      "draftNotice": "No visible públicamente mientras el formulario no esté publicado.",
+      "leaveWarning": {
+        "title": "Cambios sin guardar",
+        "description": "Algunas secciones se modificaron sin guardarse. Puedes guardarlas antes de salir o descartarlas.",
+        "discard": "Descartar",
+        "saveAndLeave": "Guardar y salir"
+      },
       "notFound": "Formulario no encontrado",
       "titleLabel": "Título del formulario",
+      "titleRequired": "El título es obligatorio",
       "duplicateButton": "Duplicar",
       "deleteButton": "Eliminar",
       "publishButton": "Publicar",
@@ -2488,6 +2505,12 @@
         "linkCopied": "Enlace copiado",
         "linkCopyError": "No se pudo copiar — seleccione el enlace manualmente."
       },
+      "publishBlocked": {
+        "unsavedToast": "Guarda las siguientes secciones antes de publicar: {steps}",
+        "noTiersToast": "Añade al menos una tarifa antes de publicar este formulario.",
+        "unsavedTag": "Sin guardar",
+        "noTiersTag": "Sin tarifas"
+      },
       "steps": {
         "info": {
           "title": "Información general",
@@ -2498,6 +2521,9 @@
           "conditionsPlaceholder": "Condiciones generales del formulario…",
           "conditionsPdfLabel": "Documento de condiciones (PDF o imagen)",
           "requireCguvLabel": "Exigir la firma de las condiciones generales",
+          "contactSectionTitle": "Información de contacto para los socios",
+          "contactSectionHint": "Los datos de contacto aparecen en el formulario en línea.",
+          "contactSectionHintAria": "¿Para qué sirven estos datos de contacto?",
           "contactEmailLabel": "Correo de contacto",
           "contactPhoneLabel": "Teléfono de contacto",
           "validationModeLabel": "Validación de afiliaciones gratuitas",
@@ -3425,10 +3451,10 @@
       "resultsCount": "{count, plural, one {# resultado} other {# resultados}}",
       "membersCount": "{count, plural, one {# miembro} other {# miembros}}",
       "blankFormPdf": "Ficha en blanco (PDF)",
+      "communication": "Comunicación",
       "sendEmail": "Enviar un correo",
       "sendSms": "Enviar un SMS",
       "export": "Exportar",
-      "import": "Importar",
       "exportExcel": "Excel (.xlsx)",
       "exportPdf": "PDF (.pdf)",
       "columns": {
@@ -3440,16 +3466,19 @@
       },
       "membershipAdherent": "Socio",
       "membershipBenevole": "Voluntario",
-      "statsMembership": "Afiliación",
+      "data": "Datos",
+      "stats": "Estadísticas",
+      "statsTitle": "Estadísticas de miembros",
+      "statsSex": "Sexo",
+      "statsAge": "Edad",
+      "statsTotal": "Total",
+      "statsUnknown": "No especificado",
       "statsAdherents": "Socios",
       "statsBenevoles": "Voluntarios",
-      "statsDemographics": "Demografía",
       "statsMen": "Hombres",
       "statsWomen": "Mujeres",
-      "statsSexUnknown": "Sexo no especificado",
       "statsAdults": "Adultos",
       "statsChildren": "Niños",
-      "statsAgeUnknown": "Edad no especificada",
       "searchPlaceholder": "Buscar un miembro…",
       "allStatuses": "Todos los estados",
       "allTypes": "Todos los tipos",

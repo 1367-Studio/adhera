@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useImperativeHandle, useState, type Ref } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -38,7 +38,28 @@ type MembershipTier = MembershipTierDraft & { id: string; order: number }
 
 let nextTempId = 0
 
-export function MembershipTiersEditor({ formId, membreTypes }: { formId: string; membreTypes: MembreType[] }) {
+// Exactly the fields handleSave() persists, in list order (the order itself is saved as
+// `order`). Anything editable but missing here would be silently lost by the unsaved-changes
+// guard in the parent page, so this must stay in sync with the mutation payload below.
+function tiersSignature(rows: MembershipTierDraft[]): string {
+  return JSON.stringify(rows.map(t => [
+    t.itemType, t.kind, t.free, t.freeAmount, t.amount, t.durationMonths, t.fixedPeriodEnd,
+    t.taxReceiptEligible, t.installmentsAllowed, t.installmentsCount, t.label, t.membreTypeId,
+  ]))
+}
+
+// Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
+// when validation or the request failed — the toast has already been shown by then.
+export type MembershipTiersEditorHandle = { save: () => Promise<boolean> }
+
+export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref }: {
+  formId: string
+  membreTypes: MembreType[]
+  // Reported up so the page can warn before navigating away — see the guard in
+  // src/app/dashboard/adhesions/[id]/page.tsx.
+  onDirtyChange?: (dirty: boolean) => void
+  ref?: Ref<MembershipTiersEditorHandle>
+}) {
   const t       = useTranslations("membershipForms.detail.steps.tiers")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -78,6 +99,17 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
     if (data) setTiers(data.map(t => ({ ...t, key: t.id, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })))
   }, [data])
 
+  // Same normalization the hydration effect above applies, so an untouched list compares
+  // equal (fixedPeriodEnd arrives as a full ISO datetime but is edited as YYYY-MM-DD).
+  const isDirty = tiersSignature(tiers) !== tiersSignature(
+    (data ?? []).map(t => ({ ...t, fixedPeriodEnd: t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null })),
+  )
+  useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
+  // Unmounting means the local edits are gone anyway — leaving the flag set would block
+  // navigation over work that no longer exists.
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
+  useImperativeHandle(ref, () => ({ save: handleSave }))
+
   function addTier() {
     setTiers(prev => [...prev, {
       key: `new-${nextTempId++}`, itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false, freeAmount: false, amount: null,
@@ -102,39 +134,39 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
     setTiers(prev => prev.filter(t => t.key !== key))
   }
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     if (tiers.some(t => !t.label.trim())) {
       toast.error(t("labelRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => !t.free && !t.freeAmount && !t.amount)) {
       toast.error(t("amountRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => t.free && t.freeAmount)) {
       toast.error(t("freeAndFreeAmountError"))
-      return
+      return false
     }
     if (!tiers.some(t => t.itemType === "MEMBERSHIP")) {
       toast.error(t("membershipTierRequiredError"))
-      return
+      return false
     }
     // Une donation reste à montant libre mais garde son propre champ "amount" comme montant
     // minimum — contrairement à un tarif/option à montant libre classique, où ce champ n'a
     // pas de sens et doit être vidé (voir la ligne juste en dessous).
     if (tiers.some(t => t.itemType === "DONATION" && !t.amount)) {
       toast.error(t("minAmountRequiredError"))
-      return
+      return false
     }
     // Stripe recurring prices cap interval_count at 12 for a "month" interval — see the same
     // rule enforced server-side in [id]/tiers/route.ts.
     if (tiers.some(t => t.kind === "RECURRING" && (t.durationMonths ?? 0) > 12)) {
       toast.error(t("durationMonthsRecurringMaxError"))
-      return
+      return false
     }
     if (tiers.some(t => t.durationMonths && t.fixedPeriodEnd)) {
       toast.error(t("durationConflictError"))
-      return
+      return false
     }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
@@ -151,8 +183,10 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
         label: t.label, membreTypeId: t.membreTypeId,
       })))
       toast.success(t("saved"))
+      return true
     } catch (err) {
       toast.error(err instanceof Error ? err.message : tCommon("error"))
+      return false
     }
   }
 
@@ -233,6 +267,7 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                   </div>
                   <div className="w-40">
                     <FormField
+                      id={`tier-duration-${tier.key}`}
                       label={t("durationMonthsField")}
                       type="number"
                       min={1}
@@ -244,12 +279,13 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                         fixedPeriodEnd: e.target.value ? null : tier.fixedPeriodEnd,
                       })}
                       disabled={!!tier.fixedPeriodEnd}
-                      hint={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
+                      hintTooltip={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
                     />
                   </div>
                   {tier.kind === "ONE_OFF" && (
                     <div className="w-44">
                       <FormField
+                        id={`tier-fixed-period-end-${tier.key}`}
                         label={t("fixedPeriodEndField")}
                         type="date"
                         value={tier.fixedPeriodEnd ?? ""}
@@ -258,7 +294,7 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
                           durationMonths: e.target.value ? null : tier.durationMonths,
                         })}
                         disabled={!!tier.durationMonths}
-                        hint={t("fixedPeriodEndHint")}
+                        hintTooltip={t("fixedPeriodEndHint")}
                       />
                     </div>
                   )}
@@ -344,7 +380,7 @@ export function MembershipTiersEditor({ formId, membreTypes }: { formId: string;
           <PlusIcon className="mr-1.5 size-4" />
           {t("addTier")}
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} loading={saveMutation.isPending}>
+        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
           {t("saveTiers")}
         </Button>
       </div>

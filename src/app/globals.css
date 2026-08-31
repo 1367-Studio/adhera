@@ -41,6 +41,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-public-panel: var(--public-panel);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -449,6 +450,11 @@ header.sticky {
   --dashboard-veil:         rgba(248, 250, 252, 0);
   --dashboard-panel:        rgb(248 250 252 / 62%);
   --dashboard-panel-radius: 0.75rem;
+  /* Panneau opaque des pages publiques posé sur .public-canvas — un blanc cassé chaud,
+     moins clinique que le #ffffff de --card contre le fond flouté. Déclaré ici comme
+     token (et exposé en `bg-public-panel` via @theme inline) plutôt qu'écrit en dur
+     dans le JSX : une valeur en dur resterait claire en mode sombre. */
+  --public-panel:           #f5f3f1;
 }
 
 .dark {
@@ -456,6 +462,9 @@ header.sticky {
      qu'en clair, d'où un voile légèrement plus opaque ici. */
   --dashboard-veil:  rgb(0 0 0 / 94%);
   --dashboard-panel: rgb(0 0 0 / 62%);
+  /* Pas d'équivalent chaud en sombre : on s'aligne sur --card, la surface opaque de
+     référence, pour que le panneau et les cartes qu'il porte restent cohérents. */
+  --public-panel:    #141414;
 }
 
 .dashboard-canvas {
@@ -466,6 +475,24 @@ header.sticky {
   background-position:   center;
   background-attachment: fixed;
   background-repeat:     no-repeat;
+}
+
+/* Variante pour les pages publiques (formulaires d'adhésion/don), à poser EN PLUS de
+   .dashboard-canvas : seule l'image change, tout le reste (cadrage, `fixed`, voile,
+   repli reduced-motion) est hérité de la règle ci-dessus.
+
+   Même illustration, mais floutée beaucoup plus fort (sigma 96 contre 16) : le
+   dashboard est un outil qu'on regarde des heures, où le filigrane doit rester
+   discret mais net ; une page publique est une vitrine vue une fois, où l'image sert
+   d'ambiance et ne doit surtout pas concurrencer le formulaire. À sigma 96 le
+   monument n'est plus identifiable, il ne reste que des aplats de couleur.
+
+   Régénérer avec la même recette que l'asset du dashboard :
+     sharp("public/logo-dashboard.png").resize({width:1400}).blur(96).webp({quality:82}) */
+.public-canvas {
+  background-image:
+    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
+    url("/app/logo-public-blur.webp");
 }
 
 /* Pas de parallaxe pour qui n'en veut pas : `fixed` produit un décalage au

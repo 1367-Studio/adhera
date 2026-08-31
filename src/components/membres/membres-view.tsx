@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon, ChartBarIcon, PaperPlaneTiltIcon, ArrowsDownUpIcon } from "@phosphor-icons/react/dist/ssr";
 import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
@@ -21,13 +21,15 @@ import { MembreForm } from "@/components/membres/membre-form"
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { SendSmsModal } from "@/components/membres/send-sms-modal"
+import { MembresStatsModal, type MembresStats } from "@/components/membres/membres-stats-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchInput } from "@/components/ui/search-input"
 import { FilterSelect } from "@/components/ui/filter-select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCurrentUser, useModules } from "@/lib/user-context"
@@ -95,30 +97,6 @@ function getStatusBadge(t: Translator): Record<Membre["status"], { label: string
     INACTIF:  { label: t("membres.form.status.inactif"),  variant: "secondary"   },
     SUSPENDU: { label: t("membres.form.status.suspendu"), variant: "destructive" },
   }
-}
-
-type MembresStatsBucket = {
-  count:            number
-  hommes:           number
-  femmes:           number
-  sexeNonRenseigne: number
-  adultes:          number
-  enfants:          number
-  ageNonRenseigne:  number
-}
-
-type MembresStats = MembresStatsBucket & {
-  adherents: MembresStatsBucket
-  benevoles: MembresStatsBucket
-}
-
-function StatItem({ label, value }: { label: string; value: number }) {
-  return (
-    <span className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
-      <span className="font-medium tabular-nums text-foreground">{value}</span>
-      <span className="text-muted-foreground">{label}</span>
-    </span>
-  )
 }
 
 export function ChangeRoleModal({
@@ -191,6 +169,7 @@ export function MembresView() {
   const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
   const [emailOpen, setEmailOpen]         = useState(false)
   const [smsOpen,   setSmsOpen]           = useState(false)
+  const [statsOpen, setStatsOpen]         = useState(false)
   const [historyTarget, setHistoryTarget] = useState<Membre | null>(null)
   const [roleTarget, setRoleTarget]       = useState<Membre | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -226,6 +205,7 @@ export function MembresView() {
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
     queryFn:  () => fetch("/api/membres/stats").then(r => r.json()),
+    enabled:  statsOpen,
   })
   const membres = (result?.data ?? []) as Membre[]
 
@@ -388,34 +368,69 @@ export function MembresView() {
         title={t("membres.view.title")}
         description={descriptionText}
         action={
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => router.push("/dashboard/membres/import")}>
-              {t("membres.view.import")}
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
-              {t("membres.view.sendEmail")}
-            </Button>
-            {modules.sms && (
-              <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
-                {t("membres.view.sendSms")}
-              </Button>
-            )}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      size="icon-sm"
+                      variant="outline"
+                      aria-label={t("membres.view.stats")}
+                      onClick={() => setStatsOpen(true)}
+                    />
+                  }
+                >
+                  <ChartBarIcon />
+                </TooltipTrigger>
+                <TooltipContent>{t("membres.view.stats")}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
-                {t("membres.view.export")}
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={t("membres.view.communication")} />}>
+                <PaperPlaneTiltIcon className="size-4 sm:hidden" />
+                <span className="hidden sm:inline">{t("membres.view.communication")}</span>
                 <CaretDownIcon className="ml-1 size-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleExportXlsx}>
-                  {t("membres.view.exportExcel")}
+                <DropdownMenuItem onClick={() => setEmailOpen(true)}>
+                  {t("membres.view.sendEmail")}
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => exportMembresPdf(buildExportParams())}>
-                  {t("membres.view.exportPdf")}
-                </DropdownMenuItem>
+                {modules.sms && (
+                  <DropdownMenuItem onClick={() => setSmsOpen(true)}>
+                    {t("membres.view.sendSms")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={t("membres.view.data")} />}>
+                <ArrowsDownUpIcon className="size-4 sm:hidden" />
+                <span className="hidden sm:inline">{t("membres.view.data")}</span>
+                <CaretDownIcon className="ml-1 size-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => router.push("/dashboard/membres/import")}>
+                    {t("membres.importWizard.title")}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
-                  {t("membres.view.blankFormPdf")}
-                </DropdownMenuItem>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>{t("membres.view.export")}</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={handleExportXlsx}>
+                    {t("membres.view.exportExcel")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => exportMembresPdf(buildExportParams())}>
+                    {t("membres.view.exportPdf")}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => window.open(`${BASE_PATH}/api/membres/fiche-vierge`, "_blank")}>
+                    {t("membres.view.blankFormPdf")}
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
             <Button size="sm" onClick={() => setCreateOpen(true)}>
@@ -425,29 +440,6 @@ export function MembresView() {
           </div>
         }
       />
-
-      {stats && (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
-          {modules.cotisations && (
-            <>
-              <div role="group" aria-label={t("membres.view.statsMembership")} className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-                <StatItem value={stats.adherents.count} label={t("membres.view.statsAdherents")} />
-                <StatItem value={stats.benevoles.count} label={t("membres.view.statsBenevoles")} />
-              </div>
-              <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
-            </>
-          )}
-          <div role="group" aria-label={t("membres.view.statsDemographics")} className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-            <StatItem value={stats.adultes} label={t("membres.view.statsAdults")} />
-            <StatItem value={stats.enfants} label={t("membres.view.statsChildren")} />
-            <StatItem value={stats.ageNonRenseigne} label={t("membres.view.statsAgeUnknown")} />
-            <span aria-hidden="true" className="hidden h-4 w-px bg-border sm:block" />
-            <StatItem value={stats.hommes} label={t("membres.view.statsMen")} />
-            <StatItem value={stats.femmes} label={t("membres.view.statsWomen")} />
-            <StatItem value={stats.sexeNonRenseigne} label={t("membres.view.statsSexUnknown")} />
-          </div>
-        </div>
-      )}
 
       <div className="flex flex-wrap gap-2">
         <SearchInput
@@ -587,6 +579,13 @@ export function MembresView() {
       <SendSmsModal
         open={smsOpen}
         onOpenChange={setSmsOpen}
+      />
+
+      <MembresStatsModal
+        open={statsOpen}
+        onOpenChange={setStatsOpen}
+        stats={stats}
+        showMembership={modules.cotisations}
       />
 
       <Modal

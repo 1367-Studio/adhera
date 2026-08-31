@@ -1,34 +1,44 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
-import { toast } from "sonner"
-import {
-  CopyIcon, ArchiveIcon, TrashIcon, CloudArrowUpIcon, CloudArrowDownIcon, CheckIcon, LinkIcon, EyeIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser } from "@/lib/user-context"
-import { useMembreTypes } from "@/hooks/use-membre-types"
-import { BASE_PATH } from "@/lib/env"
-import { PageHeader } from "@/components/ui/page-header"
-import { Button } from "@/components/ui/button"
+import { MembershipFormFieldsEditor, type MembershipFormFieldsEditorHandle } from "@/components/adhesions/membership-form-fields-editor"
+import { MembershipTiersEditor, type MembershipTiersEditorHandle } from "@/components/adhesions/membership-tiers-editor"
+import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
+import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
+import { DetailNotFound } from "@/components/ui/detail-not-found"
+import { DocumentUpload } from "@/components/ui/document-upload"
+import { FormField } from "@/components/ui/form-field"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { FormField } from "@/components/ui/form-field"
-import { SelectField } from "@/components/ui/select-field"
-import { CheckboxField } from "@/components/ui/checkbox-field"
-import { ImageUpload } from "@/components/ui/image-upload"
-import { DocumentUpload } from "@/components/ui/document-upload"
+import { Modal } from "@/components/ui/modal"
+import { PageHeader } from "@/components/ui/page-header"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion"
-import { BackLink } from "@/components/ui/back-link"
-import { DetailNotFound } from "@/components/ui/detail-not-found"
-import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { MembershipFormFieldsEditor } from "@/components/adhesions/membership-form-fields-editor"
-import { MembershipTiersEditor } from "@/components/adhesions/membership-tiers-editor"
+import { SelectField } from "@/components/ui/select-field"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { useMembreTypes } from "@/hooks/use-membre-types"
+import { BASE_PATH } from "@/lib/env"
+import { useCurrentUser } from "@/lib/user-context"
+import {
+  ArchiveIcon,
+  CheckIcon,
+  CloudArrowDownIcon,
+  CloudArrowUpIcon,
+  CopyIcon,
+  EyeIcon,
+  InfoIcon,
+  LinkIcon,
+  TrashIcon,
+} from "@phosphor-icons/react/dist/ssr"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
+import { useParams, useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 
 type MembershipFormStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type FieldRequirement     = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -74,6 +84,11 @@ type MembershipForm = {
 
 type SaveableFields = Partial<Omit<MembershipForm, "id" | "slug" | "status" | "_count">>
 
+// One entry per accordion step below, in display order. Each step has its own Save button,
+// so unsaved work is tracked per step — see stepDirty / stepIssue in the component.
+const STEP_KEYS = ["info", "tiers", "fields", "payment", "publish"] as const
+type StepKey = typeof STEP_KEYS[number]
+
 // datetime-local inputs have no timezone — the value IS wall-clock local time, so this
 // slices the ISO string rather than going through Date (which would apply UTC offset and
 // shift the displayed hour), same convention as evenement-form.tsx.
@@ -100,7 +115,23 @@ export default function MembershipFormDetailPage() {
 
   const [title, setTitle]                 = useState("")
   const [deleteConfirm, setDeleteConfirm]  = useState(false)
+  // The Tarifs / Champs personnalisés editors own their own drafts, so they report dirtiness
+  // up rather than the page trying to read it out of them.
+  const [tiersDirty, setTiersDirty]        = useState(false)
+  const [fieldsDirty, setFieldsDirty]      = useState(false)
+  const [leaveConfirm, setLeaveConfirm]    = useState(false)
+  // "Enregistrer et quitter" in flight — keeps the leave dialog open and its buttons inert.
+  const [leaveSaving, setLeaveSaving]      = useState(false)
   const [linkCopied, setLinkCopied]        = useState(false)
+  // Imperative handles on the two editors that own their own drafts, so saveAll can ask them
+  // to save without lifting all of that state up here.
+  const tiersRef  = useRef<MembershipTiersEditorHandle>(null)
+  const fieldsRef = useRef<MembershipFormFieldsEditorHandle>(null)
+  // Controlled so a refused publish can expand the steps it is complaining about.
+  const [openSteps, setOpenSteps]          = useState<StepKey[]>([])
+  // Set by the first refused publish; from then on every step that would still block
+  // publishing is tinted until it is fixed. Cleared once a publish goes through.
+  const [publishAttempted, setPublishAttempted] = useState(false)
 
   // Step 1 — Informations générales
   const [imageUrl, setImageUrl]             = useState("")
@@ -154,6 +185,15 @@ export default function MembershipFormDetailPage() {
     }),
   })
 
+  // Same key and URL as MembershipTiersEditor's own query, so this is just a second
+  // subscriber to the cached list (react-query dedupes the fetch). The page needs it because
+  // publishing must be refused while no tier is saved — the server rejects that too, but
+  // catching it here lets the Tarifs step be pointed at like any other blocking step.
+  const { data: savedTiers } = useQuery<{ id: string }[]>({
+    queryKey: ["membership-form", id, "tiers"],
+    queryFn:  () => fetch(`/api/membership-forms/${id}/tiers`).then(r => r.json()),
+  })
+
   useEffect(() => {
     if (!form) return
     setTitle(form.title)
@@ -201,9 +241,17 @@ export default function MembershipFormDetailPage() {
     onError: (err) => toast.error(err instanceof Error ? err.message : t("detail.toasts.saveError")),
   })
 
-  // Uploads the pending image file (if any) before saving — mirrors evenement-form.tsx's
-  // handleFormSubmit so a cancelled edit never leaves an orphaned file in R2.
-  async function handleSaveInfo() {
+  // What each step's Save button persists. saveAll() below reuses the same builders so
+  // "Enregistrer et quitter" writes exactly what the buttons would have.
+  //
+  // Uploads the pending image / conditions PDF first (same lazy pattern as
+  // evenement-form.tsx's handleFormSubmit, so a cancelled edit never leaves an orphaned file
+  // in R2) and returns null when a step cannot be saved — the reason has already been toasted.
+  async function infoPayload(): Promise<SaveableFields | null> {
+    if (!title.trim()) {
+      toast.error(t("detail.titleRequired"))
+      return null
+    }
     let resolvedImageUrl = imageUrl || null
     if (pendingFile) {
       setUploadingImage(true)
@@ -212,14 +260,13 @@ export default function MembershipFormDetailPage() {
         fd.append("file", pendingFile.file)
         fd.append("prefix", "adhera/adhesions")
         const res = await fetch("/api/upload", { method: "POST", body: fd })
-        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return }
+        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return null }
         const { url } = (await res.json()) as { url: string }
         resolvedImageUrl = url
       } finally {
         setUploadingImage(false)
       }
     }
-    // Same lazy pattern for the conditions document: only uploaded when the form is saved.
     let resolvedAttachments = attachments
     if (pendingPdf) {
       setUploadingImage(true)
@@ -228,14 +275,17 @@ export default function MembershipFormDetailPage() {
         fd.append("file", pendingPdf.file)
         fd.append("prefix", "adhera/adhesions")
         const res = await fetch("/api/upload", { method: "POST", body: fd })
-        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return }
+        if (!res.ok) { toast.error(t("detail.toasts.saveError")); return null }
         const { url } = (await res.json()) as { url: string }
         resolvedAttachments = [{ url, filename: pendingPdf.file.name, size: pendingPdf.file.size }]
       } finally {
         setUploadingImage(false)
       }
     }
-    saveMutation.mutate({
+    setPendingFile(null)
+    setPendingPdf(null)
+    return {
+      title: title.trim(),
       imageUrl: resolvedImageUrl,
       description: description || null,
       conditions: conditions || null,
@@ -244,9 +294,28 @@ export default function MembershipFormDetailPage() {
       contactEmail: contactEmail || null,
       contactPhone: contactPhone || null,
       validationMode,
-    })
-    setPendingFile(null)
-    setPendingPdf(null)
+    }
+  }
+  const standardFieldsPayload = (): SaveableFields => ({
+    fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage,
+  })
+  const paymentPayload = (): SaveableFields => ({
+    allowCash, allowCheque, allowTransfer,
+    offlineInstructions:    offlineInstructions || null,
+    confirmationMessage:    confirmationMessage || null,
+    adminNotificationEmail: adminNotificationEmail || null,
+  })
+  function publishPayload(): SaveableFields | null {
+    if (opensAt && closesAt && opensAt >= closesAt) {
+      toast.error(tSteps("publish.datesOrderError"))
+      return null
+    }
+    return { visibility, opensAt: fromDatetimeLocal(opensAt), closesAt: fromDatetimeLocal(closesAt) }
+  }
+
+  async function handleSaveInfo() {
+    const payload = await infoPayload()
+    if (payload) saveMutation.mutate(payload)
   }
 
   const publishMutation = useMutation({
@@ -268,6 +337,7 @@ export default function MembershipFormDetailPage() {
       }
       qc.setQueryData(["membership-form", id], result)
       qc.invalidateQueries({ queryKey: ["membership-forms"] })
+      if (action === "publish") setPublishAttempted(false)
       toast.success(t("formsView.toasts.statusUpdated"))
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.statusError")),
@@ -286,6 +356,58 @@ export default function MembershipFormDetailPage() {
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.deleteError")),
   })
+
+  // Every value a Save button on this page persists, grouped by the step whose Save button
+  // writes it. Must stay in sync with the payload builders above (infoPayload,
+  // standardFieldsPayload, paymentPayload, publishPayload): a field that is editable but
+  // missing here would be dropped on navigation with no warning at all — and would not stop
+  // a publish either.
+  const changed = (edited: unknown[], saved: unknown[]) => JSON.stringify(edited) !== JSON.stringify(saved)
+  // The Formulaire step has two Save buttons — the standard-field matrix and the custom fields
+  // editor's own — so its halves are tracked apart (each greys out its own button) and merged
+  // for the step.
+  const standardFieldsDirty = !!form && changed(
+    [fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage],
+    [form.fieldAddress, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender, form.fieldPhoto, form.fieldLanguage],
+  )
+  const stepDirty: Record<StepKey, boolean> = {
+    // A picked-but-not-yet-uploaded file only lives in memory (see the lazy-upload pattern
+    // above), so it counts as unsaved work even though no persisted field changed yet.
+    info: !!form && (!!pendingFile || !!pendingPdf || changed(
+      [title, imageUrl, description, conditions, attachments, requireCguv, contactEmail, contactPhone, validationMode],
+      [form.title, form.imageUrl ?? "", form.description ?? "", form.conditions ?? "", form.attachments ?? [],
+        form.requireCguvSignature, form.contactEmail ?? "", form.contactPhone ?? "", form.validationMode],
+    )),
+    tiers: tiersDirty,
+    fields: fieldsDirty || standardFieldsDirty,
+    payment: !!form && changed(
+      [allowCash, allowCheque, allowTransfer, offlineInstructions, confirmationMessage, adminNotificationEmail],
+      [form.allowCash, form.allowCheque, form.allowTransfer, form.offlineInstructions ?? "", form.confirmationMessage ?? "", form.adminNotificationEmail ?? ""],
+    ),
+    publish: !!form && changed(
+      [visibility, opensAt, closesAt],
+      [form.visibility, toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt)],
+    ),
+  }
+
+  const isDirty = STEP_KEYS.some(k => stepDirty[k])
+
+  // What would stop a publish right now, per step. Derived from live state on purpose: as soon
+  // as a step is saved (or a tier added) its issue clears, and with it the tint below.
+  const stepIssue = (key: StepKey): "unsaved" | "noTiers" | null =>
+    stepDirty[key] ? "unsaved"
+    : key === "tiers" && savedTiers?.length === 0 ? "noTiers"
+    : null
+
+  // Covers tab close / reload / external links, which client-side routing never sees. The
+  // browser shows its own generic wording here — returnValue only has to be set, its text
+  // is ignored by every current browser.
+  useEffect(() => {
+    if (!isDirty) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = "" }
+    window.addEventListener("beforeunload", onBeforeUnload)
+    return () => window.removeEventListener("beforeunload", onBeforeUnload)
+  }, [isDirty])
 
   if (isLoading) return <DetailLoadingSkeleton />
   if (isError || !form) {
@@ -334,17 +456,110 @@ export default function MembershipFormDetailPage() {
     }
   }
 
+  const stepTitles: Record<StepKey, string> = {
+    info:    tSteps("info.title"),
+    tiers:   tSteps("tiers.title"),
+    fields:  tSteps("fields.title"),
+    payment: tSteps("payment.title"),
+    publish: tSteps("publish.title"),
+  }
+
+  // Refuses to publish while any step still has unsaved edits (each step has its own Save
+  // button, so it is easy to leave one behind) or while no tier is saved. The offending steps
+  // are expanded, tinted and named in the toast; the first one is scrolled into view.
+  function handlePublish() {
+    const blocked = STEP_KEYS.filter(k => stepIssue(k) !== null)
+    if (blocked.length === 0) {
+      publishMutation.mutate("publish")
+      return
+    }
+    setPublishAttempted(true)
+    setOpenSteps(prev => Array.from(new Set([...prev, ...blocked])))
+    const unsaved = blocked.filter(k => stepIssue(k) === "unsaved")
+    toast.error(unsaved.length > 0
+      ? t("detail.publishBlocked.unsavedToast", { steps: unsaved.map(k => stepTitles[k]).join(", ") })
+      : t("detail.publishBlocked.noTiersToast"))
+    document.getElementById(`step-${blocked[0]}`)?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
+  // Saves every step that still has unsaved work: the two editors that own their drafts first
+  // (each validates and toasts on its own), then one PATCH for the page-level steps. Stops at
+  // the first failure and returns false so the caller stays on the page.
+  async function saveAll(): Promise<boolean> {
+    if (tiersDirty  && !(await tiersRef.current?.save()))  return false
+    if (fieldsDirty && !(await fieldsRef.current?.save())) return false
+    let payload: SaveableFields = {}
+    if (stepDirty.info) {
+      const info = await infoPayload()
+      if (!info) return false
+      payload = { ...payload, ...info }
+    }
+    if (standardFieldsDirty) payload = { ...payload, ...standardFieldsPayload() }
+    if (stepDirty.payment)   payload = { ...payload, ...paymentPayload() }
+    if (stepDirty.publish) {
+      const publish = publishPayload()
+      if (!publish) return false
+      payload = { ...payload, ...publish }
+    }
+    if (Object.keys(payload).length === 0) return true
+    try {
+      await saveMutation.mutateAsync(payload) // its onError has already toasted on failure
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  async function handleSaveAndLeave() {
+    setLeaveSaving(true)
+    try {
+      if (await saveAll()) router.push("/dashboard/adhesions")
+    } finally {
+      setLeaveSaving(false)
+    }
+  }
+
+  // Tint + inline tag on a step that blocked the last publish attempt. A plain background on
+  // the item (no border, no badge) keeps the accordion reading as one surface.
+  const stepClass = (key: StepKey) =>
+    publishAttempted && stepIssue(key) ? "bg-destructive/10 first:rounded-t-lg last:rounded-b-lg" : undefined
+  function stepTrigger(key: StepKey) {
+    const issue = publishAttempted ? stepIssue(key) : null
+    return (
+      <span className="flex items-center gap-2">
+        {stepTitles[key]}
+        {issue && (
+          <span className="text-xs font-normal text-destructive">
+            {issue === "unsaved" ? t("detail.publishBlocked.unsavedTag") : t("detail.publishBlocked.noTiersTag")}
+          </span>
+        )}
+      </span>
+    )
+  }
+
   return (
     <div className="space-y-4">
-      <BackLink href="/dashboard/adhesions">{t("detail.backToList")}</BackLink>
+      <BackLink
+        href="/dashboard/adhesions"
+        onClick={e => { if (isDirty) { e.preventDefault(); setLeaveConfirm(true) } }}
+      >
+        {t("detail.backToList")}
+      </BackLink>
 
       <PageHeader
         title={form.title}
-        description={<Badge variant={STATUS_VARIANT[form.status]}>{STATUS_LABEL[form.status]}</Badge>}
+        description={
+          <span className="flex flex-wrap items-center gap-2">
+            <Badge variant={STATUS_VARIANT[form.status]}>{STATUS_LABEL[form.status]}</Badge>
+            {form.status === "DRAFT" && (
+              <span className="text-xs text-muted-foreground">{t("detail.draftNotice")}</span>
+            )}
+          </span>
+        }
         action={
           <div className="flex gap-2">
             {form.status !== "PUBLISHED" ? (
-              <Button size="sm" variant="secondary" onClick={() => publishMutation.mutate("publish")} loading={publishMutation.isPending}>
+              <Button size="sm" variant="secondary" onClick={handlePublish} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
               </Button>
@@ -382,21 +597,24 @@ export default function MembershipFormDetailPage() {
         }
       />
 
-      <div className="max-w-xl space-y-2">
-        <Label htmlFor="form-title">{t("detail.titleLabel")}</Label>
-        <Input
-          id="form-title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onBlur={() => { if (title.trim() && title.trim() !== form.title) saveMutation.mutate({ title: title.trim() }) }}
-        />
-      </div>
-
-      <Accordion multiple defaultValue={[]}>
-        <AccordionItem value="info">
-          <AccordionTrigger>{tSteps("info.title")}</AccordionTrigger>
+      {/* keepMounted: Base UI unmounts a closed panel by default, which threw away whatever
+          the Tarifs / Champs editors held in local state the moment you collapsed them. */}
+      <Accordion multiple value={openSteps} onValueChange={v => setOpenSteps(v as StepKey[])} keepMounted>
+        <AccordionItem id="step-info" value="info" className={stepClass("info")}>
+          <AccordionTrigger>{stepTrigger("info")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
+              {/* The title used to save itself on blur — which also fired when clicking the
+                  back link, so "leave without saving" still saved it. It now goes through this
+                  step's Save button like every other field. */}
+              <div className="max-w-xl space-y-1.5">
+                <Label htmlFor="form-title">{t("detail.titleLabel")}</Label>
+                <Input
+                  id="form-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
               <div className="space-y-1.5">
                 <Label>{tSteps("info.imageLabel")}</Label>
                 <ImageUpload
@@ -438,18 +656,34 @@ export default function MembershipFormDetailPage() {
                 checked={requireCguv}
                 onChange={(e) => setRequireCguv(e.target.checked)}
               />
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField
-                  label={tSteps("info.contactEmailLabel")}
-                  type="email"
-                  value={contactEmail}
-                  onChange={(e) => setContactEmail(e.target.value)}
-                />
-                <FormField
-                  label={tSteps("info.contactPhoneLabel")}
-                  value={contactPhone}
-                  onChange={(e) => setContactPhone(e.target.value)}
-                />
+              <div className="space-y-3">
+                <p className="flex items-center gap-1.5 text-sm font-semibold">
+                  {tSteps("info.contactSectionTitle")}
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="text-muted-foreground hover:text-foreground"
+                      aria-label={tSteps("info.contactSectionHintAria")}
+                    >
+                      <InfoIcon className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="max-w-64 whitespace-normal text-left">
+                      {tSteps("info.contactSectionHint")}
+                    </TooltipContent>
+                  </Tooltip>
+                </p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    label={tSteps("info.contactEmailLabel")}
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                  />
+                  <FormField
+                    label={tSteps("info.contactPhoneLabel")}
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                  />
+                </div>
               </div>
               <div className="max-w-sm space-y-1.5">
                 <SelectField
@@ -466,6 +700,7 @@ export default function MembershipFormDetailPage() {
               <div className="flex justify-end">
                 <Button
                   size="sm"
+                  disabled={!stepDirty.info}
                   loading={saveMutation.isPending || uploadingImage}
                   onClick={handleSaveInfo}
                 >
@@ -476,15 +711,15 @@ export default function MembershipFormDetailPage() {
           </AccordionPanel>
         </AccordionItem>
 
-        <AccordionItem value="tiers">
-          <AccordionTrigger>{tSteps("tiers.title")}</AccordionTrigger>
+        <AccordionItem id="step-tiers" value="tiers" className={stepClass("tiers")}>
+          <AccordionTrigger>{stepTrigger("tiers")}</AccordionTrigger>
           <AccordionPanel>
-            <MembershipTiersEditor formId={id} membreTypes={membreTypes} />
+            <MembershipTiersEditor ref={tiersRef} formId={id} membreTypes={membreTypes} onDirtyChange={setTiersDirty} />
           </AccordionPanel>
         </AccordionItem>
 
-        <AccordionItem value="fields">
-          <AccordionTrigger>{tSteps("fields.title")}</AccordionTrigger>
+        <AccordionItem id="step-fields" value="fields" className={stepClass("fields")}>
+          <AccordionTrigger>{stepTrigger("fields")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-5">
               <div>
@@ -501,10 +736,9 @@ export default function MembershipFormDetailPage() {
                 <div className="flex justify-end mt-3">
                   <Button
                     size="sm"
+                    disabled={!standardFieldsDirty}
                     loading={saveMutation.isPending}
-                    onClick={() => saveMutation.mutate({
-                      fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage,
-                    })}
+                    onClick={() => saveMutation.mutate(standardFieldsPayload())}
                   >
                     {tCommon("save")}
                   </Button>
@@ -512,14 +746,14 @@ export default function MembershipFormDetailPage() {
               </div>
 
               <div className="border-t pt-4">
-                <MembershipFormFieldsEditor formId={id} />
+                <MembershipFormFieldsEditor ref={fieldsRef} formId={id} onDirtyChange={setFieldsDirty} />
               </div>
             </div>
           </AccordionPanel>
         </AccordionItem>
 
-        <AccordionItem value="payment">
-          <AccordionTrigger>{tSteps("payment.title")}</AccordionTrigger>
+        <AccordionItem id="step-payment" value="payment" className={stepClass("payment")}>
+          <AccordionTrigger>{stepTrigger("payment")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">{tSteps("payment.hint")}</p>
@@ -562,13 +796,9 @@ export default function MembershipFormDetailPage() {
               <div className="flex justify-end">
                 <Button
                   size="sm"
+                  disabled={!stepDirty.payment}
                   loading={saveMutation.isPending}
-                  onClick={() => saveMutation.mutate({
-                    allowCash, allowCheque, allowTransfer,
-                    offlineInstructions: offlineInstructions || null,
-                    confirmationMessage: confirmationMessage || null,
-                    adminNotificationEmail: adminNotificationEmail || null,
-                  })}
+                  onClick={() => saveMutation.mutate(paymentPayload())}
                 >
                   {tCommon("save")}
                 </Button>
@@ -577,8 +807,8 @@ export default function MembershipFormDetailPage() {
           </AccordionPanel>
         </AccordionItem>
 
-        <AccordionItem value="publish">
-          <AccordionTrigger>{tSteps("publish.title")}</AccordionTrigger>
+        <AccordionItem id="step-publish" value="publish" className={stepClass("publish")}>
+          <AccordionTrigger>{stepTrigger("publish")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
               <SelectField
@@ -608,17 +838,11 @@ export default function MembershipFormDetailPage() {
               <div className="flex justify-end">
                 <Button
                   size="sm"
+                  disabled={!stepDirty.publish}
                   loading={saveMutation.isPending}
                   onClick={() => {
-                    if (opensAt && closesAt && opensAt >= closesAt) {
-                      toast.error(tSteps("publish.datesOrderError"))
-                      return
-                    }
-                    saveMutation.mutate({
-                      visibility,
-                      opensAt: fromDatetimeLocal(opensAt),
-                      closesAt: fromDatetimeLocal(closesAt),
-                    })
+                    const payload = publishPayload()
+                    if (payload) saveMutation.mutate(payload)
                   }}
                 >
                   {tCommon("save")}
@@ -628,6 +852,28 @@ export default function MembershipFormDetailPage() {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+
+      <Modal
+        open={leaveConfirm}
+        onOpenChange={setLeaveConfirm}
+        title={t("detail.leaveWarning.title")}
+        description={t("detail.leaveWarning.description")}
+        size="md"
+        dismissable={!leaveSaving}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setLeaveConfirm(false)} disabled={leaveSaving}>
+              {tCommon("cancel")}
+            </Button>
+            <Button variant="destructive" onClick={() => router.push("/dashboard/adhesions")} disabled={leaveSaving}>
+              {t("detail.leaveWarning.discard")}
+            </Button>
+            <Button onClick={handleSaveAndLeave} loading={leaveSaving}>
+              {t("detail.leaveWarning.saveAndLeave")}
+            </Button>
+          </>
+        }
+      />
 
       <ConfirmDialog
         open={deleteConfirm}

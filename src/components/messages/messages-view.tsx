@@ -2,10 +2,11 @@
 
 import { useState } from "react"
 import { useTranslations } from "next-intl"
-import { LayoutIcon, LightningIcon, ClockIcon, ListChecksIcon, EnvelopeSimpleIcon, DeviceMobileIcon } from "@phosphor-icons/react/dist/ssr";
+import { LayoutIcon, LightningIcon, ClockIcon, ListChecksIcon, CaretDownIcon, PaperPlaneTiltIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { TemplatesManager } from "@/components/messages/templates-manager"
 import { RulesManager } from "@/components/messages/rules-manager"
 import { HistoriqueView } from "@/components/messages/historique-view"
@@ -37,20 +38,28 @@ export function MessagesView() {
         title={t("title")}
         description={t("description")}
         action={
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={() => setEmailOpen(true)}>
-              <EnvelopeSimpleIcon className="mr-1.5 size-4" />
-              {tMembres("sendEmail")}
-            </Button>
-            {modules.sms && (
-              <Button size="sm" variant="outline" onClick={() => setSmsOpen(true)}>
-                <DeviceMobileIcon className="mr-1.5 size-4" />
-                {tMembres("sendSms")}
-              </Button>
-            )}
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={tMembres("communication")} />}>
+                <PaperPlaneTiltIcon className="size-4 sm:hidden" />
+                <span className="hidden sm:inline">{tMembres("communication")}</span>
+                <CaretDownIcon className="ml-1 size-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setEmailOpen(true)}>
+                  {tMembres("sendEmail")}
+                </DropdownMenuItem>
+                {modules.sms && (
+                  <DropdownMenuItem onClick={() => setSmsOpen(true)}>
+                    {tMembres("sendSms")}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             {view === "rules" && (
-              <Button variant="outline" size="sm" onClick={() => setCampagneOpen(true)}>
-                <ListChecksIcon className="mr-1.5 size-3.5" /> {t("reminderSchedule")}
+              <Button variant="outline" size="sm" aria-label={t("reminderSchedule")} onClick={() => setCampagneOpen(true)}>
+                <ListChecksIcon className="size-3.5 sm:mr-1.5" />
+                <span className="hidden sm:inline">{t("reminderSchedule")}</span>
               </Button>
             )}
             <ViewToggle options={options} value={view} onChange={setView} />

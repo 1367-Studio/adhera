@@ -10,16 +10,19 @@ import {
   useTracks,
   useRoomContext,
   useRoomInfo,
+  useConnectionState,
   isTrackReference,
   useChat,
 } from "@livekit/components-react"
-import { DisconnectReason, Track } from "livekit-client"
-import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon } from "@phosphor-icons/react/dist/ssr";
+import { ConnectionState, DisconnectReason, Track } from "livekit-client"
+import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon, UserFocusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { Modal } from "@/components/ui/modal"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 import { useMeetingToken } from "@/hooks/use-meetings"
+import { useBackgroundBlur, supportsBackgroundBlur } from "@/components/reunions/use-background-blur"
 import { toast } from "sonner"
 
 type LeaveOpts = { ended?: boolean }
@@ -184,6 +187,13 @@ function Controls({
   const room               = useRoomContext()
   const [toggling, setToggling] = useState(false)
 
+  // Evaluated once per mount rather than per render: it pokes at WebGL2 by creating a
+  // throwaway canvas, and the answer can't change while the tab is open.
+  const [blurSupported] = useState(supportsBackgroundBlur)
+  const blur = useBackgroundBlur({
+    onError: () => toast.error(t("reunions.meetingRoom.toasts.blurError")),
+  })
+
   async function handleToggleRecording() {
     setToggling(true)
     try {
@@ -309,6 +319,34 @@ function Controls({
         {isCameraEnabled ? <VideoCameraIcon className="size-5" /> : <VideoCameraSlashIcon className="size-5" />}
       </TrackToggle>
 
+      {blurSupported && (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <button
+                  onClick={blur.toggle}
+                  disabled={ending || blur.pending || !blur.available}
+                  aria-pressed={blur.enabled}
+                  aria-label={blur.enabled ? t("reunions.meetingRoom.blurOff") : t("reunions.meetingRoom.blurOn")}
+                  className={cn(
+                    "flex size-11 items-center justify-center rounded-full border transition-colors disabled:opacity-50",
+                    blur.enabled ? "bg-primary text-primary-foreground border-primary" : "bg-card hover:bg-muted",
+                  )}
+                />
+              }
+            >
+              {blur.pending
+                ? <CircleNotchIcon className="size-5 animate-spin" />
+                : <UserFocusIcon className="size-5" />}
+            </TooltipTrigger>
+            <TooltipContent>
+              {blur.enabled ? t("reunions.meetingRoom.blurOff") : t("reunions.meetingRoom.blurOn")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+
       <Button
         variant="outline"
         className="rounded-full px-5 h-11"
@@ -365,6 +403,41 @@ function RoomInner({
     }
   }, [metadata])
 
+  // Ask the host once per join whether to record: the transcript and the compte rendu are
+  // both derived from the recording, so a meeting nobody recorded can never produce either.
+  // Held back until the local mic track is actually published — the egress route starts one
+  // egress per participant that already has a live audio track and 422s when it finds none,
+  // which is exactly what a prompt fired the instant the room opens would hit. Derived
+  // rather than stored so it also closes itself if recording starts from anywhere else.
+  const connectionState = useConnectionState()
+  const { microphoneTrack } = useLocalParticipant()
+  const [promptAnswered,   setPromptAnswered]   = useState(false)
+  const [startingRecording, setStartingRecording] = useState(false)
+
+  const recordPromptOpen =
+    isAdmin &&
+    !promptAnswered &&
+    !recording &&
+    connectionState === ConnectionState.Connected &&
+    !!microphoneTrack
+
+  async function handleStartRecording() {
+    setStartingRecording(true)
+    try {
+      const res = await fetch(`/api/meetings/${meetingId}/egress`, { method: "POST" })
+      if (!res.ok) {
+        const body = await res.json().catch(() => null)
+        toast.error(body?.error ?? t("reunions.meetingRoom.toasts.startRecordingError"))
+        return
+      }
+      setPromptAnswered(true)
+    } catch {
+      toast.error(t("reunions.meetingRoom.toasts.recordingError"))
+    } finally {
+      setStartingRecording(false)
+    }
+  }
+
   // Badge: count new messages received while chat is closed
   useEffect(() => {
     const newCount = chatMessages.length
@@ -411,6 +484,25 @@ function RoomInner({
         />
       </div>
       {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} />}
+
+      <Modal
+        open={recordPromptOpen}
+        onOpenChange={(open) => { if (!open) setPromptAnswered(true) }}
+        title={t("reunions.meetingRoom.recordPrompt.title")}
+        description={t("reunions.meetingRoom.recordPrompt.description")}
+        size="sm"
+        dismissable={!startingRecording}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setPromptAnswered(true)} disabled={startingRecording}>
+              {t("reunions.meetingRoom.recordPrompt.decline")}
+            </Button>
+            <Button onClick={handleStartRecording} loading={startingRecording}>
+              {t("reunions.meetingRoom.recordPrompt.confirm")}
+            </Button>
+          </>
+        }
+      />
     </div>
   )
 }
