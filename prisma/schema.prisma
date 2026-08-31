@@ -1161,6 +1161,12 @@ model MembershipForm {
 
   // Étape 5 — Publication
   visibility MembershipVisibility @default(LINK)
+  // Id of the "membership"-type SiteSection (Association.siteConfig JSON, see
+  // src/types/site-config.ts) this form is bound to when visibility = SITE — mirrors
+  // AssoConnect's "Sélectionner une page sur laquelle publier le formulaire" step: an explicit
+  // form→section pick instead of an implicit "most recently touched SITE form wins" heuristic.
+  // Required by the API whenever visibility is set to SITE; null for LINK/PRIVATE.
+  siteSectionId String?
   opensAt    DateTime?
   closesAt   DateTime?
 

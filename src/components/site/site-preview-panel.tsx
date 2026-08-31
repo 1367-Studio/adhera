@@ -6,7 +6,6 @@ import { isColorDark } from "@/lib/color"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
-type MembreType  = { id: string; name: string; color: string }
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
   location: string | null; description: string | null; price: string | null; capacity: number | null
@@ -28,21 +27,20 @@ type Props = {
   slug:        string
   city:        string | null
   country:     string
-  membreTypes: MembreType[]
   events:      PublicEvent[]
   actualites?: PublicActualite[]
   donsEnabled: boolean
 }
 
 
-export function SitePreviewPanel({ config, name, slug, city, country, membreTypes, events, actualites = [], donsEnabled }: Props) {
+export function SitePreviewPanel({ config, name, slug, city, country, events, actualites = [], donsEnabled }: Props) {
   const sections    = config?.sections ?? []
   const color       = config?.primaryColor ?? "#6366f1"
   const logoUrl     = config?.logoUrl
   const headerBg    = config?.headerBgColor || "#ffffff"
   const headerDark  = isColorDark(headerBg)
   const showMembres  = config?.headerShowMembres ?? true
-  const showRegister = config?.headerShowRegister ?? false
+  const showRegister = config?.headerShowRegister ?? true
   const footerBg    = config?.footerBgColor || "#ffffff"
   const footerDark  = isColorDark(footerBg)
   const footerLinks = (config?.footerLinks ?? []).filter(l => l.label && l.url)
@@ -70,7 +68,7 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
             <div className="flex items-center gap-1.5">
               {showRegister && (
                 <span className="text-xs font-medium px-2 py-1 rounded border" style={{ color, borderColor: color }}>
-                  S&apos;inscrire
+                  Adhérer
                 </span>
               )}
               {showMembres && (
@@ -211,28 +209,23 @@ export function SitePreviewPanel({ config, name, slug, city, country, membreType
             }
 
             case "membership":
+              // Mirrors what SiteMembershipFormCta actually renders on the live site — a
+              // title/body and one CTA button linking to whichever MembershipForm is bound
+              // to this section (Formulaires → Adhésions → étape Publication). Without one
+              // bound, this section renders nothing at all on the real site.
               return (
                 <section key={section.id} className="py-12 px-4 relative">
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white">
-                      Aperçu — formulaire non interactif
+                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white text-center">
+                      Aperçu — nécessite un formulaire d&apos;adhésion publié et lié à cette section
                     </span>
                   </div>
-                  <div className="max-w-sm mx-auto pointer-events-none select-none">
+                  <div className="max-w-sm mx-auto pointer-events-none select-none text-center">
                     <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
                     {"body" in section && section.body && (
                       <p className="text-gray-500 text-sm mb-6">{section.body}</p>
                     )}
-                    <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />
-                        <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />
-                      </div>
-                      <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />
-                      <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />
-                      {membreTypes.length > 0 && <div className="h-9 rounded-lg border border-gray-200 bg-gray-50" />}
-                      <div className="h-10 rounded-lg" style={{ background: color }} />
-                    </div>
+                    <div className="h-10 rounded-lg" style={{ background: color }} />
                   </div>
                 </section>
               )

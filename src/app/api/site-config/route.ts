@@ -71,6 +71,25 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   data.siteConfig = { ...existingConfig, ...configFields }
 
   await prisma.association.update({ where: { id: associationId }, data })
+
+  // A deleted section can be one a MembershipForm's Publication step points at
+  // (siteSectionId) — without this, the form stays PUBLISHED+SITE forever bound to a
+  // section id that no longer exists anywhere in siteConfig, so it silently vanishes from
+  // the page while still counting as "published on the site" (e.g. still driving the header
+  // CTA). Clearing it back to null falls through to the normal "not bound to a section yet"
+  // state, which the Publication step already knows how to show and unblock.
+  if (configFields.sections) {
+    const oldIds     = new Set(((existingConfig.sections as { id: string }[] | undefined) ?? []).map(s => s.id))
+    const newIds     = new Set(configFields.sections.map(s => s.id))
+    const removedIds = [...oldIds].filter(id => !newIds.has(id))
+    if (removedIds.length > 0) {
+      await prisma.membershipForm.updateMany({
+        where: { associationId, siteSectionId: { in: removedIds } },
+        data:  { siteSectionId: null },
+      })
+    }
+  }
+
   await revalidatePublicSiteFor(associationId)
 
   const action = published === true ? "SITE_PUBLISHED" : published === false ? "SITE_UNPUBLISHED" : "SITE_UPDATED"

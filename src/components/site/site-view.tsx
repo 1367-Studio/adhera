@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
-import { useMembreTypes } from "@/hooks/use-membre-types"
 import { SiteControlsPanel } from "@/components/site/site-controls-panel"
 import { SitePreviewPanel } from "@/components/site/site-preview-panel"
 import type { SiteConfig } from "@/types/site-config"
@@ -34,8 +33,6 @@ export function SiteView() {
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
   })
-
-  const { data: membreTypes = [] } = useMembreTypes()
 
   const { data: events = [] } = useQuery<PublicEvent[]>({
     queryKey: ["evenements-site-preview"],
@@ -176,7 +173,6 @@ export function SiteView() {
           slug={assoc?.slug ?? ""}
           city={assoc?.city ?? null}
           country={assoc?.country ?? "France"}
-          membreTypes={membreTypes}
           events={events}
           donsEnabled={modules.dons}
         />
