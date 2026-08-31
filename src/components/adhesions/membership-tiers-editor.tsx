@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useImperativeHandle, useState, type Ref } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -48,12 +48,17 @@ function tiersSignature(rows: MembershipTierDraft[]): string {
   ]))
 }
 
-export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
+// Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
+// when validation or the request failed — the toast has already been shown by then.
+export type MembershipTiersEditorHandle = { save: () => Promise<boolean> }
+
+export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref }: {
   formId: string
   membreTypes: MembreType[]
   // Reported up so the page can warn before navigating away — see the guard in
   // src/app/dashboard/adhesions/[id]/page.tsx.
   onDirtyChange?: (dirty: boolean) => void
+  ref?: Ref<MembershipTiersEditorHandle>
 }) {
   const t       = useTranslations("membershipForms.detail.steps.tiers")
   const tCommon = useTranslations("common")
@@ -103,6 +108,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
   // Unmounting means the local edits are gone anyway — leaving the flag set would block
   // navigation over work that no longer exists.
   useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
+  useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addTier() {
     setTiers(prev => [...prev, {
@@ -128,39 +134,39 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
     setTiers(prev => prev.filter(t => t.key !== key))
   }
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     if (tiers.some(t => !t.label.trim())) {
       toast.error(t("labelRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => !t.free && !t.freeAmount && !t.amount)) {
       toast.error(t("amountRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => t.free && t.freeAmount)) {
       toast.error(t("freeAndFreeAmountError"))
-      return
+      return false
     }
     if (!tiers.some(t => t.itemType === "MEMBERSHIP")) {
       toast.error(t("membershipTierRequiredError"))
-      return
+      return false
     }
     // Une donation reste à montant libre mais garde son propre champ "amount" comme montant
     // minimum — contrairement à un tarif/option à montant libre classique, où ce champ n'a
     // pas de sens et doit être vidé (voir la ligne juste en dessous).
     if (tiers.some(t => t.itemType === "DONATION" && !t.amount)) {
       toast.error(t("minAmountRequiredError"))
-      return
+      return false
     }
     // Stripe recurring prices cap interval_count at 12 for a "month" interval — see the same
     // rule enforced server-side in [id]/tiers/route.ts.
     if (tiers.some(t => t.kind === "RECURRING" && (t.durationMonths ?? 0) > 12)) {
       toast.error(t("durationMonthsRecurringMaxError"))
-      return
+      return false
     }
     if (tiers.some(t => t.durationMonths && t.fixedPeriodEnd)) {
       toast.error(t("durationConflictError"))
-      return
+      return false
     }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
@@ -177,8 +183,10 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
         label: t.label, membreTypeId: t.membreTypeId,
       })))
       toast.success(t("saved"))
+      return true
     } catch (err) {
       toast.error(err instanceof Error ? err.message : tCommon("error"))
+      return false
     }
   }
 
@@ -372,7 +380,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange }: {
           <PlusIcon className="mr-1.5 size-4" />
           {t("addTier")}
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} loading={saveMutation.isPending}>
+        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
           {t("saveTiers")}
         </Button>
       </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useImperativeHandle, useState, type Ref } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -20,9 +20,14 @@ function fieldsSignature(rows: MembershipFormFieldDraft[]): string {
   return JSON.stringify(rows.map(f => [f.type, f.label, f.required]))
 }
 
-export function MembershipFormFieldsEditor({ formId, onDirtyChange }: {
+// Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
+// when validation or the request failed — the toast has already been shown by then.
+export type MembershipFormFieldsEditorHandle = { save: () => Promise<boolean> }
+
+export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   formId: string
   onDirtyChange?: (dirty: boolean) => void
+  ref?: Ref<MembershipFormFieldsEditorHandle>
 }) {
   const t       = useTranslations("membershipForms.detail.steps.fields")
   const tCommon = useTranslations("common")
@@ -53,6 +58,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange }: {
   const isDirty = fieldsSignature(fields) !== fieldsSignature(data ?? [])
   useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
   useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
+  useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addField() {
     setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false }])
@@ -64,16 +70,18 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange }: {
     setFields(prev => prev.filter(f => f.key !== key))
   }
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     if (fields.some(f => !f.label.trim())) {
       toast.error(t("labelRequiredError"))
-      return
+      return false
     }
     try {
       await saveMutation.mutateAsync(fields.map(f => ({ type: f.type, label: f.label, required: f.required, id: f.id })))
       toast.success(t("saved"))
+      return true
     } catch (err) {
       toast.error(err instanceof Error ? err.message : tCommon("error"))
+      return false
     }
   }
 
@@ -135,7 +143,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange }: {
           <PlusIcon className="mr-1.5 size-4" />
           {t("addField")}
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} loading={saveMutation.isPending}>
+        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
           {t("saveFields")}
         </Button>
       </div>

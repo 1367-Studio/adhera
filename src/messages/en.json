@@ -2485,11 +2485,13 @@
       "draftNotice": "Not publicly visible until the form is published.",
       "leaveWarning": {
         "title": "Unsaved changes",
-        "description": "Some sections were edited but not saved. If you leave now, those changes will be lost.",
-        "confirm": "Leave without saving"
+        "description": "Some sections were edited but not saved. You can save them before leaving, or discard them.",
+        "discard": "Discard",
+        "saveAndLeave": "Save and leave"
       },
       "notFound": "Form not found",
       "titleLabel": "Form title",
+      "titleRequired": "The title is required",
       "duplicateButton": "Duplicate",
       "deleteButton": "Delete",
       "publishButton": "Publish",
@@ -2502,6 +2504,12 @@
         "saveError": "Error while saving",
         "linkCopied": "Link copied",
         "linkCopyError": "Couldn't copy — select the link manually."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Save the following sections before publishing: {steps}",
+        "noTiersToast": "Add at least one tier before publishing this form.",
+        "unsavedTag": "Unsaved",
+        "noTiersTag": "No tier"
       },
       "steps": {
         "info": {

@@ -2485,11 +2485,13 @@
       "draftNotice": "Non visible publiquement tant que le formulaire n'est pas publié.",
       "leaveWarning": {
         "title": "Modifications non enregistrées",
-        "description": "Certaines sections ont été modifiées sans être enregistrées. Si vous quittez maintenant, ces changements seront perdus.",
-        "confirm": "Quitter sans enregistrer"
+        "description": "Certaines sections ont été modifiées sans être enregistrées. Vous pouvez les enregistrer avant de quitter, ou les abandonner.",
+        "discard": "Abandonner",
+        "saveAndLeave": "Enregistrer et quitter"
       },
       "notFound": "Formulaire introuvable",
       "titleLabel": "Titre du formulaire",
+      "titleRequired": "Le titre est obligatoire",
       "duplicateButton": "Dupliquer",
       "deleteButton": "Supprimer",
       "publishButton": "Publier",
@@ -2502,6 +2504,12 @@
         "saveError": "Erreur lors de l'enregistrement",
         "linkCopied": "Lien copié",
         "linkCopyError": "Copie impossible — sélectionnez le lien manuellement."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Enregistrez les sections suivantes avant de publier : {steps}",
+        "noTiersToast": "Ajoutez au moins un tarif avant de publier ce formulaire.",
+        "unsavedTag": "Non enregistré",
+        "noTiersTag": "Aucun tarif"
       },
       "steps": {
         "info": {

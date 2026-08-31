@@ -2485,11 +2485,13 @@
       "draftNotice": "Não visível publicamente enquanto o formulário não for publicado.",
       "leaveWarning": {
         "title": "Alterações não salvas",
-        "description": "Algumas seções foram alteradas sem serem salvas. Se sair agora, essas alterações serão perdidas.",
-        "confirm": "Sair sem salvar"
+        "description": "Algumas seções foram alteradas sem serem salvas. Você pode salvá-las antes de sair ou descartá-las.",
+        "discard": "Descartar",
+        "saveAndLeave": "Salvar e sair"
       },
       "notFound": "Formulário não encontrado",
       "titleLabel": "Título do formulário",
+      "titleRequired": "O título é obrigatório",
       "duplicateButton": "Duplicar",
       "deleteButton": "Excluir",
       "publishButton": "Publicar",
@@ -2502,6 +2504,12 @@
         "saveError": "Erro ao salvar",
         "linkCopied": "Link copiado",
         "linkCopyError": "Não foi possível copiar — selecione o link manualmente."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Salve as seguintes seções antes de publicar: {steps}",
+        "noTiersToast": "Adicione pelo menos uma tarifa antes de publicar este formulário.",
+        "unsavedTag": "Não salvo",
+        "noTiersTag": "Sem tarifas"
       },
       "steps": {
         "info": {
