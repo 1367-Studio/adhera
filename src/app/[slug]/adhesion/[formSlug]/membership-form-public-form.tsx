@@ -92,6 +92,7 @@ type RegistrantDraft = {
   sexe:      "" | "HOMME" | "FEMME"
   spokenLanguage: string
   address:   string
+  photoUrl:  string
   answers:   Record<string, string>
 }
 
@@ -212,11 +213,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
-  // A required photo is only ever collected from the person filling out the form (see the
-  // ImageUpload block below) — an extra "Adhérent" block has no upload UI of its own, so
-  // multi-registrant mode can't satisfy a REQUIRED fieldPhoto for anyone past the first.
   const canAddRegistrant = !isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0 && form?.fieldPhoto !== "REQUIRED"
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
     : extraRegistrants.length + 1 < MAX_REGISTRANTS
 
   const amount = isMulti ? membershipAmount + extraRegistrantsAmount : membershipAmount + extrasAmount
@@ -265,7 +263,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     setExtraAmounts({})
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
-      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", answers: {},
+      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
     }])
   }
   function removeRegistrant(key: string) {
@@ -287,6 +285,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       (form.fieldMobile    !== "REQUIRED" || r.mobile.trim()) &&
       (form.fieldGender    !== "REQUIRED" || !!r.sexe) &&
       (form.fieldLanguage  !== "REQUIRED" || !!r.spokenLanguage) &&
+      (form.fieldPhoto     !== "REQUIRED" || r.photoUrl) &&
       form.customFields.every(f => !f.required || (r.answers[f.id] ?? "").trim() !== "")
   }
   const canSubmit =
@@ -333,7 +332,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   amount: rt && !rt.free && rt.freeAmount ? r.freeAmount : undefined,
                   firstName: r.firstName.trim(), lastName: r.lastName.trim(),
                   birthDate: r.birthDate.trim() || undefined, phone: r.phone.trim() || undefined, mobile: r.mobile.trim() || undefined,
-                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined, answers: r.answers,
+                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined,
+                  photoUrl: r.photoUrl || undefined, answers: r.answers,
                 }
               }),
             ],
@@ -574,6 +574,18 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                         <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
                         <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
                       </div>
+                      {form.fieldPhoto !== "HIDDEN" && (
+                        <div className="flex justify-center">
+                          <ImageUpload
+                            value={r.photoUrl}
+                            onChange={v => updateRegistrant(r.key, { photoUrl: v })}
+                            aspectRatio="square"
+                            className="w-32"
+                            compact
+                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                          />
+                        </div>
+                      )}
                       {form.fieldAddress !== "HIDDEN" && (
                         <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
                       )}
