@@ -830,7 +830,7 @@ model Cotisation {
   declarationIssuedAt DateTime?
   // The real, tax-deductible "reçu fiscal" (CERFA) — distinct from declarationNumber above,
   // which is a non-deductible attestation always available for any PAYE cotisation. This one
-  // only exists when taxReceiptEligible is true (see below) and the association has
+  // only exists when receiptMode is not NONE (see below) and the association has
   // canIssueTaxReceipts — mirrors Don.receiptNumber/receiptIssuedAt exactly, and shares the
   // same per-association/per-year numbering sequence (see assignReceiptNumber in
   // src/lib/pdf/recu-fiscal.ts) so no two receipts — Don or Cotisation — ever collide.
@@ -845,11 +845,13 @@ model Cotisation {
   // for cotisations created any other way (admin manual add, legacy /inscription flow).
   membershipFormId    String?
   tierId              String?
-  // Snapshotted from MembershipTier.taxReceiptEligible at creation — never re-derived if the
-  // tier changes afterward, same reasoning as membershipFormId/tierId already being frozen
-  // copies. Governs whether this Cotisation can ever get a receiptNumber above — unrelated to
-  // declarationNumber, which every PAYE cotisation can get regardless of this flag.
-  taxReceiptEligible  Boolean          @default(false)
+  // Snapshotted from MembershipTier.receiptMode/deductibleAmount at creation — never re-derived
+  // if the tier changes afterward, same reasoning as membershipFormId/tierId already being
+  // frozen copies. Governs whether this Cotisation can ever get a receiptNumber above (and, if
+  // PARTIAL, which amount that receipt shows — see receiptAmount() in recu-fiscal.ts) —
+  // unrelated to declarationNumber, which every PAYE cotisation can get regardless.
+  receiptMode         DonationReceiptMode @default(NONE)
+  deductibleAmount    Decimal?            @db.Decimal(10, 2)
   // Set only when this Cotisation came from a custom-duration MembershipTier (see
   // MembershipTier.durationMonths) — null for the ordinary calendar-year row, where validity
   // is implicitly Jan 1–Dec 31 of `year`. periodEnd, when set, is what src/lib/membre-
@@ -1253,10 +1255,13 @@ model MembershipTier {
   fixedPeriodEnd DateTime?
   // Un tier MEMBERSHIP peut être marqué éligible au reçu fiscal — rare en France (une
   // cotisation n'est pas un don), mais certaines associations le permettent dans des cas
-  // précis. Répercuté sur chaque Cotisation qu'il produit (voir Cotisation.taxReceiptEligible),
-  // jamais réévalué a posteriori si le tier change après coup — même logique de snapshot que
-  // membershipFormId/tierId déjà copiés sur Cotisation.
-  taxReceiptEligible Boolean @default(false)
+  // précis, parfois seulement partiellement (ex. une part de la cotisation correspond à une
+  // contrepartie — revue, événement — non déductible). Même modèle que DonationTier.
+  // receiptMode/deductibleAmount. Répercuté sur chaque Cotisation qu'il produit (voir
+  // Cotisation.receiptMode), jamais réévalué a posteriori si le tier change après coup —
+  // même logique de snapshot que membershipFormId/tierId déjà copiés sur Cotisation.
+  receiptMode      DonationReceiptMode @default(NONE)
+  deductibleAmount Decimal?            @db.Decimal(10, 2) // requis si receiptMode = PARTIAL
   // "Payer en plusieurs fois" — offre au visiteur, au moment du paiement, le choix de régler
   // en installmentsCount mensualités automatiques plutôt qu'en une fois. Implémenté comme un
   // Stripe Subscription plafonné à N cycles (subscription_data.cancel_at, voir checkout/
@@ -1423,11 +1428,12 @@ model CotisationSubscription {
   // `interval: "year"`); a number = `interval_count` months instead (see checkout/route.ts
   // and handleCotisationInvoicePaid, src/lib/webhook/cotisation-subscriptions.ts).
   durationMonths   Int?
-  // Snapshotted from MembershipTier.taxReceiptEligible at signup, same reasoning as
+  // Snapshotted from MembershipTier.receiptMode/deductibleAmount at signup, same reasoning as
   // durationMonths above — copied onto every yearly Cotisation this subscription produces
   // (see handleCotisationInvoicePaid) so a tier edited after signup can't change what an
   // already-running subscription's past or future receipts are eligible for.
-  taxReceiptEligible Boolean @default(false)
+  receiptMode      DonationReceiptMode @default(NONE)
+  deductibleAmount Decimal?            @db.Decimal(10, 2)
 
   association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre         Membre          @relation(fields: [membreId], references: [id])

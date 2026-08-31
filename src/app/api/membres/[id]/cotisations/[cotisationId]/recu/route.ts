@@ -13,9 +13,9 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
     where: { id: cotisationId, membreId: id, associationId: ctx.associationId, paidAt: { not: null } },
   })
   if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable ou non payée" }, { status: 404 })
-  // Snapshotted from MembershipTier.taxReceiptEligible at creation (see schema.prisma) — a
+  // Snapshotted from MembershipTier.receiptMode at creation (see schema.prisma) — a
   // cotisation created any other way (admin manual add, legacy /inscription) never has it set.
-  if (!cotisation.taxReceiptEligible)
+  if (cotisation.receiptMode === "NONE")
     return NextResponse.json({ error: "Cette cotisation n'est pas éligible au reçu fiscal" }, { status: 403 })
 
   const membre = await prisma.membre.findUnique({

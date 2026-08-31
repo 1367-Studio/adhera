@@ -306,11 +306,13 @@ export async function generateRecuFiscalForDon(
 }
 
 type CotisationForReceipt = {
-  id:              string
-  amount:          { toString(): string }
-  paidAt:          Date | null
-  receiptNumber:   string | null
-  receiptIssuedAt: DateTime_ | null
+  id:               string
+  amount:           { toString(): string }
+  paidAt:           Date | null
+  receiptNumber:    string | null
+  receiptIssuedAt:  DateTime_ | null
+  receiptMode?:      string | null
+  deductibleAmount?: { toString(): string } | null
 }
 type DateTime_ = Date
 
@@ -342,5 +344,7 @@ export async function generateRecuFiscalForCotisation(
     anonymous:       false,
     receiptNumber,
     receiptIssuedAt: cotisation.receiptIssuedAt,
+    receiptMode:      cotisation.receiptMode,
+    deductibleAmount: cotisation.deductibleAmount,
   }, association)
 }
