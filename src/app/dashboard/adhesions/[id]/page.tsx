@@ -1,6 +1,7 @@
 "use client"
 
 import { MembershipFormFieldsEditor, type MembershipFormFieldsEditorHandle } from "@/components/adhesions/membership-form-fields-editor"
+import { MembershipProductsEditor, type MembershipProductsEditorHandle } from "@/components/adhesions/membership-products-editor"
 import { MembershipTiersEditor, type MembershipTiersEditorHandle } from "@/components/adhesions/membership-tiers-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
@@ -90,7 +91,7 @@ type SaveableFields = Partial<Omit<MembershipForm, "id" | "slug" | "status" | "_
 
 // One entry per accordion step below, in display order. Each step has its own Save button,
 // so unsaved work is tracked per step — see stepDirty / stepIssue in the component.
-const STEP_KEYS = ["info", "tiers", "fields", "payment", "publish"] as const
+const STEP_KEYS = ["info", "tiers", "fields", "products", "payment", "publish"] as const
 // Sentinel option value in the site-section picker — selecting it creates a new "membership"
 // section instead of picking an existing one. Never a real cuid/uuid, so it can't collide.
 const CREATE_SITE_SECTION_VALUE = "__create__"
@@ -130,14 +131,16 @@ export default function MembershipFormDetailPage() {
   // up rather than the page trying to read it out of them.
   const [tiersDirty, setTiersDirty]        = useState(false)
   const [fieldsDirty, setFieldsDirty]      = useState(false)
+  const [productsDirty, setProductsDirty]  = useState(false)
   const [leaveConfirm, setLeaveConfirm]    = useState(false)
   // "Enregistrer et quitter" in flight — keeps the leave dialog open and its buttons inert.
   const [leaveSaving, setLeaveSaving]      = useState(false)
   const [linkCopied, setLinkCopied]        = useState(false)
   // Imperative handles on the two editors that own their own drafts, so saveAll can ask them
   // to save without lifting all of that state up here.
-  const tiersRef  = useRef<MembershipTiersEditorHandle>(null)
-  const fieldsRef = useRef<MembershipFormFieldsEditorHandle>(null)
+  const tiersRef    = useRef<MembershipTiersEditorHandle>(null)
+  const fieldsRef   = useRef<MembershipFormFieldsEditorHandle>(null)
+  const productsRef = useRef<MembershipProductsEditorHandle>(null)
   // Controlled so a refused publish can expand the steps it is complaining about.
   const [openSteps, setOpenSteps]          = useState<StepKey[]>([])
   // Set by the first refused publish; from then on every step that would still block
@@ -432,6 +435,7 @@ export default function MembershipFormDetailPage() {
     )),
     tiers: tiersDirty,
     fields: fieldsDirty || standardFieldsDirty,
+    products: productsDirty,
     payment: !!form && changed(
       [allowCash, allowCheque, allowTransfer, offlineInstructions, confirmationMessage, adminNotificationEmail],
       [form.allowCash, form.allowCheque, form.allowTransfer, form.offlineInstructions ?? "", form.confirmationMessage ?? "", form.adminNotificationEmail ?? ""],
@@ -509,11 +513,12 @@ export default function MembershipFormDetailPage() {
   }
 
   const stepTitles: Record<StepKey, string> = {
-    info:    tSteps("info.title"),
-    tiers:   tSteps("tiers.title"),
-    fields:  tSteps("fields.title"),
-    payment: tSteps("payment.title"),
-    publish: tSteps("publish.title"),
+    info:     tSteps("info.title"),
+    tiers:    tSteps("tiers.title"),
+    fields:   tSteps("fields.title"),
+    products: tSteps("products.title"),
+    payment:  tSteps("payment.title"),
+    publish:  tSteps("publish.title"),
   }
 
   // Refuses to publish while any step still has unsaved edits (each step has its own Save
@@ -538,8 +543,9 @@ export default function MembershipFormDetailPage() {
   // (each validates and toasts on its own), then one PATCH for the page-level steps. Stops at
   // the first failure and returns false so the caller stays on the page.
   async function saveAll(): Promise<boolean> {
-    if (tiersDirty  && !(await tiersRef.current?.save()))  return false
-    if (fieldsDirty && !(await fieldsRef.current?.save())) return false
+    if (tiersDirty    && !(await tiersRef.current?.save()))    return false
+    if (fieldsDirty   && !(await fieldsRef.current?.save()))   return false
+    if (productsDirty && !(await productsRef.current?.save())) return false
     let payload: SaveableFields = {}
     if (stepDirty.info) {
       const info = await infoPayload()
@@ -810,6 +816,13 @@ export default function MembershipFormDetailPage() {
                 <MembershipFormFieldsEditor ref={fieldsRef} formId={id} onDirtyChange={setFieldsDirty} />
               </div>
             </div>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem id="step-products" value="products" className={stepClass("products")}>
+          <AccordionTrigger className={stepHeaderClass("products")}>{stepTrigger("products")}</AccordionTrigger>
+          <AccordionPanel>
+            <MembershipProductsEditor ref={productsRef} formId={id} onDirtyChange={setProductsDirty} />
           </AccordionPanel>
         </AccordionItem>
 

@@ -56,6 +56,14 @@ const schema = z.object({
     tierId: z.string().min(1),
     amount: z.number().positive().max(100000).optional(), // requis seulement pour une option à montant libre
   })).max(20).optional().default([]),
+  // Produits Boutique choisis en fin d'adhésion — jamais sur le multiSchema/registrantSchema
+  // (ni sur un tarif RECURRING ou payé en plusieurs fois, voir le garde-fou plus bas) : le
+  // stock n'est décompté qu'une fois, au moment du paiement unique via webhook (voir
+  // membership-form-products.ts), un rail qu'aucun de ces autres chemins n'emprunte.
+  products:    z.array(z.object({
+    varianteId: z.string().min(1),
+    quantity:   z.number().int().min(1).max(99),
+  })).max(10).optional().default([]),
   conditionsAgreed: z.boolean().optional().default(false),
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention que
   // les autres formulaires publics.
@@ -133,7 +141,10 @@ export async function POST(
 
   const form = await prisma.membershipForm.findFirst({
     where:   { slug: formSlug, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
-    include: { tiers: true, customFields: true },
+    include: {
+      tiers: true, customFields: true,
+      products: { include: { variante: { include: { produit: { select: { status: true } } } } } },
+    },
   })
   if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
 
@@ -164,7 +175,7 @@ export async function POST(
   if (addonTierIds.size !== parsed.data.addons.length)
     return NextResponse.json({ error: "Options en double" }, { status: 422 })
 
-  const resolvedAddons: { tierId: string; itemType: "ADDON" | "DONATION"; label: string; amount: number }[] = []
+  const resolvedAddons: { tierId: string; itemType: "ADDON" | "DONATION"; label: string; amount: number; receiptMode: "NONE" | "FULL" | "PARTIAL"; deductibleAmount: number | null }[] = []
   for (const a of parsed.data.addons) {
     const addonTier = form.tiers.find(t => t.id === a.tierId && t.itemType !== "MEMBERSHIP")
     if (!addonTier) return NextResponse.json({ error: "Option invalide" }, { status: 422 })
@@ -177,15 +188,54 @@ export async function POST(
     const itemMinimum = addonTier.amount != null ? Number(addonTier.amount) : MIN_ITEM_AMOUNT
     if (addonTier.freeAmount && itemAmount < itemMinimum)
       return NextResponse.json({ error: `Le montant minimum pour « ${addonTier.label} » est de ${itemMinimum}€.` }, { status: 422 })
-    resolvedAddons.push({ tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount })
+    resolvedAddons.push({
+      tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount,
+      receiptMode:      addonTier.receiptMode,
+      deductibleAmount: addonTier.deductibleAmount != null ? Number(addonTier.deductibleAmount) : null,
+    })
   }
   const totalAddons = resolvedAddons.reduce((sum, a) => sum + a.amount, 0)
+
+  // Produits Boutique proposés en fin de formulaire — validés et re-tarifés server-side à
+  // partir du stock/prix en direct, jamais repris du payload, même raisonnement que les
+  // options ci-dessus. Toujours vide en dehors du rail ONE_OFF/paiement unique (voir le
+  // garde-fou juste après) — c'est le seul chemin dont le webhook décompte réellement le
+  // stock (voir membership-form-products.ts).
+  const productVarianteIds = new Set(parsed.data.products.map(p => p.varianteId))
+  if (productVarianteIds.size !== parsed.data.products.length)
+    return NextResponse.json({ error: "Produits en double" }, { status: 422 })
+
+  const resolvedProducts: { varianteId: string; produitId: string; label: string; quantity: number; unitPriceCents: number }[] = []
+  for (const p of parsed.data.products) {
+    // Le module Boutique a pu être désactivé depuis que le formulaire a été configuré (voir
+    // le même garde-fou côté GET public) — dans ce cas plus aucune offre n'est valide, même
+    // si MembershipFormProduct la référence encore.
+    const offer = modules.boutique ? form.products.find(fp => fp.varianteId === p.varianteId) : undefined
+    if (!offer || offer.variante.produit.status !== "ACTIVE")
+      return NextResponse.json({ error: "Produit invalide" }, { status: 422 })
+    // Contrôle en amont, pour un message d'erreur clair — le webhook refait le même contrôle
+    // de façon atomique au moment du paiement (voir membership-form-products.ts), seul
+    // moment qui compte vraiment puisque le stock peut bouger entre les deux.
+    if (offer.variante.stock < p.quantity)
+      return NextResponse.json({ error: `Stock insuffisant pour « ${offer.variante.label} » (disponible : ${offer.variante.stock})` }, { status: 422 })
+    resolvedProducts.push({
+      varianteId: offer.variante.id, produitId: offer.variante.produitId, label: offer.variante.label,
+      quantity: p.quantity, unitPriceCents: offer.variante.price,
+    })
+  }
+  // Défense en profondeur : structurellement, resolvedProducts ne peut déjà rejoindre que le
+  // rail ONE_OFF/paiement unique plus bas (aucun autre branch n'y touche), mais un payload
+  // trafiqué pourrait combiner un tarif RECURRING ou "plusieurs fois" avec des produits —
+  // un tarif gratuit reste ONE_OFF pour le paiement (voir effectiveKind plus bas).
+  if (resolvedProducts.length > 0 && ((tier.free ? "ONE_OFF" : tier.kind) !== "ONE_OFF" || parsed.data.payInInstallments))
+    return NextResponse.json({ error: "Les produits ne sont pas disponibles avec ce mode de paiement." }, { status: 422 })
+  const totalProductsCents = resolvedProducts.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0)
 
   // A paid tier — or a free tier picking up a paid extra — is always immediate as soon as
   // payment is confirmed; there's nothing sensible to "hold for approval" once money has
   // already changed hands. Only a fully free submission is ever routed through the form's
   // own validationMode.
-  const willBeImmediate = !tier.free || totalAddons > 0 || form.validationMode === "IMMEDIATE"
+  const willBeImmediate = !tier.free || totalAddons > 0 || totalProductsCents > 0 || form.validationMode === "IMMEDIATE"
   if (willBeImmediate && !parsed.data.password)
     return NextResponse.json({ error: "Un mot de passe est requis." }, { status: 422 })
 
@@ -232,7 +282,10 @@ export async function POST(
   if (existing) return NextResponse.json({ error: "Cette adresse email est déjà utilisée." }, { status: 409 })
 
   // ─── Tarif gratuit (sans option payante) ───────────────────────────────────────
-  if (tier.free && totalAddons === 0) {
+  // resolvedProducts.length === 0 est requis ici aussi : sans ça, une tarif gratuite
+  // combinée à un produit passait entièrement à côté de Stripe — le membre était créé sans
+  // jamais payer le produit, ni décompter son stock.
+  if (tier.free && totalAddons === 0 && resolvedProducts.length === 0) {
     try {
       await assertMemberLimit(assoc.id)
     } catch (err) {
@@ -376,6 +429,11 @@ export async function POST(
     // à Cotisation/Don. Le client masque déjà ce choix dès qu'une option est cochée.
     if (totalAddons > 0)
       return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des options supplémentaires." }, { status: 400 })
+    // Même raisonnement que les options ci-dessus : un produit n'est jamais décompté/vendu
+    // que via le webhook Stripe (voir membership-form-products.ts) — un paiement hors ligne
+    // ne passe jamais par ce webhook.
+    if (resolvedProducts.length > 0)
+      return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des produits." }, { status: 400 })
     const allowed = paymentMethod === "ESPECES" ? form.allowCash : paymentMethod === "CHEQUE" ? form.allowCheque : form.allowTransfer
     if (!allowed) return NextResponse.json({ error: "Ce moyen de paiement n'est pas disponible pour ce formulaire" }, { status: 400 })
   } else {
@@ -505,6 +563,12 @@ export async function POST(
     membershipAmount: String(membershipAmount ?? 0),
     tierFree:         tier.free ? "1" : "",
     addons:           JSON.stringify(resolvedAddons),
+    // Clés minimales (identité + quantité) plutôt qu'un snapshot complet comme resolvedAddons
+    // ci-dessus — label/prix sont toujours re-dérivables en direct depuis BoutiqueVariante/
+    // BoutiqueProduit au moment du webhook (voir membership-form-products.ts), inutile de les
+    // dupliquer ici alors que Stripe plafonne chaque valeur de metadata à 500 caractères.
+    products:         JSON.stringify(resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))),
+    productsAmount:   String(totalProductsCents / 100),
     // Snapshotted for the webhooks — see the periodStart/periodEnd comment above. durationMonths
     // is also carried separately so handleCotisationSubscriptionCheckout can snapshot it onto
     // CotisationSubscription for every future renewal (handleCotisationInvoicePaid), not just
@@ -528,6 +592,17 @@ export async function POST(
       product_data: { name: `${a.label} — ${assoc.name}` },
     },
     quantity: 1,
+  }))
+
+  // Uniquement non-vide sur le rail ONE_OFF (voir le garde-fou plus haut) — jamais mêlé aux
+  // branches installments/RECURRING plus bas.
+  const productLineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = resolvedProducts.map(p => ({
+    price_data: {
+      currency:     "eur",
+      unit_amount:  p.unitPriceCents,
+      product_data: { name: `${p.label} — ${assoc.name}` },
+    },
+    quantity: p.quantity,
   }))
 
   // ─── Tarif ponctuel, payé en plusieurs fois ────────────────────────────────────
@@ -604,6 +679,7 @@ export async function POST(
         quantity: 1,
       }] : []),
       ...addonLineItems,
+      ...productLineItems,
     ]
 
     let checkoutSession: Stripe.Checkout.Session

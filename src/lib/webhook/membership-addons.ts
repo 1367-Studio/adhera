@@ -7,6 +7,8 @@ interface ResolvedAddon {
   itemType: "ADDON" | "DONATION"
   label:    string
   amount:   number
+  receiptMode:      "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: number | null
 }
 
 // Mirrors the exact shape checkout/route.ts serializes into metadata.addons — parsed once
@@ -63,7 +65,10 @@ export async function createMembershipAddonPurchases(tx: TxClient, params: {
           email:          params.email,
           amount:         addon.amount,
           paidAt:         new Date(),
-          receiptMode:    params.canIssueTaxReceipts ? "FULL" : "NONE",
+          // La tarif porte son propre réglage (voir membership-tiers-editor.tsx) — seul le
+          // droit global de l'association à émettre des reçus fiscaux peut l'écraser à NONE.
+          receiptMode:      params.canIssueTaxReceipts ? addon.receiptMode : "NONE",
+          deductibleAmount: params.canIssueTaxReceipts && addon.receiptMode === "PARTIAL" ? addon.deductibleAmount : null,
         },
       })
     }

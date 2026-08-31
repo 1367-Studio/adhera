@@ -140,7 +140,9 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       if (t.key !== key) return t
       if (itemType === "MEMBERSHIP") return { ...t, itemType }
       if (itemType === "ADDON") return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, deductibleAmount: null, installmentsAllowed: false, installmentsCount: null }
-      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, deductibleAmount: null, installmentsAllowed: false, installmentsCount: null }
+      // Une donation reste éligible au reçu fiscal par défaut, comme sur AssoConnect — voir
+      // le panneau "Reçus fiscaux" de sa formule de type Dons.
+      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, receiptMode: "FULL" as const, deductibleAmount: null, installmentsAllowed: false, installmentsCount: null }
     }))
   }
   function removeTier(key: string) {
@@ -198,7 +200,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
         // End-of-day, not midnight-at-the-start — "valable jusqu'au 31 août" should cover the
         // whole 31st, not expire the instant it begins.
         fixedPeriodEnd: t.itemType === "MEMBERSHIP" && t.fixedPeriodEnd ? new Date(`${t.fixedPeriodEnd}T23:59:59`).toISOString() : null,
-        receiptMode:      t.itemType === "MEMBERSHIP" ? t.receiptMode : "NONE" as const,
+        receiptMode:      t.itemType !== "ADDON" ? t.receiptMode : "NONE" as const,
         deductibleAmount: t.itemType === "MEMBERSHIP" && t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
         installmentsAllowed: t.itemType === "MEMBERSHIP" ? t.installmentsAllowed : false,
         installmentsCount:   t.itemType === "MEMBERSHIP" && t.installmentsAllowed ? t.installmentsCount : null,
@@ -376,7 +378,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                     />
                   </div>
                 )}
-                {tier.itemType === "MEMBERSHIP" && (
+                {(tier.itemType === "MEMBERSHIP" || tier.itemType === "DONATION") && (
                   <div className="w-52">
                     <SelectField
                       label={t("receiptModeField")}

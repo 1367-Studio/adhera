@@ -12,6 +12,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
@@ -167,6 +168,62 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
     })
   }
 
+  // Étape séparée délibérée, après que l'adhésion elle-même a été créée avec succès — voir
+  // le commentaire de createMembershipFormProductPurchase pour pourquoi cette étape ne peut
+  // pas être nichée dans la transaction principale. Un échec ici (stock épuisé sur une ligne,
+  // ou l'étape entière qui échoue après ses tentatives) n'annule jamais l'adhésion déjà créée
+  // — même philosophie "l'argent a déjà bougé" que la vérification de limite de membres plus
+  // bas : on notifie l'équipe plutôt que de bloquer.
+  let purchasedProducts: { label: string; quantity: number; amount: number }[] = []
+  try {
+    const productResult = await createMembershipFormProductPurchase({
+      associationId:   meta.associationId,
+      membreId:        created.membre.id,
+      cotisationId:    created.cotisation.id,
+      paymentIntentId: paymentIntentId ?? null,
+      productsJson:    meta.products,
+    })
+    purchasedProducts = productResult?.purchased ?? []
+    if (productResult?.flaggedOversells.length) {
+      const admins = await prisma.user.findMany({
+        where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+        select: { id: true },
+      })
+      if (admins.length) {
+        await prisma.notification.createMany({
+          data: admins.map(a => ({
+            userId: a.id,
+            title:  "Vente boutique en rupture de stock lors d'une adhésion",
+            body:   `${created.membre.firstName} ${created.membre.lastName} a payé pour ${productResult.flaggedOversells.length} produit(s) boutique devenu(s) indisponible(s) entre-temps. Le montant a été encaissé — contactez le membre pour convenir d'un arrangement.`,
+            link:   "/dashboard/boutique",
+            scope:  "GESTION",
+          })),
+          skipDuplicates: true,
+        })
+        await pusherServer.trigger(`private-association-${meta.associationId}`, "new-notification", {}).catch(() => {})
+      }
+    }
+  } catch (err) {
+    console.error(`[membership-oneoff] failed to record boutique product purchase for checkout session ${session.id} (association ${meta.associationId}):`, err)
+    const admins = await prisma.user.findMany({
+      where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+      select: { id: true },
+    })
+    if (admins.length) {
+      await prisma.notification.createMany({
+        data: admins.map(a => ({
+          userId: a.id,
+          title:  "Vente boutique non enregistrée lors d'une adhésion",
+          body:   `${created.membre.firstName} ${created.membre.lastName} a payé pour des produits boutique, mais l'achat n'a pas pu être enregistré automatiquement. L'adhésion elle-même est bien créée — vérifiez et enregistrez la vente manuellement si besoin.`,
+          link:   "/dashboard/boutique",
+          scope:  "GESTION",
+        })),
+        skipDuplicates: true,
+      })
+      await pusherServer.trigger(`private-association-${meta.associationId}`, "new-notification", {}).catch(() => {})
+    }
+  }
+
   if (assoc?.slug) {
     sendEmail(membershipWelcomeEmail({
       firstName:       created.membre.firstName,
@@ -178,6 +235,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
+      products:            purchasedProducts.length ? purchasedProducts : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
 
     fireEventRule({

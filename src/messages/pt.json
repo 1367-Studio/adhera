@@ -2636,6 +2636,17 @@
           "siteSectionCreateOption": "+ Criar nova seção",
           "siteSectionCreateError": "Erro ao criar a seção do site.",
           "siteSectionRequiredError": "Escolha em qual seção do site este formulário será publicado."
+        },
+        "products": {
+          "title": "Produtos",
+          "hint": "Produtos da Loja oferecidos para compra ao final da adesão. O estoque é compartilhado com o módulo Loja.",
+          "noProducts": "Nenhum produto ativo na Loja. Ative o módulo Loja e crie pelo menos um produto para oferecer aqui.",
+          "stockCount": "{count, plural, one {# em estoque} other {# em estoque}}",
+          "outOfStock": "Esgotado",
+          "selectedCount": "{count}/{max} produtos selecionados",
+          "maxProductsError": "Você pode oferecer no máximo {max} produtos",
+          "saved": "Produtos salvos",
+          "saveProducts": "Salvar produtos"
         }
       }
     },
@@ -2697,7 +2708,11 @@
       "submittedWithPayment": "Sua adesão está ativa e seu pagamento foi recebido.",
       "submittedRequestBody": "Seu pedido de adesão foi recebido. A associação entrará em contato em breve.",
       "toastCancelled": "Pagamento cancelado.",
-      "errorNetwork": "Erro de rede. Tente novamente."
+      "errorNetwork": "Erro de rede. Tente novamente.",
+      "productsLabel": "Produtos",
+      "outOfStock": "Esgotado",
+      "decreaseQuantityLabel": "Diminuir quantidade",
+      "increaseQuantityLabel": "Aumentar quantidade"
     }
   },
   "messages": {

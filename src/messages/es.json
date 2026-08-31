@@ -2636,6 +2636,17 @@
           "siteSectionCreateOption": "+ Crear nueva sección",
           "siteSectionCreateError": "Error al crear la sección del sitio.",
           "siteSectionRequiredError": "Elige en qué sección del sitio se publicará este formulario."
+        },
+        "products": {
+          "title": "Productos",
+          "hint": "Productos de la Tienda ofrecidos para comprar al final de la afiliación. El stock es compartido con el módulo Tienda.",
+          "noProducts": "No hay productos activos en la Tienda. Active el módulo Tienda y cree al menos un producto para ofrecerlo aquí.",
+          "stockCount": "{count, plural, one {# en stock} other {# en stock}}",
+          "outOfStock": "Agotado",
+          "selectedCount": "{count}/{max} productos seleccionados",
+          "maxProductsError": "Puede ofrecer como máximo {max} productos",
+          "saved": "Productos guardados",
+          "saveProducts": "Guardar productos"
         }
       }
     },
@@ -2697,7 +2708,11 @@
       "submittedWithPayment": "Tu afiliación está activa y tu pago se ha recibido correctamente.",
       "submittedRequestBody": "Tu solicitud de afiliación se ha recibido. La asociación se pondrá en contacto contigo lo antes posible.",
       "toastCancelled": "Pago cancelado.",
-      "errorNetwork": "Error de red. Inténtalo de nuevo."
+      "errorNetwork": "Error de red. Inténtalo de nuevo.",
+      "productsLabel": "Productos",
+      "outOfStock": "Agotado",
+      "decreaseQuantityLabel": "Disminuir cantidad",
+      "increaseQuantityLabel": "Aumentar cantidad"
     }
   },
   "messages": {

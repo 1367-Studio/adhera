@@ -943,6 +943,11 @@ export function membershipWelcomeEmail(p: {
   canIssueTaxReceipts?: boolean
   receiptMode?:         "NONE" | "FULL" | "PARTIAL"
   deductibleAmount?:    number
+  // Produits Boutique achetés en fin de formulaire (voir MembershipFormProduct) — amount déjà
+  // en euros décimaux (converti depuis les centimes par createMembershipFormProductPurchase).
+  // Pas de PDF/reçu Boutique séparé envoyé pour ça — une deuxième confirmation dans la même
+  // minute lirait comme un doublon, voir membership-forms.ts.
+  products?: { label: string; quantity: number; amount: number }[]
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const statusSentence = p.offlinePending
@@ -967,6 +972,11 @@ export function membershipWelcomeEmail(p: {
         Vous pourrez le télécharger depuis votre espace membre.
       </p>`
     : ""
+  const productsSentence = p.products && p.products.length > 0
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        Ce montant inclut également : ${p.products.map(item => `${item.label}${item.quantity > 1 ? ` ×${item.quantity}` : ""}`).join(", ")}.
+      </p>`
+    : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -981,6 +991,7 @@ export function membershipWelcomeEmail(p: {
       </td></tr>
     </table>` : ""}
     ${groupSentence}
+    ${productsSentence}
     ${receiptSentence}
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
