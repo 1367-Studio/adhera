@@ -167,7 +167,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
-        const firstMembership = data?.tiers.find(t => t.itemType === "MEMBERSHIP")
+        const membershipCandidates = data?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
+        const hasOffline = !!(data?.allowCash || data?.allowCheque || data?.allowTransfer)
+        // Prefer a tier that's actually payable (free, Stripe, or — single-registrant only —
+        // an offline method) over whatever happens to be first — otherwise a visitor could land
+        // straight on a dead-end "paiement indisponible" tier with no clue another one would work.
+        const payable = membershipCandidates.find(t => t.free || data?.paymentEnabled || (t.kind === "ONE_OFF" && hasOffline))
+        const firstMembership = payable ?? membershipCandidates[0]
         if (firstMembership) setTierId(firstMembership.id)
       })
       .catch(() => setForm(null))
@@ -208,6 +214,20 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const membershipTiers = form?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
   const extraTiers      = form?.tiers.filter(t => t.itemType !== "MEMBERSHIP") ?? []
   const selectedTier = membershipTiers.find(x => x.id === tierId) ?? null
+  // Offline methods only make sense for a one-off charge — a cheque doesn't arrive on its own
+  // every year. Never available in multi-registrant mode (Stripe-only, see checkout/route.ts).
+  const offlineMethods = (["ESPECES", "CHEQUE", "VIREMENT"] as const).filter(m =>
+    m === "ESPECES" ? form?.allowCash : m === "CHEQUE" ? form?.allowCheque : form?.allowTransfer,
+  )
+  // Whether a given tier has *any* usable payment method in the given mode — a free tier always
+  // does, a paid one needs Stripe (both modes) or, single-registrant only, an offline method.
+  // isPreview always says yes: canSubmit already forces isPreview off, so a manager previewing
+  // the form can't get stuck mid-submit and should be able to see every section regardless of
+  // whether Stripe/offline is configured yet. Used to keep tier pickers from ever offering (or
+  // silently defaulting a new registrant to) a choice that would leave the visitor with no way
+  // to pay — instead of reacting after the fact by hiding the whole form.
+  const isTierPayable = (tier: Tier, multi: boolean) =>
+    tier.free || isPreview || (multi ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (tier.kind === "ONE_OFF" && offlineMethods.length > 0)))
   // A RECURRING tier bills every durationMonths months, not always yearly (see
   // MembershipTier.durationMonths) — 12 (or unset) still reads as "par an" rather than the
   // technically-equivalent-but-odd "tous les 12 mois".
@@ -237,6 +257,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // always the person filling out the form, reusing every state variable above; this only
   // covers the extra blocks added via "Ajouter un autre adhérent".
   const oneOffMembershipTiers = membershipTiers.filter(x => x.kind === "ONE_OFF")
+  // The only tiers ever safe to assign to an extra registrant, or to default a newly-added one
+  // to — anything else would need an offline method that doesn't exist once isMulti is true.
+  const multiUsableTiers = oneOffMembershipTiers.filter(x => isTierPayable(x, true))
   const isMulti = extraRegistrants.length > 0
   const registrantTier = (r: RegistrantDraft) => oneOffMembershipTiers.find(x => x.id === r.tierId) ?? null
   const registrantAmount = (r: RegistrantDraft) => {
@@ -264,13 +287,14 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
-  // Inscription groupée is Stripe-only server-side (see checkout/route.ts) — without it, adding
-  // a registrant traps the visitor: hasAnyPaymentMethod collapses the whole <form> (including
-  // the remove/add controls) down to "paiement indisponible" as soon as isMulti flips on, with
-  // no way back. Block entry at the source instead of only reacting to the dead end.
-  const canAddRegistrant = !!form?.paymentEnabled && (!isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
-    : extraRegistrants.length + 1 < MAX_REGISTRANTS)
+  // Requires selectedTier itself to already be multi-payable (isTierPayable(…, true)) — a tier
+  // that's only payable offline (single-registrant mode) must not let the visitor into isMulti,
+  // since it would instantly become unpayable the moment it flips on. Also requires at least one
+  // multiUsableTiers entry so there's something valid to default a newly-added registrant to —
+  // a form with only offline-paid tiers and no Stripe simply doesn't offer this feature.
+  const canAddRegistrant = !isMulti
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
+    : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0
 
   const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
@@ -279,14 +303,6 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // checkout/route.ts (both the single- and multi-registrant branches).
   const willBeImmediate = !!selectedTier && (amount > 0 || form?.validationMode === "IMMEDIATE")
 
-  // Offline methods only make sense for a one-off charge — a cheque doesn't arrive on its own
-  // every year. A free membership tier is always stored as kind ONE_OFF (see
-  // membership-tiers-editor.tsx), so this already covers "free tier + paid extras" too without
-  // special-casing it. Never available in multi-registrant mode (Stripe-only, see
-  // checkout/route.ts).
-  const offlineMethods = (["ESPECES", "CHEQUE", "VIREMENT"] as const).filter(m =>
-    m === "ESPECES" ? form?.allowCash : m === "CHEQUE" ? form?.allowCheque : form?.allowTransfer,
-  )
   const needsPayment = amount > 0
   // Only the membership price itself can be split — an addon/donation riding alongside would
   // otherwise have to be either folded into the recurring installment price (changing what
@@ -299,8 +315,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
   const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
   const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
-  const hasAnyPaymentMethod = !selectedTier || !needsPayment
-    || (isMulti ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0)))
+  // Safety net, not the primary guard — canAddRegistrant/isTierPayable already keep every tier
+  // picker (registrant 0's buttons, each extra registrant's select) from ever landing on a tier
+  // that isn't payable in the current mode. This still matters for the tier a visitor lands on
+  // by default (form.notOpenYet aside, the very first membership tier fetched) when literally
+  // nothing on the form has a working payment method — a real admin misconfiguration, not
+  // something reachable through normal interaction anymore.
+  const hasAnyPaymentMethod = !selectedTier || !needsPayment || isTierPayable(selectedTier, isMulti)
 
   useEffect(() => {
     if (!canPayInInstallments && payInInstallments) setPayInInstallments(false)
@@ -323,7 +344,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   }, [showOfflineChoice, paymentMethod, payInInstallments])
 
   function addRegistrant() {
-    const defaultTier = oneOffMembershipTiers[0]
+    const defaultTier = multiUsableTiers[0]
     // Addons/donations ne sont pas offerts en mode multi-inscrit (impossible à répartir entre
     // N personnes) — cleared so a stale selection from before "Ajouter un autre adhérent" can't
     // silently resurrect if extras are removed. Les produits Boutique restent disponibles en
@@ -566,7 +587,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       // Une adhésion groupée ne peut pas s'appuyer sur un tarif récurrent — un
                       // Stripe Subscription est lié à un seul Membre, impossible à répartir
                       // entre N personnes (voir checkout/route.ts).
-                      const disabled = isMulti && tier.kind === "RECURRING"
+                      const recurringInMulti = isMulti && tier.kind === "RECURRING"
+                      const noPaymentMethod = !recurringInMulti && !isTierPayable(tier, isMulti)
+                      const disabled = recurringInMulti || noPaymentMethod
                       return (
                       <button
                         key={tier.id}
@@ -581,10 +604,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       >
                         <div>{tier.label}</div>
                         <div className="text-xs text-muted-foreground">
-                          {tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                          {tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
+                          {noPaymentMethod ? t("tierUnavailable") :
+                            tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                          {!noPaymentMethod && tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
                         </div>
-                        {oneOffDurationSuffix(tier) && (
+                        {!noPaymentMethod && oneOffDurationSuffix(tier) && (
                           <div className="text-xs text-muted-foreground">{oneOffDurationSuffix(tier)}</div>
                         )}
                       </button>
@@ -625,7 +649,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       </div>
                       <SelectField
                         label={t("amountLabel")}
-                        options={oneOffMembershipTiers.map(x => ({
+                        options={multiUsableTiers.map(x => ({
                           value: x.id,
                           label: x.free
                             ? `${x.label} — ${t("freeLabel")}`

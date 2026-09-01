@@ -2702,6 +2702,7 @@
       "submitFree": "Enviar mi solicitud de afiliación",
       "submitImmediateFree": "Confirmar mi afiliación",
       "paymentUnavailable": "El pago en línea no está disponible en este momento.",
+      "tierUnavailable": "No disponible",
       "genericError": "Ha ocurrido un error. Inténtalo de nuevo.",
       "submittedTitle": "¡Bienvenido/a!",
       "submittedRequestTitle": "¡Solicitud enviada!",
