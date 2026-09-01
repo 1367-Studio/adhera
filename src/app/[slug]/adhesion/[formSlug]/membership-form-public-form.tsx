@@ -264,9 +264,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
-  const canAddRegistrant = !isMulti
+  // Inscription groupée is Stripe-only server-side (see checkout/route.ts) — without it, adding
+  // a registrant traps the visitor: hasAnyPaymentMethod collapses the whole <form> (including
+  // the remove/add controls) down to "paiement indisponible" as soon as isMulti flips on, with
+  // no way back. Block entry at the source instead of only reacting to the dead end.
+  const canAddRegistrant = !!form?.paymentEnabled && (!isMulti
     ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
-    : extraRegistrants.length + 1 < MAX_REGISTRANTS
+    : extraRegistrants.length + 1 < MAX_REGISTRANTS)
 
   const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
