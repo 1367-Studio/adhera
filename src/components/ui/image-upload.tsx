@@ -23,6 +23,13 @@ interface ImageUploadProps {
    *  instructions/button labels don't fit — drops to icon-only, with the same
    *  text exposed as a title tooltip instead. */
   compact?: boolean
+  /** Overrides for the two client-side toasts (file-too-large check, and the network/parse
+   *  failure fallback when the server response itself can't be read) — every other error
+   *  already comes from the server as `body.error` and is shown as-is. Optional and English/
+   *  French-default by design: most call sites (admin, portal) have no per-visitor locale to
+   *  honor, but a public form does — see membership-form-public-form.tsx. */
+  maxSizeErrorMessage?: string
+  genericErrorMessage?: string
 }
 
 const RATIOS = {
@@ -41,13 +48,22 @@ export function ImageUpload({
   onFilePending,
   uploadUrl = "/api/upload",
   compact = false,
+  maxSizeErrorMessage,
+  genericErrorMessage,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [dragging,  setDragging]  = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(file: File) {
-    if (file.size > 5 * 1024 * 1024) { toast.error("Image trop volumineuse (max 5 Mo)"); return }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(maxSizeErrorMessage ?? "Image trop volumineuse (max 5 Mo)")
+      // Without this, re-picking the exact same filename (e.g. after compressing it
+      // externally) never fires a fresh change event — the input's value already equals
+      // it, so the visitor's retry silently does nothing.
+      if (inputRef.current) inputRef.current.value = ""
+      return
+    }
 
     if (lazy) {
       const blobUrl = URL.createObjectURL(file)
@@ -65,13 +81,13 @@ export function ImageUpload({
       const res = await fetch(uploadUrl, { method: "POST", body: fd })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        toast.error(body.error ?? "Erreur lors de l'upload")
+        toast.error(body.error ?? genericErrorMessage ?? "Erreur lors de l'upload")
         return
       }
       const { url } = await res.json()
       onChange(url)
     } catch {
-      toast.error("Erreur lors de l'upload")
+      toast.error(genericErrorMessage ?? "Erreur lors de l'upload")
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ""

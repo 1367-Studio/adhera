@@ -215,7 +215,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
           <p className="text-muted-foreground">{t("notFound")}</p>
-          <LocaleSwitcher />
+          <LocaleSwitcher persistAccountLocale={!isPreview} />
         </div>
       </>
     )
@@ -227,7 +227,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
       <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
         <div className="w-full max-w-md space-y-6">
           <div className="flex justify-end">
-            <LocaleSwitcher />
+            <LocaleSwitcher persistAccountLocale={!isPreview} />
           </div>
 
           {isPreview && (
