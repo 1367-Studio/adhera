@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Table,
@@ -143,6 +144,7 @@ function CardList<T>({
   empty,
   selection,
 }: Pick<DataTableProps<T>, "columns" | "data" | "keyExtractor" | "onRowClick" | "empty" | "selection">) {
+  const t = useTranslations("common")
   const primaryCol = columns.find((c) => !isActionsCol(c) && !c.hideInCard)
   const actionsCol = columns.find(isActionsCol)
   const detailCols = columns.filter((c) => c !== primaryCol && !isActionsCol(c) && !c.hideInCard)
@@ -151,7 +153,7 @@ function CardList<T>({
   if (!data.length) {
     return (
       <div className="md:hidden rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">
-        {empty ?? "Aucune donnée"}
+        {empty ?? t("noData")}
       </div>
     )
   }
@@ -226,6 +228,7 @@ export function DataTable<T>({
   selection,
   pagination,
 }: DataTableProps<T>) {
+  const t = useTranslations("common")
   const colCount = columns.length + (selection ? 1 : 0)
 
   if (loading) {
@@ -281,7 +284,7 @@ export function DataTable<T>({
             <TableBody>
               <TableRow>
                 <TableCell colSpan={colCount} className="h-32 text-center text-muted-foreground">
-                  {empty ?? "Aucune donnée"}
+                  {empty ?? t("noData")}
                 </TableCell>
               </TableRow>
             </TableBody>

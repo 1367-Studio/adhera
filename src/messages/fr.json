@@ -21,7 +21,31 @@
     "deleted": "Supprimé",
     "created": "Créé",
     "updated": "Mis à jour",
-    "irreversibleAction": "Cette action est irréversible."
+    "irreversibleAction": "Cette action est irréversible.",
+    "imageUpload": {
+      "replace": "Remplacer",
+      "remove": "Retirer",
+      "dropOrClickToAdd": "Glisser ou cliquer pour ajouter une image",
+      "formatsHint": "JPG, PNG, WebP · max 5 Mo",
+      "compactHint": "Glisser/cliquer pour ajouter une image (JPG, PNG, WebP, max 5 Mo)",
+      "maxSizeError": "Image trop volumineuse (max 5 Mo)",
+      "uploadError": "Erreur lors de l'upload"
+    },
+    "free": "Gratuit",
+    "startingFromPrice": "À partir de {price}",
+    "noData": "Aucune donnée",
+    "location": "Lieu",
+    "choosePlaceholder": "Choisir…",
+    "allPlaceholder": "Tous",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "paginationRange": "{from}–{to} sur {total}",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "actions": "Actions",
+    "dismissTip": "Ignorer l'astuce",
+    "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris…",
+    "viewOnGoogleMaps": "Voir sur Google Maps"
   },
   "auth": {
     "layout": {
@@ -653,6 +677,13 @@
     "fiscalPeriodReminder": {
       "title": "Configurez votre période fiscale",
       "body": "Créez votre période fiscale pour assurer le bon suivi de vos données financières."
+    },
+    "bell": {
+      "ariaLabel": "Notifications",
+      "title": "Notifications",
+      "markAllRead": "Tout lire",
+      "markAllReadTooltip": "Marque comme lues les notifications affichées ici",
+      "empty": "Aucune notification"
     }
   },
   "fiscalPeriodPopup": {

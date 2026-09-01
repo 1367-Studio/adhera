@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef, useState } from "react"
+import { useTranslations } from "next-intl"
 import { EyeIcon, EyeSlashIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -24,6 +25,7 @@ interface FormFieldProps extends React.ComponentProps<typeof Input> {
 
 const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, hint, hintTooltip, labelAction, className, id, type, required, noHtmlRequired, leadingIcon, ...props }, ref) => {
+    const t = useTranslations("common")
     const fieldId = id ?? label.toLowerCase().replace(/\s+/g, "-")
     const isPassword = type === "password"
     const [showPassword, setShowPassword] = useState(false)
@@ -94,7 +96,7 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
               tabIndex={-1}
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             >
               {showPassword
                 ? <EyeSlashIcon className="size-4" />

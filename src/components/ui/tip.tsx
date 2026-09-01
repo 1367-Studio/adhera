@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTip } from "@/hooks/use-tip"
 import { cn } from "@/lib/utils"
@@ -13,6 +14,7 @@ interface TipProps {
 }
 
 export function Tip({ id, label, children, side = "top", className }: TipProps) {
+  const t = useTranslations("common")
   const { dismissed, dismiss } = useTip(id)
 
   if (dismissed) return <>{children}</>
@@ -25,7 +27,7 @@ export function Tip({ id, label, children, side = "top", className }: TipProps) 
           render={
             <button
               type="button"
-              aria-label="Dispensar dica"
+              aria-label={t("dismissTip")}
               className="absolute -top-1 -right-1 z-10 size-3.5 rounded-full focus:outline-none"
               onClick={(e) => { e.stopPropagation(); dismiss() }}
             />

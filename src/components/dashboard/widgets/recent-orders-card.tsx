@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import { ShoppingBagIcon, ArrowRightIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import type { Locale } from "@/i18n/locales"
 
 type Vente = {
   id:          string
@@ -27,6 +28,7 @@ interface Props {
 
 export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
   const t = useTranslations("dashboard.recentOrders")
+  const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
   return (
     <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col">
       <div className="flex items-center gap-2">
@@ -67,7 +69,7 @@ export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
                       {v.membre ? `${v.membre.firstName} ${v.membre.lastName}` : (v.guestName ?? t("guest"))}
                     </p>
                     <p className={cn("text-xs", v.status === "PENDING" ? "text-amber-600 dark:text-amber-500" : "text-muted-foreground")}>
-                      {format(new Date(v.date), "d MMM 'à' HH:mm", { locale: fr })}
+                      {format(new Date(v.date), "d MMM, HH:mm", { locale: dateFnsLocale })}
                     </p>
                   </div>
                   <span className="text-sm font-semibold tabular-nums shrink-0 ml-2">{fmt(v.totalAmount / 100)}</span>

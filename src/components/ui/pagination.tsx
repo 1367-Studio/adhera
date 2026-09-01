@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl"
 import { CaretLeftIcon, CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -19,6 +20,7 @@ function pageNumbers(current: number, total: number): (number | "…")[] {
 }
 
 export function Pagination({ page, totalPages, total, limit, onPageChange, className }: PaginationProps) {
+  const t = useTranslations("common")
   if (totalPages <= 1) return null
 
   const from = (page - 1) * limit + 1
@@ -28,7 +30,7 @@ export function Pagination({ page, totalPages, total, limit, onPageChange, class
   return (
     <div className={cn("flex items-center justify-between gap-4 text-sm", className)}>
       <span className="text-muted-foreground">
-        {from}–{to} sur {total}
+        {t("paginationRange", { from, to, total })}
       </span>
 
       <div className="flex items-center gap-1">
@@ -37,7 +39,7 @@ export function Pagination({ page, totalPages, total, limit, onPageChange, class
           size="icon-sm"
           disabled={page === 1}
           onClick={() => onPageChange(page - 1)}
-          aria-label="Page précédente"
+          aria-label={t("previousPage")}
         >
           <CaretLeftIcon className="size-4" />
         </Button>
@@ -63,7 +65,7 @@ export function Pagination({ page, totalPages, total, limit, onPageChange, class
           size="icon-sm"
           disabled={page === totalPages}
           onClick={() => onPageChange(page + 1)}
-          aria-label="Page suivante"
+          aria-label={t("nextPage")}
         >
           <CaretRightIcon className="size-4" />
         </Button>

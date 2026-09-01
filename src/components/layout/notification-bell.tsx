@@ -2,13 +2,17 @@
 
 import { useState } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import { useTranslations, useLocale } from "next-intl"
 import { BellIcon, ChecksIcon, CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import { useNotifications, useMarkRead, useMarkAllRead } from "@/hooks/use-notifications"
 import { cn, stripHtml } from "@/lib/utils"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import type { Locale } from "@/i18n/locales"
 
 export function NotificationBell() {
+  const t = useTranslations("notifications.bell")
+  const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
@@ -24,7 +28,7 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen(v => !v)}
         className="relative flex items-center justify-center rounded-md h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-        aria-label="Notifications"
+        aria-label={t("ariaLabel")}
         aria-expanded={open}
       >
         <BellIcon className="size-4" />
@@ -46,20 +50,20 @@ export function NotificationBell() {
           <div className="fixed inset-x-2 top-14 z-50 overflow-hidden rounded-lg border border-border bg-card shadow-xl sm:absolute sm:inset-x-auto sm:left-auto sm:right-0 sm:top-10 sm:w-80">
             <div className="flex items-center justify-between px-4 py-3 border-b">
               <span className="text-sm font-medium">
-                Notifications{unread.length > 0 && ` (${unread.length})`}
+                {t("title")}{unread.length > 0 && ` (${unread.length})`}
               </span>
               {unread.length > 0 && (
                 <button
                   onClick={() => markAllRead.mutate(scope)}
                   disabled={markAllRead.isPending}
-                  title="Marque comme lues les notifications affichées ici"
+                  title={t("markAllReadTooltip")}
                   className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 disabled:opacity-50"
                 >
                   {markAllRead.isPending
                     ? <CircleNotchIcon className="size-3 animate-spin" />
                     : <ChecksIcon className="size-3" />
                   }
-                  Tout lire
+                  {t("markAllRead")}
                 </button>
               )}
             </div>
@@ -67,7 +71,7 @@ export function NotificationBell() {
             <div className="max-h-80 overflow-y-auto divide-y">
               {notifications.length === 0 && (
                 <p className="py-8 text-center text-sm text-muted-foreground">
-                  Aucune notification
+                  {t("empty")}
                 </p>
               )}
               {notifications.map(n => (
@@ -97,7 +101,7 @@ export function NotificationBell() {
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground/60 mt-1">
-                      {format(new Date(n.createdAt), "d MMM à HH:mm", { locale: fr })}
+                      {format(new Date(n.createdAt), "d MMM, HH:mm", { locale: dateFnsLocale })}
                     </p>
                   </div>
                 </div>
