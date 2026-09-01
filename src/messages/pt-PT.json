@@ -2714,6 +2714,7 @@
       "submitFree": "Enviar o meu pedido de adesão",
       "submitImmediateFree": "Confirmar a minha adesão",
       "paymentUnavailable": "O pagamento online não está disponível de momento.",
+      "tierUnavailable": "Indisponível",
       "genericError": "Ocorreu um erro. Tente novamente.",
       "submittedTitle": "Bem-vindo(a)!",
       "submittedRequestTitle": "Pedido enviado!",

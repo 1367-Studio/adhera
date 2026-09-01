@@ -2702,6 +2702,7 @@
       "submitFree": "Send my membership request",
       "submitImmediateFree": "Confirm my membership",
       "paymentUnavailable": "Online payment isn't available right now.",
+      "tierUnavailable": "Unavailable",
       "genericError": "Something went wrong. Please try again.",
       "submittedTitle": "Welcome!",
       "submittedRequestTitle": "Request sent!",

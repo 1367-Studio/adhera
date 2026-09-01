@@ -2702,6 +2702,7 @@
       "submitFree": "Envoyer ma demande d'adhésion",
       "submitImmediateFree": "Confirmer mon adhésion",
       "paymentUnavailable": "Le paiement en ligne n'est pas disponible pour le moment.",
+      "tierUnavailable": "Indisponible",
       "genericError": "Une erreur est survenue. Réessayez.",
       "submittedTitle": "Bienvenue !",
       "submittedRequestTitle": "Demande envoyée !",
