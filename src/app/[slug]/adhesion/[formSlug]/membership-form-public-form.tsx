@@ -13,6 +13,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { TermsModal } from "@/components/public/terms-modal"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -881,7 +882,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 ))}
 
                 {form.conditions && (
-                  <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+                  <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
                 )}
                 {!!form.attachments?.length && (
                   <ul className="space-y-1">
