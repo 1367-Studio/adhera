@@ -11,6 +11,7 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { TermsModal } from "@/components/public/terms-modal"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { cn } from "@/lib/utils"
@@ -405,7 +406,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
               <CheckboxField label={t("anonymousLabel")} checked={anonymous} onChange={e => setAnonymous(e.target.checked)} />
 
               {form.conditions && (
-                <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+                <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
               )}
               {!!form.attachments?.length && (
                 <ul className="space-y-1">
