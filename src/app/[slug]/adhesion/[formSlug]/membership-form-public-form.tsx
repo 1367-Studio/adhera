@@ -400,6 +400,40 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (!form.requireCguvSignature || conditionsAgreed) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
 
+  // Same numbering the registrant cards themselves use (registrantLabel: idx + 2, since
+  // registrant 0 is always "Membre 1" — the person filling out the form).
+  const invalidRegistrantIndex = isMulti ? extraRegistrants.findIndex(r => !registrantValid(r)) : -1
+  const belowMinimumRegistrantIndex = registrantBelowMinimum ? extraRegistrants.indexOf(registrantBelowMinimum) : -1
+
+  // Mirrors canSubmit's own checks, in priority order, but surfaces *why* the button is
+  // disabled instead of leaving the visitor to guess — a disabled <button> fires no click/
+  // submit event at all, so without this there is no way to find out what's wrong short of
+  // reading the page source. belowMinimum (the overall Stripe total) is the one exception:
+  // its own inline message already sits right above this section, next to the button, so
+  // repeating it here would just be noise.
+  const blockingReason: string | null = !form ? null
+    : isPreview ? t("blockedPreview")
+    : !selectedTier ? null // membershipTiers.length === 0 already replaces the whole form with noTiers
+    : isMulti && invalidRegistrantIndex !== -1 ? t("blockedRegistrantIncomplete", { number: invalidRegistrantIndex + 2 })
+    : isMulti && belowMinimumRegistrantIndex !== -1 ? t("blockedRegistrantBelowMinimum", { number: belowMinimumRegistrantIndex + 2 })
+    : needsPayment && paymentMethod === "STRIPE" && !form.paymentEnabled ? t("blockedNoPaymentMethod")
+    : needsPayment && paymentMethod !== "STRIPE" && selectedTier.kind !== "ONE_OFF" ? t("blockedNoPaymentMethod")
+    : extraBelowMinimum ? t("blockedExtraBelowMinimum", { label: extraBelowMinimum.label })
+    : !firstName.trim() || !lastName.trim() ? t("blockedMissingIdentity")
+    : !emailValid(email) ? t("blockedInvalidEmail")
+    : willBeImmediate && password.length < 8 ? t("blockedPasswordTooShort")
+    : form.requireCguvSignature && !conditionsAgreed ? t("blockedConditionsNotAccepted")
+    : (form.fieldAddress   === "REQUIRED" && !address.trim())
+      || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
+      || (form.fieldPhone     === "REQUIRED" && !phone.trim())
+      || (form.fieldMobile    === "REQUIRED" && !mobile.trim())
+      || (form.fieldGender    === "REQUIRED" && !sexe)
+      || (form.fieldLanguage  === "REQUIRED" && !spokenLanguage)
+      || (form.fieldPhoto     === "REQUIRED" && !photoUrl)
+      || !form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
+    ? t("blockedMissingRequiredField")
+    : null
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!canSubmit || !form || !selectedTier) return
@@ -991,6 +1025,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
                     )}
                   </div>
+                )}
+
+                {!loading && blockingReason && (
+                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
                 )}
 
                 <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
