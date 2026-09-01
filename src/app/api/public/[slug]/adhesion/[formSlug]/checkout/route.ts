@@ -19,6 +19,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -227,7 +228,7 @@ export async function POST(
     resolvedAddons.push({
       tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount,
       receiptMode:      addonTier.receiptMode,
-      deductibleAmount: addonTier.deductibleAmount != null ? Number(addonTier.deductibleAmount) : null,
+      deductibleAmount: eligibleReceiptAmount(itemAmount, addonTier.receiptMode, addonTier.ineligibleAmount != null ? Number(addonTier.ineligibleAmount) : null),
     })
   }
   const totalAddons = resolvedAddons.reduce((sum, a) => sum + a.amount, 0)
@@ -387,7 +388,7 @@ export async function POST(
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         return { user, membre }
@@ -407,7 +408,7 @@ export async function POST(
       firstName, email, associationName: assoc.name, amount: 0,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
-      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
+      deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -467,6 +468,18 @@ export async function POST(
   const membershipAmount = tier.free ? 0 : (tier.freeAmount ? parsed.data.amount : Number(tier.amount))
   if (!tier.free && (!membershipAmount || membershipAmount <= 0))
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
+  // Même plancher que le parcours multi-inscrits pour un tarif à montant libre sans minimum
+  // configuré (voir le commentaire de MIN_ITEM_AMOUNT plus haut).
+  if (!tier.free && tier.freeAmount) {
+    const tierMinimum = tier.amount != null ? Number(tier.amount) : MIN_ITEM_AMOUNT
+    if ((membershipAmount ?? 0) < tierMinimum)
+      return NextResponse.json({ error: `Le montant minimum pour « ${tier.label} » est de ${tierMinimum}€.` }, { status: 422 })
+  }
+  // Le montant non éligible est une part fixe du tarif — un adhérent payant moins que cette
+  // part (montant libre en dessous du non-éligible configuré) donnerait un reçu à montant
+  // négatif (voir eligibleReceiptAmount).
+  if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && (membershipAmount ?? 0) < Number(tier.ineligibleAmount))
+    return NextResponse.json({ error: "Le montant payé ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce tarif." }, { status: 422 })
   const amount = (membershipAmount ?? 0) + totalAddons // amount total réellement dû (tarif + options)
   if (!amount || amount <= 0)
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
@@ -509,7 +522,7 @@ export async function POST(
             amount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         return { user, membre }
@@ -528,7 +541,7 @@ export async function POST(
       offlinePending: true, offlineInstructions: form.offlineInstructions,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
-      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
+      deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -593,7 +606,7 @@ export async function POST(
     periodEnd:        periodEnd ? periodEnd.toISOString() : "",
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
     receiptMode:      tier.receiptMode,
-    deductibleAmount: tier.receiptMode === "PARTIAL" && tier.deductibleAmount != null ? tier.deductibleAmount.toString() : "",
+    deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)?.toString() ?? "",
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -846,6 +859,10 @@ async function handleMultiRegistrantCheckout(
     const tierMinimum = tier.amount != null ? Number(tier.amount) : MIN_ITEM_AMOUNT
     if (!tier.free && tier.freeAmount && amount < tierMinimum)
       return NextResponse.json({ error: `Le montant minimum pour « ${tier.label} » est de ${tierMinimum}€.` }, { status: 422 })
+    // Même garde-fou que le parcours à un seul adhérent — voir le commentaire
+    // eligibleReceiptAmount plus haut.
+    if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && amount < Number(tier.ineligibleAmount))
+      return NextResponse.json({ error: `Le montant payé pour ${r.firstName} ${r.lastName} ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce tarif.` }, { status: 422 })
 
     // Même matrice de champs standards que le parcours à un seul adhérent, appliquée à
     // chaque personne individuellement — chaque bloc "Adhérent" produit son propre Membre.

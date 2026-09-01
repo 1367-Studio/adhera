@@ -21,7 +21,11 @@ type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; require
 type Tier = {
   id: string; label: string; kind: "ONE_OFF" | "RECURRING"; interval: "MONTH" | "QUARTER" | "YEAR" | null
   freeAmount: boolean; amount: string | null; receiptMode: "NONE" | "FULL" | "PARTIAL"
+  // Montant fixe : déjà calculé côté serveur (montant payé = amount). Montant libre : null —
+  // ineligibleAmount brut est utilisé à la place pour recalculer en direct au fur et à mesure
+  // de la saisie (voir partialReceiptAmount ci-dessous).
   deductibleAmount: string | null
+  ineligibleAmount: string | null
 }
 
 type FormInfo = {
@@ -123,6 +127,19 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
 
   const selectedTier = form?.tiers.find(x => x.id === tierId) ?? null
   const amount = selectedTier?.freeAmount ? freeAmount : Number(selectedTier?.amount ?? 0)
+  // A montant-libre palier with no minimum configured by staff still needs a real floor —
+  // otherwise the field defaults to €0 (see MIN_DONATION_AMOUNT), same convention as the
+  // Adhésion public form's own tierMinimum.
+  const tierMinimum = (x: Tier) => (x.amount != null ? Number(x.amount) : MIN_DONATION_AMOUNT)
+  // Montant réellement éligible au reçu fiscal pour un palier "Sim, parcialmente" — déjà
+  // calculé côté serveur pour un montant fixe (deductibleAmount), recalculé en direct ici pour
+  // un montant libre (ineligibleAmount brut) puisque le montant payé n'est connu qu'au moment
+  // de la saisie (voir eligibleReceiptAmount côté serveur).
+  const partialReceiptAmount = (x: Tier, paidAmount: number): number | null => {
+    if (x.receiptMode !== "PARTIAL") return null
+    if (x.freeAmount) return x.ineligibleAmount != null ? Math.max(0, paidAmount - Number(x.ineligibleAmount)) : null
+    return x.deductibleAmount != null ? Number(x.deductibleAmount) : null
+  }
 
   const intervalSuffix = (interval: Tier["interval"]) =>
     interval === "MONTH" ? t("perMonth") : interval === "QUARTER" ? t("perQuarter") : t("perYear")
@@ -140,11 +157,23 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   // Below Stripe's charge floor — mirrors the server check in checkout/route.ts. Only
   // applies online: a small cash/cheque/transfer gift has no such constraint.
   const belowMinimum = paymentMethod === "STRIPE" && amount > 0 && amount < MIN_DONATION_AMOUNT
+  // Le palier peut configurer son propre minimum (montant libre) — une règle de
+  // l'association, applicable peu importe le moyen de paiement.
+  const belowTierMinimum = !!selectedTier && selectedTier.freeAmount && amount > 0 && amount < tierMinimum(selectedTier)
+  // Un montant libre payé en dessous de la part non éligible donnerait un reçu à montant
+  // négatif — le serveur le refuse déjà (voir checkout/route.ts), mais sans ce même contrôle
+  // ici le donateur ne le découvrirait qu'après avoir rempli tout le formulaire.
+  // Pas de garde `amount > 0` ici (contrairement à belowMinimum/belowTierMinimum) — au
+  // montant par défaut (0), le don serait déjà en dessous de la part non éligible, et sans
+  // ce cas couvert la notice "Seuls 0,00 € sont déductibles" plus bas s'afficherait telle
+  // quelle avant même que le donateur ait touché au champ.
+  const belowIneligible = !!selectedTier && selectedTier.freeAmount && selectedTier.receiptMode === "PARTIAL" &&
+    selectedTier.ineligibleAmount != null && amount < Number(selectedTier.ineligibleAmount)
   const canSubmit =
     !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
     (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier?.kind === "ONE_OFF") &&
-    !!selectedTier && amount > 0 && !belowMinimum &&
+    !!selectedTier && amount > 0 && !belowMinimum && !belowTierMinimum && !belowIneligible &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
     (donorType !== "COMPANY" || (companyName.trim() && siret.trim())) &&
     (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
@@ -312,10 +341,25 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                     })}
                   </p>
                 )}
-                {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
+                {!belowMinimum && belowTierMinimum && (
+                  <p className="text-xs text-destructive">
+                    {t("belowExtraMinimum", {
+                      label: selectedTier.label,
+                      amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                    })}
+                  </p>
+                )}
+                {selectedTier && !belowMinimum && !belowTierMinimum && belowIneligible && (
+                  <p className="text-xs text-destructive">
+                    {t("belowIneligibleAmount", {
+                      amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                    })}
+                  </p>
+                )}
+                {selectedTier && !belowIneligible && partialReceiptAmount(selectedTier, amount) != null && (
                   <p className="text-xs text-muted-foreground">
                     {t("partialReceiptNotice", {
-                      amount: Number(selectedTier.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                      amount: partialReceiptAmount(selectedTier, amount)!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
                     })}
                   </p>
                 )}

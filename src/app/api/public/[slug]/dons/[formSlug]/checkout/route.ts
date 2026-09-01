@@ -8,6 +8,7 @@ import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
 import { writeActivityLog } from "@/lib/activity-log"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Stripe refuses to charge below ~0,50 € on EUR cards. 1 € is a round number safely above
 // that floor for every payment method (SEPA debit, cards, etc.) — enforced both here and
@@ -110,11 +111,19 @@ export async function POST(
   const amount = tier.freeAmount ? parsed.data.amount : Number(tier.amount)
   if (!amount || amount <= 0)
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
+  // Un palier à montant libre peut configurer son propre minimum — une règle de
+  // l'association, applicable peu importe le moyen de paiement (pas seulement en ligne).
+  if (tier.freeAmount && tier.amount != null && amount < Number(tier.amount))
+    return NextResponse.json({ error: `Le montant minimum pour « ${tier.label} » est de ${Number(tier.amount)}€.` }, { status: 422 })
   // Below Stripe's charge floor — only relevant online; a small cash/cheque/transfer gift
   // has no such constraint. A fixed tier configured under this amount would otherwise fail
   // opaquely inside stripe.checkout.sessions.create below.
   if (!isOffline && amount < MIN_DONATION_AMOUNT)
     return NextResponse.json({ error: `Le montant minimum est de ${MIN_DONATION_AMOUNT} €.` }, { status: 422 })
+  // Le montant non éligible est une part fixe du palier — un don en dessous de cette part
+  // (montant libre) donnerait un reçu à montant négatif (voir eligibleReceiptAmount).
+  if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && amount < Number(tier.ineligibleAmount))
+    return NextResponse.json({ error: "Le montant du don ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce palier." }, { status: 422 })
 
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
@@ -180,7 +189,7 @@ export async function POST(
         answers:   Object.keys(answers).length ? answers : undefined,
         cguvAgreedAt,
         receiptMode:      tier.receiptMode,
-        deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+        deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
       },
     })
 
@@ -216,7 +225,7 @@ export async function POST(
       answers:   JSON.stringify(answers),
       cguvAgreedAt: cguvAgreedAt ? cguvAgreedAt.toISOString() : "",
       receiptMode:      tier.receiptMode,
-      deductibleAmount: tier.receiptMode === "PARTIAL" && tier.deductibleAmount != null ? tier.deductibleAmount.toString() : "",
+      deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)?.toString() ?? "",
     }
 
     let checkoutSession: Stripe.Checkout.Session
@@ -278,7 +287,7 @@ export async function POST(
       answers:   Object.keys(answers).length ? answers : undefined,
       cguvAgreedAt,
       receiptMode:      tier.receiptMode,
-      deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+      deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
     },
   })
 

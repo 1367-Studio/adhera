@@ -20,7 +20,7 @@ const tierSchema = z.object({
   // peu importe quand il paie (ex. saison sportive). ISO string côté payload.
   fixedPeriodEnd: z.string().datetime().nullable().optional(),
   receiptMode:      z.enum(["NONE", "FULL", "PARTIAL"]).optional().default("NONE"),
-  deductibleAmount: z.number().positive().max(100000).nullable().optional(),
+  ineligibleAmount: z.number().positive().max(100000).nullable().optional(),
   // "Payer en plusieurs fois" — voir schema.prisma. installmentsCount borné à [2, 12] : 1 fois
   // n'est pas "plusieurs", et au-delà de 12 mensualités automatiques Stripe le découpage
   // devient peu réaliste pour une cotisation associative.
@@ -55,14 +55,19 @@ const tierSchema = z.object({
 }).refine(d => !d.free || d.receiptMode === "NONE", {
   // No money changes hands on a free tier — nothing to issue a tax-deductible receipt for.
   message: "Un tarif gratuit ne peut pas être éligible au reçu fiscal", path: ["receiptMode"],
-}).refine(d => d.receiptMode !== "PARTIAL" || !d.freeAmount, {
-  // Le montant déductible est une valeur fixe attachée au tarif — n'a pas de sens pour un
-  // tarif à montant libre où l'adhérent choisit lui-même le montant versé.
+}).refine(d => d.receiptMode !== "PARTIAL" || d.itemType === "MEMBERSHIP" || !d.freeAmount, {
+  // Une donation embarquée (itemType DONATION) est toujours à montant libre et n'a pas de
+  // notion de "montant non éligible" configurée — seul un tarif MEMBERSHIP à montant libre
+  // peut être partiellement éligible (voir eligibleReceiptAmount, calculé sur le montant
+  // réellement payé au moment du paiement).
   message: "Le reçu partiel n'est pas disponible pour un montant libre", path: ["receiptMode"],
-}).refine(d => d.receiptMode !== "PARTIAL" || d.deductibleAmount != null, {
-  message: "Le montant déductible est requis pour un reçu partiel", path: ["deductibleAmount"],
-}).refine(d => d.receiptMode !== "PARTIAL" || d.amount == null || d.deductibleAmount == null || d.deductibleAmount <= d.amount, {
-  message: "Le montant déductible ne peut pas dépasser le montant du tarif", path: ["deductibleAmount"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.ineligibleAmount != null, {
+  message: "Le montant non éligible est requis pour un reçu partiel", path: ["ineligibleAmount"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.amount == null || d.ineligibleAmount == null || d.ineligibleAmount <= d.amount, {
+  // Quand freeAmount est actif, `amount` est le montant minimum configuré (voir plus bas) —
+  // la même borne s'applique : le non-éligible ne peut pas dépasser ce plancher, sinon un
+  // adhérent payant tout juste le minimum obtiendrait un reçu à montant négatif.
+  message: "Le montant non éligible ne peut pas dépasser le montant (ou le minimum) du tarif", path: ["ineligibleAmount"],
 }).refine(d => !d.installmentsAllowed || (d.kind === "ONE_OFF" && !d.free && !d.freeAmount), {
   // RECURRING is already spread over time by nature; free has nothing to split; freeAmount
   // has no fixed total to divide into N equal installments up front.
@@ -190,11 +195,13 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         kind:         isMembership ? t.kind : "ONE_OFF" as const,
         free:         t.itemType === "DONATION" ? false : t.free,
         freeAmount:   t.itemType === "DONATION" ? true : (t.free ? false : t.freeAmount),
-        amount:       t.free || (t.itemType !== "DONATION" && t.freeAmount) ? null : t.amount,
+        // null seulement si gratuit — sinon montant fixe, ou montant minimum optionnel pour un
+        // tarif à montant libre (voir amountField/minAmountField dans l'éditeur).
+        amount:       t.free ? null : t.amount,
         durationMonths: isMembership ? (t.durationMonths || null) : null,
         fixedPeriodEnd: isMembership && t.fixedPeriodEnd ? new Date(t.fixedPeriodEnd) : null,
         receiptMode:      receiptEligible && !t.free ? t.receiptMode : "NONE" as const,
-        deductibleAmount: isMembership && !t.free && t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
+        ineligibleAmount: isMembership && !t.free && t.receiptMode === "PARTIAL" ? t.ineligibleAmount : null,
         installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount ? !!t.installmentsAllowed : false,
         installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && t.installmentsAllowed ? t.installmentsCount : null,
         label:        t.label,

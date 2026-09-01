@@ -14,19 +14,18 @@ const tierSchema = z.object({
   amount:     z.number().positive().max(100000).nullable().optional(),
   label:      z.string().trim().min(1).max(100),
   receiptMode:      z.enum(["NONE", "FULL", "PARTIAL"]).optional().default("FULL"),
-  deductibleAmount: z.number().positive().max(100000).nullable().optional(),
+  ineligibleAmount: z.number().positive().max(100000).nullable().optional(),
 }).refine(d => d.freeAmount || d.amount != null, {
   message: "Un montant est requis pour un palier à montant fixe", path: ["amount"],
 }).refine(d => d.kind !== "RECURRING" || d.interval != null, {
   message: "Une périodicité est requise pour un palier récurrent", path: ["interval"],
-}).refine(d => d.receiptMode !== "PARTIAL" || !d.freeAmount, {
-  // Le montant déductible est une valeur fixe attachée au palier — n'a pas de sens pour
-  // un palier à montant libre où le donateur choisit lui-même le montant versé.
-  message: "Le reçu partiel n'est pas disponible pour un montant libre", path: ["receiptMode"],
-}).refine(d => d.receiptMode !== "PARTIAL" || d.deductibleAmount != null, {
-  message: "Le montant déductible est requis pour un reçu partiel", path: ["deductibleAmount"],
-}).refine(d => d.receiptMode !== "PARTIAL" || d.amount == null || d.deductibleAmount == null || d.deductibleAmount <= d.amount, {
-  message: "Le montant déductible ne peut pas dépasser le montant du don", path: ["deductibleAmount"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.ineligibleAmount != null, {
+  message: "Le montant non éligible est requis pour un reçu partiel", path: ["ineligibleAmount"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.amount == null || d.ineligibleAmount == null || d.ineligibleAmount <= d.amount, {
+  // Quand freeAmount est actif, `amount` est le montant minimum configuré (voir plus bas) —
+  // même borne : le non-éligible ne peut pas dépasser ce plancher, sinon un donateur payant
+  // tout juste le minimum obtiendrait un reçu à montant négatif.
+  message: "Le montant non éligible ne peut pas dépasser le montant (ou le minimum) du don", path: ["ineligibleAmount"],
 })
 
 const tiersSchema = z.array(tierSchema).max(20)
@@ -68,9 +67,11 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     for (const t of parsed.data) {
       const data = {
         order: t.order, kind: t.kind, interval: t.kind === "RECURRING" ? t.interval : null,
-        freeAmount: t.freeAmount, amount: t.freeAmount ? null : t.amount,
+        // amount sert de montant fixe normalement, ou de montant minimum optionnel quand
+        // freeAmount est actif (voir minAmountField dans l'éditeur) — jamais forcé à null.
+        freeAmount: t.freeAmount, amount: t.amount,
         label: t.label, receiptMode: t.receiptMode,
-        deductibleAmount: t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
+        ineligibleAmount: t.receiptMode === "PARTIAL" ? t.ineligibleAmount : null,
       }
       if (t.id && existingIds.has(t.id)) {
         await tx.donationTier.update({ where: { id: t.id }, data })

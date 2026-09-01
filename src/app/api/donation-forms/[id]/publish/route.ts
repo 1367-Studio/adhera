@@ -78,7 +78,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         tiers: {
           create: form.tiers.map(t => ({
             order: t.order, kind: t.kind, freeAmount: t.freeAmount, amount: t.amount,
-            interval: t.interval, label: t.label, receiptMode: t.receiptMode, deductibleAmount: t.deductibleAmount,
+            interval: t.interval, label: t.label, receiptMode: t.receiptMode, ineligibleAmount: t.ineligibleAmount,
           })),
         },
         customFields: {
