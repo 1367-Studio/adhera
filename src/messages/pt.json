@@ -21,7 +21,31 @@
     "deleted": "Excluído",
     "created": "Criado",
     "updated": "Atualizado",
-    "irreversibleAction": "Esta ação não pode ser desfeita."
+    "irreversibleAction": "Esta ação não pode ser desfeita.",
+    "imageUpload": {
+      "replace": "Substituir",
+      "remove": "Remover",
+      "dropOrClickToAdd": "Arraste ou clique para adicionar uma imagem",
+      "formatsHint": "JPG, PNG, WebP · máx. 5 MB",
+      "compactHint": "Arraste ou clique para adicionar uma imagem (JPG, PNG, WebP, máx. 5 MB)",
+      "maxSizeError": "Imagem muito grande (máx. 5 MB)",
+      "uploadError": "Erro ao enviar a imagem"
+    },
+    "free": "Grátis",
+    "startingFromPrice": "A partir de {price}",
+    "noData": "Nenhum dado",
+    "location": "Local",
+    "choosePlaceholder": "Escolher…",
+    "allPlaceholder": "Todos",
+    "previousPage": "Página anterior",
+    "nextPage": "Próxima página",
+    "paginationRange": "{from}–{to} de {total}",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "actions": "Ações",
+    "dismissTip": "Dispensar dica",
+    "addressPlaceholder": "Salão de festas, Rua Principal, 123…",
+    "viewOnGoogleMaps": "Ver no Google Maps"
   },
   "auth": {
     "layout": {
@@ -653,6 +677,13 @@
     "fiscalPeriodReminder": {
       "title": "Configure seu período fiscal",
       "body": "Crie seu período fiscal para garantir o bom acompanhamento dos seus dados financeiros."
+    },
+    "bell": {
+      "ariaLabel": "Notificações",
+      "title": "Notificações",
+      "markAllRead": "Marcar tudo como lido",
+      "markAllReadTooltip": "Marca como lidas as notificações mostradas aqui",
+      "empty": "Nenhuma notificação"
     }
   },
   "fiscalPeriodPopup": {

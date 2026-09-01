@@ -3,10 +3,9 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState, Suspense } from "react"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import { ArrowLeftIcon, ShoppingBagIcon, PackageIcon, PencilSimpleIcon, XIcon, FileArrowDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,6 +14,8 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import type { Locale } from "@/i18n/locales"
 
 type CommandeItem = {
   id:        string
@@ -51,6 +52,7 @@ export default function MesCommandesPage() {
 function MesCommandesPageInner() {
   const t              = useTranslations("portalMembre.boutique")
   const tCommon        = useTranslations("common")
+  const dateFnsLocale  = getDateFnsLocale(useLocale() as Locale)
   const statusLabel: Record<string, string> = { PENDING: t("orderStatus.pending"), PAID: t("orderStatus.paid"), CANCELLED: t("orderStatus.cancelled") }
   const { slug }       = useParams<{ slug: string }>()
   const router         = useRouter()
@@ -167,7 +169,7 @@ function MesCommandesPageInner() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-muted-foreground">
-                    {format(new Date(c.createdAt), "d MMMM yyyy", { locale: fr })}
+                    {format(new Date(c.createdAt), "d MMMM yyyy", { locale: dateFnsLocale })}
                   </p>
                   <p className="font-semibold text-primary tabular-nums">{fmt(c.totalAmount)}</p>
                 </div>

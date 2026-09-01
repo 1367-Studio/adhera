@@ -21,7 +21,31 @@
     "deleted": "Eliminado",
     "created": "Creado",
     "updated": "Actualizado",
-    "irreversibleAction": "Esta acción no se puede deshacer."
+    "irreversibleAction": "Esta acción no se puede deshacer.",
+    "imageUpload": {
+      "replace": "Reemplazar",
+      "remove": "Quitar",
+      "dropOrClickToAdd": "Arrastra o haz clic para añadir una imagen",
+      "formatsHint": "JPG, PNG, WebP · máx. 5 MB",
+      "compactHint": "Arrastra o haz clic para añadir una imagen (JPG, PNG, WebP, máx. 5 MB)",
+      "maxSizeError": "Imagen demasiado grande (máx. 5 MB)",
+      "uploadError": "Error al subir la imagen"
+    },
+    "free": "Gratis",
+    "startingFromPrice": "Desde {price}",
+    "noData": "Sin datos",
+    "location": "Ubicación",
+    "choosePlaceholder": "Elegir…",
+    "allPlaceholder": "Todos",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
+    "paginationRange": "{from}–{to} de {total}",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "actions": "Acciones",
+    "dismissTip": "Descartar consejo",
+    "addressPlaceholder": "Salón de actos, Calle Mayor 12…",
+    "viewOnGoogleMaps": "Ver en Google Maps"
   },
   "auth": {
     "layout": {
@@ -653,6 +677,13 @@
     "fiscalPeriodReminder": {
       "title": "Configure su período fiscal",
       "body": "Cree su período fiscal para garantizar un correcto seguimiento de sus datos financieros."
+    },
+    "bell": {
+      "ariaLabel": "Notificaciones",
+      "title": "Notificaciones",
+      "markAllRead": "Marcar todo como leído",
+      "markAllReadTooltip": "Marca como leídas las notificaciones mostradas aquí",
+      "empty": "Ninguna notificación"
     }
   },
   "fiscalPeriodPopup": {

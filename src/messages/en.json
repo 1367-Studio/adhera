@@ -21,7 +21,31 @@
     "deleted": "Deleted",
     "created": "Created",
     "updated": "Updated",
-    "irreversibleAction": "This action cannot be undone."
+    "irreversibleAction": "This action cannot be undone.",
+    "imageUpload": {
+      "replace": "Replace",
+      "remove": "Remove",
+      "dropOrClickToAdd": "Drag or click to add an image",
+      "formatsHint": "JPG, PNG, WebP · max 5 MB",
+      "compactHint": "Drag or click to add an image (JPG, PNG, WebP, max 5 MB)",
+      "maxSizeError": "Image too large (max 5 MB)",
+      "uploadError": "Error uploading the image"
+    },
+    "free": "Free",
+    "startingFromPrice": "From {price}",
+    "noData": "No data",
+    "location": "Location",
+    "choosePlaceholder": "Choose…",
+    "allPlaceholder": "All",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "paginationRange": "{from}–{to} of {total}",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "actions": "Actions",
+    "dismissTip": "Dismiss tip",
+    "addressPlaceholder": "Community hall, 12 Main Street…",
+    "viewOnGoogleMaps": "View on Google Maps"
   },
   "auth": {
     "layout": {
@@ -653,6 +677,13 @@
     "fiscalPeriodReminder": {
       "title": "Set up your fiscal period",
       "body": "Create your fiscal period to ensure accurate tracking of your financial data."
+    },
+    "bell": {
+      "ariaLabel": "Notifications",
+      "title": "Notifications",
+      "markAllRead": "Mark all read",
+      "markAllReadTooltip": "Marks the notifications shown here as read",
+      "empty": "No notifications"
     }
   },
   "fiscalPeriodPopup": {

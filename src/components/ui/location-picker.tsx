@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import dynamic from "next/dynamic"
+import { useTranslations } from "next-intl"
 import { MapPinIcon, CircleNotchIcon, XCircleIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 
@@ -43,7 +44,9 @@ interface LocationPickerProps {
   error?: string
 }
 
-export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, error }: LocationPickerProps) {
+export function LocationPicker({ label, address, lat, lng, onChange, error }: LocationPickerProps) {
+  const t = useTranslations("common")
+  const effectiveLabel = label ?? t("location")
   const [query, setQuery]         = useState(address)
   const [results, setResults]     = useState<NominatimResult[]>([])
   const [searching, setSearching] = useState(false)
@@ -122,7 +125,7 @@ export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, er
 
   return (
     <div className="space-y-1.5">
-      {label && <label className="block text-sm font-medium text-foreground">{label}</label>}
+      {effectiveLabel && <label className="block text-sm font-medium text-foreground">{effectiveLabel}</label>}
       <div ref={containerRef} className="space-y-2">
         {/* Autocomplete input */}
         <div className="relative">
@@ -132,7 +135,7 @@ export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, er
             value={query}
             onChange={e => handleInput(e.target.value)}
             onFocus={() => results.length > 0 && setOpen(true)}
-            placeholder="Salle des fêtes, 12 rue de la Paix, Paris…"
+            placeholder={t("addressPlaceholder")}
             className={cn(
               "w-full rounded-md border border-input bg-background pl-9 pr-9 py-2 text-sm outline-none focus:ring-1 focus:ring-ring",
               error && "border-destructive focus:ring-destructive",
@@ -184,7 +187,7 @@ export function LocationPicker({ label = "Lieu", address, lat, lng, onChange, er
               rel="noopener noreferrer"
               className="ml-0.5 inline-flex items-center gap-0.5 underline hover:text-foreground"
             >
-              Voir sur Google Maps <ArrowSquareOutIcon className="size-3" />
+              {t("viewOnGoogleMaps")} <ArrowSquareOutIcon className="size-3" />
             </a>
           </p>
         )}
