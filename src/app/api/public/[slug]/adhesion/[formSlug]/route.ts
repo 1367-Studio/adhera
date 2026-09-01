@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 export async function GET(
   req: Request,
@@ -90,7 +91,15 @@ export async function GET(
       amount: t.amount?.toString() ?? null, durationMonths: t.durationMonths,
       fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
       installmentsAllowed: t.installmentsAllowed, installmentsCount: t.installmentsCount,
-      receiptMode: t.receiptMode, deductibleAmount: t.deductibleAmount?.toString() ?? null,
+      receiptMode: t.receiptMode,
+      // Montant fixe : le montant éligible est déjà calculable ici (montant payé = t.amount).
+      // Montant libre : pas de montant payé encore connu — ineligibleAmount brut est exposé à
+      // la place, pour que le formulaire public recalcule en direct au fur et à mesure que le
+      // visiteur saisit son montant (voir eligibleReceiptAmount côté composant).
+      deductibleAmount: t.freeAmount || t.amount == null
+        ? null
+        : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
+      ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
     // Un produit archivé après avoir été lié au formulaire n'est pas retiré de

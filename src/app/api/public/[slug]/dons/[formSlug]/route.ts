@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 export async function GET(
   req: Request,
@@ -76,7 +77,13 @@ export async function GET(
     tiers: form.tiers.map(t => ({
       id: t.id, label: t.label, kind: t.kind, interval: t.interval, freeAmount: t.freeAmount,
       amount: t.amount?.toString() ?? null, receiptMode: t.receiptMode,
-      deductibleAmount: t.deductibleAmount?.toString() ?? null,
+      // Montant fixe : le montant éligible est déjà calculable ici (montant payé = t.amount).
+      // Montant libre : ineligibleAmount brut est exposé à la place, pour que le formulaire
+      // public recalcule en direct le montant éligible au fur et à mesure de la saisie.
+      deductibleAmount: t.freeAmount || t.amount == null
+        ? null
+        : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
+      ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
   })

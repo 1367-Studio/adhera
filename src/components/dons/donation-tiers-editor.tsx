@@ -21,7 +21,7 @@ type DonationTierDraft = {
   amount: number | null
   label: string
   receiptMode: "NONE" | "FULL" | "PARTIAL"
-  deductibleAmount: number | null
+  ineligibleAmount: number | null
 }
 type DonationTier = DonationTierDraft & { id: string; order: number }
 
@@ -61,18 +61,18 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
 
   const [tiers, setTiers] = useState<(DonationTierDraft & { key: string })[]>([])
 
-  // amount/deductibleAmount come back from the API as strings — Prisma's Decimal serializes
+  // amount/ineligibleAmount come back from the API as strings — Prisma's Decimal serializes
   // to JSON as a string, not a number — so the PUT below would 422 ("expected number,
   // received string") the moment a tier is saved again without its CurrencyField ever being
   // touched (the only place that turns the value back into a real number — see onChange).
   useEffect(() => { if (data) setTiers(data.map(t => ({
     ...t, key: t.id,
     amount:           t.amount != null ? Number(t.amount) : null,
-    deductibleAmount: t.deductibleAmount != null ? Number(t.deductibleAmount) : null,
+    ineligibleAmount: t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
   }))) }, [data])
 
   function addTier() {
-    setTiers(prev => [...prev, { key: `new-${nextTempId++}`, kind: "ONE_OFF", interval: null, freeAmount: false, amount: null, label: "", receiptMode: "FULL", deductibleAmount: null }])
+    setTiers(prev => [...prev, { key: `new-${nextTempId++}`, kind: "ONE_OFF", interval: null, freeAmount: false, amount: null, label: "", receiptMode: "FULL", ineligibleAmount: null }])
   }
   function updateTier(key: string, patch: Partial<DonationTierDraft>) {
     setTiers(prev => prev.map(t => t.key === key ? { ...t, ...patch } : t))
@@ -94,19 +94,21 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
       toast.error(t("intervalRequiredError"))
       return
     }
-    if (tiers.some(t => t.receiptMode === "PARTIAL" && !t.deductibleAmount)) {
-      toast.error(t("deductibleAmountRequiredError"))
+    if (tiers.some(t => t.receiptMode === "PARTIAL" && !t.ineligibleAmount)) {
+      toast.error(t("ineligibleAmountRequiredError"))
       return
     }
-    if (tiers.some(t => t.receiptMode === "PARTIAL" && t.amount != null && t.deductibleAmount != null && t.deductibleAmount > t.amount)) {
-      toast.error(t("deductibleAmountExceedsError"))
+    if (tiers.some(t => t.receiptMode === "PARTIAL" && t.amount != null && t.ineligibleAmount != null && t.ineligibleAmount > t.amount)) {
+      toast.error(t("ineligibleAmountExceedsError"))
       return
     }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
         id: t.id, order, kind: t.kind, interval: t.kind === "RECURRING" ? t.interval : null,
-        freeAmount: t.freeAmount, amount: t.freeAmount ? null : t.amount, label: t.label, receiptMode: t.receiptMode,
-        deductibleAmount: t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
+        // amount sert de montant fixe normalement, ou de montant minimum optionnel quand
+        // freeAmount est actif — jamais forcé à null.
+        freeAmount: t.freeAmount, amount: t.amount, label: t.label, receiptMode: t.receiptMode,
+        ineligibleAmount: t.receiptMode === "PARTIAL" ? t.ineligibleAmount : null,
       })))
       toast.success(t("saved"))
     } catch (err) {
@@ -174,39 +176,50 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
               <div className="flex items-end gap-3 flex-wrap">
                 <div className="w-40">
                   <CurrencyField
-                    label={t("amountField")}
+                    label={tier.freeAmount ? t("minAmountField") : t("amountField")}
                     value={tier.amount ?? 0}
                     onChange={v => updateTier(tier.key, { amount: v })}
-                    disabled={tier.freeAmount}
                   />
                 </div>
                 <div className="pb-2.5">
                   <CheckboxField
                     label={t("freeAmountField")}
                     checked={tier.freeAmount}
-                    onChange={e => updateTier(tier.key, {
-                      freeAmount: e.target.checked,
-                      // Le montant déductible est une valeur fixe attachée au palier — n'a
-                      // pas de sens dès que le donateur choisit lui-même le montant versé.
-                      receiptMode: e.target.checked && tier.receiptMode === "PARTIAL" ? "FULL" : tier.receiptMode,
-                    })}
+                    onChange={e => updateTier(tier.key, { freeAmount: e.target.checked })}
                   />
                 </div>
                 <div className="w-36">
                   <SelectField
                     label={t("receiptModeField")}
-                    options={tier.freeAmount ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
+                    options={receiptOptions}
                     value={tier.receiptMode}
                     onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
                   />
                 </div>
                 {tier.receiptMode === "PARTIAL" && (
-                  <div className="w-40">
+                  <div className="w-40 space-y-1">
                     <CurrencyField
-                      label={t("deductibleAmountField")}
-                      value={tier.deductibleAmount ?? 0}
-                      onChange={v => updateTier(tier.key, { deductibleAmount: v })}
+                      label={t("ineligibleAmountField")}
+                      value={tier.ineligibleAmount ?? 0}
+                      onChange={v => updateTier(tier.key, { ineligibleAmount: v })}
                     />
+                    <p className="text-xs text-muted-foreground">
+                      {tier.freeAmount ? t("eligibleAmountAutoHint", {
+                        amount: (tier.ineligibleAmount ?? 0).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                      }) : t("eligibleAmountPreview", {
+                        amount: Math.max(0, (tier.amount ?? 0) - (tier.ineligibleAmount ?? 0)).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                      })}
+                    </p>
+                    {/* Sans minimum configuré, un don en dessous du montant non éligible sera
+                        bloqué au paiement (voir checkout/route.ts) — mieux vaut que le
+                        gestionnaire le sache en configurant le palier. */}
+                    {tier.freeAmount && !tier.amount && !!tier.ineligibleAmount && (
+                      <p className="text-xs text-destructive">
+                        {t("noMinimumWarning", {
+                          amount: tier.ineligibleAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                        })}
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

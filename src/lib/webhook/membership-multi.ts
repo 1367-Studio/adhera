@@ -13,6 +13,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -151,7 +152,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
             amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         if (i === 0) firstCotisationId = cotisation.id
@@ -253,6 +254,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     // Only reflects the primary registrant's own tier — same simplification as the amount
     // above already being the combined group total rather than a per-person breakdown.
     const primaryTier = form.tiers.find(t => t.id === primary.tierId)
+    const primaryAmount = primaryTier
+      ? (primaryTier.free ? 0 : (primaryTier.freeAmount ? (primary.amount ?? 0) : Number(primaryTier.amount ?? 0)))
+      : 0
 
     sendEmail(membershipWelcomeEmail({
       firstName:       primary.firstName,
@@ -263,7 +267,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
       branding:        resolveDocumentBranding(assoc),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         primaryTier?.receiptMode,
-      deductibleAmount:    primaryTier?.deductibleAmount != null ? Number(primaryTier.deductibleAmount) : undefined,
+      deductibleAmount:    primaryTier
+        ? eligibleReceiptAmount(primaryAmount, primaryTier.receiptMode, primaryTier.ineligibleAmount != null ? Number(primaryTier.ineligibleAmount) : null) ?? undefined
+        : undefined,
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
       products:            purchasedProducts.length ? purchasedProducts : undefined,
     }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})

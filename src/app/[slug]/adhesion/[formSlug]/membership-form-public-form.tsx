@@ -36,7 +36,11 @@ type Tier = {
   installmentsAllowed: boolean
   installmentsCount: number | null
   receiptMode: "NONE" | "FULL" | "PARTIAL"
+  // Montant fixe : déjà calculé côté serveur (montant payé = amount). Montant libre : null —
+  // ineligibleAmount brut est utilisé à la place pour recalculer en direct au fur et à mesure
+  // de la saisie (voir partialReceiptAmount ci-dessous).
   deductibleAmount: string | null
+  ineligibleAmount: string | null
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
 
@@ -248,6 +252,20 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // A montant-libre extra with no minimum configured by staff still needs a real floor —
   // otherwise the field defaults to €0 and nothing stops a visitor from submitting it as-is.
   const tierMinimum = (x: Tier) => (x.amount != null ? Number(x.amount) : MIN_AMOUNT)
+  // Montant réellement éligible au reçu fiscal pour un tarif "Sim, parcialmente" — déjà
+  // calculé côté serveur pour un montant fixe (deductibleAmount), recalculé en direct ici pour
+  // un montant libre (ineligibleAmount brut) puisque le montant payé n'est connu qu'au moment
+  // de la saisie (voir eligibleReceiptAmount côté serveur).
+  const partialReceiptAmount = (x: Tier, paidAmount: number): number | null => {
+    if (x.receiptMode !== "PARTIAL") return null
+    if (x.freeAmount) return x.ineligibleAmount != null ? Math.max(0, paidAmount - Number(x.ineligibleAmount)) : null
+    return x.deductibleAmount != null ? Number(x.deductibleAmount) : null
+  }
+  // Un montant libre payé en dessous de la part non éligible donnerait un reçu à montant
+  // négatif — le serveur le refuse déjà (voir checkout/route.ts), mais sans ce même contrôle
+  // ici le visiteur ne le découvrirait qu'après avoir rempli tout le formulaire.
+  const belowIneligible = (x: Tier, paidAmount: number): boolean =>
+    x.freeAmount && x.receiptMode === "PARTIAL" && x.ineligibleAmount != null && paidAmount < Number(x.ineligibleAmount)
   const selectedExtras = extraTiers.filter(x => selectedExtraIds.has(x.id))
   const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? tierMinimum(x)) : Number(x.amount ?? 0)), 0)
   const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? tierMinimum(x)) < tierMinimum(x))
@@ -287,6 +305,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const registrantBelowMinimum = extraRegistrants.find(r => {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
+  })
+  const registrantBelowIneligible = extraRegistrants.find(r => {
+    const rt = registrantTier(r)
+    return !!rt && belowIneligible(rt, registrantAmount(r))
   })
   // Requires selectedTier itself to already be multi-payable (isTierPayable(…, true)) — a tier
   // that's only payable offline (single-registrant mode) must not let the visitor into isMulti,
@@ -366,6 +388,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
   const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
   const belowMinimum = needsPayment && paymentMethod === "STRIPE" && amount < MIN_AMOUNT
+  // Le tarif principal peut configurer son propre minimum (montant libre) — même garde-fou
+  // que les extras/inscrits supplémentaires (extraBelowMinimum/registrantBelowMinimum), qui
+  // eux le respectent déjà.
+  const membershipBelowMinimum = !!selectedTier && !selectedTier.free && selectedTier.freeAmount && membershipAmount < tierMinimum(selectedTier)
+  const membershipBelowIneligible = !!selectedTier && belowIneligible(selectedTier, membershipAmount)
   const registrantValid = (r: RegistrantDraft) => {
     const rt = registrantTier(r)
     return !!form && !!rt &&
@@ -383,9 +410,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
     !!selectedTier &&
-    (!isMulti || (!registrantBelowMinimum && extraRegistrants.every(registrantValid))) &&
+    (!isMulti || (!registrantBelowMinimum && !registrantBelowIneligible && extraRegistrants.every(registrantValid))) &&
     (!needsPayment || (
-      !belowMinimum && !extraBelowMinimum &&
+      !belowMinimum && !extraBelowMinimum && !membershipBelowMinimum && !membershipBelowIneligible &&
       (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier.kind === "ONE_OFF")
     )) &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
@@ -651,12 +678,24 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     })}
                   </div>
                   {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
-                    <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                    <>
+                      <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                      {membershipBelowMinimum && (
+                        <p className="text-xs text-destructive">
+                          {t("belowExtraMinimum", { label: selectedTier.label, amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                        </p>
+                      )}
+                      {!membershipBelowMinimum && membershipBelowIneligible && (
+                        <p className="text-xs text-destructive">
+                          {t("belowIneligibleAmount", { amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                        </p>
+                      )}
+                    </>
                   )}
-                  {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
+                  {selectedTier && !membershipBelowIneligible && partialReceiptAmount(selectedTier, membershipAmount) != null && (
                     <p className="text-xs text-muted-foreground">
                       {t("partialReceiptNotice", {
-                        amount: Number(selectedTier.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                        amount: partialReceiptAmount(selectedTier, membershipAmount)!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
                       })}
                     </p>
                   )}
@@ -696,17 +735,21 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       {rt && !rt.free && rt.freeAmount && (
                         <>
                           <CurrencyField label={t("freeAmountLabel")} value={r.freeAmount} onChange={v => updateRegistrant(r.key, { freeAmount: v })} />
-                          {registrantAmount(r) < tierMinimum(rt) && (
+                          {registrantAmount(r) < tierMinimum(rt) ? (
                             <p className="text-xs text-destructive">
-                              {t("belowMinimumAmount", { amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                              {t("belowExtraMinimum", { label: rt.label, amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                            </p>
+                          ) : belowIneligible(rt, registrantAmount(r)) && (
+                            <p className="text-xs text-destructive">
+                              {t("belowIneligibleAmount", { amount: Number(rt.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
                             </p>
                           )}
                         </>
                       )}
-                      {rt?.receiptMode === "PARTIAL" && rt.deductibleAmount && (
+                      {rt && !belowIneligible(rt, registrantAmount(r)) && partialReceiptAmount(rt, registrantAmount(r)) != null && (
                         <p className="text-xs text-muted-foreground">
                           {t("partialReceiptNotice", {
-                            amount: Number(rt.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                            amount: partialReceiptAmount(rt, registrantAmount(r))!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
                           })}
                         </p>
                       )}
