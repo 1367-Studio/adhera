@@ -28,7 +28,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const form = await prisma.membershipForm.findFirst({
     where:   { id, associationId: ctx.associationId },
-    include: { tiers: true, customFields: true },
+    include: { tiers: true, customFields: true, products: true },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -82,15 +82,28 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         fieldPhone:            form.fieldPhone,
         fieldMobile:           form.fieldMobile,
         fieldGender:           form.fieldGender,
+        fieldPhoto:            form.fieldPhoto,
+        fieldLanguage:         form.fieldLanguage,
         allowCash:             form.allowCash,
         allowCheque:           form.allowCheque,
         allowTransfer:         form.allowTransfer,
         offlineInstructions:   form.offlineInstructions,
         confirmationMessage:   form.confirmationMessage,
+        adminNotificationEmail: form.adminNotificationEmail,
         visibility:            "LINK",
         tiers: {
           create: form.tiers.map(t => ({
-            order: t.order, kind: t.kind, free: t.free, freeAmount: t.freeAmount, amount: t.amount,
+            order: t.order, itemType: t.itemType, kind: t.kind, free: t.free, freeAmount: t.freeAmount, amount: t.amount,
+            durationMonths: t.durationMonths,
+            // Never carried over as-is: it's an absolute date (e.g. "valid until Aug 31,
+            // 2027" for a season), so copying it verbatim would silently give the duplicate
+            // — almost always made to set up a *new* season — the same expiry as the one
+            // it's replacing, possibly already in the past. Reset to null (same treatment
+            // opensAt/closesAt already get below) so whoever duplicates has to pick a fresh
+            // date rather than inherit a stale one.
+            fixedPeriodEnd: null,
+            receiptMode: t.receiptMode, ineligibleAmount: t.ineligibleAmount,
+            installmentsAllowed: t.installmentsAllowed, installmentsCount: t.installmentsCount,
             label: t.label, membreTypeId: t.membreTypeId,
           })),
         },
@@ -98,6 +111,9 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           create: form.customFields.map(f => ({
             type: f.type, label: f.label, required: f.required, order: f.order,
           })),
+        },
+        products: {
+          create: form.products.map(p => ({ varianteId: p.varianteId, order: p.order })),
         },
       },
     })
@@ -109,6 +125,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       entity:        "MembershipForm",
       entityId:      copy.id,
       label:         copy.title,
+      metadata:      { sourceFormId: id, sourceTitle: form.title },
     })
 
     return NextResponse.json(copy, { status: 201 })
