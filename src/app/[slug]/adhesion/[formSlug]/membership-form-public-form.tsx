@@ -508,7 +508,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
           <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
             <p className="text-muted-foreground">{t("notFound")}</p>
-            <LocaleSwitcher />
+            <LocaleSwitcher persistAccountLocale={!isPreview} />
           </div>
         </div>
       </>
@@ -522,7 +522,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
           <div className="w-full max-w-md space-y-6">
             <div className="flex justify-end">
-              <LocaleSwitcher />
+              <LocaleSwitcher persistAccountLocale={!isPreview} />
             </div>
 
             {isPreview && (
@@ -688,7 +688,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                             aspectRatio="square"
                             className="w-32"
                             compact
-                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
+                            maxSizeErrorMessage={t("photoTooLarge")}
+                            genericErrorMessage={t("photoUploadError")}
                           />
                         </div>
                       )}
@@ -812,7 +814,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       aspectRatio="square"
                       className="w-32"
                       compact
-                      uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                      uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
+                      maxSizeErrorMessage={t("photoTooLarge")}
+                      genericErrorMessage={t("photoUploadError")}
                     />
                   </div>
                 )}

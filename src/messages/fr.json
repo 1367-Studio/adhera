@@ -2654,6 +2654,11 @@
     },
     "public": {
       "notFound": "Formulaire introuvable",
+      "photoNoFile": "Aucun fichier fourni",
+      "photoTooLarge": "Fichier trop volumineux (max 5 Mo)",
+      "photoFormatUnsupported": "Format non supporté. JPG, PNG, WebP ou GIF uniquement.",
+      "photoUploadError": "Erreur lors de l'envoi de la photo. Réessayez.",
+      "photoTooManyAttempts": "Trop de tentatives, réessayez plus tard.",
       "notOpenYet": "Ce formulaire n'est pas encore ouvert.",
       "closed": "Ce formulaire est fermé.",
       "noTiers": "Aucun tarif n'est disponible pour le moment sur ce formulaire.",

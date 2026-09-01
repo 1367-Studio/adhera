@@ -2654,6 +2654,11 @@
     },
     "public": {
       "notFound": "Form not found",
+      "photoNoFile": "No file provided",
+      "photoTooLarge": "File too large (max 5 MB)",
+      "photoFormatUnsupported": "Unsupported format. JPG, PNG, WebP, or GIF only.",
+      "photoUploadError": "Couldn't upload the photo. Please try again.",
+      "photoTooManyAttempts": "Too many attempts, please try again later.",
       "notOpenYet": "This form isn't open yet.",
       "closed": "This form is closed.",
       "noTiers": "No tiers are available on this form right now.",

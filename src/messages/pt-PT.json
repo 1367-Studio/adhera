@@ -2666,6 +2666,11 @@
     },
     "public": {
       "notFound": "Formulário não encontrado",
+      "photoNoFile": "Nenhum ficheiro enviado",
+      "photoTooLarge": "Ficheiro demasiado grande (máx. 5 MB)",
+      "photoFormatUnsupported": "Formato não suportado. Utilize JPG, PNG, WebP ou GIF.",
+      "photoUploadError": "Erro ao enviar a foto. Tente novamente.",
+      "photoTooManyAttempts": "Demasiadas tentativas. Tente novamente mais tarde.",
       "notOpenYet": "Este formulário ainda não está aberto.",
       "closed": "Este formulário está encerrado.",
       "noTiers": "Nenhuma tarifa está disponível neste formulário neste momento.",
