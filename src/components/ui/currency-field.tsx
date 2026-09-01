@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 
 interface CurrencyFieldProps {
@@ -160,10 +161,10 @@ export function CurrencyField({ label, error, hint, required, disabled, value, o
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+      <Label>
         {label}
         {required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
-      </label>
+      </Label>
       <input
         type="text"
         inputMode="numeric"

@@ -61,7 +61,15 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
 
   const [tiers, setTiers] = useState<(DonationTierDraft & { key: string })[]>([])
 
-  useEffect(() => { if (data) setTiers(data.map(t => ({ ...t, key: t.id }))) }, [data])
+  // amount/deductibleAmount come back from the API as strings — Prisma's Decimal serializes
+  // to JSON as a string, not a number — so the PUT below would 422 ("expected number,
+  // received string") the moment a tier is saved again without its CurrencyField ever being
+  // touched (the only place that turns the value back into a real number — see onChange).
+  useEffect(() => { if (data) setTiers(data.map(t => ({
+    ...t, key: t.id,
+    amount:           t.amount != null ? Number(t.amount) : null,
+    deductibleAmount: t.deductibleAmount != null ? Number(t.deductibleAmount) : null,
+  }))) }, [data])
 
   function addTier() {
     setTiers(prev => [...prev, { key: `new-${nextTempId++}`, kind: "ONE_OFF", interval: null, freeAmount: false, amount: null, label: "", receiptMode: "FULL", deductibleAmount: null }])

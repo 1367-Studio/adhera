@@ -34,9 +34,10 @@ const updateSchema = z.object({
   confirmationMessage: z.string().max(2000).optional().nullable(),
   adminNotificationEmail: z.string().email().max(200).optional().nullable(),
 
-  visibility: z.enum(["LINK", "SITE", "PRIVATE"]).optional(),
-  opensAt:    z.string().datetime().optional().nullable(),
-  closesAt:   z.string().datetime().optional().nullable(),
+  visibility:    z.enum(["LINK", "SITE", "PRIVATE"]).optional(),
+  siteSectionId: z.string().optional().nullable(),
+  opensAt:       z.string().datetime().optional().nullable(),
+  closesAt:      z.string().datetime().optional().nullable(),
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -62,7 +63,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const form = await prisma.membershipForm.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, title: true, opensAt: true, closesAt: true },
+    select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -80,6 +81,24 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const finalClosesAt = data.closesAt !== undefined ? (data.closesAt ? new Date(data.closesAt) : null) : form.closesAt
   if (finalOpensAt && finalClosesAt && finalOpensAt >= finalClosesAt)
     return NextResponse.json({ error: "La date de clôture doit être postérieure à la date d'ouverture." }, { status: 422 })
+
+  const finalVisibility    = data.visibility    !== undefined ? data.visibility    : form.visibility
+  const finalSiteSectionId = data.siteSectionId !== undefined ? data.siteSectionId : form.siteSectionId
+  if (finalVisibility === "SITE" && !finalSiteSectionId)
+    return NextResponse.json({ error: "Choisissez une section du site sur laquelle publier ce formulaire." }, { status: 422 })
+
+  // Two PUBLISHED forms can't both occupy the same site section — mirrors AssoConnect, where
+  // picking a page already bound to another collect isn't allowed either. status here is the
+  // form's own (this route never changes it — see /publish for that), so this only fires once
+  // an admin actually has both a published form and a taken section selected at the same time.
+  if (form.status === "PUBLISHED" && finalVisibility === "SITE" && finalSiteSectionId) {
+    const conflict = await prisma.membershipForm.findFirst({
+      where:  { associationId: ctx.associationId, id: { not: id }, status: "PUBLISHED", visibility: "SITE", siteSectionId: finalSiteSectionId },
+      select: { title: true },
+    })
+    if (conflict)
+      return NextResponse.json({ error: `Cette section est déjà utilisée par le formulaire publié « ${conflict.title} ». Choisissez une autre section ou dépubliez l'autre formulaire.` }, { status: 409 })
+  }
 
   const updated = await prisma.membershipForm.update({
     where: { id },
@@ -107,6 +126,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(data.confirmationMessage  !== undefined ? { confirmationMessage: data.confirmationMessage }      : {}),
       ...(data.adminNotificationEmail !== undefined ? { adminNotificationEmail: data.adminNotificationEmail } : {}),
       ...(data.visibility           !== undefined ? { visibility: data.visibility }                        : {}),
+      ...(data.siteSectionId        !== undefined ? { siteSectionId: data.siteSectionId }                  : {}),
       ...(data.opensAt              !== undefined ? { opensAt: data.opensAt ? new Date(data.opensAt) : null }   : {}),
       ...(data.closesAt             !== undefined ? { closesAt: data.closesAt ? new Date(data.closesAt) : null } : {}),
     },

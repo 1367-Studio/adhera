@@ -11,9 +11,13 @@ type Props = {
   headerBgColor?:     string
   headerShowMembres?: boolean
   headerShowRegister?: boolean
+  // The public MembershipForm to send visitors to — null when the association has none
+  // published on the site, in which case the button never renders regardless of
+  // headerShowRegister (there's nothing to send anyone to).
+  membershipCta?:     { href: string } | null
 }
 
-export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = false }: Props) {
+export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null }: Props) {
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
   const textColor = isDark ? "#fff" : "#111827"
@@ -33,19 +37,15 @@ export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, he
           <span className="text-sm">{name}</span>
         </Link>
 
-        {(headerShowMembres || headerShowRegister) && (
+        {(headerShowMembres || (headerShowRegister && membershipCta)) && (
           <div className="flex items-center gap-2">
-            {headerShowRegister && (
-              // Pointait vers `#inscription`, une ancre qui n'existe nulle part dans la
-              // page : le bouton rechargeait la même page sans rien faire. La page
-              // d'inscription du portail, elle, existe toujours (aucun réglage ne la
-              // désactive) et rattache le compte au membre existant s'il y en a un.
+            {headerShowRegister && membershipCta && (
               <Link
-                href={`/portal/${portalSlug}/register`}
+                href={membershipCta.href}
                 className="text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
                 style={{ color, borderColor: color }}
               >
-                S&apos;inscrire
+                Adhérer
               </Link>
             )}
             {headerShowMembres && (

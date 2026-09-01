@@ -2552,7 +2552,13 @@
           "durationConflictError": "Choisissez une durée en mois ou une date de fin fixe, pas les deux",
           "fixedPeriodEndField": "Date de fin fixe",
           "fixedPeriodEndHint": "Alternative à la durée en mois — même date de fin pour tout le monde (ex. saison sportive).",
-          "taxReceiptEligibleField": "Éligible au reçu fiscal",
+          "receiptModeField": "Reçu fiscal",
+          "receiptNone": "Non",
+          "receiptFull": "Oui, intégralement",
+          "receiptPartial": "Oui, partiellement",
+          "deductibleAmountField": "Montant déductible (€)",
+          "deductibleAmountRequiredError": "Le montant déductible est requis pour un reçu partiel",
+          "deductibleAmountExceedsError": "Le montant déductible ne peut pas dépasser le montant du tarif",
           "installmentsAllowedField": "Autoriser le paiement en plusieurs fois",
           "installmentsCountField": "Nombre de fois",
           "membreTypeNone": "Aucun",
@@ -2620,9 +2626,27 @@
           "visibilityLink": "Sur lien uniquement",
           "visibilitySite": "Sur le site internet",
           "visibilityPrivate": "Privé",
+          "schedulePeriodLabel": "Limiter la période d'inscription",
+          "schedulePeriodHint": "Sans période définie, le formulaire reste ouvert tant qu'il est publié.",
           "opensAtLabel": "Ouverture",
           "closesAtLabel": "Fermeture",
-          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
+          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture.",
+          "siteSectionLabel": "Section du site",
+          "siteSectionPlaceholder": "Choisir…",
+          "siteSectionCreateOption": "+ Créer une nouvelle section",
+          "siteSectionCreateError": "Erreur lors de la création de la section du site.",
+          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire."
+        },
+        "products": {
+          "title": "Produits",
+          "hint": "Produits de la Boutique proposés à l'achat en fin d'adhésion. Le stock est partagé avec le module Boutique.",
+          "noProducts": "Aucun produit actif dans la Boutique. Activez le module Boutique et créez au moins un produit pour en proposer ici.",
+          "stockCount": "{count, plural, one {# en stock} other {# en stock}}",
+          "outOfStock": "Épuisé",
+          "selectedCount": "{count}/{max} produits sélectionnés",
+          "maxProductsError": "Vous pouvez proposer au maximum {max} produits",
+          "saved": "Produits enregistrés",
+          "saveProducts": "Enregistrer les produits"
         }
       }
     },
@@ -2641,6 +2665,7 @@
       "sharedAccountHint": "L'email et le mot de passe ci-dessous serviront à se connecter pour l'ensemble du groupe.",
       "donationBadge": "(don)",
       "totalLabel": "Total à régler",
+      "partialReceiptNotice": "Seuls {amount} sont déductibles des impôts pour cette adhésion.",
       "belowExtraMinimum": "Le montant minimum pour « {label} » est de {amount}.",
       "belowMinimumAmount": "Le montant minimum pour un paiement en ligne est de {amount}.",
       "perYear": "/ an",
@@ -2683,7 +2708,12 @@
       "submittedWithPayment": "Votre adhésion est active et votre paiement a bien été reçu.",
       "submittedRequestBody": "Votre demande d'adhésion a bien été reçue. L'association vous contactera dans les meilleurs délais.",
       "toastCancelled": "Paiement annulé.",
-      "errorNetwork": "Erreur réseau. Réessayez."
+      "errorNetwork": "Erreur réseau. Réessayez.",
+      "productsLabel": "Produits",
+      "outOfStock": "Épuisé",
+      "decreaseQuantityLabel": "Diminuer la quantité",
+      "increaseQuantityLabel": "Augmenter la quantité",
+      "productsMultiHint": "Les produits choisis seront attribués au compte de la personne qui remplit ce formulaire."
     }
   },
   "messages": {
@@ -3599,6 +3629,7 @@
       "validUntil": "Valable jusqu'au {date}",
       "periodExpiredOn": "Expirée le {date}",
       "downloadRecuFiscal": "Télécharger le reçu fiscal",
+      "downloadRecuFiscalPartial": "Télécharger le reçu fiscal (partiel : {amount} déductible)",
       "showingRecentCotisations": "Affichage des {count} cotisations les plus récentes sur {total} au total.",
       "addonPurchasesTitle": "Options et donations achetées",
       "donationFallbackLabel": "Donation",
@@ -4160,7 +4191,7 @@
       "headerBgColor": "Couleur de fond",
       "headerBgPlaceholder": "#ffffff (blanc par défaut)",
       "loginButton": "Bouton \"Se connecter\"",
-      "registerButton": "Bouton \"S'inscrire\"",
+      "registerButton": "Bouton \"Adhérer\"",
       "footer": "Pied de page",
       "footerTextLabel": "Texte",
       "footerTextPlaceholder": "© {year} Mon Association",
@@ -4371,6 +4402,7 @@
       "pay": "Payer",
       "noMemberProfile": "Aucun profil membre associé à ce compte.",
       "downloadRecuFiscal": "Télécharger le reçu fiscal",
+      "downloadRecuFiscalPartial": "Télécharger le reçu fiscal (partiel : {amount} déductible)",
       "toasts": {
         "paymentDone": "Paiement effectué !",
         "paymentCancelled": "Paiement annulé.",

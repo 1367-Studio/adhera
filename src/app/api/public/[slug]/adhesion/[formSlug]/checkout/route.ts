@@ -14,7 +14,7 @@ import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
-import { membershipWelcomeEmail } from "@/lib/email"
+import { membershipWelcomeEmail, membershipPendingValidationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
@@ -56,6 +56,14 @@ const schema = z.object({
     tierId: z.string().min(1),
     amount: z.number().positive().max(100000).optional(), // requis seulement pour une option à montant libre
   })).max(20).optional().default([]),
+  // Produits Boutique choisis en fin d'adhésion — jamais sur le multiSchema/registrantSchema
+  // (ni sur un tarif RECURRING ou payé en plusieurs fois, voir le garde-fou plus bas) : le
+  // stock n'est décompté qu'une fois, au moment du paiement unique via webhook (voir
+  // membership-form-products.ts), un rail qu'aucun de ces autres chemins n'emprunte.
+  products:    z.array(z.object({
+    varianteId: z.string().min(1),
+    quantity:   z.number().int().min(1).max(99),
+  })).max(10).optional().default([]),
   conditionsAgreed: z.boolean().optional().default(false),
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention que
   // les autres formulaires publics.
@@ -93,7 +101,43 @@ const multiSchema = z.object({
   conditionsAgreed: z.boolean().optional().default(false),
   website:     z.string().optional().or(z.literal("")),
   locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  // Contrairement au reste de ce schéma, jamais rattaché à un registrant précis : le groupe
+  // n'a qu'un seul email/login réel (registrants[0], voir handleMultiRegistrantCheckout), donc
+  // le produit lui est toujours attribué en entier plutôt que d'être réparti entre les
+  // personnes du groupe.
+  products:    z.array(z.object({
+    varianteId: z.string().min(1),
+    quantity:   z.number().int().min(1).max(99),
+  })).max(10).optional().default([]),
 })
+
+type ResolvedProduct = { varianteId: string; produitId: string; label: string; quantity: number; unitPriceCents: number }
+
+// Partagé entre le parcours à un seul adhérent et l'inscription groupée — mêmes règles de
+// validation/re-tarification server-side dans les deux cas (voir le commentaire détaillé sur
+// resolvedProducts dans le parcours à un seul adhérent, plus bas, pour le raisonnement complet).
+function resolveRequestedProducts(
+  form: { products: { varianteId: string; variante: { id: string; produitId: string; label: string; price: number; stock: number; produit: { status: string } } }[] },
+  modules: { boutique: boolean },
+  requested: { varianteId: string; quantity: number }[],
+): { error: string } | { products: ResolvedProduct[]; totalCents: number } {
+  const varianteIds = new Set(requested.map(p => p.varianteId))
+  if (varianteIds.size !== requested.length) return { error: "Produits en double" }
+
+  const products: ResolvedProduct[] = []
+  for (const p of requested) {
+    const offer = modules.boutique ? form.products.find(fp => fp.varianteId === p.varianteId) : undefined
+    if (!offer || offer.variante.produit.status !== "ACTIVE")
+      return { error: "Produit invalide" }
+    if (offer.variante.stock < p.quantity)
+      return { error: `Stock insuffisant pour « ${offer.variante.label} » (disponible : ${offer.variante.stock})` }
+    products.push({
+      varianteId: offer.variante.id, produitId: offer.variante.produitId, label: offer.variante.label,
+      quantity: p.quantity, unitPriceCents: offer.variante.price,
+    })
+  }
+  return { products, totalCents: products.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0) }
+}
 
 export async function POST(
   req: Request,
@@ -124,7 +168,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -133,7 +177,10 @@ export async function POST(
 
   const form = await prisma.membershipForm.findFirst({
     where:   { slug: formSlug, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
-    include: { tiers: true, customFields: true },
+    include: {
+      tiers: true, customFields: true,
+      products: { include: { variante: { include: { produit: { select: { status: true } } } } } },
+    },
   })
   if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
 
@@ -164,7 +211,7 @@ export async function POST(
   if (addonTierIds.size !== parsed.data.addons.length)
     return NextResponse.json({ error: "Options en double" }, { status: 422 })
 
-  const resolvedAddons: { tierId: string; itemType: "ADDON" | "DONATION"; label: string; amount: number }[] = []
+  const resolvedAddons: { tierId: string; itemType: "ADDON" | "DONATION"; label: string; amount: number; receiptMode: "NONE" | "FULL" | "PARTIAL"; deductibleAmount: number | null }[] = []
   for (const a of parsed.data.addons) {
     const addonTier = form.tiers.find(t => t.id === a.tierId && t.itemType !== "MEMBERSHIP")
     if (!addonTier) return NextResponse.json({ error: "Option invalide" }, { status: 422 })
@@ -177,15 +224,34 @@ export async function POST(
     const itemMinimum = addonTier.amount != null ? Number(addonTier.amount) : MIN_ITEM_AMOUNT
     if (addonTier.freeAmount && itemAmount < itemMinimum)
       return NextResponse.json({ error: `Le montant minimum pour « ${addonTier.label} » est de ${itemMinimum}€.` }, { status: 422 })
-    resolvedAddons.push({ tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount })
+    resolvedAddons.push({
+      tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount,
+      receiptMode:      addonTier.receiptMode,
+      deductibleAmount: addonTier.deductibleAmount != null ? Number(addonTier.deductibleAmount) : null,
+    })
   }
   const totalAddons = resolvedAddons.reduce((sum, a) => sum + a.amount, 0)
+
+  // Produits Boutique proposés en fin de formulaire — validés et re-tarifés server-side à
+  // partir du stock/prix en direct, jamais repris du payload, même raisonnement que les
+  // options ci-dessus. Toujours vide en dehors du rail ONE_OFF/paiement unique (voir le
+  // garde-fou juste après) — c'est le seul chemin dont le webhook décompte réellement le
+  // stock (voir membership-form-products.ts).
+  const productsResult = resolveRequestedProducts(form, modules, parsed.data.products)
+  if ("error" in productsResult) return NextResponse.json({ error: productsResult.error }, { status: 422 })
+  const { products: resolvedProducts, totalCents: totalProductsCents } = productsResult
+  // Défense en profondeur : structurellement, resolvedProducts ne peut déjà rejoindre que le
+  // rail ONE_OFF/paiement unique plus bas (aucun autre branch n'y touche), mais un payload
+  // trafiqué pourrait combiner un tarif RECURRING ou "plusieurs fois" avec des produits —
+  // un tarif gratuit reste ONE_OFF pour le paiement (voir effectiveKind plus bas).
+  if (resolvedProducts.length > 0 && ((tier.free ? "ONE_OFF" : tier.kind) !== "ONE_OFF" || parsed.data.payInInstallments))
+    return NextResponse.json({ error: "Les produits ne sont pas disponibles avec ce mode de paiement." }, { status: 422 })
 
   // A paid tier — or a free tier picking up a paid extra — is always immediate as soon as
   // payment is confirmed; there's nothing sensible to "hold for approval" once money has
   // already changed hands. Only a fully free submission is ever routed through the form's
   // own validationMode.
-  const willBeImmediate = !tier.free || totalAddons > 0 || form.validationMode === "IMMEDIATE"
+  const willBeImmediate = !tier.free || totalAddons > 0 || totalProductsCents > 0 || form.validationMode === "IMMEDIATE"
   if (willBeImmediate && !parsed.data.password)
     return NextResponse.json({ error: "Un mot de passe est requis." }, { status: 422 })
 
@@ -232,7 +298,10 @@ export async function POST(
   if (existing) return NextResponse.json({ error: "Cette adresse email est déjà utilisée." }, { status: 409 })
 
   // ─── Tarif gratuit (sans option payante) ───────────────────────────────────────
-  if (tier.free && totalAddons === 0) {
+  // resolvedProducts.length === 0 est requis ici aussi : sans ça, une tarif gratuite
+  // combinée à un produit passait entièrement à côté de Stripe — le membre était créé sans
+  // jamais payer le produit, ni décompter son stock.
+  if (tier.free && totalAddons === 0 && resolvedProducts.length === 0) {
     try {
       await assertMemberLimit(assoc.id)
     } catch (err) {
@@ -271,6 +340,16 @@ export async function POST(
         label: `${firstName} ${lastName} (${form.title})`,
       })
 
+      sendEmail(membershipPendingValidationEmail({
+        firstName, email, associationName: assoc.name, formTitle: form.title,
+        branding: resolveDocumentBranding(assoc),
+      }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION" }).catch(() => {})
+
+      notifyMembershipSignup({
+        associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+        memberNames: [`${firstName} ${lastName}`], amount: 0, primaryMembreId: membre.id, pendingValidation: true,
+      }).catch(() => {})
+
       return NextResponse.json({ pending: true })
     }
 
@@ -307,7 +386,8 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
+            periodStart, periodEnd, receiptMode: tier.receiptMode,
+            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
         return { user, membre }
@@ -326,6 +406,8 @@ export async function POST(
     sendEmail(membershipWelcomeEmail({
       firstName, email, associationName: assoc.name, amount: 0,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
+      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -363,6 +445,11 @@ export async function POST(
     // à Cotisation/Don. Le client masque déjà ce choix dès qu'une option est cochée.
     if (totalAddons > 0)
       return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des options supplémentaires." }, { status: 400 })
+    // Même raisonnement que les options ci-dessus : un produit n'est jamais décompté/vendu
+    // que via le webhook Stripe (voir membership-form-products.ts) — un paiement hors ligne
+    // ne passe jamais par ce webhook.
+    if (resolvedProducts.length > 0)
+      return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des produits." }, { status: 400 })
     const allowed = paymentMethod === "ESPECES" ? form.allowCash : paymentMethod === "CHEQUE" ? form.allowCheque : form.allowTransfer
     if (!allowed) return NextResponse.json({ error: "Ce moyen de paiement n'est pas disponible pour ce formulaire" }, { status: 400 })
   } else {
@@ -421,7 +508,8 @@ export async function POST(
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
-            periodStart, periodEnd, taxReceiptEligible: tier.taxReceiptEligible,
+            periodStart, periodEnd, receiptMode: tier.receiptMode,
+            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
           },
         })
         return { user, membre }
@@ -439,6 +527,8 @@ export async function POST(
       firstName, email, associationName: assoc.name, amount,
       offlinePending: true, offlineInstructions: form.offlineInstructions,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
+      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -489,6 +579,12 @@ export async function POST(
     membershipAmount: String(membershipAmount ?? 0),
     tierFree:         tier.free ? "1" : "",
     addons:           JSON.stringify(resolvedAddons),
+    // Clés minimales (identité + quantité) plutôt qu'un snapshot complet comme resolvedAddons
+    // ci-dessus — label/prix sont toujours re-dérivables en direct depuis BoutiqueVariante/
+    // BoutiqueProduit au moment du webhook (voir membership-form-products.ts), inutile de les
+    // dupliquer ici alors que Stripe plafonne chaque valeur de metadata à 500 caractères.
+    products:         JSON.stringify(resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))),
+    productsAmount:   String(totalProductsCents / 100),
     // Snapshotted for the webhooks — see the periodStart/periodEnd comment above. durationMonths
     // is also carried separately so handleCotisationSubscriptionCheckout can snapshot it onto
     // CotisationSubscription for every future renewal (handleCotisationInvoicePaid), not just
@@ -496,7 +592,8 @@ export async function POST(
     periodStart:      periodStart ? periodStart.toISOString() : "",
     periodEnd:        periodEnd ? periodEnd.toISOString() : "",
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
-    taxReceiptEligible: tier.taxReceiptEligible ? "1" : "",
+    receiptMode:      tier.receiptMode,
+    deductibleAmount: tier.receiptMode === "PARTIAL" && tier.deductibleAmount != null ? tier.deductibleAmount.toString() : "",
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -511,6 +608,17 @@ export async function POST(
       product_data: { name: `${a.label} — ${assoc.name}` },
     },
     quantity: 1,
+  }))
+
+  // Uniquement non-vide sur le rail ONE_OFF (voir le garde-fou plus haut) — jamais mêlé aux
+  // branches installments/RECURRING plus bas.
+  const productLineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = resolvedProducts.map(p => ({
+    price_data: {
+      currency:     "eur",
+      unit_amount:  p.unitPriceCents,
+      product_data: { name: `${p.label} — ${assoc.name}` },
+    },
+    quantity: p.quantity,
   }))
 
   // ─── Tarif ponctuel, payé en plusieurs fois ────────────────────────────────────
@@ -587,6 +695,7 @@ export async function POST(
         quantity: 1,
       }] : []),
       ...addonLineItems,
+      ...productLineItems,
     ]
 
     let checkoutSession: Stripe.Checkout.Session
@@ -688,7 +797,7 @@ async function handleMultiRegistrantCheckout(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -697,7 +806,10 @@ async function handleMultiRegistrantCheckout(
 
   const form = await prisma.membershipForm.findFirst({
     where:   { slug: formSlug, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
-    include: { tiers: true, customFields: true },
+    include: {
+      tiers: true, customFields: true,
+      products: { include: { variante: { include: { produit: { select: { status: true } } } } } },
+    },
   })
   if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
 
@@ -706,11 +818,13 @@ async function handleMultiRegistrantCheckout(
   if (form.requireCguvSignature && !data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
-  // A required photo is only ever collected from the person filling out the form (see
-  // membership-form-public-form.tsx) — the client already hides "Ajouter un autre adhérent"
-  // for such forms, this rejects a direct API call that bypasses that.
-  if (form.fieldPhoto === "REQUIRED")
-    return NextResponse.json({ error: "Une inscription groupée n'est pas disponible pour ce formulaire." }, { status: 422 })
+  // Toujours attribué en entier à registrants[0] une fois consommé (voir
+  // MembershipCheckoutDraft.products dans schema.prisma) — jamais réparti entre les personnes
+  // du groupe, même raisonnement de re-tarification server-side que le parcours à un seul
+  // adhérent.
+  const productsResult = resolveRequestedProducts(form, modules, data.products)
+  if ("error" in productsResult) return NextResponse.json({ error: productsResult.error }, { status: 422 })
+  const { products: resolvedProducts, totalCents: totalProductsCents } = productsResult
 
   // Resolve + validate every registrant's tier — MEMBERSHIP/ONE_OFF only. A Stripe
   // Subscription is tied to exactly one Membre, so a single group checkout can't "split" a
@@ -742,6 +856,7 @@ async function handleMultiRegistrantCheckout(
       [form.fieldMobile,    r.mobile,    "Mobile"],
       [form.fieldGender,    r.sexe,      "Genre"],
       [form.fieldLanguage,  r.spokenLanguage, "Langue parlée"],
+      [form.fieldPhoto,     r.photoUrl,  "Photo"],
     ]
     for (const [requirement, value, label] of standardChecks) {
       if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -764,10 +879,19 @@ async function handleMultiRegistrantCheckout(
     resolved.push({ tier, amount, r, answers })
   }
 
-  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0)
+  // totalProductsCents/100 inclus ici même s'il n'existe pas de tarif payant dans le groupe :
+  // sans ça, un groupe entièrement gratuit + un produit payant retombait dans la branche
+  // "tous gratuits" plus bas, qui ne passe jamais par Stripe — même bug de contournement que
+  // celui corrigé sur le parcours à un seul adhérent (voir le commentaire sur tier.free plus
+  // haut dans ce fichier).
+  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0) + totalProductsCents / 100
   // Same reasoning as the single-registrant path's willBeImmediate: any money changing hands
   // is always immediate, only a fully-free group ever goes through the form's validationMode.
-  const willBeImmediate = totalAmount > 0 || form.validationMode === "IMMEDIATE"
+  // resolvedProducts.length > 0 is checked on its own, not just via totalAmount — a €0-priced
+  // product would otherwise still slip into the "tous gratuits" branch below, which never
+  // touches stock/BoutiqueCommande at all (same edge case the single-registrant path's own
+  // `resolvedProducts.length === 0` guard closes).
+  const willBeImmediate = totalAmount > 0 || resolvedProducts.length > 0 || form.validationMode === "IMMEDIATE"
   if (willBeImmediate && !data.password)
     return NextResponse.json({ error: "Un mot de passe est requis." }, { status: 422 })
 
@@ -826,6 +950,20 @@ async function handleMultiRegistrantCheckout(
       label: `${resolved[0].r.firstName} ${resolved[0].r.lastName} + ${resolved.length - 1} (${form.title})`,
     })
 
+    const allNames = resolved.map(({ r }) => `${r.firstName} ${r.lastName}`)
+
+    // Only registrant 0 (data.email) has an email on file in a group submission — see the
+    // create loop above — so that's the one and only person who can be reached here.
+    sendEmail(membershipPendingValidationEmail({
+      firstName: resolved[0].r.firstName, email: data.email, associationName: assoc.name, formTitle: form.title,
+      branding: resolveDocumentBranding(assoc), otherRegistrants: allNames.slice(1),
+    }), { associationId: assoc.id, membreId: firstMembreId, source: "TRANSACTION" }).catch(() => {})
+
+    notifyMembershipSignup({
+      associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
+      memberNames: allNames, amount: 0, primaryMembreId: firstMembreId, pendingValidation: true,
+    }).catch(() => {})
+
     return NextResponse.json({ pending: true })
   }
 
@@ -860,6 +998,12 @@ async function handleMultiRegistrantCheckout(
         periodStart: tier.fixedPeriodEnd || tier.durationMonths ? now.toISOString() : null,
         periodEnd:   tier.fixedPeriodEnd?.toISOString() ?? (tier.durationMonths ? addMonths(now, tier.durationMonths).toISOString() : null),
       })),
+      // [{ v: varianteId, q: quantity }] — mêmes clés minimales que commonMeta.products du
+      // parcours à un seul adhérent (voir schema.prisma, MembershipCheckoutDraft.products),
+      // toujours attribué à registrants[0] une fois consommé (voir consumeMembershipCheckoutDraft).
+      products: resolvedProducts.length
+        ? resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))
+        : undefined,
       totalAmount,
       expiresAt: new Date(now.getTime() + 30 * 60_000),
     },
@@ -891,6 +1035,19 @@ async function handleMultiRegistrantCheckout(
       },
       quantity: 1,
     }))
+  // Toujours attribués à registrants[0] (voir le commentaire sur MembershipCheckoutDraft.products
+  // plus haut) — le nom de la ligne ne mentionne donc personne en particulier, contrairement
+  // aux lignes de tarif ci-dessus.
+  for (const p of resolvedProducts) {
+    lineItems.push({
+      price_data: {
+        currency:     "eur" as const,
+        unit_amount:  p.unitPriceCents,
+        product_data: { name: `${p.label} — ${assoc.name}` },
+      },
+      quantity: p.quantity,
+    })
+  }
 
   const successUrl = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=success`
   const cancelUrl  = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=cancelled`

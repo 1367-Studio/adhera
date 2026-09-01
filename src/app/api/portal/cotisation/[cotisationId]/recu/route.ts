@@ -12,7 +12,7 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { cotisationId }) =>
     where: { id: cotisationId, membreId: ctx.membreId!, associationId: ctx.associationId, paidAt: { not: null } },
   })
   if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable ou non payée" }, { status: 404 })
-  if (!cotisation.taxReceiptEligible)
+  if (cotisation.receiptMode === "NONE")
     return NextResponse.json({ error: "Cette cotisation n'est pas éligible au reçu fiscal" }, { status: 403 })
 
   const membre = await prisma.membre.findUnique({

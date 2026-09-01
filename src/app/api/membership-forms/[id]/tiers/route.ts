@@ -19,7 +19,8 @@ const tierSchema = z.object({
   // Alternative à durationMonths — une date de fin absolue, identique pour tout signataire
   // peu importe quand il paie (ex. saison sportive). ISO string côté payload.
   fixedPeriodEnd: z.string().datetime().nullable().optional(),
-  taxReceiptEligible: z.boolean().optional().default(false),
+  receiptMode:      z.enum(["NONE", "FULL", "PARTIAL"]).optional().default("NONE"),
+  deductibleAmount: z.number().positive().max(100000).nullable().optional(),
   // "Payer en plusieurs fois" — voir schema.prisma. installmentsCount borné à [2, 12] : 1 fois
   // n'est pas "plusieurs", et au-delà de 12 mensualités automatiques Stripe le découpage
   // devient peu réaliste pour une cotisation associative.
@@ -51,9 +52,17 @@ const tierSchema = z.object({
   // A RECURRING tier renews indefinitely — an absolute end date doesn't fit the Stripe
   // Subscription model it bills through (see checkout/route.ts).
   message: "Une date de fin fixe n'est pas disponible pour un tarif récurrent", path: ["fixedPeriodEnd"],
-}).refine(d => !d.free || !d.taxReceiptEligible, {
+}).refine(d => !d.free || d.receiptMode === "NONE", {
   // No money changes hands on a free tier — nothing to issue a tax-deductible receipt for.
-  message: "Un tarif gratuit ne peut pas être éligible au reçu fiscal", path: ["taxReceiptEligible"],
+  message: "Un tarif gratuit ne peut pas être éligible au reçu fiscal", path: ["receiptMode"],
+}).refine(d => d.receiptMode !== "PARTIAL" || !d.freeAmount, {
+  // Le montant déductible est une valeur fixe attachée au tarif — n'a pas de sens pour un
+  // tarif à montant libre où l'adhérent choisit lui-même le montant versé.
+  message: "Le reçu partiel n'est pas disponible pour un montant libre", path: ["receiptMode"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.deductibleAmount != null, {
+  message: "Le montant déductible est requis pour un reçu partiel", path: ["deductibleAmount"],
+}).refine(d => d.receiptMode !== "PARTIAL" || d.amount == null || d.deductibleAmount == null || d.deductibleAmount <= d.amount, {
+  message: "Le montant déductible ne peut pas dépasser le montant du tarif", path: ["deductibleAmount"],
 }).refine(d => !d.installmentsAllowed || (d.kind === "ONE_OFF" && !d.free && !d.freeAmount), {
   // RECURRING is already spread over time by nature; free has nothing to split; freeAmount
   // has no fixed total to divide into N equal installments up front.
@@ -172,6 +181,9 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       // trust that alone — normalize server-side too so a stale/tampered payload can't leave
       // e.g. a recurring ADDON or a membre-type-tagging DONATION in the database.
       const isMembership = t.itemType === "MEMBERSHIP"
+      // Une donation reste éligible au reçu fiscal, comme sur AssoConnect ("Reçus fiscaux" sur
+      // sa formule de type Dons) — seule une option (ADDON) n'a jamais de sens fiscalement.
+      const receiptEligible = t.itemType !== "ADDON"
       const data = {
         order:        t.order,
         itemType:     t.itemType,
@@ -181,7 +193,8 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amount:       t.free || (t.itemType !== "DONATION" && t.freeAmount) ? null : t.amount,
         durationMonths: isMembership ? (t.durationMonths || null) : null,
         fixedPeriodEnd: isMembership && t.fixedPeriodEnd ? new Date(t.fixedPeriodEnd) : null,
-        taxReceiptEligible: isMembership && !t.free ? !!t.taxReceiptEligible : false,
+        receiptMode:      receiptEligible && !t.free ? t.receiptMode : "NONE" as const,
+        deductibleAmount: isMembership && !t.free && t.receiptMode === "PARTIAL" ? t.deductibleAmount : null,
         installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount ? !!t.installmentsAllowed : false,
         installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && t.installmentsAllowed ? t.installmentsCount : null,
         label:        t.label,

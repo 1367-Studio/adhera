@@ -67,7 +67,7 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
   const [assoc, form] = await Promise.all([
     prisma.association.findUnique({
       where:  { id: meta.associationId },
-      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+      select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true },
     }),
     meta.membershipFormId
       ? prisma.membershipForm.findUnique({ where: { id: meta.membershipFormId }, select: { title: true, adminNotificationEmail: true } })
@@ -122,7 +122,8 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
           tierId:           meta.tierId || null,
           periodStart:      meta.periodStart ? new Date(meta.periodStart) : null,
           periodEnd:        meta.periodEnd ? new Date(meta.periodEnd) : null,
-          taxReceiptEligible: meta.taxReceiptEligible === "1",
+          receiptMode:      meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
+          deductibleAmount: meta.deductibleAmount ? Number(meta.deductibleAmount) : null,
           installments: {
             // Due dates mirror when Stripe will actually invoice each cycle (t=0, 1mo, ...,
             // (installmentsCount-1)mo) — cosmetic/display only (see InstallmentSchedule in
@@ -210,6 +211,9 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       branding:        resolveDocumentBranding(assoc),
+      canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+      receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
+      deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
 
     fireEventRule({

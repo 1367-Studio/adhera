@@ -2552,7 +2552,13 @@
           "durationConflictError": "Choose either a duration in months or a fixed end date, not both",
           "fixedPeriodEndField": "Fixed end date",
           "fixedPeriodEndHint": "Alternative to a duration in months — the same end date for everyone (e.g. a sports season).",
-          "taxReceiptEligibleField": "Eligible for tax receipt",
+          "receiptModeField": "Tax receipt",
+          "receiptNone": "No",
+          "receiptFull": "Yes, fully",
+          "receiptPartial": "Yes, partially",
+          "deductibleAmountField": "Deductible amount (€)",
+          "deductibleAmountRequiredError": "A deductible amount is required for a partial receipt",
+          "deductibleAmountExceedsError": "The deductible amount cannot exceed the tier amount",
           "installmentsAllowedField": "Allow payment in installments",
           "installmentsCountField": "Number of installments",
           "membreTypeNone": "None",
@@ -2620,9 +2626,27 @@
           "visibilityLink": "Link only",
           "visibilitySite": "On the website",
           "visibilityPrivate": "Private",
+          "schedulePeriodLabel": "Limit the registration period",
+          "schedulePeriodHint": "Without a set period, the form stays open for as long as it is published.",
           "opensAtLabel": "Opens",
           "closesAtLabel": "Closes",
-          "datesOrderError": "The closing date must be after the opening date."
+          "datesOrderError": "The closing date must be after the opening date.",
+          "siteSectionLabel": "Site section",
+          "siteSectionPlaceholder": "Choose…",
+          "siteSectionCreateOption": "+ Create new section",
+          "siteSectionCreateError": "Error creating the site section.",
+          "siteSectionRequiredError": "Choose which site section this form should be published on."
+        },
+        "products": {
+          "title": "Products",
+          "hint": "Boutique products offered for purchase at the end of the signup. Stock is shared with the Boutique module.",
+          "noProducts": "No active product in the Boutique. Enable the Boutique module and create at least one product to offer here.",
+          "stockCount": "{count, plural, one {# in stock} other {# in stock}}",
+          "outOfStock": "Out of stock",
+          "selectedCount": "{count}/{max} products selected",
+          "maxProductsError": "You can offer at most {max} products",
+          "saved": "Products saved",
+          "saveProducts": "Save products"
         }
       }
     },
@@ -2641,6 +2665,7 @@
       "sharedAccountHint": "The email and password below will be used to log in for the whole group.",
       "donationBadge": "(donation)",
       "totalLabel": "Total due",
+      "partialReceiptNotice": "Only {amount} is tax-deductible for this membership.",
       "belowExtraMinimum": "The minimum amount for \"{label}\" is {amount}.",
       "belowMinimumAmount": "The minimum amount for an online payment is {amount}.",
       "perYear": "/ year",
@@ -2683,7 +2708,12 @@
       "submittedWithPayment": "Your membership is active and your payment has been received.",
       "submittedRequestBody": "Your membership request has been received. The association will contact you soon.",
       "toastCancelled": "Payment cancelled.",
-      "errorNetwork": "Network error. Please try again."
+      "errorNetwork": "Network error. Please try again.",
+      "productsLabel": "Products",
+      "outOfStock": "Out of stock",
+      "decreaseQuantityLabel": "Decrease quantity",
+      "increaseQuantityLabel": "Increase quantity",
+      "productsMultiHint": "Chosen products will be attributed to the account of the person filling out this form."
     }
   },
   "messages": {
@@ -3599,6 +3629,7 @@
       "validUntil": "Valid until {date}",
       "periodExpiredOn": "Expired on {date}",
       "downloadRecuFiscal": "Download the tax receipt",
+      "downloadRecuFiscalPartial": "Download the tax receipt (partial: {amount} deductible)",
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
       "addonPurchasesTitle": "Options and donations purchased",
       "donationFallbackLabel": "Donation",
@@ -4160,7 +4191,7 @@
       "headerBgColor": "Background color",
       "headerBgPlaceholder": "#ffffff (white by default)",
       "loginButton": "\"Sign in\" button",
-      "registerButton": "\"Sign up\" button",
+      "registerButton": "\"Join\" button",
       "footer": "Footer",
       "footerTextLabel": "Text",
       "footerTextPlaceholder": "© {year} My Association",
@@ -4371,6 +4402,7 @@
       "pay": "Pay",
       "noMemberProfile": "No member profile linked to this account.",
       "downloadRecuFiscal": "Download the tax receipt",
+      "downloadRecuFiscalPartial": "Download the tax receipt (partial: {amount} deductible)",
       "toasts": {
         "paymentDone": "Payment successful!",
         "paymentCancelled": "Payment cancelled.",

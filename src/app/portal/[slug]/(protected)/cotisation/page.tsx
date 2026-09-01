@@ -28,7 +28,8 @@ type Cotisation = {
   paidAt:     string | null
   note:       string | null
   declarationNumber: string | null
-  taxReceiptEligible: boolean
+  receiptMode: "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: string | null
   association: { canIssueTaxReceipts: boolean }
   installments: Installment[]
   // Server-computed (src/lib/cotisation-status.ts's nextAmountDue) — the amount that would
@@ -292,7 +293,7 @@ function CotisationPortalPageInner() {
                   <DownloadSimpleIcon className="size-3.5" />
                 </Button>
               )}
-              {thisYear.taxReceiptEligible && thisYear.paidAt && thisYear.association.canIssueTaxReceipts && (
+              {thisYear.receiptMode !== "NONE" && thisYear.paidAt && thisYear.association.canIssueTaxReceipts && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger render={
@@ -300,7 +301,11 @@ function CotisationPortalPageInner() {
                         <ReceiptIcon className="size-3.5" />
                       </Button>
                     } />
-                    <TooltipContent>{t("downloadRecuFiscal")}</TooltipContent>
+                    <TooltipContent>
+                      {thisYear.receiptMode === "PARTIAL" && thisYear.deductibleAmount
+                        ? t("downloadRecuFiscalPartial", { amount: fmtEur(Number(thisYear.deductibleAmount)) })
+                        : t("downloadRecuFiscal")}
+                    </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               )}
@@ -385,7 +390,7 @@ function CotisationPortalPageInner() {
                         <DownloadSimpleIcon className="size-3.5" />
                       </Button>
                     )}
-                    {c.taxReceiptEligible && c.paidAt && c.association.canIssueTaxReceipts && (
+                    {c.receiptMode !== "NONE" && c.paidAt && c.association.canIssueTaxReceipts && (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger render={
@@ -393,7 +398,11 @@ function CotisationPortalPageInner() {
                               <ReceiptIcon className="size-3.5" />
                             </Button>
                           } />
-                          <TooltipContent>{t("downloadRecuFiscal")}</TooltipContent>
+                          <TooltipContent>
+                            {c.receiptMode === "PARTIAL" && c.deductibleAmount
+                              ? t("downloadRecuFiscalPartial", { amount: fmtEur(Number(c.deductibleAmount)) })
+                              : t("downloadRecuFiscal")}
+                          </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     )}

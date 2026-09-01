@@ -38,7 +38,11 @@ export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
     const selectedLabel = options.find((o) => o.value === value)?.label
 
     return (
-      <div className="space-y-1.5">
+      // flex+gap, not space-y: Base UI's Select renders a visually-hidden <input> after the
+      // trigger, and space-y's :not(:last-child) rule would give the trigger phantom bottom
+      // margin (the select then floats above the row baseline). Out-of-flow children don't
+      // create flex items, so gap ignores the hidden input.
+      <div className="flex flex-col gap-1.5">
         <Label
           htmlFor={fieldId}
           className={cn(error && "text-destructive")}

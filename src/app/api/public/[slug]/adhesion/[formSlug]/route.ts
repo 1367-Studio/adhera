@@ -28,6 +28,17 @@ export async function GET(
     include: {
       tiers:        { orderBy: { order: "asc" } },
       customFields: { orderBy: { order: "asc" } },
+      products: {
+        orderBy: { order: "asc" },
+        include: {
+          variante: {
+            select: {
+              id: true, label: true, price: true, stock: true,
+              produit: { select: { id: true, name: true, status: true, imageUrl: true } },
+            },
+          },
+        },
+      },
     },
   })
   if (!form) return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -79,7 +90,26 @@ export async function GET(
       amount: t.amount?.toString() ?? null, durationMonths: t.durationMonths,
       fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
       installmentsAllowed: t.installmentsAllowed, installmentsCount: t.installmentsCount,
+      receiptMode: t.receiptMode, deductibleAmount: t.deductibleAmount?.toString() ?? null,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
+    // Un produit archivé après avoir été lié au formulaire n'est pas retiré de
+    // MembershipFormProduct (voir products/route.ts) — filtré ici plutôt, à la lecture,
+    // même logique que le statut des tiers. Si le module Boutique a été désactivé depuis
+    // (l'admin ne peut plus le reconfigurer, voir products/route.ts), les offres existantes
+    // ne doivent pas non plus rester achetables publiquement — sinon désactiver le module
+    // n'aurait aucun effet sur ce formulaire.
+    products: !modules.boutique ? [] : form.products
+      .filter(p => p.variante.produit.status === "ACTIVE")
+      .map(p => ({
+        id:              p.id,
+        varianteId:      p.variante.id,
+        variantLabel:    p.variante.label,
+        price:           p.variante.price,
+        stock:           p.variante.stock,
+        productId:       p.variante.produit.id,
+        productName:     p.variante.produit.name,
+        productImageUrl: p.variante.produit.imageUrl,
+      })),
   })
 }

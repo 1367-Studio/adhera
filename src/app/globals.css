@@ -481,14 +481,18 @@ header.sticky {
    .dashboard-canvas : seule l'image change, tout le reste (cadrage, `fixed`, voile,
    repli reduced-motion) est hérité de la règle ci-dessus.
 
-   Même illustration, mais floutée beaucoup plus fort (sigma 96 contre 16) : le
-   dashboard est un outil qu'on regarde des heures, où le filigrane doit rester
-   discret mais net ; une page publique est une vitrine vue une fois, où l'image sert
-   d'ambiance et ne doit surtout pas concurrencer le formulaire. À sigma 96 le
-   monument n'est plus identifiable, il ne reste que des aplats de couleur.
+   Même illustration, mais floutée beaucoup plus fort (sigma 96 contre 16) et recadrée
+   sur le pavage, sous la ligne du ciel : le dashboard est un outil qu'on regarde des
+   heures, où le filigrane doit rester discret mais net ; une page publique est une
+   vitrine vue une fois, où l'image sert d'ambiance et ne doit surtout pas concurrencer
+   le formulaire. À sigma 96 il ne reste que des aplats de couleur — d'où le recadrage :
+   plein cadre, le ciel devenait un gros bloc bleu saturé en haut de page ; la zone
+   basse ne donne que des beiges chauds.
 
-   Régénérer avec la même recette que l'asset du dashboard :
-     sharp("public/logo-dashboard.png").resize({width:1400}).blur(96).webp({quality:82}) */
+   Régénérer (crop = zone pavage/marches, sans ciel ni arche) :
+     sharp("public/logo-dashboard.png")
+       .extract({left:450, top:685, width:964, height:294})
+       .resize({width:1400}).blur(96).webp({quality:82}) */
 .public-canvas {
   background-image:
     linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),

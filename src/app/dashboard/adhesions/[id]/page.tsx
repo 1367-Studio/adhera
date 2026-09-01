@@ -1,6 +1,7 @@
 "use client"
 
 import { MembershipFormFieldsEditor, type MembershipFormFieldsEditorHandle } from "@/components/adhesions/membership-form-fields-editor"
+import { MembershipProductsEditor, type MembershipProductsEditorHandle } from "@/components/adhesions/membership-products-editor"
 import { MembershipTiersEditor, type MembershipTiersEditorHandle } from "@/components/adhesions/membership-tiers-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
@@ -20,8 +21,11 @@ import { PageHeader } from "@/components/ui/page-header"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { SECTION_LABELS } from "@/types/site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { BASE_PATH } from "@/lib/env"
+import { cn } from "@/lib/utils"
 import { useCurrentUser } from "@/lib/user-context"
 import {
   ArchiveIcon,
@@ -77,16 +81,20 @@ type MembershipForm = {
   confirmationMessage: string | null
   adminNotificationEmail: string | null
 
-  visibility: Visibility
-  opensAt:    string | null
-  closesAt:   string | null
+  visibility:    Visibility
+  siteSectionId: string | null
+  opensAt:       string | null
+  closesAt:      string | null
 }
 
 type SaveableFields = Partial<Omit<MembershipForm, "id" | "slug" | "status" | "_count">>
 
 // One entry per accordion step below, in display order. Each step has its own Save button,
 // so unsaved work is tracked per step — see stepDirty / stepIssue in the component.
-const STEP_KEYS = ["info", "tiers", "fields", "payment", "publish"] as const
+const STEP_KEYS = ["info", "tiers", "fields", "products", "payment", "publish"] as const
+// Sentinel option value in the site-section picker — selecting it creates a new "membership"
+// section instead of picking an existing one. Never a real cuid/uuid, so it can't collide.
+const CREATE_SITE_SECTION_VALUE = "__create__"
 type StepKey = typeof STEP_KEYS[number]
 
 // datetime-local inputs have no timezone — the value IS wall-clock local time, so this
@@ -110,6 +118,10 @@ export default function MembershipFormDetailPage() {
   const t       = useTranslations("membershipForms")
   const tSteps  = useTranslations("membershipForms.detail.steps")
   const tCommon = useTranslations("common")
+  // Same key the site editor itself uses as the default title for a newly added "membership"
+  // section — reused here so a section created from this picker looks identical to one
+  // created the old way, before "membership" was removed from the editor's add-section menu.
+  const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
   const { data: membreTypes = [] } = useMembreTypes()
 
@@ -119,14 +131,16 @@ export default function MembershipFormDetailPage() {
   // up rather than the page trying to read it out of them.
   const [tiersDirty, setTiersDirty]        = useState(false)
   const [fieldsDirty, setFieldsDirty]      = useState(false)
+  const [productsDirty, setProductsDirty]  = useState(false)
   const [leaveConfirm, setLeaveConfirm]    = useState(false)
   // "Enregistrer et quitter" in flight — keeps the leave dialog open and its buttons inert.
   const [leaveSaving, setLeaveSaving]      = useState(false)
   const [linkCopied, setLinkCopied]        = useState(false)
   // Imperative handles on the two editors that own their own drafts, so saveAll can ask them
   // to save without lifting all of that state up here.
-  const tiersRef  = useRef<MembershipTiersEditorHandle>(null)
-  const fieldsRef = useRef<MembershipFormFieldsEditorHandle>(null)
+  const tiersRef    = useRef<MembershipTiersEditorHandle>(null)
+  const fieldsRef   = useRef<MembershipFormFieldsEditorHandle>(null)
+  const productsRef = useRef<MembershipProductsEditorHandle>(null)
   // Controlled so a refused publish can expand the steps it is complaining about.
   const [openSteps, setOpenSteps]          = useState<StepKey[]>([])
   // Set by the first refused publish; from then on every step that would still block
@@ -173,9 +187,13 @@ export default function MembershipFormDetailPage() {
   const [adminNotificationEmail, setAdminNotificationEmail] = useState("")
 
   // Step 5 — Publication
-  const [visibility, setVisibility] = useState<Visibility>("LINK")
-  const [opensAt, setOpensAt]       = useState("")
-  const [closesAt, setClosesAt]     = useState("")
+  const [visibility, setVisibility]       = useState<Visibility>("LINK")
+  const [siteSectionId, setSiteSectionId] = useState<string>("")
+  const [opensAt, setOpensAt]             = useState("")
+  const [closesAt, setClosesAt]           = useState("")
+  // Pure UI state: whether the opening/closing date fields are shown. Off = form stays
+  // open while published (both dates saved as null).
+  const [scheduleEnabled, setScheduleEnabled] = useState(false)
 
   const { data: form, isLoading, isError } = useQuery<MembershipForm>({
     queryKey: ["membership-form", id],
@@ -193,6 +211,32 @@ export default function MembershipFormDetailPage() {
     queryKey: ["membership-form", id, "tiers"],
     queryFn:  () => fetch(`/api/membership-forms/${id}/tiers`).then(r => r.json()),
   })
+
+  // Feeds the Publication step's section picker — same query key/hook the site editor
+  // itself uses (useSiteConfig), so the list always matches what an admin sees under Site
+  // internet, and stays in sync when this page creates a new section below.
+  const { data: siteConfigData } = useSiteConfig()
+  const saveSiteConfig = useSaveSiteConfig()
+  const membershipSiteSections = (siteConfigData?.config?.sections ?? []).filter(s => s.type === "membership")
+  const [creatingSection, setCreatingSection] = useState(false)
+
+  // AssoConnect's own publication step lets an admin create the target page inline instead
+  // of forcing a detour to the site editor first — same idea here: a "membership" section is
+  // now only ever created from this picker (see the site editor's add-section menu, which no
+  // longer offers it), so this is the one and only place a fresh association gets its first one.
+  async function createMembershipSection() {
+    setCreatingSection(true)
+    try {
+      const newSection = { id: crypto.randomUUID(), type: "membership" as const, title: tSiteDefaults("membership"), body: "" }
+      const sections = [...(siteConfigData?.config?.sections ?? []), newSection]
+      await saveSiteConfig.mutateAsync({ sections })
+      setSiteSectionId(newSection.id)
+    } catch {
+      toast.error(tSteps("publish.siteSectionCreateError"))
+    } finally {
+      setCreatingSection(false)
+    }
+  }
 
   useEffect(() => {
     if (!form) return
@@ -219,8 +263,10 @@ export default function MembershipFormDetailPage() {
     setConfirmationMessage(form.confirmationMessage ?? "")
     setAdminNotificationEmail(form.adminNotificationEmail ?? "")
     setVisibility(form.visibility)
+    setSiteSectionId(form.siteSectionId ?? "")
     setOpensAt(toDatetimeLocal(form.opensAt))
     setClosesAt(toDatetimeLocal(form.closesAt))
+    setScheduleEnabled(!!(form.opensAt || form.closesAt))
   }, [form])
 
   const saveMutation = useMutation({
@@ -310,7 +356,16 @@ export default function MembershipFormDetailPage() {
       toast.error(tSteps("publish.datesOrderError"))
       return null
     }
-    return { visibility, opensAt: fromDatetimeLocal(opensAt), closesAt: fromDatetimeLocal(closesAt) }
+    if (visibility === "SITE" && !siteSectionId) {
+      toast.error(tSteps("publish.siteSectionRequiredError"))
+      return null
+    }
+    return {
+      visibility,
+      siteSectionId: visibility === "SITE" ? siteSectionId : null,
+      opensAt:  fromDatetimeLocal(opensAt),
+      closesAt: fromDatetimeLocal(closesAt),
+    }
   }
 
   async function handleSaveInfo() {
@@ -380,13 +435,14 @@ export default function MembershipFormDetailPage() {
     )),
     tiers: tiersDirty,
     fields: fieldsDirty || standardFieldsDirty,
+    products: productsDirty,
     payment: !!form && changed(
       [allowCash, allowCheque, allowTransfer, offlineInstructions, confirmationMessage, adminNotificationEmail],
       [form.allowCash, form.allowCheque, form.allowTransfer, form.offlineInstructions ?? "", form.confirmationMessage ?? "", form.adminNotificationEmail ?? ""],
     ),
     publish: !!form && changed(
-      [visibility, opensAt, closesAt],
-      [form.visibility, toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt)],
+      [visibility, siteSectionId, opensAt, closesAt],
+      [form.visibility, form.siteSectionId ?? "", toDatetimeLocal(form.opensAt), toDatetimeLocal(form.closesAt)],
     ),
   }
 
@@ -457,11 +513,12 @@ export default function MembershipFormDetailPage() {
   }
 
   const stepTitles: Record<StepKey, string> = {
-    info:    tSteps("info.title"),
-    tiers:   tSteps("tiers.title"),
-    fields:  tSteps("fields.title"),
-    payment: tSteps("payment.title"),
-    publish: tSteps("publish.title"),
+    info:     tSteps("info.title"),
+    tiers:    tSteps("tiers.title"),
+    fields:   tSteps("fields.title"),
+    products: tSteps("products.title"),
+    payment:  tSteps("payment.title"),
+    publish:  tSteps("publish.title"),
   }
 
   // Refuses to publish while any step still has unsaved edits (each step has its own Save
@@ -486,8 +543,9 @@ export default function MembershipFormDetailPage() {
   // (each validates and toasts on its own), then one PATCH for the page-level steps. Stops at
   // the first failure and returns false so the caller stays on the page.
   async function saveAll(): Promise<boolean> {
-    if (tiersDirty  && !(await tiersRef.current?.save()))  return false
-    if (fieldsDirty && !(await fieldsRef.current?.save())) return false
+    if (tiersDirty    && !(await tiersRef.current?.save()))    return false
+    if (fieldsDirty   && !(await fieldsRef.current?.save()))   return false
+    if (productsDirty && !(await productsRef.current?.save())) return false
     let payload: SaveableFields = {}
     if (stepDirty.info) {
       const info = await infoPayload()
@@ -522,7 +580,17 @@ export default function MembershipFormDetailPage() {
   // Tint + inline tag on a step that blocked the last publish attempt. A plain background on
   // the item (no border, no badge) keeps the accordion reading as one surface.
   const stepClass = (key: StepKey) =>
-    publishAttempted && stepIssue(key) ? "bg-destructive/10 first:rounded-t-lg last:rounded-b-lg" : undefined
+    cn(
+      "overflow-hidden rounded-lg border bg-card",
+      publishAttempted && stepIssue(key) && "bg-destructive/10",
+    )
+  // Off-white header at full --muted (the /50 tints read as white on bg-card); hover eases
+  // toward the card like the secondary button's own hover:bg-secondary/80. A flagged step
+  // keeps the transparent header so the item's destructive tint and tag stay legible.
+  const stepHeaderClass = (key: StepKey) =>
+    publishAttempted && stepIssue(key)
+      ? undefined
+      : "bg-muted hover:bg-muted/80"
   function stepTrigger(key: StepKey) {
     const issue = publishAttempted ? stepIssue(key) : null
     return (
@@ -559,7 +627,7 @@ export default function MembershipFormDetailPage() {
         action={
           <div className="flex gap-2">
             {form.status !== "PUBLISHED" ? (
-              <Button size="sm" variant="secondary" onClick={handlePublish} loading={publishMutation.isPending}>
+              <Button size="sm" onClick={handlePublish} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
               </Button>
@@ -589,7 +657,7 @@ export default function MembershipFormDetailPage() {
                 {t("detail.archiveButton")}
               </Button>
             )}
-            <Button size="sm" variant="ghost" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
+            <Button size="sm" variant="destructive" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
               <TrashIcon className="mr-1.5 size-4" />
               {t("detail.deleteButton")}
             </Button>
@@ -599,9 +667,10 @@ export default function MembershipFormDetailPage() {
 
       {/* keepMounted: Base UI unmounts a closed panel by default, which threw away whatever
           the Tarifs / Champs editors held in local state the moment you collapsed them. */}
-      <Accordion multiple value={openSteps} onValueChange={v => setOpenSteps(v as StepKey[])} keepMounted>
+      {/* Detached steps: the shared joined-container chrome moves onto each item instead. */}
+      <Accordion multiple value={openSteps} onValueChange={v => setOpenSteps(v as StepKey[])} keepMounted className="space-y-3 rounded-none border-0 bg-transparent divide-y-0">
         <AccordionItem id="step-info" value="info" className={stepClass("info")}>
-          <AccordionTrigger>{stepTrigger("info")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("info")}>{stepTrigger("info")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
               {/* The title used to save itself on blur — which also fired when clicking the
@@ -657,7 +726,7 @@ export default function MembershipFormDetailPage() {
                 onChange={(e) => setRequireCguv(e.target.checked)}
               />
               <div className="space-y-3">
-                <p className="flex items-center gap-1.5 text-sm font-semibold">
+                <p className="flex items-center gap-1.5 text-sm font-semibold text-primary">
                   {tSteps("info.contactSectionTitle")}
                   <Tooltip>
                     <TooltipTrigger
@@ -712,18 +781,18 @@ export default function MembershipFormDetailPage() {
         </AccordionItem>
 
         <AccordionItem id="step-tiers" value="tiers" className={stepClass("tiers")}>
-          <AccordionTrigger>{stepTrigger("tiers")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("tiers")}>{stepTrigger("tiers")}</AccordionTrigger>
           <AccordionPanel>
             <MembershipTiersEditor ref={tiersRef} formId={id} membreTypes={membreTypes} onDirtyChange={setTiersDirty} />
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-fields" value="fields" className={stepClass("fields")}>
-          <AccordionTrigger>{stepTrigger("fields")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("fields")}>{stepTrigger("fields")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-5">
               <div>
-                <p className="text-sm font-medium">{tSteps("fields.standardFieldsHint")}</p>
+                <p className="text-sm font-medium text-primary">{tSteps("fields.standardFieldsHint")}</p>
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <SelectField label={tSteps("fields.addressLabel")} options={requirementOptions} value={fieldAddress} onValueChange={v => setFieldAddress(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.birthDateLabel")} options={requirementOptions} value={fieldBirthDate} onValueChange={v => setFieldBirthDate(v as FieldRequirement)} />
@@ -752,8 +821,15 @@ export default function MembershipFormDetailPage() {
           </AccordionPanel>
         </AccordionItem>
 
+        <AccordionItem id="step-products" value="products" className={stepClass("products")}>
+          <AccordionTrigger className={stepHeaderClass("products")}>{stepTrigger("products")}</AccordionTrigger>
+          <AccordionPanel>
+            <MembershipProductsEditor ref={productsRef} formId={id} onDirtyChange={setProductsDirty} />
+          </AccordionPanel>
+        </AccordionItem>
+
         <AccordionItem id="step-payment" value="payment" className={stepClass("payment")}>
-          <AccordionTrigger>{stepTrigger("payment")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("payment")}>{stepTrigger("payment")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">{tSteps("payment.hint")}</p>
@@ -808,7 +884,7 @@ export default function MembershipFormDetailPage() {
         </AccordionItem>
 
         <AccordionItem id="step-publish" value="publish" className={stepClass("publish")}>
-          <AccordionTrigger>{stepTrigger("publish")}</AccordionTrigger>
+          <AccordionTrigger className={stepHeaderClass("publish")}>{stepTrigger("publish")}</AccordionTrigger>
           <AccordionPanel>
             <div className="space-y-4">
               <SelectField
@@ -821,20 +897,48 @@ export default function MembershipFormDetailPage() {
                 value={visibility}
                 onValueChange={v => setVisibility(v as Visibility)}
               />
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField
-                  label={tSteps("publish.opensAtLabel")}
-                  type="datetime-local"
-                  value={opensAt}
-                  onChange={(e) => setOpensAt(e.target.value)}
+              {visibility === "SITE" && (
+                <SelectField
+                  label={tSteps("publish.siteSectionLabel")}
+                  required
+                  disabled={creatingSection}
+                  placeholder={tSteps("publish.siteSectionPlaceholder")}
+                  options={[
+                    ...membershipSiteSections.map(s => ({ value: s.id, label: s.title || SECTION_LABELS.membership })),
+                    { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
+                  ]}
+                  value={siteSectionId}
+                  onValueChange={v => {
+                    if (v === CREATE_SITE_SECTION_VALUE) createMembershipSection()
+                    else setSiteSectionId(v)
+                  }}
                 />
-                <FormField
-                  label={tSteps("publish.closesAtLabel")}
-                  type="datetime-local"
-                  value={closesAt}
-                  onChange={(e) => setClosesAt(e.target.value)}
-                />
-              </div>
+              )}
+              <CheckboxField
+                label={tSteps("publish.schedulePeriodLabel")}
+                hint={tSteps("publish.schedulePeriodHint")}
+                checked={scheduleEnabled}
+                onChange={(e) => {
+                  setScheduleEnabled(e.target.checked)
+                  if (!e.target.checked) { setOpensAt(""); setClosesAt("") }
+                }}
+              />
+              {scheduleEnabled && (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField
+                    label={tSteps("publish.opensAtLabel")}
+                    type="datetime-local"
+                    value={opensAt}
+                    onChange={(e) => setOpensAt(e.target.value)}
+                  />
+                  <FormField
+                    label={tSteps("publish.closesAtLabel")}
+                    type="datetime-local"
+                    value={closesAt}
+                    onChange={(e) => setClosesAt(e.target.value)}
+                  />
+                </div>
+              )}
               <div className="flex justify-end">
                 <Button
                   size="sm"

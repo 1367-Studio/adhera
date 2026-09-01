@@ -2552,7 +2552,13 @@
           "durationConflictError": "Escolha uma duração em meses ou uma data de fim fixa, não as duas",
           "fixedPeriodEndField": "Data de fim fixa",
           "fixedPeriodEndHint": "Alternativa à duração em meses — mesma data de fim para todos (ex. uma temporada esportiva).",
-          "taxReceiptEligibleField": "Elegível para recibo fiscal",
+          "receiptModeField": "Recibo fiscal",
+          "receiptNone": "Não",
+          "receiptFull": "Sim, integralmente",
+          "receiptPartial": "Sim, parcialmente",
+          "deductibleAmountField": "Valor dedutível (€)",
+          "deductibleAmountRequiredError": "O valor dedutível é obrigatório para um recibo parcial",
+          "deductibleAmountExceedsError": "O valor dedutível não pode ultrapassar o valor da tarifa",
           "installmentsAllowedField": "Permitir pagamento em várias vezes",
           "installmentsCountField": "Número de parcelas",
           "membreTypeNone": "Nenhum",
@@ -2620,9 +2626,27 @@
           "visibilityLink": "Somente por link",
           "visibilitySite": "No site",
           "visibilityPrivate": "Privado",
+          "schedulePeriodLabel": "Limitar o período de inscrição",
+          "schedulePeriodHint": "Sem um período definido, o formulário permanece aberto enquanto estiver publicado.",
           "opensAtLabel": "Abertura",
           "closesAtLabel": "Encerramento",
-          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
+          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura.",
+          "siteSectionLabel": "Seção do site",
+          "siteSectionPlaceholder": "Escolher…",
+          "siteSectionCreateOption": "+ Criar nova seção",
+          "siteSectionCreateError": "Erro ao criar a seção do site.",
+          "siteSectionRequiredError": "Escolha em qual seção do site este formulário será publicado."
+        },
+        "products": {
+          "title": "Produtos",
+          "hint": "Produtos da Loja oferecidos para compra ao final da adesão. O estoque é compartilhado com o módulo Loja.",
+          "noProducts": "Nenhum produto ativo na Loja. Ative o módulo Loja e crie pelo menos um produto para oferecer aqui.",
+          "stockCount": "{count, plural, one {# em estoque} other {# em estoque}}",
+          "outOfStock": "Esgotado",
+          "selectedCount": "{count}/{max} produtos selecionados",
+          "maxProductsError": "Você pode oferecer no máximo {max} produtos",
+          "saved": "Produtos salvos",
+          "saveProducts": "Salvar produtos"
         }
       }
     },
@@ -2641,6 +2665,7 @@
       "sharedAccountHint": "O email e a senha abaixo serão usados para entrar por todo o grupo.",
       "donationBadge": "(doação)",
       "totalLabel": "Total a pagar",
+      "partialReceiptNotice": "Apenas {amount} são dedutíveis do imposto de renda para esta adesão.",
       "belowExtraMinimum": "O valor mínimo para « {label} » é de {amount}.",
       "belowMinimumAmount": "O valor mínimo para pagamento online é de {amount}.",
       "perYear": "/ ano",
@@ -2683,7 +2708,12 @@
       "submittedWithPayment": "Sua adesão está ativa e seu pagamento foi recebido.",
       "submittedRequestBody": "Seu pedido de adesão foi recebido. A associação entrará em contato em breve.",
       "toastCancelled": "Pagamento cancelado.",
-      "errorNetwork": "Erro de rede. Tente novamente."
+      "errorNetwork": "Erro de rede. Tente novamente.",
+      "productsLabel": "Produtos",
+      "outOfStock": "Esgotado",
+      "decreaseQuantityLabel": "Diminuir quantidade",
+      "increaseQuantityLabel": "Aumentar quantidade",
+      "productsMultiHint": "Os produtos escolhidos serão atribuídos à conta da pessoa que preenche este formulário."
     }
   },
   "messages": {
@@ -3599,6 +3629,7 @@
       "validUntil": "Válida até {date}",
       "periodExpiredOn": "Expirou em {date}",
       "downloadRecuFiscal": "Baixar o recibo fiscal",
+      "downloadRecuFiscalPartial": "Baixar o recibo fiscal (parcial: {amount} dedutível)",
       "showingRecentCotisations": "Exibindo as {count} mensalidades mais recentes de {total} no total.",
       "addonPurchasesTitle": "Opções e doações compradas",
       "donationFallbackLabel": "Doação",
@@ -4160,7 +4191,7 @@
       "headerBgColor": "Cor de fundo",
       "headerBgPlaceholder": "#ffffff (branco por padrão)",
       "loginButton": "Botão \"Entrar\"",
-      "registerButton": "Botão \"Cadastrar\"",
+      "registerButton": "Botão \"Aderir\"",
       "footer": "Rodapé",
       "footerTextLabel": "Texto",
       "footerTextPlaceholder": "© {year} Minha Associação",
@@ -4371,6 +4402,7 @@
       "pay": "Pagar",
       "noMemberProfile": "Nenhum perfil de membro associado a esta conta.",
       "downloadRecuFiscal": "Baixar o recibo fiscal",
+      "downloadRecuFiscalPartial": "Baixar o recibo fiscal (parcial: {amount} dedutível)",
       "toasts": {
         "paymentDone": "Pagamento realizado!",
         "paymentCancelled": "Pagamento cancelado.",

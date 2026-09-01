@@ -29,7 +29,13 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
   }
 }
 
-const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "membership", "dons", "contact"]
+// "membership" isn't offered here — a MembershipForm's own Publication step is what binds
+// it to a section now (see the siteSectionId picker in dashboard/adhesions/[id]), so an
+// association only ever gets one by publishing a form to the site, not by adding a generic
+// block from this menu. Existing "membership" sections (created before this change) stay
+// editable/removable in the section list below — only the ability to add a new one from
+// here is gone.
+const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "dons", "contact"]
 
 // Accordion panel
 function Panel({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
@@ -293,7 +299,7 @@ export function SiteControlsPanel({
           </div>
           {(["headerShowMembres", "headerShowRegister"] as const).map((key, i) => {
             const label  = i === 0 ? t("loginButton") : t("registerButton")
-            const active = key === "headerShowMembres" ? (cfg.headerShowMembres ?? true) : (cfg.headerShowRegister ?? false)
+            const active = key === "headerShowMembres" ? (cfg.headerShowMembres ?? true) : (cfg.headerShowRegister ?? true)
             return (
               <div key={key} className="flex items-center justify-between">
                 <Label className="text-xs">{label}</Label>

@@ -29,7 +29,10 @@ const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
     const [showPassword, setShowPassword] = useState(false)
 
     return (
-      <div className="space-y-1.5">
+      // flex+gap, not space-y: the sr-only hint node below is position:absolute but still a
+      // last child, so space-y's :not(:last-child) rule would give the input wrapper phantom
+      // bottom margin (fields with hintTooltip then float above the row baseline).
+      <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between gap-2">
           {/* The trigger is a <button>, so it sits beside the <label> rather than inside it —
               nesting it would make every click on the icon also focus the input. */}

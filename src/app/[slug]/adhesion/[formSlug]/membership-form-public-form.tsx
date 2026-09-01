@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { IdentificationCardIcon, PlusIcon, TrashIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
+import { IdentificationCardIcon, PlusIcon, MinusIcon, TrashIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -34,8 +34,19 @@ type Tier = {
   // ONE_OFF fixed-amount tier (see tiers/route.ts).
   installmentsAllowed: boolean
   installmentsCount: number | null
+  receiptMode: "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: string | null
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
+
+// Produit Boutique proposé en fin de formulaire — voir MembershipFormProduct. price/stock
+// sont lus en direct depuis le BoutiqueVariante au moment du GET, price en centimes
+// (contrairement aux montants de tier/addon, en euros décimaux — converti explicitement
+// partout où il rejoint `amount`).
+type OfferedProduct = {
+  id: string; varianteId: string; variantLabel: string; price: number; stock: number
+  productId: string; productName: string; productImageUrl: string | null
+}
 
 type FormInfo = {
   associationName: string
@@ -64,6 +75,7 @@ type FormInfo = {
   paymentEnabled: boolean
   tiers: Tier[]
   customFields: CustomField[]
+  products: OfferedProduct[]
 }
 
 type PaymentMethod = "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT"
@@ -90,6 +102,7 @@ type RegistrantDraft = {
   sexe:      "" | "HOMME" | "FEMME"
   spokenLanguage: string
   address:   string
+  photoUrl:  string
   answers:   Record<string, string>
 }
 
@@ -126,6 +139,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // checkbox selections, each with its own free-amount input when the tier calls for one.
   const [selectedExtraIds, setSelectedExtraIds] = useState<Set<string>>(new Set())
   const [extraAmounts, setExtraAmounts] = useState<Record<string, number>>({})
+  // Produits Boutique choisis en fin de formulaire — keyed par varianteId, absent/0 = pas
+  // sélectionné. Un simple compteur suffit ici (pas de "montant libre" comme pour les
+  // extras), contrairement à selectedExtraIds/extraAmounts.
+  const [productQuantities, setProductQuantities] = useState<Record<string, number>>({})
   const [firstName, setFirstName]   = useState("")
   const [lastName, setLastName]     = useState("")
   const [email, setEmail]           = useState("")
@@ -155,6 +172,28 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       })
       .catch(() => setForm(null))
   }, [slug, formSlug, isPreview])
+
+  // Re-fetched (not just re-shown) after a rejected submit — a "stock insuffisant" 422 means
+  // the numbers already on screen are stale, and without this the visitor would just retry
+  // with the same now-wrong quantity and get the same error again. Doesn't touch tierId (an
+  // in-progress selection shouldn't be reset) or re-run on mount, unlike the effect above.
+  function refreshProductsStock() {
+    fetch(`/api/public/${slug}/adhesion/${formSlug}${isPreview ? "?preview=1" : ""}`)
+      .then(r => r.ok ? r.json() : null)
+      .then((data: FormInfo | null) => {
+        if (!data) return
+        setForm(data)
+        setProductQuantities(prev => {
+          const next: Record<string, number> = {}
+          for (const p of data.products) {
+            const q = prev[p.varianteId]
+            if (q) next[p.varianteId] = Math.min(q, p.stock)
+          }
+          return next
+        })
+      })
+      .catch(() => {})
+  }
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -206,18 +245,30 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     return rt.free ? 0 : rt.freeAmount ? r.freeAmount : Number(rt.amount ?? 0)
   }
   const extraRegistrantsAmount = extraRegistrants.reduce((sum, r) => sum + registrantAmount(r), 0)
+
+  // Produits Boutique — disponibles aussi en mode multi-inscrit, toujours attribués en entier
+  // au registrant 0 (seule personne du groupe avec un email/login réel — voir
+  // consumeMembershipCheckoutDraft) plutôt que répartis entre les N personnes. Jamais avec un
+  // tarif récurrent ou un paiement échelonné (le stock est décompté une seule fois, au moment
+  // du paiement unique — voir checkout/route.ts). En mode multi, tous les tarifs sont déjà
+  // ONE_OFF (RECURRING y est exclu plus haut), donc seul selectedTier (registrant 0) compte ici.
+  const canBuyProducts = !!selectedTier && selectedTier.kind === "ONE_OFF" && !payInInstallments
+  const offeredProducts = form?.products ?? []
+  // price est en centimes (BoutiqueVariante.price) — converti ici, une seule fois, avant de
+  // rejoindre membershipAmount/extrasAmount qui sont en euros décimaux.
+  const productsAmount = canBuyProducts
+    ? offeredProducts.reduce((sum, p) => sum + (productQuantities[p.varianteId] ?? 0) * p.price, 0) / 100
+    : 0
+  const hasProductsSelected = Object.values(productQuantities).some(q => q > 0)
   const registrantBelowMinimum = extraRegistrants.find(r => {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
-  // A required photo is only ever collected from the person filling out the form (see the
-  // ImageUpload block below) — an extra "Adhérent" block has no upload UI of its own, so
-  // multi-registrant mode can't satisfy a REQUIRED fieldPhoto for anyone past the first.
   const canAddRegistrant = !isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0 && form?.fieldPhoto !== "REQUIRED"
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
     : extraRegistrants.length + 1 < MAX_REGISTRANTS
 
-  const amount = isMulti ? membershipAmount + extraRegistrantsAmount : membershipAmount + extrasAmount
+  const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
   // paid extra/registrant riding along with an otherwise-free membership (there's nothing
   // sensible to "hold for approval" once money changed hands) — mirrors willBeImmediate in
@@ -238,14 +289,26 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // each future automatic charge is for) or invoiced separately, neither of which the visitor
   // has any way to see coming. Simplest to just not offer both at once, same restriction
   // showOfflineChoice already applies for the same underlying reason.
-  const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0
-  const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !payInInstallments
+  // Un produit Boutique n'est décompté du stock que via le webhook Stripe (voir
+  // checkout/route.ts + membership-form-products.ts) — un paiement hors-ligne (espèces,
+  // chèque, virement) ne passe jamais par ce webhook, donc un produit choisi doit forcer le
+  // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
+  const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
+  const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
   const hasAnyPaymentMethod = !selectedTier || !needsPayment
     || (isMulti ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0)))
 
   useEffect(() => {
     if (!canPayInInstallments && payInInstallments) setPayInInstallments(false)
   }, [canPayInInstallments, payInInstallments])
+
+  // Clears any chosen product the moment the section itself would stop rendering (switching
+  // to a RECURRING tier or toggling "plusieurs fois") — otherwise a stale selection could
+  // silently resurrect if the visitor switches back, same convention as addRegistrant()
+  // clearing selectedExtraIds/extraAmounts below.
+  useEffect(() => {
+    if (!canBuyProducts && hasProductsSelected) setProductQuantities({})
+  }, [canBuyProducts, hasProductsSelected])
 
   // Extras hide the offline radio group (see showOfflineChoice) — if a visitor had already
   // picked an offline method and then checks an extra (or adds another adhérent), fall back
@@ -257,13 +320,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
   function addRegistrant() {
     const defaultTier = oneOffMembershipTiers[0]
-    // Addons/donations aren't offered in multi-registrant mode — cleared so a stale selection
-    // from before "Ajouter un autre adhérent" can't silently resurrect if extras are removed.
+    // Addons/donations ne sont pas offerts en mode multi-inscrit (impossible à répartir entre
+    // N personnes) — cleared so a stale selection from before "Ajouter un autre adhérent" can't
+    // silently resurrect if extras are removed. Les produits Boutique restent disponibles en
+    // mode multi (toujours attribués au registrant 0), donc productQuantities n'est pas vidé ici.
     setSelectedExtraIds(new Set())
     setExtraAmounts({})
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
-      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", answers: {},
+      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
     }])
   }
   function removeRegistrant(key: string) {
@@ -285,6 +350,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       (form.fieldMobile    !== "REQUIRED" || r.mobile.trim()) &&
       (form.fieldGender    !== "REQUIRED" || !!r.sexe) &&
       (form.fieldLanguage  !== "REQUIRED" || !!r.spokenLanguage) &&
+      (form.fieldPhoto     !== "REQUIRED" || r.photoUrl) &&
       form.customFields.every(f => !f.required || (r.answers[f.id] ?? "").trim() !== "")
   }
   const canSubmit =
@@ -331,7 +397,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   amount: rt && !rt.free && rt.freeAmount ? r.freeAmount : undefined,
                   firstName: r.firstName.trim(), lastName: r.lastName.trim(),
                   birthDate: r.birthDate.trim() || undefined, phone: r.phone.trim() || undefined, mobile: r.mobile.trim() || undefined,
-                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined, answers: r.answers,
+                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined,
+                  photoUrl: r.photoUrl || undefined, answers: r.answers,
                 }
               }),
             ],
@@ -340,6 +407,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             website,
             conditionsAgreed,
             locale:   loc,
+            // Jamais rattaché à un registrant précis — toujours attribué en entier au
+            // registrant 0 une fois consommé (voir consumeMembershipCheckoutDraft).
+            products: Object.entries(productQuantities)
+              .filter(([, quantity]) => quantity > 0)
+              .map(([varianteId, quantity]) => ({ varianteId, quantity })),
           }
         : {
             tierId,
@@ -348,6 +420,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             payInInstallments: canPayInInstallments && payInInstallments ? true : undefined,
             locale: loc,
             addons: selectedExtras.map(x => ({ tierId: x.id, amount: x.freeAmount ? (extraAmounts[x.id] ?? 0) : undefined })),
+            products: Object.entries(productQuantities)
+              .filter(([, quantity]) => quantity > 0)
+              .map(([varianteId, quantity]) => ({ varianteId, quantity })),
             firstName: firstName.trim(),
             lastName:  lastName.trim(),
             email:     email.trim(),
@@ -372,6 +447,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       const data = await res.json()
       if (!res.ok) {
         toast.error(data.error ?? t("genericError"))
+        // Covers "stock insuffisant" among other re-validated-server-side rejections — the
+        // form's own numbers (product stock, but also tier/addon state) could be stale by
+        // now, so a bare retry would otherwise just repeat the same error.
+        refreshProductsStock()
         return
       }
       if (data.url) { window.location.href = data.url; return }
@@ -511,6 +590,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
                     <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
                   )}
+                  {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
+                    <p className="text-xs text-muted-foreground">
+                      {t("partialReceiptNotice", {
+                        amount: Number(selectedTier.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                      })}
+                    </p>
+                  )}
                   {canPayInInstallments && selectedTier && (
                     <CheckboxField
                       label={t("payInInstallmentsLabel", {
@@ -554,10 +640,29 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                           )}
                         </>
                       )}
+                      {rt?.receiptMode === "PARTIAL" && rt.deductibleAmount && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("partialReceiptNotice", {
+                            amount: Number(rt.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                          })}
+                        </p>
+                      )}
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
                         <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
                       </div>
+                      {form.fieldPhoto !== "HIDDEN" && (
+                        <div className="flex justify-center">
+                          <ImageUpload
+                            value={r.photoUrl}
+                            onChange={v => updateRegistrant(r.key, { photoUrl: v })}
+                            aspectRatio="square"
+                            className="w-32"
+                            compact
+                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                          />
+                        </div>
+                      )}
                       {form.fieldAddress !== "HIDDEN" && (
                         <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
                       )}
@@ -669,41 +774,6 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   </div>
                 )}
 
-                {needsPayment && (
-                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
-                    <span>{t("totalLabel")}</span>
-                    <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
-                  </div>
-                )}
-                {belowMinimum && (
-                  <p className="text-xs text-destructive">
-                    {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                  </p>
-                )}
-
-                {showOfflineChoice && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
-                    <div className="flex flex-wrap gap-3 text-sm">
-                      {form.paymentEnabled && (
-                        <label className="flex items-center gap-1.5">
-                          <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
-                          {t("paymentMethodStripe")}
-                        </label>
-                      )}
-                      {offlineMethods.map(m => (
-                        <label key={m} className="flex items-center gap-1.5">
-                          <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
-                          {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
-                        </label>
-                      ))}
-                    </div>
-                    {paymentMethod !== "STRIPE" && form.offlineInstructions && (
-                      <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
-                    )}
-                  </div>
-                )}
-
                 {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
                 {form.fieldPhoto !== "HIDDEN" && (
                   <div className="flex justify-center">
@@ -804,6 +874,90 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
                 {form.requireCguvSignature && (
                   <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
+                )}
+
+                {canBuyProducts && offeredProducts.length > 0 && (
+                  <div className="space-y-2 border-t pt-4">
+                    <p className="text-sm font-medium">{t("productsLabel")}</p>
+                    {isMulti && <p className="text-xs text-muted-foreground">{t("productsMultiHint")}</p>}
+                    <div className="space-y-2">
+                      {offeredProducts.map(product => {
+                        const quantity = productQuantities[product.varianteId] ?? 0
+                        return (
+                          <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                            <div>
+                              <div>{product.productName} — {product.variantLabel}</div>
+                              <div className="text-xs text-muted-foreground">
+                                {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                              </div>
+                            </div>
+                            {product.stock === 0 ? (
+                              <span className="text-xs text-muted-foreground">{t("outOfStock")}</span>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon-sm"
+                                  disabled={quantity === 0}
+                                  aria-label={t("decreaseQuantityLabel")}
+                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.max(0, quantity - 1) }))}
+                                >
+                                  <MinusIcon className="size-3.5" />
+                                </Button>
+                                <span className="w-4 text-center tabular-nums">{quantity}</span>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon-sm"
+                                  disabled={quantity >= product.stock}
+                                  aria-label={t("increaseQuantityLabel")}
+                                  onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.min(product.stock, quantity + 1) }))}
+                                >
+                                  <PlusIcon className="size-3.5" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {needsPayment && (
+                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
+                    <span>{t("totalLabel")}</span>
+                    <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                  </div>
+                )}
+                {belowMinimum && (
+                  <p className="text-xs text-destructive">
+                    {t("belowMinimumAmount", { amount: MIN_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                  </p>
+                )}
+
+                {showOfflineChoice && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
+                    <div className="flex flex-wrap gap-3 text-sm">
+                      {form.paymentEnabled && (
+                        <label className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
+                          {t("paymentMethodStripe")}
+                        </label>
+                      )}
+                      {offlineMethods.map(m => (
+                        <label key={m} className="flex items-center gap-1.5">
+                          <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
+                          {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
+                        </label>
+                      ))}
+                    </div>
+                    {paymentMethod !== "STRIPE" && form.offlineInstructions && (
+                      <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
+                    )}
+                  </div>
                 )}
 
                 <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>

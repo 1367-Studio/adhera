@@ -45,6 +45,19 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (action === "publish" && form.tiers.length === 0)
     return NextResponse.json({ error: "Ajoutez au moins un tarif avant de publier ce formulaire." }, { status: 422 })
 
+  // A form can be saved with visibility SITE while still DRAFT (the PATCH route's own
+  // same-section conflict check only fires once a form is already PUBLISHED) — so re-check
+  // here at the moment it actually goes live, otherwise two forms could end up published on
+  // the same site section simply by publishing in the "wrong" order.
+  if (action === "publish" && form.visibility === "SITE" && form.siteSectionId) {
+    const conflict = await prisma.membershipForm.findFirst({
+      where:  { associationId: ctx.associationId, id: { not: id }, status: "PUBLISHED", visibility: "SITE", siteSectionId: form.siteSectionId },
+      select: { title: true },
+    })
+    if (conflict)
+      return NextResponse.json({ error: `Cette section est déjà utilisée par le formulaire publié « ${conflict.title} ». Choisissez une autre section ou dépubliez l'autre formulaire.` }, { status: 409 })
+  }
+
   if (action === "duplicate") {
     const t     = await getTranslations("membershipForms")
     const title = `${form.title} ${t("duplicateSuffix")}`

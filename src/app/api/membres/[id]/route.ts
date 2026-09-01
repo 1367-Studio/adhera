@@ -6,6 +6,7 @@ import { membreUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
 import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear } from "@/lib/membre-adherent"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
+import { grantMembrePortalAccess } from "@/lib/membre-access"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -232,6 +233,24 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
     return updated
   })
+
+  // A PENDING member approved through the "validation sur demande" path never got a User
+  // account at signup (that form never collects a password — see checkout/route.ts's
+  // willBeImmediate) — without this, an approved member would have no way to ever log in,
+  // approval notwithstanding. grantMembrePortalAccess sends the invitation email itself
+  // (temp password + login link), so this is also the member's "your membership is
+  // confirmed" notice.
+  if (isApproval && !membre.userId && membre.email) {
+    const association = await prisma.association.findUnique({
+      where:  { id: associationId },
+      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    })
+    if (association) {
+      await grantMembrePortalAccess({ membre, associationId, actorId: userId, association }).catch(err => {
+        console.error(`[membres/approve] failed to grant portal access to ${membre.id} after approval:`, err)
+      })
+    }
+  }
 
   const changes = computeMemberDiff(
     existing as unknown as Record<string, unknown>,
