@@ -1454,10 +1454,14 @@
       "list": {
         "searchPlaceholder": "Search…",
         "addGuest": "Add a guest",
+        "addGuestTooltip": "Add someone who isn't a member of the association",
+        "addMember": "Add a member",
+        "addMemberTooltip": "Search for an existing member to add to this event",
         "noResults": "No results",
-        "noActiveMembers": "No active members",
+        "noParticipants": "No participants yet",
         "guestBadge": "Guest",
         "paidBadge": "Paid",
+        "freeBadge": "Free",
         "cancelPaymentTooltip": "Cancel this cash payment",
         "infoTooltip": "View registration details",
         "infoEmail": "Email",
@@ -1465,6 +1469,7 @@
         "infoAddress": "Address",
         "reservedBadge": "Reserved",
         "markPaid": "Mark as paid",
+        "markFreeTooltip": "Mark free (one-off exception, doesn't create a public tarif)",
         "editTitle": "Edit",
         "removeTitle": "Remove"
       },
@@ -1473,6 +1478,13 @@
         "optional": "(optional)",
         "emailHint": "Without an email, this person won't be able to receive the invitation to leave a review after the event.",
         "submit": "Add guest"
+      },
+      "addMemberModal": {
+        "title": "Add a member",
+        "searchPlaceholder": "Search for a member…",
+        "typeToSearch": "Type at least 2 letters to search",
+        "noResults": "No member found",
+        "allAdded": "Every active member is already on the list"
       },
       "tierPickerModal": {
         "title": "Choose a ticket type",
@@ -1499,8 +1511,10 @@
       },
       "toasts": {
         "markedPaid": "{name} marked as paid",
+        "markedFree": "{name} marked as free",
         "paymentCancelled": "Payment for {name} cancelled",
         "guestAdded": "{name} added",
+        "memberAdded": "{name} added to the list",
         "guestUpdated": "Guest updated",
         "guestRemoved": "{name} removed from the list",
         "updateError": "Error updating",
@@ -4067,6 +4081,7 @@
         "participationPublicCancelled": "Public registration cancelled",
         "ticketCheckoutStarted": "Payment started",
         "ticketPaid": "Ticket paid",
+        "ticketMarkedFree": "Ticket marked free",
         "ticketPaymentCancelled": "Payment cancelled",
         "ticketRefunded": "Ticket refunded",
         "evenementQrGenerated": "Check-in QR generated",

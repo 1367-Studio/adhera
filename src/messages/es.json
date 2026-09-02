@@ -1454,10 +1454,14 @@
       "list": {
         "searchPlaceholder": "Buscar…",
         "addGuest": "Añadir un invitado",
+        "addGuestTooltip": "Añadir a alguien que no es miembro de la asociación",
+        "addMember": "Añadir un miembro",
+        "addMemberTooltip": "Buscar un miembro existente para añadirlo a este evento",
         "noResults": "Sin resultados",
-        "noActiveMembers": "Ningún miembro activo",
+        "noParticipants": "Todavía no hay participantes",
         "guestBadge": "Invitado",
         "paidBadge": "Pagado",
+        "freeBadge": "Gratis",
         "cancelPaymentTooltip": "Cancelar este pago en efectivo",
         "infoTooltip": "Ver información de la inscripción",
         "infoEmail": "Correo electrónico",
@@ -1465,6 +1469,7 @@
         "infoAddress": "Dirección",
         "reservedBadge": "Reservado",
         "markPaid": "Marcar como pagado",
+        "markFreeTooltip": "Marcar gratis (excepción puntual, sin crear un tarif público)",
         "editTitle": "Editar",
         "removeTitle": "Quitar"
       },
@@ -1473,6 +1478,13 @@
         "optional": "(opcional)",
         "emailHint": "Sin un correo electrónico, esta persona no podrá recibir la invitación para dejar una opinión después del evento.",
         "submit": "Añadir invitado"
+      },
+      "addMemberModal": {
+        "title": "Añadir un miembro",
+        "searchPlaceholder": "Buscar un miembro…",
+        "typeToSearch": "Escriba al menos 2 letras para buscar",
+        "noResults": "Ningún miembro encontrado",
+        "allAdded": "Todos los miembros activos ya están en la lista"
       },
       "tierPickerModal": {
         "title": "Elegir un tarifa",
@@ -1499,8 +1511,10 @@
       },
       "toasts": {
         "markedPaid": "{name} marcado como pagado",
+        "markedFree": "{name} marcado como gratis",
         "paymentCancelled": "Pago de {name} cancelado",
         "guestAdded": "{name} añadido",
+        "memberAdded": "{name} añadido a la lista",
         "guestUpdated": "Invitado actualizado",
         "guestRemoved": "{name} eliminado de la lista",
         "updateError": "Error al actualizar",
@@ -4067,6 +4081,7 @@
         "participationPublicCancelled": "Inscripción pública anulada",
         "ticketCheckoutStarted": "Pago iniciado",
         "ticketPaid": "Entrada pagada",
+        "ticketMarkedFree": "Entrada marcada como gratis",
         "ticketPaymentCancelled": "Pago cancelado",
         "ticketRefunded": "Entrada reembolsada",
         "evenementQrGenerated": "QR de acceso generado",

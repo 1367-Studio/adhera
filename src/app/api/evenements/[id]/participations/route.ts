@@ -5,6 +5,10 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Narrower than MANAGERS on purpose — waiving a ticket's price is a judgment call an
+// association may not want its Trésorier/Secrétaire making unilaterally, unlike simply
+// recording a payment that already happened.
+const FREE_MANAGERS = ["ADMIN", "PRESIDENT"]
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenementId }) => {
   const { associationId } = ctx
@@ -16,64 +20,38 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   const ticketTypeLabels = new Map(evenement.ticketTypes.map(tt => [tt.id, tt.label]))
 
-  // Active members are offered as one-click walk-in targets even without a prior RSVP.
-  // Every other Participation row (a member's named companions, a non-ACTIF member's
-  // own ticket, or a guest added directly at the door) is merged in on top so nobody
-  // with a real ticket is ever invisible from the check-in list.
-  const [activeMembres, participations] = await Promise.all([
-    prisma.membre.findMany({
-      where:   { associationId, deletedAt: null, status: "ACTIF" },
-      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-      select:  { id: true, firstName: true, lastName: true },
-    }),
-    prisma.participation.findMany({
-      where:  { evenementId },
-      select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, stripeSessionId: true, ticketTypeId: true },
-    }),
-  ])
+  // Only people with a real link to this event — a ticket, an RSVP, a companion, or a
+  // guest added at the door. Used to list every active member here regardless of any of
+  // that, so an admin could check someone in without adding them first — but that made
+  // every event look like the whole membership roster was "in" it, especially once bulk
+  // imports (e.g. AssoConnect) swelled the active member count. Finding and adding a
+  // member now lives in the "Ajouter un membre" search instead (see the presences page),
+  // which still creates a Participation lazily via POST below — presence itself is a
+  // separate, deliberate click, same as any other row.
+  const participations = await prisma.participation.findMany({
+    where:  { evenementId },
+    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true },
+  })
 
-  const byMembre        = new Map(participations.filter(p => p.membreId).map(p => [p.membreId as string, p]))
-  const activeMembreIds = new Set(activeMembres.map(m => m.id))
-
-  const rows = [
-    ...activeMembres.map(m => {
-      const p = byMembre.get(m.id)
-      return {
-        participationId: p?.id ?? null,
-        membreId:        m.id,
-        firstName:       m.firstName,
-        lastName:        m.lastName,
-        email:           p?.email ?? null,
-        phone:           p?.phone ?? null,
-        address:         p?.address ?? null,
-        answers:         p?.answers ?? null,
-        present:         p?.present ?? false,
-        rsvp:            p?.rsvp ?? null,
-        ticketPaidAt:    p?.ticketPaidAt ?? null,
-        stripeSessionId: p?.stripeSessionId ?? null,
-        ticketTypeLabel: p?.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
-        isGuest:         false,
-      }
-    }),
-    ...participations
-      .filter(p => !p.membreId || !activeMembreIds.has(p.membreId))
-      .map(p => ({
-        participationId: p.id,
-        membreId:        p.membreId,
-        firstName:       p.firstName,
-        lastName:        p.lastName,
-        email:           p.email,
-        phone:           p.phone,
-        address:         p.address,
-        answers:         p.answers,
-        present:         p.present,
-        rsvp:            p.rsvp,
-        ticketPaidAt:    p.ticketPaidAt,
-        stripeSessionId: p.stripeSessionId,
-        ticketTypeLabel: p.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
-        isGuest:         p.membreId == null,
-      })),
-  ].sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
+  const rows = participations
+    .map(p => ({
+      participationId: p.id,
+      membreId:        p.membreId,
+      firstName:       p.firstName,
+      lastName:        p.lastName,
+      email:           p.email,
+      phone:           p.phone,
+      address:         p.address,
+      answers:         p.answers,
+      present:         p.present,
+      rsvp:            p.rsvp,
+      ticketPaidAt:    p.ticketPaidAt,
+      amount:          p.amount,
+      stripeSessionId: p.stripeSessionId,
+      ticketTypeLabel: p.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
+      isGuest:         p.membreId == null,
+    }))
+    .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
 
   return NextResponse.json(rows)
 })
@@ -84,7 +62,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (!MANAGERS.includes(role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const { participationId, membreId, ticketTypeId } = await req.json() as { participationId?: string; membreId?: string; ticketTypeId?: string }
+  const { participationId, membreId, ticketTypeId, free } = await req.json() as { participationId?: string; membreId?: string; ticketTypeId?: string; free?: boolean }
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
@@ -115,7 +93,37 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (participation.ticketPaidAt)
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
-    const paidAt = new Date()
+  const paidAt = new Date()
+
+  // Ad-hoc exemption (VIP, staff, speaker…) — an admin override distinct from a €0 tarif:
+  // a free MembershipTier-style entry would be publicly selectable by anyone registering,
+  // while this only ever applies to the one row it's clicked on. No amount, no tier, no
+  // Income — there's no real payment to reconcile, unlike every other branch below.
+  if (free) {
+    if (!FREE_MANAGERS.includes(role))
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+
+    // Clears any tier the registration had already picked (public form, portal, or a
+    // previous manual assignment) — otherwise the row would show both a specific paid
+    // tarif's label and the "Gratuit" badge at once, implying a price that was never
+    // actually charged.
+    const updated = await prisma.participation.update({
+      where: { id: participation.id },
+      data:  { ticketPaidAt: paidAt, amount: 0, ticketTypeId: null },
+    })
+
+    await writeActivityLog({
+      associationId,
+      actorId:  userId,
+      action:   "TICKET_MARKED_FREE",
+      entity:   "Participation",
+      entityId: participation.id,
+      label:    evenement.title,
+      metadata: { memberName: `${participation.firstName} ${participation.lastName}` },
+    })
+
+    return NextResponse.json(updated)
+  }
 
   // Which tier to charge: an explicit choice from the request wins (the "choose a tier"
   // modal in the presences UI, for a walk-in that was never given one); otherwise fall back
@@ -186,6 +194,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   const { participationId, membreId, present } = await req.json() as { participationId?: string; membreId?: string; present: boolean }
 
   let participation
+  let justCreated = false
   if (participationId) {
     participation = await prisma.participation.findFirst({ where: { id: participationId, evenementId } })
     if (!participation) return NextResponse.json({ error: "Participation introuvable" }, { status: 404 })
@@ -197,6 +206,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
       participation = await prisma.participation.create({
         data: { membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
       })
+      justCreated = true
     }
   } else {
     return NextResponse.json({ error: "participationId ou membreId requis" }, { status: 422 })
@@ -217,6 +227,22 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
     where: { id: participation.id },
     data:  { present },
   })
+
+  // Logged even when present stays false (the "Ajouter un membre" search on the presences
+  // page never auto-checks someone in — see that page's handleAddMember) — otherwise
+  // adding a member here left no trace at all, unlike the guest-add endpoint's own
+  // PARTICIPANT_ADDED entry.
+  if (justCreated) {
+    await writeActivityLog({
+      associationId,
+      actorId:  userId,
+      action:   "PARTICIPANT_ADDED",
+      entity:   "Participation",
+      entityId: participation.id,
+      label:    evenement.title,
+      metadata: { memberName: `${participation.firstName} ${participation.lastName}` },
+    })
+  }
 
   if (wasPresent !== present) {
     await writeActivityLog({

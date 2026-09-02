@@ -182,6 +182,7 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     PARTICIPATION_PUBLIC_CANCELLED: { label: t("membres.activiteView.actions.participationPublicCancelled"), color: DEL   },
     TICKET_CHECKOUT_STARTED:  { label: t("membres.activiteView.actions.ticketCheckoutStarted"),     color: VIO_L  },
     TICKET_PAID:              { label: t("membres.activiteView.actions.ticketPaid"),         color: EME    },
+    TICKET_MARKED_FREE:       { label: t("membres.activiteView.actions.ticketMarkedFree"),   color: SLA_L  },
     TICKET_PAYMENT_CANCELLED: { label: t("membres.activiteView.actions.ticketPaymentCancelled"),     color: DEL    },
     TICKET_REFUNDED:          { label: t("membres.activiteView.actions.ticketRefunded"),          color: DEL    },
     EVENEMENT_QR_GENERATED:   { label: t("membres.activiteView.actions.evenementQrGenerated"),  color: VIO    },

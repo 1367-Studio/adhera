@@ -1454,10 +1454,14 @@
       "list": {
         "searchPlaceholder": "Rechercher…",
         "addGuest": "Ajouter un invité",
+        "addGuestTooltip": "Ajouter quelqu'un qui n'est pas membre de l'association",
+        "addMember": "Ajouter un membre",
+        "addMemberTooltip": "Rechercher un membre existant pour l'ajouter à cet événement",
         "noResults": "Aucun résultat",
-        "noActiveMembers": "Aucun membre actif",
+        "noParticipants": "Aucun participant pour l'instant",
         "guestBadge": "Invité",
         "paidBadge": "Payé",
+        "freeBadge": "Gratuit",
         "cancelPaymentTooltip": "Annuler ce paiement en espèces",
         "infoTooltip": "Voir les informations d'inscription",
         "infoEmail": "E-mail",
@@ -1465,6 +1469,7 @@
         "infoAddress": "Adresse",
         "reservedBadge": "Réservé",
         "markPaid": "Marquer payé",
+        "markFreeTooltip": "Marquer gratuit (exception ponctuelle, sans créer de tarif public)",
         "editTitle": "Modifier",
         "removeTitle": "Retirer"
       },
@@ -1473,6 +1478,13 @@
         "optional": "(optionnel)",
         "emailHint": "Sans e-mail, cette personne ne pourra pas recevoir l'invitation à laisser un avis après l'événement.",
         "submit": "Ajouter l'invité·e"
+      },
+      "addMemberModal": {
+        "title": "Ajouter un membre",
+        "searchPlaceholder": "Rechercher un membre…",
+        "typeToSearch": "Tapez au moins 2 lettres pour rechercher",
+        "noResults": "Aucun membre trouvé",
+        "allAdded": "Tous les membres actifs sont déjà dans la liste"
       },
       "tierPickerModal": {
         "title": "Choisir un tarif",
@@ -1499,8 +1511,10 @@
       },
       "toasts": {
         "markedPaid": "{name} marqué comme payé",
+        "markedFree": "{name} marqué comme gratuit",
         "paymentCancelled": "Paiement de {name} annulé",
         "guestAdded": "{name} ajouté·e",
+        "memberAdded": "{name} ajouté·e à la liste",
         "guestUpdated": "Invité·e mis·e à jour",
         "guestRemoved": "{name} retiré·e de la liste",
         "updateError": "Erreur lors de la mise à jour",
@@ -4067,6 +4081,7 @@
         "participationPublicCancelled": "Inscription publique annulée",
         "ticketCheckoutStarted": "Paiement initié",
         "ticketPaid": "Ticket payé",
+        "ticketMarkedFree": "Ticket marqué gratuit",
         "ticketPaymentCancelled": "Paiement annulé",
         "ticketRefunded": "Ticket remboursé",
         "evenementQrGenerated": "QR check-in généré",
