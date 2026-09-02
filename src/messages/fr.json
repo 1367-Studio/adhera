@@ -1243,6 +1243,9 @@
       "capacity": "Capacité",
       "capacityHint": "(vide = illimitée)",
       "capacityUnit": "{count, plural, one {# place} other {# places}}",
+      "adminNotificationEmail": "Email de notification",
+      "adminNotificationEmailPlaceholder": "vous@association.fr",
+      "adminNotificationEmailHint": "Optionnel — recevez un email à chaque inscription à cet événement. Les gestionnaires reçoivent de toute façon une notification dans l'application.",
       "description": "Description",
       "descriptionPlaceholder": "Détails de l'événement…",
       "toasts": {
@@ -2599,10 +2602,11 @@
         },
         "tiers": {
           "title": "Tarifs",
-          "hint": "Tarifs proposés pour ce formulaire d'adhésion.",
+          "hint": "Tarifs proposés pour ce formulaire d'adhésion. Glissez-déposez pour définir l'ordre d'affichage sur le formulaire public.",
           "noTiers": "Aucun tarif",
           "addTier": "Ajouter un tarif",
           "removeTier": "Supprimer le tarif",
+          "reorderTier": "Glisser pour réorganiser",
           "labelField": "Libellé",
           "labelPlaceholder": "Ex. Tarif adulte",
           "amountField": "Montant (€)",

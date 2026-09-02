@@ -1255,6 +1255,9 @@
       "capacity": "Capacidade",
       "capacityHint": "(vazio = ilimitada)",
       "capacityUnit": "{count, plural, one {# vaga} other {# vagas}}",
+      "adminNotificationEmail": "Email de notificação",
+      "adminNotificationEmailPlaceholder": "voce@associacao.pt",
+      "adminNotificationEmailHint": "Opcional — receba um email sempre que alguém se inscrever neste evento. Os gestores recebem uma notificação na aplicação de qualquer forma.",
       "description": "Descrição",
       "descriptionPlaceholder": "Detalhes do evento…",
       "toasts": {
@@ -2611,10 +2614,11 @@
         },
         "tiers": {
           "title": "Tarifas",
-          "hint": "Tarifas propostas neste formulário de adesão.",
+          "hint": "Tarifas propostas neste formulário de adesão. Arraste e largue para definir a ordem no formulário público.",
           "noTiers": "Nenhuma tarifa",
           "addTier": "Adicionar tarifa",
           "removeTier": "Remover tarifa",
+          "reorderTier": "Arrastar para reordenar",
           "labelField": "Rótulo",
           "labelPlaceholder": "Ex. Tarifa adulto",
           "amountField": "Valor (€)",

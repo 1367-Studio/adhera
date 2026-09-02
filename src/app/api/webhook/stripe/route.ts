@@ -4,6 +4,7 @@ import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, ge
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
+import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
@@ -406,6 +407,7 @@ export async function POST(req: Request) {
                 date:         true,
                 location:     true,
                 associationId: true,
+                adminNotificationEmail: true,
                 association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
               },
             },
@@ -519,6 +521,22 @@ export async function POST(req: Request) {
               }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
             }
           }
+
+          // This is the "a ticket sold" moment — the paid path deliberately notifies from
+          // here rather than from the route that opened the checkout session, which only
+          // ever means someone *started* paying. Outside the `evenement.association` block
+          // above so a missing association relation costs the confirmation emails but not
+          // the organizer's own notification. Awaited for the same reason as those emails.
+          await notifyEventRegistration({
+            associationId:  evenement.associationId,
+            evenementId:    buyerTicket.evenementId,
+            eventTitle:     evenement.title,
+            eventDate:      evenement.date,
+            attendeeNames:  tickets.map(t => `${t.firstName} ${t.lastName}`),
+            amount:         totalAmount,
+            adminNotificationEmail: evenement.adminNotificationEmail,
+            membreId:       buyerTicket.membreId ?? undefined,
+          }).catch(() => {})
         }
       } else if (donId) {
         const paidAt = new Date()

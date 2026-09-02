@@ -705,22 +705,27 @@ model Membre {
 }
 
 model Evenement {
-  id            String    @id @default(cuid())
-  title         String
-  description   String?
-  imageUrl      String?
-  date          DateTime
-  endDate       DateTime?
-  location      String?
-  lat           Float?
-  lng           Float?
-  price         Decimal?  @db.Decimal(10, 2)
-  capacity      Int?
-  qrToken       String?   @unique
-  qrExpiresAt   DateTime?
-  associationId String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                     String    @id @default(cuid())
+  title                  String
+  description            String?
+  imageUrl               String?
+  date                   DateTime
+  endDate                DateTime?
+  location               String?
+  lat                    Float?
+  lng                    Float?
+  price                  Decimal?  @db.Decimal(10, 2)
+  capacity               Int?
+  // Optionnel — un admin doit explicitement le renseigner pour recevoir un email à chaque
+  // inscription à cet événement (voir notifyEventRegistration). Miroir exact de
+  // MembershipForm.adminNotificationEmail. Sans ce champ, une inscription ne produit qu'une
+  // notification in-app pour les gestionnaires — jamais rien d'envoyé par email.
+  adminNotificationEmail String?
+  qrToken                String?   @unique
+  qrExpiresAt            DateTime?
+  associationId          String
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]

@@ -1243,6 +1243,9 @@
       "capacity": "Capacity",
       "capacityHint": "(empty = unlimited)",
       "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
+      "adminNotificationEmail": "Notification email",
+      "adminNotificationEmailPlaceholder": "you@association.org",
+      "adminNotificationEmailHint": "Optional — get an email each time someone registers for this event. Managers get an in-app notification either way.",
       "description": "Description",
       "descriptionPlaceholder": "Event details…",
       "toasts": {
@@ -2599,10 +2602,11 @@
         },
         "tiers": {
           "title": "Tiers",
-          "hint": "Tiers offered on this membership form.",
+          "hint": "Tiers offered on this membership form. Drag and drop to set the order they appear in on the public form.",
           "noTiers": "No tiers",
           "addTier": "Add a tier",
           "removeTier": "Remove tier",
+          "reorderTier": "Drag to reorder",
           "labelField": "Label",
           "labelPlaceholder": "E.g. Adult tier",
           "amountField": "Amount (€)",

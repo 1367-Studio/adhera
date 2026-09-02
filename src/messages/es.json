@@ -1243,6 +1243,9 @@
       "capacity": "Capacidad",
       "capacityHint": "(vacío = ilimitada)",
       "capacityUnit": "{count, plural, one {# plaza} other {# plazas}}",
+      "adminNotificationEmail": "Email de notificación",
+      "adminNotificationEmailPlaceholder": "tu@asociacion.es",
+      "adminNotificationEmailHint": "Opcional — recibe un email cada vez que alguien se inscriba a este evento. Los gestores reciben una notificación en la aplicación de todos modos.",
       "description": "Descripción",
       "descriptionPlaceholder": "Detalles del evento…",
       "toasts": {
@@ -2599,10 +2602,11 @@
         },
         "tiers": {
           "title": "Tarifas",
-          "hint": "Tarifas propuestas en este formulario de afiliación.",
+          "hint": "Tarifas propuestas en este formulario de afiliación. Arrastra y suelta para definir el orden en el formulario público.",
           "noTiers": "Ninguna tarifa",
           "addTier": "Añadir una tarifa",
           "removeTier": "Eliminar tarifa",
+          "reorderTier": "Arrastrar para reordenar",
           "labelField": "Etiqueta",
           "labelPlaceholder": "Ej. Tarifa adulto",
           "amountField": "Importe (€)",

@@ -9,6 +9,7 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
+import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MAX_NUMBER_FIELD_VALUE = 999_999
@@ -237,6 +238,13 @@ export async function POST(
         },
         branding:        resolveDocumentBranding(assoc),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
+      // Awaited like the confirmation above it: this route runs serverless, and an execution
+      // frozen right after the response would drop a fire-and-forget notification.
+      await notifyEventRegistration({
+        associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+        attendeeNames: [`${firstName} ${lastName}`], amount: 0,
+        adminNotificationEmail: evenement.adminNotificationEmail,
+      }).catch(() => {})
       return NextResponse.json({ ok: true })
     }
 
@@ -411,6 +419,13 @@ export async function POST(
       },
       branding:        resolveDocumentBranding(assoc),
     }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
+    // One notification for the whole order, not one per seat — a family booking four places
+    // is a single thing that happened, and four identical bells would read as four bookings.
+    await notifyEventRegistration({
+      associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+      attendeeNames: newAttendees.map(a => `${a.firstName} ${a.lastName}`), amount: 0,
+      adminNotificationEmail: evenement.adminNotificationEmail,
+    }).catch(() => {})
     return NextResponse.json({ ok: true, skippedEmails })
   }
 

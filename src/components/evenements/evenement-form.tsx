@@ -177,6 +177,15 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading, hasT
         </div>
       </div>
 
+      <FormField
+        label={t("adminNotificationEmail")}
+        type="email"
+        placeholder={t("adminNotificationEmailPlaceholder")}
+        hint={t("adminNotificationEmailHint")}
+        error={errors.adminNotificationEmail?.message}
+        {...register("adminNotificationEmail")}
+      />
+
       <Controller
         name="description"
         control={control}
