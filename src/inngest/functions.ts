@@ -3,6 +3,7 @@ import { processAutomationRule } from "@/inngest/process-automation-rule"
 import { sendEventRuleEmail, sendEventRuleSms } from "@/inngest/event-rule-dispatch"
 import { bulkSendMembresEmail, bulkSendMembresSms, bulkSendCotisationReminders, bulkSendSondageInvitations } from "@/inngest/bulk-send"
 import { importMembres } from "@/inngest/membres-import"
+import { eventReviewRequest } from "@/inngest/event-review-request"
 
 export const functions = [
   automationSweep,
@@ -14,4 +15,5 @@ export const functions = [
   bulkSendCotisationReminders,
   bulkSendSondageInvitations,
   importMembres,
+  eventReviewRequest,
 ]

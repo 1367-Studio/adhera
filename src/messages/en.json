@@ -1340,6 +1340,7 @@
       "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
       "actions": {
         "presences": "Attendance",
+        "avaliacoes": "Reviews",
         "copyLink": "Copy link",
         "edit": "Edit",
         "customFields": "Custom fields",
@@ -1470,7 +1471,13 @@
       "addGuestModal": {
         "title": "Add a guest",
         "optional": "(optional)",
-        "submit": "Add and mark present"
+        "emailHint": "Without an email, this person won't be able to receive the invitation to leave a review after the event.",
+        "submit": "Add guest"
+      },
+      "tierPickerModal": {
+        "title": "Choose a ticket type",
+        "selectLabel": "Ticket type",
+        "confirm": "Confirm"
       },
       "editGuestModal": {
         "title": "Edit guest"
@@ -1493,7 +1500,7 @@
       "toasts": {
         "markedPaid": "{name} marked as paid",
         "paymentCancelled": "Payment for {name} cancelled",
-        "guestAdded": "{name} added and marked present",
+        "guestAdded": "{name} added",
         "guestUpdated": "Guest updated",
         "guestRemoved": "{name} removed from the list",
         "updateError": "Error updating",
@@ -1501,6 +1508,16 @@
         "qrRevoked": "QR Code disabled",
         "noMembersToExport": "No members to export",
         "linkCopied": "Link copied"
+      }
+    },
+    "avaliacoes": {
+      "empty": "No reviews yet",
+      "countLabel": "{count, plural, one {# review} other {# reviews}}",
+      "columns": {
+        "participant": "Participant",
+        "rating": "Rating",
+        "comment": "Comment",
+        "date": "Date"
       }
     }
   },
@@ -4042,6 +4059,7 @@
         "evenementUpdated": "Event updated",
         "evenementDeleted": "Event deleted",
         "presenceMarked": "Attendance marked",
+        "participantAdded": "Participant added",
         "rsvpUpdated": "RSVP updated",
         "participationGuestUpdated": "Guest updated",
         "participationGuestRemoved": "Guest removed",

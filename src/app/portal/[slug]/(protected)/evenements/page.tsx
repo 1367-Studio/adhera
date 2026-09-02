@@ -7,13 +7,15 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
-import { useSetRsvp, type GuestInput } from "@/hooks/use-evenements"
+import { useSetRsvp, useSubmitReview, type GuestInput } from "@/hooks/use-evenements"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
+import { Modal } from "@/components/ui/modal"
+import { StarRating } from "@/components/ui/star-rating"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
@@ -37,7 +39,7 @@ type Evenement = {
   price:          string | null
   capacity:       number | null
   ticketTypes:    EvenementTicketType[]
-  participations: { present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null }[]
+  participations: { id: string; present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null; avis: { id: string } | null }[]
   partySize:      number
   rsvpCounts:     RsvpCounts
   confirmedCount: number
@@ -709,22 +711,27 @@ function EventCard({
 
       {/* Bottom section */}
       {isPast ? (
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">Présence :</span>
-          {participation ? (
-            participation.present
-              ? <span className="font-medium text-green-600 dark:text-green-400">Présent</span>
-              : <span className="font-medium text-muted-foreground">Absent</span>
-          ) : (
-            <span className="text-muted-foreground italic">Non enregistrée</span>
-          )}
-          {currentRsvp && !hasFee && (
-            <>
-              <span className="text-muted-foreground/40">·</span>
-              <span className="text-muted-foreground">
-                RSVP : {RSVP_OPTIONS.find(o => o.value === currentRsvp)?.label}
-              </span>
-            </>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground">Présence :</span>
+            {participation ? (
+              participation.present
+                ? <span className="font-medium text-green-600 dark:text-green-400">Présent</span>
+                : <span className="font-medium text-muted-foreground">Absent</span>
+            ) : (
+              <span className="text-muted-foreground italic">Non enregistrée</span>
+            )}
+            {currentRsvp && !hasFee && (
+              <>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="text-muted-foreground">
+                  RSVP : {RSVP_OPTIONS.find(o => o.value === currentRsvp)?.label}
+                </span>
+              </>
+            )}
+          </div>
+          {participation?.present && (
+            <EventReviewSection evenementId={ev.id} alreadySubmitted={!!participation.avis} />
           )}
         </div>
       ) : !hasFee ? (
@@ -743,6 +750,54 @@ function EventCard({
         </div>
       ) : null}
     </div>
+  )
+}
+
+function EventReviewSection({ evenementId, alreadySubmitted }: { evenementId: string; alreadySubmitted: boolean }) {
+  const [open, setOpen]       = useState(false)
+  const [rating, setRating]   = useState(0)
+  const [comment, setComment] = useState("")
+  const submitReview          = useSubmitReview(evenementId)
+
+  if (alreadySubmitted) {
+    return <p className="text-xs text-muted-foreground">Avis envoyé — merci !</p>
+  }
+
+  function handleSubmit() {
+    if (rating < 1) { toast.error("Choisissez une note"); return }
+    submitReview.mutate({ rating, comment: comment.trim() || undefined }, {
+      onSuccess: () => setOpen(false),
+      onError:   err => toast.error(err instanceof Error ? err.message : "Erreur"),
+    })
+  }
+
+  return (
+    <>
+      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+        Laisser un avis
+      </Button>
+      <Modal
+        open={open}
+        onOpenChange={setOpen}
+        title="Laisser un avis"
+        footer={
+          <Button loading={submitReview.isPending} onClick={handleSubmit}>
+            Envoyer
+          </Button>
+        }
+      >
+        <div className="space-y-4 py-1">
+          <StarRating value={rating} onChange={setRating} />
+          <textarea
+            value={comment}
+            onChange={e => setComment(e.target.value)}
+            placeholder="Un commentaire ? (facultatif)"
+            rows={3}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+        </div>
+      </Modal>
+    </>
   )
 }
 
