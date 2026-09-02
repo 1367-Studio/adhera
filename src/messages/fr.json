@@ -2415,6 +2415,7 @@
     },
     "public": {
       "notFound": "Formulaire introuvable",
+      "contactHelp": "Une question ? Contactez-nous :",
       "notOpenYet": "Ce formulaire n'est pas encore ouvert.",
       "closed": "Ce formulaire est fermé.",
       "noTiers": "Aucun palier n'est disponible pour le moment sur ce formulaire.",
@@ -2703,6 +2704,7 @@
     },
     "public": {
       "notFound": "Formulaire introuvable",
+      "contactHelp": "Une question ? Contactez-nous :",
       "photoNoFile": "Aucun fichier fourni",
       "photoLabel": "Photo",
       "photoTooLarge": "Fichier trop volumineux (max 5 Mo)",

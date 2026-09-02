@@ -2415,6 +2415,7 @@
     },
     "public": {
       "notFound": "Form not found",
+      "contactHelp": "Any questions? Get in touch:",
       "notOpenYet": "This form isn't open yet.",
       "closed": "This form is closed.",
       "noTiers": "No tiers are available on this form right now.",
@@ -2703,6 +2704,7 @@
     },
     "public": {
       "notFound": "Form not found",
+      "contactHelp": "Any questions? Get in touch:",
       "photoNoFile": "No file provided",
       "photoLabel": "Photo",
       "photoTooLarge": "File too large (max 5 MB)",

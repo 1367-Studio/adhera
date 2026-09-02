@@ -37,6 +37,8 @@ type FormInfo = {
   conditions: string | null
   attachments?: { url: string; filename: string; size: number }[] | null
   requireCguvSignature: boolean
+  contactEmail: string | null
+  contactPhone: string | null
   fieldAddress: FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldPhone: FieldRequirement
@@ -485,6 +487,28 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                   : t("submitWithAmount", { amount: "" })}
               </Button>
             </form>
+          )}
+
+          {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
+              des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
+              sur le formulaire en ligne ». L'API les envoyait déjà ; personne ne les affichait.
+              Placées hors du bloc conditionnel : c'est justement quand le formulaire est fermé,
+              pas encore ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un. */}
+          {(form.contactEmail || form.contactPhone) && (
+            <p className="text-center text-xs text-muted-foreground">
+              {t("contactHelp")}{" "}
+              {form.contactEmail && (
+                <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
+                  {form.contactEmail}
+                </a>
+              )}
+              {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
+              {form.contactPhone && (
+                <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
+                  {form.contactPhone}
+                </a>
+              )}
+            </p>
           )}
         </div>
       </div>

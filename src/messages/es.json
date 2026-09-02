@@ -2415,6 +2415,7 @@
     },
     "public": {
       "notFound": "Formulario no encontrado",
+      "contactHelp": "¿Alguna pregunta? Contáctenos:",
       "notOpenYet": "Este formulario aún no está abierto.",
       "closed": "Este formulario está cerrado.",
       "noTiers": "Ningún nivel está disponible en este formulario por ahora.",
@@ -2703,6 +2704,7 @@
     },
     "public": {
       "notFound": "Formulario no encontrado",
+      "contactHelp": "¿Alguna pregunta? Contáctenos:",
       "photoNoFile": "No se proporcionó ningún archivo",
       "photoLabel": "Foto",
       "photoTooLarge": "Archivo demasiado grande (máx. 5 MB)",
