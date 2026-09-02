@@ -2599,10 +2599,11 @@
         },
         "tiers": {
           "title": "Tarifas",
-          "hint": "Tarifas propostas neste formulário de adesão.",
+          "hint": "Tarifas propostas neste formulário de adesão. Arraste e solte para definir a ordem no formulário público.",
           "noTiers": "Nenhuma tarifa",
           "addTier": "Adicionar tarifa",
           "removeTier": "Remover tarifa",
+          "reorderTier": "Arrastar para reordenar",
           "labelField": "Rótulo",
           "labelPlaceholder": "Ex. Tarifa adulto",
           "amountField": "Valor (€)",

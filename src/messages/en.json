@@ -2599,10 +2599,11 @@
         },
         "tiers": {
           "title": "Tiers",
-          "hint": "Tiers offered on this membership form.",
+          "hint": "Tiers offered on this membership form. Drag and drop to set the order they appear in on the public form.",
           "noTiers": "No tiers",
           "addTier": "Add a tier",
           "removeTier": "Remove tier",
+          "reorderTier": "Drag to reorder",
           "labelField": "Label",
           "labelPlaceholder": "E.g. Adult tier",
           "amountField": "Amount (€)",
