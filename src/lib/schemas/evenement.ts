@@ -11,6 +11,10 @@ const evenementBase = z.object({
   lng:         z.number().optional(),
   price:       z.number().nonnegative().optional(),
   capacity:    z.number().int().positive().optional(),
+  // Opt-in : renseigné, cette adresse reçoit un email à chaque inscription. Les
+  // gestionnaires reçoivent de toute façon une notification in-app — voir
+  // notifyEventRegistration.
+  adminNotificationEmail: z.string().trim().email("Adresse email invalide").max(200).optional().or(z.literal("")),
 })
 
 export const evenementSchema = evenementBase.refine(

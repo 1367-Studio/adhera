@@ -1243,6 +1243,9 @@
       "capacity": "Capacidad",
       "capacityHint": "(vacío = ilimitada)",
       "capacityUnit": "{count, plural, one {# plaza} other {# plazas}}",
+      "adminNotificationEmail": "Email de notificación",
+      "adminNotificationEmailPlaceholder": "tu@asociacion.es",
+      "adminNotificationEmailHint": "Opcional — recibe un email cada vez que alguien se inscriba a este evento. Los gestores reciben una notificación en la aplicación de todos modos.",
       "description": "Descripción",
       "descriptionPlaceholder": "Detalles del evento…",
       "toasts": {
@@ -1340,6 +1343,7 @@
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
       "actions": {
         "presences": "Asistencia",
+        "avaliacoes": "Opiniones",
         "copyLink": "Copiar enlace",
         "edit": "Editar",
         "customFields": "Campos personalizados",
@@ -1453,10 +1457,14 @@
       "list": {
         "searchPlaceholder": "Buscar…",
         "addGuest": "Añadir un invitado",
+        "addGuestTooltip": "Añadir a alguien que no es miembro de la asociación",
+        "addMember": "Añadir un miembro",
+        "addMemberTooltip": "Buscar un miembro existente para añadirlo a este evento",
         "noResults": "Sin resultados",
-        "noActiveMembers": "Ningún miembro activo",
+        "noParticipants": "Todavía no hay participantes",
         "guestBadge": "Invitado",
         "paidBadge": "Pagado",
+        "freeBadge": "Gratis",
         "cancelPaymentTooltip": "Cancelar este pago en efectivo",
         "infoTooltip": "Ver información de la inscripción",
         "infoEmail": "Correo electrónico",
@@ -1464,13 +1472,27 @@
         "infoAddress": "Dirección",
         "reservedBadge": "Reservado",
         "markPaid": "Marcar como pagado",
+        "markFreeTooltip": "Marcar gratis (excepción puntual, sin crear un tarif público)",
         "editTitle": "Editar",
         "removeTitle": "Quitar"
       },
       "addGuestModal": {
         "title": "Añadir un invitado",
         "optional": "(opcional)",
-        "submit": "Añadir y marcar presente"
+        "emailHint": "Sin un correo electrónico, esta persona no podrá recibir la invitación para dejar una opinión después del evento.",
+        "submit": "Añadir invitado"
+      },
+      "addMemberModal": {
+        "title": "Añadir un miembro",
+        "searchPlaceholder": "Buscar un miembro…",
+        "typeToSearch": "Escriba al menos 2 letras para buscar",
+        "noResults": "Ningún miembro encontrado",
+        "allAdded": "Todos los miembros activos ya están en la lista"
+      },
+      "tierPickerModal": {
+        "title": "Elegir un tarifa",
+        "selectLabel": "Tarifa",
+        "confirm": "Confirmar"
       },
       "editGuestModal": {
         "title": "Editar invitado"
@@ -1492,8 +1514,10 @@
       },
       "toasts": {
         "markedPaid": "{name} marcado como pagado",
+        "markedFree": "{name} marcado como gratis",
         "paymentCancelled": "Pago de {name} cancelado",
-        "guestAdded": "{name} añadido y marcado presente",
+        "guestAdded": "{name} añadido",
+        "memberAdded": "{name} añadido a la lista",
         "guestUpdated": "Invitado actualizado",
         "guestRemoved": "{name} eliminado de la lista",
         "updateError": "Error al actualizar",
@@ -1501,6 +1525,16 @@
         "qrRevoked": "Código QR desactivado",
         "noMembersToExport": "Ningún miembro para exportar",
         "linkCopied": "Enlace copiado"
+      }
+    },
+    "avaliacoes": {
+      "empty": "Aún no hay opiniones",
+      "countLabel": "{count, plural, one {# opinión} other {# opiniones}}",
+      "columns": {
+        "participant": "Participante",
+        "rating": "Nota",
+        "comment": "Comentario",
+        "date": "Fecha"
       }
     }
   },
@@ -2582,10 +2616,11 @@
         },
         "tiers": {
           "title": "Tarifas",
-          "hint": "Tarifas propuestas en este formulario de afiliación.",
+          "hint": "Tarifas propuestas en este formulario de afiliación. Arrastra y suelta para definir el orden en el formulario público.",
           "noTiers": "Ninguna tarifa",
           "addTier": "Añadir una tarifa",
           "removeTier": "Eliminar tarifa",
+          "reorderTier": "Arrastrar para reordenar",
           "labelField": "Etiqueta",
           "labelPlaceholder": "Ej. Tarifa adulto",
           "amountField": "Importe (€)",
@@ -4042,6 +4077,7 @@
         "evenementUpdated": "Evento modificado",
         "evenementDeleted": "Evento eliminado",
         "presenceMarked": "Asistencia marcada",
+        "participantAdded": "Participante añadido",
         "rsvpUpdated": "RSVP actualizado",
         "participationGuestUpdated": "Invitado modificado",
         "participationGuestRemoved": "Invitado eliminado",
@@ -4049,6 +4085,7 @@
         "participationPublicCancelled": "Inscripción pública anulada",
         "ticketCheckoutStarted": "Pago iniciado",
         "ticketPaid": "Entrada pagada",
+        "ticketMarkedFree": "Entrada marcada como gratis",
         "ticketPaymentCancelled": "Pago cancelado",
         "ticketRefunded": "Entrada reembolsada",
         "evenementQrGenerated": "QR de acceso generado",

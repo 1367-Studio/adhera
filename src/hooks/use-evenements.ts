@@ -62,6 +62,25 @@ async function setRsvp(evenementId: string, rsvp: string, quantity?: number, gue
   return res.json()
 }
 
+async function submitReview(evenementId: string, rating: number, comment?: string) {
+  const res = await fetch(`/api/portal/evenements/${evenementId}/avaliacao`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ rating, ...(comment && { comment }) }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
+export function useSubmitReview(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ rating, comment }: { rating: number; comment?: string }) =>
+      submitReview(evenementId, rating, comment),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
+  })
+}
+
 async function generateQr(evenementId: string) {
   const res = await fetch(`/api/evenements/${evenementId}/qr`, { method: "POST" })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
@@ -77,11 +96,11 @@ async function revokeQr(evenementId: string) {
 // hasn't RSVP'd yet (membreId) — the backend creates the ticket on first use in that case.
 export type RowRef = { participationId: string; membreId?: undefined } | { membreId: string; participationId?: undefined }
 
-async function markPaid(evenementId: string, ref: RowRef) {
+async function markPaid(evenementId: string, ref: RowRef, ticketTypeId?: string, free?: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(ref),
+    body:    JSON.stringify({ ...ref, ticketTypeId, free }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -152,6 +171,7 @@ export type CalendarEvenement = {
   description: string | null
   imageUrl:    string | null
   capacity:    number | null
+  adminNotificationEmail: string | null
   qrToken:     string | null
   qrExpiresAt: string | null
   ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
@@ -251,7 +271,7 @@ export function useSetRsvp(evenementId: string) {
 export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (ref: RowRef) => markPaid(evenementId, ref),
+    mutationFn: ({ ticketTypeId, free, ...ref }: RowRef & { ticketTypeId?: string; free?: boolean }) => markPaid(evenementId, ref, ticketTypeId, free),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),

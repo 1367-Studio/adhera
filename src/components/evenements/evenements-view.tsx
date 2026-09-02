@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon, LinkIcon, TagIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, ListChecksIcon, LinkIcon, TagIcon, StarIcon } from "@phosphor-icons/react/dist/ssr";
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { format } from "date-fns"
@@ -41,6 +41,7 @@ type Evenement = {
   description: string | null
   imageUrl:    string | null
   capacity:    number | null
+  adminNotificationEmail: string | null
   qrToken:     string | null
   qrExpiresAt: string | null
   ticketTypes:    EvenementTicketType[]
@@ -91,7 +92,7 @@ export function EvenementsView() {
   }
 
   function calendarEventToEvenement(ev: CalendarEvenement): Evenement {
-    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, ticketTypes: ev.ticketTypes, _count: ev._count, confirmedCount: 0 }
+    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, adminNotificationEmail: ev.adminNotificationEmail, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, ticketTypes: ev.ticketTypes, _count: ev._count, confirmedCount: 0 }
   }
 
   function handleCalendarEditClick(ev: CalendarEvenement)      { setEditTarget(calendarEventToEvenement(ev)) }
@@ -250,6 +251,7 @@ export function EvenementsView() {
       cell: (e) => (
         <RowActions actions={[
           { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
+          { label: t("evenements.view.actions.avaliacoes"), icon: <StarIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/avaliacoes`) },
           { label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.id) },
           { label: t("evenements.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e),     separator: true },
           { label: t("evenements.view.actions.customFields"), icon: <ListChecksIcon className="size-3.5" />, onClick: () => setCustomFieldsTarget(e) },
@@ -351,6 +353,7 @@ export function EvenementsView() {
             lng:         editTarget.lng      ?? undefined,
             price:       editTarget.price    != null ? Number(editTarget.price)    : undefined,
             capacity:    editTarget.capacity != null ? Number(editTarget.capacity) : undefined,
+            adminNotificationEmail: editTarget.adminNotificationEmail ?? "",
           } : undefined}
           hasTicketTypes={!!editTarget?.ticketTypes.length}
           onSubmit={handleUpdate}

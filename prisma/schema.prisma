@@ -472,43 +472,43 @@ model Association {
   updatedAt                      DateTime           @updatedAt
   deletedAt                      DateTime?
 
-  users                    User[]
-  membres                  Membre[]
-  membreTypes              MembreType[]
-  evenements               Evenement[]
-  cotisations              Cotisation[]
-  actualites               Actualite[]
-  messageTemplates         MessageTemplate[]
-  automationRules          AutomationRule[]
-  materials                Material[]
-  activityLogs             ActivityLog[]
-  dons                     Don[]
-  donationForms            DonationForm[]
-  donationSubscriptions    DonationSubscription[]
-  cotisationSubscriptions  CotisationSubscription[]
+  users                      User[]
+  membres                    Membre[]
+  membreTypes                MembreType[]
+  evenements                 Evenement[]
+  cotisations                Cotisation[]
+  actualites                 Actualite[]
+  messageTemplates           MessageTemplate[]
+  automationRules            AutomationRule[]
+  materials                  Material[]
+  activityLogs               ActivityLog[]
+  dons                       Don[]
+  donationForms              DonationForm[]
+  donationSubscriptions      DonationSubscription[]
+  cotisationSubscriptions    CotisationSubscription[]
   cotisationInstallmentPlans CotisationInstallmentPlan[]
-  membershipForms          MembershipForm[]
-  membershipAddonPurchases MembershipAddonPurchase[]
-  membershipCheckoutDrafts MembershipCheckoutDraft[]
-  sondages                 Sondage[]
-  boutiqueProduits         BoutiqueProduit[]
-  boutiqueCommandes        BoutiqueCommande[]
-  meetings                 Meeting[]
-  exercicesComptables      ExerciceComptable[]
-  bankAccounts             BankAccount[]
-  bankTransactions         BankTransaction[]
-  financeCategories        FinanceCategory[]
-  incomes                  Income[]
-  expenses                 Expense[]
-  bankReconciliations      BankReconciliation[]
-  fournisseurs             Fournisseur[]
-  devis                    Devis[]
-  factures                 Facture[]
-  facturesRecues           FactureRecue[]
-  emailMessages            EmailMessage[]
-  smsMessages              SmsMessage[]
-  supportTickets           SupportTicket[]
-  pricingOffer             PricingOffer?
+  membershipForms            MembershipForm[]
+  membershipAddonPurchases   MembershipAddonPurchase[]
+  membershipCheckoutDrafts   MembershipCheckoutDraft[]
+  sondages                   Sondage[]
+  boutiqueProduits           BoutiqueProduit[]
+  boutiqueCommandes          BoutiqueCommande[]
+  meetings                   Meeting[]
+  exercicesComptables        ExerciceComptable[]
+  bankAccounts               BankAccount[]
+  bankTransactions           BankTransaction[]
+  financeCategories          FinanceCategory[]
+  incomes                    Income[]
+  expenses                   Expense[]
+  bankReconciliations        BankReconciliation[]
+  fournisseurs               Fournisseur[]
+  devis                      Devis[]
+  factures                   Facture[]
+  facturesRecues             FactureRecue[]
+  emailMessages              EmailMessage[]
+  smsMessages                SmsMessage[]
+  supportTickets             SupportTicket[]
+  pricingOffer               PricingOffer?
 }
 
 // A staff-generated, single-use custom-pricing signup link (see /register?offer=<token>)
@@ -705,22 +705,27 @@ model Membre {
 }
 
 model Evenement {
-  id            String    @id @default(cuid())
-  title         String
-  description   String?
-  imageUrl      String?
-  date          DateTime
-  endDate       DateTime?
-  location      String?
-  lat           Float?
-  lng           Float?
-  price         Decimal?  @db.Decimal(10, 2)
-  capacity      Int?
-  qrToken       String?   @unique
-  qrExpiresAt   DateTime?
-  associationId String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                     String    @id @default(cuid())
+  title                  String
+  description            String?
+  imageUrl               String?
+  date                   DateTime
+  endDate                DateTime?
+  location               String?
+  lat                    Float?
+  lng                    Float?
+  price                  Decimal?  @db.Decimal(10, 2)
+  capacity               Int?
+  // Optionnel — un admin doit explicitement le renseigner pour recevoir un email à chaque
+  // inscription à cet événement (voir notifyEventRegistration). Miroir exact de
+  // MembershipForm.adminNotificationEmail. Sans ce champ, une inscription ne produit qu'une
+  // notification in-app pour les gestionnaires — jamais rien d'envoyé par email.
+  adminNotificationEmail String?
+  qrToken                String?   @unique
+  qrExpiresAt            DateTime?
+  associationId          String
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]
@@ -728,6 +733,7 @@ model Evenement {
   customFields   EvenementCustomField[]
   ticketTypes    EvenementTicketType[]
   dons           Don[]
+  avis           EvenementAvis[]
 
   @@index([associationId, date])
 }
@@ -771,59 +777,84 @@ model EvenementTicketType {
 }
 
 model Participation {
-  id              String      @id @default(cuid())
-  membreId        String? // null = convive sans compte membre
-  evenementId     String
-  firstName       String // capturé sur la ligne — pas de join Membre pour l'affichage
-  lastName        String
-  email           String?
-  phone           String?
-  address         String?
+  id                String      @id @default(cuid())
+  membreId          String? // null = convive sans compte membre
+  evenementId       String
+  firstName         String // capturé sur la ligne — pas de join Membre pour l'affichage
+  lastName          String
+  email             String?
+  phone             String?
+  address           String?
   // Réponses aux EvenementCustomField de cet événement, keyed by field id (ex: {"clxyz...": "42"})
   // — un JSON simple suffit ici, personne n'agrège ces réponses entre participants comme un sondage.
-  answers         Json?
-  present         Boolean     @default(false)
-  rsvp            RsvpStatus?
-  rsvpAt          DateTime?
-  ticketPaidAt    DateTime?
-  amount          Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
-  orderId         String? // regroupe les places d'une même réservation/paiement
-  stripeSessionId String?
+  answers           Json?
+  present           Boolean     @default(false)
+  rsvp              RsvpStatus?
+  rsvpAt            DateTime?
+  ticketPaidAt      DateTime?
+  amount            Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
+  orderId           String? // regroupe les places d'une même réservation/paiement
+  stripeSessionId   String?
   // Which EvenementTicketType this seat picked, when the event has tiers — null for
   // untiered/flat-price/free events (the vast majority). Drives the per-seat amount at checkout
   // time instead of Evenement.price.
-  ticketTypeId    String?
+  ticketTypeId      String?
   // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
   // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
-  cancelToken     String?     @unique
+  cancelToken       String?     @unique
   // Jeton du billet, encodé dans le QR code envoyé par email après inscription/paiement.
   // Scanné à l'entrée par l'organisateur (présences → scanner) pour valider le billet et
   // marquer la présence — voir /api/evenements/[id]/scan. Null pour les rows antérieures
   // à la fonctionnalité (pas de backfill : leur email est déjà parti sans QR).
-  ticketToken     String?     @unique
-  createdAt       DateTime    @default(now())
+  ticketToken       String?     @unique
+  // Lien public (sans compte) pour laisser un avis après l'événement — même principe que
+  // cancelToken/ticketToken. Généré à l'envoi de l'email de demande d'avis (voir le cron
+  // Inngest event-review-request), pas à l'inscription.
+  reviewToken       String?     @unique
+  // Dédoublonne l'envoi automatique de l'email de demande d'avis — le cron tourne tous les
+  // jours et ne doit relancer l'email qu'une seule fois par participation.
+  reviewRequestedAt DateTime?
+  createdAt         DateTime    @default(now())
 
   membre         Membre?              @relation(fields: [membreId], references: [id])
   evenement      Evenement            @relation(fields: [evenementId], references: [id])
   ticketType     EvenementTicketType? @relation(fields: [ticketTypeId], references: [id])
   incomes        Income[]
   automationLogs AutomationLog[]
+  avis           EvenementAvis?
 
   @@index([evenementId])
   @@index([orderId])
   @@index([membreId, evenementId])
 }
 
+// Avis laissé par un participant après un événement — une note (1-5) et un commentaire
+// facultatif. Un seul avis par participation (participationId unique), seuls les
+// participants marqués présents peuvent en laisser un (vérifié côté API, pas ici).
+model EvenementAvis {
+  id              String   @id @default(cuid())
+  evenementId     String
+  participationId String   @unique
+  rating          Int
+  comment         String?
+  createdAt       DateTime @default(now())
+
+  evenement     Evenement     @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  participation Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
+
+  @@index([evenementId])
+}
+
 model Cotisation {
-  id                  String           @id @default(cuid())
+  id                  String              @id @default(cuid())
   membreId            String
   associationId       String
-  amount              Decimal          @db.Decimal(10, 2)
-  amountPaid          Decimal          @default(0) @db.Decimal(10, 2)
+  amount              Decimal             @db.Decimal(10, 2)
+  amountPaid          Decimal             @default(0) @db.Decimal(10, 2)
   year                Int
   paidAt              DateTime?
   dueDate             DateTime?
-  status              CotisationStatus @default(EN_ATTENTE)
+  status              CotisationStatus    @default(EN_ATTENTE)
   note                String?
   stripeSessionId     String?
   declarationNumber   String?
@@ -858,18 +889,18 @@ model Cotisation {
   // adherent.ts actually checks instead of `year` to decide if this row still covers today.
   periodStart         DateTime?
   periodEnd           DateTime?
-  createdAt           DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
 
-  membre          Membre                    @relation(fields: [membreId], references: [id])
-  association     Association               @relation(fields: [associationId], references: [id])
-  payments        CotisationPayment[]
-  installments    CotisationInstallment[]
-  subscription    CotisationSubscription?   @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
-  membershipForm  MembershipForm?           @relation(fields: [membershipFormId], references: [id], onDelete: SetNull)
-  tier            MembershipTier?           @relation(fields: [tierId], references: [id], onDelete: SetNull)
-  addonPurchases  MembershipAddonPurchase[]
-  installmentPlan CotisationInstallmentPlan?
+  membre            Membre                     @relation(fields: [membreId], references: [id])
+  association       Association                @relation(fields: [associationId], references: [id])
+  payments          CotisationPayment[]
+  installments      CotisationInstallment[]
+  subscription      CotisationSubscription?    @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  membershipForm    MembershipForm?            @relation(fields: [membershipFormId], references: [id], onDelete: SetNull)
+  tier              MembershipTier?            @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  addonPurchases    MembershipAddonPurchase[]
+  installmentPlan   CotisationInstallmentPlan?
   boutiqueCommandes BoutiqueCommande[]
 
   @@unique([membreId, year])
@@ -940,34 +971,34 @@ model CotisationPayment {
 }
 
 model Don {
-  id               String               @id @default(cuid())
-  associationId    String
-  membreId         String?
-  evenementId      String?
-  donorType        DonorType            @default(INDIVIDUAL)
-  firstName        String
-  lastName         String
-  companyName      String?
-  siret            String?
-  email            String
-  address          String?
-  amount           Decimal              @db.Decimal(10, 2)
-  message          String?
-  anonymous        Boolean              @default(false)
-  receiptNumber    String?
-  receiptIssuedAt  DateTime?
-  stripeSessionId  String?              @unique
-  paidAt           DateTime?
-  refundedAt       DateTime?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  id                    String               @id @default(cuid())
+  associationId         String
+  membreId              String?
+  evenementId           String?
+  donorType             DonorType            @default(INDIVIDUAL)
+  firstName             String
+  lastName              String
+  companyName           String?
+  siret                 String?
+  email                 String
+  address               String?
+  amount                Decimal              @db.Decimal(10, 2)
+  message               String?
+  anonymous             Boolean              @default(false)
+  receiptNumber         String?
+  receiptIssuedAt       DateTime?
+  stripeSessionId       String?              @unique
+  paidAt                DateTime?
+  refundedAt            DateTime?
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
   // Null for the standalone donation page (/portal/[slug]/don) — a Don only carries these
   // when it came through a configurable DonationForm. Additive: existing rows are unaffected.
-  donationFormId   String?
-  tierId           String?
+  donationFormId        String?
+  tierId                String?
   // Set only on the Don produced by a recurring donation's successful charge (invoice.paid) —
   // null for one-off dons, whether via a DonationForm or the standalone page.
-  subscriptionId   String?
+  subscriptionId        String?
   // Set only when this Don was the embedded-donation extra on a MembershipForm signup (see
   // MembershipTier.itemType == DONATION, src/lib/webhook/membership-addons.ts). Distinct from
   // `tierId` above, which points at the unrelated DonationTier model — a donation bought this
@@ -979,14 +1010,14 @@ model Don {
   membershipAddonTierId String?
   // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
   // Participation.answers.
-  answers          Json?
+  answers               Json?
   // Null = Stripe (the only method before offline donations existed). Set explicitly for
   // ESPECES/CHEQUE/VIREMENT — those are the only ones where paidAt isn't written by the
   // webhook, see the "encaissement" flow in /api/dons/[id]/encaisser.
-  paymentMethod    DonPaymentMethod?
+  paymentMethod         DonPaymentMethod?
   // Proof of consent when the form's requireCguvSignature is on — set server-side at
   // checkout, never trusted from the client alone. Null when the form doesn't require it.
-  cguvAgreedAt     DateTime?
+  cguvAgreedAt          DateTime?
   // Snapshotted from DonationTier at the moment this Don is created — same reasoning as
   // `amount` already being its own column instead of being re-read from the tier. Without
   // this, an admin editing a tier's receiptMode/ineligibleAmount between "donor gave a
@@ -994,21 +1025,21 @@ model Don {
   // receipt gets issued, contradicting what the donor was shown on the public page. Null
   // for the standalone /portal/[slug]/don page (no tier) — receiptMode null there means
   // "always full", matching the pre-existing behavior.
-  receiptMode      DonationReceiptMode?
-  deductibleAmount Decimal?             @db.Decimal(10, 2)
+  receiptMode           DonationReceiptMode?
+  deductibleAmount      Decimal?             @db.Decimal(10, 2)
 
-  association  Association           @relation(fields: [associationId], references: [id])
-  membre       Membre?               @relation(fields: [membreId], references: [id])
+  association         Association           @relation(fields: [associationId], references: [id])
+  membre              Membre?               @relation(fields: [membreId], references: [id])
   // A donation prompted by an event registration is still a standalone association-level
   // donation record — this is only a reporting link, so deleting the event must not delete it.
-  evenement    Evenement?            @relation(fields: [evenementId], references: [id], onDelete: SetNull)
-  donationForm DonationForm?         @relation(fields: [donationFormId], references: [id], onDelete: SetNull)
-  tier         DonationTier?         @relation(fields: [tierId], references: [id], onDelete: SetNull)
-  subscription DonationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  evenement           Evenement?            @relation(fields: [evenementId], references: [id], onDelete: SetNull)
+  donationForm        DonationForm?         @relation(fields: [donationFormId], references: [id], onDelete: SetNull)
+  tier                DonationTier?         @relation(fields: [tierId], references: [id], onDelete: SetNull)
+  subscription        DonationSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
   // SetNull, not Cascade — a Don is a real financial/receipt record and must survive even if
   // the MembershipTier that generated it is later deleted (unlike MembershipAddonPurchase,
   // which is a lightweight purchase log with no receipt of its own).
-  membershipAddonTier MembershipTier? @relation(fields: [membershipAddonTierId], references: [id], onDelete: SetNull)
+  membershipAddonTier MembershipTier?       @relation(fields: [membershipAddonTierId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
@@ -1085,14 +1116,14 @@ model DonationTier {
   amount     Decimal?          @db.Decimal(10, 2)
   interval   DonationInterval? // requis si kind = RECURRING
 
-  label       String
-  receiptMode DonationReceiptMode @default(FULL)
+  label            String
+  receiptMode      DonationReceiptMode @default(FULL)
   // Part du montant NON éligible au reçu fiscal (ex. valeur d'une contrepartie reçue en
   // échange) — requis si receiptMode = PARTIAL. Le montant éligible imprimé sur le reçu est
   // calculé automatiquement (voir eligibleReceiptAmount dans src/lib/receipt-eligibility.ts)
   // comme (montant réellement payé − ineligibleAmount), jamais stocké tel quel : pour un
   // palier freeAmount le montant payé n'est connu qu'au moment du paiement.
-  ineligibleAmount Decimal? @db.Decimal(10, 2)
+  ineligibleAmount Decimal?            @db.Decimal(10, 2)
 
   form          DonationForm           @relation(fields: [formId], references: [id], onDelete: Cascade)
   dons          Don[]
@@ -1155,11 +1186,11 @@ model MembershipForm {
   // Étape 4 — Paiement. Pas de champ "allowOnline" (contrairement à DonationForm) : un tier
   // payant passe toujours par Stripe, ces 3 flags n'activent que le règlement hors-ligne des
   // tiers ONE_OFF (encaissement manuel par un admin, comme pour les dons).
-  allowCash           Boolean @default(false)
-  allowCheque         Boolean @default(false)
-  allowTransfer       Boolean @default(false)
-  offlineInstructions String?
-  confirmationMessage String?
+  allowCash              Boolean @default(false)
+  allowCheque            Boolean @default(false)
+  allowTransfer          Boolean @default(false)
+  offlineInstructions    String?
+  confirmationMessage    String?
   // Optionnel — un admin doit explicitement le renseigner pour recevoir un email à chaque
   // nouvelle adhésion via ce formulaire (voir notifyMembershipSignup). Distinct de
   // contactEmail, qui est montré aux visiteurs comme point de contact, jamais utilisé pour
@@ -1168,25 +1199,25 @@ model MembershipForm {
   adminNotificationEmail String?
 
   // Étape 5 — Publication
-  visibility MembershipVisibility @default(LINK)
+  visibility    MembershipVisibility @default(LINK)
   // Id of the "membership"-type SiteSection (Association.siteConfig JSON, see
   // src/types/site-config.ts) this form is bound to when visibility = SITE — mirrors
   // AssoConnect's "Sélectionner une page sur laquelle publier le formulaire" step: an explicit
   // form→section pick instead of an implicit "most recently touched SITE form wins" heuristic.
   // Required by the API whenever visibility is set to SITE; null for LINK/PRIVATE.
   siteSectionId String?
-  opensAt    DateTime?
-  closesAt   DateTime?
+  opensAt       DateTime?
+  closesAt      DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  association   Association              @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  tiers         MembershipTier[]
-  products      MembershipFormProduct[]
-  customFields  MembershipFormField[]
-  cotisations   Cotisation[]
-  subscriptions CotisationSubscription[]
+  association    Association               @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tiers          MembershipTier[]
+  products       MembershipFormProduct[]
+  customFields   MembershipFormField[]
+  cotisations    Cotisation[]
+  subscriptions  CotisationSubscription[]
   checkoutDrafts MembershipCheckoutDraft[]
 
   @@unique([associationId, slug])
@@ -1202,7 +1233,7 @@ model MembershipForm {
 // webhook/membership-multi.ts) is what turns it into real Membre/Cotisation rows once
 // payment is confirmed (or immediately, for an all-free submission — see checkout/route.ts).
 model MembershipCheckoutDraft {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   associationId String
   formId        String
   email         String
@@ -1216,26 +1247,26 @@ model MembershipCheckoutDraft {
   // answers }] — one entry per "Adhérent" block on the public form, in submission order.
   // registrants[0] is the person who filled the form (gets the User/login); the rest become
   // Membre-only dependants of them (Membre.responsableId) — see consumeMembershipCheckoutDraft.
-  registrants Json
+  registrants        Json
   // [{ v: varianteId, q: quantity }] — Boutique products chosen alongside the group signup,
   // always attributed to registrants[0] (the one person with a real email/login in the
   // submission) once consumed, never split across the group. Same minimal-keys shape as
   // checkout/route.ts's single-registrant commonMeta.products, kept consistent even though
   // this rides in a real Json column (no Stripe metadata size cap to economize for) rather
   // than a stringified value.
-  products    Json?
+  products           Json?
   // [{ tierId, itemType, label, amount, receiptMode, deductibleAmount }] — options payantes et
   // dons embarqués choisis à côté de l'inscription groupée. Même forme que metadata.addons du
   // parcours à un seul adhérent (voir checkout/route.ts), pour que createMembershipAddonPurchases
   // consomme les deux sans distinction. Toujours rattachés à registrants[0], la seule personne
   // du groupe avec un email/login réel — même règle que products ci-dessus.
-  addons      Json?
-  totalAmount Decimal  @db.Decimal(10, 2)
+  addons             Json?
+  totalAmount        Decimal   @db.Decimal(10, 2)
 
-  createdAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
   // Swept by /api/cron/membership-drafts-sweep once past this without ever being consumed —
   // an abandoned checkout (closed tab, expired Stripe session) shouldn't sit here forever.
-  expiresAt DateTime
+  expiresAt  DateTime
   // Set by consumeMembershipCheckoutDraft once the Membre/Cotisation rows exist — both the
   // idempotency guard against a redelivered webhook event and what excludes this row from
   // the sweep above.
@@ -1276,13 +1307,13 @@ model MembershipTier {
   // — voir Cotisation.periodStart/periodEnd et src/lib/membre-adherent.ts. Seulement pertinent
   // pour itemType MEMBERSHIP ; ignoré (forcé null) pour ADDON/DONATION comme les autres champs
   // propres à l'adhésion elle-même. Mutuellement exclusif avec fixedPeriodEnd ci-dessous.
-  durationMonths Int?
+  durationMonths      Int?
   // Alternative à durationMonths : une date de fin absolue, identique pour tout le monde peu
   // importe la date de paiement (ex. "saison 2026-2027, valable jusqu'au 31 août 2027") plutôt
   // qu'un nombre de mois relatif à l'inscription. Seulement pour un tier ONE_OFF — un tier
   // RECURRING se renouvelle indéfiniment, une date de fin absolue n'a pas de sens pour lui
   // (voir tiers/route.ts pour la validation d'exclusion mutuelle).
-  fixedPeriodEnd DateTime?
+  fixedPeriodEnd      DateTime?
   // Un tier MEMBERSHIP peut être marqué éligible au reçu fiscal — rare en France (une
   // cotisation n'est pas un don), mais certaines associations le permettent dans des cas
   // précis, parfois seulement partiellement (ex. une part de la cotisation correspond à une
@@ -1290,13 +1321,13 @@ model MembershipTier {
   // receiptMode/ineligibleAmount. Répercuté sur chaque Cotisation qu'il produit (voir
   // Cotisation.receiptMode), jamais réévalué a posteriori si le tier change après coup —
   // même logique de snapshot que membershipFormId/tierId déjà copiés sur Cotisation.
-  receiptMode DonationReceiptMode @default(NONE)
+  receiptMode         DonationReceiptMode @default(NONE)
   // Part du montant NON éligible au reçu fiscal — requis si receiptMode = PARTIAL. Le
   // montant éligible imprimé sur le reçu est calculé automatiquement (voir
   // eligibleReceiptAmount dans src/lib/receipt-eligibility.ts) comme (montant réellement
   // payé − ineligibleAmount), jamais stocké tel quel : pour un tarif freeAmount le montant
   // payé n'est connu qu'au moment du paiement.
-  ineligibleAmount Decimal? @db.Decimal(10, 2)
+  ineligibleAmount    Decimal?            @db.Decimal(10, 2)
   // "Payer en plusieurs fois" — offre au visiteur, au moment du paiement, le choix de régler
   // en installmentsCount mensualités automatiques plutôt qu'en une fois. Implémenté comme un
   // Stripe Subscription plafonné à N cycles (subscription_data.cancel_at, voir checkout/
@@ -1305,10 +1336,10 @@ model MembershipTier {
   // CotisationSubscription. Seulement pour un tier ONE_OFF à montant fixe (pas RECURRING —
   // déjà étalé dans le temps par nature ; pas free/freeAmount, ça ne se divise pas proprement
   // en N parts égales) — voir tiers/route.ts pour la validation.
-  installmentsAllowed Boolean @default(false)
+  installmentsAllowed Boolean             @default(false)
   // Bornée à [2, 12] — 1 fois n'est pas un "plusieurs fois", et au-delà de 12 mensualités le
   // découpage devient peu réaliste pour une cotisation associative.
-  installmentsCount   Int?    @default(3)
+  installmentsCount   Int?                @default(3)
 
   label        String
   // Tag automatique du Membre créé par ce tier — remplace le menu déroulant de MembreType
@@ -1913,7 +1944,7 @@ model BoutiqueVariante {
   stock     Int      @default(0)
   createdAt DateTime @default(now())
 
-  produit       BoutiqueProduit        @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  produit       BoutiqueProduit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
   commandeItems BoutiqueCommandeItem[]
   formOffers    MembershipFormProduct[]
 }

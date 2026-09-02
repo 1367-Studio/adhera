@@ -3,6 +3,7 @@ import fs from "fs"
 import { Prisma, DonorType, OrganismeCategory } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { amountToFrenchWords } from "@/lib/pdf/french-numbers"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 type DonForReceipt = {
   id:           string
@@ -127,7 +128,7 @@ export async function generateRecuFiscal(
 
   const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
-  const dateStr   = paidAt.toLocaleDateString("fr-FR")
+  const dateStr   = paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE })
   const amountWords = amountToFrenchWords(amount)
 
   const templateBytes = fs.readFileSync(new URL("./templates/2041-rd.pdf", import.meta.url))
@@ -237,7 +238,7 @@ export async function generateRecuFiscalEntreprise(
 
   const amount    = receiptAmount(don)
   const paidAt    = don.paidAt ?? new Date()
-  const dateStr   = paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  const dateStr   = paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
   const amountWords = amountToFrenchWords(amount)
 
   const templateBytes = fs.readFileSync(new URL("./templates/2041-mec-sd.pdf", import.meta.url))

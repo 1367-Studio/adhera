@@ -33,18 +33,20 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
       return NextResponse.json({ error: "Capacité maximale atteinte" }, { status: 422 })
   }
 
+  // present stays false (schema default) — a walk-in added by the association must wait
+  // for an explicit presence/payment validation on the day, not be auto-checked-in here.
   const participation = await prisma.participation.create({
-    data: { evenementId, firstName, lastName, email: email ?? null, present: true },
+    data: { evenementId, firstName, lastName, email: email ?? null },
   })
 
   await writeActivityLog({
     associationId,
     actorId:  userId,
-    action:   "PRESENCE_MARKED",
+    action:   "PARTICIPANT_ADDED",
     entity:   "Participation",
     entityId: participation.id,
     label:    evenement.title,
-    metadata: { present: true, memberName: `${firstName} ${lastName}`, guest: true },
+    metadata: { memberName: `${firstName} ${lastName}`, guest: true },
   })
 
   return NextResponse.json(participation, { status: 201 })

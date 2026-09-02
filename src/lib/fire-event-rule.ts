@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 import { inngest } from "@/lib/inngest"
 import { customEmail } from "@/lib/email"
 import { parseModules } from "@/lib/modules"
@@ -41,7 +42,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
     slug:        association.slug,
     titreEvenement: evenement?.title,
     dateEvenement:  evenement?.date
-      ? evenement.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+      ? evenement.date.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
       : undefined,
     lieuEvenement: evenement?.location ?? undefined,
   })

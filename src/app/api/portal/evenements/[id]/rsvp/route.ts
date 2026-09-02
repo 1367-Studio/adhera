@@ -7,6 +7,7 @@ import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
+import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
@@ -179,6 +180,18 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   }
 
   if (rsvp === "CONFIRME" && !wasAlreadyConfirme) {
+    // Guarded by !wasAlreadyConfirme like the member's own confirmation below: a member
+    // editing their guest count shouldn't ring the bell again as a fresh registration.
+    // amount 0 — a portal RSVP that costs money goes through the checkout route and is
+    // announced by the Stripe webhook instead, once the payment actually clears.
+    await notifyEventRegistration({
+      associationId: ctx.associationId, evenementId, eventTitle: evenement.title, eventDate: evenement.date,
+      attendeeNames: [`${membre.firstName} ${membre.lastName}`, ...guestNames.map(g => `${g.firstName} ${g.lastName}`)],
+      amount: 0,
+      adminNotificationEmail: evenement.adminNotificationEmail,
+      membreId: membre.id,
+    }).catch(() => {})
+
     const assoc = await prisma.association.findUnique({
       where:  { id: ctx.associationId },
       select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true },

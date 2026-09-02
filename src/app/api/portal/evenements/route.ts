@@ -70,7 +70,7 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const now = new Date()
   const participationSelect = {
     where:  { membre: { userId } },
-    select: { present: true, rsvp: true, ticketPaidAt: true, orderId: true },
+    select: { id: true, present: true, rsvp: true, ticketPaidAt: true, orderId: true, avis: { select: { id: true } } },
   }
 
   const LIMIT = 10

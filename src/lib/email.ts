@@ -1,4 +1,5 @@
 import { APP_NAME } from "@/config/brand"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 // Free-text user input (e.g. a custom message on a Devis/Facture send) interpolated into
 // an HTML email must be escaped — otherwise it's rendered as markup by the recipient's
@@ -223,8 +224,8 @@ export function rsvpConfirmationEmail(p: {
   ticketQr?:       TicketQr
   branding?:       EmailBranding
 }) {
-  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Participation confirmée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -264,7 +265,7 @@ export function sondageInvitationEmail(p: {
   branding?:       EmailBranding
 }) {
   const deadlineStr = p.deadline
-    ? p.deadline.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    ? p.deadline.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau sondage</h2>
@@ -297,7 +298,7 @@ export function checkInReceiptEmail(p: {
   eventDate:       Date
   branding?:       EmailBranding
 }) {
-  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Présence enregistrée ✓</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -325,7 +326,7 @@ export function paymentConfirmationEmail(p: {
   const amountStr = p.amount != null
     ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
     : "—"
-  const dateStr = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  const dateStr = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Paiement reçu</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -370,8 +371,8 @@ export function eventReminderEmail(p: {
     : days === 1
       ? "demain"
       : `dans ${days} jours`
-  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
+  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long" })
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Rappel — ${whenLabel}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -395,6 +396,30 @@ export function eventReminderEmail(p: {
   return {
     to:      p.email,
     subject: `Rappel — ${p.eventTitle} (${whenLabel})`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+export function eventReviewRequestEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  reviewUrl:       string
+  branding?:       EmailBranding
+}) {
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre avis compte</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
+      Pouvez-vous prendre un instant pour nous donner votre avis ?
+    </p>
+    ${btn("Donner mon avis", p.reviewUrl)}`
+  return {
+    to:      p.email,
+    subject: `Votre avis sur ${p.eventTitle}`,
     html:    layout(p.associationName, content, p.branding),
   }
 }
@@ -436,7 +461,7 @@ export function subscriptionPaymentFailedEmail(p: {
     ? p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
     : "—"
   const nextAttemptStr = p.nextAttemptAt
-    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le paiement de votre abonnement a échoué</h2>
@@ -580,8 +605,8 @@ export function ticketPurchaseEmail(p: {
   ticketQrs?:      TicketQr[]
   branding?:       EmailBranding
 }) {
-  const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const timeStr   = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr   = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const amountStr = Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const qtyLine   = p.quantity > 1 ? `<tr><td style="padding-bottom:10px;">
     <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Nombre de billets</span>
@@ -636,8 +661,8 @@ export function ticketQrDeliveryEmail(p: {
   ticketQr:        TicketQr
   branding?:       EmailBranding
 }) {
-  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre QR code d'entrée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -703,9 +728,9 @@ export function meetingInviteEmail(p: {
   const whenStr = p.instant
     ? "maintenant"
     : p.scheduledAt
-      ? p.scheduledAt.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }) +
+      ? p.scheduledAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" }) +
         " à " +
-        p.scheduledAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+        p.scheduledAt.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
       : "prochainement"
 
   const content = `
@@ -748,7 +773,7 @@ export function donConfirmationEmail(p: {
   branding?:           EmailBranding
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
-  const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
 
   const isCompany   = p.donorType === "COMPANY"
   const isPartial   = p.deductibleAmount != null && p.deductibleAmount < p.amount
@@ -838,7 +863,7 @@ export function donationSubscriptionPaymentFailedEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const nextAttemptStr = p.nextAttemptAt
-    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre don n'a pas abouti</h2>
@@ -1087,6 +1112,50 @@ export function membershipSignupAdminNotificationEmail(p: {
   }
 }
 
+// Sent to Evenement.adminNotificationEmail (opt-in, per événement — see
+// notifyEventRegistration) each time someone registers for that event. Distinct from the
+// in-app Notification every ADMIN/PRESIDENT/TRESORIER already gets regardless of this field:
+// this is for whoever runs the event and wants a real email the moment a seat goes, without
+// having to be logged in or watching the notification bell.
+export function evenementRegistrationAdminNotificationEmail(p: {
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  attendeeNames:   string[] // 1 for a single seat, N for a group order
+  amount:          number   // 0 for a free registration — the block below is then skipped
+  dashboardUrl:    string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const namesStr  = p.attendeeNames.join(", ")
+  const isGroup   = p.attendeeNames.length > 1
+  const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  // "Billet vendu" only when money actually changed hands — a free RSVP that announced
+  // itself as a sale would be worse than no notification at all.
+  const heading = p.amount > 0
+    ? (isGroup ? "Billets vendus" : "Billet vendu")
+    : (isGroup ? "Nouvelles inscriptions" : "Nouvelle inscription")
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      ${escapeHtml(namesStr)} ${isGroup ? "se sont inscrits" : "s'est inscrit(e)"} à
+      <strong>${escapeHtml(p.eventTitle)}</strong> — ${escapeHtml(dateStr)}.
+    </p>
+    ${p.amount > 0 ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>` : ""}
+    ${btn("Voir les inscrits", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `${heading} · ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function cotisationSubscriptionPaymentFailedEmail(p: {
   firstName:       string
   email:           string
@@ -1098,7 +1167,7 @@ export function cotisationSubscriptionPaymentFailedEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const nextAttemptStr = p.nextAttemptAt
-    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre cotisation n'a pas abouti</h2>
@@ -1158,7 +1227,7 @@ export function membershipInstallmentPaymentFailedEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const nextAttemptStr = p.nextAttemptAt
-    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+    ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre mensualité n'a pas abouti</h2>
@@ -1217,7 +1286,7 @@ export function boutiqueConfirmationEmail(p: {
   branding?:       EmailBranding
 }) {
   const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
-  const dateStr  = p.paidAt.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  const dateStr  = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
 
   const rows = p.items.map(i => {
     const unitStr = (i.unitPrice / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })

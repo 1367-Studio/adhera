@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { nextCotisationDeclarationNumber } from "@/lib/document-numbering"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 type CotisationForDeclaration = {
   id:                  string
@@ -65,7 +66,7 @@ export async function generateDeclarationCotisation(
 
   const amount  = parseFloat(cotisation.amount.toString())
   const paidAt  = cotisation.paidAt ?? new Date()
-  const dateStr = paidAt.toLocaleDateString("fr-FR")
+  const dateStr = paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE })
 
   const doc  = await PDFDocument.create()
   const font = await doc.embedFont(StandardFonts.Helvetica)

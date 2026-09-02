@@ -1243,6 +1243,9 @@
       "capacity": "Capacity",
       "capacityHint": "(empty = unlimited)",
       "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
+      "adminNotificationEmail": "Notification email",
+      "adminNotificationEmailPlaceholder": "you@association.org",
+      "adminNotificationEmailHint": "Optional — get an email each time someone registers for this event. Managers get an in-app notification either way.",
       "description": "Description",
       "descriptionPlaceholder": "Event details…",
       "toasts": {
@@ -1340,6 +1343,7 @@
       "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
       "actions": {
         "presences": "Attendance",
+        "avaliacoes": "Reviews",
         "copyLink": "Copy link",
         "edit": "Edit",
         "customFields": "Custom fields",
@@ -1453,10 +1457,14 @@
       "list": {
         "searchPlaceholder": "Search…",
         "addGuest": "Add a guest",
+        "addGuestTooltip": "Add someone who isn't a member of the association",
+        "addMember": "Add a member",
+        "addMemberTooltip": "Search for an existing member to add to this event",
         "noResults": "No results",
-        "noActiveMembers": "No active members",
+        "noParticipants": "No participants yet",
         "guestBadge": "Guest",
         "paidBadge": "Paid",
+        "freeBadge": "Free",
         "cancelPaymentTooltip": "Cancel this cash payment",
         "infoTooltip": "View registration details",
         "infoEmail": "Email",
@@ -1464,13 +1472,27 @@
         "infoAddress": "Address",
         "reservedBadge": "Reserved",
         "markPaid": "Mark as paid",
+        "markFreeTooltip": "Mark free (one-off exception, doesn't create a public tarif)",
         "editTitle": "Edit",
         "removeTitle": "Remove"
       },
       "addGuestModal": {
         "title": "Add a guest",
         "optional": "(optional)",
-        "submit": "Add and mark present"
+        "emailHint": "Without an email, this person won't be able to receive the invitation to leave a review after the event.",
+        "submit": "Add guest"
+      },
+      "addMemberModal": {
+        "title": "Add a member",
+        "searchPlaceholder": "Search for a member…",
+        "typeToSearch": "Type at least 2 letters to search",
+        "noResults": "No member found",
+        "allAdded": "Every active member is already on the list"
+      },
+      "tierPickerModal": {
+        "title": "Choose a ticket type",
+        "selectLabel": "Ticket type",
+        "confirm": "Confirm"
       },
       "editGuestModal": {
         "title": "Edit guest"
@@ -1492,8 +1514,10 @@
       },
       "toasts": {
         "markedPaid": "{name} marked as paid",
+        "markedFree": "{name} marked as free",
         "paymentCancelled": "Payment for {name} cancelled",
-        "guestAdded": "{name} added and marked present",
+        "guestAdded": "{name} added",
+        "memberAdded": "{name} added to the list",
         "guestUpdated": "Guest updated",
         "guestRemoved": "{name} removed from the list",
         "updateError": "Error updating",
@@ -1501,6 +1525,16 @@
         "qrRevoked": "QR Code disabled",
         "noMembersToExport": "No members to export",
         "linkCopied": "Link copied"
+      }
+    },
+    "avaliacoes": {
+      "empty": "No reviews yet",
+      "countLabel": "{count, plural, one {# review} other {# reviews}}",
+      "columns": {
+        "participant": "Participant",
+        "rating": "Rating",
+        "comment": "Comment",
+        "date": "Date"
       }
     }
   },
@@ -2582,10 +2616,11 @@
         },
         "tiers": {
           "title": "Tiers",
-          "hint": "Tiers offered on this membership form.",
+          "hint": "Tiers offered on this membership form. Drag and drop to set the order they appear in on the public form.",
           "noTiers": "No tiers",
           "addTier": "Add a tier",
           "removeTier": "Remove tier",
+          "reorderTier": "Drag to reorder",
           "labelField": "Label",
           "labelPlaceholder": "E.g. Adult tier",
           "amountField": "Amount (€)",
@@ -4042,6 +4077,7 @@
         "evenementUpdated": "Event updated",
         "evenementDeleted": "Event deleted",
         "presenceMarked": "Attendance marked",
+        "participantAdded": "Participant added",
         "rsvpUpdated": "RSVP updated",
         "participationGuestUpdated": "Guest updated",
         "participationGuestRemoved": "Guest removed",
@@ -4049,6 +4085,7 @@
         "participationPublicCancelled": "Public registration cancelled",
         "ticketCheckoutStarted": "Payment started",
         "ticketPaid": "Ticket paid",
+        "ticketMarkedFree": "Ticket marked free",
         "ticketPaymentCancelled": "Payment cancelled",
         "ticketRefunded": "Ticket refunded",
         "evenementQrGenerated": "Check-in QR generated",

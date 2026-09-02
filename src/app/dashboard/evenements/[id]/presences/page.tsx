@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, InfoIcon, PaperPlaneRightIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, ScanIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, GiftIcon, InfoIcon, PaperPlaneRightIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, ScanIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
@@ -23,6 +23,8 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { Modal } from "@/components/ui/modal"
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { SelectField } from "@/components/ui/select-field"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
@@ -41,6 +43,7 @@ type PresenceRow = {
   present:         boolean
   rsvp:            string | null
   ticketPaidAt:    string | null
+  amount:          string | null
   stripeSessionId: string | null
   ticketTypeLabel: string | null
   isGuest:         boolean
@@ -108,6 +111,9 @@ export default function PresencesPage() {
   const qc      = useQueryClient()
   const user    = useCurrentUser()
   const RSVP_LABELS = getRsvpConfig(t)
+  // Mirrors FREE_MANAGERS server-side (src/app/api/evenements/[id]/participations/
+  // route.ts) — hiding the action for roles that would just get a 403 back.
+  const canMarkFree = user.role === "ADMIN" || user.role === "PRESIDENT"
 
   // Local QR state — initialized from server data, updated immediately after mutations
   const [qrToken, setQrToken]           = useState<string | null>(null)
@@ -119,6 +125,10 @@ export default function PresencesPage() {
   const [revokeConfirmOpen,     setRevokeConfirmOpen]     = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
   const [addGuestOpen, setAddGuestOpen] = useState(false)
+  const [addMemberOpen, setAddMemberOpen] = useState(false)
+  const [addingMemberId, setAddingMemberId] = useState<string | null>(null)
+  const [memberQuery, setMemberQuery] = useState("")
+  const [debouncedMemberQuery, setDebouncedMemberQuery] = useState("")
   const [guestFirstName, setGuestFirstName] = useState("")
   const [guestLastName,  setGuestLastName]  = useState("")
   const [guestEmail,     setGuestEmail]     = useState("")
@@ -129,6 +139,8 @@ export default function PresencesPage() {
   const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
   const [infoTarget, setInfoTarget]     = useState<PresenceRow | null>(null)
   const [sendingTickets, setSendingTickets] = useState(false)
+  const [tierPickerTarget, setTierPickerTarget] = useState<PresenceRow | null>(null)
+  const [selectedTierId,   setSelectedTierId]   = useState("")
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -143,6 +155,25 @@ export default function PresencesPage() {
   }>({
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
+  })
+
+  // Fetched only while the "Ajouter un membre" modal is open — this is the pool the
+  // check-in list used to show unconditionally for every event (see the API route's own
+  // comment); it's now opt-in, one member at a time, to stop every event page from
+  // looking like the whole membership roster is "in" it. Searched server-side (debounced)
+  // rather than fetched once and filtered client-side — a client-side cap would silently
+  // hide members past it, defeating the point on exactly the large (e.g. AssoConnect-
+  // imported) rosters that motivated this change in the first place.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedMemberQuery(memberQuery), 250)
+    return () => clearTimeout(timer)
+  }, [memberQuery])
+
+  const memberQueryReady = debouncedMemberQuery.trim().length >= 2
+  const { data: activeMembres = [], isLoading: loadingActiveMembres } = useQuery<{ id: string; firstName: string; lastName: string }[]>({
+    queryKey: ["membres-active-for-event", debouncedMemberQuery],
+    queryFn:  () => fetch(`/api/membres?status=ACTIF&search=${encodeURIComponent(debouncedMemberQuery.trim())}`).then(r => r.json()),
+    enabled:  addMemberOpen && memberQueryReady,
   })
 
   // Merge local state with server state (local takes precedence after mutations)
@@ -176,6 +207,11 @@ export default function PresencesPage() {
   const { data: rows = [], isLoading: loadingRows } = useParticipations(id)
 
   const typed          = rows as PresenceRow[]
+  const linkedMembreIds = useMemo(() => new Set(typed.filter(r => r.membreId).map(r => r.membreId!)), [typed])
+  const memberCandidates = useMemo(
+    () => activeMembres.filter(m => !linkedMembreIds.has(m.id)),
+    [activeMembres, linkedMembreIds],
+  )
   const hasFee         = !!ev?.ticketTypes.length || (!!ev?.price && Number(ev.price) > 0)
   const hasMultipleTicketTypes = (ev?.ticketTypes.length ?? 0) > 1
   const presentsCount  = typed.filter(r => r.present).length
@@ -196,15 +232,45 @@ export default function PresencesPage() {
     ? typed.filter(r => `${r.lastName} ${r.firstName}`.toLowerCase().includes(search.toLowerCase()))
     : typed
 
-  function handleMarkPaid(row: PresenceRow) {
+  function submitMarkPaid(row: PresenceRow, ticketTypeId?: string) {
     const key = rowKey(row)
     if (payingIds.has(key)) return
     setPayingIds(prev => new Set(prev).add(key))
-    markPaid.mutate(rowRef(row), {
-      onSuccess: () => toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` })),
+    markPaid.mutate({ ...rowRef(row), ticketTypeId }, {
+      onSuccess: () => {
+        toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` }))
+        setTierPickerTarget(null)
+      },
       onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
+  }
+
+  // Admin-only exemption (VIP, staff, speaker…) — distinct from a €0 tarif on the event
+  // itself, which would be publicly selectable by anyone registering. No tier picker: it
+  // applies to this one row regardless of how many tarifs the event has.
+  function submitMarkFree(row: PresenceRow) {
+    const key = rowKey(row)
+    if (payingIds.has(key)) return
+    setPayingIds(prev => new Set(prev).add(key))
+    markPaid.mutate({ ...rowRef(row), free: true }, {
+      onSuccess: () => toast.success(t("evenements.presences.toasts.markedFree", { name: `${row.firstName} ${row.lastName}` })),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
+      onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
+    })
+  }
+
+  // A registration that never picked a tier (typically a walk-in added at the door) is
+  // ambiguous once the event has more than one — ask instead of silently charging the
+  // cheapest one. Anyone who already has a tier, or an event with at most one, pays in
+  // a single click as before.
+  function handleMarkPaid(row: PresenceRow) {
+    if (hasMultipleTicketTypes && !row.ticketTypeLabel) {
+      setSelectedTierId("")
+      setTierPickerTarget(row)
+      return
+    }
+    submitMarkPaid(row)
   }
 
   function handleCancelPayment(row: PresenceRow) {
@@ -227,6 +293,27 @@ export default function PresencesPage() {
       setGuestFirstName(""); setGuestLastName(""); setGuestEmail("")
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // Reuses the same mutation as toggling presence on a row — POST lazily creates the
+  // Participation for this member. present stays false on purpose, same as adding a
+  // guest: cmdk selects an item on Enter as well as click, so auto-marking present here
+  // would let a stray Enter while typing a search silently check someone in who never
+  // showed up. Adding them to the list is enough; presence is still one click away.
+  async function handleAddMember(m: { id: string; firstName: string; lastName: string }) {
+    if (addingMemberId) return
+    setAddingMemberId(m.id)
+    try {
+      await toggle.mutateAsync({ membreId: m.id, present: false })
+      toast.success(t("evenements.presences.toasts.memberAdded", { name: `${m.firstName} ${m.lastName}` }))
+      setAddMemberOpen(false)
+      setMemberQuery("")
+      setDebouncedMemberQuery("")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    } finally {
+      setAddingMemberId(null)
     }
   }
 
@@ -394,7 +481,10 @@ export default function PresencesPage() {
     y += 10
 
     // ── Stats chips ─────────────────────────────────────────────────────────
-    const paidCount = hasFee ? typed.filter(r => r.ticketPaidAt != null).length : 0
+    // "Payé" here means real money changed hands — a "Marquer gratuit" exemption or a
+    // genuine €0 tarif both set ticketPaidAt but must never inflate this count (see the
+    // matching fix in export/route.ts's Paiement column).
+    const paidCount = hasFee ? typed.filter(r => r.ticketPaidAt != null && Number(r.amount ?? 0) > 0).length : 0
     const stats: { value: string; label: string }[] = [
       { value: String(presentsCount), label: presentsCount !== 1 ? "présents" : "présent" },
       ...(capacity ? [{ value: String(capacity), label: "capacité" }] : []),
@@ -458,7 +548,7 @@ export default function PresencesPage() {
           i + 1,
           `${r.lastName} ${r.firstName}`,
           r.present ? "Oui" : "",
-          r.ticketPaidAt ? "Payé" : r.rsvp === "CONFIRME" ? "Réservé" : "—",
+          r.ticketPaidAt ? (Number(r.amount ?? 0) === 0 ? "Gratuit" : "Payé") : r.rsvp === "CONFIRME" ? "Réservé" : "—",
           ...(showInfoCol ? [contactLine(r)] : []),
         ]),
         columnStyles: {
@@ -475,7 +565,7 @@ export default function PresencesPage() {
           if (data.column.index === 3) {
             if (data.cell.raw === "Payé")    data.cell.styles.textColor = [22, 163, 74]
             if (data.cell.raw === "Réservé") data.cell.styles.textColor = [37, 99, 235]
-            if (data.cell.raw === "—")       data.cell.styles.textColor = ZINC
+            if (data.cell.raw === "Gratuit" || data.cell.raw === "—") data.cell.styles.textColor = ZINC
           }
         },
       })
@@ -774,10 +864,26 @@ export default function PresencesPage() {
               />
             </div>
             {!isPast && (
-              <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddGuestOpen(true)}>
-                <UserPlusIcon className="mr-1.5 size-3.5" />
-                {t("evenements.presences.list.addGuest")}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger render={<span />}>
+                    <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddMemberOpen(true)}>
+                      <UserPlusIcon className="mr-1.5 size-3.5" />
+                      {t("evenements.presences.list.addMember")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-56">{t("evenements.presences.list.addMemberTooltip")}</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger render={<span />}>
+                    <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddGuestOpen(true)}>
+                      <UserPlusIcon className="mr-1.5 size-3.5" />
+                      {t("evenements.presences.list.addGuest")}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-56">{t("evenements.presences.list.addGuestTooltip")}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
 
@@ -789,7 +895,7 @@ export default function PresencesPage() {
             </div>
           ) : filtered.length === 0 ? (
             <p className="py-10 text-center text-sm text-muted-foreground">
-              {search ? t("evenements.presences.list.noResults") : t("evenements.presences.list.noActiveMembers")}
+              {search ? t("evenements.presences.list.noResults") : t("evenements.presences.list.noParticipants")}
             </p>
           ) : (
             <div className="divide-y max-h-[60vh] overflow-y-auto">
@@ -844,9 +950,18 @@ export default function PresencesPage() {
                   {hasFee && (
                     row.ticketPaidAt ? (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="flex items-center gap-1 text-xs font-medium text-green-600 dark:text-green-400">
-                          <CheckIcon className="size-3" />
-                          {t("evenements.presences.list.paidBadge")}
+                        <span className={cn(
+                          "flex items-center gap-1 text-xs font-medium",
+                          row.amount != null && Number(row.amount) === 0
+                            ? "text-muted-foreground"
+                            : "text-green-600 dark:text-green-400",
+                        )}>
+                          {row.amount != null && Number(row.amount) === 0
+                            ? <GiftIcon className="size-3" />
+                            : <CheckIcon className="size-3" />}
+                          {row.amount != null && Number(row.amount) === 0
+                            ? t("evenements.presences.list.freeBadge")
+                            : t("evenements.presences.list.paidBadge")}
                         </span>
                         {!row.stripeSessionId && (
                           <TooltipProvider>
@@ -881,17 +996,53 @@ export default function PresencesPage() {
                           <MoneyIcon className="size-3" />
                           {t("evenements.presences.list.markPaid")}
                         </button>
+                        {canMarkFree && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger render={<span />}>
+                                <button
+                                  type="button"
+                                  onClick={() => submitMarkFree(row)}
+                                  disabled={payingIds.has(rowKey(row))}
+                                  className="flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                >
+                                  <GiftIcon className="size-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t("evenements.presences.list.markFreeTooltip")}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
                       </div>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => handleMarkPaid(row)}
-                        disabled={payingIds.has(rowKey(row))}
-                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
-                      >
-                        <MoneyIcon className="size-3" />
-                        {t("evenements.presences.list.markPaid")}
-                      </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleMarkPaid(row)}
+                          disabled={payingIds.has(rowKey(row))}
+                          className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                        >
+                          <MoneyIcon className="size-3" />
+                          {t("evenements.presences.list.markPaid")}
+                        </button>
+                        {canMarkFree && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger render={<span />}>
+                                <button
+                                  type="button"
+                                  onClick={() => submitMarkFree(row)}
+                                  disabled={payingIds.has(rowKey(row))}
+                                  className="flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                >
+                                  <GiftIcon className="size-3.5" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>{t("evenements.presences.list.markFreeTooltip")}</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
                     )
                   )}
 
@@ -988,7 +1139,95 @@ export default function PresencesPage() {
               onChange={e => setGuestEmail(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
             />
+            <p className="text-xs text-muted-foreground">{t("evenements.presences.addGuestModal.emailHint")}</p>
           </div>
+        </div>
+      </Modal>
+
+      {/* Find and add an existing member, without listing every active member on the
+          page by default (see the participations API's own comment). Presence itself
+          isn't set here — see handleAddMember. */}
+      <Modal
+        open={addMemberOpen}
+        onOpenChange={(open) => {
+          setAddMemberOpen(open)
+          if (!open) { setMemberQuery(""); setDebouncedMemberQuery("") }
+        }}
+        title={t("evenements.presences.addMemberModal.title")}
+        size="sm"
+      >
+        {/* shouldFilter=false: the association's active members are searched server-side
+            (see the query above), not filtered client-side against a locally fetched
+            list — cmdk's own fuzzy filter would otherwise re-narrow (and could hide)
+            results it never fetched in the first place. */}
+        <Command className="rounded-lg! border" shouldFilter={false}>
+          <CommandInput
+            value={memberQuery}
+            onValueChange={setMemberQuery}
+            placeholder={t("evenements.presences.addMemberModal.searchPlaceholder")}
+          />
+          <CommandList>
+            {!memberQueryReady ? (
+              <CommandEmpty>{t("evenements.presences.addMemberModal.typeToSearch")}</CommandEmpty>
+            ) : loadingActiveMembres ? (
+              <div className="p-3 space-y-2">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-8 rounded-md bg-muted animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <>
+                <CommandEmpty>
+                  {activeMembres.length > 0 && memberCandidates.length === 0
+                    ? t("evenements.presences.addMemberModal.allAdded")
+                    : t("evenements.presences.addMemberModal.noResults")}
+                </CommandEmpty>
+                {memberCandidates.map(m => (
+                  <CommandItem
+                    key={m.id}
+                    value={`${m.lastName} ${m.firstName}`}
+                    disabled={addingMemberId === m.id}
+                    onSelect={() => handleAddMember(m)}
+                  >
+                    {m.lastName} {m.firstName}
+                  </CommandItem>
+                ))}
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </Modal>
+
+      {/* Which tier to charge, when marking paid a registration that never picked one */}
+      <Modal
+        open={!!tierPickerTarget}
+        onOpenChange={(open) => !open && setTierPickerTarget(null)}
+        title={t("evenements.presences.tierPickerModal.title")}
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setTierPickerTarget(null)}>{t("common.cancel")}</Button>
+            <Button
+              loading={tierPickerTarget ? payingIds.has(rowKey(tierPickerTarget)) : false}
+              disabled={!selectedTierId}
+              onClick={() => tierPickerTarget && submitMarkPaid(tierPickerTarget, selectedTierId)}
+            >
+              <MoneyIcon className="mr-1.5 size-4" />
+              {t("evenements.presences.tierPickerModal.confirm")}
+            </Button>
+          </>
+        }
+      >
+        <div className="py-2">
+          <SelectField
+            label={t("evenements.presences.tierPickerModal.selectLabel")}
+            value={selectedTierId}
+            onValueChange={setSelectedTierId}
+            options={(ev?.ticketTypes ?? []).map(tt => ({
+              value: tt.id,
+              label: `${tt.label} — ${Number(tt.price).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`,
+            }))}
+          />
         </div>
       </Modal>
 
