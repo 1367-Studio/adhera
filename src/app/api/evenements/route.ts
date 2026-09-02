@@ -111,7 +111,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, ...rest } = parsed.data
+  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, ...rest } = parsed.data
   const evenement = await prisma.evenement.create({
     data: {
       ...rest,
@@ -125,6 +125,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       lng:         lng      ?? null,
       price:       price    ?? null,
       capacity:    capacity ?? null,
+      adminNotificationEmail: adminNotificationEmail || null,
     },
   })
 

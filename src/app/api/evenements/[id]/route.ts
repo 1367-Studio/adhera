@@ -38,7 +38,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, ...rest } = parsed.data
+  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, ...rest } = parsed.data
 
   if (capacity != null) {
     const reserved = await prisma.participation.count({
@@ -65,6 +65,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(lng         !== undefined ? { lng }                              : {}),
       ...(price       !== undefined ? { price:    price    ?? null }       : {}),
       ...(capacity    !== undefined ? { capacity: capacity ?? null }       : {}),
+      ...(adminNotificationEmail !== undefined ? { adminNotificationEmail: adminNotificationEmail || null } : {}),
     },
   })
   await revalidatePublicSiteFor(associationId)

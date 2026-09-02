@@ -1111,6 +1111,50 @@ export function membershipSignupAdminNotificationEmail(p: {
   }
 }
 
+// Sent to Evenement.adminNotificationEmail (opt-in, per événement — see
+// notifyEventRegistration) each time someone registers for that event. Distinct from the
+// in-app Notification every ADMIN/PRESIDENT/TRESORIER already gets regardless of this field:
+// this is for whoever runs the event and wants a real email the moment a seat goes, without
+// having to be logged in or watching the notification bell.
+export function evenementRegistrationAdminNotificationEmail(p: {
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  attendeeNames:   string[] // 1 for a single seat, N for a group order
+  amount:          number   // 0 for a free registration — the block below is then skipped
+  dashboardUrl:    string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const namesStr  = p.attendeeNames.join(", ")
+  const isGroup   = p.attendeeNames.length > 1
+  const dateStr   = p.eventDate.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  // "Billet vendu" only when money actually changed hands — a free RSVP that announced
+  // itself as a sale would be worse than no notification at all.
+  const heading = p.amount > 0
+    ? (isGroup ? "Billets vendus" : "Billet vendu")
+    : (isGroup ? "Nouvelles inscriptions" : "Nouvelle inscription")
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      ${escapeHtml(namesStr)} ${isGroup ? "se sont inscrits" : "s'est inscrit(e)"} à
+      <strong>${escapeHtml(p.eventTitle)}</strong> — ${escapeHtml(dateStr)}.
+    </p>
+    ${p.amount > 0 ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>` : ""}
+    ${btn("Voir les inscrits", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `${heading} · ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function cotisationSubscriptionPaymentFailedEmail(p: {
   firstName:       string
   email:           string

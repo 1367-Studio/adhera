@@ -41,6 +41,7 @@ type Evenement = {
   description: string | null
   imageUrl:    string | null
   capacity:    number | null
+  adminNotificationEmail: string | null
   qrToken:     string | null
   qrExpiresAt: string | null
   ticketTypes:    EvenementTicketType[]
@@ -91,7 +92,7 @@ export function EvenementsView() {
   }
 
   function calendarEventToEvenement(ev: CalendarEvenement): Evenement {
-    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, ticketTypes: ev.ticketTypes, _count: ev._count, confirmedCount: 0 }
+    return { id: ev.id, title: ev.title, date: ev.date, endDate: ev.endDate, location: ev.location, lat: ev.lat, lng: ev.lng, price: ev.price, description: ev.description, imageUrl: ev.imageUrl, capacity: ev.capacity, adminNotificationEmail: ev.adminNotificationEmail, qrToken: ev.qrToken, qrExpiresAt: ev.qrExpiresAt, ticketTypes: ev.ticketTypes, _count: ev._count, confirmedCount: 0 }
   }
 
   function handleCalendarEditClick(ev: CalendarEvenement)      { setEditTarget(calendarEventToEvenement(ev)) }
@@ -352,6 +353,7 @@ export function EvenementsView() {
             lng:         editTarget.lng      ?? undefined,
             price:       editTarget.price    != null ? Number(editTarget.price)    : undefined,
             capacity:    editTarget.capacity != null ? Number(editTarget.capacity) : undefined,
+            adminNotificationEmail: editTarget.adminNotificationEmail ?? "",
           } : undefined}
           hasTicketTypes={!!editTarget?.ticketTypes.length}
           onSubmit={handleUpdate}

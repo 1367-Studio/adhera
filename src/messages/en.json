@@ -1243,6 +1243,9 @@
       "capacity": "Capacity",
       "capacityHint": "(empty = unlimited)",
       "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
+      "adminNotificationEmail": "Notification email",
+      "adminNotificationEmailPlaceholder": "you@association.org",
+      "adminNotificationEmailHint": "Optional — get an email each time someone registers for this event. Managers get an in-app notification either way.",
       "description": "Description",
       "descriptionPlaceholder": "Event details…",
       "toasts": {

@@ -171,6 +171,7 @@ export type CalendarEvenement = {
   description: string | null
   imageUrl:    string | null
   capacity:    number | null
+  adminNotificationEmail: string | null
   qrToken:     string | null
   qrExpiresAt: string | null
   ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]

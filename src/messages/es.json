@@ -1243,6 +1243,9 @@
       "capacity": "Capacidad",
       "capacityHint": "(vacío = ilimitada)",
       "capacityUnit": "{count, plural, one {# plaza} other {# plazas}}",
+      "adminNotificationEmail": "Email de notificación",
+      "adminNotificationEmailPlaceholder": "tu@asociacion.es",
+      "adminNotificationEmailHint": "Opcional — recibe un email cada vez que alguien se inscriba a este evento. Los gestores reciben una notificación en la aplicación de todos modos.",
       "description": "Descripción",
       "descriptionPlaceholder": "Detalles del evento…",
       "toasts": {
