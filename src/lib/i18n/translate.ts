@@ -4,12 +4,14 @@ import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 
 const AZURE_ENDPOINT = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0&textType=html"
 
-const AZURE_LOCALE_MAP: Record<Exclude<Locale, "fr">, string> = {
-  en: "en",
-  pt: "pt",
+// Azure accepts the BCP-47 tag as-is for every EU language, so only the exceptions are
+// listed. Written as an override table rather than an exhaustive map on purpose: enabling a
+// new locale in SUPPORTED_LOCALES must not also require an edit here, or association-authored
+// content would silently keep coming back in French for that language.
+const AZURE_TAG_OVERRIDES: Record<string, string> = {
   "pt-PT": "pt-pt",
-  es: "es",
 }
+const azureTag = (locale: string): string => AZURE_TAG_OVERRIDES[locale] ?? locale
 
 function hashText(text: string): string {
   return crypto.createHash("md5").update(text).digest("hex").slice(0, 16)
@@ -37,7 +39,7 @@ async function azureTranslate(texts: string[], targetLang: string): Promise<stri
 
 // Hash-keyed cache: identical text (even across associations) is translated once per
 // locale and reused until the source text changes (new text → new hash → cache miss).
-async function batchTranslate(texts: string[], locale: Exclude<Locale, "fr">): Promise<string[]> {
+async function batchTranslate(texts: string[], locale: Exclude<Locale, typeof DEFAULT_LOCALE>): Promise<string[]> {
   const hashes = texts.map(hashText)
 
   const cached   = await prisma.translation.findMany({ where: { locale, hash: { in: hashes } } })
@@ -52,7 +54,7 @@ async function batchTranslate(texts: string[], locale: Exclude<Locale, "fr">): P
   if (misses.length > 0) {
     try {
       // Azure supports up to 1000 strings per request — all misses in one call.
-      const translated = await azureTranslate(misses.map((m) => m.text), AZURE_LOCALE_MAP[locale])
+      const translated = await azureTranslate(misses.map((m) => m.text), azureTag(locale))
 
       await prisma.translation.createMany({
         data: misses.map((m, i) => ({ hash: m.hash, locale, translated: translated[i] })),
@@ -89,7 +91,7 @@ export async function translateFields<T extends Record<string, unknown>>(
   if (texts.size === 0) return items
 
   const uniqueTexts     = [...texts]
-  const translated      = await batchTranslate(uniqueTexts, locale as Exclude<Locale, "fr">)
+  const translated      = await batchTranslate(uniqueTexts, locale as Exclude<Locale, typeof DEFAULT_LOCALE>)
   const translationMap  = new Map(uniqueTexts.map((t, i) => [t, translated[i]]))
 
   return items.map((item) => {

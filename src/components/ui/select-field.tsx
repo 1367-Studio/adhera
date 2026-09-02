@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef } from "react"
+import { useTranslations } from "next-intl"
 import { Label } from "@/components/ui/label"
 import {
   Select,
@@ -34,6 +35,7 @@ interface SelectFieldProps {
 
 export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
   ({ label, options, value, onValueChange, placeholder, error, required, disabled, id }, ref) => {
+    const t = useTranslations("common")
     const fieldId     = id ?? label.toLowerCase().replace(/\s+/g, "-")
     const selectedLabel = options.find((o) => o.value === value)?.label
 
@@ -61,7 +63,7 @@ export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
             )}
           >
             <span className={cn("flex flex-1 text-left text-sm truncate", !selectedLabel && "text-muted-foreground")}>
-              {selectedLabel ?? (placeholder ?? "Choisir…")}
+              {selectedLabel ?? (placeholder ?? t("choosePlaceholder"))}
             </span>
           </SelectTrigger>
           <SelectContent>

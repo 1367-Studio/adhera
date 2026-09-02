@@ -19,6 +19,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -27,6 +28,54 @@ const MIN_ITEM_AMOUNT = 1
 // Bounds both Stripe's line_items array and how many rows a single submission can create —
 // see handleMultiRegistrantCheckout below.
 const MAX_REGISTRANTS = 10
+
+type ResolvedAddon = {
+  tierId:   string
+  itemType: "ADDON" | "DONATION"
+  label:    string
+  amount:   number
+  receiptMode:      "NONE" | "FULL" | "PARTIAL"
+  deductibleAmount: number | null
+}
+type AddonTier = {
+  id: string; itemType: string; label: string; freeAmount: boolean
+  amount: Prisma.Decimal | null; receiptMode: "NONE" | "FULL" | "PARTIAL"
+  ineligibleAmount: Prisma.Decimal | null
+}
+
+// Options (add-ons / don embarqué) — validées et re-tarifées server-side, jamais reprises
+// telles quelles du payload, même raisonnement que le montant de la tarif principale. Partagé
+// entre le parcours à un seul adhérent et l'inscription groupée : deux copies de ce barème
+// auraient fini par diverger, et c'est du code qui décide de ce qui est facturé.
+function resolveAddons(
+  tiers: AddonTier[],
+  requested: { tierId: string; amount?: number }[],
+): { ok: true; addons: ResolvedAddon[] } | { ok: false; error: string } {
+  if (new Set(requested.map(a => a.tierId)).size !== requested.length)
+    return { ok: false, error: "Options en double" }
+
+  const addons: ResolvedAddon[] = []
+  for (const a of requested) {
+    const addonTier = tiers.find(t => t.id === a.tierId && t.itemType !== "MEMBERSHIP")
+    if (!addonTier) return { ok: false, error: "Option invalide" }
+    const itemAmount = addonTier.freeAmount ? a.amount : Number(addonTier.amount)
+    if (!itemAmount || itemAmount <= 0)
+      return { ok: false, error: `Montant invalide pour « ${addonTier.label} »` }
+    // Un ADDON à montant libre sans minimum configuré (addonTier.amount == null) retombe sur
+    // le même plancher que le formulaire applique déjà au total (MIN_AMOUNT côté client) —
+    // sans ça, rien n'empêchait un centime symbolique.
+    const itemMinimum = addonTier.amount != null ? Number(addonTier.amount) : MIN_ITEM_AMOUNT
+    if (addonTier.freeAmount && itemAmount < itemMinimum)
+      return { ok: false, error: `Le montant minimum pour « ${addonTier.label} » est de ${itemMinimum}€.` }
+    addons.push({
+      tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION",
+      label: addonTier.label, amount: itemAmount,
+      receiptMode:      addonTier.receiptMode,
+      deductibleAmount: eligibleReceiptAmount(itemAmount, addonTier.receiptMode, addonTier.ineligibleAmount != null ? Number(addonTier.ineligibleAmount) : null),
+    })
+  }
+  return { ok: true, addons }
+}
 
 const schema = z.object({
   tierId:      z.string().min(1),
@@ -91,11 +140,18 @@ const registrantSchema = z.object({
 // A deliberately separate schema/branch (handleMultiRegistrantCheckout below) rather than
 // folding this into `schema` above — that would have meant making tierId/firstName/lastName
 // optional there too, weakening the single-registrant path's own types for zero benefit to
-// it. Kept minimal: no addons/paymentMethod (Stripe-only, one tarif per person, no add-ons/
-// donation embarquée — see the Fase 2 plan's own scoping note) and no per-registrant email
-// (one shared login for the whole submission).
+// it. Kept minimal: Stripe-only, one tarif per person, and no per-registrant email (one shared
+// login for the whole submission). `addons` and `products` are the two exceptions — never
+// attached to a particular registrant, always attributed in full to registrants[0], the only
+// person in the group with a real email/login.
 const multiSchema = z.object({
   registrants: z.array(registrantSchema).min(2).max(MAX_REGISTRANTS),
+  // Même forme que `addons` du parcours à un seul adhérent — un groupe doit pouvoir ajouter
+  // un don ou une option comme n'importe quel adhérent seul.
+  addons:      z.array(z.object({
+    tierId: z.string().min(1),
+    amount: z.number().positive().max(100000).optional(),
+  })).max(20).optional().default([]),
   email:       z.string().email().max(200),
   password:    z.string().min(8).optional(), // requis seulement si l'adhésion sera immédiate
   conditionsAgreed: z.boolean().optional().default(false),
@@ -205,31 +261,9 @@ export async function POST(
   const periodStart = tier.fixedPeriodEnd || tier.durationMonths ? now : null
   const periodEnd    = tier.fixedPeriodEnd ?? (tier.durationMonths ? addMonths(now, tier.durationMonths) : null)
 
-  // Options (add-ons/don embarqué) — validées et re-tarifées server-side, jamais reprises
-  // telles quelles du payload, même raisonnement que le montant de la tarif principale.
-  const addonTierIds = new Set(parsed.data.addons.map(a => a.tierId))
-  if (addonTierIds.size !== parsed.data.addons.length)
-    return NextResponse.json({ error: "Options en double" }, { status: 422 })
-
-  const resolvedAddons: { tierId: string; itemType: "ADDON" | "DONATION"; label: string; amount: number; receiptMode: "NONE" | "FULL" | "PARTIAL"; deductibleAmount: number | null }[] = []
-  for (const a of parsed.data.addons) {
-    const addonTier = form.tiers.find(t => t.id === a.tierId && t.itemType !== "MEMBERSHIP")
-    if (!addonTier) return NextResponse.json({ error: "Option invalide" }, { status: 422 })
-    const itemAmount = addonTier.freeAmount ? a.amount : Number(addonTier.amount)
-    if (!itemAmount || itemAmount <= 0)
-      return NextResponse.json({ error: `Montant invalide pour « ${addonTier.label} »` }, { status: 422 })
-    // Un ADDON à montant libre sans minimum configuré (addonTier.amount == null) retombe sur
-    // le même plancher que le formulaire applique déjà au total (MIN_AMOUNT côté client) —
-    // sans ça, rien n'empêchait un centime symbolique.
-    const itemMinimum = addonTier.amount != null ? Number(addonTier.amount) : MIN_ITEM_AMOUNT
-    if (addonTier.freeAmount && itemAmount < itemMinimum)
-      return NextResponse.json({ error: `Le montant minimum pour « ${addonTier.label} » est de ${itemMinimum}€.` }, { status: 422 })
-    resolvedAddons.push({
-      tierId: addonTier.id, itemType: addonTier.itemType as "ADDON" | "DONATION", label: addonTier.label, amount: itemAmount,
-      receiptMode:      addonTier.receiptMode,
-      deductibleAmount: addonTier.deductibleAmount != null ? Number(addonTier.deductibleAmount) : null,
-    })
-  }
+  const addonsResult = resolveAddons(form.tiers, parsed.data.addons)
+  if (!addonsResult.ok) return NextResponse.json({ error: addonsResult.error }, { status: 422 })
+  const resolvedAddons = addonsResult.addons
   const totalAddons = resolvedAddons.reduce((sum, a) => sum + a.amount, 0)
 
   // Produits Boutique proposés en fin de formulaire — validés et re-tarifés server-side à
@@ -387,7 +421,7 @@ export async function POST(
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         return { user, membre }
@@ -407,7 +441,7 @@ export async function POST(
       firstName, email, associationName: assoc.name, amount: 0,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
-      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
+      deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -467,6 +501,18 @@ export async function POST(
   const membershipAmount = tier.free ? 0 : (tier.freeAmount ? parsed.data.amount : Number(tier.amount))
   if (!tier.free && (!membershipAmount || membershipAmount <= 0))
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
+  // Même plancher que le parcours multi-inscrits pour un tarif à montant libre sans minimum
+  // configuré (voir le commentaire de MIN_ITEM_AMOUNT plus haut).
+  if (!tier.free && tier.freeAmount) {
+    const tierMinimum = tier.amount != null ? Number(tier.amount) : MIN_ITEM_AMOUNT
+    if ((membershipAmount ?? 0) < tierMinimum)
+      return NextResponse.json({ error: `Le montant minimum pour « ${tier.label} » est de ${tierMinimum}€.` }, { status: 422 })
+  }
+  // Le montant non éligible est une part fixe du tarif — un adhérent payant moins que cette
+  // part (montant libre en dessous du non-éligible configuré) donnerait un reçu à montant
+  // négatif (voir eligibleReceiptAmount).
+  if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && (membershipAmount ?? 0) < Number(tier.ineligibleAmount))
+    return NextResponse.json({ error: "Le montant payé ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce tarif." }, { status: 422 })
   const amount = (membershipAmount ?? 0) + totalAddons // amount total réellement dû (tarif + options)
   if (!amount || amount <= 0)
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
@@ -509,7 +555,7 @@ export async function POST(
             amount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         return { user, membre }
@@ -528,7 +574,7 @@ export async function POST(
       offlinePending: true, offlineInstructions: form.offlineInstructions,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
-      deductibleAmount: tier.deductibleAmount != null ? Number(tier.deductibleAmount) : undefined,
+      deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({
@@ -593,7 +639,7 @@ export async function POST(
     periodEnd:        periodEnd ? periodEnd.toISOString() : "",
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
     receiptMode:      tier.receiptMode,
-    deductibleAmount: tier.receiptMode === "PARTIAL" && tier.deductibleAmount != null ? tier.deductibleAmount.toString() : "",
+    deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)?.toString() ?? "",
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -846,6 +892,10 @@ async function handleMultiRegistrantCheckout(
     const tierMinimum = tier.amount != null ? Number(tier.amount) : MIN_ITEM_AMOUNT
     if (!tier.free && tier.freeAmount && amount < tierMinimum)
       return NextResponse.json({ error: `Le montant minimum pour « ${tier.label} » est de ${tierMinimum}€.` }, { status: 422 })
+    // Même garde-fou que le parcours à un seul adhérent — voir le commentaire
+    // eligibleReceiptAmount plus haut.
+    if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && amount < Number(tier.ineligibleAmount))
+      return NextResponse.json({ error: `Le montant payé pour ${r.firstName} ${r.lastName} ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce tarif.` }, { status: 422 })
 
     // Même matrice de champs standards que le parcours à un seul adhérent, appliquée à
     // chaque personne individuellement — chaque bloc "Adhérent" produit son propre Membre.
@@ -884,7 +934,12 @@ async function handleMultiRegistrantCheckout(
   // "tous gratuits" plus bas, qui ne passe jamais par Stripe — même bug de contournement que
   // celui corrigé sur le parcours à un seul adhérent (voir le commentaire sur tier.free plus
   // haut dans ce fichier).
-  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0) + totalProductsCents / 100
+  const addonsResult = resolveAddons(form.tiers, data.addons)
+  if (!addonsResult.ok) return NextResponse.json({ error: addonsResult.error }, { status: 422 })
+  const resolvedAddons = addonsResult.addons
+  const totalAddons = resolvedAddons.reduce((sum, a) => sum + a.amount, 0)
+
+  const totalAmount = resolved.reduce((sum, x) => sum + x.amount, 0) + totalProductsCents / 100 + totalAddons
   // Same reasoning as the single-registrant path's willBeImmediate: any money changing hands
   // is always immediate, only a fully-free group ever goes through the form's validationMode.
   // resolvedProducts.length > 0 is checked on its own, not just via totalAmount — a €0-priced
@@ -1004,6 +1059,11 @@ async function handleMultiRegistrantCheckout(
       products: resolvedProducts.length
         ? resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))
         : undefined,
+      // Snapshot complet (label/montant/reçu inclus) plutôt que les seuls ids, exactement comme
+      // metadata.addons du parcours à un seul adhérent : createMembershipAddonPurchases consomme
+      // les deux sans distinction, et un tarif modifié entre le paiement et le webhook ne doit
+      // pas réécrire ce qui a réellement été facturé.
+      addons: resolvedAddons.length ? resolvedAddons : undefined,
       totalAmount,
       expiresAt: new Date(now.getTime() + 30 * 60_000),
     },
@@ -1046,6 +1106,18 @@ async function handleMultiRegistrantCheckout(
         product_data: { name: `${p.label} — ${assoc.name}` },
       },
       quantity: p.quantity,
+    })
+  }
+  // Itemized like everything else on this session, and for the same reason as the products
+  // above: the option belongs to the submission, not to one named person in the group.
+  for (const a of resolvedAddons) {
+    lineItems.push({
+      price_data: {
+        currency:     "eur" as const,
+        unit_amount:  Math.round(a.amount * 100),
+        product_data: { name: `${a.label} — ${assoc.name}` },
+      },
+      quantity: 1,
     })
   }
 

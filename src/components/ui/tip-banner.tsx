@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { LightbulbIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTip } from "@/hooks/use-tip"
 import { cn } from "@/lib/utils"
@@ -11,6 +12,7 @@ interface TipBannerProps {
 }
 
 export function TipBanner({ id, children, className }: TipBannerProps) {
+  const t = useTranslations("common")
   const { dismissed, dismiss } = useTip(id)
 
   if (dismissed) return null
@@ -26,7 +28,7 @@ export function TipBanner({ id, children, className }: TipBannerProps) {
       <p className="flex-1 leading-relaxed text-muted-foreground">{children}</p>
       <button
         type="button"
-        aria-label="Dispensar dica"
+        aria-label={t("dismissTip")}
         onClick={dismiss}
         className="mt-0.5 shrink-0 rounded text-muted-foreground/60 hover:text-foreground transition-colors focus:outline-none"
       >

@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server"
+import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
+import { translateFields } from "@/lib/i18n/translate"
+import type { Locale } from "@/i18n/locales"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 export async function GET(
   req: Request,
@@ -48,13 +52,30 @@ export async function GET(
     }
   }
 
+  // Admin-authored content, translated on the fly for the visitor's locale — see the
+  // matching note in the public adhésion route.
+  const locale = (await getLocale()) as Locale
+  const [content] = await translateFields(
+    [{
+      title:               form.title,
+      description:         form.description,
+      conditions:          form.conditions,
+      confirmationMessage: form.confirmationMessage,
+      offlineInstructions: form.offlineInstructions,
+    }],
+    ["title", "description", "conditions", "confirmationMessage", "offlineInstructions"],
+    locale,
+  )
+  const tiers        = await translateFields(form.tiers, ["label"], locale)
+  const customFields = await translateFields(form.customFields, ["label"], locale)
+
   return NextResponse.json({
     associationName:     assoc.name,
     id:                  form.id,
-    title:               form.title,
+    title:               content.title,
     imageUrl:            form.imageUrl,
-    description:         form.description,
-    conditions:          form.conditions,
+    description:         content.description,
+    conditions:          content.conditions,
     attachments:          form.attachments ?? [],
     requireCguvSignature: form.requireCguvSignature,
     contactEmail:        form.contactEmail,
@@ -64,8 +85,8 @@ export async function GET(
     fieldPhone:          form.fieldPhone,
     fieldMobile:         form.fieldMobile,
     fieldGender:         form.fieldGender,
-    confirmationMessage: form.confirmationMessage,
-    offlineInstructions: form.offlineInstructions,
+    confirmationMessage: content.confirmationMessage,
+    offlineInstructions: content.offlineInstructions,
     allowCash:           form.allowCash,
     allowCheque:         form.allowCheque,
     allowTransfer:       form.allowTransfer,
@@ -73,11 +94,17 @@ export async function GET(
     closed,
     paymentEnabled,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
-    tiers: form.tiers.map(t => ({
+    tiers: tiers.map(t => ({
       id: t.id, label: t.label, kind: t.kind, interval: t.interval, freeAmount: t.freeAmount,
       amount: t.amount?.toString() ?? null, receiptMode: t.receiptMode,
-      deductibleAmount: t.deductibleAmount?.toString() ?? null,
+      // Montant fixe : le montant éligible est déjà calculable ici (montant payé = t.amount).
+      // Montant libre : ineligibleAmount brut est exposé à la place, pour que le formulaire
+      // public recalcule en direct le montant éligible au fur et à mesure de la saisie.
+      deductibleAmount: t.freeAmount || t.amount == null
+        ? null
+        : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
+      ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
-    customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
+    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
   })
 }

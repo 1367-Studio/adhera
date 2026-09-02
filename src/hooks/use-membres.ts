@@ -21,6 +21,10 @@ export type MembreDetail = {
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
+  // Non-null only while a "validation sur demande" request is still awaiting an admin — the
+  // approval in PATCH /api/membres/[id] consumes and clears it.
+  pendingTierId: string | null
+  pendingTier:   { id: string; label: string; free: boolean } | null
   adherentOverride: boolean | null
   isAdherent:       boolean
   typeId:        string | null
@@ -155,7 +159,9 @@ async function fetchMembresPaginated(page: number, limit: number, search?: strin
   if (adherent) params.set("adherent", adherent)
   const res = await fetch(`/api/membres?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement des membres")
-  return res.json() as Promise<PaginatedResult<unknown>>
+  // pendingCount rides along with the page rather than getting its own endpoint/round-trip —
+  // it is a global count of PENDING membres, unaffected by the filters above (see the route).
+  return res.json() as Promise<PaginatedResult<unknown> & { pendingCount: number }>
 }
 
 async function fetchMembre(id: string) {

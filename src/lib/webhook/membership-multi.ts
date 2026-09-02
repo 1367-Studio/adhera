@@ -13,6 +13,8 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
+import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -65,6 +67,14 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
 
   const registrants = draft.registrants as unknown as MembershipMultiRegistrant[]
   const now = new Date()
+
+  // Read before the transaction because createMembershipAddonPurchases needs it inside one:
+  // an embedded donation's receiptMode is capped by the association's own right to issue tax
+  // receipts, and that call has to sit in the same transaction as the Membre it hangs off.
+  const receiptsAllowed = (await prisma.association.findUnique({
+    where:  { id: draft.associationId },
+    select: { canIssueTaxReceipts: true },
+  }))?.canIssueTaxReceipts ?? false
 
   let membreIds: string[]
   let firstCotisationId: string
@@ -151,10 +161,27 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
             amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
-            deductibleAmount: tier.receiptMode === "PARTIAL" ? tier.deductibleAmount : null,
+            deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
         if (i === 0) firstCotisationId = cotisation.id
+      }
+
+      // Options / don embarqué — toujours rattachés à registrants[0], la seule personne du
+      // groupe avec un email réel (même règle que products, voir MembershipCheckoutDraft).
+      // Dans la transaction, comme le parcours à un seul adhérent : un échec ici doit annuler
+      // toute l'inscription plutôt que laisser une option orpheline derrière un paiement.
+      if (draft.addons) {
+        await createMembershipAddonPurchases(tx, {
+          associationId: draft.associationId,
+          membreId:      ids[0],
+          cotisationId:  firstCotisationId,
+          firstName:     registrants[0].firstName,
+          lastName:      registrants[0].lastName,
+          email:         draft.email,
+          addonsJson:    JSON.stringify(draft.addons),
+          canIssueTaxReceipts: receiptsAllowed,
+        })
       }
 
       await tx.membershipCheckoutDraft.update({ where: { id: draftId }, data: { consumedAt: now } })
@@ -253,6 +280,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     // Only reflects the primary registrant's own tier — same simplification as the amount
     // above already being the combined group total rather than a per-person breakdown.
     const primaryTier = form.tiers.find(t => t.id === primary.tierId)
+    const primaryAmount = primaryTier
+      ? (primaryTier.free ? 0 : (primaryTier.freeAmount ? (primary.amount ?? 0) : Number(primaryTier.amount ?? 0)))
+      : 0
 
     sendEmail(membershipWelcomeEmail({
       firstName:       primary.firstName,
@@ -263,7 +293,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
       branding:        resolveDocumentBranding(assoc),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         primaryTier?.receiptMode,
-      deductibleAmount:    primaryTier?.deductibleAmount != null ? Number(primaryTier.deductibleAmount) : undefined,
+      deductibleAmount:    primaryTier
+        ? eligibleReceiptAmount(primaryAmount, primaryTier.receiptMode, primaryTier.ineligibleAmount != null ? Number(primaryTier.ineligibleAmount) : null) ?? undefined
+        : undefined,
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
       products:            purchasedProducts.length ? purchasedProducts : undefined,
     }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})
@@ -281,6 +313,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
   notifyMembershipSignup({
     associationId: draft.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
     memberNames: registrants.map(r => `${r.firstName} ${r.lastName}`), amount: Number(draft.totalAmount), primaryMembreId: membreIds[0],
+    // Le groupe entier passe au crible, pas seulement le registrant 0 : c'est justement
+    // l'enfant ou le conjoint ajouté en second qui existe déjà souvent en base.
+    membreIds,
   }).catch(() => {})
 
   await writeActivityLog({

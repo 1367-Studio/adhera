@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
@@ -27,6 +28,7 @@ interface RowActionsProps {
 }
 
 export function RowActions({ actions, tip }: RowActionsProps) {
+  const t = useTranslations("common")
   const trigger = (
     <DropdownMenuTrigger
       render={
@@ -38,7 +40,7 @@ export function RowActions({ actions, tip }: RowActionsProps) {
       }
     >
       <DotsThreeIcon className="size-4" />
-      <span className="sr-only">Ações</span>
+      <span className="sr-only">{t("actions")}</span>
     </DropdownMenuTrigger>
   )
 

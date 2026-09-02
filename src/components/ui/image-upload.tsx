@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import { useTranslations } from "next-intl"
 import { ImageIcon, CircleNotchIcon, XIcon, UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -11,6 +12,10 @@ interface ImageUploadProps {
   prefix?: string
   aspectRatio?: "video" | "square" | "wide"
   className?: string
+  /** Marks the empty dropzone as invalid (red dashed border), for a required photo the
+   *  visitor hasn't provided. Only affects the empty state — once an image is there the
+   *  requirement is met. Opt-in: every existing call site keeps the neutral border. */
+  invalid?: boolean
   /** When true, skips the immediate R2 upload. onChange receives a blob: URL for preview,
    *  and onFilePending is called with the File so the consumer can upload at save time. */
   lazy?: boolean
@@ -23,6 +28,13 @@ interface ImageUploadProps {
    *  instructions/button labels don't fit — drops to icon-only, with the same
    *  text exposed as a title tooltip instead. */
   compact?: boolean
+  /** Overrides for the two client-side toasts (file-too-large check, and the network/parse
+   *  failure fallback when the server response itself can't be read) — every other error
+   *  already comes from the server as `body.error` and is shown as-is. Optional: the component
+   *  already localizes both via next-intl, so these only matter when a call site needs
+   *  different wording than the shared default. */
+  maxSizeErrorMessage?: string
+  genericErrorMessage?: string
 }
 
 const RATIOS = {
@@ -37,17 +49,28 @@ export function ImageUpload({
   prefix = "adhera",
   aspectRatio = "video",
   className,
+  invalid,
   lazy = false,
   onFilePending,
   uploadUrl = "/api/upload",
   compact = false,
+  maxSizeErrorMessage,
+  genericErrorMessage,
 }: ImageUploadProps) {
+  const t = useTranslations("common.imageUpload")
   const [uploading, setUploading] = useState(false)
   const [dragging,  setDragging]  = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(file: File) {
-    if (file.size > 5 * 1024 * 1024) { toast.error("Image trop volumineuse (max 5 Mo)"); return }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(maxSizeErrorMessage ?? t("maxSizeError"))
+      // Without this, re-picking the exact same filename (e.g. after compressing it
+      // externally) never fires a fresh change event — the input's value already equals
+      // it, so the visitor's retry silently does nothing.
+      if (inputRef.current) inputRef.current.value = ""
+      return
+    }
 
     if (lazy) {
       const blobUrl = URL.createObjectURL(file)
@@ -65,13 +88,13 @@ export function ImageUpload({
       const res = await fetch(uploadUrl, { method: "POST", body: fd })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        toast.error(body.error ?? "Erreur lors de l'upload")
+        toast.error(body.error ?? genericErrorMessage ?? t("uploadError"))
         return
       }
       const { url } = await res.json()
       onChange(url)
     } catch {
-      toast.error("Erreur lors de l'upload")
+      toast.error(genericErrorMessage ?? t("uploadError"))
     } finally {
       setUploading(false)
       if (inputRef.current) inputRef.current.value = ""
@@ -105,26 +128,26 @@ export function ImageUpload({
               type="button"
               onClick={() => inputRef.current?.click()}
               disabled={uploading}
-              title={compact ? "Remplacer" : undefined}
+              title={compact ? t("replace") : undefined}
               className={cn(
                 "flex items-center gap-1.5 bg-background/90 text-foreground text-xs font-medium rounded-md hover:bg-background transition-colors",
                 compact ? "p-1.5" : "px-3 py-1.5",
               )}
             >
               {uploading ? <CircleNotchIcon className="size-3.5 animate-spin" /> : <UploadSimpleIcon className="size-3.5" />}
-              {!compact && "Remplacer"}
+              {!compact && t("replace")}
             </button>
             <button
               type="button"
               onClick={() => onChange("")}
-              title={compact ? "Retirer" : undefined}
+              title={compact ? t("remove") : undefined}
               className={cn(
                 "flex items-center gap-1 bg-destructive/90 text-destructive-foreground text-xs font-medium rounded-md hover:bg-destructive transition-colors",
                 compact ? "p-1.5" : "px-3 py-1.5",
               )}
             >
               <XIcon className="size-3.5" />
-              {!compact && "Retirer"}
+              {!compact && t("remove")}
             </button>
           </div>
         </>
@@ -136,11 +159,13 @@ export function ImageUpload({
           onDragLeave={() => setDragging(false)}
           onDrop={onDrop}
           disabled={uploading}
-          title={compact ? "Glisser/cliquer pour ajouter une image (JPG, PNG, WebP, max 5 Mo)" : undefined}
+          title={compact ? t("compactHint") : undefined}
           className={cn(
             "absolute inset-0 w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 p-2 text-center transition-colors",
             dragging
               ? "border-primary bg-primary/5 text-primary"
+              : invalid
+              ? "border-destructive bg-destructive/5 text-destructive hover:bg-destructive/10"
               : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/30",
           )}
         >
@@ -151,8 +176,8 @@ export function ImageUpload({
           ) : (
             <>
               <ImageIcon className="size-5" />
-              <span className="text-xs font-medium">Glisser ou cliquer pour ajouter une image</span>
-              <span className="text-[11px] opacity-60">JPG, PNG, WebP · max 5 Mo</span>
+              <span className="text-xs font-medium">{t("dropOrClickToAdd")}</span>
+              <span className="text-[11px] opacity-60">{t("formatsHint")}</span>
             </>
           )}
         </button>

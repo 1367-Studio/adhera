@@ -60,7 +60,7 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
   const existing = await prisma.donationSubscription.findUnique({ where: { stripeSubscriptionId: subscriptionId } })
   if (existing) return
 
-  const tier = await prisma.donationTier.findUnique({ where: { id: meta.tierId }, select: { amount: true, interval: true, receiptMode: true, deductibleAmount: true } })
+  const tier = await prisma.donationTier.findUnique({ where: { id: meta.tierId }, select: { amount: true, interval: true, receiptMode: true, ineligibleAmount: true } })
   const sub  = await stripe.subscriptions.retrieve(subscriptionId)
   const unitAmount = sub.items.data[0]?.price.unit_amount
   const amount     = unitAmount != null ? unitAmount / 100 : Number(tier?.amount ?? 0)

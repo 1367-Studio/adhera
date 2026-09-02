@@ -10,12 +10,16 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/password-requirements"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { TermsModal } from "@/components/public/terms-modal"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
+import { Label } from "@/components/ui/label"
+import { BASE_PATH } from "@/lib/env"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -35,7 +39,11 @@ type Tier = {
   installmentsAllowed: boolean
   installmentsCount: number | null
   receiptMode: "NONE" | "FULL" | "PARTIAL"
+  // Montant fixe : déjà calculé côté serveur (montant payé = amount). Montant libre : null —
+  // ineligibleAmount brut est utilisé à la place pour recalculer en direct au fur et à mesure
+  // de la saisie (voir partialReceiptAmount ci-dessous).
   deductibleAmount: string | null
+  ineligibleAmount: string | null
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
 
@@ -57,6 +65,8 @@ type FormInfo = {
   conditions: string | null
   attachments?: { url: string; filename: string; size: number }[] | null
   requireCguvSignature: boolean
+  contactEmail: string | null
+  contactPhone: string | null
   validationMode: ValidationMode
   fieldAddress: FieldRequirement
   fieldBirthDate: FieldRequirement
@@ -160,6 +170,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [answers, setAnswers]       = useState<Record<string, string>>({})
   const [website, setWebsite]       = useState("") // honeypot
+  // Un champ ne vire au rouge qu'une fois quitté, ou après un clic sur le bouton d'envoi
+  // désactivé — marquer tout de suite chaque champ requis vide afficherait le formulaire
+  // intégralement en rouge à l'arrivée, avant que le visiteur ait fait quoi que ce soit.
+  const [touched, setTouched] = useState<Set<string>>(new Set())
+  const [showAllErrors, setShowAllErrors] = useState(false)
+  // Renseigné au blur du champ e-mail par /check-email — le checkout refuse déjà cette adresse
+  // avec un 409, mais seulement une fois tout le formulaire rempli (et parfois au retour de
+  // Stripe). Prévenir ici évite au visiteur de tout saisir pour rien.
+  const [emailTaken, setEmailTaken] = useState(false)
   const [extraRegistrants, setExtraRegistrants] = useState<RegistrantDraft[]>([])
 
   useEffect(() => {
@@ -167,7 +186,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
-        const firstMembership = data?.tiers.find(t => t.itemType === "MEMBERSHIP")
+        const membershipCandidates = data?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
+        const hasOffline = !!(data?.allowCash || data?.allowCheque || data?.allowTransfer)
+        // Prefer a tier that's actually payable (free, Stripe, or — single-registrant only —
+        // an offline method) over whatever happens to be first — otherwise a visitor could land
+        // straight on a dead-end "paiement indisponible" tier with no clue another one would work.
+        const payable = membershipCandidates.find(t => t.free || data?.paymentEnabled || (t.kind === "ONE_OFF" && hasOffline))
+        const firstMembership = payable ?? membershipCandidates[0]
         if (firstMembership) setTierId(firstMembership.id)
       })
       .catch(() => setForm(null))
@@ -208,6 +233,20 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const membershipTiers = form?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
   const extraTiers      = form?.tiers.filter(t => t.itemType !== "MEMBERSHIP") ?? []
   const selectedTier = membershipTiers.find(x => x.id === tierId) ?? null
+  // Offline methods only make sense for a one-off charge — a cheque doesn't arrive on its own
+  // every year. Never available in multi-registrant mode (Stripe-only, see checkout/route.ts).
+  const offlineMethods = (["ESPECES", "CHEQUE", "VIREMENT"] as const).filter(m =>
+    m === "ESPECES" ? form?.allowCash : m === "CHEQUE" ? form?.allowCheque : form?.allowTransfer,
+  )
+  // Whether a given tier has *any* usable payment method in the given mode — a free tier always
+  // does, a paid one needs Stripe (both modes) or, single-registrant only, an offline method.
+  // isPreview always says yes: canSubmit already forces isPreview off, so a manager previewing
+  // the form can't get stuck mid-submit and should be able to see every section regardless of
+  // whether Stripe/offline is configured yet. Used to keep tier pickers from ever offering (or
+  // silently defaulting a new registrant to) a choice that would leave the visitor with no way
+  // to pay — instead of reacting after the fact by hiding the whole form.
+  const isTierPayable = (tier: Tier, multi: boolean) =>
+    tier.free || isPreview || (multi ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (tier.kind === "ONE_OFF" && offlineMethods.length > 0)))
   // A RECURRING tier bills every durationMonths months, not always yearly (see
   // MembershipTier.durationMonths) — 12 (or unset) still reads as "par an" rather than the
   // technically-equivalent-but-odd "tous les 12 mois".
@@ -227,9 +266,27 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // A montant-libre extra with no minimum configured by staff still needs a real floor —
   // otherwise the field defaults to €0 and nothing stops a visitor from submitting it as-is.
   const tierMinimum = (x: Tier) => (x.amount != null ? Number(x.amount) : MIN_AMOUNT)
+  // Montant réellement éligible au reçu fiscal pour un tarif "Sim, parcialmente" — déjà
+  // calculé côté serveur pour un montant fixe (deductibleAmount), recalculé en direct ici pour
+  // un montant libre (ineligibleAmount brut) puisque le montant payé n'est connu qu'au moment
+  // de la saisie (voir eligibleReceiptAmount côté serveur).
+  const partialReceiptAmount = (x: Tier, paidAmount: number): number | null => {
+    if (x.receiptMode !== "PARTIAL") return null
+    if (x.freeAmount) return x.ineligibleAmount != null ? Math.max(0, paidAmount - Number(x.ineligibleAmount)) : null
+    return x.deductibleAmount != null ? Number(x.deductibleAmount) : null
+  }
+  // Un montant libre payé en dessous de la part non éligible donnerait un reçu à montant
+  // négatif — le serveur le refuse déjà (voir checkout/route.ts), mais sans ce même contrôle
+  // ici le visiteur ne le découvrirait qu'après avoir rempli tout le formulaire.
+  const belowIneligible = (x: Tier, paidAmount: number): boolean =>
+    x.freeAmount && x.receiptMode === "PARTIAL" && x.ineligibleAmount != null && paidAmount < Number(x.ineligibleAmount)
   const selectedExtras = extraTiers.filter(x => selectedExtraIds.has(x.id))
-  const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? tierMinimum(x)) : Number(x.amount ?? 0)), 0)
-  const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? tierMinimum(x)) < tierMinimum(x))
+  // Fallback 0, never tierMinimum: an untouched free-amount extra has NOT been filled in, and
+  // handleSubmit already sends `?? 0` for it. Defaulting to the minimum here made the running
+  // total (and extraBelowMinimum below) disagree with what was actually posted — the visitor
+  // saw a valid 1,00 € and a matching total, then got the server's "Montant invalide" back.
+  const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? 0) : Number(x.amount ?? 0)), 0)
+  const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? 0) < tierMinimum(x))
 
   // ─── Inscription groupée (N ≥ 2 "Adhérent") ─────────────────────────────────────
   // No addons/donation embarquée and no RECURRING tier in this mode — see checkout/route.ts's
@@ -237,6 +294,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // always the person filling out the form, reusing every state variable above; this only
   // covers the extra blocks added via "Ajouter un autre adhérent".
   const oneOffMembershipTiers = membershipTiers.filter(x => x.kind === "ONE_OFF")
+  // The only tiers ever safe to assign to an extra registrant, or to default a newly-added one
+  // to — anything else would need an offline method that doesn't exist once isMulti is true.
+  const multiUsableTiers = oneOffMembershipTiers.filter(x => isTierPayable(x, true))
   const isMulti = extraRegistrants.length > 0
   const registrantTier = (r: RegistrantDraft) => oneOffMembershipTiers.find(x => x.id === r.tierId) ?? null
   const registrantAmount = (r: RegistrantDraft) => {
@@ -264,25 +324,28 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     const rt = registrantTier(r)
     return !!rt && !rt.free && rt.freeAmount && registrantAmount(r) < tierMinimum(rt)
   })
+  const registrantBelowIneligible = extraRegistrants.find(r => {
+    const rt = registrantTier(r)
+    return !!rt && belowIneligible(rt, registrantAmount(r))
+  })
+  // Requires selectedTier itself to already be multi-payable (isTierPayable(…, true)) — a tier
+  // that's only payable offline (single-registrant mode) must not let the visitor into isMulti,
+  // since it would instantly become unpayable the moment it flips on. Also requires at least one
+  // multiUsableTiers entry so there's something valid to default a newly-added registrant to —
+  // a form with only offline-paid tiers and no Stripe simply doesn't offer this feature.
   const canAddRegistrant = !isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && oneOffMembershipTiers.length > 0
-    : extraRegistrants.length + 1 < MAX_REGISTRANTS
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
+    : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0
 
-  const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
+  // extrasAmount counts in both modes: an option or an embedded donation belongs to the
+  // submission, not to one person, so a group buying one owes exactly what a lone member would.
+  const amount = (isMulti ? extraRegistrantsAmount : 0) + membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
   // paid extra/registrant riding along with an otherwise-free membership (there's nothing
   // sensible to "hold for approval" once money changed hands) — mirrors willBeImmediate in
   // checkout/route.ts (both the single- and multi-registrant branches).
   const willBeImmediate = !!selectedTier && (amount > 0 || form?.validationMode === "IMMEDIATE")
 
-  // Offline methods only make sense for a one-off charge — a cheque doesn't arrive on its own
-  // every year. A free membership tier is always stored as kind ONE_OFF (see
-  // membership-tiers-editor.tsx), so this already covers "free tier + paid extras" too without
-  // special-casing it. Never available in multi-registrant mode (Stripe-only, see
-  // checkout/route.ts).
-  const offlineMethods = (["ESPECES", "CHEQUE", "VIREMENT"] as const).filter(m =>
-    m === "ESPECES" ? form?.allowCash : m === "CHEQUE" ? form?.allowCheque : form?.allowTransfer,
-  )
   const needsPayment = amount > 0
   // Only the membership price itself can be split — an addon/donation riding alongside would
   // otherwise have to be either folded into the recurring installment price (changing what
@@ -295,8 +358,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
   const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
   const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
-  const hasAnyPaymentMethod = !selectedTier || !needsPayment
-    || (isMulti ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0)))
+  // Safety net, not the primary guard — canAddRegistrant/isTierPayable already keep every tier
+  // picker (registrant 0's buttons, each extra registrant's select) from ever landing on a tier
+  // that isn't payable in the current mode. This still matters for the tier a visitor lands on
+  // by default (form.notOpenYet aside, the very first membership tier fetched) when literally
+  // nothing on the form has a working payment method — a real admin misconfiguration, not
+  // something reachable through normal interaction anymore.
+  const hasAnyPaymentMethod = !selectedTier || !needsPayment || isTierPayable(selectedTier, isMulti)
 
   useEffect(() => {
     if (!canPayInInstallments && payInInstallments) setPayInInstallments(false)
@@ -319,13 +387,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   }, [showOfflineChoice, paymentMethod, payInInstallments])
 
   function addRegistrant() {
-    const defaultTier = oneOffMembershipTiers[0]
-    // Addons/donations ne sont pas offerts en mode multi-inscrit (impossible à répartir entre
-    // N personnes) — cleared so a stale selection from before "Ajouter un autre adhérent" can't
-    // silently resurrect if extras are removed. Les produits Boutique restent disponibles en
-    // mode multi (toujours attribués au registrant 0), donc productQuantities n'est pas vidé ici.
-    setSelectedExtraIds(new Set())
-    setExtraAmounts({})
+    const defaultTier = multiUsableTiers[0]
+    // Options et dons embarqués survivent au passage en inscription groupée : comme les
+    // produits Boutique, ils appartiennent à la soumission et sont attribués en entier au
+    // registrant 0 (voir consumeMembershipCheckoutDraft). Ils étaient vidés ici tant que le
+    // checkout groupé ne savait pas les facturer — cocher « Faire un don » puis ajouter un
+    // second adhérent faisait disparaître le don sans rien dire.
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
       firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
@@ -339,7 +406,45 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   }
 
   const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+
+  const touch = (name: string) =>
+    setTouched(prev => (prev.has(name) ? prev : new Set(prev).add(name)))
+  // Visible une fois le champ quitté, ou après une tentative d'envoi — jamais avant.
+  const showsError = (name: string) => showAllErrors || touched.has(name)
+  // `required` reprend la matrice de champs du formulaire : un champ OPTIONAL laissé vide
+  // n'est pas une erreur et ne doit donc jamais rougir.
+  const requiredError = (name: string, value: string, required = true) =>
+    required && !value.trim() && showsError(name) ? t("fieldRequired") : undefined
+
+  // ImageUpload n'a pas de blur : ces deux-là n'apparaissent donc qu'après une tentative
+  // d'envoi (showAllErrors), ce qui est exactement le moment où le visiteur cherche ce qui
+  // manque.
+  const photoError = requiredError("photo", photoUrl, form?.fieldPhoto === "REQUIRED")
+  const registrantPhotoError = (r: RegistrantDraft) =>
+    requiredError(`${r.key}.photo`, r.photoUrl, form?.fieldPhoto === "REQUIRED")
+
+  async function checkEmailTaken() {
+    touch("email")
+    const value = email.trim()
+    if (!emailValid(value)) { setEmailTaken(false); return }
+    try {
+      const res = await fetch(
+        `/api/public/${slug}/adhesion/${formSlug}/check-email?email=${encodeURIComponent(value)}`,
+      )
+      if (!res.ok) { setEmailTaken(false); return }
+      setEmailTaken(!!(await res.json()).exists)
+    } catch {
+      // Purement informatif : le checkout revalide de toute façon. Une coupure réseau ne doit
+      // pas afficher un faux « déjà adhérent » ni bloquer la saisie.
+      setEmailTaken(false)
+    }
+  }
   const belowMinimum = needsPayment && paymentMethod === "STRIPE" && amount < MIN_AMOUNT
+  // Le tarif principal peut configurer son propre minimum (montant libre) — même garde-fou
+  // que les extras/inscrits supplémentaires (extraBelowMinimum/registrantBelowMinimum), qui
+  // eux le respectent déjà.
+  const membershipBelowMinimum = !!selectedTier && !selectedTier.free && selectedTier.freeAmount && membershipAmount < tierMinimum(selectedTier)
+  const membershipBelowIneligible = !!selectedTier && belowIneligible(selectedTier, membershipAmount)
   const registrantValid = (r: RegistrantDraft) => {
     const rt = registrantTier(r)
     return !!form && !!rt &&
@@ -357,13 +462,14 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
     !!selectedTier &&
-    (!isMulti || (!registrantBelowMinimum && extraRegistrants.every(registrantValid))) &&
+    (!isMulti || (!registrantBelowMinimum && !registrantBelowIneligible && extraRegistrants.every(registrantValid))) &&
+    !extraBelowMinimum &&
     (!needsPayment || (
-      !belowMinimum && !extraBelowMinimum &&
+      !belowMinimum && !membershipBelowMinimum && !membershipBelowIneligible &&
       (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier.kind === "ONE_OFF")
     )) &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
-    (!willBeImmediate || password.length >= 8) &&
+    (!willBeImmediate || password.length >= PASSWORD_MIN_LENGTH) &&
     (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
@@ -373,6 +479,40 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
     (!form.requireCguvSignature || conditionsAgreed) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
+
+  // Same numbering the registrant cards themselves use (registrantLabel: idx + 2, since
+  // registrant 0 is always "Membre 1" — the person filling out the form).
+  const invalidRegistrantIndex = isMulti ? extraRegistrants.findIndex(r => !registrantValid(r)) : -1
+  const belowMinimumRegistrantIndex = registrantBelowMinimum ? extraRegistrants.indexOf(registrantBelowMinimum) : -1
+
+  // Mirrors canSubmit's own checks, in priority order, but surfaces *why* the button is
+  // disabled instead of leaving the visitor to guess — a disabled <button> fires no click/
+  // submit event at all, so without this there is no way to find out what's wrong short of
+  // reading the page source. belowMinimum (the overall Stripe total) is the one exception:
+  // its own inline message already sits right above this section, next to the button, so
+  // repeating it here would just be noise.
+  const blockingReason: string | null = !form ? null
+    : isPreview ? t("blockedPreview")
+    : !selectedTier ? null // membershipTiers.length === 0 already replaces the whole form with noTiers
+    : isMulti && invalidRegistrantIndex !== -1 ? t("blockedRegistrantIncomplete", { number: invalidRegistrantIndex + 2 })
+    : isMulti && belowMinimumRegistrantIndex !== -1 ? t("blockedRegistrantBelowMinimum", { number: belowMinimumRegistrantIndex + 2 })
+    : needsPayment && paymentMethod === "STRIPE" && !form.paymentEnabled ? t("blockedNoPaymentMethod")
+    : needsPayment && paymentMethod !== "STRIPE" && selectedTier.kind !== "ONE_OFF" ? t("blockedNoPaymentMethod")
+    : extraBelowMinimum ? t("blockedExtraBelowMinimum", { label: extraBelowMinimum.label })
+    : !firstName.trim() || !lastName.trim() ? t("blockedMissingIdentity")
+    : !emailValid(email) ? t("blockedInvalidEmail")
+    : willBeImmediate && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
+    : form.requireCguvSignature && !conditionsAgreed ? t("blockedConditionsNotAccepted")
+    : (form.fieldAddress   === "REQUIRED" && !address.trim())
+      || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
+      || (form.fieldPhone     === "REQUIRED" && !phone.trim())
+      || (form.fieldMobile    === "REQUIRED" && !mobile.trim())
+      || (form.fieldGender    === "REQUIRED" && !sexe)
+      || (form.fieldLanguage  === "REQUIRED" && !spokenLanguage)
+      || (form.fieldPhoto     === "REQUIRED" && !photoUrl)
+      || !form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
+    ? t("blockedMissingRequiredField")
+    : null
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -407,8 +547,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             website,
             conditionsAgreed,
             locale:   loc,
-            // Jamais rattaché à un registrant précis — toujours attribué en entier au
-            // registrant 0 une fois consommé (voir consumeMembershipCheckoutDraft).
+            // Ni les options ni les produits ne sont rattachés à un registrant précis —
+            // toujours attribués en entier au registrant 0 une fois consommés (voir
+            // consumeMembershipCheckoutDraft).
+            addons: selectedExtras.map(x => ({ tierId: x.id, amount: x.freeAmount ? (extraAmounts[x.id] ?? 0) : undefined })),
             products: Object.entries(productQuantities)
               .filter(([, quantity]) => quantity > 0)
               .map(([varianteId, quantity]) => ({ varianteId, quantity })),
@@ -482,7 +624,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
           <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
             <p className="text-muted-foreground">{t("notFound")}</p>
-            <LocaleSwitcher />
+            <LocaleSwitcher persistAccountLocale={!isPreview} />
           </div>
         </div>
       </>
@@ -496,7 +638,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
           <div className="w-full max-w-md space-y-6">
             <div className="flex justify-end">
-              <LocaleSwitcher />
+              <LocaleSwitcher persistAccountLocale={!isPreview} />
             </div>
 
             {isPreview && (
@@ -562,7 +704,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       // Une adhésion groupée ne peut pas s'appuyer sur un tarif récurrent — un
                       // Stripe Subscription est lié à un seul Membre, impossible à répartir
                       // entre N personnes (voir checkout/route.ts).
-                      const disabled = isMulti && tier.kind === "RECURRING"
+                      const recurringInMulti = isMulti && tier.kind === "RECURRING"
+                      const noPaymentMethod = !recurringInMulti && !isTierPayable(tier, isMulti)
+                      const disabled = recurringInMulti || noPaymentMethod
                       return (
                       <button
                         key={tier.id}
@@ -577,10 +721,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       >
                         <div>{tier.label}</div>
                         <div className="text-xs text-muted-foreground">
-                          {tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                          {tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
+                          {noPaymentMethod ? t("tierUnavailable") :
+                            tier.free ? t("freeLabel") : !tier.freeAmount && Number(tier.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                          {!noPaymentMethod && tier.kind === "RECURRING" && ` ${recurringSuffix(tier)}`}
                         </div>
-                        {oneOffDurationSuffix(tier) && (
+                        {!noPaymentMethod && oneOffDurationSuffix(tier) && (
                           <div className="text-xs text-muted-foreground">{oneOffDurationSuffix(tier)}</div>
                         )}
                       </button>
@@ -588,12 +733,27 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     })}
                   </div>
                   {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
-                    <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
+                    <>
+                      <CurrencyField
+                        label={t("freeAmountLabel")}
+                        required
+                        placeholder={tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                        value={freeAmount}
+                        onChange={setFreeAmount}
+                        error={
+                          membershipBelowMinimum
+                            ? t("belowExtraMinimum", { label: selectedTier.label, amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                            : membershipBelowIneligible
+                            ? t("belowIneligibleAmount", { amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                            : undefined
+                        }
+                      />
+                    </>
                   )}
-                  {selectedTier?.receiptMode === "PARTIAL" && selectedTier.deductibleAmount && (
+                  {selectedTier && !membershipBelowIneligible && partialReceiptAmount(selectedTier, membershipAmount) != null && (
                     <p className="text-xs text-muted-foreground">
                       {t("partialReceiptNotice", {
-                        amount: Number(selectedTier.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                        amount: partialReceiptAmount(selectedTier, membershipAmount)!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
                       })}
                     </p>
                   )}
@@ -609,118 +769,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   )}
                 </div>
 
-                {extraRegistrants.map((r, idx) => {
-                  const rt = registrantTier(r)
-                  return (
-                    <div key={r.key} className="space-y-3 rounded-md border p-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
-                          <TrashIcon className="size-4" />
-                        </Button>
-                      </div>
-                      <SelectField
-                        label={t("amountLabel")}
-                        options={oneOffMembershipTiers.map(x => ({
-                          value: x.id,
-                          label: x.free
-                            ? `${x.label} — ${t("freeLabel")}`
-                            : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
-                        }))}
-                        value={r.tierId}
-                        onValueChange={v => updateRegistrant(r.key, { tierId: v })}
-                      />
-                      {rt && !rt.free && rt.freeAmount && (
-                        <>
-                          <CurrencyField label={t("freeAmountLabel")} value={r.freeAmount} onChange={v => updateRegistrant(r.key, { freeAmount: v })} />
-                          {registrantAmount(r) < tierMinimum(rt) && (
-                            <p className="text-xs text-destructive">
-                              {t("belowMinimumAmount", { amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                            </p>
-                          )}
-                        </>
-                      )}
-                      {rt?.receiptMode === "PARTIAL" && rt.deductibleAmount && (
-                        <p className="text-xs text-muted-foreground">
-                          {t("partialReceiptNotice", {
-                            amount: Number(rt.deductibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                          })}
-                        </p>
-                      )}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
-                        <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
-                      </div>
-                      {form.fieldPhoto !== "HIDDEN" && (
-                        <div className="flex justify-center">
-                          <ImageUpload
-                            value={r.photoUrl}
-                            onChange={v => updateRegistrant(r.key, { photoUrl: v })}
-                            aspectRatio="square"
-                            className="w-32"
-                            compact
-                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
-                          />
-                        </div>
-                      )}
-                      {form.fieldAddress !== "HIDDEN" && (
-                        <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
-                      )}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {form.fieldBirthDate !== "HIDDEN" && (
-                          <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
-                        )}
-                        {form.fieldGender !== "HIDDEN" && (
-                          <SelectField
-                            label={t("genderLabel")}
-                            required={form.fieldGender === "REQUIRED"}
-                            options={[
-                              { value: "",       label: t("genderNone") },
-                              { value: "HOMME",  label: t("genderHomme") },
-                              { value: "FEMME",  label: t("genderFemme") },
-                            ]}
-                            value={r.sexe}
-                            onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
-                          />
-                        )}
-                        {form.fieldLanguage !== "HIDDEN" && (
-                          <SelectField
-                            label={t("languageLabel")}
-                            required={form.fieldLanguage === "REQUIRED"}
-                            options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
-                            value={r.spokenLanguage}
-                            onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
-                          />
-                        )}
-                        {form.fieldPhone !== "HIDDEN" && (
-                          <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
-                        )}
-                        {form.fieldMobile !== "HIDDEN" && (
-                          <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
-                        )}
-                      </div>
-                      {form.customFields.map(field => (
-                        <FormField
-                          key={field.id}
-                          label={field.label}
-                          required={field.required}
-                          type={field.type === "NUMBER" ? "number" : "text"}
-                          value={r.answers[field.id] ?? ""}
-                          onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
-                        />
-                      ))}
-                    </div>
-                  )
-                })}
-
-                {canAddRegistrant && (
-                  <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
-                    <PlusIcon className="mr-1.5 size-4" />
-                    {t("addRegistrant")}
-                  </Button>
-                )}
-
-                {!isMulti && extraTiers.length > 0 && (
+                {extraTiers.length > 0 && (
                   <div className="space-y-2 border-t pt-4">
                     <p className="text-sm font-medium">{t("extrasLabel")}</p>
                     <div className="space-y-2">
@@ -754,17 +803,19 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                               <>
                                 <CurrencyField
                                   label={extra.itemType === "DONATION" ? t("freeAmountLabel") : t("amountLabel")}
-                                  value={extraAmounts[extra.id] ?? tierMinimum(extra)}
+                                  required
+                                  placeholder={tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                  value={extraAmounts[extra.id] ?? 0}
                                   onChange={v => setExtraAmounts(prev => ({ ...prev, [extra.id]: v }))}
+                                  error={
+                                    (extraAmounts[extra.id] ?? 0) < tierMinimum(extra)
+                                      ? t("belowExtraMinimum", {
+                                          label: extra.label,
+                                          amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                                        })
+                                      : undefined
+                                  }
                                 />
-                                {(extraAmounts[extra.id] ?? tierMinimum(extra)) < tierMinimum(extra) && (
-                                  <p className="text-xs text-destructive">
-                                    {t("belowExtraMinimum", {
-                                      label: extra.label,
-                                      amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                                    })}
-                                  </p>
-                                )}
                               </>
                             )}
                           </div>
@@ -775,69 +826,118 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
 
                 {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
+                {/* ImageUpload n'affiche ni libellé ni astérisque : sans ce cadre, une photo
+                    obligatoire bloquait l'envoi avec « Renseignez tous les champs obligatoires
+                    signalés ci-dessus » alors que rien, précisément, n'était signalé. */}
                 {form.fieldPhoto !== "HIDDEN" && (
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Label className={cn(photoError && "text-destructive")}>
+                      {t("photoLabel")}
+                      {form.fieldPhoto === "REQUIRED" && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
+                    </Label>
                     <ImageUpload
                       value={photoUrl}
                       onChange={setPhotoUrl}
                       aspectRatio="square"
                       className="w-32"
                       compact
-                      uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo`}
+                      invalid={!!photoError}
+                      uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
+                      maxSizeErrorMessage={t("photoTooLarge")}
+                      genericErrorMessage={t("photoUploadError")}
                     />
+                    {photoError && <p className="text-xs text-destructive">{photoError}</p>}
                   </div>
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormField label={t("firstNameLabel")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                  <FormField label={t("lastNameLabel")} required value={lastName} onChange={e => setLastName(e.target.value)} />
+                  <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} onBlur={() => touch("firstName")} error={requiredError("firstName", firstName)} />
+                  <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} onBlur={() => touch("lastName")} error={requiredError("lastName", lastName)} />
                 </div>
-                <FormField label={t("emailLabel")} type="email" required value={email} onChange={e => setEmail(e.target.value)} />
+                <FormField
+                  label={t("emailLabel")}
+                  type="email"
+                  placeholder={t("emailPlaceholder")}
+                  required
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setEmailTaken(false) }}
+                  onBlur={checkEmailTaken}
+                  error={!showsError("email") ? undefined : !email.trim() ? t("fieldRequired") : !emailValid(email) ? t("blockedInvalidEmail") : undefined}
+                />
+                {/* Un avertissement, pas une erreur : le visiteur peut légitimement continuer
+                    (foyer partageant une adresse, homonyme). Ambre plutôt que rouge, et le
+                    bouton d'envoi reste actif — c'est le checkout qui tranchera. */}
+                {emailTaken && (
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
+                    {t("emailAlreadyMember")}{" "}
+                    <a href={`${BASE_PATH}/portal/${slug}/login`} className="underline underline-offset-2 font-medium">
+                      {t("emailAlreadyMemberLogin")}
+                    </a>
+                  </p>
+                )}
                 {willBeImmediate && (
-                  <FormField
-                    label={t("passwordLabel")}
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    hint={t("passwordHint")}
-                  />
+                  <div className="space-y-1.5">
+                    <FormField
+                      label={t("passwordLabel")}
+                      type="password"
+                      required
+                      minLength={PASSWORD_MIN_LENGTH}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      onBlur={() => touch("password")}
+                      error={requiredError("password", password)}
+                      hint={t("passwordHint")}
+                    />
+                    <PasswordRequirements
+                      title={t("passwordRequirementsTitle")}
+                      rules={[{
+                        label: t("passwordRuleMinLength", { count: PASSWORD_MIN_LENGTH }),
+                        met:   password.length >= PASSWORD_MIN_LENGTH,
+                      }]}
+                    />
+                  </div>
                 )}
 
                 {form.fieldAddress !== "HIDDEN" && (
-                  <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                  <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} onBlur={() => touch("address")} error={requiredError("address", address, form.fieldAddress === "REQUIRED")} />
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
-                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
+                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} onBlur={() => touch("birthDate")} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
                   )}
                   {form.fieldGender !== "HIDDEN" && (
                     <SelectField
                       label={t("genderLabel")}
                       required={form.fieldGender === "REQUIRED"}
                       options={[
-                        { value: "",       label: t("genderNone") },
+                        // Pas d'option vide quand le champ est requis : « Préférer ne pas préciser » vaut ""
+                        // et ne satisfait donc jamais l'exigence, alors qu'elle s'affiche comme une réponse
+                        // choisie. Sans elle, SelectField retombe sur son placeholder « Choisir… ».
+                        ...(form.fieldGender === "REQUIRED" ? [] : [{ value: "", label: t("genderNone") }]),
                         { value: "HOMME",  label: t("genderHomme") },
                         { value: "FEMME",  label: t("genderFemme") },
                       ]}
                       value={sexe}
                       onValueChange={v => setSexe(v as "" | "HOMME" | "FEMME")}
+                      error={requiredError("sexe", sexe, form.fieldGender === "REQUIRED")}
                     />
                   )}
                   {form.fieldLanguage !== "HIDDEN" && (
                     <SelectField
                       label={t("languageLabel")}
                       required={form.fieldLanguage === "REQUIRED"}
-                      options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                      options={form.fieldLanguage === "REQUIRED"
+                        ? languageOptions
+                        : [{ value: "", label: t("languageNone") }, ...languageOptions]}
                       value={spokenLanguage}
                       onValueChange={setSpokenLanguage}
+                      error={requiredError("spokenLanguage", spokenLanguage, form.fieldLanguage === "REQUIRED")}
                     />
                   )}
                   {form.fieldPhone !== "HIDDEN" && (
-                    <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                    <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")} error={requiredError("phone", phone, form.fieldPhone === "REQUIRED")} />
                   )}
                   {form.fieldMobile !== "HIDDEN" && (
-                    <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                    <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} onBlur={() => touch("mobile")} error={requiredError("mobile", mobile, form.fieldMobile === "REQUIRED")} />
                   )}
                 </div>
 
@@ -849,11 +949,156 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     type={field.type === "NUMBER" ? "number" : "text"}
                     value={answers[field.id] ?? ""}
                     onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
+                    onBlur={() => touch(field.id)}
+                    error={requiredError(field.id, answers[field.id] ?? "", field.required)}
                   />
                 ))}
 
+                {/* Adhérents 2..N sit after registrant 1's own details rather than straight
+                    under the tarif picker: being asked to add a second person before having
+                    given the first one's name read as a step out of order. The block and the
+                    button that creates its cards stay together, so a newly added card always
+                    appears right where the button is. */}
+                {(extraRegistrants.length > 0 || canAddRegistrant) && (
+                  <div className="space-y-3 border-t pt-4">
+                    {extraRegistrants.map((r, idx) => {
+                      const rt = registrantTier(r)
+                      return (
+                        <div key={r.key} className="space-y-3 rounded-md border p-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
+                            <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
+                              <TrashIcon className="size-4" />
+                            </Button>
+                          </div>
+                          <SelectField
+                            label={t("amountLabel")}
+                            options={multiUsableTiers.map(x => ({
+                              value: x.id,
+                              label: x.free
+                                ? `${x.label} — ${t("freeLabel")}`
+                                : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
+                            }))}
+                            value={r.tierId}
+                            onValueChange={v => updateRegistrant(r.key, { tierId: v })}
+                          />
+                          {rt && !rt.free && rt.freeAmount && (
+                            <>
+                              <CurrencyField
+                                label={t("freeAmountLabel")}
+                                required
+                                placeholder={tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                value={r.freeAmount}
+                                onChange={v => updateRegistrant(r.key, { freeAmount: v })}
+                                error={
+                                  registrantAmount(r) < tierMinimum(rt)
+                                    ? t("belowExtraMinimum", { label: rt.label, amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                                    : belowIneligible(rt, registrantAmount(r))
+                                    ? t("belowIneligibleAmount", { amount: Number(rt.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                                    : undefined
+                                }
+                              />
+                            </>
+                          )}
+                          {rt && !belowIneligible(rt, registrantAmount(r)) && partialReceiptAmount(rt, registrantAmount(r)) != null && (
+                            <p className="text-xs text-muted-foreground">
+                              {t("partialReceiptNotice", {
+                                amount: partialReceiptAmount(rt, registrantAmount(r))!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                              })}
+                            </p>
+                          )}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} onBlur={() => touch(`${r.key}.firstName`)} error={requiredError(`${r.key}.firstName`, r.firstName)} />
+                            <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} onBlur={() => touch(`${r.key}.lastName`)} error={requiredError(`${r.key}.lastName`, r.lastName)} />
+                          </div>
+                          {form.fieldPhoto !== "HIDDEN" && (
+                            <div className="flex flex-col items-center gap-1.5">
+                              <Label className={cn(registrantPhotoError(r) && "text-destructive")}>
+                                {t("photoLabel")}
+                                {form.fieldPhoto === "REQUIRED" && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
+                              </Label>
+                              <ImageUpload
+                                value={r.photoUrl}
+                                onChange={v => updateRegistrant(r.key, { photoUrl: v })}
+                                aspectRatio="square"
+                                className="w-32"
+                                compact
+                                invalid={!!registrantPhotoError(r)}
+                                uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
+                                maxSizeErrorMessage={t("photoTooLarge")}
+                                genericErrorMessage={t("photoUploadError")}
+                              />
+                              {registrantPhotoError(r) && <p className="text-xs text-destructive">{registrantPhotoError(r)}</p>}
+                            </div>
+                          )}
+                          {form.fieldAddress !== "HIDDEN" && (
+                            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} onBlur={() => touch(`${r.key}.address`)} error={requiredError(`${r.key}.address`, r.address, form.fieldAddress === "REQUIRED")} />
+                          )}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {form.fieldBirthDate !== "HIDDEN" && (
+                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} onBlur={() => touch(`${r.key}.birthDate`)} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
+                            )}
+                            {form.fieldGender !== "HIDDEN" && (
+                              <SelectField
+                                label={t("genderLabel")}
+                                required={form.fieldGender === "REQUIRED"}
+                                options={[
+                                  // Pas d'option vide quand le champ est requis : « Préférer ne pas préciser » vaut ""
+                                  // et ne satisfait donc jamais l'exigence, alors qu'elle s'affiche comme une réponse
+                                  // choisie. Sans elle, SelectField retombe sur son placeholder « Choisir… ».
+                                  ...(form.fieldGender === "REQUIRED" ? [] : [{ value: "", label: t("genderNone") }]),
+                                  { value: "HOMME",  label: t("genderHomme") },
+                                  { value: "FEMME",  label: t("genderFemme") },
+                                ]}
+                                value={r.sexe}
+                                onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
+                              />
+                            )}
+                            {form.fieldLanguage !== "HIDDEN" && (
+                              <SelectField
+                                label={t("languageLabel")}
+                                required={form.fieldLanguage === "REQUIRED"}
+                                options={form.fieldLanguage === "REQUIRED"
+                                  ? languageOptions
+                                  : [{ value: "", label: t("languageNone") }, ...languageOptions]}
+                                value={r.spokenLanguage}
+                                onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
+                              />
+                            )}
+                            {form.fieldPhone !== "HIDDEN" && (
+                              <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} onBlur={() => touch(`${r.key}.phone`)} error={requiredError(`${r.key}.phone`, r.phone, form.fieldPhone === "REQUIRED")} />
+                            )}
+                            {form.fieldMobile !== "HIDDEN" && (
+                              <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} onBlur={() => touch(`${r.key}.mobile`)} error={requiredError(`${r.key}.mobile`, r.mobile, form.fieldMobile === "REQUIRED")} />
+                            )}
+                          </div>
+                          {form.customFields.map(field => (
+                            <FormField
+                              key={field.id}
+                              label={field.label}
+                              required={field.required}
+                              type={field.type === "NUMBER" ? "number" : "text"}
+                              value={r.answers[field.id] ?? ""}
+                              onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
+                              onBlur={() => touch(`${r.key}.${field.id}`)}
+                              error={requiredError(`${r.key}.${field.id}`, r.answers[field.id] ?? "", field.required)}
+                            />
+                          ))}
+                        </div>
+                      )
+                    })}
+
+                    {canAddRegistrant && (
+                      <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
+                        <PlusIcon className="mr-1.5 size-4" />
+                        {t("addRegistrant")}
+                      </Button>
+                    )}
+                  </div>
+                )}
+
                 {form.conditions && (
-                  <RichTextView content={form.conditions} className="text-xs text-muted-foreground" />
+                  <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
                 )}
                 {!!form.attachments?.length && (
                   <ul className="space-y-1">
@@ -960,14 +1205,46 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   </div>
                 )}
 
-                <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                  {!needsPayment
-                    ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
-                    : t("submitPay", {
-                        amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
-                      })}
-                </Button>
+                {!loading && blockingReason && (
+                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
+                )}
+
+                {/* Le bouton est désactivé tant que le formulaire est incomplet, et un bouton
+                    désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button porte
+                    `disabled:pointer-events-none`, le clic le traverse) et fait rougir d'un coup
+                    tout ce qui manque, y compris les champs jamais visités. */}
+                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                    {!needsPayment
+                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
+                      : t("submitPay", {
+                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
+                        })}
+                  </Button>
+                </div>
               </form>
+            )}
+
+            {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
+                des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
+                sur le formulaire en ligne ». L'API les envoyait déjà ; personne ne les affichait.
+                Placées hors du bloc conditionnel : c'est justement quand le formulaire est fermé,
+                pas encore ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un. */}
+            {(form.contactEmail || form.contactPhone) && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("contactHelp")}{" "}
+                {form.contactEmail && (
+                  <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactEmail}
+                  </a>
+                )}
+                {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
+                {form.contactPhone && (
+                  <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactPhone}
+                  </a>
+                )}
+              </p>
             )}
           </div>
         </div>
