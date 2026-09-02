@@ -1,4 +1,5 @@
 import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 export interface MeetingMinutesPdfInput {
   title:       string
@@ -23,7 +24,7 @@ const GRAY  = rgb(0.45, 0.45, 0.45)
 const BLACK = rgb(0.1, 0.1, 0.1)
 
 function fmtDateTime(d: Date): string {
-  return `${d.toLocaleDateString("fr-FR")} à ${d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+  return `${d.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE })} à ${d.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })}`
 }
 
 function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): string[] {
@@ -125,7 +126,7 @@ export async function buildMeetingMinutesPdf(input: MeetingMinutesPdfInput): Pro
   }
   if (input.startedAt) {
     const range = input.endedAt
-      ? `${fmtDateTime(input.startedAt)} — ${input.endedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+      ? `${fmtDateTime(input.startedAt)} — ${input.endedAt.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })}`
       : fmtDateTime(input.startedAt)
     text(`Déroulée : ${range}`, MARGIN, 9, { color: GRAY })
     y -= 14

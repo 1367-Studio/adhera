@@ -1,4 +1,5 @@
 import { PDFDocument, PDFFont, PDFPage, StandardFonts, rgb } from "pdf-lib"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 export interface DocumentPdfItem {
   description: string
@@ -65,7 +66,7 @@ function fmtEUR(n: number): string {
 }
 
 function fmtDate(d: Date): string {
-  return d.toLocaleDateString("fr-FR")
+  return d.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE })
 }
 
 // The "Adresse" field is free text, so it sometimes already ends with the city (typed
