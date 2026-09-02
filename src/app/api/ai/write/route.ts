@@ -14,7 +14,28 @@ const schema = z.object({
 const SYSTEM_PROMPT =
   "Tu es un assistant d'écriture pour associations françaises loi 1901. " +
   "Rédige des textes formels, clairs et professionnels en français. " +
-  "Réponds UNIQUEMENT avec le texte demandé, sans commentaires ni explications."
+  "Réponds UNIQUEMENT avec le texte demandé, sans commentaires ni explications. " +
+  "Le texte est inséré tel quel dans un éditeur HTML : réponds exclusivement en HTML, " +
+  "en utilisant uniquement les balises <p>, <strong>, <em>, <u>, <h2>, <h3>, <ul>, <ol>, <li>, " +
+  "<a href=\"...\">, <blockquote> et <hr>. N'utilise jamais de syntaxe markdown (**, #, -, etc.), " +
+  "et n'entoure pas la réponse de balises <html>/<body> ni de bloc de code."
+
+// Some models still wrap the answer in a ```html fence or ignore the HTML instruction
+// entirely despite SYSTEM_PROMPT — normalize both cases so the result is always safe to
+// feed straight into the Tiptap editor and the sanitized preview.
+function normalizeAiHtml(raw: string): string {
+  const fenced = raw.match(/^```(?:html)?\s*\n?([\s\S]*?)\n?```$/i)
+  const text   = (fenced ? fenced[1] : raw).trim()
+
+  if (/<[a-z][\s\S]*>/i.test(text)) return text
+
+  const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  return text
+    .split(/\n\s*\n/)
+    .map(block => `<p>${escape(block.trim()).replace(/\n/g, "<br>")}</p>`)
+    .filter(p => p !== "<p></p>")
+    .join("")
+}
 
 function buildUserPrompt(action: string, instruction?: string, currentText?: string): string {
   const text = currentText?.trim()
@@ -72,7 +93,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
       max_tokens:  1500,
     })
 
-    const text = completion.choices[0]?.message?.content?.trim() ?? ""
+    const raw  = completion.choices[0]?.message?.content?.trim() ?? ""
+    const text = normalizeAiHtml(raw)
     return NextResponse.json({ text })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Erreur IA"

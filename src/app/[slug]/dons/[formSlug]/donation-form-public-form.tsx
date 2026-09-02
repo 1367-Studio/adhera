@@ -12,6 +12,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
+import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { cn } from "@/lib/utils"
@@ -108,14 +109,20 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const [website, setWebsite]       = useState("") // honeypot
 
   useEffect(() => {
+    // Reset to the loading state on every re-fetch (including a locale switch), not just
+    // the first mount — otherwise the previous-locale content stays on screen, unindicated,
+    // for however long the translation takes before flipping all at once.
+    setForm(undefined)
     fetch(`/api/public/${slug}/dons/${formSlug}${isPreview ? "?preview=1" : ""}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
-        if (data?.tiers.length) setTierId(data.tiers[0].id)
+        // Only default the selection on first load — a locale switch re-fetches the same
+        // tiers (same ids, translated labels) and shouldn't discard what's already chosen.
+        if (data?.tiers.length) setTierId(prev => prev || data.tiers[0].id)
       })
       .catch(() => setForm(null))
-  }, [slug, formSlug, isPreview])
+  }, [slug, formSlug, isPreview, loc])
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -248,7 +255,11 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-        <div className="min-h-screen flex items-center justify-center" />
+        <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
+          <div className="w-full max-w-md">
+            <PublicFormSkeleton />
+          </div>
+        </div>
       </>
     )
   }
