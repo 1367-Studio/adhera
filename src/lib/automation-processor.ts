@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 import { sendEmailBatch } from "@/lib/mail"
 import { sendSmsBatch } from "@/lib/sms"
 import { eventReminderEmail, customEmail } from "@/lib/email"
@@ -594,7 +595,7 @@ async function processEventReminder(
             association:    rule.association.name,
             slug:           rule.association.slug,
             titreEvenement: event.title,
-            dateEvenement:  event.date.toLocaleDateString("fr-FR", { day: "numeric", month: "long" }),
+            dateEvenement:  event.date.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long" }),
             lieuEvenement:  event.location ?? undefined,
           })
           return { membreId: p.membreId, participationId: p.id, to: p.membre!.phone!, body: substituteVars(smsBody, vars) }
