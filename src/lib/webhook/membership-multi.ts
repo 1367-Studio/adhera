@@ -13,6 +13,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
+import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
@@ -66,6 +67,14 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
 
   const registrants = draft.registrants as unknown as MembershipMultiRegistrant[]
   const now = new Date()
+
+  // Read before the transaction because createMembershipAddonPurchases needs it inside one:
+  // an embedded donation's receiptMode is capped by the association's own right to issue tax
+  // receipts, and that call has to sit in the same transaction as the Membre it hangs off.
+  const receiptsAllowed = (await prisma.association.findUnique({
+    where:  { id: draft.associationId },
+    select: { canIssueTaxReceipts: true },
+  }))?.canIssueTaxReceipts ?? false
 
   let membreIds: string[]
   let firstCotisationId: string
@@ -156,6 +165,23 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
           },
         })
         if (i === 0) firstCotisationId = cotisation.id
+      }
+
+      // Options / don embarqué — toujours rattachés à registrants[0], la seule personne du
+      // groupe avec un email réel (même règle que products, voir MembershipCheckoutDraft).
+      // Dans la transaction, comme le parcours à un seul adhérent : un échec ici doit annuler
+      // toute l'inscription plutôt que laisser une option orpheline derrière un paiement.
+      if (draft.addons) {
+        await createMembershipAddonPurchases(tx, {
+          associationId: draft.associationId,
+          membreId:      ids[0],
+          cotisationId:  firstCotisationId,
+          firstName:     registrants[0].firstName,
+          lastName:      registrants[0].lastName,
+          email:         draft.email,
+          addonsJson:    JSON.stringify(draft.addons),
+          canIssueTaxReceipts: receiptsAllowed,
+        })
       }
 
       await tx.membershipCheckoutDraft.update({ where: { id: draftId }, data: { consumedAt: now } })

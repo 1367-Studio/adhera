@@ -1224,6 +1224,12 @@ model MembershipCheckoutDraft {
   // this rides in a real Json column (no Stripe metadata size cap to economize for) rather
   // than a stringified value.
   products    Json?
+  // [{ tierId, itemType, label, amount, receiptMode, deductibleAmount }] — options payantes et
+  // dons embarqués choisis à côté de l'inscription groupée. Même forme que metadata.addons du
+  // parcours à un seul adhérent (voir checkout/route.ts), pour que createMembershipAddonPurchases
+  // consomme les deux sans distinction. Toujours rattachés à registrants[0], la seule personne
+  // du groupe avec un email/login réel — même règle que products ci-dessus.
+  addons      Json?
   totalAmount Decimal  @db.Decimal(10, 2)
 
   createdAt DateTime  @default(now())

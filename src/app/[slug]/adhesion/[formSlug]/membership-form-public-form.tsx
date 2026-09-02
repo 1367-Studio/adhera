@@ -324,7 +324,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     ? !!selectedTier && selectedTier.kind === "ONE_OFF" && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
     : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0
 
-  const amount = isMulti ? membershipAmount + extraRegistrantsAmount + productsAmount : membershipAmount + extrasAmount + productsAmount
+  // extrasAmount counts in both modes: an option or an embedded donation belongs to the
+  // submission, not to one person, so a group buying one owes exactly what a lone member would.
+  const amount = (isMulti ? extraRegistrantsAmount : 0) + membershipAmount + extrasAmount + productsAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
   // paid extra/registrant riding along with an otherwise-free membership (there's nothing
   // sensible to "hold for approval" once money changed hands) — mirrors willBeImmediate in
@@ -373,12 +375,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
   function addRegistrant() {
     const defaultTier = multiUsableTiers[0]
-    // Addons/donations ne sont pas offerts en mode multi-inscrit (impossible à répartir entre
-    // N personnes) — cleared so a stale selection from before "Ajouter un autre adhérent" can't
-    // silently resurrect if extras are removed. Les produits Boutique restent disponibles en
-    // mode multi (toujours attribués au registrant 0), donc productQuantities n'est pas vidé ici.
-    setSelectedExtraIds(new Set())
-    setExtraAmounts({})
+    // Options et dons embarqués survivent au passage en inscription groupée : comme les
+    // produits Boutique, ils appartiennent à la soumission et sont attribués en entier au
+    // registrant 0 (voir consumeMembershipCheckoutDraft). Ils étaient vidés ici tant que le
+    // checkout groupé ne savait pas les facturer — cocher « Faire un don » puis ajouter un
+    // second adhérent faisait disparaître le don sans rien dire.
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
       firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
@@ -500,8 +501,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             website,
             conditionsAgreed,
             locale:   loc,
-            // Jamais rattaché à un registrant précis — toujours attribué en entier au
-            // registrant 0 une fois consommé (voir consumeMembershipCheckoutDraft).
+            // Ni les options ni les produits ne sont rattachés à un registrant précis —
+            // toujours attribués en entier au registrant 0 une fois consommés (voir
+            // consumeMembershipCheckoutDraft).
+            addons: selectedExtras.map(x => ({ tierId: x.id, amount: x.freeAmount ? (extraAmounts[x.id] ?? 0) : undefined })),
             products: Object.entries(productQuantities)
               .filter(([, quantity]) => quantity > 0)
               .map(([varianteId, quantity]) => ({ varianteId, quantity })),
@@ -720,7 +723,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   )}
                 </div>
 
-                {!isMulti && extraTiers.length > 0 && (
+                {extraTiers.length > 0 && (
                   <div className="space-y-2 border-t pt-4">
                     <p className="text-sm font-medium">{t("extrasLabel")}</p>
                     <div className="space-y-2">
