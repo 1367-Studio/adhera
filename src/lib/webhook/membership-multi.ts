@@ -313,6 +313,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
   notifyMembershipSignup({
     associationId: draft.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
     memberNames: registrants.map(r => `${r.firstName} ${r.lastName}`), amount: Number(draft.totalAmount), primaryMembreId: membreIds[0],
+    // Le groupe entier passe au crible, pas seulement le registrant 0 : c'est justement
+    // l'enfant ou le conjoint ajouté en second qui existe déjà souvent en base.
+    membreIds,
   }).catch(() => {})
 
   await writeActivityLog({

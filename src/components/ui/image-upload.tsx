@@ -12,6 +12,10 @@ interface ImageUploadProps {
   prefix?: string
   aspectRatio?: "video" | "square" | "wide"
   className?: string
+  /** Marks the empty dropzone as invalid (red dashed border), for a required photo the
+   *  visitor hasn't provided. Only affects the empty state — once an image is there the
+   *  requirement is met. Opt-in: every existing call site keeps the neutral border. */
+  invalid?: boolean
   /** When true, skips the immediate R2 upload. onChange receives a blob: URL for preview,
    *  and onFilePending is called with the File so the consumer can upload at save time. */
   lazy?: boolean
@@ -45,6 +49,7 @@ export function ImageUpload({
   prefix = "adhera",
   aspectRatio = "video",
   className,
+  invalid,
   lazy = false,
   onFilePending,
   uploadUrl = "/api/upload",
@@ -159,6 +164,8 @@ export function ImageUpload({
             "absolute inset-0 w-full h-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 p-2 text-center transition-colors",
             dragging
               ? "border-primary bg-primary/5 text-primary"
+              : invalid
+              ? "border-destructive bg-destructive/5 text-destructive hover:bg-destructive/10"
               : "border-border text-muted-foreground hover:border-primary/50 hover:text-foreground hover:bg-muted/30",
           )}
         >

@@ -18,6 +18,8 @@ import { TermsModal } from "@/components/public/terms-modal"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
+import { Label } from "@/components/ui/label"
+import { BASE_PATH } from "@/lib/env"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -166,6 +168,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [answers, setAnswers]       = useState<Record<string, string>>({})
   const [website, setWebsite]       = useState("") // honeypot
+  // Un champ ne vire au rouge qu'une fois quitté, ou après un clic sur le bouton d'envoi
+  // désactivé — marquer tout de suite chaque champ requis vide afficherait le formulaire
+  // intégralement en rouge à l'arrivée, avant que le visiteur ait fait quoi que ce soit.
+  const [touched, setTouched] = useState<Set<string>>(new Set())
+  const [showAllErrors, setShowAllErrors] = useState(false)
+  // Renseigné au blur du champ e-mail par /check-email — le checkout refuse déjà cette adresse
+  // avec un 409, mais seulement une fois tout le formulaire rempli (et parfois au retour de
+  // Stripe). Prévenir ici évite au visiteur de tout saisir pour rien.
+  const [emailTaken, setEmailTaken] = useState(false)
   const [extraRegistrants, setExtraRegistrants] = useState<RegistrantDraft[]>([])
 
   useEffect(() => {
@@ -393,6 +404,39 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   }
 
   const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+
+  const touch = (name: string) =>
+    setTouched(prev => (prev.has(name) ? prev : new Set(prev).add(name)))
+  // Visible une fois le champ quitté, ou après une tentative d'envoi — jamais avant.
+  const showsError = (name: string) => showAllErrors || touched.has(name)
+  // `required` reprend la matrice de champs du formulaire : un champ OPTIONAL laissé vide
+  // n'est pas une erreur et ne doit donc jamais rougir.
+  const requiredError = (name: string, value: string, required = true) =>
+    required && !value.trim() && showsError(name) ? t("fieldRequired") : undefined
+
+  // ImageUpload n'a pas de blur : ces deux-là n'apparaissent donc qu'après une tentative
+  // d'envoi (showAllErrors), ce qui est exactement le moment où le visiteur cherche ce qui
+  // manque.
+  const photoError = requiredError("photo", photoUrl, form?.fieldPhoto === "REQUIRED")
+  const registrantPhotoError = (r: RegistrantDraft) =>
+    requiredError(`${r.key}.photo`, r.photoUrl, form?.fieldPhoto === "REQUIRED")
+
+  async function checkEmailTaken() {
+    touch("email")
+    const value = email.trim()
+    if (!emailValid(value)) { setEmailTaken(false); return }
+    try {
+      const res = await fetch(
+        `/api/public/${slug}/adhesion/${formSlug}/check-email?email=${encodeURIComponent(value)}`,
+      )
+      if (!res.ok) { setEmailTaken(false); return }
+      setEmailTaken(!!(await res.json()).exists)
+    } catch {
+      // Purement informatif : le checkout revalide de toute façon. Une coupure réseau ne doit
+      // pas afficher un faux « déjà adhérent » ni bloquer la saisie.
+      setEmailTaken(false)
+    }
+  }
   const belowMinimum = needsPayment && paymentMethod === "STRIPE" && amount < MIN_AMOUNT
   // Le tarif principal peut configurer son propre minimum (montant libre) — même garde-fou
   // que les extras/inscrits supplémentaires (extraBelowMinimum/registrantBelowMinimum), qui
@@ -780,25 +824,54 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
 
                 {isMulti && <p className="text-xs text-muted-foreground border-t pt-3">{t("sharedAccountHint")}</p>}
+                {/* ImageUpload n'affiche ni libellé ni astérisque : sans ce cadre, une photo
+                    obligatoire bloquait l'envoi avec « Renseignez tous les champs obligatoires
+                    signalés ci-dessus » alors que rien, précisément, n'était signalé. */}
                 {form.fieldPhoto !== "HIDDEN" && (
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Label className={cn(photoError && "text-destructive")}>
+                      {t("photoLabel")}
+                      {form.fieldPhoto === "REQUIRED" && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
+                    </Label>
                     <ImageUpload
                       value={photoUrl}
                       onChange={setPhotoUrl}
                       aspectRatio="square"
                       className="w-32"
                       compact
+                      invalid={!!photoError}
                       uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
                       maxSizeErrorMessage={t("photoTooLarge")}
                       genericErrorMessage={t("photoUploadError")}
                     />
+                    {photoError && <p className="text-xs text-destructive">{photoError}</p>}
                   </div>
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                  <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} />
+                  <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} onBlur={() => touch("firstName")} error={requiredError("firstName", firstName)} />
+                  <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} onBlur={() => touch("lastName")} error={requiredError("lastName", lastName)} />
                 </div>
-                <FormField label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)} />
+                <FormField
+                  label={t("emailLabel")}
+                  type="email"
+                  placeholder={t("emailPlaceholder")}
+                  required
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setEmailTaken(false) }}
+                  onBlur={checkEmailTaken}
+                  error={!showsError("email") ? undefined : !email.trim() ? t("fieldRequired") : !emailValid(email) ? t("blockedInvalidEmail") : undefined}
+                />
+                {/* Un avertissement, pas une erreur : le visiteur peut légitimement continuer
+                    (foyer partageant une adresse, homonyme). Ambre plutôt que rouge, et le
+                    bouton d'envoi reste actif — c'est le checkout qui tranchera. */}
+                {emailTaken && (
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
+                    {t("emailAlreadyMember")}{" "}
+                    <a href={`${BASE_PATH}/portal/${slug}/login`} className="underline underline-offset-2 font-medium">
+                      {t("emailAlreadyMemberLogin")}
+                    </a>
+                  </p>
+                )}
                 {willBeImmediate && (
                   <div className="space-y-1.5">
                     <FormField
@@ -808,6 +881,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       minLength={PASSWORD_MIN_LENGTH}
                       value={password}
                       onChange={e => setPassword(e.target.value)}
+                      onBlur={() => touch("password")}
+                      error={requiredError("password", password)}
                       hint={t("passwordHint")}
                     />
                     <PasswordRequirements
@@ -821,39 +896,46 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
 
                 {form.fieldAddress !== "HIDDEN" && (
-                  <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                  <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} onBlur={() => touch("address")} error={requiredError("address", address, form.fieldAddress === "REQUIRED")} />
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
-                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
+                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} onBlur={() => touch("birthDate")} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
                   )}
                   {form.fieldGender !== "HIDDEN" && (
                     <SelectField
                       label={t("genderLabel")}
                       required={form.fieldGender === "REQUIRED"}
                       options={[
-                        { value: "",       label: t("genderNone") },
+                        // Pas d'option vide quand le champ est requis : « Préférer ne pas préciser » vaut ""
+                        // et ne satisfait donc jamais l'exigence, alors qu'elle s'affiche comme une réponse
+                        // choisie. Sans elle, SelectField retombe sur son placeholder « Choisir… ».
+                        ...(form.fieldGender === "REQUIRED" ? [] : [{ value: "", label: t("genderNone") }]),
                         { value: "HOMME",  label: t("genderHomme") },
                         { value: "FEMME",  label: t("genderFemme") },
                       ]}
                       value={sexe}
                       onValueChange={v => setSexe(v as "" | "HOMME" | "FEMME")}
+                      error={requiredError("sexe", sexe, form.fieldGender === "REQUIRED")}
                     />
                   )}
                   {form.fieldLanguage !== "HIDDEN" && (
                     <SelectField
                       label={t("languageLabel")}
                       required={form.fieldLanguage === "REQUIRED"}
-                      options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                      options={form.fieldLanguage === "REQUIRED"
+                        ? languageOptions
+                        : [{ value: "", label: t("languageNone") }, ...languageOptions]}
                       value={spokenLanguage}
                       onValueChange={setSpokenLanguage}
+                      error={requiredError("spokenLanguage", spokenLanguage, form.fieldLanguage === "REQUIRED")}
                     />
                   )}
                   {form.fieldPhone !== "HIDDEN" && (
-                    <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                    <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")} error={requiredError("phone", phone, form.fieldPhone === "REQUIRED")} />
                   )}
                   {form.fieldMobile !== "HIDDEN" && (
-                    <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                    <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} onBlur={() => touch("mobile")} error={requiredError("mobile", mobile, form.fieldMobile === "REQUIRED")} />
                   )}
                 </div>
 
@@ -865,6 +947,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     type={field.type === "NUMBER" ? "number" : "text"}
                     value={answers[field.id] ?? ""}
                     onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
+                    onBlur={() => touch(field.id)}
+                    error={requiredError(field.id, answers[field.id] ?? "", field.required)}
                   />
                 ))}
 
@@ -922,36 +1006,45 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                             </p>
                           )}
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
-                            <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
+                            <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} onBlur={() => touch(`${r.key}.firstName`)} error={requiredError(`${r.key}.firstName`, r.firstName)} />
+                            <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} onBlur={() => touch(`${r.key}.lastName`)} error={requiredError(`${r.key}.lastName`, r.lastName)} />
                           </div>
                           {form.fieldPhoto !== "HIDDEN" && (
-                            <div className="flex justify-center">
+                            <div className="flex flex-col items-center gap-1.5">
+                              <Label className={cn(registrantPhotoError(r) && "text-destructive")}>
+                                {t("photoLabel")}
+                                {form.fieldPhoto === "REQUIRED" && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
+                              </Label>
                               <ImageUpload
                                 value={r.photoUrl}
                                 onChange={v => updateRegistrant(r.key, { photoUrl: v })}
                                 aspectRatio="square"
                                 className="w-32"
                                 compact
+                                invalid={!!registrantPhotoError(r)}
                                 uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
                                 maxSizeErrorMessage={t("photoTooLarge")}
                                 genericErrorMessage={t("photoUploadError")}
                               />
+                              {registrantPhotoError(r) && <p className="text-xs text-destructive">{registrantPhotoError(r)}</p>}
                             </div>
                           )}
                           {form.fieldAddress !== "HIDDEN" && (
-                            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
+                            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} onBlur={() => touch(`${r.key}.address`)} error={requiredError(`${r.key}.address`, r.address, form.fieldAddress === "REQUIRED")} />
                           )}
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {form.fieldBirthDate !== "HIDDEN" && (
-                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
+                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} onBlur={() => touch(`${r.key}.birthDate`)} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
                             )}
                             {form.fieldGender !== "HIDDEN" && (
                               <SelectField
                                 label={t("genderLabel")}
                                 required={form.fieldGender === "REQUIRED"}
                                 options={[
-                                  { value: "",       label: t("genderNone") },
+                                  // Pas d'option vide quand le champ est requis : « Préférer ne pas préciser » vaut ""
+                                  // et ne satisfait donc jamais l'exigence, alors qu'elle s'affiche comme une réponse
+                                  // choisie. Sans elle, SelectField retombe sur son placeholder « Choisir… ».
+                                  ...(form.fieldGender === "REQUIRED" ? [] : [{ value: "", label: t("genderNone") }]),
                                   { value: "HOMME",  label: t("genderHomme") },
                                   { value: "FEMME",  label: t("genderFemme") },
                                 ]}
@@ -963,16 +1056,18 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                               <SelectField
                                 label={t("languageLabel")}
                                 required={form.fieldLanguage === "REQUIRED"}
-                                options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                                options={form.fieldLanguage === "REQUIRED"
+                                  ? languageOptions
+                                  : [{ value: "", label: t("languageNone") }, ...languageOptions]}
                                 value={r.spokenLanguage}
                                 onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
                               />
                             )}
                             {form.fieldPhone !== "HIDDEN" && (
-                              <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
+                              <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} onBlur={() => touch(`${r.key}.phone`)} error={requiredError(`${r.key}.phone`, r.phone, form.fieldPhone === "REQUIRED")} />
                             )}
                             {form.fieldMobile !== "HIDDEN" && (
-                              <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
+                              <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} onBlur={() => touch(`${r.key}.mobile`)} error={requiredError(`${r.key}.mobile`, r.mobile, form.fieldMobile === "REQUIRED")} />
                             )}
                           </div>
                           {form.customFields.map(field => (
@@ -983,6 +1078,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                               type={field.type === "NUMBER" ? "number" : "text"}
                               value={r.answers[field.id] ?? ""}
                               onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
+                              onBlur={() => touch(`${r.key}.${field.id}`)}
+                              error={requiredError(`${r.key}.${field.id}`, r.answers[field.id] ?? "", field.required)}
                             />
                           ))}
                         </div>
@@ -1110,13 +1207,19 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   <p className="text-xs text-destructive text-center">{blockingReason}</p>
                 )}
 
-                <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                  {!needsPayment
-                    ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
-                    : t("submitPay", {
-                        amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
-                      })}
-                </Button>
+                {/* Le bouton est désactivé tant que le formulaire est incomplet, et un bouton
+                    désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button porte
+                    `disabled:pointer-events-none`, le clic le traverse) et fait rougir d'un coup
+                    tout ce qui manque, y compris les champs jamais visités. */}
+                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                    {!needsPayment
+                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
+                      : t("submitPay", {
+                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
+                        })}
+                  </Button>
+                </div>
               </form>
             )}
           </div>

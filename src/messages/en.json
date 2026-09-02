@@ -2704,6 +2704,7 @@
     "public": {
       "notFound": "Form not found",
       "photoNoFile": "No file provided",
+      "photoLabel": "Photo",
       "photoTooLarge": "File too large (max 5 MB)",
       "photoFormatUnsupported": "Unsupported format. JPG, PNG, WebP, or GIF only.",
       "photoUploadError": "Couldn't upload the photo. Please try again.",
@@ -2778,6 +2779,9 @@
       "blockedPasswordTooShort": "The password must be at least 8 characters long.",
       "blockedConditionsNotAccepted": "You need to accept the terms and conditions to continue.",
       "blockedMissingRequiredField": "Fill in every required field highlighted above.",
+      "fieldRequired": "This field is required.",
+      "emailAlreadyMember": "A membership already exists with this email address.",
+      "emailAlreadyMemberLogin": "Log in",
       "paymentUnavailable": "Online payment isn't available right now.",
       "tierUnavailable": "Unavailable",
       "genericError": "Something went wrong. Please try again.",

@@ -2704,6 +2704,7 @@
     "public": {
       "notFound": "Formulaire introuvable",
       "photoNoFile": "Aucun fichier fourni",
+      "photoLabel": "Photo",
       "photoTooLarge": "Fichier trop volumineux (max 5 Mo)",
       "photoFormatUnsupported": "Format non supporté. JPG, PNG, WebP ou GIF uniquement.",
       "photoUploadError": "Erreur lors de l'envoi de la photo. Réessayez.",
@@ -2778,6 +2779,9 @@
       "blockedPasswordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
       "blockedConditionsNotAccepted": "Vous devez accepter les conditions générales pour continuer.",
       "blockedMissingRequiredField": "Renseignez tous les champs obligatoires signalés ci-dessus.",
+      "fieldRequired": "Ce champ est requis.",
+      "emailAlreadyMember": "Une adhésion existe déjà avec cette adresse e-mail.",
+      "emailAlreadyMemberLogin": "Se connecter",
       "paymentUnavailable": "Le paiement en ligne n'est pas disponible pour le moment.",
       "tierUnavailable": "Indisponible",
       "genericError": "Une erreur est survenue. Réessayez.",
