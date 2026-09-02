@@ -15,6 +15,7 @@ import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
+import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -182,6 +183,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [extraRegistrants, setExtraRegistrants] = useState<RegistrantDraft[]>([])
 
   useEffect(() => {
+    // Reset to the loading state on every re-fetch (including a locale switch), not just
+    // the first mount — otherwise the previous-locale content stays on screen, unindicated,
+    // for however long the translation takes before flipping all at once.
+    setForm(undefined)
     fetch(`/api/public/${slug}/adhesion/${formSlug}${isPreview ? "?preview=1" : ""}`)
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
@@ -193,10 +198,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         // straight on a dead-end "paiement indisponible" tier with no clue another one would work.
         const payable = membershipCandidates.find(t => t.free || data?.paymentEnabled || (t.kind === "ONE_OFF" && hasOffline))
         const firstMembership = payable ?? membershipCandidates[0]
-        if (firstMembership) setTierId(firstMembership.id)
+        // Only default the selection on first load — a locale switch re-fetches the same
+        // tiers (same ids, translated labels) and shouldn't discard what's already chosen.
+        if (firstMembership) setTierId(prev => prev || firstMembership.id)
       })
       .catch(() => setForm(null))
-  }, [slug, formSlug, isPreview])
+  }, [slug, formSlug, isPreview, loc])
 
   // Re-fetched (not just re-shown) after a rejected submit — a "stock insuffisant" 422 means
   // the numbers already on screen are stale, and without this the visitor would just retry
@@ -611,7 +618,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
-          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center" />
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
+            <div className="w-full max-w-md">
+              <PublicFormSkeleton />
+            </div>
+          </div>
         </div>
       </>
     )

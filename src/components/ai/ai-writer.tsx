@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { SparkleIcon, XIcon, ArrowElbowDownLeftIcon, ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
+import { RichTextView } from "@/components/ui/rich-text-view"
 import { cn } from "@/lib/utils"
 
 type Action = "generate" | "improve" | "rephrase" | "summarize"
@@ -123,8 +124,8 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
       {/* Result */}
       {result && (
         <div className="space-y-2">
-          <div className="rounded-md border bg-background px-3 py-2.5 text-sm text-foreground max-h-40 overflow-y-auto whitespace-pre-wrap">
-            {result}
+          <div className="rounded-md border bg-background px-3 py-2.5 text-sm text-foreground max-h-56 overflow-y-auto">
+            <RichTextView content={result} />
           </div>
           <div className="flex gap-2">
             <Button size="sm" onClick={() => onReplace(result)} className="bg-violet-600 hover:bg-violet-700 text-white">
