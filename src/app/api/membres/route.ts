@@ -66,11 +66,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
-  const [data, total] = await Promise.all([
+  const [data, total, pendingCount] = await Promise.all([
     prisma.membre.findMany({ where, orderBy, skip, take: limit, include }),
     prisma.membre.count({ where }),
+    // Deliberately ignores `where` — this is an inbox counter ("you have N requests waiting"),
+    // so it must read the same however the list happens to be filtered or searched. Filtering
+    // it would make the badge vanish the moment an admin narrowed the list, which is exactly
+    // when they'd want to still see there is something to review.
+    prisma.membre.count({ where: { associationId, deletedAt: null, status: "PENDING" } }),
   ])
-  return NextResponse.json({ data: data.map(m => ({ ...m, isAdherent: isMembreAdherent(m) })), total, page, limit, totalPages: Math.ceil(total / limit) })
+  return NextResponse.json({ data: data.map(m => ({ ...m, isAdherent: isMembreAdherent(m) })), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
 }, { roles: MANAGERS })
 
 export const POST = withAdminAuth(async (req, ctx) => {

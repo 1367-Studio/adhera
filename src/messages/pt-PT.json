@@ -2462,6 +2462,15 @@
       "donorTypeCompany": "Empresa",
       "companyNameLabel": "Nome da empresa",
       "siretLabel": "SIRET",
+      "firstNamePlaceholder": "Maria",
+      "lastNamePlaceholder": "Silva",
+      "emailPlaceholder": "maria.silva@email.pt",
+      "addressPlaceholder": "Rua das Flores 12, 1200-192 Lisboa",
+      "phonePlaceholder": "213 456 789",
+      "mobilePlaceholder": "912 345 678",
+      "companyNamePlaceholder": "Silva & Filhos Lda",
+      "siretPlaceholder": "12345678900012",
+      "genderPlaceholder": "Feminino",
       "viewConditionsLabel": "Consultar os termos e condições gerais",
       "conditionsModalTitle": "Termos e condições gerais",
       "conditionsAgreeLabel": "Aceito as condições gerais",
@@ -2722,6 +2731,12 @@
       "addRegistrant": "Adicionar outro membro",
       "removeRegistrant": "Remover este membro",
       "sharedAccountHint": "O email e a palavra-passe abaixo serão usados para iniciar sessão por todo o grupo.",
+      "firstNamePlaceholder": "Maria",
+      "lastNamePlaceholder": "Silva",
+      "emailPlaceholder": "maria.silva@email.pt",
+      "addressPlaceholder": "Rua das Flores 12, 1200-192 Lisboa",
+      "phonePlaceholder": "213 456 789",
+      "mobilePlaceholder": "912 345 678",
       "donationBadge": "(donativo)",
       "totalLabel": "Total a pagar",
       "partialReceiptNotice": "Apenas {amount} são dedutíveis de impostos para esta adesão.",
@@ -2744,6 +2759,8 @@
       "emailLabel": "E-mail",
       "passwordLabel": "Palavra-passe",
       "passwordHint": "Para aceder à sua área de membro.",
+      "passwordRequirementsTitle": "A sua palavra-passe deve conter:",
+      "passwordRuleMinLength": "Pelo menos {count} caracteres",
       "addressLabel": "Morada",
       "birthDateLabel": "Data de nascimento",
       "phoneLabel": "Telefone",
@@ -3620,7 +3637,8 @@
         "roleUpdated": "Função atualizada"
       },
       "changeRoleTitle": "Alterar função",
-      "changeRoleDescription": "Função de {name} na associação."
+      "changeRoleDescription": "Função de {name} na associação.",
+      "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}"
     },
     "detail": {
       "notFound": "Este membro não foi encontrado ou foi eliminado.",
@@ -3726,6 +3744,17 @@
         "cotisationUpdated": "Quota atualizada",
         "subscriptionCancelled": "Cobrança automática interrompida",
         "installmentCancelled": "Pagamento em prestações interrompido"
+      },
+      "pendingRequest": {
+        "title": "Pedido de adesão a aguardar validação",
+        "description": "Este membro enviou um pedido de adesão que ainda não foi validado.",
+        "withTier": "Tarifa pedida: {tier} — a validação ativa o membro.",
+        "approve": "Validar",
+        "reject": "Recusar",
+        "approvedToast": "Pedido validado",
+        "rejectedToast": "Pedido recusado",
+        "rejectConfirmTitle": "Recusar este pedido?",
+        "rejectConfirmDescription": "{name} passará ao estado «Inativo» e não poderá iniciar sessão. O pedido e as respostas ao formulário são mantidos."
       }
     },
     "sms": {

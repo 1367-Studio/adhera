@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
+import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
+import { translateFields } from "@/lib/i18n/translate"
+import type { Locale } from "@/i18n/locales"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
@@ -59,13 +62,34 @@ export async function GET(
     }
   }
 
+  // Every string below is written by the association in its own language. Translated on the
+  // fly for the visitor's locale (hash-cached, so each distinct text costs one Azure call
+  // ever) rather than asking associations to maintain a copy per language — the same
+  // treatment the public événement route already gives its own admin-authored fields.
+  // Deliberately left alone: the attachments' filenames, and the Boutique product/variant
+  // names, which are catalogue entries and proper nouns rather than prose.
+  const locale = (await getLocale()) as Locale
+  const [content] = await translateFields(
+    [{
+      title:               form.title,
+      description:         form.description,
+      conditions:          form.conditions,
+      confirmationMessage: form.confirmationMessage,
+      offlineInstructions: form.offlineInstructions,
+    }],
+    ["title", "description", "conditions", "confirmationMessage", "offlineInstructions"],
+    locale,
+  )
+  const tiers        = await translateFields(form.tiers, ["label"], locale)
+  const customFields = await translateFields(form.customFields, ["label"], locale)
+
   return NextResponse.json({
     associationName:      assoc.name,
     id:                   form.id,
-    title:                form.title,
+    title:                content.title,
     imageUrl:             form.imageUrl,
-    description:          form.description,
-    conditions:           form.conditions,
+    description:          content.description,
+    conditions:           content.conditions,
     attachments:           form.attachments ?? [],
     requireCguvSignature: form.requireCguvSignature,
     contactEmail:         form.contactEmail,
@@ -78,15 +102,15 @@ export async function GET(
     fieldGender:          form.fieldGender,
     fieldPhoto:           form.fieldPhoto,
     fieldLanguage:        form.fieldLanguage,
-    confirmationMessage:  form.confirmationMessage,
-    offlineInstructions:  form.offlineInstructions,
+    confirmationMessage:  content.confirmationMessage,
+    offlineInstructions:  content.offlineInstructions,
     allowCash:            form.allowCash,
     allowCheque:          form.allowCheque,
     allowTransfer:        form.allowTransfer,
     notOpenYet,
     closed,
     paymentEnabled,
-    tiers: form.tiers.map(t => ({
+    tiers: tiers.map(t => ({
       id: t.id, label: t.label, itemType: t.itemType, kind: t.kind, free: t.free, freeAmount: t.freeAmount,
       amount: t.amount?.toString() ?? null, durationMonths: t.durationMonths,
       fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
@@ -101,7 +125,7 @@ export async function GET(
         : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
       ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
-    customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
+    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
     // Un produit archivé après avoir été lié au formulaire n'est pas retiré de
     // MembershipFormProduct (voir products/route.ts) — filtré ici plutôt, à la lecture,
     // même logique que le statut des tiers. Si le module Boutique a été désactivé depuis

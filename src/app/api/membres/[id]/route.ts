@@ -46,6 +46,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       materialLoans:  { include: { material: { select: { id: true, name: true } } }, orderBy: { borrowedAt: "desc" }, take: 50 },
       type:           { select: { id: true, name: true, color: true } },
       user:           { select: { role: true } },
+      // Only ever set on a PENDING membre created by a "validation sur demande" form (see
+      // Membre.pendingTierId) — drives the approval banner in membre-detail-view.tsx, which
+      // needs the requested tier's label to say what is actually being approved.
+      pendingTier:    { select: { id: true, label: true, free: true } },
       responsable:    RESPONSABLE_SELECT,
       dependants:     { select: { id: true, firstName: true, lastName: true } },
       cotisationSubscription: { select: { id: true, amount: true, status: true, currentPeriodEndsAt: true } },

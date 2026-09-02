@@ -26,6 +26,10 @@ export function BackLink({
     <Button
       variant="ghost"
       size={iconOnly ? "icon" : "sm"}
+      // Base UI asserts the rendered element really is a <button> unless told otherwise —
+      // this one is always an <a> (see the note above), so the native-button semantics it
+      // would otherwise enforce don't apply.
+      nativeButton={false}
       render={<Link href={href} aria-label={iconOnly ? children : undefined} onClick={onClick} />}
     >
       <ArrowLeftIcon className="size-4" />

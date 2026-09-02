@@ -1,39 +1,39 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import { ApiError } from "@/lib/api-error"
-import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
-import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, ClockCounterClockwiseIcon, ShieldIcon, KeyIcon, EyeIcon, CaretDownIcon, ChartBarIcon, PaperPlaneTiltIcon, ArrowsDownUpIcon } from "@phosphor-icons/react/dist/ssr";
-import { useMembresPaginated, useCreateMembre, useUpdateMembre, useDeleteMembre, useChangeRole, useCreateAccess } from "@/hooks/use-membres"
-import { useMembreTypes } from "@/hooks/use-membre-types"
-import type { MembreInput, MembreCreateInput } from "@/lib/schemas"
-import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
-import { PageHeader } from "@/components/ui/page-header"
-import { DataTable, type Column } from "@/components/ui/data-table"
-import { Modal } from "@/components/ui/modal"
-import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { MembreForm } from "@/components/membres/membre-form"
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
+import { MembreForm } from "@/components/membres/membre-form"
+import { MembresStatsModal, type MembresStats } from "@/components/membres/membres-stats-modal"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { SendSmsModal } from "@/components/membres/send-sms-modal"
-import { MembresStatsModal, type MembresStats } from "@/components/membres/membres-stats-modal"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { RowActions } from "@/components/ui/row-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SearchInput } from "@/components/ui/search-input"
-import { FilterSelect } from "@/components/ui/filter-select"
+import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { DataTable, type Column } from "@/components/ui/data-table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { FilterSelect } from "@/components/ui/filter-select"
+import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
+import { Modal } from "@/components/ui/modal"
+import { PageHeader } from "@/components/ui/page-header"
+import { RowActions } from "@/components/ui/row-actions"
+import { SearchInput } from "@/components/ui/search-input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useUpdateMembre } from "@/hooks/use-membres"
+import { ApiError } from "@/lib/api-error"
+import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
+import { BASE_PATH } from "@/lib/env"
+import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
+import type { MembreCreateInput, MembreInput } from "@/lib/schemas"
+import { useCurrentUser, useModules } from "@/lib/user-context"
+import { ArrowsDownUpIcon, CaretDownIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { useCurrentUser, useModules } from "@/lib/user-context"
-import { BASE_PATH } from "@/lib/env"
+import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState } from "react"
+import { toast } from "sonner"
 
 
 type MembreTypeRef = { id: string; name: string; color: string }
@@ -362,11 +362,33 @@ export function MembresView() {
     ? t("membres.view.resultsCount", { count: result?.total ?? 0 })
     : t("membres.view.membersCount", { count: result?.total ?? 0 })
 
+  // Signups from a "validation sur demande" form land as PENDING and were, until now,
+  // announced nowhere — the list looked identical whether or not anything awaited review.
+  // Counted association-wide by the API (not through the current filters), so it stays
+  // truthful while the list is narrowed; hidden once PENDING is the active filter, where the
+  // row count already says the same thing.
+  const pendingCount = result?.pendingCount ?? 0
+  const showPending  = pendingCount > 0 && statusFilter !== "PENDING"
+
   return (
     <div className="space-y-4">
       <PageHeader
         title={t("membres.view.title")}
-        description={descriptionText}
+        description={
+          showPending ? (
+            <span className="flex flex-wrap items-center gap-1.5">
+              {descriptionText}
+              <span aria-hidden>·</span>
+              <button
+                type="button"
+                onClick={() => { setStatusFilter("PENDING"); setPage(1) }}
+                className="font-medium text-foreground underline underline-offset-2 transition-colors hover:text-primary"
+              >
+                {t("membres.view.pendingRequests", { count: pendingCount })}
+              </button>
+            </span>
+          ) : descriptionText
+        }
         action={
           <div className="flex flex-wrap items-center justify-end gap-2">
             <TooltipProvider>
@@ -433,10 +455,10 @@ export function MembresView() {
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
+            {/* <Button size="sm" onClick={() => setCreateOpen(true)}>
               <PlusIcon className="mr-1.5 size-4" />
               {t("common.add")}
-            </Button>
+            </Button> */}
           </div>
         }
       />

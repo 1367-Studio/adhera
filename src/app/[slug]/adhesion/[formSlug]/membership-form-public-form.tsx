@@ -10,6 +10,7 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/password-requirements"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -267,8 +268,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const belowIneligible = (x: Tier, paidAmount: number): boolean =>
     x.freeAmount && x.receiptMode === "PARTIAL" && x.ineligibleAmount != null && paidAmount < Number(x.ineligibleAmount)
   const selectedExtras = extraTiers.filter(x => selectedExtraIds.has(x.id))
-  const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? tierMinimum(x)) : Number(x.amount ?? 0)), 0)
-  const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? tierMinimum(x)) < tierMinimum(x))
+  // Fallback 0, never tierMinimum: an untouched free-amount extra has NOT been filled in, and
+  // handleSubmit already sends `?? 0` for it. Defaulting to the minimum here made the running
+  // total (and extraBelowMinimum below) disagree with what was actually posted — the visitor
+  // saw a valid 1,00 € and a matching total, then got the server's "Montant invalide" back.
+  const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? 0) : Number(x.amount ?? 0)), 0)
+  const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? 0) < tierMinimum(x))
 
   // ─── Inscription groupée (N ≥ 2 "Adhérent") ─────────────────────────────────────
   // No addons/donation embarquée and no RECURRING tier in this mode — see checkout/route.ts's
@@ -411,12 +416,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     !!form && !form.notOpenYet && !form.closed &&
     !!selectedTier &&
     (!isMulti || (!registrantBelowMinimum && !registrantBelowIneligible && extraRegistrants.every(registrantValid))) &&
+    !extraBelowMinimum &&
     (!needsPayment || (
-      !belowMinimum && !extraBelowMinimum && !membershipBelowMinimum && !membershipBelowIneligible &&
+      !belowMinimum && !membershipBelowMinimum && !membershipBelowIneligible &&
       (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier.kind === "ONE_OFF")
     )) &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
-    (!willBeImmediate || password.length >= 8) &&
+    (!willBeImmediate || password.length >= PASSWORD_MIN_LENGTH) &&
     (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
@@ -448,7 +454,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     : extraBelowMinimum ? t("blockedExtraBelowMinimum", { label: extraBelowMinimum.label })
     : !firstName.trim() || !lastName.trim() ? t("blockedMissingIdentity")
     : !emailValid(email) ? t("blockedInvalidEmail")
-    : willBeImmediate && password.length < 8 ? t("blockedPasswordTooShort")
+    : willBeImmediate && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
     : form.requireCguvSignature && !conditionsAgreed ? t("blockedConditionsNotAccepted")
     : (form.fieldAddress   === "REQUIRED" && !address.trim())
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
@@ -679,17 +685,20 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   </div>
                   {selectedTier && !selectedTier.free && selectedTier.freeAmount && (
                     <>
-                      <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
-                      {membershipBelowMinimum && (
-                        <p className="text-xs text-destructive">
-                          {t("belowExtraMinimum", { label: selectedTier.label, amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                        </p>
-                      )}
-                      {!membershipBelowMinimum && membershipBelowIneligible && (
-                        <p className="text-xs text-destructive">
-                          {t("belowIneligibleAmount", { amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                        </p>
-                      )}
+                      <CurrencyField
+                        label={t("freeAmountLabel")}
+                        required
+                        placeholder={tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                        value={freeAmount}
+                        onChange={setFreeAmount}
+                        error={
+                          membershipBelowMinimum
+                            ? t("belowExtraMinimum", { label: selectedTier.label, amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                            : membershipBelowIneligible
+                            ? t("belowIneligibleAmount", { amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                            : undefined
+                        }
+                      />
                     </>
                   )}
                   {selectedTier && !membershipBelowIneligible && partialReceiptAmount(selectedTier, membershipAmount) != null && (
@@ -710,123 +719,6 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     />
                   )}
                 </div>
-
-                {extraRegistrants.map((r, idx) => {
-                  const rt = registrantTier(r)
-                  return (
-                    <div key={r.key} className="space-y-3 rounded-md border p-3">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
-                          <TrashIcon className="size-4" />
-                        </Button>
-                      </div>
-                      <SelectField
-                        label={t("amountLabel")}
-                        options={multiUsableTiers.map(x => ({
-                          value: x.id,
-                          label: x.free
-                            ? `${x.label} — ${t("freeLabel")}`
-                            : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
-                        }))}
-                        value={r.tierId}
-                        onValueChange={v => updateRegistrant(r.key, { tierId: v })}
-                      />
-                      {rt && !rt.free && rt.freeAmount && (
-                        <>
-                          <CurrencyField label={t("freeAmountLabel")} value={r.freeAmount} onChange={v => updateRegistrant(r.key, { freeAmount: v })} />
-                          {registrantAmount(r) < tierMinimum(rt) ? (
-                            <p className="text-xs text-destructive">
-                              {t("belowExtraMinimum", { label: rt.label, amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                            </p>
-                          ) : belowIneligible(rt, registrantAmount(r)) && (
-                            <p className="text-xs text-destructive">
-                              {t("belowIneligibleAmount", { amount: Number(rt.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                            </p>
-                          )}
-                        </>
-                      )}
-                      {rt && !belowIneligible(rt, registrantAmount(r)) && partialReceiptAmount(rt, registrantAmount(r)) != null && (
-                        <p className="text-xs text-muted-foreground">
-                          {t("partialReceiptNotice", {
-                            amount: partialReceiptAmount(rt, registrantAmount(r))!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                          })}
-                        </p>
-                      )}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <FormField label={t("firstNameLabel")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
-                        <FormField label={t("lastNameLabel")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
-                      </div>
-                      {form.fieldPhoto !== "HIDDEN" && (
-                        <div className="flex justify-center">
-                          <ImageUpload
-                            value={r.photoUrl}
-                            onChange={v => updateRegistrant(r.key, { photoUrl: v })}
-                            aspectRatio="square"
-                            className="w-32"
-                            compact
-                            uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
-                            maxSizeErrorMessage={t("photoTooLarge")}
-                            genericErrorMessage={t("photoUploadError")}
-                          />
-                        </div>
-                      )}
-                      {form.fieldAddress !== "HIDDEN" && (
-                        <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
-                      )}
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        {form.fieldBirthDate !== "HIDDEN" && (
-                          <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
-                        )}
-                        {form.fieldGender !== "HIDDEN" && (
-                          <SelectField
-                            label={t("genderLabel")}
-                            required={form.fieldGender === "REQUIRED"}
-                            options={[
-                              { value: "",       label: t("genderNone") },
-                              { value: "HOMME",  label: t("genderHomme") },
-                              { value: "FEMME",  label: t("genderFemme") },
-                            ]}
-                            value={r.sexe}
-                            onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
-                          />
-                        )}
-                        {form.fieldLanguage !== "HIDDEN" && (
-                          <SelectField
-                            label={t("languageLabel")}
-                            required={form.fieldLanguage === "REQUIRED"}
-                            options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
-                            value={r.spokenLanguage}
-                            onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
-                          />
-                        )}
-                        {form.fieldPhone !== "HIDDEN" && (
-                          <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
-                        )}
-                        {form.fieldMobile !== "HIDDEN" && (
-                          <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
-                        )}
-                      </div>
-                      {form.customFields.map(field => (
-                        <FormField
-                          key={field.id}
-                          label={field.label}
-                          required={field.required}
-                          type={field.type === "NUMBER" ? "number" : "text"}
-                          value={r.answers[field.id] ?? ""}
-                          onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
-                        />
-                      ))}
-                    </div>
-                  )
-                })}
-
-                {canAddRegistrant && (
-                  <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
-                    <PlusIcon className="mr-1.5 size-4" />
-                    {t("addRegistrant")}
-                  </Button>
-                )}
 
                 {!isMulti && extraTiers.length > 0 && (
                   <div className="space-y-2 border-t pt-4">
@@ -862,17 +754,19 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                               <>
                                 <CurrencyField
                                   label={extra.itemType === "DONATION" ? t("freeAmountLabel") : t("amountLabel")}
-                                  value={extraAmounts[extra.id] ?? tierMinimum(extra)}
+                                  required
+                                  placeholder={tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                  value={extraAmounts[extra.id] ?? 0}
                                   onChange={v => setExtraAmounts(prev => ({ ...prev, [extra.id]: v }))}
+                                  error={
+                                    (extraAmounts[extra.id] ?? 0) < tierMinimum(extra)
+                                      ? t("belowExtraMinimum", {
+                                          label: extra.label,
+                                          amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                                        })
+                                      : undefined
+                                  }
                                 />
-                                {(extraAmounts[extra.id] ?? tierMinimum(extra)) < tierMinimum(extra) && (
-                                  <p className="text-xs text-destructive">
-                                    {t("belowExtraMinimum", {
-                                      label: extra.label,
-                                      amount: tierMinimum(extra).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                                    })}
-                                  </p>
-                                )}
                               </>
                             )}
                           </div>
@@ -898,24 +792,33 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                   </div>
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormField label={t("firstNameLabel")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                  <FormField label={t("lastNameLabel")} required value={lastName} onChange={e => setLastName(e.target.value)} />
+                  <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
+                  <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} />
                 </div>
-                <FormField label={t("emailLabel")} type="email" required value={email} onChange={e => setEmail(e.target.value)} />
+                <FormField label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)} />
                 {willBeImmediate && (
-                  <FormField
-                    label={t("passwordLabel")}
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    hint={t("passwordHint")}
-                  />
+                  <div className="space-y-1.5">
+                    <FormField
+                      label={t("passwordLabel")}
+                      type="password"
+                      required
+                      minLength={PASSWORD_MIN_LENGTH}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      hint={t("passwordHint")}
+                    />
+                    <PasswordRequirements
+                      title={t("passwordRequirementsTitle")}
+                      rules={[{
+                        label: t("passwordRuleMinLength", { count: PASSWORD_MIN_LENGTH }),
+                        met:   password.length >= PASSWORD_MIN_LENGTH,
+                      }]}
+                    />
+                  </div>
                 )}
 
                 {form.fieldAddress !== "HIDDEN" && (
-                  <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                  <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
@@ -944,10 +847,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     />
                   )}
                   {form.fieldPhone !== "HIDDEN" && (
-                    <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                    <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
                   )}
                   {form.fieldMobile !== "HIDDEN" && (
-                    <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                    <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
                   )}
                 </div>
 
@@ -961,6 +864,136 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
                   />
                 ))}
+
+                {/* Adhérents 2..N sit after registrant 1's own details rather than straight
+                    under the tarif picker: being asked to add a second person before having
+                    given the first one's name read as a step out of order. The block and the
+                    button that creates its cards stay together, so a newly added card always
+                    appears right where the button is. */}
+                {(extraRegistrants.length > 0 || canAddRegistrant) && (
+                  <div className="space-y-3 border-t pt-4">
+                    {extraRegistrants.map((r, idx) => {
+                      const rt = registrantTier(r)
+                      return (
+                        <div key={r.key} className="space-y-3 rounded-md border p-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">{t("registrantLabel", { number: idx + 2 })}</p>
+                            <Button type="button" variant="ghost" size="icon" onClick={() => removeRegistrant(r.key)} aria-label={t("removeRegistrant")}>
+                              <TrashIcon className="size-4" />
+                            </Button>
+                          </div>
+                          <SelectField
+                            label={t("amountLabel")}
+                            options={multiUsableTiers.map(x => ({
+                              value: x.id,
+                              label: x.free
+                                ? `${x.label} — ${t("freeLabel")}`
+                                : x.freeAmount ? x.label : `${x.label} — ${Number(x.amount).toLocaleString(loc, { style: "currency", currency: "EUR" })}`,
+                            }))}
+                            value={r.tierId}
+                            onValueChange={v => updateRegistrant(r.key, { tierId: v })}
+                          />
+                          {rt && !rt.free && rt.freeAmount && (
+                            <>
+                              <CurrencyField
+                                label={t("freeAmountLabel")}
+                                required
+                                placeholder={tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                value={r.freeAmount}
+                                onChange={v => updateRegistrant(r.key, { freeAmount: v })}
+                                error={
+                                  registrantAmount(r) < tierMinimum(rt)
+                                    ? t("belowExtraMinimum", { label: rt.label, amount: tierMinimum(rt).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                                    : belowIneligible(rt, registrantAmount(r))
+                                    ? t("belowIneligibleAmount", { amount: Number(rt.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                                    : undefined
+                                }
+                              />
+                            </>
+                          )}
+                          {rt && !belowIneligible(rt, registrantAmount(r)) && partialReceiptAmount(rt, registrantAmount(r)) != null && (
+                            <p className="text-xs text-muted-foreground">
+                              {t("partialReceiptNotice", {
+                                amount: partialReceiptAmount(rt, registrantAmount(r))!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                              })}
+                            </p>
+                          )}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={r.firstName} onChange={e => updateRegistrant(r.key, { firstName: e.target.value })} />
+                            <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={r.lastName} onChange={e => updateRegistrant(r.key, { lastName: e.target.value })} />
+                          </div>
+                          {form.fieldPhoto !== "HIDDEN" && (
+                            <div className="flex justify-center">
+                              <ImageUpload
+                                value={r.photoUrl}
+                                onChange={v => updateRegistrant(r.key, { photoUrl: v })}
+                                aspectRatio="square"
+                                className="w-32"
+                                compact
+                                uploadUrl={`/api/public/${slug}/adhesion/${formSlug}/photo${isPreview ? "?preview=1" : ""}`}
+                                maxSizeErrorMessage={t("photoTooLarge")}
+                                genericErrorMessage={t("photoUploadError")}
+                              />
+                            </div>
+                          )}
+                          {form.fieldAddress !== "HIDDEN" && (
+                            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} />
+                          )}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            {form.fieldBirthDate !== "HIDDEN" && (
+                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} />
+                            )}
+                            {form.fieldGender !== "HIDDEN" && (
+                              <SelectField
+                                label={t("genderLabel")}
+                                required={form.fieldGender === "REQUIRED"}
+                                options={[
+                                  { value: "",       label: t("genderNone") },
+                                  { value: "HOMME",  label: t("genderHomme") },
+                                  { value: "FEMME",  label: t("genderFemme") },
+                                ]}
+                                value={r.sexe}
+                                onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
+                              />
+                            )}
+                            {form.fieldLanguage !== "HIDDEN" && (
+                              <SelectField
+                                label={t("languageLabel")}
+                                required={form.fieldLanguage === "REQUIRED"}
+                                options={[{ value: "", label: t("languageNone") }, ...languageOptions]}
+                                value={r.spokenLanguage}
+                                onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
+                              />
+                            )}
+                            {form.fieldPhone !== "HIDDEN" && (
+                              <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} />
+                            )}
+                            {form.fieldMobile !== "HIDDEN" && (
+                              <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} />
+                            )}
+                          </div>
+                          {form.customFields.map(field => (
+                            <FormField
+                              key={field.id}
+                              label={field.label}
+                              required={field.required}
+                              type={field.type === "NUMBER" ? "number" : "text"}
+                              value={r.answers[field.id] ?? ""}
+                              onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
+                            />
+                          ))}
+                        </div>
+                      )
+                    })}
+
+                    {canAddRegistrant && (
+                      <Button type="button" variant="outline" size="sm" onClick={addRegistrant}>
+                        <PlusIcon className="mr-1.5 size-4" />
+                        {t("addRegistrant")}
+                      </Button>
+                    )}
+                  </div>
+                )}
 
                 {form.conditions && (
                   <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />

@@ -739,6 +739,7 @@ export default function PresencesPage() {
               variant="outline"
               size="sm"
               className="w-full"
+              nativeButton={false}
               render={<Link href={`/dashboard/evenements/${id}/presences/scan`} />}
             >
               <ScanIcon className="mr-1.5 size-3.5" />

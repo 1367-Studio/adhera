@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
-  DownloadSimpleIcon, ReceiptIcon, XCircleIcon
+  DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
@@ -157,6 +157,7 @@ export function MembreDetailView() {
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
+  const [rejectOpen, setRejectOpen]             = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
   // opened here rather than sending the admin off to the main Cotisations list to find it.
@@ -200,6 +201,33 @@ export function MembreDetailView() {
     try {
       await createAccessMutation.mutateAsync(id)
       toast.success(t("membres.detail.toasts.accessCreated"))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // Approving/refusing a "validation sur demande" signup is just a status change — the whole
+  // side-effect chain (free Cotisation, portal access + invitation email, clearing
+  // pendingTierId) lives in PATCH /api/membres/[id], so there is deliberately no dedicated
+  // endpoint here. Only `status` is sent: membreUpdateSchema is a .partial(), and the route
+  // only writes the keys it actually receives.
+  async function handleApprove() {
+    try {
+      await updateMutation.mutateAsync({ status: "ACTIF" })
+      toast.success(t("membres.detail.pendingRequest.approvedToast"))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  // INACTIF rather than deleting the row: the person still applied, and that history (plus
+  // their answers to the form) is worth keeping. It also flips User.active to false
+  // server-side, so a refused applicant can't log in.
+  async function handleReject() {
+    try {
+      await updateMutation.mutateAsync({ status: "INACTIF" })
+      toast.success(t("membres.detail.pendingRequest.rejectedToast"))
+      setRejectOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -409,6 +437,32 @@ export function MembreDetailView() {
             )}
           </div>
         </div>
+
+        {/* Approving a request used to mean opening the edit modal and changing a dropdown —
+            an action nothing on the page announced. Shown for any PENDING membre, not only one
+            carrying a pendingTier: a PENDING created by another path (site membership section,
+            manual creation) needs the same way out. */}
+        {membre.status === "PENDING" && !isSelf && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">
+            <div className="space-y-0.5">
+              <p className="text-sm font-medium">{t("membres.detail.pendingRequest.title")}</p>
+              <p className="text-xs text-muted-foreground">
+                {membre.pendingTier
+                  ? t("membres.detail.pendingRequest.withTier", { tier: membre.pendingTier.label })
+                  : t("membres.detail.pendingRequest.description")}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" onClick={handleApprove} loading={updateMutation.isPending}>
+                <CheckIcon className="mr-1.5 size-4" />
+                {t("membres.detail.pendingRequest.approve")}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={() => setRejectOpen(true)}>
+                {t("membres.detail.pendingRequest.reject")}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -839,6 +893,16 @@ export function MembreDetailView() {
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={rejectOpen}
+        onOpenChange={setRejectOpen}
+        title={t("membres.detail.pendingRequest.rejectConfirmTitle")}
+        description={t("membres.detail.pendingRequest.rejectConfirmDescription", { name: `${membre.firstName} ${membre.lastName}` })}
+        confirmLabel={t("membres.detail.pendingRequest.reject")}
+        loading={updateMutation.isPending}
+        onConfirm={handleReject}
       />
 
       <ConfirmDialog

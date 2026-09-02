@@ -2450,6 +2450,15 @@
       "donorTypeCompany": "Empresa",
       "companyNameLabel": "Nombre de la empresa",
       "siretLabel": "SIRET",
+      "firstNamePlaceholder": "María",
+      "lastNamePlaceholder": "García",
+      "emailPlaceholder": "maria.garcia@email.es",
+      "addressPlaceholder": "Calle Mayor 12, 28013 Madrid",
+      "phonePlaceholder": "912 345 678",
+      "mobilePlaceholder": "612 345 678",
+      "companyNamePlaceholder": "García e Hijos S.L.",
+      "siretPlaceholder": "12345678900012",
+      "genderPlaceholder": "Mujer",
       "viewConditionsLabel": "Consultar las condiciones generales",
       "conditionsModalTitle": "Condiciones generales",
       "conditionsAgreeLabel": "Acepto las condiciones generales",
@@ -2710,6 +2719,12 @@
       "addRegistrant": "Añadir otro socio",
       "removeRegistrant": "Quitar este socio",
       "sharedAccountHint": "El email y la contraseña de abajo se usarán para iniciar sesión para todo el grupo.",
+      "firstNamePlaceholder": "María",
+      "lastNamePlaceholder": "García",
+      "emailPlaceholder": "maria.garcia@email.es",
+      "addressPlaceholder": "Calle Mayor 12, 28013 Madrid",
+      "phonePlaceholder": "912 345 678",
+      "mobilePlaceholder": "612 345 678",
       "donationBadge": "(donación)",
       "totalLabel": "Total a pagar",
       "partialReceiptNotice": "Solo {amount} son deducibles de impuestos para esta cuota.",
@@ -2732,6 +2747,8 @@
       "emailLabel": "Correo electrónico",
       "passwordLabel": "Contraseña",
       "passwordHint": "Para acceder a tu espacio de socio.",
+      "passwordRequirementsTitle": "Su contraseña debe contener:",
+      "passwordRuleMinLength": "Al menos {count} caracteres",
       "addressLabel": "Dirección",
       "birthDateLabel": "Fecha de nacimiento",
       "phoneLabel": "Teléfono",
@@ -3608,7 +3625,8 @@
         "roleUpdated": "Rol actualizado"
       },
       "changeRoleTitle": "Cambiar rol",
-      "changeRoleDescription": "Rol de {name} en la asociación."
+      "changeRoleDescription": "Rol de {name} en la asociación.",
+      "pendingRequests": "{count, plural, one {# solicitud pendiente} other {# solicitudes pendientes}}"
     },
     "detail": {
       "notFound": "Este miembro no se encuentra o ha sido eliminado.",
@@ -3714,6 +3732,17 @@
         "cotisationUpdated": "Cuota actualizada",
         "subscriptionCancelled": "Cobro automático detenido",
         "installmentCancelled": "Pago en varias veces detenido"
+      },
+      "pendingRequest": {
+        "title": "Solicitud de afiliación pendiente de validación",
+        "description": "Este miembro ha enviado una solicitud de afiliación que aún no ha sido validada.",
+        "withTier": "Tarifa solicitada: {tier} — la validación activa al miembro.",
+        "approve": "Validar",
+        "reject": "Rechazar",
+        "approvedToast": "Solicitud validada",
+        "rejectedToast": "Solicitud rechazada",
+        "rejectConfirmTitle": "¿Rechazar esta solicitud?",
+        "rejectConfirmDescription": "{name} pasará al estado «Inactivo» y no podrá iniciar sesión. La solicitud y sus respuestas al formulario se conservan."
       }
     },
     "sms": {

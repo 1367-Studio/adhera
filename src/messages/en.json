@@ -2450,6 +2450,15 @@
       "donorTypeCompany": "Company",
       "companyNameLabel": "Company name",
       "siretLabel": "SIRET",
+      "firstNamePlaceholder": "Jane",
+      "lastNamePlaceholder": "Smith",
+      "emailPlaceholder": "jane.smith@email.com",
+      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
+      "phonePlaceholder": "020 7946 0958",
+      "mobilePlaceholder": "07700 900123",
+      "companyNamePlaceholder": "Smith & Sons Ltd",
+      "siretPlaceholder": "12345678900012",
+      "genderPlaceholder": "Female",
       "viewConditionsLabel": "View the terms and conditions",
       "conditionsModalTitle": "Terms and conditions",
       "conditionsAgreeLabel": "I accept the terms and conditions",
@@ -2710,6 +2719,12 @@
       "addRegistrant": "Add another member",
       "removeRegistrant": "Remove this member",
       "sharedAccountHint": "The email and password below will be used to log in for the whole group.",
+      "firstNamePlaceholder": "Jane",
+      "lastNamePlaceholder": "Smith",
+      "emailPlaceholder": "jane.smith@email.com",
+      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
+      "phonePlaceholder": "020 7946 0958",
+      "mobilePlaceholder": "07700 900123",
       "donationBadge": "(donation)",
       "totalLabel": "Total due",
       "partialReceiptNotice": "Only {amount} is tax-deductible for this membership.",
@@ -2732,6 +2747,8 @@
       "emailLabel": "Email",
       "passwordLabel": "Password",
       "passwordHint": "To access your member portal.",
+      "passwordRequirementsTitle": "Your password must contain:",
+      "passwordRuleMinLength": "At least {count} characters",
       "addressLabel": "Address",
       "birthDateLabel": "Date of birth",
       "phoneLabel": "Phone",
@@ -3608,7 +3625,8 @@
         "roleUpdated": "Role updated"
       },
       "changeRoleTitle": "Change role",
-      "changeRoleDescription": "{name}'s role in the association."
+      "changeRoleDescription": "{name}'s role in the association.",
+      "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}"
     },
     "detail": {
       "notFound": "This member could not be found or has been deleted.",
@@ -3714,6 +3732,17 @@
         "cotisationUpdated": "Membership fee updated",
         "subscriptionCancelled": "Automatic charge stopped",
         "installmentCancelled": "Installment plan stopped"
+      },
+      "pendingRequest": {
+        "title": "Membership request awaiting approval",
+        "description": "This member submitted a membership request that has not been approved yet.",
+        "withTier": "Requested tier: {tier} — approving activates the member.",
+        "approve": "Approve",
+        "reject": "Decline",
+        "approvedToast": "Request approved",
+        "rejectedToast": "Request declined",
+        "rejectConfirmTitle": "Decline this request?",
+        "rejectConfirmDescription": "{name} will be set to “Inactive” and won't be able to sign in. The request and their form answers are kept."
       }
     },
     "sms": {

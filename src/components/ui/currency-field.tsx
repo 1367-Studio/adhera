@@ -13,6 +13,12 @@ interface CurrencyFieldProps {
   value:     number
   onChange:  (value: number) => void
   onBlur?:   () => void
+  // Shown, greyed out, while the amount is still 0 — for a "montant libre" whose expected or
+  // minimum amount is worth suggesting without pre-filling it. Rendering a real 0 as the
+  // suggestion instead would read as an amount already entered (the whole point of a
+  // placeholder), and pre-filling the minimum as a value makes the field look completed when
+  // nothing has been typed. Opt-in: without it the field keeps showing a plain "0,00 €".
+  placeholder?: string
 }
 
 const MAX_CENTS = 9_999_999 // 99 999,99 €
@@ -105,7 +111,7 @@ function fmtCents(cents: number): string {
   }).format(cents / 100)
 }
 
-export function CurrencyField({ label, error, hint, required, disabled, value, onChange, onBlur }: CurrencyFieldProps) {
+export function CurrencyField({ label, error, hint, required, disabled, value, onChange, onBlur, placeholder }: CurrencyFieldProps) {
   const [cents, setCents] = useState(() => Math.round((value ?? 0) * 100))
   const internal          = useRef(false)
   const savedRef          = useRef(cents)
@@ -161,15 +167,19 @@ export function CurrencyField({ label, error, hint, required, disabled, value, o
 
   return (
     <div className="flex flex-col gap-1.5">
-      <Label>
+      <Label className={cn(error && "text-destructive")}>
         {label}
         {required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
       </Label>
       <input
         type="text"
         inputMode="numeric"
-        value={fmtCents(cents)}
+        // A native placeholder only renders on an empty value, so the formatted 0 has to give
+        // way to "" for it to show at all.
+        value={placeholder != null && cents === 0 ? "" : fmtCents(cents)}
+        placeholder={placeholder}
         disabled={disabled}
+        aria-invalid={!!error}
         onFocus={handleFocus}
         onKeyDown={handleKeyDown}
         onChange={() => {/* controlled via onKeyDown */}}
@@ -177,8 +187,13 @@ export function CurrencyField({ label, error, hint, required, disabled, value, o
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring select-none cursor-text",
+          "placeholder:text-muted-foreground",
           "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-          error && "border-destructive",
+          // Tinted fill on top of FormField's border-only convention: on a public form an
+          // unfilled amount has to be impossible to miss, and the border alone reads as
+          // decoration next to a greyed-out placeholder. Kept at /5 so it stays a tint rather
+          // than a block of colour, and on the destructive token so dark mode follows.
+          error && "border-destructive bg-destructive/5 focus-visible:ring-destructive/30",
         )}
       />
       {hint  && <p className="text-xs text-muted-foreground">{hint}</p>}

@@ -159,7 +159,11 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const belowMinimum = paymentMethod === "STRIPE" && amount > 0 && amount < MIN_DONATION_AMOUNT
   // Le palier peut configurer son propre minimum (montant libre) — une règle de
   // l'association, applicable peu importe le moyen de paiement.
-  const belowTierMinimum = !!selectedTier && selectedTier.freeAmount && amount > 0 && amount < tierMinimum(selectedTier)
+  // No `amount > 0` guard (unlike belowMinimum, which is about Stripe's floor rather than this
+  // field): at the default 0 the palier's minimum is precisely what has not been met, and that
+  // is the case the donor most needs flagged. canSubmit already required amount > 0, so this
+  // only makes an existing blocker visible — it blocks nothing new.
+  const belowTierMinimum = !!selectedTier && selectedTier.freeAmount && amount < tierMinimum(selectedTier)
   // Un montant libre payé en dessous de la part non éligible donnerait un reçu à montant
   // négatif — le serveur le refuse déjà (voir checkout/route.ts), mais sans ce même contrôle
   // ici le donateur ne le découvrirait qu'après avoir rempli tout le formulaire.
@@ -169,6 +173,15 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   // quelle avant même que le donateur ait touché au champ.
   const belowIneligible = !!selectedTier && selectedTier.freeAmount && selectedTier.receiptMode === "PARTIAL" &&
     selectedTier.ineligibleAmount != null && amount < Number(selectedTier.ineligibleAmount)
+  // Single source for the amount field's error text, in the priority the three stacked
+  // paragraphs it replaced used: Stripe's floor first, then the palier's own minimum, then the
+  // non-deductible floor.
+  const amountError: string | null = !selectedTier ? null
+    : belowMinimum      ? t("belowMinimumAmount", { amount: MIN_DONATION_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+    : belowTierMinimum  ? t("belowExtraMinimum", { label: selectedTier.label, amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+    : belowIneligible   ? t("belowIneligibleAmount", { amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+    : null
+
   const canSubmit =
     !loading && !isPreview &&
     !!form && !form.notOpenYet && !form.closed &&
@@ -331,30 +344,21 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                     </button>
                   ))}
                 </div>
-                {selectedTier?.freeAmount && (
-                  <CurrencyField label={t("freeAmountLabel")} value={freeAmount} onChange={setFreeAmount} />
-                )}
-                {belowMinimum && (
-                  <p className="text-xs text-destructive">
-                    {t("belowMinimumAmount", {
-                      amount: MIN_DONATION_AMOUNT.toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                    })}
-                  </p>
-                )}
-                {!belowMinimum && belowTierMinimum && (
-                  <p className="text-xs text-destructive">
-                    {t("belowExtraMinimum", {
-                      label: selectedTier.label,
-                      amount: tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                    })}
-                  </p>
-                )}
-                {selectedTier && !belowMinimum && !belowTierMinimum && belowIneligible && (
-                  <p className="text-xs text-destructive">
-                    {t("belowIneligibleAmount", {
-                      amount: Number(selectedTier.ineligibleAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                    })}
-                  </p>
+                {/* On a montant-libre palier these all describe the field right above, so they
+                    ride in its `error` slot (tinted input + message) instead of floating below
+                    it. A fixed-amount palier has no input to attach them to — hence the
+                    standalone paragraph fallback. Priority order is unchanged. */}
+                {selectedTier?.freeAmount ? (
+                  <CurrencyField
+                    label={t("freeAmountLabel")}
+                    required
+                    placeholder={tierMinimum(selectedTier).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                    value={freeAmount}
+                    onChange={setFreeAmount}
+                    error={amountError ?? undefined}
+                  />
+                ) : amountError && (
+                  <p className="text-xs text-destructive">{amountError}</p>
                 )}
                 {selectedTier && !belowIneligible && partialReceiptAmount(selectedTier, amount) != null && (
                   <p className="text-xs text-muted-foreground">
@@ -400,32 +404,32 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <FormField label={t("firstNameLabel")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                <FormField label={t("lastNameLabel")} required value={lastName} onChange={e => setLastName(e.target.value)} />
+                <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
+                <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} />
               </div>
               {donorType === "COMPANY" && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormField label={t("companyNameLabel")} required value={companyName} onChange={e => setCompanyName(e.target.value)} />
-                  <FormField label={t("siretLabel")} required value={siret} onChange={e => setSiret(e.target.value)} />
+                  <FormField label={t("companyNameLabel")} placeholder={t("companyNamePlaceholder")} required value={companyName} onChange={e => setCompanyName(e.target.value)} />
+                  <FormField label={t("siretLabel")} placeholder={t("siretPlaceholder")} required value={siret} onChange={e => setSiret(e.target.value)} />
                 </div>
               )}
-              <FormField label={t("emailLabel")} type="email" required value={email} onChange={e => setEmail(e.target.value)} />
+              <FormField label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)} />
 
               {form.fieldAddress !== "HIDDEN" && (
-                <FormField label={t("addressLabel")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
               )}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {form.fieldBirthDate !== "HIDDEN" && (
                   <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
                 )}
                 {form.fieldGender !== "HIDDEN" && (
-                  <FormField label={t("genderLabel")} required={form.fieldGender === "REQUIRED"} value={gender} onChange={e => setGender(e.target.value)} />
+                  <FormField label={t("genderLabel")} placeholder={t("genderPlaceholder")} required={form.fieldGender === "REQUIRED"} value={gender} onChange={e => setGender(e.target.value)} />
                 )}
                 {form.fieldPhone !== "HIDDEN" && (
-                  <FormField label={t("phoneLabel")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                  <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
                 )}
                 {form.fieldMobile !== "HIDDEN" && (
-                  <FormField label={t("mobileLabel")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                  <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
                 )}
               </div>
 
