@@ -1352,6 +1352,7 @@
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
       "actions": {
         "presences": "Presenças",
+        "avaliacoes": "Avaliações",
         "copyLink": "Copiar ligação",
         "edit": "Editar",
         "customFields": "Campos personalizados",
@@ -1482,7 +1483,13 @@
       "addGuestModal": {
         "title": "Adicionar convidado",
         "optional": "(opcional)",
-        "submit": "Adicionar e marcar presente"
+        "emailHint": "Sem e-mail, esta pessoa não vai poder receber o convite para avaliar o evento depois.",
+        "submit": "Adicionar convidado"
+      },
+      "tierPickerModal": {
+        "title": "Escolher um tarifa",
+        "selectLabel": "Tarifa",
+        "confirm": "Confirmar"
       },
       "editGuestModal": {
         "title": "Editar convidado"
@@ -1505,7 +1512,7 @@
       "toasts": {
         "markedPaid": "{name} marcado como pago",
         "paymentCancelled": "Pagamento de {name} cancelado",
-        "guestAdded": "{name} adicionado e marcado presente",
+        "guestAdded": "{name} adicionado",
         "guestUpdated": "Convidado atualizado",
         "guestRemoved": "{name} removido da lista",
         "updateError": "Erro ao atualizar",
@@ -1513,6 +1520,16 @@
         "qrRevoked": "QR Code desativado",
         "noMembersToExport": "Nenhum membro para exportar",
         "linkCopied": "Ligação copiada"
+      }
+    },
+    "avaliacoes": {
+      "empty": "Ainda não há avaliações",
+      "countLabel": "{count, plural, one {# avaliação} other {# avaliações}}",
+      "columns": {
+        "participant": "Participante",
+        "rating": "Nota",
+        "comment": "Comentário",
+        "date": "Data"
       }
     }
   },
@@ -4054,6 +4071,7 @@
         "evenementUpdated": "Evento atualizado",
         "evenementDeleted": "Evento eliminado",
         "presenceMarked": "Presença marcada",
+        "participantAdded": "Participante adicionado",
         "rsvpUpdated": "RSVP atualizado",
         "participationGuestUpdated": "Convidado atualizado",
         "participationGuestRemoved": "Convidado removido",

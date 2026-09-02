@@ -23,6 +23,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { Modal } from "@/components/ui/modal"
+import { SelectField } from "@/components/ui/select-field"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
@@ -129,6 +130,8 @@ export default function PresencesPage() {
   const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
   const [infoTarget, setInfoTarget]     = useState<PresenceRow | null>(null)
   const [sendingTickets, setSendingTickets] = useState(false)
+  const [tierPickerTarget, setTierPickerTarget] = useState<PresenceRow | null>(null)
+  const [selectedTierId,   setSelectedTierId]   = useState("")
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -196,15 +199,31 @@ export default function PresencesPage() {
     ? typed.filter(r => `${r.lastName} ${r.firstName}`.toLowerCase().includes(search.toLowerCase()))
     : typed
 
-  function handleMarkPaid(row: PresenceRow) {
+  function submitMarkPaid(row: PresenceRow, ticketTypeId?: string) {
     const key = rowKey(row)
     if (payingIds.has(key)) return
     setPayingIds(prev => new Set(prev).add(key))
-    markPaid.mutate(rowRef(row), {
-      onSuccess: () => toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` })),
+    markPaid.mutate({ ...rowRef(row), ticketTypeId }, {
+      onSuccess: () => {
+        toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` }))
+        setTierPickerTarget(null)
+      },
       onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
+  }
+
+  // A registration that never picked a tier (typically a walk-in added at the door) is
+  // ambiguous once the event has more than one — ask instead of silently charging the
+  // cheapest one. Anyone who already has a tier, or an event with at most one, pays in
+  // a single click as before.
+  function handleMarkPaid(row: PresenceRow) {
+    if (hasMultipleTicketTypes && !row.ticketTypeLabel) {
+      setSelectedTierId("")
+      setTierPickerTarget(row)
+      return
+    }
+    submitMarkPaid(row)
   }
 
   function handleCancelPayment(row: PresenceRow) {
@@ -988,7 +1007,41 @@ export default function PresencesPage() {
               onChange={e => setGuestEmail(e.target.value)}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
             />
+            <p className="text-xs text-muted-foreground">{t("evenements.presences.addGuestModal.emailHint")}</p>
           </div>
+        </div>
+      </Modal>
+
+      {/* Which tier to charge, when marking paid a registration that never picked one */}
+      <Modal
+        open={!!tierPickerTarget}
+        onOpenChange={(open) => !open && setTierPickerTarget(null)}
+        title={t("evenements.presences.tierPickerModal.title")}
+        size="sm"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setTierPickerTarget(null)}>{t("common.cancel")}</Button>
+            <Button
+              loading={tierPickerTarget ? payingIds.has(rowKey(tierPickerTarget)) : false}
+              disabled={!selectedTierId}
+              onClick={() => tierPickerTarget && submitMarkPaid(tierPickerTarget, selectedTierId)}
+            >
+              <MoneyIcon className="mr-1.5 size-4" />
+              {t("evenements.presences.tierPickerModal.confirm")}
+            </Button>
+          </>
+        }
+      >
+        <div className="py-2">
+          <SelectField
+            label={t("evenements.presences.tierPickerModal.selectLabel")}
+            value={selectedTierId}
+            onValueChange={setSelectedTierId}
+            options={(ev?.ticketTypes ?? []).map(tt => ({
+              value: tt.id,
+              label: `${tt.label} — ${Number(tt.price).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`,
+            }))}
+          />
         </div>
       </Modal>
 

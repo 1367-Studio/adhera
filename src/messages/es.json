@@ -1340,6 +1340,7 @@
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
       "actions": {
         "presences": "Asistencia",
+        "avaliacoes": "Opiniones",
         "copyLink": "Copiar enlace",
         "edit": "Editar",
         "customFields": "Campos personalizados",
@@ -1470,7 +1471,13 @@
       "addGuestModal": {
         "title": "Añadir un invitado",
         "optional": "(opcional)",
-        "submit": "Añadir y marcar presente"
+        "emailHint": "Sin un correo electrónico, esta persona no podrá recibir la invitación para dejar una opinión después del evento.",
+        "submit": "Añadir invitado"
+      },
+      "tierPickerModal": {
+        "title": "Elegir un tarifa",
+        "selectLabel": "Tarifa",
+        "confirm": "Confirmar"
       },
       "editGuestModal": {
         "title": "Editar invitado"
@@ -1493,7 +1500,7 @@
       "toasts": {
         "markedPaid": "{name} marcado como pagado",
         "paymentCancelled": "Pago de {name} cancelado",
-        "guestAdded": "{name} añadido y marcado presente",
+        "guestAdded": "{name} añadido",
         "guestUpdated": "Invitado actualizado",
         "guestRemoved": "{name} eliminado de la lista",
         "updateError": "Error al actualizar",
@@ -1501,6 +1508,16 @@
         "qrRevoked": "Código QR desactivado",
         "noMembersToExport": "Ningún miembro para exportar",
         "linkCopied": "Enlace copiado"
+      }
+    },
+    "avaliacoes": {
+      "empty": "Aún no hay opiniones",
+      "countLabel": "{count, plural, one {# opinión} other {# opiniones}}",
+      "columns": {
+        "participant": "Participante",
+        "rating": "Nota",
+        "comment": "Comentario",
+        "date": "Fecha"
       }
     }
   },
@@ -4042,6 +4059,7 @@
         "evenementUpdated": "Evento modificado",
         "evenementDeleted": "Evento eliminado",
         "presenceMarked": "Asistencia marcada",
+        "participantAdded": "Participante añadido",
         "rsvpUpdated": "RSVP actualizado",
         "participationGuestUpdated": "Invitado modificado",
         "participationGuestRemoved": "Invitado eliminado",

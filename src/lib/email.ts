@@ -399,6 +399,30 @@ export function eventReminderEmail(p: {
   }
 }
 
+export function eventReviewRequestEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  reviewUrl:       string
+  branding?:       EmailBranding
+}) {
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre avis compte</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
+      Pouvez-vous prendre un instant pour nous donner votre avis ?
+    </p>
+    ${btn("Donner mon avis", p.reviewUrl)}`
+  return {
+    to:      p.email,
+    subject: `Votre avis sur ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function adminWelcomeEmail(p: {
   firstName:       string
   email:           string

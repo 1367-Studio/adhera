@@ -84,11 +84,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (!MANAGERS.includes(role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const { participationId, membreId } = await req.json() as { participationId?: string; membreId?: string }
+  const { participationId, membreId, ticketTypeId } = await req.json() as { participationId?: string; membreId?: string; ticketTypeId?: string }
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { title: true, price: true, ticketTypes: { select: { id: true, price: true } } },
+    select: { title: true, price: true, ticketTypes: { select: { id: true, label: true, price: true } } },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   const hasTicketTypes = evenement.ticketTypes.length > 0
@@ -116,15 +116,26 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     return NextResponse.json({ error: "Déjà marqué comme payé" }, { status: 409 })
 
     const paidAt = new Date()
-  // Charge whatever tier this registration already picked (public form, portal purchase, or
-  // a previous manual assignment) — only a walk-in that was never given a tier falls back to
-  // the cheapest one, since there's no UI here yet to let the admin pick one on the spot.
-  const amount = hasTicketTypes
-    ? Number(
-        evenement.ticketTypes.find(tt => tt.id === participation.ticketTypeId)?.price
-        ?? evenement.ticketTypes.reduce((min, tt) => Number(tt.price) < Number(min.price) ? tt : min).price,
-      )
-    : Number(evenement.price)
+
+  // Which tier to charge: an explicit choice from the request wins (the "choose a tier"
+  // modal in the presences UI, for a walk-in that was never given one); otherwise fall back
+  // to whatever this registration already picked (public form, portal purchase, or a
+  // previous manual assignment); a single-tier event has no ambiguity so needs neither.
+  // More than one tier and nothing resolved means the caller must pick — never guess.
+  let tier: { id: string; label: string; price: unknown } | undefined
+  if (hasTicketTypes) {
+    if (ticketTypeId) {
+      tier = evenement.ticketTypes.find(tt => tt.id === ticketTypeId)
+      if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
+    } else if (participation.ticketTypeId) {
+      tier = evenement.ticketTypes.find(tt => tt.id === participation.ticketTypeId)
+    } else if (evenement.ticketTypes.length === 1) {
+      tier = evenement.ticketTypes[0]
+    } else {
+      return NextResponse.json({ error: "Sélectionnez un tarif" }, { status: 422 })
+    }
+  }
+  const amount = hasTicketTypes ? Number(tier!.price) : Number(evenement.price)
 
   const exercice = await resolveExerciceForDate(associationId, paidAt)
   const exerciceGuard = closedExerciceGuard(exercice?.status)
@@ -132,9 +143,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
 
   const updated = await prisma.participation.update({
     where: { id: participation.id },
-    data:  { ticketPaidAt: paidAt, amount },
+    data:  { ticketPaidAt: paidAt, amount, ticketTypeId: tier?.id },
   })
 
+  const ticketLabel = evenement.ticketTypes.length > 1 && tier ? ` (${tier.label})` : ""
   await prisma.income.create({
     data: {
       associationId,
@@ -142,7 +154,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
       memberId:        participation.membreId,
       participationId: participation.id,
       amount,
-      description: `Billet (espèces) — ${evenement.title} — ${participation.firstName} ${participation.lastName}`,
+      description: `Billet (espèces) — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
       source:      "MANUAL",
       status:      "PAID",
       date:        paidAt,
