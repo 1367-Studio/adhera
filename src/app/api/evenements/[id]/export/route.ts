@@ -28,24 +28,13 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
-  // Same reasoning as /participations: active members are listed even without a ticket
-  // (so a walk-in who never RSVP'd still shows up), and every Participation row —
-  // a member's named companions, a non-ACTIF member's own ticket, or a guest added at
-  // the door — is merged on top so nobody with a real ticket is missing from the export.
-  const [membres, participations] = await Promise.all([
-    prisma.membre.findMany({
-      where:   { associationId, deletedAt: null, status: "ACTIF" },
-      orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
-      select:  { id: true, firstName: true, lastName: true },
-    }),
-    prisma.participation.findMany({
-      where:  { evenementId: id },
-      select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, ticketTypeId: true },
-    }),
-  ])
-
-  const byMembre    = new Map(participations.filter(p => p.membreId).map(p => [p.membreId as string, p]))
-  const membreIds   = new Set(membres.map(m => m.id))
+  // Same reasoning as /participations: only people with a real link to this event —
+  // a ticket, an RSVP, a companion, or a guest added at the door. See that route's own
+  // comment for why every active member used to be listed here regardless.
+  const participations = await prisma.participation.findMany({
+    where:  { evenementId: id },
+    select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, ticketTypeId: true },
+  })
 
   const slug    = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
   const date    = format(evenement.date, "yyyy-MM-dd")
@@ -53,12 +42,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const hasFee  = hasTicketTypes || (evenement.price != null && Number(evenement.price) > 0)
   const ticketTypeLabels = new Map(evenement.ticketTypes.map(tt => [tt.id, tt.label]))
 
-  const allRows = [
-    ...membres.map(m => ({ firstName: m.firstName, lastName: m.lastName, email: byMembre.get(m.id)?.email ?? null, p: byMembre.get(m.id) })),
-    ...participations
-      .filter(p => !p.membreId || !membreIds.has(p.membreId))
-      .map(p => ({ firstName: p.firstName, lastName: p.lastName, email: p.email, p })),
-  ]
+  const allRows = participations.map(p => ({ firstName: p.firstName, lastName: p.lastName, email: p.email, p }))
 
   // One column per custom field configured on this event — active members never fill
   // these (they're only asked on the public registration form), so their cells stay
@@ -87,7 +71,10 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     if (hasFee) {
       return {
         ...base,
-        Paiement: p?.ticketPaidAt ? "Payé" : p?.rsvp === "CONFIRME" ? "Réservé" : "",
+        // A ticketPaidAt with amount 0 is either the "Marquer gratuit" admin exemption
+        // (src/app/api/evenements/[id]/participations/route.ts) or a genuine €0 tarif —
+        // either way it isn't a real payment, so it must never render as "Payé" here.
+        Paiement: p?.ticketPaidAt ? (Number(p.amount ?? 0) === 0 ? "Gratuit" : "Payé") : p?.rsvp === "CONFIRME" ? "Réservé" : "",
         RSVP:     "",
         ...(hasTicketTypes ? { Tarif: p?.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? "") : "" } : {}),
         ...customValues,

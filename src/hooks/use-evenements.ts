@@ -96,11 +96,11 @@ async function revokeQr(evenementId: string) {
 // hasn't RSVP'd yet (membreId) — the backend creates the ticket on first use in that case.
 export type RowRef = { participationId: string; membreId?: undefined } | { membreId: string; participationId?: undefined }
 
-async function markPaid(evenementId: string, ref: RowRef, ticketTypeId?: string) {
+async function markPaid(evenementId: string, ref: RowRef, ticketTypeId?: string, free?: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ ...ref, ticketTypeId }),
+    body:    JSON.stringify({ ...ref, ticketTypeId, free }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
@@ -271,7 +271,7 @@ export function useSetRsvp(evenementId: string) {
 export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ ticketTypeId, ...ref }: RowRef & { ticketTypeId?: string }) => markPaid(evenementId, ref, ticketTypeId),
+    mutationFn: ({ ticketTypeId, free, ...ref }: RowRef & { ticketTypeId?: string; free?: boolean }) => markPaid(evenementId, ref, ticketTypeId, free),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
