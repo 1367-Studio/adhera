@@ -39,6 +39,10 @@ export const membreSchema = z.object({
 export const membreCreateSchema = membreSchema.extend({
   email: z.string().trim().email("Email invalide").min(1, "Email requis"),
   role:  z.enum(["MEMBRE", "SECRETAIRE", "TRESORIER", "PRESIDENT", "ADMIN"]).optional(),
+  // Tarif d'un formulaire d'adhésion publié — la cotisation créée reprend ce tarif (montant,
+  // reçu fiscal, période) et le membre reçoit le lien de paiement public par email, comme
+  // s'il s'était inscrit lui-même. Vide = comportement historique (montant par défaut).
+  tierId: z.string().optional().or(z.literal("")),
 })
 
 export const membreUpdateSchema = membreSchema.partial()

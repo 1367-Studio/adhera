@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
 import { useResponsableOptions } from "@/hooks/use-membres"
 import { useModules } from "@/lib/user-context"
 import { FormField } from "@/components/ui/form-field"
@@ -56,6 +57,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
   const modules = useModules()
+  const { data: tierOptionsData = [] } = useMembershipTierOptions(!!isCreate && modules.cotisations)
 
   const statusOptions = [
     { value: "PENDING",  label: t("membres.form.status.pending")  },
@@ -141,6 +143,16 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     ...types.map(type => ({ value: type.id, label: type.name })),
   ]
 
+  // "Aucun tarif" keeps the historical behavior (montant par défaut de l'association, ou
+  // rien) — the picker only renders when at least one real tarif exists (length > 1).
+  const tierOptions = [
+    { value: "", label: t("membres.form.tierNone") },
+    ...tierOptionsData.map(tier => ({
+      value: tier.id,
+      label: `${tier.formTitle} — ${tier.label} (${tier.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })})`,
+    })),
+  ]
+
   const responsableOptions = responsableCandidates.length > 0
     ? [
         { value: "", label: t("membres.form.noResponsable") },
@@ -215,6 +227,29 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               <p className="text-xs text-muted-foreground">
                 {t("membres.form.invitationNotice")}
               </p>
+            </div>
+          )}
+        />
+      )}
+
+      {isCreate && tierOptions.length > 1 && (
+        <Controller
+          name="tierId"
+          control={control}
+          render={({ field }) => (
+            <div className="space-y-1.5">
+              <SelectField
+                label={t("membres.form.fields.cotisationTier")}
+                options={tierOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.tierId?.message}
+              />
+              {field.value && (
+                <p className="text-xs text-muted-foreground">
+                  {t("membres.form.tierNotice")}
+                </p>
+              )}
             </div>
           )}
         />

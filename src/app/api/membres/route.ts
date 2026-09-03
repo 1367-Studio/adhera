@@ -11,8 +11,11 @@ import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
 import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
-import { isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect, membreAdherentWhereClause } from "@/lib/membre-adherent"
+import { currentCotisationYear, isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect, membreAdherentWhereClause } from "@/lib/membre-adherent"
 import { maybeCreateDefaultCotisation } from "@/lib/cotisation-defaults"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { parseModules } from "@/lib/modules"
+import { addMonths } from "date-fns"
 import { pusherServer } from "@/lib/pusher-server"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -90,7 +93,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -145,6 +148,29 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Un compte existe déjà avec cet email dans cette association" }, { status: 409 })
   }
 
+  // Same eligibility rules as GET /api/membership-forms/tier-options (the picker this comes
+  // from) — re-checked here rather than trusting the client, and scoped to this association.
+  const tier = tierId
+    ? await prisma.membershipTier.findFirst({
+        where: {
+          id:         tierId,
+          itemType:   "MEMBERSHIP",
+          kind:       "ONE_OFF",
+          free:       false,
+          freeAmount: false,
+          amount:     { not: null },
+          form:       { associationId, status: "PUBLISHED" },
+        },
+        select: {
+          id: true, formId: true, amount: true, receiptMode: true, ineligibleAmount: true,
+          durationMonths: true, fixedPeriodEnd: true, membreTypeId: true,
+        },
+      })
+    : null
+  if (tierId && (!tier || !assoc || !parseModules(assoc.modules).cotisations)) {
+    return NextResponse.json({ error: "Tarif d'adhésion introuvable" }, { status: 422 })
+  }
+
   const plainPassword = randomBytes(6).toString("hex")
   const passwordHash  = await bcrypt.hash(plainPassword, 12)
 
@@ -158,12 +184,39 @@ export const POST = withAdminAuth(async (req, ctx) => {
         associationId,
       },
     })
-    const created = await tx.membre.create({ data: { ...membreData, userId: user.id } })
+    const created = await tx.membre.create({ data: {
+      ...membreData,
+      // Same auto-tagging as the public form: the tarif's membreType wins only when the
+      // admin didn't pick a type explicitly in the form.
+      typeId: membreData.typeId ?? tier?.membreTypeId ?? null,
+      userId: user.id,
+    } })
     // No findPendingCotisation lookup here on purpose: unlike portal/register/route.ts,
     // this route always creates a brand-new Membre row (no re-link to a pre-existing one),
     // so created.id can never already have a cotisation — maybeCreateDefaultCotisation's own
     // return value is already the complete answer.
-    const cotisation = assoc ? await maybeCreateDefaultCotisation(tx, created.id, associationId, assoc) : null
+    if (!tier) {
+      const cotisation = assoc ? await maybeCreateDefaultCotisation(tx, created.id, associationId, assoc) : null
+      return { membre: created, cotisation }
+    }
+    // Cotisation snapshot mirroring the public form's offline branch (see
+    // api/public/[slug]/adhesion/[formSlug]/checkout/route.ts) — the member registered by
+    // the admin ends up indistinguishable from one who signed up on the form and hasn't
+    // paid yet; the payment link emailed below settles it through the same Stripe webhook.
+    const now         = new Date()
+    const periodStart = tier.fixedPeriodEnd || tier.durationMonths ? now : null
+    const periodEnd   = tier.fixedPeriodEnd ?? (tier.durationMonths ? addMonths(now, tier.durationMonths) : null)
+    const cotisation  = await tx.cotisation.create({
+      data: {
+        membreId: created.id, associationId, year: currentCotisationYear(now),
+        amount: tier.amount!, status: "EN_ATTENTE",
+        membershipFormId: tier.formId, tierId: tier.id,
+        periodStart, periodEnd, receiptMode: tier.receiptMode,
+        deductibleAmount: eligibleReceiptAmount(Number(tier.amount), tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
+        paymentToken: randomBytes(20).toString("hex"),
+      },
+      select: { amount: true, year: true, paymentToken: true },
+    })
     return { membre: created, cotisation }
   })
 
@@ -189,7 +242,13 @@ export const POST = withAdminAuth(async (req, ctx) => {
       role,
       loginUrl,
       branding:        resolveDocumentBranding(assoc),
-      cotisation:      notifyCotisation ? { amount: Number(notifyCotisation.amount), year: notifyCotisation.year } : undefined,
+      cotisation:      notifyCotisation ? {
+        amount: Number(notifyCotisation.amount),
+        year:   notifyCotisation.year,
+        // Public pay-without-login link — the whole point of the admin-creates-member flow:
+        // the admin fills everything in here, the member only has to pay on their side.
+        payUrl: notifyCotisation.paymentToken ? `${APP_URL}/cotisation/${notifyCotisation.paymentToken}` : undefined,
+      } : undefined,
     }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(() => {})
 
     // Same in-app notification pattern as new events/actualités/sondages — otherwise this

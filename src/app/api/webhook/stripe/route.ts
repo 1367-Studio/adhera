@@ -26,6 +26,8 @@ import {
 } from "@/lib/webhook/cotisation-subscriptions"
 import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
 import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
+import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { grantMembrePortalAccess } from "@/lib/membre-access"
 import {
   isMembershipInstallmentEvent, handleMembershipInstallmentCheckout, handleInstallmentInvoicePaid,
   tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
@@ -331,6 +333,43 @@ export async function POST(req: Request) {
             label:         `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`,
             metadata:      { amount: chargedAmount },
           })
+
+          // Adhésion remplie par un gestionnaire (admin-registration/route.ts) : le Membre
+          // existe sans compte, et ce paiement — via le lien public tokenisé — est le moment
+          // où la personne rejoint vraiment. On lui crée donc son accès portail (email
+          // d'identifiants, mot de passe modifiable) et on notifie les gestionnaires, comme
+          // une inscription self-service le fait au checkout. Le garde membre.userId == null
+          // exclut naturellement tous les autres chemins : un paiement portail ou une
+          // inscription publique ont toujours déjà un compte à ce stade.
+          // .catch(null) : le paiement est déjà enregistré à ce stade — un pépin sur cette
+          // lecture de confort ne doit ni faire échouer le webhook ni provoquer un retry
+          // Stripe (qui ré-enregistrerait un paiement partiel).
+          const paidCot = await prisma.cotisation.findUnique({
+            where:  { id: cotisationId },
+            select: {
+              membershipForm: { select: { title: true, adminNotificationEmail: true } },
+              membre:         { select: { id: true, firstName: true, lastName: true, email: true, userId: true } },
+              association:    { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
+            },
+          }).catch(() => null)
+          if (paidCot && paidCot.membre.email && !paidCot.membre.userId) {
+            await grantMembrePortalAccess({
+              membre:        paidCot.membre,
+              associationId: existingCotisation.associationId,
+              actorId:       null,
+              association:   paidCot.association,
+            }).catch(() => {})
+            if (paidCot.membershipForm) {
+              await notifyMembershipSignup({
+                associationId:          existingCotisation.associationId,
+                formTitle:              paidCot.membershipForm.title,
+                adminNotificationEmail: paidCot.membershipForm.adminNotificationEmail,
+                memberNames:            [`${paidCot.membre.firstName} ${paidCot.membre.lastName}`],
+                amount:                 chargedAmount,
+                primaryMembreId:        paidCot.membre.id,
+              }).catch(() => {})
+            }
+          }
         } catch (err) {
           if (err instanceof CotisationOverpaymentError) {
             // Stripe already captured the charge — there's no "reject" available at this

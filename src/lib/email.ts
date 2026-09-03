@@ -163,8 +163,10 @@ export function invitationEmail(p: {
   loginUrl:        string
   branding?:       EmailBranding
   // Set when a default cotisation was auto-created for this member — same reasoning as
-  // portalWelcomeEmail's cotisation note.
-  cotisation?: { amount: number; year: number }
+  // portalWelcomeEmail's cotisation note. payUrl, when present, is the public tokenized
+  // payment page (/cotisation/[token]) so the member can pay without logging in — the
+  // credentials below stay available but stop being a prerequisite to paying.
+  cotisation?: { amount: number; year: number; payUrl?: string }
 }) {
   const isStaff   = p.role !== "MEMBRE"
   const roleLabel: Record<string, string> = {
@@ -181,8 +183,11 @@ export function invitationEmail(p: {
 
   const cotisationNote = p.cotisation ? `
     <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;">
-      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
-    </p>` : ""
+      Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — ${p.cotisation.payUrl
+        ? "réglable en ligne dès maintenant, sans connexion :"
+        : "réglable directement depuis votre espace membre, onglet « Cotisation »."}
+    </p>
+    ${p.cotisation.payUrl ? btn("Régler ma cotisation", p.cotisation.payUrl) : ""}` : ""
 
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
@@ -1057,6 +1062,45 @@ export function membershipPendingValidationEmail(p: {
   return {
     to:      p.email,
     subject: `Votre demande d'adhésion à ${p.associationName} est en attente de validation`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent when a manager fills the public adhésion form on someone's behalf (mode admin —
+// see membership-form-public-form.tsx / admin-registration/route.ts): no account exists
+// yet, the person only has to pay through the tokenized public link. Portal access and its
+// credentials email only come once the payment settles (see the Stripe webhook's
+// cotisationId branch), which is why, unlike membershipWelcomeEmail, there is no login
+// link or password talk here.
+export function membershipPaymentLinkEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  formTitle:       string
+  amount:          number
+  year:            number
+  payUrl:          string
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Finalisez votre adhésion à ${p.associationName}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>${p.associationName} vous a inscrit(e) via « ${p.formTitle} ».
+      Il ne reste qu'à régler votre cotisation ${p.year} pour devenir adhérent(e) — en ligne,
+      en quelques clics, sans créer de compte.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant à régler</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+    </table>
+    ${btn("Régler ma cotisation", p.payUrl)}
+    <p style="margin:0;font-size:13px;color:#71717a;">Une fois le paiement effectué, vous recevrez vos identifiants d'accès à l'espace membre par email.</p>`
+  return {
+    to:      p.email,
+    subject: `Finalisez votre adhésion à ${p.associationName}`,
     html:    layout(p.associationName, content, p.branding),
   }
 }

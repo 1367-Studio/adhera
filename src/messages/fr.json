@@ -2757,6 +2757,11 @@
       "addRegistrant": "Ajouter un autre adhérent",
       "removeRegistrant": "Retirer cet adhérent",
       "sharedAccountHint": "L'email et le mot de passe ci-dessous serviront à se connecter pour l'ensemble du groupe.",
+      "adminFillNotice": "Mode administrateur — remplissez ce formulaire pour un adhérent : il recevra par email un lien pour régler sa cotisation.",
+      "adminSubmitSendLink": "Envoyer le lien de paiement ({amount})",
+      "adminLinkSentTitle": "Lien de paiement envoyé",
+      "adminLinkSentBody": "Le membre a été créé et un email avec le lien de paiement a été envoyé à {email}. Il deviendra adhérent une fois la cotisation réglée.",
+      "adminEmailAlreadyMember": "Cette adresse email appartient déjà à un membre de l'association.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
@@ -3579,9 +3584,12 @@
         "address": "Adresse",
         "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Langue préférée",
-        "spokenLanguage": "Langue parlée"
+        "spokenLanguage": "Langue parlée",
+        "cotisationTier": "Cotisation — tarif d'adhésion"
       },
       "invitationNotice": "Un email d'invitation avec les identifiants sera envoyé à cette adresse.",
+      "tierNone": "Aucun tarif (comportement par défaut)",
+      "tierNotice": "Une cotisation sera créée à ce tarif et le membre recevra par email un lien pour la régler en ligne, sans connexion.",
       "adherentAutoWithResponsable": "Calculé automatiquement : sa propre cotisation de l'année en cours si elle existe, sinon celle de son responsable — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte).",
       "adherentAutoNoResponsable": "Calculé automatiquement selon la cotisation de l'année en cours — à ne forcer qu'en cas d'exception (isolé de « Statut », qui contrôle le compte).",
       "noType": "Aucun type",
@@ -3666,6 +3674,8 @@
         "roleUpdated": "Rôle mis à jour"
       },
       "changeRoleTitle": "Modifier le rôle",
+      "addViaForm": "Via un formulaire d'adhésion",
+      "addManual": "Ajouter manuellement",
       "changeRoleDescription": "Rôle de {name} dans l'association.",
       "pendingRequests": "{count, plural, one {# demande en attente} other {# demandes en attente}}"
     },

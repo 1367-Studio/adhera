@@ -1,10 +1,14 @@
+import { randomBytes } from "crypto"
 import type { Prisma } from "@prisma/client"
 import { parseModules } from "@/lib/modules"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 
 type TxClient = Prisma.TransactionClient
 
-export type CreatedDefaultCotisation = { amount: Prisma.Decimal; year: number }
+// paymentToken feeds the public "réglez de votre côté" link (/cotisation/[token]) that the
+// caller's email can carry — nullable because rows created before the feature (or by other
+// paths) don't have one; findPendingCotisation below can return such a row.
+export type CreatedDefaultCotisation = { amount: Prisma.Decimal; year: number; paymentToken: string | null }
 
 // Creates a pending (EN_ATTENTE) cotisation for the current year on a freshly created
 // Membre, when the association has configured a default amount — lets a new member pay
@@ -33,8 +37,11 @@ export async function maybeCreateDefaultCotisation(
       year,
       amount: association.cotisationDefaultAmount,
       status: "EN_ATTENTE",
+      // Same 160-bit recipe as Participation.cancelToken — minted eagerly so the caller's
+      // invitation email can carry the public payment link without a second write.
+      paymentToken: randomBytes(20).toString("hex"),
     },
-    select: { amount: true, year: true },
+    select: { amount: true, year: true, paymentToken: true },
   })
 }
 
@@ -51,6 +58,6 @@ export async function findPendingCotisation(
   const year = currentCotisationYear()
   return tx.cotisation.findFirst({
     where:  { membreId, year, status: "EN_ATTENTE" },
-    select: { amount: true, year: true },
+    select: { amount: true, year: true, paymentToken: true },
   })
 }

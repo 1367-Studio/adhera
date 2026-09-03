@@ -2757,6 +2757,11 @@
       "addRegistrant": "Adicionar outro membro",
       "removeRegistrant": "Remover este membro",
       "sharedAccountHint": "O email e a senha abaixo serão usados para entrar por todo o grupo.",
+      "adminFillNotice": "Modo administrador — preencha este formulário em nome de um membro: ele receberá por email um link para pagar a mensalidade.",
+      "adminSubmitSendLink": "Enviar o link de pagamento ({amount})",
+      "adminLinkSentTitle": "Link de pagamento enviado",
+      "adminLinkSentBody": "O membro foi criado e um email com o link de pagamento foi enviado para {email}. Ele se tornará membro assim que a mensalidade for paga.",
+      "adminEmailAlreadyMember": "Este endereço de email já pertence a um membro da associação.",
       "firstNamePlaceholder": "Maria",
       "lastNamePlaceholder": "Silva",
       "emailPlaceholder": "maria.silva@email.pt",
@@ -3579,9 +3584,12 @@
         "address": "Endereço",
         "addressPlaceholder": "Rua Exemplo, 123, São Paulo",
         "preferredLocale": "Idioma preferido",
-        "spokenLanguage": "Idioma falado"
+        "spokenLanguage": "Idioma falado",
+        "cotisationTier": "Mensalidade — tarifa de adesão"
       },
       "invitationNotice": "Um email de convite com os dados de acesso será enviado para este endereço.",
+      "tierNone": "Sem tarifa (comportamento padrão)",
+      "tierNotice": "Será criada uma mensalidade com esta tarifa e o membro receberá por email um link para pagá-la online, sem login.",
       "adherentAutoWithResponsable": "Calculado automaticamente: a própria mensalidade do ano em curso, se existir, senão a do responsável — só force em caso de exceção (independente de \"Status\", que controla a conta).",
       "adherentAutoNoResponsable": "Calculado automaticamente conforme a mensalidade do ano em curso — só force em caso de exceção (independente de \"Status\", que controla a conta).",
       "noType": "Nenhum tipo",
@@ -3666,6 +3674,8 @@
         "roleUpdated": "Função atualizada"
       },
       "changeRoleTitle": "Alterar função",
+      "addViaForm": "Por um formulário de adesão",
+      "addManual": "Adicionar manualmente",
       "changeRoleDescription": "Função de {name} na associação.",
       "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}"
     },
