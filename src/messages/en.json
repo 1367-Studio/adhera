@@ -183,6 +183,28 @@
         "genericErrorToast": "Error resetting password.",
         "networkErrorToast": "Network error. Please try again."
       }
+    },
+    "contact": {
+      "trigger": "Contact support",
+      "title": "Contact us",
+      "description": "Your message will go directly to Formwise support.",
+      "form": {
+        "nameLabel": "Name",
+        "nameRequired": "Name required.",
+        "emailLabel": "Email address",
+        "emailRequired": "Email address required.",
+        "emailInvalid": "Invalid email address.",
+        "messageLabel": "Message",
+        "messageRequired": "Message required.",
+        "submit": "Send message",
+        "sendError": "Error sending. Please try again shortly.",
+        "networkError": "Network error. Please try again."
+      },
+      "sent": {
+        "title": "Message sent",
+        "description": "Thanks! Our support team will get back to you shortly.",
+        "close": "Close"
+      }
     }
   },
   "portal": {

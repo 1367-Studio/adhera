@@ -183,6 +183,28 @@
         "genericErrorToast": "Erro ao redefinir a senha.",
         "networkErrorToast": "Erro de rede. Tente novamente."
       }
+    },
+    "contact": {
+      "trigger": "Contatar o suporte",
+      "title": "Fale conosco",
+      "description": "Sua mensagem será recebida diretamente pelo suporte da Formwise.",
+      "form": {
+        "nameLabel": "Nome",
+        "nameRequired": "Nome obrigatório.",
+        "emailLabel": "Endereço de email",
+        "emailRequired": "Endereço de email obrigatório.",
+        "emailInvalid": "Endereço de email inválido.",
+        "messageLabel": "Mensagem",
+        "messageRequired": "Mensagem obrigatória.",
+        "submit": "Enviar mensagem",
+        "sendError": "Erro ao enviar. Tente novamente em alguns instantes.",
+        "networkError": "Erro de rede. Tente novamente."
+      },
+      "sent": {
+        "title": "Mensagem enviada",
+        "description": "Obrigado! Nossa equipe de suporte entrará em contato em breve.",
+        "close": "Fechar"
+      }
     }
   },
   "portal": {

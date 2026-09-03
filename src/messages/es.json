@@ -183,6 +183,28 @@
         "genericErrorToast": "Error al restablecer la contraseña.",
         "networkErrorToast": "Error de red. Inténtalo de nuevo."
       }
+    },
+    "contact": {
+      "trigger": "Contactar con soporte",
+      "title": "Contáctanos",
+      "description": "Tu mensaje será recibido directamente por el soporte de Formwise.",
+      "form": {
+        "nameLabel": "Nombre",
+        "nameRequired": "El nombre es obligatorio.",
+        "emailLabel": "Correo electrónico",
+        "emailRequired": "El correo electrónico es obligatorio.",
+        "emailInvalid": "Correo electrónico no válido.",
+        "messageLabel": "Mensaje",
+        "messageRequired": "El mensaje es obligatorio.",
+        "submit": "Enviar mensaje",
+        "sendError": "Error al enviar. Inténtalo de nuevo en unos instantes.",
+        "networkError": "Error de red. Inténtalo de nuevo."
+      },
+      "sent": {
+        "title": "Mensaje enviado",
+        "description": "¡Gracias! Nuestro equipo de soporte se pondrá en contacto contigo pronto.",
+        "close": "Cerrar"
+      }
     }
   },
   "portal": {

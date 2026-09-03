@@ -183,6 +183,28 @@
         "genericErrorToast": "Erreur lors de la réinitialisation.",
         "networkErrorToast": "Erreur réseau. Veuillez réessayer."
       }
+    },
+    "contact": {
+      "trigger": "Contacter le support",
+      "title": "Contactez-nous",
+      "description": "Votre message sera reçu directement par le support Formwise.",
+      "form": {
+        "nameLabel": "Nom",
+        "nameRequired": "Nom requis.",
+        "emailLabel": "Adresse email",
+        "emailRequired": "Adresse email requise.",
+        "emailInvalid": "Adresse email invalide.",
+        "messageLabel": "Message",
+        "messageRequired": "Message requis.",
+        "submit": "Envoyer le message",
+        "sendError": "Erreur lors de l'envoi. Veuillez réessayer dans quelques instants.",
+        "networkError": "Erreur réseau. Veuillez réessayer."
+      },
+      "sent": {
+        "title": "Message envoyé",
+        "description": "Merci ! Notre équipe support vous répondra rapidement.",
+        "close": "Fermer"
+      }
     }
   },
   "portal": {

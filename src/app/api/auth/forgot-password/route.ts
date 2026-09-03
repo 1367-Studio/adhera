@@ -49,9 +49,13 @@ export async function POST(req: Request) {
 
     const resetUrl     = `${APP_URL}/reset-password?token=${token}`
     const accountLabel = user.association?.name ?? "votre compte administrateur"
-    Promise.resolve().then(async () => {
-      await sendEmail(passwordResetEmail({ email, resetUrl, accountLabel }))
-    }).catch(() => {})
+    // Awaited (not fire-and-forget) — on Vercel's serverless runtime, an un-awaited promise
+    // can be torn down the moment the response is sent, before the Resend call ever fires.
+    // That previously made this email silently never send in deployed environments while
+    // working fine locally (a long-lived process has no such cutoff) — see incident 2026-09-03.
+    await sendEmail(passwordResetEmail({ email, resetUrl, accountLabel })).catch((err: unknown) => {
+      console.error("[forgot-password] failed to send reset email:", err)
+    })
   }
 
   return NextResponse.json({ ok: true })
