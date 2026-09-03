@@ -19,7 +19,7 @@ import { SearchInput } from "@/components/ui/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useUpdateMembre } from "@/hooks/use-membres"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre } from "@/hooks/use-membres"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
@@ -219,11 +219,21 @@ export function MembresView() {
   const updateMutation      = useUpdateMembre(editTarget?.id ?? "")
   const deleteMutation      = useDeleteMembre()
   const createAccessMutation = useCreateAccess()
+  const resendPaymentLinkMutation = useResendPaymentLink()
 
   async function handleCreateAccess(m: Membre) {
     try {
       await createAccessMutation.mutateAsync(m.id)
       toast.success(t("membres.view.toasts.accessCreated", { name: `${m.firstName} ${m.lastName}` }))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleResendPaymentLink(m: Membre) {
+    try {
+      await resendPaymentLinkMutation.mutateAsync(m.id)
+      toast.success(t("membres.view.toasts.paymentLinkResent", { name: `${m.firstName} ${m.lastName}` }))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -350,6 +360,7 @@ export function MembresView() {
             ] : []),
             ...(!m.userId && m.email ? [
               { label: t("membres.view.actions.createAccess"), icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
+              { label: t("membres.view.actions.resendPaymentLink"), icon: <PaperPlaneTiltIcon className="size-3.5" />, onClick: () => handleResendPaymentLink(m) },
             ] : []),
             ...(!isSelf ? [
               { label: t("membres.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },

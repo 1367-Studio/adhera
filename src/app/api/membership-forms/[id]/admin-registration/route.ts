@@ -8,7 +8,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { membershipPaymentLinkEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -118,6 +118,15 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
   if (existing) return NextResponse.json({ error: "Cette adresse email est déjà utilisée." }, { status: 409 })
 
+  // Same guard as POST /api/membres — this route creates a Membre too, and must not become a
+  // way around the plan's member cap just because it's reached through a form.
+  try {
+    await assertMemberLimit(associationId)
+  } catch (err) {
+    if (err instanceof MemberLimitReachedError) return NextResponse.json({ error: err.message, code: err.code }, { status: 422 })
+    throw err
+  }
+
   const now         = new Date()
   const periodStart = tier.fixedPeriodEnd || tier.durationMonths ? now : null
   const periodEnd   = tier.fixedPeriodEnd ?? (tier.durationMonths ? addMonths(now, tier.durationMonths) : null)
@@ -161,7 +170,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     throw err
   }
 
-  sendEmail(membershipPaymentLinkEmail({
+  // Awaited: a fire-and-forget promise here can get torn down by Vercel's serverless runtime
+  // before Resend is ever called (confirmed on this exact pattern elsewhere — see da57b4f).
+  // This email is the only way the person hears about the membership at all at this point,
+  // so losing it silently would leave the manager thinking it was sent when it never left.
+  await sendEmail(membershipPaymentLinkEmail({
     firstName, email,
     associationName: assoc.name,
     formTitle:       form.title,

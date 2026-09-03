@@ -3680,6 +3680,7 @@
         "history": "Histórico",
         "changeRole": "Alterar função",
         "createAccess": "Criar acesso",
+        "resendPaymentLink": "Reenviar link de pagamento",
         "delete": "Excluir"
       },
       "deleteConfirmDescription": "Este membro será arquivado e não poderá mais acessar a associação.",
@@ -3687,6 +3688,7 @@
       "historyTitleDefault": "Histórico",
       "toasts": {
         "accessCreated": "Acesso criado para {name} — um email foi enviado",
+        "paymentLinkResent": "Link de pagamento reenviado para {name}",
         "memberAdded": "Membro adicionado com sucesso",
         "memberUpdated": "Membro atualizado",
         "memberDeleted": "Membro excluído",

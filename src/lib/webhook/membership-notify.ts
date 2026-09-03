@@ -92,7 +92,10 @@ export async function notifyMembershipSignup(params: {
   })
   if (!assoc) return
 
-  sendEmail(membershipSignupAdminNotificationEmail({
+  // Awaited: callers that themselves await notifyMembershipSignup (e.g. the Stripe webhook)
+  // need this to actually finish before the request ends, or the send can get torn down by
+  // Vercel's serverless runtime before Resend is called — same confirmed pattern as da57b4f.
+  await sendEmail(membershipSignupAdminNotificationEmail({
     email:           params.adminNotificationEmail,
     associationName: assoc.name,
     formTitle:       params.formTitle,
