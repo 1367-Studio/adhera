@@ -353,10 +353,14 @@ export function MembreDetailView() {
   // ADDON purchases and DONATION-item-type extras live in two different tables (see
   // Don.membershipAddonTierId) but are the same thing from this member's point of view —
   // merged into one chronological list rather than two separate sub-sections.
+  // A pending don (paidAt null) has no date to sort by — treated as "now" (Infinity) rather
+  // than "" so it floats to the top instead of sinking below every already-paid row, however
+  // old. It's the one row here that still needs someone's attention.
+  const purchaseSortKey = (date: string | null) => date ? new Date(date).getTime() : Infinity
   const addonPurchases = [
     ...membre.membershipAddonPurchases.map(p => ({ id: p.id, label: p.label, amount: p.amount, date: p.purchasedAt })),
     ...membre.dons.map(d => ({ id: d.id, label: d.membershipAddonTier?.label ?? t("membres.detail.donationFallbackLabel"), amount: d.amount, date: d.paidAt })),
-  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
+  ].sort((a, b) => purchaseSortKey(b.date) - purchaseSortKey(a.date))
   const TAB_PAGE_SIZE         = 50
 
   return (
@@ -718,7 +722,16 @@ export function MembreDetailView() {
                     <span>{p.label}</span>
                     <span className="flex items-center gap-2">
                       <span className="tabular-nums font-medium">{fmt(p.amount)}</span>
-                      {p.date && <span className="text-xs text-muted-foreground">{format(new Date(p.date), "dd/MM/yyyy", { locale: fr })}</span>}
+                      {p.date ? (
+                        <span className="text-xs text-muted-foreground">{format(new Date(p.date), "dd/MM/yyyy", { locale: fr })}</span>
+                      ) : (
+                        // Only a don paid offline (ESPECES/CHEQUE/VIREMENT) reaches this list with no
+                        // date — MembershipAddonPurchase always has purchasedAt. Surfaces the pending
+                        // encaissement here too, next to the member's own cotisations above, so an
+                        // admin reconciling a single physical payment (e.g. one cheque covering both)
+                        // sees both pending items on the same screen instead of only in /dashboard/dons.
+                        <span className="text-xs text-muted-foreground">{t("membres.detail.addonPurchasePending")}</span>
+                      )}
                     </span>
                   </div>
                 ))}

@@ -11,7 +11,7 @@ import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
-import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 
@@ -236,6 +236,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
       products:            purchasedProducts.length ? purchasedProducts : undefined,
+      addons:              parseAddons(meta.addons).map(a => ({ label: a.label, amount: a.amount })),
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
 
     fireEventRule({

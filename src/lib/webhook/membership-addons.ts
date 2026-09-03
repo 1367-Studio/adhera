@@ -1,8 +1,8 @@
-import type { Prisma } from "@prisma/client"
+import type { Prisma, DonPaymentMethod } from "@prisma/client"
 
 type TxClient = Prisma.TransactionClient
 
-interface ResolvedAddon {
+export interface ResolvedAddon {
   tierId:   string
   itemType: "ADDON" | "DONATION"
   label:    string
@@ -12,8 +12,10 @@ interface ResolvedAddon {
 }
 
 // Mirrors the exact shape checkout/route.ts serializes into metadata.addons — parsed once
-// here rather than trusting the JSON shape at each call site.
-function parseAddons(addonsJson: string | undefined): ResolvedAddon[] {
+// here rather than trusting the JSON shape at each call site. Exported so the webhook
+// handlers can also read {label, amount} pairs off it for membershipWelcomeEmail's own
+// addons breakdown (see email.ts's addonsSentence) without re-implementing this parsing.
+export function parseAddons(addonsJson: string | undefined): ResolvedAddon[] {
   if (!addonsJson) return []
   try {
     const parsed = JSON.parse(addonsJson)
@@ -36,6 +38,11 @@ export async function createMembershipAddonPurchases(tx: TxClient, params: {
   email:         string
   addonsJson:    string | undefined
   canIssueTaxReceipts: boolean
+  // Defaults reproduce the pre-existing Stripe-webhook behavior unchanged — only the offline
+  // membership checkout branch (checkout/route.ts) passes these explicitly, since there the
+  // don is created before the visitor's cash/cheque/virement has actually been encaissé.
+  donPaymentMethod?: DonPaymentMethod
+  donPaidAt?:        Date | null
 }): Promise<void> {
   const addons = parseAddons(params.addonsJson)
   for (const addon of addons) {
@@ -58,13 +65,13 @@ export async function createMembershipAddonPurchases(tx: TxClient, params: {
           donationFormId: null,
           tierId:         null,
           membershipAddonTierId: addon.tierId,
-          paymentMethod:  "STRIPE",
+          paymentMethod:  params.donPaymentMethod ?? "STRIPE",
           donorType:      "INDIVIDUAL",
           firstName:      params.firstName,
           lastName:       params.lastName,
           email:          params.email,
           amount:         addon.amount,
-          paidAt:         new Date(),
+          paidAt:         params.donPaidAt === undefined ? new Date() : params.donPaidAt,
           // La tarif porte son propre réglage (voir membership-tiers-editor.tsx) — seul le
           // droit global de l'association à émettre des reçus fiscaux peut l'écraser à NONE.
           receiptMode:      params.canIssueTaxReceipts ? addon.receiptMode : "NONE",

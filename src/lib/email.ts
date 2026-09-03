@@ -978,10 +978,19 @@ export function membershipWelcomeEmail(p: {
   // Pas de PDF/reçu Boutique séparé envoyé pour ça — une deuxième confirmation dans la même
   // minute lirait comme un doublon, voir membership-forms.ts.
   products?: { label: string; quantity: number; amount: number }[]
+  // Options payantes et dons embarqués (MembershipTier.itemType ADDON/DONATION) inclus dans
+  // `amount` ci-dessus — sans cette liste, un visiteur ayant coché un don voyait un montant
+  // total présenté comme "sa cotisation" sans jamais savoir qu'une partie était en fait une
+  // donation, encaissée et reçue séparément (voir createMembershipAddonPurchases). Chaque
+  // don devient son propre Don, avec son propre reçu fiscal le jour de son encaissement — ce
+  // montant-ci n'en est qu'un aperçu, jamais une confirmation en soi.
+  addons?: { label: string; amount: number }[]
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  // "le montant ci-dessous", not "votre cotisation" — that total can also carry an addon/don
+  // embarqué (see addonsSentence), so it isn't always just the membership fee itself.
   const statusSentence = p.offlinePending
-    ? " Il vous reste à régler votre cotisation selon les instructions ci-dessous."
+    ? " Il vous reste à régler le montant ci-dessous, selon les instructions données plus bas."
     : p.amount > 0 ? " et votre paiement a bien été reçu." : "."
   const groupSentence = p.otherRegistrants && p.otherRegistrants.length > 0
     ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
@@ -1007,6 +1016,12 @@ export function membershipWelcomeEmail(p: {
         Ce montant inclut également : ${p.products.map(item => `${item.label}${item.quantity > 1 ? ` ×${item.quantity}` : ""}`).join(", ")}.
       </p>`
     : ""
+  const addonsSentence = p.addons && p.addons.length > 0
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        Ce montant inclut également : ${p.addons.map(item => `${item.label} (${item.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })})`).join(", ")}.
+        ${p.offlinePending ? "Chaque élément fera l'objet d'une confirmation et, le cas échéant, d'un reçu séparés." : ""}
+      </p>`
+    : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -1022,6 +1037,7 @@ export function membershipWelcomeEmail(p: {
     </table>` : ""}
     ${groupSentence}
     ${productsSentence}
+    ${addonsSentence}
     ${receiptSentence}
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`

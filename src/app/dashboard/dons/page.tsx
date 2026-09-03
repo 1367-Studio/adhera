@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useState, useRef, useEffect } from "react"
+import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
@@ -56,6 +57,11 @@ type Don = {
   deductibleAmount: string | null
   paymentMethod: "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT" | null
   donationForm:  { id: string; title: string } | null
+  membreId:      string | null
+  // Set only for a don embarqué on a MembershipForm signup — see membershipAddonTier include
+  // in /api/dons. Lets the pending table point back at the member, who also has an
+  // independent Cotisation waiting on its own encaissement for the same physical payment.
+  membershipAddonTier: { label: string } | null
 }
 
 type DonsResult = {
@@ -265,6 +271,14 @@ function DonsPageInner() {
         <div>
           <p className="font-medium">{d.donorType === "COMPANY" ? (d.companyName ?? `${d.firstName} ${d.lastName}`) : `${d.firstName} ${d.lastName}`}</p>
           <p className="text-xs text-muted-foreground">{d.email}</p>
+          {d.membershipAddonTier && d.membreId && (
+            // Same physical payment as this member's own pending Cotisation (see
+            // checkout/route.ts's offline branch) — the two are confirmed independently, so
+            // this is here to stop an admin from encaissing one and forgetting the other.
+            <Link href={`/dashboard/membres/${d.membreId}`} className="text-xs text-muted-foreground hover:underline hover:text-foreground">
+              {t("donationsView.fromMembershipForm", { tier: d.membershipAddonTier.label })}
+            </Link>
+          )}
         </div>
       ),
     },
