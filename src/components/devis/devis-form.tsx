@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
@@ -110,18 +111,20 @@ export function DevisForm({ defaultValues, onSubmit, onCancel, loading, itemsLoc
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField
-          label={t("documents.issueDate")}
-          type="date"
-          required
-          error={errors.issueDate?.message}
-          {...register("issueDate")}
+        <Controller
+          name="issueDate"
+          control={control}
+          render={({ field }) => (
+            <DateField label={t("documents.issueDate")} required value={field.value ?? ""} onChange={field.onChange} error={errors.issueDate?.message} />
+          )}
         />
-        <FormField
-          label={t("devis.form.validUntil")}
-          type="date"
-          error={errors.validUntil?.message}
-          {...register("validUntil")}
+        {/* allowFuture : une date de validité est par nature postérieure à aujourd'hui. */}
+        <Controller
+          name="validUntil"
+          control={control}
+          render={({ field }) => (
+            <DateField label={t("devis.form.validUntil")} allowFuture value={field.value ?? ""} onChange={field.onChange} error={errors.validUntil?.message} />
+          )}
         />
       </div>
 

@@ -11,6 +11,10 @@
     "loading": "Loading...",
     "search": "Search",
     "clearSearch": "Clear search",
+    "datePlaceholder": "Pick a date",
+    "dateTimePlaceholder": "Pick a date and time",
+    "time": "Time",
+    "clear": "Clear",
     "yes": "Yes",
     "no": "No",
     "success": "Success",
@@ -3662,6 +3666,16 @@
       "allStatuses": "All statuses",
       "allTypes": "All types",
       "allMembership": "Members and volunteers",
+      "filters": {
+        "trigger": "Filters",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "address": "Address",
+        "birthDateFrom": "Born after",
+        "birthDateTo": "Born before",
+        "apply": "Apply",
+        "reset": "Reset"
+      },
       "statusOptions": {
         "pending": "Pending",
         "actifs": "Active",
@@ -3673,6 +3687,7 @@
         "benevoles": "Volunteers"
       },
       "noResultsFor": "No results for \"{search}\"",
+      "noResultsFiltered": "No member matches these filters",
       "noMembers": "No members registered",
       "actions": {
         "view": "View profile",

@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
-import { SparkleIcon, XIcon, ArrowElbowDownLeftIcon, ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
-import { Button } from "@/components/ui/button"
-import { RichTextView } from "@/components/ui/rich-text-view"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button";
+import { RichTextView } from "@/components/ui/rich-text-view";
+import { cn } from "@/lib/utils";
+import { ArrowElbowDownLeftIcon, ArrowsClockwiseIcon, SparkleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { useState } from "react";
 
 type Action = "generate" | "improve" | "rephrase" | "summarize"
 
@@ -113,7 +113,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
 
       {!hasText && activeAction.needsText && (
         <p className="text-xs text-amber-600 dark:text-amber-400">
-          Écrivez d'abord du texte dans l'éditeur pour utiliser « {activeAction.label} ».
+          Écrivez d&apos;abord du texte dans l&apos;éditeur pour utiliser « {activeAction.label} ».
         </p>
       )}
 

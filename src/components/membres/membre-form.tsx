@@ -10,6 +10,7 @@ import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
 import { useResponsableOptions } from "@/hooks/use-membres"
 import { useModules } from "@/lib/user-context"
 import { FormField } from "@/components/ui/form-field"
+import { DateField, todayValue } from "@/components/ui/date-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { SelectField } from "@/components/ui/select-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
@@ -161,7 +162,10 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    // PILOTE espacement (voir la discussion sur la densité des formulaires) : 20px entre
+    // champs au lieu de 16, pour que l'écart entre deux champs se distingue nettement des
+    // 6px qui séparent un label de son propre contrôle. À généraliser si validé.
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
       <Controller
         name="photoUrl"
         control={control}
@@ -178,7 +182,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           </div>
         )}
       />
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
         <FormField
           label={t("membres.form.fields.firstName")}
           required
@@ -193,7 +197,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
         <FormField
           label={t("membres.form.fields.email")}
           type="email"
@@ -255,13 +259,21 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       )}
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField
-          label={t("membres.form.fields.birthDate")}
-          type="date"
-          max={new Date().toISOString().split("T")[0]}
-          error={errors.birthDate?.message}
-          {...register("birthDate")}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+        <Controller
+          name="birthDate"
+          control={control}
+          render={({ field }) => (
+            <DateField
+              label={t("membres.form.fields.birthDate")}
+              // Nobody is born tomorrow — the picker refuses future months outright rather
+              // than letting one be chosen and rejected afterwards.
+              max={todayValue()}
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              error={errors.birthDate?.message}
+            />
+          )}
         />
         <Controller
           name="status"
@@ -300,7 +312,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       )}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-x-4 gap-y-5">
         <Controller
           name="civilite"
           control={control}
@@ -342,7 +354,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
         <Controller
           name="possedeTshirt"
           control={control}
@@ -376,49 +388,83 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       </div>
 
-      {showResponsableField && (
+      {/* Deux colonnes : à 896px de large, un select seul occupait toute la modale —
+          900px de champ pour afficher « Français ». */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+        {showResponsableField && (
+          <Controller
+            name="responsableId"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label={t("membres.form.fields.responsable")}
+                options={responsableOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.responsableId?.message}
+              />
+            )}
+          />
+        )}
+
         <Controller
-          name="responsableId"
+          name="preferredLocale"
           control={control}
           render={({ field }) => (
             <SelectField
-              label={t("membres.form.fields.responsable")}
-              options={responsableOptions}
+              label={t("membres.form.fields.preferredLocale")}
+              options={preferredLocaleOptions}
               value={field.value ?? ""}
               onValueChange={field.onChange}
-              error={errors.responsableId?.message}
+              error={errors.preferredLocale?.message}
             />
           )}
         />
-      )}
+      </div>
 
-      <Controller
-        name="preferredLocale"
-        control={control}
-        render={({ field }) => (
-          <SelectField
-            label={t("membres.form.fields.preferredLocale")}
-            options={preferredLocaleOptions}
-            value={field.value ?? ""}
-            onValueChange={field.onChange}
-            error={errors.preferredLocale?.message}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+        <Controller
+          name="spokenLanguage"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label={t("membres.form.fields.spokenLanguage")}
+              options={spokenLanguageSelectOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.spokenLanguage?.message}
+            />
+          )}
+        />
+
+        {/* Type de membre */}
+        {types.length > 0 && (
+          <Controller
+            name="typeId"
+            control={control}
+            render={({ field }) => (
+              <div className="space-y-1.5">
+                <SelectField
+                  label={t("membres.form.fields.type")}
+                  options={typeOptions}
+                  value={field.value ?? ""}
+                  onValueChange={field.onChange}
+                  error={errors.typeId?.message}
+                />
+                {field.value && (() => {
+                  const matchedType = types.find(type => type.id === field.value)
+                  return matchedType ? (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <span>{t("membres.form.preview")}</span>
+                      <MembreTypeBadge name={matchedType.name} color={matchedType.color} />
+                    </div>
+                  ) : null
+                })()}
+              </div>
+            )}
           />
         )}
-      />
-
-      <Controller
-        name="spokenLanguage"
-        control={control}
-        render={({ field }) => (
-          <SelectField
-            label={t("membres.form.fields.spokenLanguage")}
-            options={spokenLanguageSelectOptions}
-            value={field.value ?? ""}
-            onValueChange={field.onChange}
-            error={errors.spokenLanguage?.message}
-          />
-        )}
-      />
+      </div>
 
       <TextareaField
         label={t("membres.form.fields.allergies")}
@@ -428,34 +474,6 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         {...register("allergies")}
       />
 
-      {/* Type de membre */}
-      {types.length > 0 && (
-        <Controller
-          name="typeId"
-          control={control}
-          render={({ field }) => (
-            <div className="space-y-1.5">
-              <SelectField
-                label={t("membres.form.fields.type")}
-                options={typeOptions}
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-                error={errors.typeId?.message}
-              />
-              {field.value && (() => {
-                const matchedType = types.find(type => type.id === field.value)
-                return matchedType ? (
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span>{t("membres.form.preview")}</span>
-                    <MembreTypeBadge name={matchedType.name} color={matchedType.color} />
-                  </div>
-                ) : null
-              })()}
-            </div>
-          )}
-        />
-      )}
-
       <FormField
         label={t("membres.form.fields.address")}
         placeholder={t("membres.form.fields.addressPlaceholder")}
@@ -463,7 +481,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         {...register("address")}
       />
 
-      <div className="flex justify-end gap-2 pt-2">
+      <div className="flex justify-end gap-2 pt-3">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
           {t("common.cancel")}
         </Button>

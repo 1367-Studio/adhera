@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -110,12 +111,11 @@ function RequestModal({
             <label className="text-sm font-medium">
               {t("requestModal.expectedReturnLabel")} <span className="text-muted-foreground font-normal">{t("requestModal.optional")}</span>
             </label>
-            <input
-              type="date"
+            <DateField
+              allowFuture
               min={minDate}
               value={expectedReturnAt}
-              onChange={e => setExpectedReturnAt(e.target.value)}
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+              onChange={setExpectedReturnAt}
             />
           </div>
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { DateTimeField } from "@/components/ui/date-time-field"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
@@ -48,6 +49,7 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading, hasT
   const lat           = watch("lat")
   const lng           = watch("lng")
   const locationValue = watch("location") ?? ""
+  const startDateValue = watch("date")
   const capacityValue = watch("capacity")
 
   // Same lazy-upload pattern as actualite-form.tsx: picking a file only creates a local
@@ -110,18 +112,21 @@ export function EvenementForm({ defaultValues, onSubmit, onCancel, loading, hasT
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField
-          label={t("startDate")}
-          type="datetime-local"
-          required
-          error={errors.date?.message}
-          {...register("date")}
+        <Controller
+          name="date"
+          control={control}
+          render={({ field }) => (
+            <DateTimeField label={t("startDate")} required allowFuture value={field.value ?? ""} onChange={field.onChange} error={errors.date?.message} />
+          )}
         />
-        <FormField
-          label={t("endDate")}
-          type="datetime-local"
-          error={errors.endDate?.message}
-          {...register("endDate")}
+        <Controller
+          name="endDate"
+          control={control}
+          render={({ field }) => (
+            // Bornée par la date de début : le schéma refuse déjà une fin antérieure, autant
+            // que le calendrier ne la propose pas.
+            <DateTimeField label={t("endDate")} allowFuture min={startDateValue || undefined} value={field.value ?? ""} onChange={field.onChange} error={errors.endDate?.message} />
+          )}
         />
       </div>
 

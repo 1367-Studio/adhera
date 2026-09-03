@@ -11,6 +11,10 @@
     "loading": "Chargement...",
     "search": "Rechercher",
     "clearSearch": "Effacer la recherche",
+    "datePlaceholder": "Choisir une date",
+    "dateTimePlaceholder": "Choisir une date et une heure",
+    "time": "Heure",
+    "clear": "Effacer",
     "yes": "Oui",
     "no": "Non",
     "success": "Succès",
@@ -3662,6 +3666,16 @@
       "allStatuses": "Tous les statuts",
       "allTypes": "Tous les types",
       "allMembership": "Adhérents et bénévoles",
+      "filters": {
+        "trigger": "Filtres",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "address": "Adresse",
+        "birthDateFrom": "Né(e) après le",
+        "birthDateTo": "Né(e) avant le",
+        "apply": "Appliquer",
+        "reset": "Réinitialiser"
+      },
       "statusOptions": {
         "pending": "En attente",
         "actifs": "Actifs",
@@ -3673,6 +3687,7 @@
         "benevoles": "Bénévoles"
       },
       "noResultsFor": "Aucun résultat pour « {search} »",
+      "noResultsFiltered": "Aucun membre ne correspond aux filtres",
       "noMembers": "Aucun membre enregistré",
       "actions": {
         "view": "Voir la fiche",

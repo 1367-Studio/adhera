@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -269,7 +270,13 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
         {/* SCHEDULED_ONCE */}
         {triggerType === "SCHEDULED_ONCE" && (
           <div className="grid grid-cols-2 gap-3">
-            <FormField label={t("messages.ruleModal.sendDate")} required type="date" error={errors.date?.message} {...register("date")} />
+            <Controller
+              name="date"
+              control={control}
+              render={({ field }) => (
+                <DateField label={t("messages.ruleModal.sendDate")} required allowFuture value={field.value ?? ""} onChange={field.onChange} error={errors.date?.message} />
+              )}
+            />
             <FormField label={t("messages.ruleModal.time")} required type="time" {...register("time")} />
           </div>
         )}
@@ -306,7 +313,13 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
             <p className="text-xs text-muted-foreground">{t("messages.ruleModal.cotisationDueHint")}</p>
             <div className="grid grid-cols-2 gap-3">
               <FormField label={t("messages.ruleModal.daysBeforeDue")} type="number" min={1} placeholder="30" {...register("daysBefore")} />
-              <FormField label={t("messages.ruleModal.dueDate")} type="date" {...register("dueDate")} />
+              <Controller
+                name="dueDate"
+                control={control}
+                render={({ field }) => (
+                  <DateField label={t("messages.ruleModal.dueDate")} allowFuture value={field.value ?? ""} onChange={field.onChange} />
+                )}
+              />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <FormField label={t("messages.ruleModal.cotisationYear")} type="number" placeholder="2026" {...register("year")} />

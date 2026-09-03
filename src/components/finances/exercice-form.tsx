@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect } from "react"
-import { useForm, type Resolver } from "react-hook-form"
+import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { exerciceComptableSchema } from "@/lib/schemas"
 import type { ExerciceInput } from "@/hooks/use-exercices"
 import { FormField } from "@/components/ui/form-field"
+import { DateField } from "@/components/ui/date-field"
 import { Button } from "@/components/ui/button"
 
 interface ExerciceFormProps {
@@ -21,11 +22,14 @@ interface ExerciceFormProps {
 export function ExerciceForm({ isFounding, patternHint, defaultValues, onSubmit, onCancel, loading }: ExerciceFormProps) {
   const t = useTranslations()
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ExerciceInput>({
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<ExerciceInput>({
     resolver: zodResolver(exerciceComptableSchema) as Resolver<ExerciceInput>,
     defaultValues,
     mode: "onSubmit",
   })
+  // Drives the end-date picker's lower bound, so the two fields stay coherent as they're
+  // filled rather than only at submit.
+  const startDate = useWatch({ control, name: "startDate" })
 
   // Re-syncs the form when the parent auto-fills the corrected dates after a
   // PATTERN_MISMATCH response — without this, the fields would keep showing what the
@@ -51,8 +55,24 @@ export function ExerciceForm({ isFounding, patternHint, defaultValues, onSubmit,
       <FormField label={t("finances.exerciceForm.label")} required placeholder={t("finances.exerciceForm.labelPlaceholder")} error={errors.label?.message} {...register("label")} />
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label={t("finances.exerciceForm.startDate")} type="date" required error={errors.startDate?.message} {...register("startDate")} />
-        <FormField label={t("finances.exerciceForm.endDate")}   type="date" required error={errors.endDate?.message}   {...register("endDate")} />
+        <Controller
+          name="startDate"
+          control={control}
+          render={({ field }) => (
+            // allowFuture: an exercice comptable is routinely opened before it starts —
+            // "saison 2027-2028" is created in 2026.
+            <DateField label={t("finances.exerciceForm.startDate")} required allowFuture value={field.value ?? ""} onChange={field.onChange} error={errors.startDate?.message} />
+          )}
+        />
+        <Controller
+          name="endDate"
+          control={control}
+          render={({ field }) => (
+            // An exercice cannot end before it starts — the picker greys out those months
+            // instead of leaving the schema to reject the pair on submit.
+            <DateField label={t("finances.exerciceForm.endDate")} required allowFuture min={startDate || undefined} value={field.value ?? ""} onChange={field.onChange} error={errors.endDate?.message} />
+          )}
+        />
       </div>
 
       <div className="flex justify-end gap-2 pt-2">

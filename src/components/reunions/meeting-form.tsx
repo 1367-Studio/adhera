@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateTimeField } from "@/components/ui/date-time-field"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -136,12 +137,12 @@ export function MeetingForm({ membres, loading, onSubmit, onCancel, defaultValue
       )}
 
       {!instant && (
-        <FormField
+        <DateTimeField
           label={t("reunions.form.scheduledDateTime")}
           id="scheduledAt"
-          type="datetime-local"
+          allowFuture
           value={scheduledAt}
-          onChange={(e) => setScheduledAt(e.target.value)}
+          onChange={setScheduledAt}
         />
       )}
 

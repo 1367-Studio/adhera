@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useState, useEffect } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useParams, useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -399,12 +400,12 @@ function SondageDetailPageInner() {
 
                   <div className="space-y-1.5">
                     <Label htmlFor="deadline">Date limite <span className="text-muted-foreground font-normal">(optionnel)</span></Label>
-                    <Input
+                    <DateField
                       id="deadline"
-                      type="date"
+                      allowFuture
                       min={todayStr()}
                       value={deadline}
-                      onChange={e => setDeadline(e.target.value)}
+                      onChange={setDeadline}
                       disabled={!editable}
                     />
                   </div>

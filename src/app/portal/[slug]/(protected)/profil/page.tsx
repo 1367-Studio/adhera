@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useTranslations } from "next-intl"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
@@ -305,7 +306,13 @@ export default function ProfilPage() {
               <Label htmlFor="birthDate" className="flex items-center gap-1.5">
                 <CalendarBlankIcon className="size-3.5" /> {t("contact.birthDate")}
               </Label>
-              <Input id="birthDate" type="date" max={new Date().toISOString().split("T")[0]} {...register("birthDate")} />
+              <Controller
+                name="birthDate"
+                control={control}
+                render={({ field }) => (
+                  <DateField id="birthDate" value={field.value ?? ""} onChange={field.onChange} />
+                )}
+              />
               {errors.birthDate && <p className="text-destructive text-xs">{errors.birthDate.message}</p>}
             </div>
 
