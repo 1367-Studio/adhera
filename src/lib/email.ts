@@ -1455,3 +1455,30 @@ export function supportTicketReplyEmail(p: {
     html:    layout(APP_NAME, content),
   }
 }
+
+// Sent to SUPPORT_TEAM_EMAIL from the "Contactar o suporte" dialog on the auth pages
+// (login/register/forgot-password/reset-password) — an anonymous visitor, not yet an
+// authenticated account, so unlike supportTicketStaffEmail this has no association/ticket
+// to link back to. The "Répondre" button opens a mailto: to the visitor's own address
+// (their only identifier here) rather than a dashboard URL.
+export function contactSupportEmail(p: {
+  to:      string
+  name:    string
+  email:   string
+  message: string
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau message de contact</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      <strong>${escapeHtml(p.name)}</strong> (${escapeHtml(p.email)}) a envoyé un message depuis le formulaire de contact :
+    </p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
+      <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.message)}</td></tr>
+    </table>
+    ${btn("Répondre", `mailto:${encodeURIComponent(p.email)}`)}`
+  return {
+    to:      p.to,
+    subject: `[Contact] ${p.name}`,
+    html:    layout(APP_NAME, content),
+  }
+}

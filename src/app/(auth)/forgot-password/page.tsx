@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server"
 import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.forgotPassword")
@@ -37,13 +38,16 @@ export default async function ForgotPasswordPage({
 
         <ForgotPasswordForm />
 
-        <Link
-          href={backHref}
-          className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeftIcon className="size-3.5" />
-          {t("backToLogin")}
-        </Link>
+        <div className="space-y-2">
+          <Link
+            href={backHref}
+            className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeftIcon className="size-3.5" />
+            {t("backToLogin")}
+          </Link>
+          <ContactSupportTrigger />
+        </div>
       </div>
     </div>
   )

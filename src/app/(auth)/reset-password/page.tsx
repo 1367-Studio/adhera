@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server"
 import { ResetPasswordForm } from "@/components/auth/reset-password-form"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.resetPassword")
@@ -41,12 +42,15 @@ export default async function ResetPasswordPage({
           </div>
         )}
 
-        <Link
-          href="/forgot-password"
-          className="flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {t("requestNewLink")}
-        </Link>
+        <div className="space-y-2">
+          <Link
+            href="/forgot-password"
+            className="flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {t("requestNewLink")}
+          </Link>
+          <ContactSupportTrigger />
+        </div>
       </div>
     </div>
   )

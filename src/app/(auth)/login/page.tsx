@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { LoginForm } from "@/components/layout/login-form";
 import { APP_NAME } from "@/config/brand";
 import { LogoMark } from "@/components/layout/logo-mark";
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.login");
@@ -41,15 +42,18 @@ export default async function LoginPage({
 
         <LoginForm callbackUrl={callbackUrl} />
 
-        <p className="text-center text-sm text-muted-foreground">
-          {t("noAccount")}{" "}
-          <Link
-            href="/register"
-            className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors"
-          >
-            {t("createAccount")}
-          </Link>
-        </p>
+        <div className="space-y-2">
+          <p className="text-center text-sm text-muted-foreground">
+            {t("noAccount")}{" "}
+            <Link
+              href="/register"
+              className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors"
+            >
+              {t("createAccount")}
+            </Link>
+          </p>
+          <ContactSupportTrigger />
+        </div>
       </div>
     </div>
   );

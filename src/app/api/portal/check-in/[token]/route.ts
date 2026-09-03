@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextResponse, after } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
@@ -123,7 +123,12 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
     const eventTitle     = evenement.title
     const eventDate      = evenement.date
     const associationIdForEmail = evenement.associationId
-    Promise.resolve().then(async () => {
+    // after(), not an un-awaited promise — Vercel's serverless runtime can tear down the
+    // function the moment the response is sent, so a bare `Promise.resolve().then(...)` here
+    // could get killed before the Resend call ever fires (see forgot-password/route.ts for
+    // the incident this pattern caused elsewhere). after() is guaranteed to run to completion
+    // without holding up this response, which matters here since it's a live QR-scan UX.
+    after(async () => {
       const assoc = await prisma.association.findUnique({
         where:  { id: associationIdForEmail },
         select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
@@ -132,8 +137,10 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id })
-    }).catch(() => {})
+      }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id }).catch((err: unknown) => {
+        console.error("[check-in] failed to send check-in receipt email:", err)
+      })
+    })
   }
 
   return NextResponse.json({ success: true, alreadyCheckedIn: wasAlreadyPresent, evenement: { title: evenement.title, date: evenement.date } })
