@@ -857,6 +857,11 @@ model Cotisation {
   status              CotisationStatus    @default(EN_ATTENTE)
   note                String?
   stripeSessionId     String?
+  // Lien de paiement public « réglez de votre côté » — même convention que
+  // Participation.cancelToken : un token 160 bits envoyé par email suffit, pas de compte
+  // requis. Posé à la création par maybeCreateDefaultCotisation ; null pour les rows
+  // antérieures ou créées ailleurs (webhooks, admin manuel).
+  paymentToken        String?             @unique
   declarationNumber   String?
   declarationIssuedAt DateTime?
   // The real, tax-deductible "reçu fiscal" (CERFA) — distinct from declarationNumber above,

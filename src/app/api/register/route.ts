@@ -187,9 +187,11 @@ export async function POST(req: Request) {
     })
 
     const loginUrl = `${APP_URL}/login`
-    Promise.resolve().then(async () => {
-      await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS }))
-    }).catch(() => {})
+    // Awaited (not fire-and-forget) — see forgot-password/route.ts for why an un-awaited
+    // promise here silently never sends on Vercel's serverless runtime.
+    await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS })).catch((err: unknown) => {
+      console.error("[register] failed to send welcome email:", err)
+    })
 
     return NextResponse.json({ ok: true })
   } catch {

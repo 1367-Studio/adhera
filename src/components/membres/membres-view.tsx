@@ -19,14 +19,15 @@ import { SearchInput } from "@/components/ui/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useUpdateMembre } from "@/hooks/use-membres"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre } from "@/hooks/use-membres"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import type { MembreCreateInput, MembreInput } from "@/lib/schemas"
 import { useCurrentUser, useModules } from "@/lib/user-context"
-import { ArrowsDownUpIcon, CaretDownIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { useMembershipFillForms } from "@/hooks/use-membership-tier-options"
+import { ArrowsDownUpIcon, CaretDownIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -158,6 +159,7 @@ export function MembresView() {
   const router                          = useRouter()
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
+  const { data: fillForms = [] }        = useMembershipFillForms(modules.cotisations)
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -217,11 +219,21 @@ export function MembresView() {
   const updateMutation      = useUpdateMembre(editTarget?.id ?? "")
   const deleteMutation      = useDeleteMembre()
   const createAccessMutation = useCreateAccess()
+  const resendPaymentLinkMutation = useResendPaymentLink()
 
   async function handleCreateAccess(m: Membre) {
     try {
       await createAccessMutation.mutateAsync(m.id)
       toast.success(t("membres.view.toasts.accessCreated", { name: `${m.firstName} ${m.lastName}` }))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleResendPaymentLink(m: Membre) {
+    try {
+      await resendPaymentLinkMutation.mutateAsync(m.id)
+      toast.success(t("membres.view.toasts.paymentLinkResent", { name: `${m.firstName} ${m.lastName}` }))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -348,6 +360,7 @@ export function MembresView() {
             ] : []),
             ...(!m.userId && m.email ? [
               { label: t("membres.view.actions.createAccess"), icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
+              { label: t("membres.view.actions.resendPaymentLink"), icon: <PaperPlaneTiltIcon className="size-3.5" />, onClick: () => handleResendPaymentLink(m) },
             ] : []),
             ...(!isSelf ? [
               { label: t("membres.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
@@ -455,10 +468,38 @@ export function MembresView() {
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            {/* <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <PlusIcon className="mr-1.5 size-4" />
-              {t("common.add")}
-            </Button> */}
+            {/* Avec au moins un formulaire d'adhésion publié, « Ajouter » propose de le
+                remplir à la place de l'adhérent (mode admin du formulaire public — la
+                personne reçoit alors le lien de paiement par email) en plus de l'ajout
+                manuel classique. Sans formulaire (ou sans slug résolu), bouton simple. */}
+            {fillForms.length > 0 && currentUser.associationSlug ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger render={<Button size="sm" />}>
+                  <PlusIcon className="mr-1.5 size-4" />
+                  {t("common.add")}
+                  <CaretDownIcon className="ml-1 size-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>{t("membres.view.addViaForm")}</DropdownMenuLabel>
+                    {fillForms.map(f => (
+                      <DropdownMenuItem key={f.id} onClick={() => router.push(`/${currentUser.associationSlug}/adhesion/${f.slug}?admin=1`)}>
+                        {f.title}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setCreateOpen(true)}>
+                    {t("membres.view.addManual")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button size="sm" onClick={() => setCreateOpen(true)}>
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("common.add")}
+              </Button>
+            )}
           </div>
         }
       />

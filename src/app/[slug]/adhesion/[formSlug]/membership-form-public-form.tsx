@@ -90,7 +90,9 @@ type FormInfo = {
 }
 
 type PaymentMethod = "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT"
-type SubmitOutcome = "url" | "immediate" | "offline" | "pending" | null
+// "linkSent" n'existe qu'en mode admin (isAdminFill) : le formulaire n'a rien encaissé,
+// il a créé le membre et envoyé le lien de paiement par email.
+type SubmitOutcome = "url" | "immediate" | "offline" | "pending" | "linkSent" | null
 
 const MIN_AMOUNT = 1
 // Mirrors checkout/route.ts's own MAX_REGISTRANTS — bounds both the Stripe line_items array
@@ -134,6 +136,13 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const loc = useLocale()
   const searchParams = useSearchParams()
   const isPreview    = searchParams.get("preview") === "1"
+  // Mode admin : un gestionnaire remplit le formulaire À LA PLACE d'un adhérent (entrée
+  // « Ajouter » de la page Membres). Même formulaire, mais : pas de mot de passe ni de CGUV
+  // (la personne n'est pas là), pas d'options/produits/inscription groupée/échelonné/
+  // hors-ligne (le lien de paiement envoyé ne facture que la cotisation), et l'envoi crée le
+  // membre + expédie le lien Stripe au lieu d'encaisser (voir admin-registration/route.ts,
+  // qui re-vérifie la session et tout le reste côté serveur — ce flag n'est qu'un mode d'UI).
+  const isAdminFill  = searchParams.get("admin") === "1"
   const router        = useRouter()
   const pathname       = usePathname()
   const showInAppBrowserBanner = useInAppBrowserEscape()
@@ -191,7 +200,10 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       .then(r => r.ok ? r.json() : null)
       .then((data: FormInfo | null) => {
         setForm(data)
-        const membershipCandidates = data?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
+        const membershipCandidates = (data?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? [])
+          // Mode admin : seuls les tarifs que le lien de paiement sait facturer (one-off,
+          // payants) sont proposés — même filtre que membershipTiers plus bas.
+          .filter(t => !isAdminFill || (t.kind === "ONE_OFF" && !t.free))
         const hasOffline = !!(data?.allowCash || data?.allowCheque || data?.allowTransfer)
         // Prefer a tier that's actually payable (free, Stripe, or — single-registrant only —
         // an offline method) over whatever happens to be first — otherwise a visitor could land
@@ -203,7 +215,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
         if (firstMembership) setTierId(prev => prev || firstMembership.id)
       })
       .catch(() => setForm(null))
-  }, [slug, formSlug, isPreview, loc])
+  }, [slug, formSlug, isPreview, isAdminFill, loc])
 
   // Re-fetched (not just re-shown) after a rejected submit — a "stock insuffisant" 422 means
   // the numbers already on screen are stale, and without this the visitor would just retry
@@ -237,8 +249,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     router.replace(pathname, { scroll: false })
   }, [searchParams, t, router, pathname])
 
-  const membershipTiers = form?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? []
-  const extraTiers      = form?.tiers.filter(t => t.itemType !== "MEMBERSHIP") ?? []
+  const membershipTiers = (form?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? [])
+    .filter(t => !isAdminFill || (t.kind === "ONE_OFF" && !t.free))
+  // Vider extraTiers en mode admin tue les options/dons embarqués partout d'un coup
+  // (selectedExtras/extrasAmount en découlent) — le lien de paiement ne facture que la
+  // cotisation elle-même.
+  const extraTiers      = isAdminFill ? [] : form?.tiers.filter(t => t.itemType !== "MEMBERSHIP") ?? []
   const selectedTier = membershipTiers.find(x => x.id === tierId) ?? null
   // Offline methods only make sense for a one-off charge — a cheque doesn't arrive on its own
   // every year. Never available in multi-registrant mode (Stripe-only, see checkout/route.ts).
@@ -253,6 +269,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // silently defaulting a new registrant to) a choice that would leave the visitor with no way
   // to pay — instead of reacting after the fact by hiding the whole form.
   const isTierPayable = (tier: Tier, multi: boolean) =>
+    // Mode admin : le lien envoyé passe forcément par Stripe — les méthodes hors-ligne ne
+    // comptent pas comme « payable » ici.
+    isAdminFill ? !!form?.paymentEnabled :
     tier.free || isPreview || (multi ? !!form?.paymentEnabled : !!(form?.paymentEnabled || (tier.kind === "ONE_OFF" && offlineMethods.length > 0)))
   // A RECURRING tier bills every durationMonths months, not always yearly (see
   // MembershipTier.durationMonths) — 12 (or unset) still reads as "par an" rather than the
@@ -319,8 +338,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // tarif récurrent ou un paiement échelonné (le stock est décompté une seule fois, au moment
   // du paiement unique — voir checkout/route.ts). En mode multi, tous les tarifs sont déjà
   // ONE_OFF (RECURRING y est exclu plus haut), donc seul selectedTier (registrant 0) compte ici.
-  const canBuyProducts = !!selectedTier && selectedTier.kind === "ONE_OFF" && !payInInstallments
-  const offeredProducts = form?.products ?? []
+  const canBuyProducts = !isAdminFill && !!selectedTier && selectedTier.kind === "ONE_OFF" && !payInInstallments
+  const offeredProducts = isAdminFill ? [] : form?.products ?? []
   // price est en centimes (BoutiqueVariante.price) — converti ici, une seule fois, avant de
   // rejoindre membershipAmount/extrasAmount qui sont en euros décimaux.
   const productsAmount = canBuyProducts
@@ -340,9 +359,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // since it would instantly become unpayable the moment it flips on. Also requires at least one
   // multiUsableTiers entry so there's something valid to default a newly-added registrant to —
   // a form with only offline-paid tiers and no Stripe simply doesn't offer this feature.
-  const canAddRegistrant = !isMulti
+  const canAddRegistrant = !isAdminFill && (!isMulti
     ? !!selectedTier && selectedTier.kind === "ONE_OFF" && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
-    : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0
+    : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0)
 
   // extrasAmount counts in both modes: an option or an embedded donation belongs to the
   // submission, not to one person, so a group buying one owes exactly what a lone member would.
@@ -363,8 +382,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // checkout/route.ts + membership-form-products.ts) — un paiement hors-ligne (espèces,
   // chèque, virement) ne passe jamais par ce webhook, donc un produit choisi doit forcer le
   // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
-  const canPayInInstallments = !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
-  const showOfflineChoice = !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
+  const canPayInInstallments = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
+  const showOfflineChoice = !isAdminFill && !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
   // Safety net, not the primary guard — canAddRegistrant/isTierPayable already keep every tier
   // picker (registrant 0's buttons, each extra registrant's select) from ever landing on a tier
   // that isn't payable in the current mode. This still matters for the tier a visitor lands on
@@ -476,7 +495,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
       (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier.kind === "ONE_OFF")
     )) &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
-    (!willBeImmediate || password.length >= PASSWORD_MIN_LENGTH) &&
+    // Mode admin : la personne n'est pas là pour choisir un mot de passe (son compte n'est
+    // créé qu'au paiement) ni pour accepter les CGUV.
+    (!willBeImmediate || isAdminFill || password.length >= PASSWORD_MIN_LENGTH) &&
     (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
@@ -484,7 +505,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldGender    !== "REQUIRED" || sexe) &&
     (form.fieldLanguage  !== "REQUIRED" || !!spokenLanguage) &&
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
-    (!form.requireCguvSignature || conditionsAgreed) &&
+    (!form.requireCguvSignature || isAdminFill || conditionsAgreed) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
 
   // Same numbering the registrant cards themselves use (registrantLabel: idx + 2, since
@@ -508,8 +529,8 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     : extraBelowMinimum ? t("blockedExtraBelowMinimum", { label: extraBelowMinimum.label })
     : !firstName.trim() || !lastName.trim() ? t("blockedMissingIdentity")
     : !emailValid(email) ? t("blockedInvalidEmail")
-    : willBeImmediate && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
-    : form.requireCguvSignature && !conditionsAgreed ? t("blockedConditionsNotAccepted")
+    : willBeImmediate && !isAdminFill && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
+    : form.requireCguvSignature && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
     : (form.fieldAddress   === "REQUIRED" && !address.trim())
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
       || (form.fieldPhone     === "REQUIRED" && !phone.trim())
@@ -527,6 +548,35 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
 
     setLoading(true)
     try {
+      // Mode admin : rien n'est encaissé ici — le serveur crée le membre et lui envoie le
+      // lien de paiement par email (session gestionnaire re-vérifiée côté serveur).
+      if (isAdminFill) {
+        const res = await fetch(`/api/membership-forms/${form.id}/admin-registration`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tierId,
+            amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
+            firstName: firstName.trim(),
+            lastName:  lastName.trim(),
+            email:     email.trim(),
+            address:   address.trim() || undefined,
+            birthDate: birthDate.trim() || undefined,
+            phone:     phone.trim() || undefined,
+            mobile:    mobile.trim() || undefined,
+            sexe:      sexe || undefined,
+            spokenLanguage: spokenLanguage || undefined,
+            photoUrl:  photoUrl || undefined,
+            locale:    loc,
+            answers,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) { toast.error(data.error ?? t("genericError")); return }
+        setOutcome("linkSent")
+        return
+      }
+
       const payload = isMulti
         ? {
             registrants: [
@@ -658,6 +708,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
               </p>
             )}
 
+            {isAdminFill && !isPreview && (
+              <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
+                {t("adminFillNotice")}
+              </p>
+            )}
+
             {form.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
@@ -680,10 +736,12 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             {outcome ? (
               <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
                 <p className="font-medium">
-                  {outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
+                  {outcome === "linkSent" ? t("adminLinkSentTitle") : outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
                 </p>
                 <p className="text-muted-foreground">
-                  {outcome === "pending"
+                  {outcome === "linkSent"
+                    ? t("adminLinkSentBody", { email: email.trim() })
+                    : outcome === "pending"
                     ? (form.confirmationMessage || t("submittedRequestBody"))
                     : (form.confirmationMessage || t("submittedWithPayment"))}
                 </p>
@@ -879,13 +937,17 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     bouton d'envoi reste actif — c'est le checkout qui tranchera. */}
                 {emailTaken && (
                   <p className="text-xs text-amber-700 dark:text-amber-400">
-                    {t("emailAlreadyMember")}{" "}
-                    <a href={`${BASE_PATH}/portal/${slug}/login`} className="underline underline-offset-2 font-medium">
-                      {t("emailAlreadyMemberLogin")}
-                    </a>
+                    {isAdminFill ? t("adminEmailAlreadyMember") : (
+                      <>
+                        {t("emailAlreadyMember")}{" "}
+                        <a href={`${BASE_PATH}/portal/${slug}/login`} className="underline underline-offset-2 font-medium">
+                          {t("emailAlreadyMemberLogin")}
+                        </a>
+                      </>
+                    )}
                   </p>
                 )}
-                {willBeImmediate && (
+                {willBeImmediate && !isAdminFill && (
                   <div className="space-y-1.5">
                     <FormField
                       label={t("passwordLabel")}
@@ -1128,7 +1190,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     ))}
                   </ul>
                 )}
-                {form.requireCguvSignature && (
+                {form.requireCguvSignature && !isAdminFill && (
                   <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
                 )}
 
@@ -1226,7 +1288,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     tout ce qui manque, y compris les champs jamais visités. */}
                 <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
                   <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                    {!needsPayment
+                    {isAdminFill
+                      ? t("adminSubmitSendLink", { amount: amount.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                      : !needsPayment
                       ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
                       : t("submitPay", {
                           amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,

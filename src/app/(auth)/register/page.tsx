@@ -5,6 +5,7 @@ import { RegisterForm } from "@/components/auth/register-form"
 import { getPricingInfo } from "@/lib/stripe"
 import { APP_NAME } from "@/config/brand"
 import { LogoMark } from "@/components/layout/logo-mark"
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.register")
@@ -41,12 +42,15 @@ export default async function RegisterPage({
 
         <RegisterForm pricing={pricing} />
 
-        <p className="text-center text-sm text-muted-foreground">
-          {t("alreadyAccount")}{" "}
-          <Link href="/login" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors">
-            {t("signIn")}
-          </Link>
-        </p>
+        <div className="space-y-2">
+          <p className="text-center text-sm text-muted-foreground">
+            {t("alreadyAccount")}{" "}
+            <Link href="/login" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors">
+              {t("signIn")}
+            </Link>
+          </p>
+          <ContactSupportTrigger />
+        </div>
       </div>
     </div>
   )

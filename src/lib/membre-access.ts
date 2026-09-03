@@ -58,7 +58,11 @@ export async function grantMembrePortalAccess(params: {
     await tx.membre.update({ where: { id: membre.id }, data: { userId: user.id, status: "ACTIF" } })
   })
 
-  sendEmail(invitationEmail({
+  // Awaited: an un-awaited sendEmail here can be torn down by Vercel's serverless runtime
+  // before Resend is actually called — confirmed on this exact pattern elsewhere (da57b4f).
+  // These are the member's only credentials; losing the email silently would leave them
+  // granted access with no way to know their password.
+  await sendEmail(invitationEmail({
     firstName:       membre.firstName,
     email,
     password:        plainPassword,

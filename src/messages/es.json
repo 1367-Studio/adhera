@@ -183,6 +183,28 @@
         "genericErrorToast": "Error al restablecer la contraseña.",
         "networkErrorToast": "Error de red. Inténtalo de nuevo."
       }
+    },
+    "contact": {
+      "trigger": "Contactar con soporte",
+      "title": "Contáctanos",
+      "description": "Tu mensaje será recibido directamente por el soporte de Formwise.",
+      "form": {
+        "nameLabel": "Nombre",
+        "nameRequired": "El nombre es obligatorio.",
+        "emailLabel": "Correo electrónico",
+        "emailRequired": "El correo electrónico es obligatorio.",
+        "emailInvalid": "Correo electrónico no válido.",
+        "messageLabel": "Mensaje",
+        "messageRequired": "El mensaje es obligatorio.",
+        "submit": "Enviar mensaje",
+        "sendError": "Error al enviar. Inténtalo de nuevo en unos instantes.",
+        "networkError": "Error de red. Inténtalo de nuevo."
+      },
+      "sent": {
+        "title": "Mensaje enviado",
+        "description": "¡Gracias! Nuestro equipo de soporte se pondrá en contacto contigo pronto.",
+        "close": "Cerrar"
+      }
     }
   },
   "portal": {
@@ -2757,6 +2779,11 @@
       "addRegistrant": "Añadir otro socio",
       "removeRegistrant": "Quitar este socio",
       "sharedAccountHint": "El email y la contraseña de abajo se usarán para iniciar sesión para todo el grupo.",
+      "adminFillNotice": "Modo administrador — complete este formulario en nombre de un miembro: recibirá por correo un enlace para pagar su cuota.",
+      "adminSubmitSendLink": "Enviar el enlace de pago ({amount})",
+      "adminLinkSentTitle": "Enlace de pago enviado",
+      "adminLinkSentBody": "El miembro fue creado y se envió un correo con el enlace de pago a {email}. Será miembro una vez pagada la cuota.",
+      "adminEmailAlreadyMember": "Esta dirección de correo ya pertenece a un miembro de la asociación.",
       "firstNamePlaceholder": "María",
       "lastNamePlaceholder": "García",
       "emailPlaceholder": "maria.garcia@email.es",
@@ -3579,9 +3606,12 @@
         "address": "Dirección",
         "addressPlaceholder": "Calle Ejemplo 123, Madrid",
         "preferredLocale": "Idioma preferido",
-        "spokenLanguage": "Idioma hablado"
+        "spokenLanguage": "Idioma hablado",
+        "cotisationTier": "Cuota — tarifa de afiliación"
       },
       "invitationNotice": "Se enviará un correo de invitación con los datos de acceso a esta dirección.",
+      "tierNone": "Sin tarifa (comportamiento por defecto)",
+      "tierNotice": "Se creará una cuota con esta tarifa y el miembro recibirá por correo un enlace para pagarla en línea, sin iniciar sesión.",
       "adherentAutoWithResponsable": "Calculado automáticamente: su propia cuota del año en curso si existe, si no la de su responsable — fuércelo solo en casos excepcionales (independiente de «Estado», que controla la cuenta).",
       "adherentAutoNoResponsable": "Calculado automáticamente según la cuota del año en curso — fuércelo solo en casos excepcionales (independiente de «Estado», que controla la cuenta).",
       "noType": "Sin tipo",
@@ -3650,6 +3680,7 @@
         "history": "Historial",
         "changeRole": "Cambiar rol",
         "createAccess": "Crear acceso",
+        "resendPaymentLink": "Reenviar el enlace de pago",
         "delete": "Eliminar"
       },
       "deleteConfirmDescription": "Este miembro será archivado y ya no podrá acceder a la asociación.",
@@ -3657,6 +3688,7 @@
       "historyTitleDefault": "Historial",
       "toasts": {
         "accessCreated": "Acceso creado para {name} — se le envió un correo",
+        "paymentLinkResent": "Enlace de pago reenviado a {name}",
         "memberAdded": "Miembro añadido correctamente",
         "memberUpdated": "Miembro actualizado",
         "memberDeleted": "Miembro eliminado",
@@ -3666,6 +3698,8 @@
         "roleUpdated": "Rol actualizado"
       },
       "changeRoleTitle": "Cambiar rol",
+      "addViaForm": "Mediante un formulario de afiliación",
+      "addManual": "Añadir manualmente",
       "changeRoleDescription": "Rol de {name} en la asociación.",
       "pendingRequests": "{count, plural, one {# solicitud pendiente} other {# solicitudes pendientes}}"
     },

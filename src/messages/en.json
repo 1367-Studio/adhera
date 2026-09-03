@@ -183,6 +183,28 @@
         "genericErrorToast": "Error resetting password.",
         "networkErrorToast": "Network error. Please try again."
       }
+    },
+    "contact": {
+      "trigger": "Contact support",
+      "title": "Contact us",
+      "description": "Your message will go directly to Formwise support.",
+      "form": {
+        "nameLabel": "Name",
+        "nameRequired": "Name required.",
+        "emailLabel": "Email address",
+        "emailRequired": "Email address required.",
+        "emailInvalid": "Invalid email address.",
+        "messageLabel": "Message",
+        "messageRequired": "Message required.",
+        "submit": "Send message",
+        "sendError": "Error sending. Please try again shortly.",
+        "networkError": "Network error. Please try again."
+      },
+      "sent": {
+        "title": "Message sent",
+        "description": "Thanks! Our support team will get back to you shortly.",
+        "close": "Close"
+      }
     }
   },
   "portal": {
@@ -2757,6 +2779,11 @@
       "addRegistrant": "Add another member",
       "removeRegistrant": "Remove this member",
       "sharedAccountHint": "The email and password below will be used to log in for the whole group.",
+      "adminFillNotice": "Admin mode — fill this form on a member's behalf: they will receive a payment link by email.",
+      "adminSubmitSendLink": "Send the payment link ({amount})",
+      "adminLinkSentTitle": "Payment link sent",
+      "adminLinkSentBody": "The member was created and an email with the payment link was sent to {email}. They will become a member once the fee is paid.",
+      "adminEmailAlreadyMember": "This email address already belongs to a member of the association.",
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
@@ -3579,9 +3606,12 @@
         "address": "Address",
         "addressPlaceholder": "123 Main St, Springfield",
         "preferredLocale": "Preferred language",
-        "spokenLanguage": "Spoken language"
+        "spokenLanguage": "Spoken language",
+        "cotisationTier": "Membership fee — tier"
       },
       "invitationNotice": "An invitation email with login details will be sent to this address.",
+      "tierNone": "No tier (default behavior)",
+      "tierNotice": "A membership fee will be created at this tier and the member will receive an email link to pay it online, no login needed.",
       "adherentAutoWithResponsable": "Computed automatically: their own current-year membership fee if it exists, otherwise their guardian's — only override for exceptions (independent of \"Status\", which controls the account).",
       "adherentAutoNoResponsable": "Computed automatically from the current-year membership fee — only override for exceptions (independent of \"Status\", which controls the account).",
       "noType": "No type",
@@ -3650,6 +3680,7 @@
         "history": "History",
         "changeRole": "Change role",
         "createAccess": "Create access",
+        "resendPaymentLink": "Resend payment link",
         "delete": "Delete"
       },
       "deleteConfirmDescription": "This member will be archived and will no longer be able to access the association.",
@@ -3657,6 +3688,7 @@
       "historyTitleDefault": "History",
       "toasts": {
         "accessCreated": "Access created for {name} — an email was sent to them",
+        "paymentLinkResent": "Payment link resent to {name}",
         "memberAdded": "Member added successfully",
         "memberUpdated": "Member updated",
         "memberDeleted": "Member deleted",
@@ -3666,6 +3698,8 @@
         "roleUpdated": "Role updated"
       },
       "changeRoleTitle": "Change role",
+      "addViaForm": "Via a membership form",
+      "addManual": "Add manually",
       "changeRoleDescription": "{name}'s role in the association.",
       "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}"
     },

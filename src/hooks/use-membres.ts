@@ -296,6 +296,15 @@ export function useCreateAccess() {
   })
 }
 
+async function resendPaymentLink(id: string) {
+  const res = await fetch(`/api/membres/${id}/resend-payment-link`, { method: "POST" })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'envoi du lien de paiement"))
+}
+
+export function useResendPaymentLink() {
+  return useMutation({ mutationFn: resendPaymentLink })
+}
+
 async function cancelCotisationSubscription(id: string) {
   const res = await fetch(`/api/membres/${id}/cotisation-subscription`, { method: "DELETE" })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de l'arrêt de l'adhésion récurrente"))
