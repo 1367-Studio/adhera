@@ -151,12 +151,35 @@ export type MembreDetail = {
 
 const QK = ["membres"]
 
-async function fetchMembresPaginated(page: number, limit: number, search?: string, status?: string, typeId?: string, adherent?: string) {
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-  if (search) params.set("search", search)
-  if (status) params.set("status", status)
-  if (typeId) params.set("typeId", typeId)
-  if (adherent) params.set("adherent", adherent)
+// Grouped into one object rather than a growing positional list — the members list now
+// carries eight filters, and `fetch(page, limit, undefined, undefined, undefined, x)` is how
+// arguments end up silently in the wrong slot.
+export type MembresFilters = {
+  search?:        string
+  status?:        string
+  typeId?:        string
+  adherent?:      string
+  firstName?:     string
+  lastName?:      string
+  address?:       string
+  birthDateFrom?: string
+  birthDateTo?:   string
+}
+
+// The single place a filter turns into a query param — shared with the export link builder
+// (see membres-view) so a filter can never apply to the list but be dropped by the export.
+export function membresFilterParams(filters: MembresFilters): URLSearchParams {
+  const params = new URLSearchParams()
+  for (const [key, value] of Object.entries(filters)) {
+    if (value) params.set(key, value)
+  }
+  return params
+}
+
+async function fetchMembresPaginated(page: number, limit: number, filters: MembresFilters) {
+  const params = membresFilterParams(filters)
+  params.set("page",  String(page))
+  params.set("limit", String(limit))
   const res = await fetch(`/api/membres?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement des membres")
   // pendingCount rides along with the page rather than getting its own endpoint/round-trip —
@@ -224,10 +247,12 @@ export function useResponsableOptions(excludeId?: string) {
   })
 }
 
-export function useMembresPaginated(page: number, limit = 20, search?: string, status?: string, typeId?: string, adherent?: string) {
+export function useMembresPaginated(page: number, limit = 20, filters: MembresFilters = {}) {
   return useQuery({
-    queryKey:  [...QK, "paginated", page, limit, search, status, typeId, adherent],
-    queryFn:   () => fetchMembresPaginated(page, limit, search, status, typeId, adherent),
+    // Serialized rather than spread: the key must change whenever any filter changes, and a
+    // spread of a growing object is exactly how a forgotten field turns into a stale list.
+    queryKey:  [...QK, "paginated", page, limit, membresFilterParams(filters).toString()],
+    queryFn:   () => fetchMembresPaginated(page, limit, filters),
     staleTime: 0,
   })
 }

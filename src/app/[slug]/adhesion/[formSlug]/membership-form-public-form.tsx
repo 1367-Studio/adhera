@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, Suspense } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
@@ -997,7 +998,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
-                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} onBlur={() => touch("birthDate")} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
+                    <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={v => { setBirthDate(v); touch("birthDate") }} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
                   )}
                   {form.fieldGender !== "HIDDEN" && (
                     <SelectField
@@ -1131,7 +1132,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                           )}
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {form.fieldBirthDate !== "HIDDEN" && (
-                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} onBlur={() => touch(`${r.key}.birthDate`)} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
+                              <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={v => { updateRegistrant(r.key, { birthDate: v }); touch(`${r.key}.birthDate`) }} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
                             )}
                             {form.fieldGender !== "HIDDEN" && (
                               <SelectField

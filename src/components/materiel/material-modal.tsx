@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -225,7 +226,13 @@ export function MaterialModal({ open, onOpenChange, material }: Props) {
         <FormField label={t("materiel.form.description")} placeholder={t("materiel.form.descriptionPlaceholder")} {...register("description")} />
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label={t("materiel.form.purchaseDate")} type="date" {...register("purchaseDate")} />
+<Controller
+          name="purchaseDate"
+          control={control}
+          render={({ field }) => (
+            <DateField label={t("materiel.form.purchaseDate")} value={field.value ?? ""} onChange={field.onChange} />
+          )}
+        />
           <Controller
             name="purchasePrice"
             control={control}

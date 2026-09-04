@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, Suspense } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
@@ -433,7 +434,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
               )}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {form.fieldBirthDate !== "HIDDEN" && (
-                  <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} />
+                  <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={setBirthDate} />
                 )}
                 {form.fieldGender !== "HIDDEN" && (
                   <FormField label={t("genderLabel")} placeholder={t("genderPlaceholder")} required={form.fieldGender === "REQUIRED"} value={gender} onChange={e => setGender(e.target.value)} />

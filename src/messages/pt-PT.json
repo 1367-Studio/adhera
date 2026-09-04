@@ -11,6 +11,10 @@
     "loading": "A carregar...",
     "search": "Pesquisar",
     "clearSearch": "Limpar pesquisa",
+    "datePlaceholder": "Escolher uma data",
+    "dateTimePlaceholder": "Escolher data e hora",
+    "time": "Hora",
+    "clear": "Limpar",
     "yes": "Sim",
     "no": "Não",
     "success": "Sucesso",
@@ -3678,6 +3682,16 @@
       "allStatuses": "Todos os estados",
       "allTypes": "Todos os tipos",
       "allMembership": "Associados e voluntários",
+      "filters": {
+        "trigger": "Filtros",
+        "firstName": "Nome",
+        "lastName": "Apelido",
+        "address": "Morada",
+        "birthDateFrom": "Nascido após",
+        "birthDateTo": "Nascido antes de",
+        "apply": "Aplicar",
+        "reset": "Repor"
+      },
       "statusOptions": {
         "pending": "Pendente",
         "actifs": "Ativos",
@@ -3689,6 +3703,7 @@
         "benevoles": "Voluntários"
       },
       "noResultsFor": "Nenhum resultado para \"{search}\"",
+      "noResultsFiltered": "Nenhum associado corresponde a estes filtros",
       "noMembers": "Nenhum membro registado",
       "actions": {
         "view": "Ver ficha",

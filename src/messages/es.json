@@ -11,6 +11,10 @@
     "loading": "Cargando...",
     "search": "Buscar",
     "clearSearch": "Borrar búsqueda",
+    "datePlaceholder": "Elegir una fecha",
+    "dateTimePlaceholder": "Elegir fecha y hora",
+    "time": "Hora",
+    "clear": "Borrar",
     "yes": "Sí",
     "no": "No",
     "success": "Éxito",
@@ -3666,6 +3670,16 @@
       "allStatuses": "Todos los estados",
       "allTypes": "Todos los tipos",
       "allMembership": "Socios y voluntarios",
+      "filters": {
+        "trigger": "Filtros",
+        "firstName": "Nombre",
+        "lastName": "Apellidos",
+        "address": "Dirección",
+        "birthDateFrom": "Nacido después del",
+        "birthDateTo": "Nacido antes del",
+        "apply": "Aplicar",
+        "reset": "Restablecer"
+      },
       "statusOptions": {
         "pending": "Pendiente",
         "actifs": "Activos",
@@ -3677,6 +3691,7 @@
         "benevoles": "Voluntarios"
       },
       "noResultsFor": "Sin resultados para «{search}»",
+      "noResultsFiltered": "Ningún socio coincide con estos filtros",
       "noMembers": "Ningún miembro registrado",
       "actions": {
         "view": "Ver ficha",

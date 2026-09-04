@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -170,8 +171,20 @@ export function LoanModal({ open, onOpenChange, material }: Props) {
         )}
 
         <div className="grid grid-cols-2 gap-3">
-          <FormField label={t("materiel.loanModal.borrowedAt")} type="date" {...register("borrowedAt")} />
-          <FormField label={t("materiel.loanModal.expectedReturn")} type="date" min={borrowedAt} error={errors.expectedReturnAt?.message} {...register("expectedReturnAt")} />
+          <Controller
+            name="borrowedAt"
+            control={control}
+            render={({ field }) => (
+              <DateField label={t("materiel.loanModal.borrowedAt")} allowFuture value={field.value ?? ""} onChange={field.onChange} />
+            )}
+          />
+          <Controller
+            name="expectedReturnAt"
+            control={control}
+            render={({ field }) => (
+              <DateField label={t("materiel.loanModal.expectedReturn")} allowFuture min={borrowedAt} value={field.value ?? ""} onChange={field.onChange} error={errors.expectedReturnAt?.message} />
+            )}
+          />
         </div>
         {isFutureDate && (
           <p className="text-xs text-muted-foreground -mt-2">

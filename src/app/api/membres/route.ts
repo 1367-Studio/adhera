@@ -33,16 +33,20 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const adultsOnly  = searchParams.get("adultsOnly") === "true"
   const excludeId   = searchParams.get("excludeId") ?? undefined
   const adherent    = searchParams.get("adherent") ?? undefined // "ADHERENT" | "BENEVOLE"
+  // Per-field filters, cumulative with `search` and with each other. `search` stays a single
+  // OR across firstName/lastName/email (it answers "find this person"); these answer "give me
+  // this subset of members", which is a different question and must narrow, never widen.
+  const firstName = searchParams.get("firstName")?.trim()
+  const lastName  = searchParams.get("lastName")?.trim()
+  const address   = searchParams.get("address")?.trim()
 
   const where: Record<string, unknown> = { associationId, deletedAt: null }
   if (status) where.status = status
   if (typeId) where.typeId = typeId
   if (excludeId) where.id = { not: excludeId }
-  if (adultsOnly) {
-    const adultCutoff = new Date()
-    adultCutoff.setFullYear(adultCutoff.getFullYear() - ADULT_AGE_YEARS)
-    where.birthDate = { not: null, lte: adultCutoff }
-  }
+  if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
+  if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
+  if (address)   where.address   = { contains: address,   mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
@@ -50,9 +54,29 @@ export const GET = withAdminAuth(async (req, ctx) => {
       { email:     { contains: search, mode: "insensitive" } },
     ]
   }
-  if (adherent === "ADHERENT" || adherent === "BENEVOLE") {
-    where.AND = [membreAdherentWhereClause(adherent === "ADHERENT")]
+
+  // Every clause that targets birthDate goes through AND rather than a single where.birthDate:
+  // adultsOnly (member picker) and the birth-date range (members list) can both be present,
+  // and assigning where.birthDate twice would silently drop the first one.
+  const and: Record<string, unknown>[] = []
+  if (adultsOnly) {
+    const adultCutoff = new Date()
+    adultCutoff.setFullYear(adultCutoff.getFullYear() - ADULT_AGE_YEARS)
+    and.push({ birthDate: { not: null, lte: adultCutoff } })
   }
+  for (const [param, bound] of [["birthDateFrom", "gte"], ["birthDateTo", "lte"]] as const) {
+    const raw = searchParams.get(param)?.trim()
+    // Ignored rather than 422'd on a malformed value: an unparseable date would reach Prisma
+    // as Invalid Date and blow up the whole list for what is only ever a filter.
+    if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) continue
+    // Bounds cover the whole calendar day in UTC — birthDate is stored anchored at noon UTC
+    // (see the POST below), so a day-wide window matches it whichever end is queried.
+    and.push({ birthDate: bound === "gte" ? { gte: new Date(`${raw}T00:00:00.000Z`) } : { lte: new Date(`${raw}T23:59:59.999Z`) } })
+  }
+  if (adherent === "ADHERENT" || adherent === "BENEVOLE") {
+    and.push(membreAdherentWhereClause(adherent === "ADHERENT"))
+  }
+  if (and.length) where.AND = and
 
   const orderBy = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
 

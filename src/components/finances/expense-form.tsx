@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -112,7 +113,13 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
             <CurrencyField label={t("finances.incomeForm.amount")} required disabled={locked} value={field.value ?? 0} onChange={field.onChange} onBlur={field.onBlur} error={errors.amount?.message} />
           )}
         />
-        <FormField label={t("finances.incomeForm.date")} type="date" required disabled={locked} error={errors.date?.message} {...register("date")} />
+<Controller
+          name="date"
+          control={control}
+          render={({ field }) => (
+            <DateField label={t("finances.incomeForm.date")} required disabled={locked} value={field.value ?? ""} onChange={field.onChange} error={errors.date?.message} />
+          )}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

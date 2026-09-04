@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { PlusIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
@@ -211,12 +212,12 @@ export function CampagneModal({ open, onOpenChange }: Props) {
             value={year}
             onChange={e => setYear(e.target.value)}
           />
-          <FormField
+          <DateField
             label={t("messages.campagneModal.dueDate")}
-            type="date"
+            allowFuture
             hint={t("messages.campagneModal.dueDateHint")}
             value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
+            onChange={setDueDate}
           />
           <FormField
             label={t("messages.campagneModal.cooldownDays")}
