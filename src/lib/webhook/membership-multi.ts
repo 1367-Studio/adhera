@@ -13,7 +13,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
-import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
@@ -298,6 +298,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
         : undefined,
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
       products:            purchasedProducts.length ? purchasedProducts : undefined,
+      addons:              parseAddons(draft.addons ? JSON.stringify(draft.addons) : undefined).map(a => ({ label: a.label, amount: a.amount })),
     }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})
 
     for (let i = 0; i < registrants.length; i++) {

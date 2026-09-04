@@ -1,6 +1,7 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
+import { DateField } from "@/components/ui/date-field"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CurrencyField, CurrencyInput } from "@/components/ui/currency-field"
@@ -208,11 +209,12 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
           )}
         </div>
         <div className="space-y-1.5">
-          <FormField
-            label={t("cotisations.form.dueDate")}
-            type="date"
-            error={errors.dueDate?.message}
-            {...register("dueDate")}
+          <Controller
+            name="dueDate"
+            control={control}
+            render={({ field }) => (
+              <DateField label={t("cotisations.form.dueDate")} allowFuture value={field.value ?? ""} onChange={field.onChange} error={errors.dueDate?.message} />
+            )}
           />
           {fields.length > 0 && (
             <p className="text-xs text-muted-foreground">{t("cotisations.form.installments.dueDateIgnoredHint")}</p>
@@ -272,12 +274,19 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
                   />
                 </div>
                 <div className="flex-1">
-                  <FormField
-                    label={t("cotisations.form.dueDate")}
-                    type="date"
-                    error={errors.installments?.[index]?.dueDate?.message}
-                    disabled={installmentsLocked}
-                    {...register(`installments.${index}.dueDate`)}
+                  <Controller
+                    name={`installments.${index}.dueDate`}
+                    control={control}
+                    render={({ field }) => (
+                      <DateField
+                        label={t("cotisations.form.dueDate")}
+                        allowFuture
+                        disabled={installmentsLocked}
+                        value={field.value ?? ""}
+                        onChange={field.onChange}
+                        error={errors.installments?.[index]?.dueDate?.message}
+                      />
+                    )}
                   />
                 </div>
                 {!installmentsLocked && (

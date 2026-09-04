@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { format } from "date-fns"
 import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { membreAdherentWhereClause } from "@/lib/membre-adherent"
 
 // Same reasoning as evenements/[id]/export — Nom/Prénom/Email can come from public,
 // unauthenticated self-registration (site-membership-section.tsx), so a value starting
@@ -38,12 +39,21 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // intake form these mirror) beyond the default column set below — opt-in so the existing
   // membres page export keeps its current column layout unchanged.
   const full     = searchParams.get("full") === "1"
+  const firstName = searchParams.get("firstName")?.trim()
+  const lastName  = searchParams.get("lastName")?.trim()
+  const address   = searchParams.get("address")?.trim()
+  const adherent  = searchParams.get("adherent") ?? undefined // "ADHERENT" | "BENEVOLE"
 
   // Mirrors the same where-building logic as GET /api/membres — deliberately duplicated
   // rather than imported, so pagination and export stay independently testable/changeable.
+  // Every filter the list understands must be understood here too: an export that ignored
+  // one would hand back rows the admin had explicitly filtered out on screen.
   const where: Record<string, unknown> = { associationId, deletedAt: null }
   if (status) where.status = status
   if (typeId) where.typeId = typeId
+  if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
+  if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
+  if (address)   where.address   = { contains: address,   mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
@@ -52,9 +62,28 @@ export const GET = withAdminAuth(async (req, ctx) => {
     ]
   }
 
+  const and: Record<string, unknown>[] = []
+  for (const [param, bound] of [["birthDateFrom", "gte"], ["birthDateTo", "lte"]] as const) {
+    const raw = searchParams.get(param)?.trim()
+    if (!raw || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) continue
+    and.push({ birthDate: bound === "gte" ? { gte: new Date(`${raw}T00:00:00.000Z`) } : { lte: new Date(`${raw}T23:59:59.999Z`) } })
+  }
+  if (adherent === "ADHERENT" || adherent === "BENEVOLE") {
+    and.push(membreAdherentWhereClause(adherent === "ADHERENT"))
+  }
+  if (and.length) where.AND = and
+
+  // Même tri que la liste (voir GET /api/membres) — le fichier exporté doit sortir dans
+  // l'ordre que l'admin avait à l'écran au moment où il a cliqué sur « Exporter ».
+  const sort    = searchParams.get("sort") ?? undefined
+  const byName  = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
+  const orderBy = sort === "recent" ? [{ joinedAt: "desc" as const }, ...byName]
+    : sort === "oldest"             ? [{ joinedAt: "asc"  as const }, ...byName]
+    : byName
+
   const membres = await prisma.membre.findMany({
     where,
-    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    orderBy,
     include: {
       type: { select: { name: true } },
       ...(full ? { responsable: { select: { firstName: true, lastName: true } } } : {}),

@@ -18,6 +18,7 @@ import { membershipWelcomeEmail, membershipPendingValidationEmail } from "@/lib/
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
+import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
@@ -474,10 +475,12 @@ export async function POST(
     // donation-form checkout route.
     if (tier.kind === "RECURRING")
       return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible pour un tarif récurrent." }, { status: 400 })
-    // Les options (add-on/don) ne passent que par Stripe — un montant additionnel réglé hors
-    // ligne n'a pas de suivi d'encaissement dédié côté MembershipAddonPurchase, contrairement
-    // à Cotisation/Don. Le client masque déjà ce choix dès qu'une option est cochée.
-    if (totalAddons > 0)
+    // Un ADDON (option payante hors don) ne passe que par Stripe — un montant additionnel
+    // réglé hors ligne n'a pas de suivi d'encaissement dédié côté MembershipAddonPurchase,
+    // contrairement à Cotisation/Don. Un don embarqué (itemType DONATION), lui, réutilise
+    // directement le même Don.paymentMethod/paidAt que le formulaire de don autonome — voir
+    // l'appel à createMembershipAddonPurchases plus bas — donc reste autorisé hors ligne.
+    if (resolvedAddons.some(a => a.itemType !== "DONATION"))
       return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des options supplémentaires." }, { status: 400 })
     // Même raisonnement que les options ci-dessus : un produit n'est jamais décompté/vendu
     // que via le webhook Stripe (voir membership-form-products.ts) — un paiement hors ligne
@@ -549,14 +552,33 @@ export async function POST(
             answers:       Object.keys(answers).length ? answers : undefined,
           },
         })
-        await tx.cotisation.create({
+        // amount total réellement dû ci-dessous inclut totalAddons (voir sa définition plus
+        // haut) — mais Cotisation.amount ne doit porter que la part adhésion, même convention
+        // que le rail Stripe (voir handleMembershipOneOffCheckout, membershipAmount séparé de
+        // session.amount_total). Le don embarqué a sa propre ligne, créée juste après.
+        const cotisation = await tx.cotisation.create({
           data: {
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
-            amount, status: "EN_ATTENTE",
+            amount: membershipAmount ?? 0, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
             deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
+        })
+        // Un don embarqué payé hors ligne réutilise le même Don.paymentMethod/paidAt: null
+        // que le formulaire de don autonome — il apparaît en attente d'encaissement dans
+        // /dashboard/dons exactement comme un don payé hors ligne, jusqu'à ce qu'un admin le
+        // confirme via /api/dons/[id]/encaisser. resolvedAddons ne contient ici que des
+        // DONATION (le garde-fou ci-dessus a déjà rejeté tout ADDON en hors ligne).
+        await createMembershipAddonPurchases(tx, {
+          associationId: assoc.id,
+          membreId:      membre.id,
+          cotisationId:  cotisation.id,
+          firstName, lastName, email,
+          addonsJson:    JSON.stringify(resolvedAddons),
+          canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+          donPaymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
+          donPaidAt: null,
         })
         return { user, membre }
       }))
@@ -575,6 +597,7 @@ export async function POST(
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
+      addons: resolvedAddons.length ? resolvedAddons.map(a => ({ label: a.label, amount: a.amount })) : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
 
     await writeActivityLog({

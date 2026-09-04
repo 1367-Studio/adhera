@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -560,16 +561,16 @@ export function ActiviteView() {
 
         <div className="flex items-center gap-1.5">
           <label className="text-xs text-muted-foreground">{t("membres.activiteView.fromLabel")}</label>
-          <input type="date" value={from} max={to || undefined}
-            onChange={e => { setFrom(e.target.value); setPage(1) }}
-            className="h-9 rounded-md border border-input bg-background px-2.5 text-sm outline-none focus:ring-1 focus:ring-ring w-36"
+          <DateField value={from} max={to || undefined}
+            onChange={v => { setFrom(v); setPage(1) }}
+            className="w-40"
           />
         </div>
         <div className="flex items-center gap-1.5">
           <label className="text-xs text-muted-foreground">{t("membres.activiteView.toLabel")}</label>
-          <input type="date" value={to} min={from || undefined}
-            onChange={e => { setTo(e.target.value); setPage(1) }}
-            className="h-9 rounded-md border border-input bg-background px-2.5 text-sm outline-none focus:ring-1 focus:ring-ring w-36"
+          <DateField value={to} min={from || undefined}
+            onChange={v => { setTo(v); setPage(1) }}
+            className="w-40"
           />
         </div>
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, Suspense } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
@@ -313,6 +314,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   // saw a valid 1,00 € and a matching total, then got the server's "Montant invalide" back.
   const extrasAmount = selectedExtras.reduce((sum, x) => sum + (x.freeAmount ? (extraAmounts[x.id] ?? 0) : Number(x.amount ?? 0)), 0)
   const extraBelowMinimum = selectedExtras.find(x => x.freeAmount && (extraAmounts[x.id] ?? 0) < tierMinimum(x))
+  // A DONATION extra is now payable offline (see checkout/route.ts's Don.paymentMethod reuse)
+  // — only an ADDON (paid option that isn't a don) still forces online payment, same reasoning
+  // MembershipAddonPurchase has no offline-encaissement tracking of its own.
+  const hasNonDonationExtraSelected = selectedExtras.some(x => x.itemType !== "DONATION")
+  const hasDonationExtraSelected = selectedExtras.some(x => x.itemType === "DONATION")
 
   // ─── Inscription groupée (N ≥ 2 "Adhérent") ─────────────────────────────────────
   // No addons/donation embarquée and no RECURRING tier in this mode — see checkout/route.ts's
@@ -373,17 +379,31 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const willBeImmediate = !!selectedTier && (amount > 0 || form?.validationMode === "IMMEDIATE")
 
   const needsPayment = amount > 0
-  // Only the membership price itself can be split — an addon/donation riding alongside would
-  // otherwise have to be either folded into the recurring installment price (changing what
-  // each future automatic charge is for) or invoiced separately, neither of which the visitor
-  // has any way to see coming. Simplest to just not offer both at once, same restriction
-  // showOfflineChoice already applies for the same underlying reason.
+  // Only the membership price itself can be split — an addon riding alongside would otherwise
+  // have to be either folded into the recurring installment price (changing what each future
+  // automatic charge is for) or invoiced separately, neither of which the visitor has any way
+  // to see coming. Simplest to just not offer both at once. Installments stay Stripe-only even
+  // for a donation-only extra — unlike showOfflineChoice below, there's no equivalent of a
+  // Don.paymentMethod/paidAt to carry an installment plan offline.
   // Un produit Boutique n'est décompté du stock que via le webhook Stripe (voir
   // checkout/route.ts + membership-form-products.ts) — un paiement hors-ligne (espèces,
   // chèque, virement) ne passe jamais par ce webhook, donc un produit choisi doit forcer le
   // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
   const canPayInInstallments = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
-  const showOfflineChoice = !isAdminFill && !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && extrasAmount === 0 && !hasProductsSelected && !payInInstallments
+  // Mirrors canPayInInstallments's own extras/products guard — shown only when that's the
+  // actual reason the checkbox isn't there, not whenever installments simply aren't offered.
+  const installmentsHiddenByExtras = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && (extrasAmount > 0 || hasProductsSelected)
+  // A DONATION-only selection no longer blocks offline payment (see checkout/route.ts) — only
+  // an ADDON, a Boutique product, or an installment plan still forces Stripe.
+  const showOfflineChoice = !isAdminFill && !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && !hasNonDonationExtraSelected && !hasProductsSelected && !payInInstallments
+  // Same combination that turns showOfflineChoice off above, minus offlineMethods.length > 0 —
+  // when Stripe is enabled this is the one case where the payment-method section would otherwise
+  // just vanish (an addon/product/installment choice silently forces online payment). Tell the
+  // visitor instead of leaving an empty gap where the chooser used to be. Never fires for a
+  // donation-only selection anymore, since that no longer forces online.
+  const forcedOnlineByExtras = !isAdminFill && !isMulti && !!selectedTier && needsPayment &&
+    selectedTier.kind === "ONE_OFF" && !!form?.paymentEnabled &&
+    (hasNonDonationExtraSelected || hasProductsSelected || payInInstallments)
   // Safety net, not the primary guard — canAddRegistrant/isTierPayable already keep every tier
   // picker (registrant 0's buttons, each extra registrant's select) from ever landing on a tier
   // that isn't payable in the current mode. This still matters for the tier a visitor lands on
@@ -836,6 +856,9 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                       onChange={e => setPayInInstallments(e.target.checked)}
                     />
                   )}
+                  {installmentsHiddenByExtras && (
+                    <p className="text-xs text-muted-foreground">{t("installmentsUnavailableWithExtras")}</p>
+                  )}
                 </div>
 
                 {extraTiers.length > 0 && (
@@ -975,7 +998,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
-                    <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={e => setBirthDate(e.target.value)} onBlur={() => touch("birthDate")} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
+                    <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={v => { setBirthDate(v); touch("birthDate") }} error={requiredError("birthDate", birthDate, form.fieldBirthDate === "REQUIRED")} />
                   )}
                   {form.fieldGender !== "HIDDEN" && (
                     <SelectField
@@ -1109,7 +1132,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                           )}
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {form.fieldBirthDate !== "HIDDEN" && (
-                              <FormField label={t("birthDateLabel")} type="date" required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={e => updateRegistrant(r.key, { birthDate: e.target.value })} onBlur={() => touch(`${r.key}.birthDate`)} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
+                              <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={r.birthDate} onChange={v => { updateRegistrant(r.key, { birthDate: v }); touch(`${r.key}.birthDate`) }} error={requiredError(`${r.key}.birthDate`, r.birthDate, form.fieldBirthDate === "REQUIRED")} />
                             )}
                             {form.fieldGender !== "HIDDEN" && (
                               <SelectField
@@ -1275,7 +1298,20 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                     {paymentMethod !== "STRIPE" && form.offlineInstructions && (
                       <p className="text-xs text-muted-foreground">{form.offlineInstructions}</p>
                     )}
+                    {paymentMethod !== "STRIPE" && hasDonationExtraSelected && (
+                      // The membership fee and the don embarqué become two independent records
+                      // (Cotisation + Don), each confirmed and receipted on its own once
+                      // received — worth saying up front, since the visitor only sees one
+                      // combined total and pays with a single cheque/cash amount.
+                      <p className="text-xs text-muted-foreground">{t("offlineDonationSeparateReceiptNotice")}</p>
+                    )}
                   </div>
+                )}
+                {forcedOnlineByExtras && (
+                  <p className="text-sm font-medium">
+                    {t("paymentMethodLabel")}
+                    <span className="font-normal text-muted-foreground"> — {t("paymentMethodOnlineOnly")}</span>
+                  </p>
                 )}
 
                 {!loading && blockingReason && (

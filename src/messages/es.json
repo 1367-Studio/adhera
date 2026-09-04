@@ -11,6 +11,10 @@
     "loading": "Cargando...",
     "search": "Buscar",
     "clearSearch": "Borrar búsqueda",
+    "datePlaceholder": "Elegir una fecha",
+    "dateTimePlaceholder": "Elegir fecha y hora",
+    "time": "Hora",
+    "clear": "Borrar",
     "yes": "Sí",
     "no": "No",
     "success": "Éxito",
@@ -2338,6 +2342,7 @@
       "averageLabel": "Donación media",
       "pendingTitle": "Pendiente de cobro",
       "encaisserButton": "Marcar como recibido",
+      "fromMembershipForm": "Vinculado a una adhesión — \"{tier}\"",
       "paymentMethod": {
         "especes": "Efectivo",
         "cheque": "Cheque",
@@ -2807,6 +2812,9 @@
       "paymentMethodCash": "Efectivo",
       "paymentMethodCheque": "Cheque",
       "paymentMethodTransfer": "Transferencia",
+      "paymentMethodOnlineOnly": "tarjeta (los métodos sin conexión no están disponibles con una opción, producto o pago a plazos seleccionados)",
+      "installmentsUnavailableWithExtras": "El pago a plazos no está disponible con una opción o producto seleccionados.",
+      "offlineDonationSeparateReceiptNotice": "Su donación se confirmará, y se emitirá un recibo si corresponde, por separado de su cuota.",
       "firstNameLabel": "Nombre",
       "lastNameLabel": "Apellidos",
       "emailLabel": "Correo electrónico",
@@ -3662,6 +3670,16 @@
       "allStatuses": "Todos los estados",
       "allTypes": "Todos los tipos",
       "allMembership": "Socios y voluntarios",
+      "filters": {
+        "trigger": "Filtros",
+        "firstName": "Nombre",
+        "lastName": "Apellidos",
+        "address": "Dirección",
+        "birthDateFrom": "Nacido después del",
+        "birthDateTo": "Nacido antes del",
+        "apply": "Aplicar",
+        "reset": "Restablecer"
+      },
       "statusOptions": {
         "pending": "Pendiente",
         "actifs": "Activos",
@@ -3672,7 +3690,13 @@
         "adherents": "Socios",
         "benevoles": "Voluntarios"
       },
+      "sortDefault": "Orden alfabético",
+      "sortOptions": {
+        "recent": "Últimos añadidos",
+        "oldest": "Primeros añadidos"
+      },
       "noResultsFor": "Sin resultados para «{search}»",
+      "noResultsFiltered": "Ningún socio coincide con estos filtros",
       "noMembers": "Ningún miembro registrado",
       "actions": {
         "view": "Ver ficha",
@@ -3787,6 +3811,7 @@
       "showingRecentCotisations": "Mostrando las {count} cuotas más recientes de {total} en total.",
       "addonPurchasesTitle": "Opciones y donaciones compradas",
       "donationFallbackLabel": "Donación",
+      "addonPurchasePending": "pago pendiente",
       "noParticipation": "Ninguna participación registrada",
       "present": "Presente",
       "showingRecentParticipations": "Mostrando las {count} participaciones más recientes de {total} en total.",

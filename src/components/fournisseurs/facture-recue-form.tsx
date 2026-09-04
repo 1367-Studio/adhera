@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -109,7 +110,13 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label={t("fournisseurs.document.date")} type="date" required error={errors.issueDate?.message} {...register("issueDate")} />
+<Controller
+          name="issueDate"
+          control={control}
+          render={({ field }) => (
+            <DateField label={t("fournisseurs.document.date")} required value={field.value ?? ""} onChange={field.onChange} error={errors.issueDate?.message} />
+          )}
+        />
         <Controller
           name="amount"
           control={control}

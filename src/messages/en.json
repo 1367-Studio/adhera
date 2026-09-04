@@ -11,6 +11,10 @@
     "loading": "Loading...",
     "search": "Search",
     "clearSearch": "Clear search",
+    "datePlaceholder": "Pick a date",
+    "dateTimePlaceholder": "Pick a date and time",
+    "time": "Time",
+    "clear": "Clear",
     "yes": "Yes",
     "no": "No",
     "success": "Success",
@@ -2338,6 +2342,7 @@
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",
       "encaisserButton": "Mark as received",
+      "fromMembershipForm": "Linked to a membership signup — \"{tier}\"",
       "paymentMethod": {
         "especes": "Cash",
         "cheque": "Cheque",
@@ -2807,6 +2812,9 @@
       "paymentMethodCash": "Cash",
       "paymentMethodCheque": "Cheque",
       "paymentMethodTransfer": "Bank transfer",
+      "paymentMethodOnlineOnly": "card payment (offline methods aren't available with an option, product, or installment plan selected)",
+      "installmentsUnavailableWithExtras": "Paying in installments isn't available with an option or product selected.",
+      "offlineDonationSeparateReceiptNotice": "Your donation will be confirmed, and receipted if eligible, separately from your membership fee.",
       "firstNameLabel": "First name",
       "lastNameLabel": "Last name",
       "emailLabel": "Email",
@@ -3662,6 +3670,16 @@
       "allStatuses": "All statuses",
       "allTypes": "All types",
       "allMembership": "Members and volunteers",
+      "filters": {
+        "trigger": "Filters",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "address": "Address",
+        "birthDateFrom": "Born after",
+        "birthDateTo": "Born before",
+        "apply": "Apply",
+        "reset": "Reset"
+      },
       "statusOptions": {
         "pending": "Pending",
         "actifs": "Active",
@@ -3672,7 +3690,13 @@
         "adherents": "Members",
         "benevoles": "Volunteers"
       },
+      "sortDefault": "Alphabetical order",
+      "sortOptions": {
+        "recent": "Most recently added",
+        "oldest": "First added"
+      },
       "noResultsFor": "No results for \"{search}\"",
+      "noResultsFiltered": "No member matches these filters",
       "noMembers": "No members registered",
       "actions": {
         "view": "View profile",
@@ -3787,6 +3811,7 @@
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
       "addonPurchasesTitle": "Options and donations purchased",
       "donationFallbackLabel": "Donation",
+      "addonPurchasePending": "pending payment",
       "noParticipation": "No participation recorded",
       "present": "Present",
       "showingRecentParticipations": "Showing the {count} most recent participations out of {total} total.",

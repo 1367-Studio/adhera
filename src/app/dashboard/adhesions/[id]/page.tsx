@@ -1,6 +1,7 @@
 "use client"
 
 import { MembershipFormFieldsEditor, type MembershipFormFieldsEditorHandle } from "@/components/adhesions/membership-form-fields-editor"
+import { DateTimeField } from "@/components/ui/date-time-field"
 import { MembershipProductsEditor, type MembershipProductsEditorHandle } from "@/components/adhesions/membership-products-editor"
 import { MembershipTiersEditor, type MembershipTiersEditorHandle } from "@/components/adhesions/membership-tiers-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
@@ -925,17 +926,18 @@ export default function MembershipFormDetailPage() {
               />
               {scheduleEnabled && (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField
+                  <DateTimeField
                     label={tSteps("publish.opensAtLabel")}
-                    type="datetime-local"
+                    allowFuture
                     value={opensAt}
-                    onChange={(e) => setOpensAt(e.target.value)}
+                    onChange={setOpensAt}
                   />
-                  <FormField
+                  <DateTimeField
                     label={tSteps("publish.closesAtLabel")}
-                    type="datetime-local"
+                    allowFuture
+                    min={opensAt || undefined}
                     value={closesAt}
-                    onChange={(e) => setClosesAt(e.target.value)}
+                    onChange={setClosesAt}
                   />
                 </div>
               )}

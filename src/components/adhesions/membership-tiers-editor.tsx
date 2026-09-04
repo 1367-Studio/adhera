@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useImperativeHandle, useState, type ReactNode, type Ref } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -62,9 +63,13 @@ export type MembershipTiersEditorHandle = { save: () => Promise<boolean> }
 // so it never lands on top of a field at narrow widths, and it stays clear of the delete
 // button at the other end of the row. Only the grip carries the drag listeners — the card is
 // full of inputs a pointer-down anywhere else must still reach.
-function SortableTierCard({ id, dragLabel, children }: {
+function SortableTierCard({ id, dragLabel, action, children }: {
   id: string
   dragLabel: string
+  // Pinned to its own rail on the right, mirroring the grip on the left. Left inside the
+  // fields' flex flow it would land at the end of whatever line wrapped last, which moves
+  // the delete button around as the form's controls appear and disappear.
+  action?: ReactNode
   children: ReactNode
 }) {
   const { attributes, listeners, setNodeRef, setActivatorNodeRef, transform, transition, isDragging } = useSortable({ id })
@@ -75,7 +80,7 @@ function SortableTierCard({ id, dragLabel, children }: {
       style={{ transform: CSS.Transform.toString(transform), transition }}
       // Lifted above its neighbours while dragging — without it the card being moved slides
       // under the ones it passes over.
-      className={cn("flex items-start gap-2 rounded-md border border-input p-3", isDragging && "relative z-10 opacity-60")}
+      className={cn("flex items-start gap-3 rounded-md border border-input p-4", isDragging && "relative z-10 opacity-60")}
     >
       <Button
         type="button"
@@ -95,6 +100,7 @@ function SortableTierCard({ id, dragLabel, children }: {
         <DotsSixIcon />
       </Button>
       <div className="min-w-0 flex-1">{children}</div>
+      {action && <div className="mt-5 shrink-0">{action}</div>}
     </div>
   )
 }
@@ -317,202 +323,206 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={tiers.map(row => row.key)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {tiers.map(tier => (
-              <SortableTierCard key={tier.key} id={tier.key} dragLabel={t("reorderTier")}>
-                <div className="space-y-2">
-                  <div className="flex items-end gap-3 flex-wrap">
-                    <div className="max-w-sm flex-1 min-w-48">
-                      <FormField
-                        label={t("labelField")}
-                        placeholder={t("labelPlaceholder")}
-                        value={tier.label}
-                        onChange={e => updateTier(tier.key, { label: e.target.value })}
-                      />
-                    </div>
-                    <div className="w-44">
-                      <SelectField
-                        label={t("itemTypeField")}
-                        options={itemTypeOptions}
-                        value={tier.itemType}
-                        onValueChange={v => updateItemType(tier.key, v as ItemType)}
-                      />
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" className="ml-auto" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
-                      <TrashIcon className="size-4" />
-                    </Button>
+              <SortableTierCard
+                key={tier.key}
+                id={tier.key}
+                dragLabel={t("reorderTier")}
+                action={
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
+                    <TrashIcon className="size-4" />
+                  </Button>
+                }
+              >
+                {/* Un seul conteneur flex pour tous les contrôles du tarif. En trois rangées
+                    séparées, flex-wrap ne pouvait faire remonter un champ que dans SA rangée :
+                    « Montant minimum » retombait sous « Libellé » alors que la ligne du dessus
+                    était à moitié vide. Ici tout coule dans la largeur réellement disponible. */}
+                <div className="flex items-end gap-x-4 gap-y-5 flex-wrap">
+                  <div className="max-w-sm flex-1 min-w-48">
+                    <FormField
+                      label={t("labelField")}
+                      placeholder={t("labelPlaceholder")}
+                      value={tier.label}
+                      onChange={e => updateTier(tier.key, { label: e.target.value })}
+                    />
                   </div>
-                  {tier.itemType === "MEMBERSHIP" && (
-                    <div className="flex items-end gap-3 flex-wrap">
-                      <div className="w-48">
-                        <SelectField
-                          label={t("kindField")}
-                          options={kindOptions}
-                          value={tier.kind}
-                          onValueChange={v => updateTier(tier.key, {
-                            kind: v as "ONE_OFF" | "RECURRING",
-                            // Stripe's recurring interval_count caps at 12 (see tiers/route.ts) —
-                            // clamped immediately instead of only surfacing as a save-time toast,
-                            // so the field itself reflects the new constraint right away.
-                            durationMonths: v === "RECURRING" && (tier.durationMonths ?? 0) > 12 ? 12 : tier.durationMonths,
-                            // A fixed end date doesn't fit a subscription that renews forever.
-                            fixedPeriodEnd: v === "RECURRING" ? null : tier.fixedPeriodEnd,
-                            // Already spread over time by nature — see tiers/route.ts.
-                            installmentsAllowed: v === "RECURRING" ? false : tier.installmentsAllowed,
-                          })}
-                          disabled={tier.free}
-                        />
-                      </div>
-                      <div className="w-48">
-                        <SelectField
-                          label={t("membreTypeField")}
-                          options={membreTypeOptions}
-                          value={tier.membreTypeId ?? ""}
-                          onValueChange={v => updateTier(tier.key, { membreTypeId: v || null })}
-                        />
-                      </div>
-                      <div className="w-40">
-                        <FormField
-                          id={`tier-duration-${tier.key}`}
-                          label={t("durationMonthsField")}
-                          type="number"
-                          min={1}
-                          max={tier.kind === "RECURRING" ? 12 : 60}
-                          placeholder={t("durationMonthsPlaceholder")}
-                          value={tier.durationMonths ?? ""}
-                          onChange={e => updateTier(tier.key, {
-                            durationMonths: e.target.value ? Number(e.target.value) : null,
-                            fixedPeriodEnd: e.target.value ? null : tier.fixedPeriodEnd,
-                          })}
-                          disabled={!!tier.fixedPeriodEnd}
-                          hintTooltip={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
-                        />
-                      </div>
-                      {tier.kind === "ONE_OFF" && (
-                        <div className="w-44">
-                          <FormField
-                            id={`tier-fixed-period-end-${tier.key}`}
-                            label={t("fixedPeriodEndField")}
-                            type="date"
-                            value={tier.fixedPeriodEnd ?? ""}
-                            onChange={e => updateTier(tier.key, {
-                              fixedPeriodEnd: e.target.value || null,
-                              durationMonths: e.target.value ? null : tier.durationMonths,
-                            })}
-                            disabled={!!tier.durationMonths}
-                            hintTooltip={t("fixedPeriodEndHint")}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {/* Every control is a direct child of the items-end row so inputs, selects and
-                      checkbox bands (h-9 to match control height) share one bottom line. */}
-                  <div className="flex items-end gap-3 flex-wrap">
-                    <div className="w-40">
-                      <CurrencyField
-                        label={tier.itemType === "DONATION" || tier.freeAmount ? t("minAmountField") : t("amountField")}
-                        value={tier.amount ?? 0}
-                        onChange={v => updateTier(tier.key, { amount: v })}
+                  <div className="w-44">
+                    <SelectField
+                      label={t("itemTypeField")}
+                      options={itemTypeOptions}
+                      value={tier.itemType}
+                      onValueChange={v => updateItemType(tier.key, v as ItemType)}
+                    />
+                  </div>
+                {tier.itemType === "MEMBERSHIP" && (
+                  <>
+                    <div className="w-48">
+                      <SelectField
+                        label={t("kindField")}
+                        options={kindOptions}
+                        value={tier.kind}
+                        onValueChange={v => updateTier(tier.key, {
+                          kind: v as "ONE_OFF" | "RECURRING",
+                          // Stripe's recurring interval_count caps at 12 (see tiers/route.ts) —
+                          // clamped immediately instead of only surfacing as a save-time toast,
+                          // so the field itself reflects the new constraint right away.
+                          durationMonths: v === "RECURRING" && (tier.durationMonths ?? 0) > 12 ? 12 : tier.durationMonths,
+                          // A fixed end date doesn't fit a subscription that renews forever.
+                          fixedPeriodEnd: v === "RECURRING" ? null : tier.fixedPeriodEnd,
+                          // Already spread over time by nature — see tiers/route.ts.
+                          installmentsAllowed: v === "RECURRING" ? false : tier.installmentsAllowed,
+                        })}
                         disabled={tier.free}
                       />
                     </div>
-                    {tier.itemType !== "DONATION" && (
-                      <div className="flex h-9 items-center">
-                        <CheckboxField
-                          label={t("freeAmountField")}
-                          checked={tier.freeAmount}
-                          onChange={e => updateTier(tier.key, {
-                            freeAmount: e.target.checked, free: e.target.checked ? false : tier.free,
-                            // A variable amount has no fixed total to divide into N equal parts.
-                            installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
+                    <div className="w-48">
+                      <SelectField
+                        label={t("membreTypeField")}
+                        options={membreTypeOptions}
+                        value={tier.membreTypeId ?? ""}
+                        onValueChange={v => updateTier(tier.key, { membreTypeId: v || null })}
+                      />
+                    </div>
+                    <div className="w-40">
+                      <FormField
+                        id={`tier-duration-${tier.key}`}
+                        label={t("durationMonthsField")}
+                        type="number"
+                        min={1}
+                        max={tier.kind === "RECURRING" ? 12 : 60}
+                        placeholder={t("durationMonthsPlaceholder")}
+                        value={tier.durationMonths ?? ""}
+                        onChange={e => updateTier(tier.key, {
+                          durationMonths: e.target.value ? Number(e.target.value) : null,
+                          fixedPeriodEnd: e.target.value ? null : tier.fixedPeriodEnd,
+                        })}
+                        disabled={!!tier.fixedPeriodEnd}
+                        hintTooltip={tier.kind === "RECURRING" ? t("durationMonthsHintRecurring") : t("durationMonthsHint")}
+                      />
+                    </div>
+                    {tier.kind === "ONE_OFF" && (
+                      <div className="w-44">
+                        <DateField
+                          id={`tier-fixed-period-end-${tier.key}`}
+                          label={t("fixedPeriodEndField")}
+                          allowFuture
+                          value={tier.fixedPeriodEnd ?? ""}
+                          onChange={v => updateTier(tier.key, {
+                            fixedPeriodEnd: v || null,
+                            durationMonths: v ? null : tier.durationMonths,
                           })}
-                          disabled={tier.free}
+                          disabled={!!tier.durationMonths}
+                          hintTooltip={t("fixedPeriodEndHint")}
                         />
                       </div>
                     )}
-                    {tier.itemType === "MEMBERSHIP" && (
-                      <div className="flex h-9 items-center">
-                        <CheckboxField
-                          label={t("freeField")}
-                          checked={tier.free}
-                          onChange={e => updateTier(tier.key, {
-                            free: e.target.checked,
-                            freeAmount: e.target.checked ? false : tier.freeAmount,
-                            kind: e.target.checked ? "ONE_OFF" : tier.kind,
-                            // No money changes hands on a free tier — nothing to issue a
-                            // tax-deductible receipt for (see tiers/route.ts).
-                            receiptMode: e.target.checked ? "NONE" : tier.receiptMode,
-                            ineligibleAmount: e.target.checked ? null : tier.ineligibleAmount,
-                            installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
-                          })}
-                        />
-                      </div>
-                    )}
-                    {(tier.itemType === "MEMBERSHIP" || tier.itemType === "DONATION") && (
-                      <div className="w-52">
-                        <SelectField
-                          label={t("receiptModeField")}
-                          // Une donation embarquée (itemType DONATION) est toujours à montant
-                          // libre et n'a pas de montant non éligible configurable — seul un tarif
-                          // MEMBERSHIP à montant libre peut être partiellement éligible.
-                          options={tier.itemType === "DONATION" ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
-                          value={tier.receiptMode}
-                          onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
-                          disabled={tier.free}
-                        />
-                      </div>
-                    )}
-                    {tier.itemType === "MEMBERSHIP" && tier.receiptMode === "PARTIAL" && (
-                      <div className="w-40 space-y-1">
-                        <CurrencyField
-                          label={t("ineligibleAmountField")}
-                          value={tier.ineligibleAmount ?? 0}
-                          onChange={v => updateTier(tier.key, { ineligibleAmount: v })}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          {tier.freeAmount ? t("eligibleAmountAutoHint", {
-                            amount: (tier.ineligibleAmount ?? 0).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
-                          }) : t("eligibleAmountPreview", {
-                            amount: Math.max(0, (tier.amount ?? 0) - (tier.ineligibleAmount ?? 0)).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                  </>
+                )}
+                  <div className="w-40">
+                    <CurrencyField
+                      label={tier.itemType === "DONATION" || tier.freeAmount ? t("minAmountField") : t("amountField")}
+                      value={tier.amount ?? 0}
+                      onChange={v => updateTier(tier.key, { amount: v })}
+                      disabled={tier.free}
+                    />
+                  </div>
+                  {tier.itemType !== "DONATION" && (
+                    <div className="flex h-9 items-center">
+                      <CheckboxField
+                        label={t("freeAmountField")}
+                        checked={tier.freeAmount}
+                        onChange={e => updateTier(tier.key, {
+                          freeAmount: e.target.checked, free: e.target.checked ? false : tier.free,
+                          // A variable amount has no fixed total to divide into N equal parts.
+                          installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
+                        })}
+                        disabled={tier.free}
+                      />
+                    </div>
+                  )}
+                  {tier.itemType === "MEMBERSHIP" && (
+                    <div className="flex h-9 items-center">
+                      <CheckboxField
+                        label={t("freeField")}
+                        checked={tier.free}
+                        onChange={e => updateTier(tier.key, {
+                          free: e.target.checked,
+                          freeAmount: e.target.checked ? false : tier.freeAmount,
+                          kind: e.target.checked ? "ONE_OFF" : tier.kind,
+                          // No money changes hands on a free tier — nothing to issue a
+                          // tax-deductible receipt for (see tiers/route.ts).
+                          receiptMode: e.target.checked ? "NONE" : tier.receiptMode,
+                          ineligibleAmount: e.target.checked ? null : tier.ineligibleAmount,
+                          installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
+                        })}
+                      />
+                    </div>
+                  )}
+                  {(tier.itemType === "MEMBERSHIP" || tier.itemType === "DONATION") && (
+                    <div className="w-52">
+                      <SelectField
+                        label={t("receiptModeField")}
+                        // Une donation embarquée (itemType DONATION) est toujours à montant
+                        // libre et n'a pas de montant non éligible configurable — seul un tarif
+                        // MEMBERSHIP à montant libre peut être partiellement éligible.
+                        options={tier.itemType === "DONATION" ? receiptOptions.filter(o => o.value !== "PARTIAL") : receiptOptions}
+                        value={tier.receiptMode}
+                        onValueChange={v => updateTier(tier.key, { receiptMode: v as "NONE" | "FULL" | "PARTIAL" })}
+                        disabled={tier.free}
+                      />
+                    </div>
+                  )}
+                  {tier.itemType === "MEMBERSHIP" && tier.receiptMode === "PARTIAL" && (
+                    <div className="w-40 space-y-1">
+                      <CurrencyField
+                        label={t("ineligibleAmountField")}
+                        value={tier.ineligibleAmount ?? 0}
+                        onChange={v => updateTier(tier.key, { ineligibleAmount: v })}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {tier.freeAmount ? t("eligibleAmountAutoHint", {
+                          amount: (tier.ineligibleAmount ?? 0).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                        }) : t("eligibleAmountPreview", {
+                          amount: Math.max(0, (tier.amount ?? 0) - (tier.ineligibleAmount ?? 0)).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
+                        })}
+                      </p>
+                      {/* Sans minimum configuré, un visiteur payant moins que le montant non
+                          éligible sera bloqué au paiement (voir checkout/route.ts) — mieux vaut
+                          que le gestionnaire le sache en configurant le tarif plutôt qu'en
+                          recevant une réclamation d'un visiteur bloqué. */}
+                      {tier.freeAmount && !tier.amount && !!tier.ineligibleAmount && (
+                        <p className="text-xs text-destructive">
+                          {t("noMinimumWarning", {
+                            amount: tier.ineligibleAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
                           })}
                         </p>
-                        {/* Sans minimum configuré, un visiteur payant moins que le montant non
-                            éligible sera bloqué au paiement (voir checkout/route.ts) — mieux vaut
-                            que le gestionnaire le sache en configurant le tarif plutôt qu'en
-                            recevant une réclamation d'un visiteur bloqué. */}
-                        {tier.freeAmount && !tier.amount && !!tier.ineligibleAmount && (
-                          <p className="text-xs text-destructive">
-                            {t("noMinimumWarning", {
-                              amount: tier.ineligibleAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }),
-                            })}
-                          </p>
-                        )}
-                      </div>
-                    )}
-                    {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && (
-                      <div className="flex h-9 items-center">
-                        <CheckboxField
-                          label={t("installmentsAllowedField")}
-                          checked={tier.installmentsAllowed}
-                          onChange={e => updateTier(tier.key, { installmentsAllowed: e.target.checked, installmentsCount: e.target.checked ? (tier.installmentsCount ?? 3) : tier.installmentsCount })}
-                          disabled={tier.free}
-                        />
-                      </div>
-                    )}
-                    {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && tier.installmentsAllowed && (
-                      <div className="w-28">
-                        <FormField
-                          label={t("installmentsCountField")}
-                          type="number"
-                          min={2}
-                          max={12}
-                          value={tier.installmentsCount ?? 3}
-                          onChange={e => updateTier(tier.key, { installmentsCount: e.target.value ? Number(e.target.value) : null })}
-                        />
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  )}
+                  {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && (
+                    <div className="flex h-9 items-center">
+                      <CheckboxField
+                        label={t("installmentsAllowedField")}
+                        checked={tier.installmentsAllowed}
+                        onChange={e => updateTier(tier.key, { installmentsAllowed: e.target.checked, installmentsCount: e.target.checked ? (tier.installmentsCount ?? 3) : tier.installmentsCount })}
+                        disabled={tier.free}
+                      />
+                    </div>
+                  )}
+                  {tier.itemType === "MEMBERSHIP" && tier.kind === "ONE_OFF" && !tier.freeAmount && tier.installmentsAllowed && (
+                    <div className="w-28">
+                      <FormField
+                        label={t("installmentsCountField")}
+                        type="number"
+                        min={2}
+                        max={12}
+                        value={tier.installmentsCount ?? 3}
+                        onChange={e => updateTier(tier.key, { installmentsCount: e.target.value ? Number(e.target.value) : null })}
+                      />
+                    </div>
+                  )}
                 </div>
               </SortableTierCard>
             ))}

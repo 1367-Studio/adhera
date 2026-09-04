@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
@@ -154,12 +155,12 @@ export default function NouveauSondagePage() {
 
             <div className="space-y-1.5">
               <Label htmlFor="deadline">{t("sondages.newSurveyPage.deadlineLabel")} <span className="text-muted-foreground font-normal">{t("sondages.newSurveyPage.optional")}</span></Label>
-              <Input
+              <DateField
                 id="deadline"
-                type="date"
+                allowFuture
                 min={todayStr()}
                 value={deadline}
-                onChange={e => setDeadline(e.target.value)}
+                onChange={setDeadline}
               />
             </div>
 

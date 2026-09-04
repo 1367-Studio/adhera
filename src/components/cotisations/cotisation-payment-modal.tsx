@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useAddCotisationPayment } from "@/hooks/use-cotisations"
@@ -68,7 +69,7 @@ export function CotisationPaymentModal({ cotisationId, remaining, suggestedAmoun
           <p className="text-xs text-muted-foreground">{t("cotisations.payment.remainingBalance", { amount: `${remaining.toFixed(2)} €` })}</p>
         </div>
         <SelectField label={t("cotisations.payment.method")} required options={methodOptions} value={method} onValueChange={(v) => setMethod(v as Method)} />
-        <FormField label={t("cotisations.payment.date")} type="date" value={paidAt} onChange={e => setPaidAt(e.target.value)} />
+        <DateField label={t("cotisations.payment.date")} value={paidAt} onChange={setPaidAt} />
         <FormField label={t("cotisations.payment.note")} placeholder={t("cotisations.payment.notePlaceholder")} value={note} onChange={e => setNote(e.target.value)} />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { DateField } from "@/components/ui/date-field"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useAddFacturePayment } from "@/hooks/use-factures"
@@ -61,7 +62,7 @@ export function FacturePaymentModal({ factureId, remaining, open, onOpenChange }
           <p className="text-xs text-muted-foreground">{t("factures.payment.remainingBalance", { amount: `${remaining.toFixed(2)} €` })}</p>
         </div>
         <SelectField label={t("factures.payment.method")} required options={methodOptions} value={method} onValueChange={setMethod} />
-        <FormField label={t("factures.payment.date")} type="date" value={paidAt} onChange={e => setPaidAt(e.target.value)} />
+        <DateField label={t("factures.payment.date")} value={paidAt} onChange={setPaidAt} />
         <FormField label={t("factures.payment.note")} placeholder={t("factures.payment.notePlaceholder")} value={note} onChange={e => setNote(e.target.value)} />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>

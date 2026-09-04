@@ -1,6 +1,7 @@
 "use client"
 
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
+import { DateField } from "@/components/ui/date-field"
 import { MembreForm } from "@/components/membres/membre-form"
 import { MembresStatsModal, type MembresStats } from "@/components/membres/membres-stats-modal"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
@@ -11,15 +12,17 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FilterSelect } from "@/components/ui/filter-select"
+import { FormField } from "@/components/ui/form-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Modal } from "@/components/ui/modal"
 import { PageHeader } from "@/components/ui/page-header"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre } from "@/hooks/use-membres"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre, membresFilterParams, type MembresFilters } from "@/hooks/use-membres"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
@@ -27,7 +30,7 @@ import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import type { MembreCreateInput, MembreInput } from "@/lib/schemas"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useMembershipFillForms } from "@/hooks/use-membership-tier-options"
-import { ArrowsDownUpIcon, CaretDownIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowsDownUpIcon, CaretDownIcon, FunnelSimpleIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -90,6 +93,17 @@ function getRoleOptions(t: Translator): { value: UserRole; label: string }[] {
     { value: "ADMIN",      label: t("membres.form.role.admin")      },
   ]
 }
+
+// The five per-field filters that live behind the "Filtres" popover. Kept out of the toolbar
+// itself: eight controls in a row stops being a toolbar and starts being a form.
+type AdvancedFilters = {
+  firstName?:     string
+  lastName?:      string
+  address?:       string
+  birthDateFrom?: string
+  birthDateTo?:   string
+}
+const EMPTY_ADVANCED: AdvancedFilters = {}
 
 function getStatusBadge(t: Translator): Record<Membre["status"], { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
   return {
@@ -166,6 +180,14 @@ export function MembresView() {
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [typeFilter, setTypeFilter]     = useState<string>("")
   const [adherentFilter, setAdherentFilter] = useState<string>("")
+  const [sortFilter, setSortFilter]         = useState<string>("")
+  // Applied vs draft: the popover's inputs edit `advancedDraft`, and only "Appliquer" copies
+  // it into `advanced`, which is what the query reads. Committing on each keystroke would
+  // mean a request per character across five fields — and a date input fires onChange on
+  // partial, meaningless dates while the user is still typing the year.
+  const [advanced,      setAdvanced]      = useState<AdvancedFilters>(EMPTY_ADVANCED)
+  const [advancedDraft, setAdvancedDraft] = useState<AdvancedFilters>(EMPTY_ADVANCED)
+  const [filtersOpen,   setFiltersOpen]   = useState(false)
   const [createOpen, setCreateOpen]       = useState(false)
   const [editTarget, setEditTarget]       = useState<Membre | null>(null)
   const [deleteTarget, setDeleteTarget]   = useState<Membre | null>(null)
@@ -178,12 +200,31 @@ export function MembresView() {
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
+  const filters: MembresFilters = {
+    search:   search        || undefined,
+    status:   statusFilter  || undefined,
+    typeId:   typeFilter    || undefined,
+    adherent: adherentFilter || undefined,
+    sort:     sortFilter     || undefined,
+    ...advanced,
+  }
+  const activeAdvancedCount = Object.values(advanced).filter(Boolean).length
+  // `sortFilter` reste dehors : il réordonne la liste, il ne la restreint jamais. Le compter
+  // ferait dire « Aucun membre ne correspond aux filtres » à une association réellement vide.
+  const hasActiveFilters    = !!(statusFilter || typeFilter || adherentFilter) || activeAdvancedCount > 0
+
+  function applyAdvanced(next: AdvancedFilters) {
+    setAdvanced(next)
+    setAdvancedDraft(next)
+    setPage(1)
+    setFiltersOpen(false)
+  }
+
+  // Built from the very same filters the list is querying — previously this dropped the
+  // membership filter, so exporting a list narrowed to "Adhérents" silently handed back
+  // every member.
   function buildExportParams(){
-    const params = new URLSearchParams()
-    if (search)       params.set("search", search)
-    if (statusFilter) params.set("status", statusFilter)
-    if (typeFilter)   params.set("typeId", typeFilter)
-    return params
+    return membresFilterParams(filters)
   }
 
   function handleExportXlsx() {
@@ -203,7 +244,7 @@ export function MembresView() {
   }
 
   const { data: types = [] } = useMembreTypes()
-  const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, search || undefined, statusFilter || undefined, typeFilter || undefined, adherentFilter || undefined)
+  const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, filters)
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
     queryFn:  () => fetch("/api/membres/stats").then(r => r.json()),
@@ -553,6 +594,74 @@ export function MembresView() {
             width="w-40"
           />
         )}
+
+        <FilterSelect
+          value={sortFilter}
+          onValueChange={v => { setSortFilter(v); setPage(1) }}
+          options={[
+            { value: "recent", label: t("membres.view.sortOptions.recent") },
+            { value: "oldest", label: t("membres.view.sortOptions.oldest") },
+          ]}
+          placeholder={t("membres.view.sortDefault")}
+          width="w-44"
+        />
+
+        <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+          <PopoverTrigger
+            render={
+              <Button type="button" variant="outline">
+                <FunnelSimpleIcon className="size-4" />
+                {t("membres.view.filters.trigger")}
+                {activeAdvancedCount > 0 && (
+                  <span className="text-muted-foreground">· {activeAdvancedCount}</span>
+                )}
+              </Button>
+            }
+          />
+          <PopoverContent align="start" className="w-80 gap-3 p-3">
+            <FormField
+              label={t("membres.view.filters.firstName")}
+              value={advancedDraft.firstName ?? ""}
+              onChange={e => setAdvancedDraft(d => ({ ...d, firstName: e.target.value }))}
+            />
+            <FormField
+              label={t("membres.view.filters.lastName")}
+              value={advancedDraft.lastName ?? ""}
+              onChange={e => setAdvancedDraft(d => ({ ...d, lastName: e.target.value }))}
+            />
+            <FormField
+              label={t("membres.view.filters.address")}
+              value={advancedDraft.address ?? ""}
+              onChange={e => setAdvancedDraft(d => ({ ...d, address: e.target.value }))}
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <DateField
+                label={t("membres.view.filters.birthDateFrom")}
+                value={advancedDraft.birthDateFrom ?? ""}
+                onChange={v => setAdvancedDraft(d => ({ ...d, birthDateFrom: v }))}
+              />
+              <DateField
+                label={t("membres.view.filters.birthDateTo")}
+                value={advancedDraft.birthDateTo ?? ""}
+                onChange={v => setAdvancedDraft(d => ({ ...d, birthDateTo: v }))}
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => applyAdvanced(EMPTY_ADVANCED)}
+                disabled={activeAdvancedCount === 0 && !Object.values(advancedDraft).some(Boolean)}
+              >
+                {t("membres.view.filters.reset")}
+              </Button>
+              <Button type="button" size="sm" onClick={() => applyAdvanced(advancedDraft)}>
+                {t("membres.view.filters.apply")}
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <DataTable
@@ -560,7 +669,13 @@ export function MembresView() {
         data={membres}
         loading={isLoading}
         keyExtractor={(m) => m.id}
-        empty={search ? t("membres.view.noResultsFor", { search }) : t("membres.view.noMembers")}
+        // "Aucun membre enregistré" is only true when nothing is filtering the list — said
+        // under an active filter it reads as "your association has no members at all".
+        empty={
+          search              ? t("membres.view.noResultsFor", { search })
+          : hasActiveFilters  ? t("membres.view.noResultsFiltered")
+          :                     t("membres.view.noMembers")
+        }
         onRowClick={(m) => router.push(`/dashboard/membres/${m.id}`)}
         pagination={result ? {
           page:         result.page,
@@ -575,7 +690,7 @@ export function MembresView() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         title={t("membres.actions.add")}
-        size="lg"
+        size="4xl"
         dismissable={false}
       >
         <MembreForm
@@ -591,7 +706,7 @@ export function MembresView() {
         open={!!editTarget}
         onOpenChange={(open) => !open && setEditTarget(null)}
         title={t("membres.actions.edit")}
-        size="lg"
+        size="4xl"
         dismissable={false}
       >
         <MembreForm

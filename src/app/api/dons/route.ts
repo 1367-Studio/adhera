@@ -59,7 +59,14 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const [data, total, aggregate] = await Promise.all([
     prisma.don.findMany({
       where, orderBy, skip, take: limit,
-      include: { donationForm: { select: { id: true, title: true } } },
+      include: {
+        donationForm: { select: { id: true, title: true } },
+        // Only set for a don embarqué on a MembershipForm signup (see Don.membershipAddonTierId)
+        // — lets the pending-encaissement table point back at the member and the tier that
+        // produced it, since that member also has an independent Cotisation pending its own
+        // encaissement for the same physical payment (see checkout/route.ts's offline branch).
+        membershipAddonTier: { select: { label: true } },
+      },
     }),
     prisma.don.count({ where }),
     prisma.don.aggregate({ where: aggregateWhere, _sum: { amount: true }, _count: { id: true } }),

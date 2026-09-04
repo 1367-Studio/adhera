@@ -11,6 +11,10 @@
     "loading": "Chargement...",
     "search": "Rechercher",
     "clearSearch": "Effacer la recherche",
+    "datePlaceholder": "Choisir une date",
+    "dateTimePlaceholder": "Choisir une date et une heure",
+    "time": "Heure",
+    "clear": "Effacer",
     "yes": "Oui",
     "no": "Non",
     "success": "Succès",
@@ -2338,6 +2342,7 @@
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",
       "encaisserButton": "Encaisser",
+      "fromMembershipForm": "Don lié à une adhésion — « {tier} »",
       "paymentMethod": {
         "especes": "Espèces",
         "cheque": "Chèque",
@@ -2807,6 +2812,9 @@
       "paymentMethodCash": "Espèces",
       "paymentMethodCheque": "Chèque",
       "paymentMethodTransfer": "Virement",
+      "paymentMethodOnlineOnly": "carte bancaire (les moyens hors ligne ne sont pas disponibles avec une option, un produit ou un paiement en plusieurs fois)",
+      "installmentsUnavailableWithExtras": "Le paiement en plusieurs fois n'est pas disponible avec une option ou un produit sélectionné.",
+      "offlineDonationSeparateReceiptNotice": "Votre don sera confirmé et, le cas échéant, reçu séparément de votre cotisation.",
       "firstNameLabel": "Prénom",
       "lastNameLabel": "Nom",
       "emailLabel": "E-mail",
@@ -3662,6 +3670,16 @@
       "allStatuses": "Tous les statuts",
       "allTypes": "Tous les types",
       "allMembership": "Adhérents et bénévoles",
+      "filters": {
+        "trigger": "Filtres",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "address": "Adresse",
+        "birthDateFrom": "Né(e) après le",
+        "birthDateTo": "Né(e) avant le",
+        "apply": "Appliquer",
+        "reset": "Réinitialiser"
+      },
       "statusOptions": {
         "pending": "En attente",
         "actifs": "Actifs",
@@ -3672,7 +3690,13 @@
         "adherents": "Adhérents",
         "benevoles": "Bénévoles"
       },
+      "sortDefault": "Ordre alphabétique",
+      "sortOptions": {
+        "recent": "Derniers ajoutés",
+        "oldest": "Premiers ajoutés"
+      },
       "noResultsFor": "Aucun résultat pour « {search} »",
+      "noResultsFiltered": "Aucun membre ne correspond aux filtres",
       "noMembers": "Aucun membre enregistré",
       "actions": {
         "view": "Voir la fiche",
@@ -3787,6 +3811,7 @@
       "showingRecentCotisations": "Affichage des {count} cotisations les plus récentes sur {total} au total.",
       "addonPurchasesTitle": "Options et donations achetées",
       "donationFallbackLabel": "Donation",
+      "addonPurchasePending": "en attente d'encaissement",
       "noParticipation": "Aucune participation enregistrée",
       "present": "Présent",
       "showingRecentParticipations": "Affichage des {count} participations les plus récentes sur {total} au total.",
