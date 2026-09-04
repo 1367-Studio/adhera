@@ -49,3 +49,4 @@ seed-full-demo.ts
 
 # MediaPipe WASM copied out of node_modules by scripts/copy-mediapipe-assets.mjs
 /public/mediapipe/wasm
+.env*

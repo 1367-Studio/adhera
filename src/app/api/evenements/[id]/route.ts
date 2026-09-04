@@ -38,7 +38,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, ...rest } = parsed.data
+  const {
+    date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail,
+    contactEmail, contactPhone,
+    opensAt, closesAt, offlineInstructions, confirmationMessage, conditions, attachments, ...rest
+  } = parsed.data
 
   if (capacity != null) {
     const reserved = await prisma.participation.count({
@@ -66,6 +70,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(price       !== undefined ? { price:    price    ?? null }       : {}),
       ...(capacity    !== undefined ? { capacity: capacity ?? null }       : {}),
       ...(adminNotificationEmail !== undefined ? { adminNotificationEmail: adminNotificationEmail || null } : {}),
+      ...(contactEmail !== undefined ? { contactEmail: contactEmail || null } : {}),
+      ...(contactPhone !== undefined ? { contactPhone: contactPhone || null } : {}),
+      ...(opensAt  !== undefined ? { opensAt:  opensAt  ? new Date(opensAt)  : null } : {}),
+      ...(closesAt !== undefined ? { closesAt: closesAt ? new Date(closesAt) : null } : {}),
+      ...(offlineInstructions !== undefined ? { offlineInstructions: offlineInstructions || null } : {}),
+      ...(confirmationMessage !== undefined ? { confirmationMessage: confirmationMessage || null } : {}),
+      ...(conditions  !== undefined ? { conditions:  conditions || null } : {}),
+      ...(attachments !== undefined ? { attachments: attachments ?? undefined } : {}),
     },
   })
   await revalidatePublicSiteFor(associationId)

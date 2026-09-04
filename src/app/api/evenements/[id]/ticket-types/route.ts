@@ -43,6 +43,7 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   let ticketTypes
+  let affectedDiscountCodes: string[] = []
   try {
     ticketTypes = await prisma.$transaction(async (tx) => {
       // Upsert by id (scoped to this event) instead of delete-all/recreate-all — same reasoning
@@ -60,18 +61,34 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         // elsewhere in this codebase, rather than letting it happen unnoticed.
         const inUse = await tx.participation.count({ where: { ticketTypeId: { in: toDelete } } })
         if (inUse > 0) throw new TicketTypeInUseError()
+        // Un code promo ciblant une tarif supprimée ne doit pas bloquer la suppression (voir
+        // le commentaire de ticketTypeIds dans schema.prisma — le code cesse juste de
+        // s'appliquer), mais l'admin doit au moins le savoir plutôt que le découvrir plus tard.
+        const affected = await tx.evenementDiscountCode.findMany({
+          where:  { evenementId: id, ticketTypeIds: { hasSome: toDelete } },
+          select: { code: true },
+        })
+        affectedDiscountCodes = affected.map(d => d.code)
         await tx.evenementTicketType.deleteMany({ where: { id: { in: toDelete } } })
       }
 
       for (const [order, f] of parsed.data.entries()) {
+        const ineligibleAmount = f.receiptMode === "PARTIAL" ? (f.ineligibleAmount ?? null) : null
+        const priceBeforeDiscount = f.priceBeforeDiscount ?? null
+        // Une tarif DONATION n'a jamais de capacité propre — même contrainte que
+        // MembershipTier, déjà validée côté Zod, appliquée ici aussi pour ne jamais dépendre
+        // uniquement du client.
+        const capacity = f.itemType === "DONATION" ? null : (f.capacity ?? null)
+        const opensAt  = f.opensAt  ? new Date(f.opensAt)  : null
+        const closesAt = f.closesAt ? new Date(f.closesAt) : null
         if (f.id && existingIds.has(f.id)) {
           await tx.evenementTicketType.update({
             where: { id: f.id },
-            data:  { label: f.label, price: f.price, capacity: f.capacity ?? null, order },
+            data:  { itemType: f.itemType, label: f.label, price: f.price, priceBeforeDiscount, capacity, order, receiptMode: f.receiptMode, ineligibleAmount, active: f.active, opensAt, closesAt },
           })
         } else {
           await tx.evenementTicketType.create({
-            data: { evenementId: id, label: f.label, price: f.price, capacity: f.capacity ?? null, order },
+            data: { evenementId: id, itemType: f.itemType, label: f.label, price: f.price, priceBeforeDiscount, capacity, order, receiptMode: f.receiptMode, ineligibleAmount, active: f.active, opensAt, closesAt },
           })
         }
       }
@@ -91,5 +108,5 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     label: evenement.title, metadata: { ticketTypesCount: ticketTypes.length },
   })
 
-  return NextResponse.json(ticketTypes)
+  return NextResponse.json({ ticketTypes, affectedDiscountCodes })
 }, { roles: MANAGERS, module: "evenements" })

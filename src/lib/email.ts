@@ -260,6 +260,53 @@ export function rsvpConfirmationEmail(p: {
   }
 }
 
+// Distinct from rsvpConfirmationEmail on purpose — a waitlisted registrant never got a real
+// seat (no QR ticket to show, and no payment was taken), so the wording and layout can't
+// just be a copy with a different heading. See Evenement.waitlistEnabled.
+export function waitlistConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  eventLocation:   string | null
+  portalUrl:       string
+  // Only set for public/guest registrations (no portal account to leave the waitlist
+  // from) — see rsvpConfirmationEmail's own cancelUrl comment above.
+  cancelUrl?:      string
+  branding?:       EmailBranding
+}) {
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Vous êtes sur liste d'attente</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>l'événement suivant est complet. Votre demande a été ajoutée à la liste d'attente
+      — nous vous contacterons si une place se libère.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Événement</span>
+        <span style="font-size:15px;font-weight:600;">${p.eventTitle}</span>
+      </td></tr>
+      <tr><td style="padding-bottom:${p.eventLocation ? "10px" : "0"};">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date</span>
+        <span style="font-size:14px;">${dateStr} à ${timeStr}</span>
+      </td></tr>
+      ${p.eventLocation ? `<tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Lieu</span>
+        <span style="font-size:14px;">${p.eventLocation}</span>
+      </td></tr>` : ""}
+    </table>
+    ${btn("Voir l'événement", p.portalUrl)}
+    ${p.cancelUrl ? `<p style="margin:16px 0 0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Quitter la liste d'attente</a>.</p>` : ""}`
+  return {
+    to:      p.email,
+    subject: `Liste d'attente — ${p.eventTitle}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function sondageInvitationEmail(p: {
   firstName:       string
   email:           string

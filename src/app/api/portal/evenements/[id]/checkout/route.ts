@@ -7,6 +7,9 @@ import { z } from "zod"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { sendEmail } from "@/lib/mail"
+import { waitlistConfirmationEmail } from "@/lib/email"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 const MAX_QUANTITY  = 10
 
@@ -38,7 +41,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   const { quantity, guests } = parsed.data
 
   const evenement = await prisma.evenement.findFirst({
-    where:   { id: evenementId, associationId: ctx.associationId },
+    where:   { id: evenementId, associationId: ctx.associationId, status: "PUBLISHED" },
     include: { association: { select: { stripeConnectId: true, name: true, slug: true } }, ticketTypes: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -48,7 +51,10 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   // Ticket types (when the admin defined any) replace the flat price entirely — a fully
   // free selection (every seat on a 0€ tier) is legitimate here and confirmed without
   // Stripe below, so this early guard only applies to the untiered flat-price case.
-  const ticketTypes     = evenement.ticketTypes
+  // Inactive tiers (see EvenementTicketType.active) are invisible here just like on the
+  // public form — same convention as inscription/route.ts's realTicketTypes filter.
+  const now             = new Date()
+  const ticketTypes     = evenement.ticketTypes.filter(tt => tt.active)
   const hasTicketTypes  = ticketTypes.length > 0
   if (!hasTicketTypes && (evenement.price == null || Number(evenement.price) === 0))
     return NextResponse.json({ error: "Événement gratuit" }, { status: 422 })
@@ -73,6 +79,15 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   })
   if (hasTicketTypes && guestNames.some(g => !g.ticketType))
     return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
+
+  // Own sale window per tier, same convention as the public form (inscription/route.ts).
+  for (const tt of [selfTicketType, ...guestNames.map(g => g.ticketType)]) {
+    if (!tt) continue
+    if (tt.opensAt && tt.opensAt > now)
+      return NextResponse.json({ error: "Ce tarif n'est pas encore ouvert.", code: "TICKET_TYPE_NOT_OPEN" }, { status: 422 })
+    if (tt.closesAt && tt.closesAt < now)
+      return NextResponse.json({ error: "Ce tarif n'est plus disponible.", code: "TICKET_TYPE_CLOSED" }, { status: 422 })
+  }
 
   const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -109,9 +124,9 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   // capacity check below and the Stripe line items further down share the same list.
   const seatTicketTypes = hasTicketTypes ? [selfTicketType, ...guestNames.map(g => g.ticketType)] : []
 
-  let ticketIds: string[]
+  let result: { ids: string[]; waitlisted: boolean }
   try {
-    ticketIds = await prisma.$transaction(async (tx) => {
+    result = await prisma.$transaction(async (tx) => {
       if (evenement.capacity != null || ticketTypes.some(tt => tt.capacity != null)) {
         // Serialize concurrent checkouts for this event so the occupancy count below
         // can't race with another request also counting seats before either commits —
@@ -132,7 +147,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
       } else {
         const created = await tx.participation.create({
           data: {
-            membreId: membre.id, evenementId, orderId, rsvp: "CONFIRME",
+            associationId: ctx.associationId, membreId: membre.id, evenementId, orderId, rsvp: "CONFIRME",
             firstName: membre.firstName, lastName: membre.lastName, email: membre.email,
             ticketTypeId: selfTicketType?.id ?? null,
             ticketToken:  randomBytes(20).toString("hex"),
@@ -153,7 +168,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
           companionIds.push(existingCompanions[i].id)
         } else {
           const created = await tx.participation.create({
-            data:   { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null, ticketToken: randomBytes(20).toString("hex") },
+            data:   { associationId: ctx.associationId, evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp: "CONFIRME", ticketTypeId: g.ticketType?.id ?? null, ticketToken: randomBytes(20).toString("hex") },
             select: { id: true },
           })
           companionIds.push(created.id)
@@ -168,11 +183,19 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         }
       }
 
+      // Same all-or-nothing reasoning as the public form's own group bookings — a group
+      // checkout has no single seat to bump to the waitlist, so if it doesn't fit, the whole
+      // order goes to the waitlist together.
+      let isWaitlisted = false
+      const ids = [selfId, ...companionIds]
       if (evenement.capacity != null) {
         const occupied = await tx.participation.count({
           where: { evenementId, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
         })
-        if (occupied > evenement.capacity) throw new EventFullError()
+        if (occupied > evenement.capacity) {
+          if (!evenement.waitlistEnabled) throw new EventFullError()
+          isWaitlisted = true
+        }
       }
 
       // Same post-write count-and-check per tier actually used by this order — self-
@@ -180,7 +203,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
       // the write, not a manual pre/post delta. One groupBy for every capped tier used
       // this request instead of a query per tier, to shorten the FOR UPDATE lock hold.
       const cappedTiers = [...new Set(seatTicketTypes.filter((t): t is NonNullable<typeof t> => t != null && t.capacity != null))]
-      if (cappedTiers.length) {
+      if (!isWaitlisted && cappedTiers.length) {
         const occupancy = await tx.participation.groupBy({
           by:     ["ticketTypeId"],
           where:  { evenementId, ticketTypeId: { in: cappedTiers.map(tt => tt.id) }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
@@ -188,11 +211,18 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         })
         const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
         for (const tt of cappedTiers) {
-          if ((occupiedMap.get(tt.id) ?? 0) > tt.capacity!) throw new TicketTypeFullError(tt.label)
+          if ((occupiedMap.get(tt.id) ?? 0) > tt.capacity!) {
+            if (!evenement.waitlistEnabled) throw new TicketTypeFullError(tt.label)
+            isWaitlisted = true
+          }
         }
       }
 
-      return [selfId, ...companionIds]
+      if (isWaitlisted) {
+        await tx.participation.updateMany({ where: { id: { in: ids } }, data: { rsvp: "LISTA_ESPERA" } })
+      }
+
+      return { ids, waitlisted: isWaitlisted }
     })
   } catch (err) {
     if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
@@ -204,6 +234,32 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     }
     throw err
   }
+
+  if (result.waitlisted) {
+    await writeActivityLog({
+      associationId: ctx.associationId, actorId: ctx.userId, action: "PARTICIPATION_WAITLISTED",
+      entity: "Participation", entityId: result.ids[0], label: evenement.title, metadata: { quantity },
+    })
+    const assoc = await prisma.association.findUnique({ where: { id: ctx.associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } })
+    if (assoc) {
+      const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
+      const recipients = [
+        { firstName: membre.firstName, email: membre.email },
+        ...guestNames.filter(g => g.email).map(g => ({ firstName: g.firstName, email: g.email! })),
+      ]
+      await Promise.all(recipients.filter(r => r.email).map(r => sendEmail(waitlistConfirmationEmail({
+        firstName: r.firstName, email: r.email!,
+        associationName: assoc.name,
+        eventTitle:      evenement.title,
+        eventDate:       evenement.date,
+        eventLocation:   evenement.location,
+        portalUrl,
+        branding: resolveDocumentBranding(assoc),
+      }), { associationId: ctx.associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: result.ids[0] }).catch(() => {})))
+    }
+    return NextResponse.json({ waitlisted: true })
+  }
+  const ticketIds = result.ids
 
   const slug = evenement.association.slug
   const successUrl = `${APP_URL}/portal/${slug}/evenements?ticket=success&eid=${evenementId}`

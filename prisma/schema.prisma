@@ -38,6 +38,11 @@ enum RsvpStatus {
   PROVAVEL
   INCERTO
   ABSENT
+  // Événement (ou tarif) complet au moment de l'inscription, avec Evenement.waitlistEnabled
+  // actif — jamais compté dans les requêtes d'occupation existantes (qui ne filtrent que sur
+  // CONFIRME), donc automatiquement hors capacité sans changement de requête. Ne passe jamais
+  // par Stripe tant qu'elle reste à ce statut — voir inscription/route.ts.
+  LISTA_ESPERA
 }
 
 enum SubscriptionStatus {
@@ -705,7 +710,7 @@ model Membre {
 }
 
 model Evenement {
-  id                     String    @id @default(cuid())
+  id                     String                    @id @default(cuid())
   title                  String
   description            String?
   imageUrl               String?
@@ -714,18 +719,64 @@ model Evenement {
   location               String?
   lat                    Float?
   lng                    Float?
-  price                  Decimal?  @db.Decimal(10, 2)
+  price                  Decimal?                  @db.Decimal(10, 2)
   capacity               Int?
   // Optionnel — un admin doit explicitement le renseigner pour recevoir un email à chaque
   // inscription à cet événement (voir notifyEventRegistration). Miroir exact de
   // MembershipForm.adminNotificationEmail. Sans ce champ, une inscription ne produit qu'une
   // notification in-app pour les gestionnaires — jamais rien d'envoyé par email.
   adminNotificationEmail String?
-  qrToken                String?   @unique
+  // Contact affiché aux visiteurs sur la page publique de l'événement — jamais utilisé pour
+  // recevoir quoi que ce soit en interne, contrairement à adminNotificationEmail ci-dessus.
+  // Miroir exact de MembershipForm/DonationForm.contactEmail/contactPhone.
+  contactEmail           String?
+  contactPhone           String?
+  qrToken                String?                   @unique
   qrExpiresAt            DateTime?
+  // Étape "Publication" du wizard (miroir MembershipForm.status) — DRAFT tant que l'admin
+  // configure l'événement, PUBLISHED une fois partagé, ARCHIVED pour le retirer sans supprimer
+  // l'historique des inscriptions. Backfill à PUBLISHED pour toute ligne créée avant ce champ :
+  // tout événement existant était déjà public via son lien depuis toujours.
+  status                 EvenementStatus           @default(DRAFT)
+  // Étape "Paiement" — mêmes 3 méthodes hors-ligne que MembershipForm/DonationForm, réutilisant
+  // Participation.paymentMethod/ticketPaidAt comme suivi d'encaissement (voir ce champ).
+  allowCash              Boolean                   @default(false)
+  allowCheque            Boolean                   @default(false)
+  allowTransfer          Boolean                   @default(false)
+  offlineInstructions    String?
+  confirmationMessage    String?
+  // Étape "Formulaire" — matrice d'exigence pour les champs non-custom, miroir de
+  // MembershipForm.fieldPhone/fieldAddress/fieldBirthDate/fieldGender/fieldMobile. Backfill
+  // de fieldPhone/fieldAddress à OPTIONAL (pas HIDDEN) : ces deux champs sont déjà affichés-
+  // mais-facultatifs sur tout événement existant — OPTIONAL est la seule valeur qui préserve
+  // ce comportement à l'identique. Les 3 nouveaux (birthDate/gender/mobile) n'ont jamais été
+  // collectés avant ce champ, donc HIDDEN (leur default) est le backfill correct pour eux.
+  fieldPhone             EvenementFieldRequirement @default(OPTIONAL)
+  fieldAddress           EvenementFieldRequirement @default(OPTIONAL)
+  fieldBirthDate         EvenementFieldRequirement @default(HIDDEN)
+  fieldGender            EvenementFieldRequirement @default(HIDDEN)
+  fieldMobile            EvenementFieldRequirement @default(HIDDEN)
+  // Étape "Publication" — miroir MembershipForm.visibility/opensAt/closesAt, sans SITE : la
+  // section "événements" du site liste déjà tout événement publié automatiquement par date,
+  // sans binding par événement (contrairement à un MembershipForm qui choisit sa propre
+  // SiteSection) — voir Decisão de design #2 du plan.
+  visibility             EvenementVisibility       @default(LINK)
+  opensAt                DateTime?
+  closesAt               DateTime?
+  // Miroir exact de MembershipForm/DonationForm.conditions/attachments/requireCguvSignature —
+  // absents de tout événement existant avant ce champ (backfill : conditions/attachments
+  // null, requireCguvSignature false, son default de colonne = comportement identique à avant).
+  conditions             String? // HTML riche
+  attachments            Json? // [{ url, filename, size }]
+  requireCguvSignature   Boolean                   @default(false)
+  // Opt-in — false par défaut : certains organisateurs veulent un blocage dur à la capacité,
+  // pas une file d'attente. Quand actif, une inscription qui dépasserait la capacité (de
+  // l'événement ou d'une tarif) est acceptée avec rsvp = LISTA_ESPERA au lieu d'être rejetée
+  // — voir inscription/route.ts.
+  waitlistEnabled        Boolean                   @default(false)
   associationId          String
-  createdAt              DateTime  @default(now())
-  updatedAt              DateTime  @updatedAt
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
 
   association    Association            @relation(fields: [associationId], references: [id])
   participations Participation[]
@@ -734,13 +785,60 @@ model Evenement {
   ticketTypes    EvenementTicketType[]
   dons           Don[]
   avis           EvenementAvis[]
+  products       EvenementProduct[]
+  discountCodes  EvenementDiscountCode[]
 
   @@index([associationId, date])
+  @@index([associationId, status])
+}
+
+enum EvenementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EvenementVisibility {
+  LINK
+  PRIVATE
+}
+
+enum EvenementFieldRequirement {
+  HIDDEN
+  OPTIONAL
+  REQUIRED
+}
+
+// Miroir de DonPaymentMethod/paymentMethod du Don — null veut dire Stripe (toute ligne
+// existante avant ce champ, et toute ligne payée en ligne pour toujours) ; une valeur explicite
+// veut dire que le participant a choisi un règlement hors-ligne à l'inscription, en attente
+// d'encaissement (Participation.ticketPaidAt reste null jusqu'à confirmation admin).
+enum EvenementPaymentMethod {
+  STRIPE
+  ESPECES
+  CHEQUE
+  VIREMENT
 }
 
 enum EvenementFieldType {
   TEXT
   NUMBER
+  // Uploaded via the anonymous, event-scoped route in
+  // src/app/api/public/[slug]/evenements/[id]/upload/route.ts — the answer stored in
+  // Participation.answers is the resulting R2 URL, not raw file data.
+  FILE
+  LONG_TEXT
+  DATE
+  // SELECT/RADIO/CHECKBOX_MULTI all read their choice list from `options` below — same
+  // storage, different input widget. SELECT/RADIO answers are a single string (must be one
+  // of `options`); CHECKBOX_MULTI answers are a JSON string array (each entry must be one
+  // of `options`) — see Participation.answers's own comment for the encoding.
+  SELECT
+  RADIO
+  CHECKBOX_MULTI
+  // Answer stored as the literal string "true"/"false" — never "1"/"" — so it reads
+  // unambiguously in admin display/exports.
+  BOOLEAN
 }
 
 // Admin-defined extra fields on an event's public registration form (name/type/order),
@@ -752,6 +850,9 @@ model EvenementCustomField {
   label       String
   required    Boolean            @default(false)
   order       Int
+  // Choice list for SELECT/RADIO/CHECKBOX_MULTI — a plain string array, e.g. ["S","M","L"].
+  // Null/ignored for every other type.
+  options     Json?
 
   evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
 
@@ -762,22 +863,95 @@ model EvenementCustomField {
 // registrant picks from on the public/portal registration form, instead of Evenement.price's
 // single flat amount. Additive: an event with zero rows here behaves exactly as before, driven
 // entirely by Evenement.price — price is only ignored once at least one tier exists.
+// TICKET = tarif normal, un seul choisi par participant (comportement historique, avant ce
+// champ — backfill à TICKET pour toute ligne existante). DONATION = extra optionnel coché en
+// plus du billet, montant libre avec `price` comme minimum — mirroir de
+// MembershipTier.itemType, voir src/lib/webhook/evenement-addons.ts.
+enum EvenementTicketTypeItemType {
+  TICKET
+  DONATION
+}
+
 model EvenementTicketType {
-  id          String  @id @default(cuid())
-  evenementId String
-  label       String
-  price       Decimal @db.Decimal(10, 2)
-  capacity    Int? // null = unlimited, same convention as Evenement.capacity
-  order       Int
+  id                  String                      @id @default(cuid())
+  evenementId         String
+  itemType            EvenementTicketTypeItemType @default(TICKET)
+  label               String
+  price               Decimal                     @db.Decimal(10, 2)
+  // Prix affiché barré à côté de `price` quand renseigné, purement cosmétique — confirmé en
+  // direct sur AssoConnect ("Prix avant réduction") : aucune logique de choix pour le
+  // participant, le montant réellement facturé reste `price`. Null = comportement identique
+  // à avant ce champ.
+  priceBeforeDiscount Decimal?                    @db.Decimal(10, 2)
+  capacity            Int? // null = unlimited, same convention as Evenement.capacity
+  order               Int
+  // Reçu fiscal — miroir exact de MembershipTier/DonationTier.receiptMode/ineligibleAmount.
+  // Backfill à NONE : aucun billet n'a jamais émis de reçu avant ce champ, et NONE est le
+  // default de colonne, donc aucune tarif existant ne change de comportement. Pour
+  // itemType == DONATION, seuls NONE/FULL sont acceptés (pas PARTIAL) — même contrainte que
+  // MembershipTier pour une tarif DONATION.
+  receiptMode         DonationReceiptMode         @default(NONE)
+  ineligibleAmount    Decimal?                    @db.Decimal(10, 2)
+  // Cache une tarifa du formulaire public sans la supprimer — l'historique de qui s'est déjà
+  // inscrit dessus reste intact. Miroir du recurso "Afficher cette formule lors de
+  // l'inscription" de l'AssoConnect, qui est déjà une simple checkbox binaire — pas la peine
+  // d'un enum à 3 états façon BoutiqueProduitStatus, une tarif n'a pas d'état "brouillon".
+  active              Boolean                     @default(true)
+  // Fenêtre de vente propre à cette tarif, en plus de celle de l'événement entier
+  // (Evenement.opensAt/closesAt) — null = toujours ouverte tant que l'événement l'est. Ne
+  // peut que restreindre davantage, jamais ouvrir au-delà de la fenêtre de l'événement (voir
+  // le double-check dans inscription/route.ts).
+  opensAt             DateTime?
+  closesAt            DateTime?
 
   evenement      Evenement       @relation(fields: [evenementId], references: [id], onDelete: Cascade)
   participations Participation[]
+  donsGenerated  Don[]
 
   @@index([evenementId])
 }
 
+enum EvenementDiscountKind {
+  FIXED
+  PERCENT
+}
+
+// Code promotionnel scopé à un seul événement — aucune équivalent côté AssoConnect (son propre
+// "réduction" est juste le prix barré cosmétique de EvenementTicketType.priceBeforeDiscount,
+// voir le commentaire de ce champ) : construit sans précédent externe à imiter, sur demande du
+// Leandro. Ne s'applique jamais aux tarifs DONATION (déjà un "montant libre") ni aux produits
+// Boutique/dons embarqués — seulement au prix du billet, voir inscription/route.ts.
+model EvenementDiscountCode {
+  id          String                @id @default(cuid())
+  evenementId String
+  // Toujours comparé en majuscules (normalisé à l'écriture et à la lecture) — jamais une
+  // contrainte de collation DB, pour rester portable.
+  code        String
+  kind        EvenementDiscountKind
+  // FIXED = montant en euros retiré du prix ; PERCENT = pourcentage (0-100) retiré du prix.
+  value       Decimal               @db.Decimal(10, 2)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  maxUses     Int?
+  usesCount   Int                   @default(0)
+  active      Boolean               @default(true)
+  // Vide = s'applique à toutes les tarifs TICKET de l'événement. Sinon, liste d'ids
+  // EvenementTicketType — jamais validé par une FK (simple tableau de strings, comme
+  // BoutiqueCommandeItem.varianteId ailleurs) car une tarif supprimée ne doit pas faire
+  // disparaître le code, juste cesser de s'y appliquer.
+  ticketTypeIds String[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  participations Participation[]
+
+  @@unique([evenementId, code])
+  @@index([evenementId])
+}
+
 model Participation {
-  id                String      @id @default(cuid())
+  id                String                  @id @default(cuid())
   membreId          String? // null = convive sans compte membre
   evenementId       String
   firstName         String // capturé sur la ligne — pas de join Membre pour l'affichage
@@ -785,44 +959,84 @@ model Participation {
   email             String?
   phone             String?
   address           String?
+  birthDate         DateTime?
+  gender            Sexe?
   // Réponses aux EvenementCustomField de cet événement, keyed by field id (ex: {"clxyz...": "42"})
   // — un JSON simple suffit ici, personne n'agrège ces réponses entre participants comme un sondage.
+  // La valeur est une string pour tout type sauf CHECKBOX_MULTI, qui stocke un vrai tableau
+  // JSON de strings (jamais une string séparée par virgules — casserait si une option
+  // contenait elle-même une virgule).
+  // Porte aussi la clé fixe "mobile" (mobile phone n'a pas de colonne dédiée) — même
+  // convention que Membre.answers pour fieldMobile côté adhésion.
   answers           Json?
-  present           Boolean     @default(false)
+  present           Boolean                 @default(false)
   rsvp              RsvpStatus?
   rsvpAt            DateTime?
   ticketPaidAt      DateTime?
-  amount            Decimal?    @db.Decimal(10, 2) // montant payé pour CETTE place
+  amount            Decimal?                @db.Decimal(10, 2) // montant payé pour CETTE place
   orderId           String? // regroupe les places d'une même réservation/paiement
   stripeSessionId   String?
   // Which EvenementTicketType this seat picked, when the event has tiers — null for
   // untiered/flat-price/free events (the vast majority). Drives the per-seat amount at checkout
   // time instead of Evenement.price.
   ticketTypeId      String?
+  // Code promo appliqué à ce billet, le cas échéant — snapshot pour traçabilité, jamais
+  // recalculé après coup. `amount` ci-dessus porte déjà le prix réduit ; ce champ ne sert qu'à
+  // savoir QUEL code a servi (utile pour l'incrémentation atomique de usesCount côté webhook
+  // Stripe, et pour l'affichage admin). onDelete SetNull : supprimer un code ne doit jamais
+  // faire disparaître une inscription déjà passée.
+  discountCodeId    String?
+  // Null = payé en ligne par Stripe (toute ligne d'avant ce champ, pour toujours) — une valeur
+  // explicite veut dire que le participant a choisi ce moyen hors-ligne à l'inscription (voir
+  // EvenementPaymentMethod). ticketPaidAt reste null jusqu'à ce qu'un admin confirme
+  // l'encaissement via le même flux "marquer payé" que les entrées manuelles.
+  paymentMethod     EvenementPaymentMethod?
+  // Dénormalisé depuis evenement.associationId — nécessaire pour la numérotation des reçus par
+  // association/année (même contrainte que Cotisation/Don/BoutiqueCommande, voir nextNumber).
+  associationId     String
+  // Snapshot de EvenementTicketType.receiptMode/ineligibleAmount au moment du paiement — pas
+  // recalculé après coup, même raisonnement que Cotisation.receiptMode : un admin qui modifie
+  // la tarif plus tard ne doit pas changer rétroactivement le reçu d'un billet déjà payé.
+  receiptMode       DonationReceiptMode?
+  deductibleAmount  Decimal?                @db.Decimal(10, 2)
+  receiptNumber     String?
+  receiptIssuedAt   DateTime?
   // Lien d'auto-annulation envoyé par email — uniquement pour les inscriptions publiques
   // (membreId null), qui n'ont pas de compte portail pour utiliser le flux authentifié.
-  cancelToken       String?     @unique
+  cancelToken       String?                 @unique
   // Jeton du billet, encodé dans le QR code envoyé par email après inscription/paiement.
   // Scanné à l'entrée par l'organisateur (présences → scanner) pour valider le billet et
   // marquer la présence — voir /api/evenements/[id]/scan. Null pour les rows antérieures
   // à la fonctionnalité (pas de backfill : leur email est déjà parti sans QR).
-  ticketToken       String?     @unique
+  ticketToken       String?                 @unique
   // Lien public (sans compte) pour laisser un avis après l'événement — même principe que
   // cancelToken/ticketToken. Généré à l'envoi de l'email de demande d'avis (voir le cron
   // Inngest event-review-request), pas à l'inscription.
-  reviewToken       String?     @unique
+  reviewToken       String?                 @unique
   // Dédoublonne l'envoi automatique de l'email de demande d'avis — le cron tourne tous les
   // jours et ne doit relancer l'email qu'une seule fois par participation.
   reviewRequestedAt DateTime?
-  createdAt         DateTime    @default(now())
+  // Preuve de consentement quand Evenement.requireCguvSignature est actif — posée
+  // server-side à l'inscription, jamais reprise du client seul. Null quand l'événement ne
+  // l'exige pas. Miroir exact de Don.cguvAgreedAt/Cotisation.cguvAgreedAt.
+  cguvAgreedAt      DateTime?
+  // Nom complet saisi par le participant comme preuve informelle de signature, à côté de la
+  // case à cocher — même niveau de rigueur, juste avec un nom capturé. N'existe nulle part
+  // ailleurs dans Adhera aujourd'hui (voir le plan) : les autres formulaires (Dons/Adhésions)
+  // n'ont qu'une case à cocher, pas de champ nom dédié.
+  signedName        String?
+  createdAt         DateTime                @default(now())
 
   membre         Membre?              @relation(fields: [membreId], references: [id])
   evenement      Evenement            @relation(fields: [evenementId], references: [id])
   ticketType     EvenementTicketType? @relation(fields: [ticketTypeId], references: [id])
+  discountCode   EvenementDiscountCode? @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
   incomes        Income[]
   automationLogs AutomationLog[]
   avis           EvenementAvis?
+  boutiqueCommandes BoutiqueCommande[]
 
+  @@unique([associationId, receiptNumber])
   @@index([evenementId])
   @@index([orderId])
   @@index([membreId, evenementId])
@@ -1013,6 +1227,13 @@ model Don {
   // the tiers API can't tell a still-referenced DONATION tier from an unused one before
   // allowing its itemType to change or the tier to be deleted.
   membershipAddonTierId String?
+  // Même principe que membershipAddonTierId ci-dessus, mais côté Eventos : rempli quand ce Don
+  // vient d'une tarif de type DONATION cochée pendant l'inscription à un événement (voir
+  // EvenementTicketType.itemType, src/lib/webhook/evenement-addons.ts). Distinct de
+  // `evenementId` ci-dessus, qui reste utilisé par le prompt de don *après* inscription — les
+  // deux flux coexistent, celui-ci trace uniquement le don embarqué dans le même paiement que
+  // le billet.
+  evenementTicketTypeId String?
   // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
   // Participation.answers.
   answers               Json?
@@ -1045,6 +1266,9 @@ model Don {
   // the MembershipTier that generated it is later deleted (unlike MembershipAddonPurchase,
   // which is a lightweight purchase log with no receipt of its own).
   membershipAddonTier MembershipTier?       @relation(fields: [membershipAddonTierId], references: [id], onDelete: SetNull)
+  // SetNull, même raisonnement que membershipAddonTier — le Don doit survivre à la
+  // suppression de la tarif qui l'a produit.
+  evenementTicketType EvenementTicketType?  @relation(fields: [evenementTicketTypeId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
@@ -1053,6 +1277,7 @@ model Don {
   @@index([donationFormId])
   @@index([subscriptionId])
   @@index([membershipAddonTierId])
+  @@index([evenementTicketTypeId])
 }
 
 // Formulaire de don configurable — remplace le modèle « une page de don par association »
@@ -1383,6 +1608,23 @@ model MembershipFormProduct {
 
   @@unique([formId, varianteId])
   @@index([formId])
+}
+
+// Mirroir exact de MembershipFormProduct, côté Eventos — pur pointeur "quel variante est
+// proposé à cet évènement", jamais référencé par un BoutiqueCommandeItem (celui-ci pointe
+// directement sur varianteId), donc supprimable/recréable librement à chaque sauvegarde.
+model EvenementProduct {
+  id          String   @id @default(cuid())
+  evenementId String
+  varianteId  String
+  order       Int
+  createdAt   DateTime @default(now())
+
+  evenement Evenement        @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  variante  BoutiqueVariante @relation(fields: [varianteId], references: [id], onDelete: Cascade)
+
+  @@unique([evenementId, varianteId])
+  @@index([evenementId])
 }
 
 // Un achat d'option ADDON réglé au moment d'une adhésion — séparé de Cotisation.amount pour
@@ -1949,14 +2191,16 @@ model BoutiqueVariante {
   stock     Int      @default(0)
   createdAt DateTime @default(now())
 
-  produit       BoutiqueProduit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
-  commandeItems BoutiqueCommandeItem[]
-  formOffers    MembershipFormProduct[]
+  produit          BoutiqueProduit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  commandeItems    BoutiqueCommandeItem[]
+  formOffers       MembershipFormProduct[]
+  evenementOffers  EvenementProduct[]
 }
 
 enum BoutiqueCommandeSource {
   STOREFRONT
   MEMBERSHIP_FORM
+  EVENEMENT
 }
 
 model BoutiqueCommande {
@@ -1977,6 +2221,9 @@ model BoutiqueCommande {
   // accompagné cet achat. SetNull (pas Cascade) : supprimer la Cotisation ne doit pas
   // supprimer une vente déjà comptabilisée (Income déjà émis).
   cotisationId          String?
+  // Même principe que cotisationId, pour source = EVENEMENT — traçabilité vers le billet qui
+  // a accompagné cet achat. SetNull, même raisonnement.
+  participationId       String?
   // Assigned once, the moment the commande first becomes PAID — never reassigned by the
   // manualPaymentType correction flow, so a reçu already handed to a buyer keeps its number.
   receiptNumber         String?
@@ -1993,6 +2240,7 @@ model BoutiqueCommande {
   association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
   cotisation  Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
+  participation Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
   items       BoutiqueCommandeItem[]
 
   @@unique([associationId, receiptNumber])
