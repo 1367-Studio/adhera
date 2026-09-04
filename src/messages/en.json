@@ -2578,7 +2578,7 @@
     "donationsView": {
       "columns": {
         "donor": "Donor",
-        "form": "Form",
+        "form": "Origin",
         "standalone": "Standalone page",
         "message": "Message",
         "date": "Date",
@@ -2586,12 +2586,24 @@
         "method": "Method"
       },
       "noDonations": "No donations recorded",
+      "noDonationsFiltered": "No donations match these filters.",
+      "resetFilters": "Reset",
       "totalLabel": "Total {year}",
       "donorsLabel": "Donors",
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",
       "encaisserButton": "Mark as received",
       "fromMembershipForm": "Linked to a membership signup — \"{tier}\"",
+      "fromEvenement": "Linked to an event ticket: \"{evenement}\"",
+      "fromEvenementPrompt": "Linked to an event registration: \"{evenement}\"",
+      "originFilter": {
+        "all": "All origins",
+        "form": "Donation form",
+        "adhesion": "Membership",
+        "evenementTicket": "Event (ticket)",
+        "evenementPrompt": "Event (registration)",
+        "standalone": "Standalone page"
+      },
       "paymentMethod": {
         "especes": "Cash",
         "cheque": "Cheque",
