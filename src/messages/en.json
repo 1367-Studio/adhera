@@ -3690,6 +3690,11 @@
         "adherents": "Members",
         "benevoles": "Volunteers"
       },
+      "sortDefault": "Alphabetical order",
+      "sortOptions": {
+        "recent": "Most recently added",
+        "oldest": "First added"
+      },
       "noResultsFor": "No results for \"{search}\"",
       "noResultsFiltered": "No member matches these filters",
       "noMembers": "No members registered",

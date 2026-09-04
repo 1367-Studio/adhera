@@ -180,6 +180,7 @@ export function MembresView() {
   const [statusFilter, setStatusFilter] = useState<string>("")
   const [typeFilter, setTypeFilter]     = useState<string>("")
   const [adherentFilter, setAdherentFilter] = useState<string>("")
+  const [sortFilter, setSortFilter]         = useState<string>("")
   // Applied vs draft: the popover's inputs edit `advancedDraft`, and only "Appliquer" copies
   // it into `advanced`, which is what the query reads. Committing on each keystroke would
   // mean a request per character across five fields — and a date input fires onChange on
@@ -204,9 +205,12 @@ export function MembresView() {
     status:   statusFilter  || undefined,
     typeId:   typeFilter    || undefined,
     adherent: adherentFilter || undefined,
+    sort:     sortFilter     || undefined,
     ...advanced,
   }
   const activeAdvancedCount = Object.values(advanced).filter(Boolean).length
+  // `sortFilter` reste dehors : il réordonne la liste, il ne la restreint jamais. Le compter
+  // ferait dire « Aucun membre ne correspond aux filtres » à une association réellement vide.
   const hasActiveFilters    = !!(statusFilter || typeFilter || adherentFilter) || activeAdvancedCount > 0
 
   function applyAdvanced(next: AdvancedFilters) {
@@ -590,6 +594,17 @@ export function MembresView() {
             width="w-40"
           />
         )}
+
+        <FilterSelect
+          value={sortFilter}
+          onValueChange={v => { setSortFilter(v); setPage(1) }}
+          options={[
+            { value: "recent", label: t("membres.view.sortOptions.recent") },
+            { value: "oldest", label: t("membres.view.sortOptions.oldest") },
+          ]}
+          placeholder={t("membres.view.sortDefault")}
+          width="w-44"
+        />
 
         <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
           <PopoverTrigger

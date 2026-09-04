@@ -78,7 +78,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
   if (and.length) where.AND = and
 
-  const orderBy = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
+  // Ordre de la liste. Par défaut alphabétique ; "recent"/"oldest" trient sur joinedAt —
+  // la date affichée dans la colonne « Membre depuis », pour que l'ordre à l'écran soit
+  // lisible dans le tableau lui-même (createdAt donnerait un ordre que rien n'explique).
+  // Le nom reste en départage : sans lui, deux membres inscrits le même jour peuvent
+  // s'échanger de place d'une page à l'autre et un membre disparaît de la pagination.
+  const sort    = searchParams.get("sort") ?? undefined
+  const byName  = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
+  const orderBy = sort === "recent" ? [{ joinedAt: "desc" as const }, ...byName]
+    : sort === "oldest"             ? [{ joinedAt: "asc"  as const }, ...byName]
+    : byName
 
   const include = {
     type:        { select: { id: true, name: true, color: true } },

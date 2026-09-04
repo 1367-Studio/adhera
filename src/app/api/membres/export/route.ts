@@ -73,9 +73,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
   if (and.length) where.AND = and
 
+  // Même tri que la liste (voir GET /api/membres) — le fichier exporté doit sortir dans
+  // l'ordre que l'admin avait à l'écran au moment où il a cliqué sur « Exporter ».
+  const sort    = searchParams.get("sort") ?? undefined
+  const byName  = [{ lastName: "asc" as const }, { firstName: "asc" as const }]
+  const orderBy = sort === "recent" ? [{ joinedAt: "desc" as const }, ...byName]
+    : sort === "oldest"             ? [{ joinedAt: "asc"  as const }, ...byName]
+    : byName
+
   const membres = await prisma.membre.findMany({
     where,
-    orderBy: [{ lastName: "asc" }, { firstName: "asc" }],
+    orderBy,
     include: {
       type: { select: { name: true } },
       ...(full ? { responsable: { select: { firstName: true, lastName: true } } } : {}),

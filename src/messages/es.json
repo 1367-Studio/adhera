@@ -3690,6 +3690,11 @@
         "adherents": "Socios",
         "benevoles": "Voluntarios"
       },
+      "sortDefault": "Orden alfabético",
+      "sortOptions": {
+        "recent": "Últimos añadidos",
+        "oldest": "Primeros añadidos"
+      },
       "noResultsFor": "Sin resultados para «{search}»",
       "noResultsFiltered": "Ningún socio coincide con estos filtros",
       "noMembers": "Ningún miembro registrado",

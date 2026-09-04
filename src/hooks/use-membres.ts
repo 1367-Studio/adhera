@@ -164,6 +164,10 @@ export type MembresFilters = {
   address?:       string
   birthDateFrom?: string
   birthDateTo?:   string
+  // Ordre de la liste, pas un filtre : "recent" (derniers adhérents) ou "oldest" (premiers).
+  // Absent = tri alphabétique par défaut. Il voyage avec les filtres pour que l'export
+  // reprenne exactement l'ordre affiché à l'écran.
+  sort?:          string
 }
 
 // The single place a filter turns into a query param — shared with the export link builder
