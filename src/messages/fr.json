@@ -2578,7 +2578,7 @@
     "donationsView": {
       "columns": {
         "donor": "Donateur",
-        "form": "Formulaire",
+        "form": "Origine",
         "standalone": "Page autonome",
         "message": "Message",
         "date": "Date",
@@ -2586,12 +2586,24 @@
         "method": "Moyen"
       },
       "noDonations": "Aucun don enregistré",
+      "noDonationsFiltered": "Aucun don ne correspond à ces filtres.",
+      "resetFilters": "Réinitialiser",
       "totalLabel": "Total {year}",
       "donorsLabel": "Donateurs",
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",
       "encaisserButton": "Encaisser",
       "fromMembershipForm": "Don lié à une adhésion — « {tier} »",
+      "fromEvenement": "Don lié à un billet d'évènement : « {evenement} »",
+      "fromEvenementPrompt": "Don suite à une inscription à l'évènement : « {evenement} »",
+      "originFilter": {
+        "all": "Toutes les origines",
+        "form": "Formulaire de don",
+        "adhesion": "Adhésion",
+        "evenementTicket": "Évènement (billet)",
+        "evenementPrompt": "Évènement (inscription)",
+        "standalone": "Page autonome"
+      },
       "paymentMethod": {
         "especes": "Espèces",
         "cheque": "Chèque",

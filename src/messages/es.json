@@ -2578,7 +2578,7 @@
     "donationsView": {
       "columns": {
         "donor": "Donante",
-        "form": "Formulario",
+        "form": "Origen",
         "standalone": "Página independiente",
         "message": "Mensaje",
         "date": "Fecha",
@@ -2586,12 +2586,24 @@
         "method": "Método"
       },
       "noDonations": "Ninguna donación registrada",
+      "noDonationsFiltered": "Ninguna donación coincide con estos filtros.",
+      "resetFilters": "Restablecer",
       "totalLabel": "Total {year}",
       "donorsLabel": "Donantes",
       "averageLabel": "Donación media",
       "pendingTitle": "Pendiente de cobro",
       "encaisserButton": "Marcar como recibido",
       "fromMembershipForm": "Vinculado a una adhesión — \"{tier}\"",
+      "fromEvenement": "Vinculado a una entrada de evento: \"{evenement}\"",
+      "fromEvenementPrompt": "Vinculado a una inscripción a un evento: \"{evenement}\"",
+      "originFilter": {
+        "all": "Todos los orígenes",
+        "form": "Formulario de donación",
+        "adhesion": "Adhesión",
+        "evenementTicket": "Evento (entrada)",
+        "evenementPrompt": "Evento (inscripción)",
+        "standalone": "Página independiente"
+      },
       "paymentMethod": {
         "especes": "Efectivo",
         "cheque": "Cheque",

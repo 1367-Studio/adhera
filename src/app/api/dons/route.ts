@@ -14,6 +14,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const year          = searchParams.get("year")
   const search        = searchParams.get("search")?.trim()
+  const origin        = searchParams.get("origin") ?? undefined
   const receiptsOnly  = searchParams.get("receiptsOnly") === "true"
   // Offline dons (espèces/chèque/virement) awaiting encaissement — the one other state
   // besides "paid" this table needs to surface, so an admin has somewhere to see and
@@ -48,6 +49,28 @@ export const GET = withAdminAuth(async (req, ctx) => {
     ]
   }
 
+  // Plain field equality for every branch (never `where.OR`, unlike `search` above) so this
+  // never collides with the free-text search — both can be active together, and
+  // aggregateWhere's blind `delete aggregateWhere.OR` below only strips `search` from the KPI
+  // totals, never this filter.
+  if (origin === "form")            where.donationFormId       = { not: null }
+  if (origin === "adhesion")        where.membershipAddonTierId = { not: null }
+  if (origin === "evenementTicket") where.evenementTicketTypeId = { not: null }
+  // The post-registration donation prompt (event-donation-prompt.tsx) sets evenementId
+  // without evenementTicketTypeId — the `null` guard keeps this bucket exclusive of
+  // evenementTicket above, since a ticket-embedded don never has evenementId set anyway (see
+  // createEvenementDonation) but relying on that invariant here would be a silent trap.
+  if (origin === "evenementPrompt") {
+    where.evenementId           = { not: null }
+    where.evenementTicketTypeId = null
+  }
+  if (origin === "standalone") {
+    where.donationFormId        = null
+    where.membershipAddonTierId = null
+    where.evenementTicketTypeId = null
+    where.evenementId           = null
+  }
+
   // KPI totals intentionally ignore `search` — they summarize the year, not the filtered
   // list, so typing in the search box doesn't make the summary cards jump around.
   const aggregateWhere = { ...where }
@@ -66,6 +89,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
         // produced it, since that member also has an independent Cotisation pending its own
         // encaissement for the same physical payment (see checkout/route.ts's offline branch).
         membershipAddonTier: { select: { label: true } },
+        // Set for a don embarqué on an event ticket type (Don.evenementTicketTypeId) — lets
+        // the "origine" column point back at the event.
+        evenementTicketType: { select: { evenement: { select: { id: true, title: true } } } },
+        // Set for a don triggered by the post-registration donation prompt on an event
+        // (Don.evenementId, see event-donation-prompt.tsx) — a different flow from the ticket
+        // add-on above, but the same "came from an event" origin from an admin's viewpoint.
+        evenement: { select: { id: true, title: true } },
       },
     }),
     prisma.don.count({ where }),
