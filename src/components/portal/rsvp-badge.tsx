@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
-type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT"
+type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT" | "LISTA_ESPERA"
 
 function useRsvpConfig(): Record<RsvpStatus, { label: string; dot: string; classes: string }> {
   const t = useTranslations("portal.rsvp")
@@ -27,6 +27,11 @@ function useRsvpConfig(): Record<RsvpStatus, { label: string; dot: string; class
       label:   t("absent"),
       dot:     "bg-red-500",
       classes: "border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400",
+    },
+    LISTA_ESPERA: {
+      label:   t("listaEspera"),
+      dot:     "bg-blue-400",
+      classes: "border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-400",
     },
   }
 }

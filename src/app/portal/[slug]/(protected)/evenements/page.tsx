@@ -5,7 +5,7 @@ import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon, HourglassIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useSetRsvp, useSubmitReview, type GuestInput } from "@/hooks/use-evenements"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -20,9 +20,9 @@ import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
-type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT"
+type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT" | "LISTA_ESPERA"
 
-type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
+type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number; LISTA_ESPERA: number }
 
 type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean }
 
@@ -198,9 +198,16 @@ function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { e
         body:    JSON.stringify({ quantity, guests, ticketTypeId }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
-      return res.json() as Promise<{ url: string }>
+      return res.json() as Promise<{ url: string } | { waitlisted: true }>
     },
-    onSuccess: ({ url }) => { window.location.href = url },
+    onSuccess: (data) => {
+      if ("waitlisted" in data) {
+        toast.success("Vous êtes sur liste d'attente — nous vous préviendrons par e-mail si une place se libère.")
+        qc.invalidateQueries({ queryKey: ["portal-evenements"] })
+        return
+      }
+      window.location.href = data.url
+    },
     onError:   (err) => {
       toast.error(err instanceof Error ? err.message : "Erreur")
       // A tier could have just filled up (someone else took the last spot) — refresh so
@@ -437,6 +444,15 @@ function PaidEventSection({
     )
   }
 
+  if (rsvp === "LISTA_ESPERA") {
+    return (
+      <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium">
+        <HourglassIcon className="size-3.5" />
+        Vous êtes sur liste d&apos;attente
+      </div>
+    )
+  }
+
   if (isFull) {
     return (
       <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
@@ -484,9 +500,13 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
     if (rsvp === selected || mutation.isPending) return
     setPending(rsvp)
     try {
-      await mutation.mutateAsync({ rsvp })
-      const label = RSVP_OPTIONS.find(o => o.value === rsvp)?.label ?? rsvp
-      toast.success(`Réponse enregistrée : ${label}`)
+      const data = await mutation.mutateAsync({ rsvp })
+      if (data?.waitlisted) {
+        toast.success("Vous êtes sur liste d'attente — nous vous préviendrons par e-mail si une place se libère.")
+      } else {
+        const label = RSVP_OPTIONS.find(o => o.value === rsvp)?.label ?? rsvp
+        toast.success(`Réponse enregistrée : ${label}`)
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement")
     } finally {
@@ -581,7 +601,7 @@ function FreeEventGuestsPanel({
 }
 
 function RsvpCounters({ counts }: { counts: RsvpCounts }) {
-  const total = counts.CONFIRME + counts.PROVAVEL + counts.INCERTO + counts.ABSENT
+  const total = counts.CONFIRME + counts.PROVAVEL + counts.INCERTO + counts.ABSENT + counts.LISTA_ESPERA
   if (total === 0) return null
 
   return (
@@ -590,6 +610,7 @@ function RsvpCounters({ counts }: { counts: RsvpCounts }) {
       {counts.PROVAVEL > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-yellow-400" />{counts.PROVAVEL} si possible</span>}
       {counts.INCERTO  > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-orange-400" />{counts.INCERTO} peut-être</span>}
       {counts.ABSENT   > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-red-500" />{counts.ABSENT} absent{counts.ABSENT > 1 ? "s" : ""}</span>}
+      {counts.LISTA_ESPERA > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-blue-400" />{counts.LISTA_ESPERA} en liste d&apos;attente</span>}
     </div>
   )
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { evenementCustomFieldsSchema } from "@/lib/schemas/evenement"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -44,14 +45,18 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
 
     for (const [order, f] of parsed.data.entries()) {
+      // `options` is always sent explicitly by the editor (an array for choice types, null
+      // otherwise) — passed through as-is so switching a field away from a choice type
+      // actually clears its old options instead of leaving them stale (Prisma treats
+      // `undefined` as "don't touch", which would do exactly that).
       if (f.id && existingIds.has(f.id)) {
         await tx.evenementCustomField.update({
           where: { id: f.id },
-          data:  { type: f.type, label: f.label, required: f.required ?? false, order },
+          data:  { type: f.type, label: f.label, required: f.required ?? false, order, options: f.options ?? Prisma.JsonNull },
         })
       } else {
         await tx.evenementCustomField.create({
-          data: { evenementId: id, type: f.type, label: f.label, required: f.required ?? false, order },
+          data: { evenementId: id, type: f.type, label: f.label, required: f.required ?? false, order, options: f.options ?? Prisma.JsonNull },
         })
       }
     }

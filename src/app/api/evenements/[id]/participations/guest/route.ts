@@ -36,7 +36,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   // present stays false (schema default) — a walk-in added by the association must wait
   // for an explicit presence/payment validation on the day, not be auto-checked-in here.
   const participation = await prisma.participation.create({
-    data: { evenementId, firstName, lastName, email: email ?? null },
+    data: { associationId, evenementId, firstName, lastName, email: email ?? null },
   })
 
   await writeActivityLog({

@@ -289,7 +289,8 @@
       "confirme": "I'll be there!",
       "provavel": "If possible",
       "incerto": "Maybe",
-      "absent": "I'm not coming"
+      "absent": "I'm not coming",
+      "listaEspera": "Waitlisted"
     }
   },
   "documents": {
@@ -725,14 +726,26 @@
     "cta": "Configure now",
     "later": "Later",
     "viewFullFaq": "See the full FAQ",
-      "faqPreview": {
-        "items": [
-          { "question": "What is a fiscal year?", "answer": "A financial period (usually one year) that groups your income, expenses and bank transactions for accounting purposes." },
-          { "question": "How do I create my first fiscal year?", "answer": "Choose your own start and end dates. This choice is permanent and sets your association's fiscal calendar for all future years." },
-          { "question": "What happens when I close a fiscal year?", "answer": "Existing records (income, expenses, and bank transactions) whose dates fall within this fiscal year but which are not yet linked to a fiscal year are automatically attached to it." },
-          { "question": "What happens when I delete a fiscal year?", "answer": "Deleting a fiscal year does not delete the records linked to it. These records simply become “Unassigned” again, as they were before the fiscal year was created." }
-        ]
-      }
+    "faqPreview": {
+      "items": [
+        {
+          "question": "What is a fiscal year?",
+          "answer": "A financial period (usually one year) that groups your income, expenses and bank transactions for accounting purposes."
+        },
+        {
+          "question": "How do I create my first fiscal year?",
+          "answer": "Choose your own start and end dates. This choice is permanent and sets your association's fiscal calendar for all future years."
+        },
+        {
+          "question": "What happens when I close a fiscal year?",
+          "answer": "Existing records (income, expenses, and bank transactions) whose dates fall within this fiscal year but which are not yet linked to a fiscal year are automatically attached to it."
+        },
+        {
+          "question": "What happens when I delete a fiscal year?",
+          "answer": "Deleting a fiscal year does not delete the records linked to it. These records simply become “Unassigned” again, as they were before the fiscal year was created."
+        }
+      ]
+    }
   },
   "tour": {
     "next": "Next",
@@ -1256,6 +1269,12 @@
     }
   },
   "evenements": {
+    "duplicateSuffix": "(copy)",
+    "formStatus": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
     "form": {
       "coverImage": "Cover image",
       "title": "Title",
@@ -1269,11 +1288,19 @@
       "capacity": "Capacity",
       "capacityHint": "(empty = unlimited)",
       "capacityUnit": "{count, plural, one {# spot} other {# spots}}",
+      "waitlistEnabledLabel": "Allow a waitlist",
+      "waitlistEnabledHint": "Once full, new registrations join a waitlist instead of being turned away.",
       "adminNotificationEmail": "Notification email",
       "adminNotificationEmailPlaceholder": "you@association.org",
       "adminNotificationEmailHint": "Optional — get an email each time someone registers for this event. Managers get an in-app notification either way.",
       "description": "Description",
       "descriptionPlaceholder": "Event details…",
+      "conditionsLabel": "Terms and conditions",
+      "conditionsPlaceholder": "General terms for this event…",
+      "conditionsPdfLabel": "Terms document (PDF or image)",
+      "requireCguvLabel": "Require terms signature",
+      "contactEmailLabel": "Contact email",
+      "contactPhoneLabel": "Contact phone",
       "toasts": {
         "uploadError": "Error uploading the image"
       }
@@ -1289,10 +1316,17 @@
       "ticketTypeLabel": "Ticket type",
       "ticketTypeFree": "Free",
       "ticketTypeFromPrice": "From {amount}",
+      "wasPrice": "was {amount}",
+      "donationExtrasLabel": "Add a donation",
+      "belowDonationMinimum": "The minimum amount for this donation is {amount}.",
       "ticketTypeInvalid": "This ticket type is no longer available — please choose another one.",
+      "ticketTypeNotOpenToast": "This tariff isn't open yet — choose another one.",
+      "ticketTypeClosedToast": "This tariff is no longer available — choose another one.",
       "ticketTypeFull": "This ticket type is sold out — please choose another one.",
       "ticketTypeSoldOut": "sold out",
       "ticketTypeRemaining": "{count} left",
+      "ticketTypeNotOpenYet": "not open yet",
+      "ticketTypeClosed": "closed",
       "duplicateEmail": "Each ticket must use a different email address.",
       "alreadyRegistered": "{email} is already registered for this event.",
       "attendeesSkipped": "{count, plural, one {# person was already registered and was kept as-is} other {# people were already registered and were kept as-is}} — the rest of the order went through.",
@@ -1301,6 +1335,8 @@
       "paymentDisabled": "Online payment is not available at the moment.",
       "submittedTitle": "Registration saved!",
       "submittedWithEmail": "A confirmation email has been sent to you.",
+      "waitlistedTitle": "You're on the waitlist",
+      "waitlistedBody": "This event is full. We'll email you if a spot opens up.",
       "thankYouTitle": "Thank you for your purchase!",
       "thankYouBody": "Your payment has been received. Your ticket and its entry QR code will be emailed to you shortly.",
       "thankYouClose": "Got it",
@@ -1319,17 +1355,58 @@
       "firstNameLabel": "First name *",
       "lastNameLabel": "Last name *",
       "emailLabel": "Email *",
-      "phoneLabel": "Phone (optional)",
-      "addressLabel": "Address (optional)",
+      "phoneLabel": "Phone",
+      "addressLabel": "Address",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optional)",
+      "fileAttach": "Attach a file",
+      "fileUploading": "Uploading…",
+      "fileChosen": "File attached",
+      "fileRemove": "Remove file",
+      "fileTooLarge": "File too large (max 10 MB)",
+      "fileUploadError": "Error uploading the file",
+      "fileNetworkError": "Network error while uploading — please try again",
       "totalLabel": "Total:",
       "submit": "Register",
       "pay": "Pay {amount}",
       "privacyNote": "Your data is used only for your registration to this event.",
+      "contactHelp": "Any questions? Get in touch:",
       "errorGeneric": "Error",
       "errorNetwork": "Network error",
-      "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\"."
+      "inAppBrowserWarning": "You're browsing from Facebook or Instagram, which can prevent this page from working correctly. Tap ⋯ then \"Open in browser\".",
+      "paymentMethodLabel": "Payment method",
+      "paymentMethodStripe": "Card",
+      "paymentMethodCash": "Cash",
+      "paymentMethodCheque": "Cheque",
+      "paymentMethodTransfer": "Bank transfer",
+      "paymentMethodOnlineOnlyMultipleAttendees": "card payment (offline methods aren't available for multiple attendees)",
+      "paymentMethodOnlineOnlyProducts": "card payment (offline methods aren't available with products)",
+      "notOpenYet": "Registration isn't open yet.",
+      "registrationClosed": "Registration is closed.",
+      "mobileLabel": "Mobile",
+      "mobilePlaceholder": "07700 900123",
+      "birthDateLabel": "Date of birth",
+      "genderLabel": "Gender",
+      "genderNone": "Prefer not to say",
+      "genderHomme": "Man",
+      "genderFemme": "Woman",
+      "booleanYes": "Yes",
+      "booleanNo": "No",
+      "productsLabel": "Products",
+      "outOfStock": "Out of stock",
+      "decreaseQuantityLabel": "Decrease quantity",
+      "increaseQuantityLabel": "Increase quantity",
+      "viewConditionsLabel": "View the terms and conditions",
+      "conditionsModalTitle": "Terms and conditions",
+      "conditionsAgreeLabel": "I accept the terms and conditions",
+      "signedNameLabel": "Full name (signature)",
+      "discountCodeLabel": "Promo code",
+      "discountCodeApply": "Apply",
+      "discountCodeApplied": "Code \"{code}\" applied",
+      "discountCodeRemove": "Remove",
+      "discountCodeInvalid": "This code is not valid.",
+      "discountCodeNotApplicable": "This code doesn't apply to the selected tariff.",
+      "discountAmountLabel": "Discount:"
     },
     "scanner": {
       "openButton": "Scan tickets",
@@ -1374,7 +1451,12 @@
         "edit": "Edit",
         "customFields": "Custom fields",
         "ticketTypes": "Ticket types",
-        "delete": "Delete"
+        "delete": "Delete",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "archive": "Archive",
+        "duplicate": "Duplicate",
+        "open": "Open"
       },
       "searchPlaceholder": "Search for an event…",
       "noResultsFor": "No results for \"{search}\"",
@@ -1387,7 +1469,16 @@
         "created": "Event created successfully",
         "updated": "Event updated",
         "deleted": "Event deleted",
-        "linkCopied": "Link copied!"
+        "linkCopied": "Link copied!",
+        "statusUpdated": "Status updated",
+        "duplicated": "Event duplicated"
+      },
+      "newEventModal": {
+        "title": "New event",
+        "titleLabel": "Event title",
+        "titlePlaceholder": "Annual general meeting 2026",
+        "dateLabel": "Start date",
+        "createButton": "Create"
       }
     },
     "customFields": {
@@ -1398,11 +1489,22 @@
       "fieldLabelPlaceholder": "E.g. T-shirt size",
       "fieldType": "Type",
       "typeText": "Text",
+      "typeLongText": "Long text",
       "typeNumber": "Number",
+      "typeDate": "Date",
+      "typeBoolean": "Yes/No",
+      "typeSelect": "Dropdown",
+      "typeRadio": "Single choice",
+      "typeCheckboxMulti": "Multiple choice",
+      "typeFile": "File",
       "fieldRequired": "Required",
       "removeField": "Remove this field",
       "addField": "Add a field",
+      "optionPlaceholder": "Option {n}",
+      "addOption": "Add an option",
+      "removeOption": "Remove this option",
       "labelRequiredError": "Every field needs a label.",
+      "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
       "saved": "Custom fields saved"
     },
     "ticketTypes": {
@@ -1411,6 +1513,11 @@
       "noTypes": "No ticket types yet — the event uses its single price.",
       "typeLabel": "Ticket type label",
       "typeLabelPlaceholder": "E.g. Reduced rate",
+      "itemTypeField": "Type",
+      "itemTypeTicket": "Ticket",
+      "itemTypeDonation": "Donation",
+      "activeField": "Active",
+      "minAmountField": "Minimum amount (€)",
       "priceLabel": "Price",
       "capacityLabel": "Capacity",
       "capacityHint": "(empty = unlimited)",
@@ -1420,7 +1527,22 @@
       "saved": "Ticket types saved",
       "occupiedCount": "{count, plural, one {# registered} other {# registered}}",
       "capacityBelowOccupiedWarning": "Warning: {count, plural, one {# person is} other {# people are}} already registered for this ticket type — lowering the capacity below that won't free up spots already taken.",
-      "capacitySumExceedsEventWarning": "The sum of ticket type capacities ({sum}) exceeds the event's capacity ({eventCapacity})."
+      "capacitySumExceedsEventWarning": "The sum of ticket type capacities ({sum}) exceeds the event's capacity ({eventCapacity}).",
+      "receiptModeField": "Tax receipt",
+      "receiptNone": "No",
+      "receiptFull": "Yes, fully",
+      "receiptPartial": "Yes, partially",
+      "ineligibleAmountField": "Amount not eligible for the tax receipt (€)",
+      "ineligibleAmountRequiredError": "The non-eligible amount is required for a partial receipt",
+      "ineligibleAmountExceedsError": "The non-eligible amount cannot exceed the tier's price",
+      "eligibleAmountPreview": "Eligible: {amount}",
+      "showDiscountField": "Show a discount",
+      "priceBeforeDiscountField": "Price before discount (€)",
+      "priceBeforeDiscountTooLowError": "The price before discount must be higher than the actual price",
+      "opensAtLabel": "Opens",
+      "closesAtLabel": "Closes",
+      "windowInvalidError": "A tier's closing date must be after its opening date",
+      "affectedDiscountCodesWarning": "Tariff removed — promo code(s) {codes} no longer apply to it."
     },
     "calendar": {
       "days": {
@@ -1466,7 +1588,8 @@
       "counter": {
         "presentWord": "{count, plural, one {present} other {present}}",
         "full": "Full",
-        "liveCheckIn": "Check-in in progress · real-time"
+        "liveCheckIn": "Check-in in progress · real-time",
+        "waitlisted": "{count, plural, one {# waitlisted} other {# waitlisted}}"
       },
       "qr": {
         "heading": "Check-in QR Code",
@@ -1496,11 +1619,18 @@
         "infoEmail": "Email",
         "infoPhone": "Phone",
         "infoAddress": "Address",
+        "infoMobile": "Mobile",
+        "infoFileView": "View attached file",
+        "booleanYes": "Yes",
+        "booleanNo": "No",
         "reservedBadge": "Reserved",
         "markPaid": "Mark as paid",
         "markFreeTooltip": "Mark free (one-off exception, doesn't create a public tarif)",
         "editTitle": "Edit",
-        "removeTitle": "Remove"
+        "removeTitle": "Remove",
+        "receiptLink": "Download tax receipt",
+        "waitlistBadge": "Waitlisted",
+        "promote": "Promote"
       },
       "addGuestModal": {
         "title": "Add a guest",
@@ -1542,6 +1672,8 @@
         "markedPaid": "{name} marked as paid",
         "markedFree": "{name} marked as free",
         "paymentCancelled": "Payment for {name} cancelled",
+        "promoted": "{name} promoted from the waitlist",
+        "waitlistedMustPromote": "This person is on the waitlist — promote them first.",
         "guestAdded": "{name} added",
         "memberAdded": "{name} added to the list",
         "guestUpdated": "Guest updated",
@@ -1562,6 +1694,123 @@
         "comment": "Comment",
         "date": "Date"
       }
+    },
+    "detail": {
+      "backToList": "Back to events",
+      "draftNotice": "Not publicly visible until the event is published.",
+      "leaveWarning": {
+        "title": "Unsaved changes",
+        "description": "Some sections were edited without being saved. You can save them before leaving, or discard them.",
+        "discard": "Discard",
+        "saveAndLeave": "Save and leave"
+      },
+      "partialSaveWarning": "Some changes were already saved before the error — check which steps went through.",
+      "notFound": "Event not found",
+      "titleLabel": "Event title",
+      "duplicateButton": "Duplicate",
+      "deleteButton": "Delete",
+      "publishButton": "Publish",
+      "unpublishButton": "Unpublish",
+      "copyLinkButton": "Copy link",
+      "previewButton": "Preview",
+      "archiveButton": "Archive",
+      "toasts": {
+        "saved": "Changes saved",
+        "saveError": "Error while saving",
+        "linkCopied": "Link copied",
+        "linkCopyError": "Could not copy — select the link manually."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Save the following sections before publishing: {steps}",
+        "unsavedTag": "Not saved"
+      },
+      "steps": {
+        "info": {
+          "title": "General information"
+        },
+        "tiers": {
+          "title": "Pricing"
+        },
+        "fields": {
+          "title": "Form",
+          "standardFieldsHint": "Fields requested at registration",
+          "phoneLabel": "Phone",
+          "addressLabel": "Address",
+          "requirement": {
+            "hidden": "Hidden",
+            "optional": "Optional",
+            "required": "Required"
+          },
+          "mobileLabel": "Mobile",
+          "birthDateLabel": "Date of birth",
+          "genderLabel": "Gender"
+        },
+        "products": {
+          "title": "Products",
+          "hint": "Boutique products offered for purchase at the end of registration. Stock is shared with the Boutique module.",
+          "noProducts": "No active product in the Boutique. Enable the Boutique module and create at least one product to offer here.",
+          "stockCount": "{count, plural, one {# in stock} other {# in stock}}",
+          "outOfStock": "Out of stock",
+          "selectedCount": "{count}/{max} products selected",
+          "maxProductsError": "You can offer at most {max} products",
+          "saved": "Products saved",
+          "saveProducts": "Save products"
+        },
+        "payment": {
+          "title": "Payment",
+          "hint": "Payment methods accepted for paid tiers.",
+          "allowCashLabel": "Cash",
+          "allowChequeLabel": "Cheque",
+          "allowTransferLabel": "Bank transfer",
+          "offlineInstructionsLabel": "Offline payment instructions",
+          "offlineInstructionsPlaceholder": "E.g. Cheque payable to… / IBAN…",
+          "confirmationMessageLabel": "Confirmation message",
+          "adminNotificationEmailLabel": "Notification email (optional)",
+          "adminNotificationEmailPlaceholder": "team@association.org",
+          "adminNotificationEmailHint": "Receives an email for every registration to this event, in addition to the in-app notification."
+        },
+        "publish": {
+          "title": "Publication",
+          "visibilityLabel": "Visibility",
+          "visibilityLink": "Link only",
+          "visibilityPrivate": "Private",
+          "schedulePeriodLabel": "Limit the registration period",
+          "schedulePeriodHint": "With no period set, registration stays open as long as the event is published.",
+          "opensAtLabel": "Opens",
+          "closesAtLabel": "Closes",
+          "datesOrderError": "The closing date must be after the opening date."
+        }
+      },
+      "titleRequired": "The title is required"
+    },
+    "discountCodes": {
+      "title": "Promo codes",
+      "description": "Optional: offer discount codes on the ticket price (never on donations or the shop).",
+      "noCodes": "No promo codes yet.",
+      "codeLabel": "Code",
+      "codePlaceholder": "E.g. WELCOME10",
+      "activeField": "Active",
+      "usesCount": "{count, plural, one {# use} other {# uses}}",
+      "kindField": "Discount type",
+      "kindPercent": "Percentage",
+      "kindFixed": "Fixed amount",
+      "valuePercentLabel": "Discount (%)",
+      "valueFixedLabel": "Discount (€)",
+      "startsAtLabel": "Valid from",
+      "endsAtLabel": "Valid until",
+      "maxUsesLabel": "Max uses",
+      "maxUsesHint": "(empty = unlimited)",
+      "applicableTicketTypesLabel": "Applies to tariffs",
+      "appliesToAllHint": "No selection = applies to all tariffs.",
+      "worthlessPartialReceiptWarning": "This discount brings the price below a PARTIAL-receipt tariff's ineligible amount — the resulting receipt would be worth €0.",
+      "removeCode": "Remove this code",
+      "addCode": "Add a code",
+      "codeRequiredError": "Every code must have a value.",
+      "duplicateCodeError": "Two codes cannot be identical.",
+      "percentTooHighError": "A percentage cannot exceed 100.",
+      "valueRequiredError": "The discount must be greater than 0.",
+      "windowInvalidError": "The end date must be after the start date.",
+      "saved": "Promo codes saved"
     }
   },
   "actualites": {

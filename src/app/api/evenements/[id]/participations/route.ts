@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // Narrower than MANAGERS on purpose — waiving a ticket's price is a judgment call an
@@ -30,7 +31,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
   // separate, deliberate click, same as any other row.
   const participations = await prisma.participation.findMany({
     where:  { evenementId },
-    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true },
+    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true, receiptMode: true },
   })
 
   const rows = participations
@@ -50,6 +51,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
       stripeSessionId: p.stripeSessionId,
       ticketTypeLabel: p.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
       isGuest:         p.membreId == null,
+      receiptMode:     p.receiptMode,
     }))
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
 
@@ -66,7 +68,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { title: true, price: true, ticketTypes: { select: { id: true, label: true, price: true } } },
+    select: { title: true, price: true, ticketTypes: { select: { id: true, label: true, price: true, receiptMode: true, ineligibleAmount: true } } },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   const hasTicketTypes = evenement.ticketTypes.length > 0
@@ -83,7 +85,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     participation = await prisma.participation.findFirst({ where: { membreId, evenementId } })
     if (!participation) {
       participation = await prisma.participation.create({
-        data: { membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
+        data: { associationId, membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
       })
     }
   } else {
@@ -109,7 +111,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     // actually charged.
     const updated = await prisma.participation.update({
       where: { id: participation.id },
-      data:  { ticketPaidAt: paidAt, amount: 0, ticketTypeId: null },
+      data:  { ticketPaidAt: paidAt, amount: 0, ticketTypeId: null, receiptMode: "NONE", deductibleAmount: null },
     })
 
     await writeActivityLog({
@@ -130,7 +132,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   // to whatever this registration already picked (public form, portal purchase, or a
   // previous manual assignment); a single-tier event has no ambiguity so needs neither.
   // More than one tier and nothing resolved means the caller must pick — never guess.
-  let tier: { id: string; label: string; price: unknown } | undefined
+  let tier: { id: string; label: string; price: unknown; receiptMode: "NONE" | "FULL" | "PARTIAL"; ineligibleAmount: unknown } | undefined
   if (hasTicketTypes) {
     if (ticketTypeId) {
       tier = evenement.ticketTypes.find(tt => tt.id === ticketTypeId)
@@ -143,15 +145,35 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
       return NextResponse.json({ error: "Sélectionnez un tarif" }, { status: 422 })
     }
   }
-  const amount = hasTicketTypes ? Number(tier!.price) : Number(evenement.price)
+  // Un code promo a déjà été validé/appliqué à l'inscription (voir inscription/route.ts) —
+  // recalculer ici depuis le prix de tarif ignorerait silencieusement la remise, même bug que
+  // celui corrigé côté webhook Stripe (voir Participation.amount/discountCodeId dans
+  // schema.prisma). Ignoré si l'admin réassigne explicitement une AUTRE tarif que celle
+  // d'origine — le code n'a jamais été validé contre ce nouveau choix.
+  const usesDiscountSnapshot = participation.discountCodeId != null && participation.amount != null
+    && (!ticketTypeId || ticketTypeId === participation.ticketTypeId)
+  const amount = usesDiscountSnapshot ? Number(participation.amount) : (hasTicketTypes ? Number(tier!.price) : Number(evenement.price))
 
   const exercice = await resolveExerciceForDate(associationId, paidAt)
   const exerciceGuard = closedExerciceGuard(exercice?.status)
   if (exerciceGuard) return exerciceGuard
 
+  // A visitor who chose an offline method at registration (see the public inscription
+  // route) already has it set here — respect that instead of guessing. Only a walk-in the
+  // admin is confirming with no prior selection (the only case that existed before this
+  // field) falls back to espèces, exactly as this route always assumed.
+  const method = participation.paymentMethod ?? "ESPECES"
+  const methodLabel = { ESPECES: "espèces", CHEQUE: "chèque", VIREMENT: "virement", STRIPE: "carte" }[method]
+
+  // Snapshotted from the tier at the moment of payment (see Participation.receiptMode in
+  // schema.prisma) — an admin editing the tier's receipt settings later must not retroactively
+  // change what receipt an already-paid ticket gets.
+  const receiptMode      = tier?.receiptMode ?? "NONE"
+  const deductibleAmount = eligibleReceiptAmount(amount, receiptMode, tier?.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)
+
   const updated = await prisma.participation.update({
     where: { id: participation.id },
-    data:  { ticketPaidAt: paidAt, amount, ticketTypeId: tier?.id },
+    data:  { ticketPaidAt: paidAt, amount, ticketTypeId: tier?.id, paymentMethod: method, receiptMode, deductibleAmount },
   })
 
   const ticketLabel = evenement.ticketTypes.length > 1 && tier ? ` (${tier.label})` : ""
@@ -162,7 +184,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
       memberId:        participation.membreId,
       participationId: participation.id,
       amount,
-      description: `Billet (espèces) — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
+      paymentMethod: method,
+      description: `Billet (${methodLabel}) — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
       source:      "MANUAL",
       status:      "PAID",
       date:        paidAt,
@@ -204,12 +227,19 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
     participation = await prisma.participation.findFirst({ where: { membreId, evenementId } })
     if (!participation) {
       participation = await prisma.participation.create({
-        data: { membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
+        data: { associationId, membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
       })
       justCreated = true
     }
   } else {
     return NextResponse.json({ error: "participationId ou membreId requis" }, { status: 422 })
+  }
+
+  // Une personne en liste d'attente n'a jamais reçu de place confirmée — la cocher présente
+  // directement contournerait la capacité sans jamais repasser par "Promouvoir" (qui, lui,
+  // revérifie la capacité au moment où ça compte). Doit d'abord être promue.
+  if (present && participation.rsvp === "LISTA_ESPERA") {
+    return NextResponse.json({ error: "Cette personne est en liste d'attente — promouvez-la d'abord." }, { status: 422 })
   }
 
   if (present && evenement.capacity != null) {
