@@ -5,7 +5,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { translateFields } from "@/lib/i18n/translate"
 import type { Locale } from "@/i18n/locales"
 
-type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number }
+type RsvpCounts = { CONFIRME: number; PROVAVEL: number; INCERTO: number; ABSENT: number; LISTA_ESPERA: number }
 
 async function getRsvpCounts(evenementIds: string[]): Promise<Record<string, RsvpCounts>> {
   if (!evenementIds.length) return {}
@@ -18,7 +18,7 @@ async function getRsvpCounts(evenementIds: string[]): Promise<Record<string, Rsv
 
   const result: Record<string, RsvpCounts> = {}
   for (const id of evenementIds) {
-    result[id] = { CONFIRME: 0, PROVAVEL: 0, INCERTO: 0, ABSENT: 0 }
+    result[id] = { CONFIRME: 0, PROVAVEL: 0, INCERTO: 0, ABSENT: 0, LISTA_ESPERA: 0 }
   }
   for (const g of groups) {
     if (g.rsvp) result[g.evenementId][g.rsvp] = g._count._all
@@ -75,17 +75,23 @@ export const GET = withPortalAuth(async (_req, ctx) => {
 
   const LIMIT = 10
 
-  const ticketTypesSelect = { orderBy: { order: "asc" as const }, select: { id: true, label: true, price: true, capacity: true } }
+  // Inactive tiers (see EvenementTicketType.active) are invisible here just like on the
+  // public form — same convention as inscription/route.ts's realTicketTypes filter, and
+  // matches what the portal checkout route itself will actually accept.
+  const ticketTypesSelect = { where: { active: true }, orderBy: { order: "asc" as const }, select: { id: true, label: true, price: true, capacity: true } }
 
   const [upcomingRaw, pastRaw] = await Promise.all([
     prisma.evenement.findMany({
-      where:   { associationId, date: { gte: now } },
+      // No visibility filter here (unlike the public site route) — PRIVATE means "portal
+      // only, not on the public site/link", so a member should still see it. DRAFT is
+      // excluded either way: an admin still configuring the event isn't done announcing it.
+      where:   { associationId, date: { gte: now }, status: "PUBLISHED" },
       orderBy: { date: "asc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect, ticketTypes: ticketTypesSelect },
     }),
     prisma.evenement.findMany({
-      where:   { associationId, date: { lt: now } },
+      where:   { associationId, date: { lt: now }, status: "PUBLISHED" },
       orderBy: { date: "desc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect, ticketTypes: ticketTypesSelect },

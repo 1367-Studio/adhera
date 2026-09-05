@@ -116,6 +116,16 @@ async function cancelPayment(evenementId: string, ref: RowRef) {
   return res.json()
 }
 
+async function promoteWaitlist(evenementId: string, participationId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/participations/promote`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ participationId }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json()
+}
+
 async function togglePresence(evenementId: string, ref: RowRef, present: boolean) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method: "POST",
@@ -290,6 +300,17 @@ export function useCancelPayment(evenementId: string) {
   })
 }
 
+export function usePromoteWaitlist(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (participationId: string) => promoteWaitlist(evenementId, participationId),
+    onSuccess: () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
+      qc.invalidateQueries({ queryKey: ["activity-logs"] }),
+    ]),
+  })
+}
+
 export function useTogglePresence(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
@@ -338,12 +359,14 @@ export function useDeleteGuest(evenementId: string) {
   })
 }
 
+export type EvenementCustomFieldType = "TEXT" | "NUMBER" | "FILE" | "LONG_TEXT" | "DATE" | "SELECT" | "RADIO" | "CHECKBOX_MULTI" | "BOOLEAN"
 export type EvenementCustomField = {
   id:       string
-  type:     "TEXT" | "NUMBER"
+  type:     EvenementCustomFieldType
   label:    string
   required: boolean
   order:    number
+  options:  string[] | null
 }
 export type EvenementCustomFieldDraft = Omit<EvenementCustomField, "id" | "order"> & { id?: string }
 
@@ -381,14 +404,21 @@ export function useSaveEvenementCustomFields(evenementId: string) {
 }
 
 export type EvenementTicketType = {
-  id:       string
-  label:    string
-  price:    string
-  capacity: number | null
-  order:    number
-  occupied: number
+  id:                  string
+  itemType:            "TICKET" | "DONATION"
+  label:               string
+  price:               string
+  priceBeforeDiscount: string | null
+  capacity:            number | null
+  order:               number
+  occupied:            number
+  receiptMode:         "NONE" | "FULL" | "PARTIAL"
+  ineligibleAmount:    string | null
+  active:              boolean
+  opensAt:             string | null
+  closesAt:            string | null
 }
-export type EvenementTicketTypeDraft = Omit<EvenementTicketType, "id" | "order" | "price" | "occupied"> & { id?: string; price: number }
+export type EvenementTicketTypeDraft = Omit<EvenementTicketType, "id" | "order" | "price" | "occupied" | "ineligibleAmount" | "priceBeforeDiscount"> & { id?: string; price: number; ineligibleAmount: number | null; priceBeforeDiscount: number | null }
 
 async function fetchTicketTypes(evenementId: string) {
   const res = await fetch(`/api/evenements/${evenementId}/ticket-types`)
@@ -403,7 +433,10 @@ async function saveTicketTypes(evenementId: string, ticketTypes: EvenementTicket
     body:    JSON.stringify(ticketTypes),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
-  return res.json() as Promise<EvenementTicketType[]>
+  // affectedDiscountCodes: codes promo qui ciblaient une tarif tout juste supprimée — voir le
+  // commentaire dans ticket-types/route.ts (la suppression n'est jamais bloquée pour ça, juste
+  // signalée).
+  return res.json() as Promise<{ ticketTypes: EvenementTicketType[]; affectedDiscountCodes: string[] }>
 }
 
 export function useEvenementTicketTypes(evenementId: string) {
@@ -421,6 +454,56 @@ export function useSaveEvenementTicketTypes(evenementId: string) {
     mutationFn: (ticketTypes: EvenementTicketTypeDraft[]) => saveTicketTypes(evenementId, ticketTypes),
     onSuccess:  () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "ticket-types"] }),
+      qc.invalidateQueries({ queryKey: QK }),
+    ]),
+  })
+}
+
+export type EvenementDiscountCode = {
+  id:            string
+  code:          string
+  kind:          "FIXED" | "PERCENT"
+  value:         string
+  startsAt:      string | null
+  endsAt:        string | null
+  maxUses:       number | null
+  usesCount:     number
+  active:        boolean
+  ticketTypeIds: string[]
+}
+export type EvenementDiscountCodeDraft = Omit<EvenementDiscountCode, "id" | "value" | "usesCount"> & { id?: string; value: number }
+
+async function fetchDiscountCodes(evenementId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/discount-codes`)
+  if (!res.ok) throw new Error("Erreur lors du chargement des codes promotionnels")
+  return res.json() as Promise<EvenementDiscountCode[]>
+}
+
+async function saveDiscountCodes(evenementId: string, discountCodes: EvenementDiscountCodeDraft[]) {
+  const res = await fetch(`/api/evenements/${evenementId}/discount-codes`, {
+    method:  "PUT",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(discountCodes),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<EvenementDiscountCode[]>
+}
+
+export function useEvenementDiscountCodes(evenementId: string) {
+  return useQuery({
+    queryKey: [...QK, evenementId, "discount-codes"],
+    queryFn:  () => fetchDiscountCodes(evenementId),
+    enabled:  !!evenementId,
+    staleTime: 0,
+  })
+}
+
+export function useSaveEvenementDiscountCodes(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (discountCodes: EvenementDiscountCodeDraft[]) => saveDiscountCodes(evenementId, discountCodes),
+    onSuccess:  () => Promise.all([
+      qc.invalidateQueries({ queryKey: [...QK, evenementId, "discount-codes"] }),
       qc.invalidateQueries({ queryKey: QK }),
     ]),
   })

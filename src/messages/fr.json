@@ -289,7 +289,8 @@
       "confirme": "J'y serai !",
       "provavel": "Si possible",
       "incerto": "Peut-être",
-      "absent": "Je ne viens pas"
+      "absent": "Je ne viens pas",
+      "listaEspera": "Sur liste d'attente"
     }
   },
   "documents": {
@@ -727,10 +728,22 @@
     "viewFullFaq": "Consulter la FAQ complète",
     "faqPreview": {
       "items": [
-        { "question": "Qu'est-ce qu'un exercice fiscal ?", "answer": "Une période financière (généralement un an) qui regroupe vos recettes, dépenses et transactions bancaires à des fins comptables." },
-        { "question": "Comment créer mon premier exercice fiscal ?", "answer": "Choisissez vos propres dates de début et de fin. Ce choix est permanent et définit le calendrier fiscal de votre association pour toutes les années suivantes." },
-        { "question": "Que se passe-t-il lorsque je clôture un exercice fiscal ?", "answer": "Les enregistrements existants (recettes, dépenses et transactions bancaires) dont les dates se situent dans cet exercice fiscal mais qui ne sont pas encore rattachés à un exercice fiscal y sont automatiquement rattachés." },
-        { "question": "Que se passe-t-il lorsque je supprime un exercice fiscal ?", "answer": "La suppression d'un exercice fiscal ne supprime pas les enregistrements qui y sont rattachés. Ces enregistrements redeviennent simplement « Non attribués », comme ils l'étaient avant la création de l'exercice fiscal." }
+        {
+          "question": "Qu'est-ce qu'un exercice fiscal ?",
+          "answer": "Une période financière (généralement un an) qui regroupe vos recettes, dépenses et transactions bancaires à des fins comptables."
+        },
+        {
+          "question": "Comment créer mon premier exercice fiscal ?",
+          "answer": "Choisissez vos propres dates de début et de fin. Ce choix est permanent et définit le calendrier fiscal de votre association pour toutes les années suivantes."
+        },
+        {
+          "question": "Que se passe-t-il lorsque je clôture un exercice fiscal ?",
+          "answer": "Les enregistrements existants (recettes, dépenses et transactions bancaires) dont les dates se situent dans cet exercice fiscal mais qui ne sont pas encore rattachés à un exercice fiscal y sont automatiquement rattachés."
+        },
+        {
+          "question": "Que se passe-t-il lorsque je supprime un exercice fiscal ?",
+          "answer": "La suppression d'un exercice fiscal ne supprime pas les enregistrements qui y sont rattachés. Ces enregistrements redeviennent simplement « Non attribués », comme ils l'étaient avant la création de l'exercice fiscal."
+        }
       ]
     }
   },
@@ -1256,6 +1269,12 @@
     }
   },
   "evenements": {
+    "duplicateSuffix": "(copie)",
+    "formStatus": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "archived": "Archivé"
+    },
     "form": {
       "coverImage": "Image de couverture",
       "title": "Titre",
@@ -1269,11 +1288,19 @@
       "capacity": "Capacité",
       "capacityHint": "(vide = illimitée)",
       "capacityUnit": "{count, plural, one {# place} other {# places}}",
+      "waitlistEnabledLabel": "Autoriser une liste d'attente",
+      "waitlistEnabledHint": "Une fois complet, les nouvelles inscriptions rejoignent une liste d'attente au lieu d'être refusées.",
       "adminNotificationEmail": "Email de notification",
       "adminNotificationEmailPlaceholder": "vous@association.fr",
       "adminNotificationEmailHint": "Optionnel — recevez un email à chaque inscription à cet événement. Les gestionnaires reçoivent de toute façon une notification dans l'application.",
       "description": "Description",
       "descriptionPlaceholder": "Détails de l'événement…",
+      "conditionsLabel": "Conditions générales",
+      "conditionsPlaceholder": "Conditions générales de l'événement…",
+      "conditionsPdfLabel": "Document des conditions (PDF ou image)",
+      "requireCguvLabel": "Exiger la signature des conditions générales",
+      "contactEmailLabel": "Email de contact",
+      "contactPhoneLabel": "Téléphone de contact",
       "toasts": {
         "uploadError": "Erreur lors de l'upload de l'image"
       }
@@ -1289,10 +1316,17 @@
       "ticketTypeLabel": "Tarif",
       "ticketTypeFree": "Gratuit",
       "ticketTypeFromPrice": "À partir de {amount}",
+      "wasPrice": "avant {amount}",
+      "donationExtrasLabel": "Ajouter un don",
+      "belowDonationMinimum": "Le montant minimum pour ce don est {amount}.",
       "ticketTypeInvalid": "Ce tarif n'est plus disponible — choisissez-en un autre.",
+      "ticketTypeNotOpenToast": "Ce tarif n'est pas encore ouvert — choisissez-en un autre.",
+      "ticketTypeClosedToast": "Ce tarif n'est plus disponible — choisissez-en un autre.",
       "ticketTypeFull": "Ce tarif est complet — choisissez-en un autre.",
       "ticketTypeSoldOut": "complet",
       "ticketTypeRemaining": "{count} restantes",
+      "ticketTypeNotOpenYet": "pas encore ouvert",
+      "ticketTypeClosed": "clos",
       "duplicateEmail": "Chaque billet doit utiliser une adresse e-mail différente.",
       "alreadyRegistered": "{email} est déjà inscrit(e) à cet événement.",
       "attendeesSkipped": "{count, plural, one {# personne était déjà inscrite et a été conservée} other {# personnes étaient déjà inscrites et ont été conservées}} — le reste de la commande a bien été traité.",
@@ -1301,6 +1335,8 @@
       "paymentDisabled": "Le paiement en ligne n'est pas disponible pour le moment.",
       "submittedTitle": "Inscription enregistrée !",
       "submittedWithEmail": "Un e-mail de confirmation vous a été envoyé.",
+      "waitlistedTitle": "Vous êtes sur liste d'attente",
+      "waitlistedBody": "Cet événement est complet. Nous vous préviendrons par e-mail si une place se libère.",
       "thankYouTitle": "Merci pour votre achat !",
       "thankYouBody": "Votre paiement a bien été reçu. Votre billet et son QR code d'entrée vous seront envoyés par e-mail dans quelques instants.",
       "thankYouClose": "Compris",
@@ -1319,17 +1355,58 @@
       "firstNameLabel": "Prénom *",
       "lastNameLabel": "Nom *",
       "emailLabel": "E-mail *",
-      "phoneLabel": "Téléphone (optionnel)",
-      "addressLabel": "Adresse (optionnelle)",
+      "phoneLabel": "Téléphone",
+      "addressLabel": "Adresse",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optionnel)",
+      "fileAttach": "Joindre un fichier",
+      "fileUploading": "Upload en cours…",
+      "fileChosen": "Fichier joint",
+      "fileRemove": "Supprimer le fichier",
+      "fileTooLarge": "Fichier trop volumineux (max 10 Mo)",
+      "fileUploadError": "Erreur lors de l'upload",
+      "fileNetworkError": "Erreur réseau lors de l'upload — réessayez",
       "totalLabel": "Total :",
       "submit": "S'inscrire",
       "pay": "Payer {amount}",
       "privacyNote": "Vos données sont utilisées uniquement pour votre inscription à cet événement.",
+      "contactHelp": "Une question ? Contactez-nous :",
       "errorGeneric": "Erreur",
       "errorNetwork": "Erreur réseau",
-      "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur »."
+      "inAppBrowserWarning": "Vous naviguez depuis Facebook ou Instagram, ce qui peut empêcher cette page de fonctionner correctement. Appuyez sur ⋯ puis « Ouvrir dans le navigateur ».",
+      "paymentMethodLabel": "Moyen de paiement",
+      "paymentMethodStripe": "Carte bancaire",
+      "paymentMethodCash": "Espèces",
+      "paymentMethodCheque": "Chèque",
+      "paymentMethodTransfer": "Virement",
+      "paymentMethodOnlineOnlyMultipleAttendees": "carte bancaire (les moyens hors ligne ne sont pas disponibles avec plusieurs participants)",
+      "paymentMethodOnlineOnlyProducts": "carte bancaire (les moyens hors ligne ne sont pas disponibles avec des produits)",
+      "notOpenYet": "Les inscriptions ne sont pas encore ouvertes.",
+      "registrationClosed": "Les inscriptions sont closes.",
+      "mobileLabel": "Mobile",
+      "mobilePlaceholder": "06 12 34 56 78",
+      "birthDateLabel": "Date de naissance",
+      "genderLabel": "Genre",
+      "genderNone": "Préférer ne pas préciser",
+      "genderHomme": "Homme",
+      "genderFemme": "Femme",
+      "booleanYes": "Oui",
+      "booleanNo": "Non",
+      "productsLabel": "Produits",
+      "outOfStock": "Épuisé",
+      "decreaseQuantityLabel": "Diminuer la quantité",
+      "increaseQuantityLabel": "Augmenter la quantité",
+      "viewConditionsLabel": "Consulter les conditions générales",
+      "conditionsModalTitle": "Conditions générales",
+      "conditionsAgreeLabel": "J'accepte les conditions générales",
+      "signedNameLabel": "Nom complet (signature)",
+      "discountCodeLabel": "Code promotionnel",
+      "discountCodeApply": "Appliquer",
+      "discountCodeApplied": "Code « {code} » appliqué",
+      "discountCodeRemove": "Retirer",
+      "discountCodeInvalid": "Ce code n'est pas valide.",
+      "discountCodeNotApplicable": "Ce code ne s'applique pas au tarif sélectionné.",
+      "discountAmountLabel": "Réduction :"
     },
     "scanner": {
       "openButton": "Scanner les billets",
@@ -1374,7 +1451,12 @@
         "edit": "Modifier",
         "customFields": "Champs personnalisés",
         "ticketTypes": "Tarifs",
-        "delete": "Supprimer"
+        "delete": "Supprimer",
+        "publish": "Publier",
+        "unpublish": "Dépublier",
+        "archive": "Archiver",
+        "duplicate": "Dupliquer",
+        "open": "Ouvrir"
       },
       "searchPlaceholder": "Rechercher un événement…",
       "noResultsFor": "Aucun résultat pour « {search} »",
@@ -1387,7 +1469,16 @@
         "created": "Événement créé avec succès",
         "updated": "Événement mis à jour",
         "deleted": "Événement supprimé",
-        "linkCopied": "Lien copié !"
+        "linkCopied": "Lien copié !",
+        "statusUpdated": "Statut mis à jour",
+        "duplicated": "Événement dupliqué"
+      },
+      "newEventModal": {
+        "title": "Nouvel événement",
+        "titleLabel": "Titre de l'événement",
+        "titlePlaceholder": "Assemblée générale 2026",
+        "dateLabel": "Date de début",
+        "createButton": "Créer"
       }
     },
     "customFields": {
@@ -1398,11 +1489,22 @@
       "fieldLabelPlaceholder": "Ex : Taille du t-shirt",
       "fieldType": "Type",
       "typeText": "Texte",
+      "typeLongText": "Texte long",
       "typeNumber": "Nombre",
+      "typeDate": "Date",
+      "typeBoolean": "Oui/Non",
+      "typeSelect": "Liste déroulante",
+      "typeRadio": "Choix unique",
+      "typeCheckboxMulti": "Choix multiple",
+      "typeFile": "Fichier",
       "fieldRequired": "Obligatoire",
       "removeField": "Supprimer ce champ",
       "addField": "Ajouter un champ",
+      "optionPlaceholder": "Option {n}",
+      "addOption": "Ajouter une option",
+      "removeOption": "Supprimer cette option",
       "labelRequiredError": "Chaque champ doit avoir un intitulé.",
+      "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
       "saved": "Champs personnalisés enregistrés"
     },
     "ticketTypes": {
@@ -1411,6 +1513,11 @@
       "noTypes": "Aucun tarif pour l'instant — l'événement utilise son prix unique.",
       "typeLabel": "Intitulé du tarif",
       "typeLabelPlaceholder": "Ex : Tarif réduit",
+      "itemTypeField": "Type",
+      "itemTypeTicket": "Billet",
+      "itemTypeDonation": "Don",
+      "activeField": "Active",
+      "minAmountField": "Montant minimum (€)",
       "priceLabel": "Prix",
       "capacityLabel": "Capacité",
       "capacityHint": "(vide = illimité)",
@@ -1420,7 +1527,22 @@
       "saved": "Tarifs enregistrés",
       "occupiedCount": "{count, plural, one {# inscrit} other {# inscrits}}",
       "capacityBelowOccupiedWarning": "Attention : {count, plural, one {# personne est} other {# personnes sont}} déjà inscrite(s) sur ce tarif — réduire la capacité en dessous ne libérera pas de places déjà prises.",
-      "capacitySumExceedsEventWarning": "La somme des capacités des tarifs ({sum}) dépasse la capacité de l'événement ({eventCapacity})."
+      "capacitySumExceedsEventWarning": "La somme des capacités des tarifs ({sum}) dépasse la capacité de l'événement ({eventCapacity}).",
+      "receiptModeField": "Reçu fiscal",
+      "receiptNone": "Non",
+      "receiptFull": "Oui, intégralement",
+      "receiptPartial": "Oui, partiellement",
+      "ineligibleAmountField": "Montant non éligible au reçu fiscal (€)",
+      "ineligibleAmountRequiredError": "Le montant non éligible est requis pour un reçu partiel",
+      "ineligibleAmountExceedsError": "Le montant non éligible ne peut pas dépasser le prix du tarif",
+      "eligibleAmountPreview": "Éligible : {amount}",
+      "showDiscountField": "Afficher une réduction",
+      "priceBeforeDiscountField": "Prix avant réduction (€)",
+      "priceBeforeDiscountTooLowError": "Le prix avant réduction doit être supérieur au prix réel",
+      "opensAtLabel": "Ouvre",
+      "closesAtLabel": "Ferme",
+      "windowInvalidError": "La date de fermeture d'un tarif doit être après sa date d'ouverture",
+      "affectedDiscountCodesWarning": "Tarif supprimée — le(s) code(s) promotionnel(s) {codes} ne s'y applique(nt) plus."
     },
     "calendar": {
       "days": {
@@ -1466,7 +1588,8 @@
       "counter": {
         "presentWord": "{count, plural, one {présent} other {présents}}",
         "full": "Complet",
-        "liveCheckIn": "Check-in en cours · temps réel"
+        "liveCheckIn": "Check-in en cours · temps réel",
+        "waitlisted": "{count, plural, one {# en liste d'attente} other {# en liste d'attente}}"
       },
       "qr": {
         "heading": "QR Code de check-in",
@@ -1496,11 +1619,18 @@
         "infoEmail": "E-mail",
         "infoPhone": "Téléphone",
         "infoAddress": "Adresse",
+        "infoMobile": "Mobile",
+        "infoFileView": "Voir le fichier joint",
+        "booleanYes": "Oui",
+        "booleanNo": "Non",
         "reservedBadge": "Réservé",
         "markPaid": "Marquer payé",
         "markFreeTooltip": "Marquer gratuit (exception ponctuelle, sans créer de tarif public)",
         "editTitle": "Modifier",
-        "removeTitle": "Retirer"
+        "removeTitle": "Retirer",
+        "receiptLink": "Télécharger le reçu fiscal",
+        "waitlistBadge": "Liste d'attente",
+        "promote": "Promouvoir"
       },
       "addGuestModal": {
         "title": "Ajouter un invité",
@@ -1542,6 +1672,8 @@
         "markedPaid": "{name} marqué comme payé",
         "markedFree": "{name} marqué comme gratuit",
         "paymentCancelled": "Paiement de {name} annulé",
+        "promoted": "{name} promu·e depuis la liste d'attente",
+        "waitlistedMustPromote": "Cette personne est en liste d'attente — promouvez-la d'abord.",
         "guestAdded": "{name} ajouté·e",
         "memberAdded": "{name} ajouté·e à la liste",
         "guestUpdated": "Invité·e mis·e à jour",
@@ -1562,6 +1694,123 @@
         "comment": "Commentaire",
         "date": "Date"
       }
+    },
+    "detail": {
+      "backToList": "Retour aux événements",
+      "draftNotice": "Non visible publiquement tant que l'événement n'est pas publié.",
+      "leaveWarning": {
+        "title": "Modifications non enregistrées",
+        "description": "Certaines sections ont été modifiées sans être enregistrées. Vous pouvez les enregistrer avant de quitter, ou les abandonner.",
+        "discard": "Abandonner",
+        "saveAndLeave": "Enregistrer et quitter"
+      },
+      "partialSaveWarning": "Une partie des modifications a bien été enregistrée avant l'erreur — vérifiez les étapes déjà sauvegardées.",
+      "notFound": "Événement introuvable",
+      "titleLabel": "Titre de l'événement",
+      "duplicateButton": "Dupliquer",
+      "deleteButton": "Supprimer",
+      "publishButton": "Publier",
+      "unpublishButton": "Dépublier",
+      "copyLinkButton": "Copier le lien",
+      "previewButton": "Aperçu",
+      "archiveButton": "Archiver",
+      "toasts": {
+        "saved": "Modifications enregistrées",
+        "saveError": "Erreur lors de l'enregistrement",
+        "linkCopied": "Lien copié",
+        "linkCopyError": "Copie impossible — sélectionnez le lien manuellement."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Enregistrez les sections suivantes avant de publier : {steps}",
+        "unsavedTag": "Non enregistré"
+      },
+      "steps": {
+        "info": {
+          "title": "Informations générales"
+        },
+        "tiers": {
+          "title": "Tarifs"
+        },
+        "fields": {
+          "title": "Formulaire",
+          "standardFieldsHint": "Champs demandés à l'inscription",
+          "phoneLabel": "Téléphone",
+          "addressLabel": "Adresse",
+          "requirement": {
+            "hidden": "Masqué",
+            "optional": "Optionnel",
+            "required": "Obligatoire"
+          },
+          "mobileLabel": "Mobile",
+          "birthDateLabel": "Date de naissance",
+          "genderLabel": "Genre"
+        },
+        "products": {
+          "title": "Produits",
+          "hint": "Produits de la Boutique proposés à l'achat en fin d'inscription. Le stock est partagé avec le module Boutique.",
+          "noProducts": "Aucun produit actif dans la Boutique. Activez le module Boutique et créez au moins un produit pour en proposer ici.",
+          "stockCount": "{count, plural, one {# en stock} other {# en stock}}",
+          "outOfStock": "Épuisé",
+          "selectedCount": "{count}/{max} produits sélectionnés",
+          "maxProductsError": "Vous pouvez proposer au maximum {max} produits",
+          "saved": "Produits enregistrés",
+          "saveProducts": "Enregistrer les produits"
+        },
+        "payment": {
+          "title": "Paiement",
+          "hint": "Méthodes de paiement acceptées pour les tarifs payants.",
+          "allowCashLabel": "Espèces",
+          "allowChequeLabel": "Chèque",
+          "allowTransferLabel": "Virement",
+          "offlineInstructionsLabel": "Instructions pour le paiement hors ligne",
+          "offlineInstructionsPlaceholder": "Ex. Chèque à l'ordre de… / IBAN…",
+          "confirmationMessageLabel": "Message de confirmation",
+          "adminNotificationEmailLabel": "Email de notification (optionnel)",
+          "adminNotificationEmailPlaceholder": "gestion@association.fr",
+          "adminNotificationEmailHint": "Reçoit un email à chaque inscription à cet événement, en plus de la notification dans l'application."
+        },
+        "publish": {
+          "title": "Publication",
+          "visibilityLabel": "Visibilité",
+          "visibilityLink": "Sur lien uniquement",
+          "visibilityPrivate": "Privé",
+          "schedulePeriodLabel": "Limiter la période d'inscription",
+          "schedulePeriodHint": "Sans période définie, l'inscription reste ouverte tant que l'événement est publié.",
+          "opensAtLabel": "Ouverture",
+          "closesAtLabel": "Fermeture",
+          "datesOrderError": "La date de fermeture doit être postérieure à la date d'ouverture."
+        }
+      },
+      "titleRequired": "Le titre est obligatoire"
+    },
+    "discountCodes": {
+      "title": "Codes promotionnels",
+      "description": "Optionnel : proposez des codes de réduction sur le prix des billets (jamais sur les dons ni la boutique).",
+      "noCodes": "Aucun code promotionnel pour l'instant.",
+      "codeLabel": "Code",
+      "codePlaceholder": "Ex : BIENVENUE10",
+      "activeField": "Actif",
+      "usesCount": "{count, plural, one {# utilisation} other {# utilisations}}",
+      "kindField": "Type de réduction",
+      "kindPercent": "Pourcentage",
+      "kindFixed": "Montant fixe",
+      "valuePercentLabel": "Réduction (%)",
+      "valueFixedLabel": "Réduction (€)",
+      "startsAtLabel": "Valable à partir de",
+      "endsAtLabel": "Valable jusqu'à",
+      "maxUsesLabel": "Nombre d'utilisations max",
+      "maxUsesHint": "(vide = illimité)",
+      "applicableTicketTypesLabel": "S'applique aux tarifs",
+      "appliesToAllHint": "Aucune sélection = s'applique à tous les tarifs.",
+      "worthlessPartialReceiptWarning": "Cette remise réduit le prix sous le montant non éligible d'une tarif à reçu partiel — le reçu résultant serait à 0 €.",
+      "removeCode": "Supprimer ce code",
+      "addCode": "Ajouter un code",
+      "codeRequiredError": "Chaque code doit avoir une valeur.",
+      "duplicateCodeError": "Deux codes ne peuvent pas être identiques.",
+      "percentTooHighError": "Un pourcentage ne peut pas dépasser 100.",
+      "valueRequiredError": "La réduction doit être supérieure à 0.",
+      "windowInvalidError": "La date de fin doit être après la date de début.",
+      "saved": "Codes promotionnels enregistrés"
     }
   },
   "actualites": {
@@ -2329,7 +2578,7 @@
     "donationsView": {
       "columns": {
         "donor": "Donateur",
-        "form": "Formulaire",
+        "form": "Origine",
         "standalone": "Page autonome",
         "message": "Message",
         "date": "Date",
@@ -2337,12 +2586,24 @@
         "method": "Moyen"
       },
       "noDonations": "Aucun don enregistré",
+      "noDonationsFiltered": "Aucun don ne correspond à ces filtres.",
+      "resetFilters": "Réinitialiser",
       "totalLabel": "Total {year}",
       "donorsLabel": "Donateurs",
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",
       "encaisserButton": "Encaisser",
       "fromMembershipForm": "Don lié à une adhésion — « {tier} »",
+      "fromEvenement": "Don lié à un billet d'évènement : « {evenement} »",
+      "fromEvenementPrompt": "Don suite à une inscription à l'évènement : « {evenement} »",
+      "originFilter": {
+        "all": "Toutes les origines",
+        "form": "Formulaire de don",
+        "adhesion": "Adhésion",
+        "evenementTicket": "Évènement (billet)",
+        "evenementPrompt": "Évènement (inscription)",
+        "standalone": "Page autonome"
+      },
       "paymentMethod": {
         "especes": "Espèces",
         "cheque": "Chèque",

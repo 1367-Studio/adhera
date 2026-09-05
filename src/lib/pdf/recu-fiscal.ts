@@ -48,20 +48,21 @@ type AssociationForReceipt = {
   organismeCategoryDetail?: string | null
 }
 
-// Shared across Don AND Cotisation (see generateRecuFiscalForCotisation below) — a cotisation
-// tax receipt is legally the same "reçu fiscal" as a donation one, so both must draw from one
+// Shared across Don, Cotisation AND Participation (see generateRecuFiscalForCotisation/
+// generateRecuFiscalForParticipation below) — a receipt for an event ticket is legally the
+// same "reçu fiscal" as a donation or membership one, so all three must draw from one
 // sequence per association/year rather than each keeping its own (which could otherwise hand
-// out the same number to a Don and a Cotisation).
-async function assignReceiptNumber(associationId: string, source: "don" | "cotisation", id: string): Promise<string> {
+// out the same number twice).
+async function assignReceiptNumber(associationId: string, source: "don" | "cotisation" | "participation", id: string): Promise<string> {
   const year   = new Date().getFullYear()
   const prefix = `${year}-`
 
   // Read-max-then-write-next races when two receipts for the same association are issued
-  // concurrently. `@@unique([associationId, receiptNumber])` (on both Don and Cotisation)
-  // turns that race into a constraint violation instead of a silent duplicate — retry with a
-  // freshly re-read max on conflict.
+  // concurrently. `@@unique([associationId, receiptNumber])` (on Don, Cotisation and
+  // Participation) turns that race into a constraint violation instead of a silent
+  // duplicate — retry with a freshly re-read max on conflict.
   for (let attempt = 0; attempt < 5; attempt++) {
-    const [lastDon, lastCotisation] = await Promise.all([
+    const [lastDon, lastCotisation, lastParticipation] = await Promise.all([
       prisma.don.findFirst({
         where:   { associationId, receiptNumber: { startsWith: prefix }, paidAt: { not: null } },
         orderBy: { receiptNumber: "desc" },
@@ -72,17 +73,24 @@ async function assignReceiptNumber(associationId: string, source: "don" | "cotis
         orderBy: { receiptNumber: "desc" },
         select:  { receiptNumber: true },
       }),
+      prisma.participation.findFirst({
+        where:   { associationId, receiptNumber: { startsWith: prefix }, ticketPaidAt: { not: null } },
+        orderBy: { receiptNumber: "desc" },
+        select:  { receiptNumber: true },
+      }),
     ])
 
     const seqOf = (rn?: string | null) => rn ? parseInt(rn.split("-")[1] ?? "0", 10) : 0
-    const seq = Math.max(seqOf(lastDon?.receiptNumber), seqOf(lastCotisation?.receiptNumber)) + 1
+    const seq = Math.max(seqOf(lastDon?.receiptNumber), seqOf(lastCotisation?.receiptNumber), seqOf(lastParticipation?.receiptNumber)) + 1
     const receiptNumber = `${prefix}${String(seq).padStart(4, "0")}`
 
     try {
       if (source === "don") {
         await prisma.don.update({ where: { id }, data: { receiptNumber, receiptIssuedAt: new Date() } })
-      } else {
+      } else if (source === "cotisation") {
         await prisma.cotisation.update({ where: { id }, data: { receiptNumber, receiptIssuedAt: new Date() } })
+      } else {
+        await prisma.participation.update({ where: { id }, data: { receiptNumber, receiptIssuedAt: new Date() } })
       }
       return receiptNumber
     } catch (err) {
@@ -347,5 +355,44 @@ export async function generateRecuFiscalForCotisation(
     receiptIssuedAt: cotisation.receiptIssuedAt,
     receiptMode:      cotisation.receiptMode,
     deductibleAmount: cotisation.deductibleAmount,
+  }, association)
+}
+
+type ParticipationForReceipt = {
+  id:               string
+  firstName:        string
+  lastName:         string
+  address:          string | null
+  amount:           { toString(): string } | null
+  ticketPaidAt:     Date | null
+  receiptNumber:    string | null
+  receiptIssuedAt:  Date | null
+  receiptMode?:      string | null
+  deductibleAmount?: { toString(): string } | null
+}
+
+// A ticket buyer is always an individual — EvenementTicketType has no entreprise/SIRET
+// concept, unlike DonationTier — so this always goes through the individual template
+// (generateRecuFiscal), never generateRecuFiscalEntreprise. Same convention as
+// generateRecuFiscalForCotisation above.
+export async function generateRecuFiscalForParticipation(
+  participation: ParticipationForReceipt,
+  association: AssociationForReceipt,
+): Promise<Buffer> {
+  const receiptNumber = participation.receiptNumber
+    ?? await assignReceiptNumber(association.id, "participation", participation.id)
+
+  return generateRecuFiscal({
+    id:              participation.id,
+    firstName:       participation.firstName,
+    lastName:        participation.lastName,
+    address:         participation.address,
+    amount:          participation.amount ?? "0",
+    paidAt:          participation.ticketPaidAt,
+    anonymous:       false,
+    receiptNumber,
+    receiptIssuedAt: participation.receiptIssuedAt,
+    receiptMode:      participation.receiptMode,
+    deductibleAmount: participation.deductibleAmount,
   }, association)
 }

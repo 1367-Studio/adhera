@@ -15,6 +15,7 @@ import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationO
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import type Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { APP_URL } from "@/lib/env"
 import {
   isDonationSubscriptionEvent, handleDonationSubscriptionCheckout, handleDonationSubscriptionSynced,
@@ -24,6 +25,8 @@ import {
   isCotisationSubscriptionEvent, handleCotisationSubscriptionCheckout, handleCotisationSubscriptionSynced,
   handleCotisationSubscriptionDeleted, handleCotisationInvoicePaid, tryHandleCotisationInvoicePaymentFailed,
 } from "@/lib/webhook/cotisation-subscriptions"
+import { createEvenementDonation, parseEvenementDonations } from "@/lib/webhook/evenement-addons"
+import { createEvenementProductPurchase } from "@/lib/webhook/evenement-products"
 import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
 import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
@@ -438,7 +441,7 @@ export async function POST(req: Request) {
         const tickets = await prisma.participation.findMany({
           where:   { orderId },
           include: {
-            ticketType: { select: { price: true } },
+            ticketType: { select: { price: true, receiptMode: true, ineligibleAmount: true } },
             evenement: {
               select: {
                 title:        true,
@@ -447,7 +450,7 @@ export async function POST(req: Request) {
                 location:     true,
                 associationId: true,
                 adminNotificationEmail: true,
-                association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
+                association:  { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true } },
               },
             },
           },
@@ -466,15 +469,99 @@ export async function POST(req: Request) {
           // the checkout session was still open. This amount also drives later self-service
           // refunds (cancel-ticket route), so getting it wrong here can make a refund
           // attempt exceed what was ever charged.
-          const ticketAmounts = new Map(tickets.map(t => [t.id, Number(t.ticketType?.price ?? evenement.price ?? 0)]))
+          // Préfère le montant déjà snapshotté à l'inscription (voir inscription/route.ts) —
+          // recalculer depuis le prix de tarif ignorerait silencieusement tout code promo
+          // appliqué au checkout. Ne retombe sur le prix de tabale que pour les billets d'avant
+          // ce snapshot (amount encore null) — même compromis que le fallback evenement.price déjà
+          // accepté ci-dessus.
+          const ticketAmounts = new Map(tickets.map(t => [t.id, t.amount != null ? Number(t.amount) : Number(t.ticketType?.price ?? evenement.price ?? 0)]))
           const totalAmount   = [...ticketAmounts.values()].reduce((sum, a) => sum + a, 0)
 
           // Best-effort exercice link — never blocks, same reasoning as the other branches.
           const exercice = await resolveExerciceForDate(evenement.associationId, paidAt)
 
+          // Snapshotted from each seat's tier at the moment of payment (see
+          // Participation.receiptMode in schema.prisma) — an admin editing the tier's receipt
+          // settings later must not retroactively change what receipt an already-paid ticket gets.
           await prisma.$transaction(
-            tickets.map(t => prisma.participation.update({ where: { id: t.id }, data: { amount: ticketAmounts.get(t.id) } })),
+            tickets.map(t => {
+              const amount      = ticketAmounts.get(t.id)!
+              const receiptMode = t.ticketType?.receiptMode ?? "NONE"
+              const deductibleAmount = eligibleReceiptAmount(amount, receiptMode, t.ticketType?.ineligibleAmount != null ? Number(t.ticketType.ineligibleAmount) : null)
+              return prisma.participation.update({ where: { id: t.id }, data: { amount, receiptMode, deductibleAmount } })
+            }),
           )
+
+          // Embedded donation extra(s) chosen alongside the ticket — only ever present for a
+          // single-attendee order (see inscription/route.ts), created only now that Stripe has
+          // actually confirmed payment, mirroring createMembershipAddonPurchases's own
+          // Stripe-webhook timing.
+          const donations = parseEvenementDonations(sess.metadata?.donations)
+          if (donations.length > 0) {
+            await prisma.$transaction(async (tx) => {
+              await createEvenementDonation(tx, {
+                associationId: evenement.associationId,
+                firstName: buyerTicket.firstName, lastName: buyerTicket.lastName, email: buyerTicket.email!,
+                donations,
+                canIssueTaxReceipts: evenement.association?.canIssueTaxReceipts ?? false,
+              })
+            })
+          }
+
+          // Boutique products chosen alongside the ticket — only ever present for a
+          // single-attendee order (see inscription/route.ts), decremented from stock only now
+          // that Stripe has actually confirmed payment. A failure here never blocks the
+          // ticket itself, which is already paid — same "money already moved" reasoning as
+          // createMembershipFormProductPurchase.
+          try {
+            const productResult = await createEvenementProductPurchase({
+              associationId:   evenement.associationId,
+              participationId: buyerTicket.id,
+              membreId:        buyerTicket.membreId,
+              guestName:       `${buyerTicket.firstName} ${buyerTicket.lastName}`,
+              guestEmail:      buyerTicket.email,
+              paymentIntentId,
+              productsJson:    sess.metadata?.products,
+            })
+            if (productResult?.flaggedOversells.length) {
+              const admins = await prisma.user.findMany({
+                where:  { associationId: evenement.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+                select: { id: true },
+              })
+              if (admins.length) {
+                await prisma.notification.createMany({
+                  data: admins.map(a => ({
+                    userId: a.id,
+                    title:  "Vente boutique en rupture de stock lors d'un événement",
+                    body:   `${buyerTicket.firstName} ${buyerTicket.lastName} a payé pour ${productResult.flaggedOversells.length} produit(s) boutique devenu(s) indisponible(s) entre-temps. Le montant a été encaissé — contactez le participant pour convenir d'un arrangement.`,
+                    link:   "/dashboard/boutique",
+                    scope:  "GESTION",
+                  })),
+                  skipDuplicates: true,
+                })
+                await pusherServer.trigger(`private-association-${evenement.associationId}`, "new-notification", {}).catch(() => {})
+              }
+            }
+          } catch (err) {
+            console.error(`[evenement-products] failed to record boutique product purchase for checkout session ${sess.id} (association ${evenement.associationId}):`, err)
+            const admins = await prisma.user.findMany({
+              where:  { associationId: evenement.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
+              select: { id: true },
+            })
+            if (admins.length) {
+              await prisma.notification.createMany({
+                data: admins.map(a => ({
+                  userId: a.id,
+                  title:  "Vente boutique non enregistrée lors d'un événement",
+                  body:   `${buyerTicket.firstName} ${buyerTicket.lastName} a payé pour des produits boutique, mais l'achat n'a pas pu être enregistré automatiquement. Le billet lui-même est bien confirmé — vérifiez et enregistrez la vente manuellement si besoin.`,
+                  link:   "/dashboard/boutique",
+                  scope:  "GESTION",
+                })),
+                skipDuplicates: true,
+              })
+              await pusherServer.trigger(`private-association-${evenement.associationId}`, "new-notification", {}).catch(() => {})
+            }
+          }
 
           // One Income row per seat (not a single lump sum) so cancelling a single
           // companion later can remove just that seat's revenue without touching the rest.

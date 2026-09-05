@@ -10,10 +10,10 @@ import { useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { QRCodeSVG } from "qrcode.react"
-import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, GiftIcon, InfoIcon, PaperPlaneRightIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, ScanIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { MoneyIcon, BookmarkSimpleIcon, CheckIcon, CaretDownIcon, DownloadSimpleIcon, FileTextIcon, GiftIcon, InfoIcon, PaperPlaneRightIcon, PencilSimpleIcon, QrCodeIcon, ArrowsClockwiseIcon, MagnifyingGlassIcon, ScanIcon, TrashIcon, UserPlusIcon, UsersIcon, WarningCircleIcon, XIcon, HourglassIcon, ArrowUpIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
-  useAddGuest, useEditGuest, useDeleteGuest, type RowRef,
+  useAddGuest, useEditGuest, useDeleteGuest, usePromoteWaitlist, type RowRef,
 } from "@/hooks/use-evenements"
 import { useCurrentUser } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
@@ -38,7 +38,7 @@ type PresenceRow = {
   email:           string | null
   phone:           string | null
   address:         string | null
-  answers:         Record<string, string> | null
+  answers:         Record<string, string | string[]> | null
   participationId: string | null
   present:         boolean
   rsvp:            string | null
@@ -47,6 +47,7 @@ type PresenceRow = {
   stripeSessionId: string | null
   ticketTypeLabel: string | null
   isGuest:         boolean
+  receiptMode:     string | null
 }
 
 function rowRef(row: PresenceRow): RowRef {
@@ -61,7 +62,7 @@ function hasExtraInfo(row: PresenceRow): boolean {
   return !!(row.email || row.phone || row.address || (row.answers && Object.keys(row.answers).length > 0))
 }
 
-type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
+type CustomField = { id: string; type: "TEXT" | "NUMBER" | "FILE" | "LONG_TEXT" | "DATE" | "SELECT" | "RADIO" | "CHECKBOX_MULTI" | "BOOLEAN"; label: string; required: boolean }
 
 type EvenementTicketType = { id: string; label: string; price: string }
 
@@ -96,6 +97,20 @@ function getCheckInWindow(ev: Evenement) {
 
 type Translator = ReturnType<typeof useTranslations>
 
+// Shared by the info modal and the PDF export's contactLine — sinon les deux affichaient
+// une même réponse différemment (ex : "false" cru dans le PDF vs Oui/Non dans le modal).
+function formatFieldAnswer(field: CustomField, value: string | string[], t: Translator): string {
+  if (field.type === "BOOLEAN") {
+    return value === "true" ? t("evenements.presences.list.booleanYes") : t("evenements.presences.list.booleanNo")
+  }
+  if (Array.isArray(value)) return value.join(", ")
+  if (field.type === "DATE") {
+    const d = new Date(value)
+    return isNaN(d.getTime()) ? value : format(d, "dd MMM yyyy", { locale: fr })
+  }
+  return value
+}
+
 function getRsvpConfig(t: Translator): Record<string, { label: string; classes: string }> {
   return {
     CONFIRME: { label: t("evenements.presences.rsvp.confirme"), classes: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
@@ -121,6 +136,7 @@ export default function PresencesPage() {
   const [pendingIds, setPendingIds]      = useState<Set<string>>(new Set())
   const [payingIds, setPayingIds]        = useState<Set<string>>(new Set())
   const [cancelPayIds, setCancelPayIds]   = useState<Set<string>>(new Set())
+  const [promotingIds, setPromotingIds]   = useState<Set<string>>(new Set())
   const [search, setSearch]             = useState("")
   const [revokeConfirmOpen,     setRevokeConfirmOpen]     = useState(false)
   const [regenerateConfirmOpen, setRegenerateConfirmOpen] = useState(false)
@@ -218,10 +234,12 @@ export default function PresencesPage() {
   const reservedCount  = hasFee
     ? typed.filter(r => r.ticketPaidAt != null || r.rsvp === "CONFIRME").length
     : 0
+  const waitlistCount  = typed.filter(r => r.rsvp === "LISTA_ESPERA").length
 
   const toggle     = useTogglePresence(id)
   const markPaid    = useMarkPaid(id)
   const cancelPaid  = useCancelPayment(id)
+  const promoteWaitlist = usePromoteWaitlist(id)
   const addGuest    = useAddGuest(id)
   const editGuest   = useEditGuest(id)
   const deleteGuest = useDeleteGuest(id)
@@ -281,6 +299,18 @@ export default function PresencesPage() {
       onSuccess: () => toast.success(t("evenements.presences.toasts.paymentCancelled", { name: `${row.firstName} ${row.lastName}` })),
       onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setCancelPayIds(prev => { const s = new Set(prev); s.delete(key); return s }),
+    })
+  }
+
+  function handlePromote(row: PresenceRow) {
+    if (!row.participationId) return
+    const key = rowKey(row)
+    if (promotingIds.has(key)) return
+    setPromotingIds(prev => new Set(prev).add(key))
+    promoteWaitlist.mutate(row.participationId, {
+      onSuccess: () => toast.success(t("evenements.presences.toasts.promoted", { name: `${row.firstName} ${row.lastName}` })),
+      onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
+      onSettled: () => setPromotingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
     })
   }
 
@@ -353,11 +383,18 @@ export default function PresencesPage() {
   async function handleToggle(row: PresenceRow) {
     const key = rowKey(row)
     if (pendingIds.has(key)) return
+    // Une personne en liste d'attente n'a jamais de place confirmée — cocher présente
+    // directement contournerait la capacité sans repasser par "Promouvoir" (voir le même
+    // garde-fou côté serveur dans participations/route.ts).
+    if (!row.present && row.rsvp === "LISTA_ESPERA") {
+      toast.error(t("evenements.presences.toasts.waitlistedMustPromote"))
+      return
+    }
     setPendingIds(prev => new Set(prev).add(key))
     try {
       await toggle.mutateAsync({ ...rowRef(row), present: !row.present })
-    } catch {
-      toast.error(t("evenements.presences.toasts.updateError"))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("evenements.presences.toasts.updateError"))
     } finally {
       setPendingIds(prev => { const s = new Set(prev); s.delete(key); return s })
     }
@@ -490,6 +527,7 @@ export default function PresencesPage() {
       ...(capacity ? [{ value: String(capacity), label: "capacité" }] : []),
       ...(hasFee    ? [{ value: String(paidCount),    label: paidCount    !== 1 ? "payés"    : "payé"    }] : []),
       ...(hasFee    ? [{ value: String(reservedCount), label: reservedCount !== 1 ? "réservés" : "réservé" }] : []),
+      ...(waitlistCount > 0 ? [{ value: String(waitlistCount), label: "en liste d'attente" }] : []),
     ]
 
     const chipW = 36
@@ -524,9 +562,11 @@ export default function PresencesPage() {
       if (r.email) parts.push(r.email)
       if (r.phone) parts.push(r.phone)
       if (r.address) parts.push(r.address)
+      if (typeof r.answers?.mobile === "string" && r.answers.mobile) parts.push(r.answers.mobile)
       for (const f of ev?.customFields ?? []) {
         const v = r.answers?.[f.id]
-        if (v) parts.push(`${f.label}: ${v}`)
+        const isEmpty = Array.isArray(v) ? v.length === 0 : !v
+        if (!isEmpty) parts.push(`${f.label}: ${formatFieldAnswer(f, v!, t)}`)
       }
       return parts.join(" · ")
     }
@@ -548,7 +588,7 @@ export default function PresencesPage() {
           i + 1,
           `${r.lastName} ${r.firstName}`,
           r.present ? "Oui" : "",
-          r.ticketPaidAt ? (Number(r.amount ?? 0) === 0 ? "Gratuit" : "Payé") : r.rsvp === "CONFIRME" ? "Réservé" : "—",
+          r.ticketPaidAt ? (Number(r.amount ?? 0) === 0 ? "Gratuit" : "Payé") : r.rsvp === "CONFIRME" ? "Réservé" : r.rsvp === "LISTA_ESPERA" ? "Liste d'attente" : "—",
           ...(showInfoCol ? [contactLine(r)] : []),
         ]),
         columnStyles: {
@@ -565,6 +605,7 @@ export default function PresencesPage() {
           if (data.column.index === 3) {
             if (data.cell.raw === "Payé")    data.cell.styles.textColor = [22, 163, 74]
             if (data.cell.raw === "Réservé") data.cell.styles.textColor = [37, 99, 235]
+            if (data.cell.raw === "Liste d'attente") data.cell.styles.textColor = [37, 99, 235]
             if (data.cell.raw === "Gratuit" || data.cell.raw === "—") data.cell.styles.textColor = ZINC
           }
         },
@@ -721,6 +762,15 @@ export default function PresencesPage() {
                   <BookmarkSimpleIcon className="size-3.5" />
                   {t("evenements.view.reservedCount", { count: reservedCount })}
                   {capacity && ` / ${capacity}`}
+                </span>
+              </>
+            )}
+            {waitlistCount > 0 && (
+              <>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="flex items-center gap-1 text-sm text-yellow-600 dark:text-yellow-400">
+                  <HourglassIcon className="size-3.5" />
+                  {t("evenements.presences.counter.waitlisted", { count: waitlistCount })}
                 </span>
               </>
             )}
@@ -947,7 +997,23 @@ export default function PresencesPage() {
                     </div>
                   </button>
 
-                  {hasFee && (
+                  {row.rsvp === "LISTA_ESPERA" ? (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="flex items-center gap-1 text-xs font-medium text-yellow-600 dark:text-yellow-400 shrink-0">
+                        <HourglassIcon className="size-3" />
+                        {t("evenements.presences.list.waitlistBadge")}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handlePromote(row)}
+                        disabled={promotingIds.has(rowKey(row))}
+                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground shrink-0 border rounded px-1.5 py-0.5 hover:bg-muted transition-colors"
+                      >
+                        <ArrowUpIcon className="size-3" />
+                        {t("evenements.presences.list.promote")}
+                      </button>
+                    </div>
+                  ) : hasFee && (
                     row.ticketPaidAt ? (
                       <div className="flex items-center gap-1.5 shrink-0">
                         <span className={cn(
@@ -963,6 +1029,18 @@ export default function PresencesPage() {
                             ? t("evenements.presences.list.freeBadge")
                             : t("evenements.presences.list.paidBadge")}
                         </span>
+                        {row.receiptMode && row.receiptMode !== "NONE" && row.participationId && (
+                          <a
+                            href={`/api/evenements/${id}/participations/${row.participationId}/recu`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                            className="flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            title={t("evenements.presences.list.receiptLink")}
+                          >
+                            <FileTextIcon className="size-3.5" />
+                          </a>
+                        )}
                         {!row.stripeSessionId && (
                           <TooltipProvider>
                             <Tooltip>
@@ -1258,12 +1336,32 @@ export default function PresencesPage() {
                 <p>{infoTarget.address}</p>
               </div>
             )}
-            {ev.customFields.filter(f => infoTarget.answers?.[f.id]).map(f => (
+            {/* "mobile" n'a pas de colonne dédiée sur Participation — rangé dans answers,
+                même convention que Membre.answers côté adhésion (voir inscription/route.ts). */}
+            {typeof infoTarget.answers?.mobile === "string" && infoTarget.answers.mobile && (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("evenements.presences.list.infoMobile")}</p>
+                <p>{infoTarget.answers.mobile}</p>
+              </div>
+            )}
+            {ev.customFields.filter(f => {
+              const v = infoTarget.answers?.[f.id]
+              return Array.isArray(v) ? v.length > 0 : !!v
+            }).map(f => {
+              const value = infoTarget.answers![f.id]
+              return (
               <div key={f.id}>
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{f.label}</p>
-                <p>{infoTarget.answers![f.id]}</p>
+                {f.type === "FILE" ? (
+                  <a href={value as string} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                    {t("evenements.presences.list.infoFileView")}
+                  </a>
+                ) : (
+                  <p>{formatFieldAnswer(f, value, t)}</p>
+                )}
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </Modal>

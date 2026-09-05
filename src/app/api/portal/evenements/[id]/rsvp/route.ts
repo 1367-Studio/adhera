@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { sendEmail } from "@/lib/mail"
-import { rsvpConfirmationEmail } from "@/lib/email"
+import { rsvpConfirmationEmail, waitlistConfirmationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
@@ -37,7 +37,7 @@ class TicketTypeFullError extends Error {
 
 export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }) => {
   const evenement = await prisma.evenement.findFirst({
-    where:   { id: evenementId, associationId: ctx.associationId },
+    where:   { id: evenementId, associationId: ctx.associationId, status: "PUBLISHED" },
     include: { ticketTypes: true },
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
@@ -67,18 +67,30 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
   // Ticket types (when the event has any) must be validated up front for a real
   // reservation — reject rather than silently default, same reasoning as the Stripe
   // checkout route: a stale/missing tier here would otherwise get cash-marked at the
-  // wrong price later with no one noticing.
-  const hasTicketTypes = evenement.ticketTypes.length > 0
+  // wrong price later with no one noticing. Inactive tiers are invisible here just like on
+  // the public form — same convention as inscription/route.ts's realTicketTypes filter.
+  const activeTicketTypes = evenement.ticketTypes.filter(tt => tt.active)
+  const hasTicketTypes    = activeTicketTypes.length > 0
   if (rsvp === "CONFIRME" && hasTicketTypes) {
-    const validIds = new Set(evenement.ticketTypes.map(tt => tt.id))
+    const validIds = new Map(activeTicketTypes.map(tt => [tt.id, tt]))
     if (!parsed.data.ticketTypeId || !validIds.has(parsed.data.ticketTypeId) || guestNames.some(g => !g.ticketTypeId || !validIds.has(g.ticketTypeId))) {
       return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
     }
+    // Own sale window per tier, same convention as the public form (inscription/route.ts).
+    const now = new Date()
+    for (const ttId of [parsed.data.ticketTypeId, ...guestNames.map(g => g.ticketTypeId)]) {
+      const tt = validIds.get(ttId!)
+      if (!tt) continue
+      if (tt.opensAt && tt.opensAt > now)
+        return NextResponse.json({ error: "Ce tarif n'est pas encore ouvert.", code: "TICKET_TYPE_NOT_OPEN" }, { status: 422 })
+      if (tt.closesAt && tt.closesAt < now)
+        return NextResponse.json({ error: "Ce tarif n'est plus disponible.", code: "TICKET_TYPE_CLOSED" }, { status: 422 })
+    }
   }
 
-  let participationId: string
+  let result: { selfId: string; waitlisted: boolean }
   try {
-    participationId = await prisma.$transaction(async (tx) => {
+    result = await prisma.$transaction(async (tx) => {
       if (rsvp === "CONFIRME" && (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null))) {
         // Serialize concurrent RSVPs for this event so the occupancy count below can't
         // race with another request also counting seats before either commits — without
@@ -97,7 +109,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       } else {
         const created = await tx.participation.create({
           data: {
-            membreId: membre.id, evenementId, orderId,
+            associationId: ctx.associationId, membreId: membre.id, evenementId, orderId,
             firstName: membre.firstName, lastName: membre.lastName, email: membre.email,
             rsvp, rsvpAt: new Date(),
             ticketTypeId: hasTicketTypes && rsvp === "CONFIRME" ? parsed.data.ticketTypeId : null,
@@ -125,7 +137,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
           })
         } else {
           await tx.participation.create({
-            data: { evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp, rsvpAt: new Date(), ticketTypeId: guestTicketTypeId },
+            data: { associationId: ctx.associationId, evenementId, orderId, firstName: g.firstName, lastName: g.lastName, email: g.email || null, rsvp, rsvpAt: new Date(), ticketTypeId: guestTicketTypeId },
           })
         }
       }
@@ -138,17 +150,25 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
         }
       }
 
+      // Same all-or-nothing reasoning as the public form's own group bookings — a group
+      // RSVP has no single seat to bump to the waitlist, so if it doesn't fit, the whole
+      // party goes to the waitlist together.
+      let isWaitlisted = false
+      const companionIds = (await tx.participation.findMany({ where: { orderId, membreId: null }, select: { id: true } })).map(c => c.id)
       if (rsvp === "CONFIRME" && evenement.capacity != null) {
         const occupied = await tx.participation.count({
           where: { evenementId, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
         })
-        if (occupied > evenement.capacity) throw new EventFullError()
+        if (occupied > evenement.capacity) {
+          if (!evenement.waitlistEnabled) throw new EventFullError()
+          isWaitlisted = true
+        }
       }
 
       // Same post-write count-and-check per tier actually used by this reservation — one
       // groupBy for every capped tier used this request instead of a query per tier, to
       // shorten the FOR UPDATE lock hold.
-      if (rsvp === "CONFIRME" && hasTicketTypes) {
+      if (rsvp === "CONFIRME" && hasTicketTypes && !isWaitlisted) {
         const usedTierIds = new Set([parsed.data.ticketTypeId, ...guestNames.map(g => g.ticketTypeId)])
         const cappedTiers = [...usedTierIds]
           .map(ttId => evenement.ticketTypes.find(t => t.id === ttId))
@@ -161,12 +181,19 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
           })
           const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
           for (const tt of cappedTiers) {
-            if ((occupiedMap.get(tt.id) ?? 0) > tt.capacity!) throw new TicketTypeFullError(tt.label)
+            if ((occupiedMap.get(tt.id) ?? 0) > tt.capacity!) {
+              if (!evenement.waitlistEnabled) throw new TicketTypeFullError(tt.label)
+              isWaitlisted = true
+            }
           }
         }
       }
 
-      return selfId
+      if (isWaitlisted) {
+        await tx.participation.updateMany({ where: { id: { in: [selfId, ...companionIds] } }, data: { rsvp: "LISTA_ESPERA" } })
+      }
+
+      return { selfId, waitlisted: isWaitlisted }
     })
   } catch (err) {
     if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
@@ -177,6 +204,41 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       return NextResponse.json({ error: "Cette réservation vient d'être enregistrée — rechargez la page." }, { status: 409 })
     }
     throw err
+  }
+
+  if (result.waitlisted) {
+    await notifyEventRegistration({
+      associationId: ctx.associationId, evenementId, eventTitle: evenement.title, eventDate: evenement.date,
+      attendeeNames: [`${membre.firstName} ${membre.lastName}`, ...guestNames.map(g => `${g.firstName} ${g.lastName}`)],
+      amount: 0,
+      adminNotificationEmail: evenement.adminNotificationEmail,
+      membreId: membre.id,
+    }).catch(() => {})
+
+    const assoc = await prisma.association.findUnique({ where: { id: ctx.associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } })
+    if (assoc) {
+      const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
+      const recipients = [
+        { firstName: membre.firstName, email: membre.email },
+        ...guestNames.filter(g => g.email).map(g => ({ firstName: g.firstName, email: g.email! })),
+      ]
+      await Promise.all(recipients.filter(r => r.email).map(r => sendEmail(waitlistConfirmationEmail({
+        firstName: r.firstName, email: r.email!,
+        associationName: assoc.name,
+        eventTitle:      evenement.title,
+        eventDate:       evenement.date,
+        eventLocation:   evenement.location,
+        portalUrl,
+        branding: resolveDocumentBranding(assoc),
+      }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})))
+    }
+
+    await writeActivityLog({
+      associationId: ctx.associationId, actorId: ctx.userId, action: "PARTICIPATION_WAITLISTED",
+      entity: "Participation", entityId: result.selfId, label: evenement.title, metadata: { quantity },
+    })
+
+    return NextResponse.json({ id: result.selfId, rsvp: "LISTA_ESPERA", quantity, waitlisted: true })
   }
 
   if (rsvp === "CONFIRME" && !wasAlreadyConfirme) {
@@ -241,11 +303,11 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       actorId:  ctx.userId,
       action:   "RSVP_UPDATED",
       entity:   "Participation",
-      entityId: participationId,
+      entityId: result.selfId,
       label:    evenement.title,
       metadata: { rsvp, quantity },
     })
   }
 
-  return NextResponse.json({ id: participationId, rsvp, quantity })
+  return NextResponse.json({ id: result.selfId, rsvp, quantity })
 }, { module: "evenements" })

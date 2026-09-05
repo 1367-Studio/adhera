@@ -41,10 +41,13 @@ async function getSiteData(slug: string) {
   const [events, actualites] = await Promise.all([
     mods.evenements
       ? prisma.evenement.findMany({
-          where:   { association: { slug }, date: { gte: now } },
+          where:   { association: { slug }, date: { gte: now }, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
           orderBy: { date: "asc" },
           take:    20,
-          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true, ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } } },
+          // Une tarif désactivée n'est plus achetable — même filtre que le formulaire public
+          // (realTicketTypes dans inscription/route.ts), pour ne jamais annoncer un prix que
+          // personne ne peut plus obtenir.
+          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true, ticketTypes: { where: { active: true }, orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } } },
         })
       : Promise.resolve([]),
     mods.actualites

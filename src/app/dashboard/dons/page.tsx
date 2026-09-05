@@ -11,7 +11,7 @@ import { fr } from "date-fns/locale"
 import {
   DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon, PlusIcon,
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
-  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon,
+  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useCurrentUser } from "@/lib/user-context"
 import { PageHeader } from "@/components/ui/page-header"
@@ -62,6 +62,12 @@ type Don = {
   // in /api/dons. Lets the pending table point back at the member, who also has an
   // independent Cotisation waiting on its own encaissement for the same physical payment.
   membershipAddonTier: { label: string } | null
+  // Set only for a don embarqué on an event ticket type (Don.evenementTicketTypeId).
+  evenementTicketType: { evenement: { id: string; title: string } } | null
+  // Set only for a don triggered by the post-registration donation prompt on an event
+  // (Don.evenementId) — a different flow from evenementTicketType above, but the same
+  // "came from an event" origin from an admin's point of view.
+  evenement: { id: string; title: string } | null
 }
 
 type DonsResult = {
@@ -113,11 +119,36 @@ function DonsPageInner() {
   const initialTab = (searchParams.get("tab") as Tab) ?? "formulaires"
   const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
 
-  const [page, setPage]               = useState(1)
-  const [searchInput, setSearchInput] = useState("")
-  const [search, setSearch]           = useState("")
-  const [yearFilter, setYearFilter]   = useState<number>(currentYear)
+  // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
+  // (search/year/origin/page) instead of silently resetting them — mirrors how `tab` itself
+  // already survives a refresh via the same searchParams.
+  const initialPage   = parseInt(searchParams.get("page") ?? "") || 1
+  const initialSearch = searchParams.get("search") ?? ""
+  const initialYear   = parseInt(searchParams.get("year") ?? "") || currentYear
+  const initialOrigin = searchParams.get("origin") ?? "all"
+
+  const [page, setPage]               = useState(initialPage)
+  const [searchInput, setSearchInput] = useState(initialSearch)
+  const [search, setSearch]           = useState(initialSearch)
+  const [yearFilter, setYearFilter]   = useState<number>(initialYear)
+  const [originFilter, setOriginFilter] = useState<string>(initialOrigin)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Keeps the URL in sync with the "dons" tab's filters (read back by the initial* values
+  // above) — omits any value still at its default so the URL stays clean for the common
+  // case of no filters applied. Deliberately doesn't depend on `searchParams` itself
+  // (only reads it), which would otherwise re-run this on every router.replace it triggers.
+  useEffect(() => {
+    if (tab !== "dons") return
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tab", "dons")
+    if (search) params.set("search", search); else params.delete("search")
+    if (yearFilter !== currentYear) params.set("year", String(yearFilter)); else params.delete("year")
+    if (originFilter !== "all") params.set("origin", originFilter); else params.delete("origin")
+    if (page !== 1) params.set("page", String(page)); else params.delete("page")
+    router.replace(`/dashboard/dons?${params}`, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, search, yearFilter, originFilter, page])
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
@@ -197,10 +228,11 @@ function DonsPageInner() {
     limit: String(PAGE_SIZE),
     year:  String(yearFilter),
     ...(search ? { search } : {}),
+    ...(originFilter !== "all" ? { origin: originFilter } : {}),
   })
 
   const { data: donsResult, isLoading: loadingDons } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons", page, yearFilter, search],
+    queryKey:  ["dashboard-dons", page, yearFilter, search, originFilter],
     queryFn:   () => fetch(`/api/dons?${donsParams}`).then(r => r.json()),
     enabled:   tab === "dons",
     staleTime: 0,
@@ -261,6 +293,55 @@ function DonsPageInner() {
     ESPECES:  t("donationsView.paymentMethod.especes"),
     CHEQUE:   t("donationsView.paymentMethod.cheque"),
     VIREMENT: t("donationsView.paymentMethod.virement"),
+  }
+
+  const ORIGIN_FILTER_LABEL: Record<string, string> = {
+    all:             t("donationsView.originFilter.all"),
+    form:            t("donationsView.originFilter.form"),
+    adhesion:        t("donationsView.originFilter.adhesion"),
+    evenementTicket: t("donationsView.originFilter.evenementTicket"),
+    evenementPrompt: t("donationsView.originFilter.evenementPrompt"),
+    standalone:      t("donationsView.originFilter.standalone"),
+  }
+
+  // Resolves the 5 mutually-exclusive origins a Don can come from (see Don.donationFormId /
+  // membershipAddonTierId / evenementTicketTypeId / evenementId in schema.prisma) into the
+  // label shown in the "origine" column — plain text, no badge, same treatment the column
+  // already used for the donationForm/standalone distinction. evenementTicketType and
+  // evenement are kept as two separate branches (not merged into one "event" case) so the
+  // label always matches what the origin filter above would bucket the row into.
+  function donOrigin(d: Don) {
+    if (d.donationForm) return <span className="text-sm truncate max-w-xs block">{d.donationForm.title}</span>
+    if (d.membershipAddonTier) {
+      const label = t("donationsView.fromMembershipForm", { tier: d.membershipAddonTier.label })
+      // membreId is expected to always be set alongside membershipAddonTier (see
+      // createMembershipAddonPurchases) but Don.membreId has no explicit onDelete in the
+      // schema, defaulting to SetNull — if a hard member deletion is ever introduced, this
+      // still shows the right origin, just without the now-dead link.
+      return d.membreId ? (
+        <Link href={`/dashboard/membres/${d.membreId}`} className="text-sm truncate max-w-xs block hover:underline hover:text-foreground">
+          {label}
+        </Link>
+      ) : (
+        <span className="text-sm truncate max-w-xs block">{label}</span>
+      )
+    }
+    if (d.evenementTicketType) {
+      const evenement = d.evenementTicketType.evenement
+      return (
+        <Link href={`/dashboard/evenements/${evenement.id}`} className="text-sm truncate max-w-xs block hover:underline hover:text-foreground">
+          {t("donationsView.fromEvenement", { evenement: evenement.title })}
+        </Link>
+      )
+    }
+    if (d.evenement) {
+      return (
+        <Link href={`/dashboard/evenements/${d.evenement.id}`} className="text-sm truncate max-w-xs block hover:underline hover:text-foreground">
+          {t("donationsView.fromEvenementPrompt", { evenement: d.evenement.title })}
+        </Link>
+      )
+    }
+    return <span className="text-sm text-muted-foreground italic">{t("donationsView.columns.standalone")}</span>
   }
 
   const pendingColumns: Column<Don>[] = [
@@ -334,9 +415,7 @@ function DonsPageInner() {
     {
       key:    "form",
       header: t("donationsView.columns.form"),
-      cell: (d) => d.donationForm
-        ? <span className="text-sm">{d.donationForm.title}</span>
-        : <span className="text-sm text-muted-foreground italic">{t("donationsView.columns.standalone")}</span>,
+      cell: (d) => donOrigin(d),
     },
     {
       key:    "message",
@@ -388,6 +467,10 @@ function DonsPageInner() {
   const totalAmount = donsResult?.totalAmount ?? 0
   const totalCount  = donsResult?.totalCount ?? 0
   const avgAmount   = totalCount > 0 ? totalAmount / totalCount : 0
+  // `year` is the page's primary scope (always set, not a "filter" in the everyday sense),
+  // so only search/origin count here — same reasoning as the reset button and the
+  // no-results-vs-no-matches empty state below.
+  const hasActiveFilters = !!search || originFilter !== "all"
 
   // ─── Reçus fiscaux ──────────────────────────────────────────────────────
   const recusParams = new URLSearchParams({
@@ -600,11 +683,17 @@ function DonsPageInner() {
 
           <DonShareCard />
 
+          {/* KPI totals follow `year` AND `origin` (both deliberate, sticky selections) but
+              ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
+              doesn't make the cards jump around. The origin suffix below is what tells the
+              admin the numbers are currently scoped to one origin, not the association's
+              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="rounded-lg border bg-card p-4 space-y-1">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <TrendUpIcon className="size-3.5" />
                 {t("donationsView.totalLabel", { year: yearFilter })}
+                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
               </div>
               <p className={cn("text-xl font-bold", totalAmount > 0 ? "text-green-600 dark:text-green-400" : "")}>
                 {totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
@@ -614,6 +703,7 @@ function DonsPageInner() {
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <UsersIcon className="size-3.5" />
                 {t("donationsView.donorsLabel")}
+                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
               </div>
               <p className="text-xl font-bold">{totalCount}</p>
             </div>
@@ -621,6 +711,7 @@ function DonsPageInner() {
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <HandshakeIcon className="size-3.5" />
                 {t("donationsView.averageLabel")}
+                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
               </div>
               <p className="text-xl font-bold">
                 {avgAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
@@ -642,6 +733,32 @@ function DonsPageInner() {
                 {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{String(y)}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Select value={originFilter} onValueChange={v => { setOriginFilter(v ?? "all"); setPage(1) }}>
+              <SelectTrigger className="w-40">
+                {/* base-ui's SelectValue only auto-resolves a label when Select.Root is given
+                    an `items` prop — explicit children is the documented workaround, same
+                    pattern as the status filter in cotisations-view.tsx. */}
+                <SelectValue>{ORIGIN_FILTER_LABEL[originFilter]}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{ORIGIN_FILTER_LABEL.all}</SelectItem>
+                <SelectItem value="form">{ORIGIN_FILTER_LABEL.form}</SelectItem>
+                <SelectItem value="adhesion">{ORIGIN_FILTER_LABEL.adhesion}</SelectItem>
+                <SelectItem value="evenementTicket">{ORIGIN_FILTER_LABEL.evenementTicket}</SelectItem>
+                <SelectItem value="evenementPrompt">{ORIGIN_FILTER_LABEL.evenementPrompt}</SelectItem>
+                <SelectItem value="standalone">{ORIGIN_FILTER_LABEL.standalone}</SelectItem>
+              </SelectContent>
+            </Select>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                onClick={() => { setSearchInput(""); setSearch(""); setOriginFilter("all"); setPage(1) }}
+                className="text-muted-foreground"
+              >
+                <FunnelXIcon className="size-3.5" />
+                {t("donationsView.resetFilters")}
+              </Button>
+            )}
             <span className="self-center text-sm text-muted-foreground">
               {donsResult?.total ?? 0} don{(donsResult?.total ?? 0) !== 1 ? "s" : ""}
             </span>
@@ -652,7 +769,7 @@ function DonsPageInner() {
             data={dons}
             loading={loadingDons}
             keyExtractor={(d) => d.id}
-            empty={t("donationsView.noDonations")}
+            empty={hasActiveFilters ? t("donationsView.noDonationsFiltered") : t("donationsView.noDonations")}
             pagination={donsResult ? {
               page:         donsResult.page,
               totalPages:   donsResult.totalPages,

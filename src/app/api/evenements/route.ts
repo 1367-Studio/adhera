@@ -3,14 +3,11 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { pusherServer } from "@/lib/pusher-server"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { revalidatePublicSite } from "@/lib/association/revalidate-site"
-import { APP_TIME_ZONE } from "@/lib/date-format"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-type EvenementWithTicketTypes = { ticketTypes: { id: string; label: string; price: unknown; capacity: number | null }[] }
+type EvenementWithTicketTypes = { ticketTypes: { id: string; label: string; price: unknown; capacity: number | null; active: boolean }[] }
 
 // Shared by both the unpaginated (calendar) and paginated (list) branches below — merges
 // each tier's live occupancy into `remaining`/`full`, same shape the public/portal routes
@@ -70,7 +67,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
       take: 500,
       include: {
         _count:      { select: { participations: { where: { present: true } } } },
-        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } },
+        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true, active: true } },
       },
     })
     return NextResponse.json(await withTicketTypeOccupancy(data))
@@ -82,7 +79,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
       where, orderBy, skip, take: limit,
       include: {
         _count:      { select: { participations: { where: { present: true } } } },
-        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } },
+        ticketTypes: { orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true, active: true } },
       },
     }),
     prisma.evenement.count({ where }),
@@ -112,7 +109,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, ...rest } = parsed.data
+  // conditions/attachments/requireCguvSignature never come through the "quick create"
+  // title+date modal that hits this route — configured afterward from the wizard's own
+  // "Informações gerais" step (PATCH) — so they're left out of `rest`/`data` entirely rather
+  // than fighting Prisma's stricter JSON-create typing (a bare `null` for `attachments` isn't
+  // assignable to its create input, unlike its update input).
+  const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, conditions: _conditions, attachments: _attachments, requireCguvSignature: _requireCguvSignature, ...rest } = parsed.data
   const evenement = await prisma.evenement.create({
     data: {
       ...rest,
@@ -132,27 +134,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_CREATED", entity: "Evenement", entityId: evenement.id, label: evenement.title })
 
-  // Notify all active members with portal access
-  const pusherReady = !!(process.env.PUSHER_APP_ID && process.env.PUSHER_KEY && process.env.PUSHER_SECRET)
-  const [members, association] = await Promise.all([
-    prisma.membre.findMany({
-      where:  { associationId, deletedAt: null, status: "ACTIF", userId: { not: null } },
-      select: { userId: true },
-    }),
-    prisma.association.findUnique({ where: { id: associationId }, select: { slug: true } }),
-  ])
-  if (association) revalidatePublicSite(association.slug)
-  const notifDateStr = evenement.date.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long" })
-  const notifBody    = [notifDateStr, evenement.location].filter(Boolean).join(" · ")
-  void (async () => {
-    await prisma.notification.createMany({
-      data: members.map(m => ({ userId: m.userId!, title: evenement.title, body: notifBody || null, link: `/portal/${association?.slug}/evenements` })),
-      skipDuplicates: true,
-    })
-    if (pusherReady) {
-      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {})
-    }
-  })()
+  // No member notification and no public-site revalidation here anymore — the event is
+  // created DRAFT (see Evenement.status default) and isn't visible to anyone yet. Both now
+  // happen in POST /api/evenements/[id]/publish, only on the actual DRAFT/ARCHIVED→PUBLISHED
+  // transition, so an admin can freely configure an event without spamming every member.
 
   return NextResponse.json(evenement, { status: 201 })
 }, { roles: MANAGERS, module: "evenements" })
