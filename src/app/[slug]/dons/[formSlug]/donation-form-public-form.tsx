@@ -314,7 +314,11 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
           {submitted ? (
             <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
               <p className="font-medium">{t("submittedTitle")}</p>
-              <p className="text-muted-foreground">{form.confirmationMessage || t("submittedWithEmail")}</p>
+              {form.confirmationMessage ? (
+                <RichTextView content={form.confirmationMessage} className="text-muted-foreground" />
+              ) : (
+                <p className="text-muted-foreground">{t("submittedWithEmail")}</p>
+              )}
               {offlineSubmitted && form.offlineInstructions && (
                 <p className="text-muted-foreground pt-2 border-t mt-3">{form.offlineInstructions}</p>
               )}

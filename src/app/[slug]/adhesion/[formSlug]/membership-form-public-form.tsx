@@ -758,13 +758,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 <p className="font-medium">
                   {outcome === "linkSent" ? t("adminLinkSentTitle") : outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
                 </p>
-                <p className="text-muted-foreground">
-                  {outcome === "linkSent"
-                    ? t("adminLinkSentBody", { email: email.trim() })
-                    : outcome === "pending"
-                    ? (form.confirmationMessage || t("submittedRequestBody"))
-                    : (form.confirmationMessage || t("submittedWithPayment"))}
-                </p>
+                {outcome === "linkSent" ? (
+                  <p className="text-muted-foreground">{t("adminLinkSentBody", { email: email.trim() })}</p>
+                ) : form.confirmationMessage ? (
+                  <RichTextView content={form.confirmationMessage} className="text-muted-foreground" />
+                ) : (
+                  <p className="text-muted-foreground">
+                    {outcome === "pending" ? t("submittedRequestBody") : t("submittedWithPayment")}
+                  </p>
+                )}
                 {outcome === "offline" && form.offlineInstructions && (
                   <p className="text-muted-foreground pt-2 border-t mt-3">{form.offlineInstructions}</p>
                 )}
