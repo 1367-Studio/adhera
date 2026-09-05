@@ -8,7 +8,6 @@ import {
 } from "recharts"
 import { useModules } from "@/lib/user-context"
 import { usePalette } from "@/lib/finance-palette"
-import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -87,14 +86,18 @@ function LollipopBar({ x, y, width, height, color }: {
   )
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Components ───────────────────────────────────────────────────────────────
 
-export function FinanceCharts() {
+// Cotisations and Recettes/Dépenses used to be one widget rendering its own internal
+// `lg:grid-cols-3` — a grid inside the dashboard grid. That made them a single indivisible
+// block: neither could be moved or resized without the other, and shrinking the pair left
+// the inner grid still asking for three columns. They're two independent widgets now, and
+// share this hook so the split still costs exactly one fetch (React Query dedupes the key).
+function useFinanceChartsData() {
   const t       = useTranslations()
   const modules = useModules()
-  const pal     = usePalette()
 
-  const { data, isLoading } = useQuery<FinanceChartsData>({
+  const query = useQuery<FinanceChartsData>({
     queryKey: ["dashboard", "finance-charts"],
     queryFn:  async () => {
       const res = await fetch("/api/dashboard/finance-charts")
@@ -105,28 +108,18 @@ export function FinanceCharts() {
     staleTime: 5 * 60_000,
   })
 
-  if (!modules.cotisations && !modules.finances) return null
+  return { ...query, modules }
+}
 
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="h-48 rounded-lg border bg-card animate-pulse" />
-        <div className="h-48 rounded-lg border bg-card animate-pulse lg:col-span-2" />
-      </div>
-    )
-  }
+// Cotisations — part-to-whole → stacked bar, never a donut
+export function CotisationsGaugeCard() {
+  const t   = useTranslations()
+  const pal = usePalette()
+  const { data, isLoading, modules } = useFinanceChartsData()
 
-  if (!data) return null
-
-  if (!data.hasCotisations && !data.hasFinances) {
-    return (
-      <div className="rounded-lg border border-dashed bg-card/50 p-6 text-center">
-        <p className="text-sm text-muted-foreground">
-          {t("dashboard.charts.emptyState")}
-        </p>
-      </div>
-    )
-  }
+  if (!modules.cotisations) return null
+  if (isLoading) return <div className="h-full min-h-48 rounded-lg border bg-card animate-pulse" />
+  if (!data?.hasCotisations) return null
 
   const cotisationTotal = data.cotisations.reduce((s, c) => s + c.amount, 0)
   const cotisationCount = data.cotisations.reduce((s, c) => s + c.count, 0)
@@ -145,106 +138,110 @@ export function FinanceCharts() {
   const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
 
   return (
-    <div className="grid items-start gap-4 lg:grid-cols-3">
+    <div className="relative overflow-hidden rounded-lg border bg-card p-6 dark:border-white/10">
+      <p className="relative mb-1 text-xs font-medium text-muted-foreground">{t("dashboard.cotisations.title", { year: data.year })}</p>
+      {/* Hero figure: % already collected — the one number a progress bar exists to
+          answer, and distinct from the raw totals already listed below/elsewhere. */}
+      <p className="relative mb-4 text-3xl font-semibold">
+        {paidPct}<span className="text-lg text-muted-foreground">{t("dashboard.charts.collectedPercent")}</span>
+      </p>
 
-      {/* Cotisations — part-to-whole → stacked bar, never a donut */}
-      {data.hasCotisations && (
-        <div className={cn(
-          "relative overflow-hidden rounded-lg border bg-card p-6 dark:border-white/10",
-          !data.hasFinances && "lg:col-span-3",
-        )}>
-          <p className="relative mb-1 text-xs font-medium text-muted-foreground">{t("dashboard.cotisations.title", { year: data.year })}</p>
-          {/* Hero figure: % already collected — the one number a progress bar exists to
-              answer, and distinct from the raw totals already listed below/elsewhere. */}
-          <p className="relative mb-4 text-3xl font-semibold">
-            {paidPct}<span className="text-lg text-muted-foreground">{t("dashboard.charts.collectedPercent")}</span>
-          </p>
+      <div className="relative flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
+        {data.cotisations.map((c, i) => (
+          <div
+            key={c.status}
+            className="animate-bar-grow-in"
+            style={{
+              width:           `${cotisationDenom > 0 ? Math.max(((cotisationTotal > 0 ? c.amount : c.count) / cotisationDenom) * 100, 2) : 0}%`,
+              background:      cotisationColor[c.status] ?? pal.axis,
+              animationDelay: `${i * 80}ms`,
+            }}
+          />
+        ))}
+      </div>
 
-          <div className="relative flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
-            {data.cotisations.map((c, i) => (
-              <div
-                key={c.status}
-                className="animate-bar-grow-in"
-                style={{
-                  width:           `${cotisationDenom > 0 ? Math.max(((cotisationTotal > 0 ? c.amount : c.count) / cotisationDenom) * 100, 2) : 0}%`,
-                  background:      cotisationColor[c.status] ?? pal.axis,
-                  animationDelay: `${i * 80}ms`,
-                }}
-              />
-            ))}
+      <div className="mt-4 space-y-1.5">
+        {data.cotisations.map(c => (
+          <div key={c.status} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="size-2 shrink-0 rounded-full" style={{ background: cotisationColor[c.status] ?? pal.axis }} />
+              <span className="text-muted-foreground">{c.label}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="tabular-nums text-muted-foreground">{c.count}</span>
+              <span className="w-20 text-right tabular-nums font-medium">{fmt(c.amount)}</span>
+            </div>
           </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-          <div className="mt-4 space-y-1.5">
-            {data.cotisations.map(c => (
-              <div key={c.status} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 shrink-0 rounded-full" style={{ background: cotisationColor[c.status] ?? pal.axis }} />
-                  <span className="text-muted-foreground">{c.label}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="tabular-nums text-muted-foreground">{c.count}</span>
-                  <span className="w-20 text-right tabular-nums font-medium">{fmt(c.amount)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+// Recettes vs Dépenses — trend over time, 2 distinct series → area chart
+// (dataviz skill: "trend over time" → line/area; bar is for comparing discrete
+// categories, not a continuous monthly progression).
+export function IncomeExpenseChart() {
+  const t   = useTranslations()
+  const pal = usePalette()
+  const { data, isLoading, modules } = useFinanceChartsData()
 
-      {/* Recettes vs Dépenses — trend over time, 2 distinct series → area chart
-          (dataviz skill: "trend over time" → line/area; bar is for comparing discrete
-          categories, not a continuous monthly progression). */}
-      {data.hasFinances && (
-        <div className={`rounded-lg border bg-card p-6 dark:border-white/10 ${data.hasCotisations ? "lg:col-span-2" : "lg:col-span-3"}`}>
-          <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.trendTitle")}</p>
-          {/* debounce: avoids a known Recharts+ResizeObserver race where the container's
-              first reported size is stale/zero — without it the chart can settle into its
-              final layout before the mount animation gets a correct size to animate from,
-              so it just appears instead of growing in. */}
-          <ResponsiveContainer width="100%" height={200} debounce={50}>
-            <AreaChart data={data.monthly} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
-              <defs>
-                {/* Wash fill fading to fully transparent — the line itself carries the
-                    series color at full strength, the fill is just a soft trend cue. */}
-                <linearGradient id="fc-recettes" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"  stopColor={pal.recettes} stopOpacity={0.35} />
-                  <stop offset="100%" stopColor={pal.recettes} stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="fc-depenses" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"  stopColor={pal.depenses} stopOpacity={0.35} />
-                  <stop offset="100%" stopColor={pal.depenses} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              {/* Solid hairline, not dashed — dashing reads as a threshold/projection,
-                  not a plain grid (dataviz skill anti-pattern). */}
-              <CartesianGrid vertical={false} stroke={pal.grid} />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
-              <YAxis hide />
-              <Tooltip content={<MonthlyTip pal={pal} />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
-              <Legend
-                iconType="plainline"
-                wrapperStyle={{ fontSize: 12, color: pal.axis }}
-                formatter={(value) => (value === "recettes" ? t("dashboard.charts.income") : t("dashboard.charts.expense"))}
-              />
-              <Area
-                type="monotone" dataKey="recettes" name="recettes"
-                stroke={pal.recettes} strokeWidth={2} fill="url(#fc-recettes)"
-                dot={{ r: 3, fill: pal.recettes, strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: pal.recettes, stroke: "var(--card)", strokeWidth: 2 }}
-                animationDuration={600} animationEasing="ease-out"
-              />
-              <Area
-                type="monotone" dataKey="depenses" name="depenses"
-                stroke={pal.depenses} strokeWidth={2} fill="url(#fc-depenses)"
-                dot={{ r: 3, fill: pal.depenses, strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: pal.depenses, stroke: "var(--card)", strokeWidth: 2 }}
-                animationDuration={600} animationEasing="ease-out"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+  if (!modules.finances) return null
+  if (isLoading) return <div className="h-full min-h-48 rounded-lg border bg-card animate-pulse" />
+  if (!data?.hasFinances) return null
 
+  return (
+    <div className="flex h-full flex-col rounded-lg border bg-card p-6 dark:border-white/10">
+      <p className="mb-4 shrink-0 text-xs font-medium text-muted-foreground">{t("dashboard.charts.trendTitle")}</p>
+      {/* Fills whatever height the widget was resized to, instead of the fixed 200px it
+          used when the card's height wasn't the user's to choose. */}
+      <div className="min-h-0 flex-1">
+        {/* debounce: avoids a known Recharts+ResizeObserver race where the container's
+            first reported size is stale/zero — without it the chart can settle into its
+            final layout before the mount animation gets a correct size to animate from,
+            so it just appears instead of growing in. */}
+        <ResponsiveContainer width="100%" height="100%" debounce={50}>
+          <AreaChart data={data.monthly} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+            <defs>
+              {/* Wash fill fading to fully transparent — the line itself carries the
+                  series color at full strength, the fill is just a soft trend cue. */}
+              <linearGradient id="fc-recettes" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"  stopColor={pal.recettes} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={pal.recettes} stopOpacity={0} />
+              </linearGradient>
+              <linearGradient id="fc-depenses" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"  stopColor={pal.depenses} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={pal.depenses} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            {/* Solid hairline, not dashed — dashing reads as a threshold/projection,
+                not a plain grid (dataviz skill anti-pattern). */}
+            <CartesianGrid vertical={false} stroke={pal.grid} />
+            <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+            <YAxis hide />
+            <Tooltip content={<MonthlyTip pal={pal} />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
+            <Legend
+              iconType="plainline"
+              wrapperStyle={{ fontSize: 12, color: pal.axis }}
+              formatter={(value) => (value === "recettes" ? t("dashboard.charts.income") : t("dashboard.charts.expense"))}
+            />
+            <Area
+              type="monotone" dataKey="recettes" name="recettes"
+              stroke={pal.recettes} strokeWidth={2} fill="url(#fc-recettes)"
+              dot={{ r: 3, fill: pal.recettes, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: pal.recettes, stroke: "var(--card)", strokeWidth: 2 }}
+              animationDuration={600} animationEasing="ease-out"
+            />
+            <Area
+              type="monotone" dataKey="depenses" name="depenses"
+              stroke={pal.depenses} strokeWidth={2} fill="url(#fc-depenses)"
+              dot={{ r: 3, fill: pal.depenses, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: pal.depenses, stroke: "var(--card)", strokeWidth: 2 }}
+              animationDuration={600} animationEasing="ease-out"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }

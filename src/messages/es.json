@@ -652,13 +652,15 @@
       "customize": "Personalizar",
       "done": "Listo",
       "reset": "Restablecer",
-      "dragHint": "Arrastrar para reordenar"
+      "dragHint": "Arrastrar para reordenar",
+      "resizeHint": "Arrastra la esquina para redimensionar"
     },
     "stats": {
       "activeMembers": "Miembros activos",
       "eventsThisMonth": "Eventos este mes",
       "cotisationsPending": "Cuotas pendientes",
-      "financialBalance": "Saldo financiero"
+      "financialBalance": "Saldo financiero",
+      "donationsReceived": "Donaciones recibidas {year}"
     },
     "nextEvent": {
       "title": "Próximo evento",
@@ -668,6 +670,14 @@
       "title": "Cuotas {year}",
       "collectedThisYear": "recaudado este año",
       "pendingPayment": "{count} pendiente(s) de pago"
+    },
+    "recentDonations": {
+      "title": "Donaciones recientes",
+      "pending": "Por cobrar ({count})",
+      "recent": "Donaciones recibidas",
+      "anonymous": "Anónimo",
+      "viewAll": "Ver todas las donaciones",
+      "empty": "Todavía no hay donaciones."
     },
     "recentOrders": {
       "title": "Pedidos recientes",

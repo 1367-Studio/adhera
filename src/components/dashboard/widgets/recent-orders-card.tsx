@@ -30,7 +30,7 @@ export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
   const t = useTranslations("dashboard.recentOrders")
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
   return (
-    <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col">
+    <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col min-h-0 overflow-hidden">
       <div className="flex items-center gap-2">
         <ShoppingBagIcon className="size-4 text-muted-foreground" />
         <span className="text-sm font-medium">{t("title")}</span>
@@ -38,7 +38,11 @@ export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
       {isLoading ? (
         <div className="h-12 rounded-lg bg-muted animate-pulse" />
       ) : ventesRecentes.length ? (
-        <div className="space-y-2">
+        <div className="flex-1 min-h-0 flex flex-col gap-2">
+          {/* Only the rows scroll: a card sized shorter than its content must still
+              show its footer link, and clipping the rows is what keeps the card inside
+              the height the user picked. */}
+          <div className="flex-1 min-h-0 space-y-2 overflow-y-auto">
           {ventesRecentes.map((v, i) => {
             // The list is pre-sorted PENDING-block-then-PAID-block — a status change
             // between two consecutive rows marks the boundary.
@@ -77,6 +81,7 @@ export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
               </div>
             )
           })}
+          </div>
           <Link href="/dashboard/boutique?tab=commandes" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
             {t("viewAll")}
             <ArrowRightIcon className="size-3" />
