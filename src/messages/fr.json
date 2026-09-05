@@ -84,7 +84,7 @@
     "register": {
       "pageTitle": "Créer un compte",
       "heading": "Créer un compte",
-      "subtitle": "{trialDays} jours d'essai gratuit · Sans engagement · Annulation facile",
+      "subtitle": "{trialDays} jours d'essai gratuit · Sans carte bancaire · Sans engagement",
       "subtitleOffer": "Complétez votre inscription pour activer votre abonnement.",
       "alreadyAccount": "Déjà un compte ?",
       "signIn": "Se connecter",
@@ -114,21 +114,15 @@
         "perkTrialDays": "{days} jours gratuits",
         "perkNoCommitment": "Sans engagement",
         "perkEasyCancel": "Annulation facile",
-        "genericError": "Erreur"
-      },
-      "payment": {
-        "trialBadge": "Essai gratuit",
-        "freeToday": "0 € aujourd'hui",
-        "trialOffered": "{days} jours offerts",
-        "afterTrial": "Après la période d'essai",
-        "perMonth": "{price}/mois",
-        "billedOnce": "Facturé en une fois · {total}/an",
-        "discount": "−{pct} %",
-        "paymentError": "Erreur de paiement",
-        "createAccountError": "Erreur lors de la création du compte",
         "genericError": "Erreur",
         "startTrial": "Démarrer mon essai gratuit",
-        "securePayment": "Paiement sécurisé par Stripe · Annulez avant {days} jours pour ne rien payer"
+        "perkNoCard": "Sans carte bancaire",
+        "createAccountError": "Erreur lors de la création du compte"
+      },
+      "payment": {
+        "paymentError": "Erreur de paiement",
+        "createAccountError": "Erreur lors de la création du compte",
+        "genericError": "Erreur"
       },
       "offer": {
         "invalidTitle": "Lien non valide",
@@ -3598,7 +3592,10 @@
         },
         "confirmLabel": "Confirmer l'annulation",
         "successToast": "Annulation programmée. Vous conservez l'accès jusqu'à la fin de la période en cours."
-      }
+      },
+      "trialEndsAtNoCard": "Votre essai gratuit se termine le {date}. Aucun moyen de paiement n'est enregistré : ajoutez-en un avant cette date pour conserver l'accès, sinon l'accès sera suspendu à la fin de l'essai.",
+      "trialEndsAtNeutral": "Votre essai gratuit se termine le {date}.",
+      "addPayment": "Ajouter un moyen de paiement"
     },
     "stripeConnect": {
       "title": "Paiement en ligne (Stripe)",
@@ -3650,7 +3647,12 @@
       },
       "toasts": {
         "reactivated": "Abonnement réactivé !"
-      }
+      },
+      "titleTrialExpired": "Essai gratuit terminé",
+      "trialExpiredDesc": "Votre essai gratuit est terminé sans moyen de paiement enregistré et l'accès au tableau de bord est bloqué. Vos données sont conservées : {action}",
+      "trialExpiredDescCanEdit": "choisissez une formule et ajoutez un moyen de paiement pour continuer, ou exportez-les.",
+      "trialExpiredDescCannotEdit": "contactez un administrateur de l'association pour souscrire un abonnement.",
+      "subscribe": "Choisir une formule"
     },
     "reactivateSubscription": {
       "back": "Retour",
@@ -3666,8 +3668,12 @@
       "paymentError": "Erreur de paiement",
       "reactivateError": "Erreur lors de la réactivation",
       "toasts": {
-        "reactivated": "Abonnement réactivé !"
-      }
+        "reactivated": "Abonnement réactivé !",
+        "subscribed": "Abonnement activé !"
+      },
+      "titleTrialExpired": "S'abonner",
+      "subtitleTrialExpired": "Votre essai gratuit est terminé. Choisissez une formule et renseignez un moyen de paiement pour continuer.",
+      "confirmButtonSubscribe": "Confirmer et s'abonner"
     }
   },
   "cotisations": {

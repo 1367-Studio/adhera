@@ -61,6 +61,22 @@ export function subscriptionPeriodEnd(sub: Stripe.Subscription): Date | null {
   return unix ? new Date(unix * 1000) : null
 }
 
+// Whether Stripe has a card it would charge for this association's next platform
+// invoice: the customer-level default (what the Customer Portal's "add a payment method"
+// sets, and what /api/register sets when a card is collected) or, failing that, the
+// subscription's own default. Only meaningful during a card-free trial (see
+// /api/register): with nothing on file, Stripe cancels the subscription at trial end
+// instead of invoicing, so the settings tab and the trial_will_end webhook both need to
+// know which of the two is coming.
+export async function customerHasPaymentMethod(customerId: string, subscriptionId?: string | null): Promise<boolean> {
+  const customer = await stripe.customers.retrieve(customerId)
+  if (customer.deleted) return false
+  if (customer.invoice_settings.default_payment_method || customer.default_source) return true
+  if (!subscriptionId) return false
+  const sub = await stripe.subscriptions.retrieve(subscriptionId)
+  return !!sub.default_payment_method
+}
+
 // DonationTier.interval (MONTH | QUARTER | YEAR) → Stripe's own recurring-price shape,
 // which only knows day/week/month/year — a quarter is a month billed every 3rd cycle,
 // not a native Stripe interval.

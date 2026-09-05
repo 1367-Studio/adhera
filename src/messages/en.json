@@ -84,7 +84,7 @@
     "register": {
       "pageTitle": "Create an account",
       "heading": "Create an account",
-      "subtitle": "{trialDays}-day free trial · No commitment · Cancel anytime",
+      "subtitle": "{trialDays}-day free trial · No credit card required · No commitment",
       "subtitleOffer": "Complete your sign-up to activate your subscription.",
       "alreadyAccount": "Already have an account?",
       "signIn": "Sign in",
@@ -114,21 +114,15 @@
         "perkTrialDays": "{days} free days",
         "perkNoCommitment": "No commitment",
         "perkEasyCancel": "Easy cancellation",
-        "genericError": "Error"
-      },
-      "payment": {
-        "trialBadge": "Free trial",
-        "freeToday": "€0 today",
-        "trialOffered": "{days} days offered",
-        "afterTrial": "After the trial period",
-        "perMonth": "{price}/month",
-        "billedOnce": "Billed once · {total}/year",
-        "discount": "−{pct}%",
-        "paymentError": "Payment error",
-        "createAccountError": "Error creating account",
         "genericError": "Error",
         "startTrial": "Start my free trial",
-        "securePayment": "Secure payment by Stripe · Cancel before {days} days to pay nothing"
+        "perkNoCard": "No credit card required",
+        "createAccountError": "Error creating account"
+      },
+      "payment": {
+        "paymentError": "Payment error",
+        "createAccountError": "Error creating account",
+        "genericError": "Error"
       },
       "offer": {
         "invalidTitle": "Invalid link",
@@ -3598,7 +3592,10 @@
         },
         "confirmLabel": "Confirm cancellation",
         "successToast": "Cancellation scheduled. You keep access until the end of the current period."
-      }
+      },
+      "trialEndsAtNoCard": "Your free trial ends on {date}. No payment method is on file: add one before then to keep access, otherwise access will be suspended when the trial ends.",
+      "trialEndsAtNeutral": "Your free trial ends on {date}.",
+      "addPayment": "Add a payment method"
     },
     "stripeConnect": {
       "title": "Online payment (Stripe)",
@@ -3650,7 +3647,12 @@
       },
       "toasts": {
         "reactivated": "Subscription reactivated!"
-      }
+      },
+      "titleTrialExpired": "Free trial ended",
+      "trialExpiredDesc": "Your free trial ended without a payment method on file and dashboard access is blocked. Your data is kept: {action}",
+      "trialExpiredDescCanEdit": "choose a plan and add a payment method to continue, or export it.",
+      "trialExpiredDescCannotEdit": "contact an administrator of the association to subscribe.",
+      "subscribe": "Choose a plan"
     },
     "reactivateSubscription": {
       "back": "Back",
@@ -3666,8 +3668,12 @@
       "paymentError": "Payment error",
       "reactivateError": "Error during reactivation",
       "toasts": {
-        "reactivated": "Subscription reactivated!"
-      }
+        "reactivated": "Subscription reactivated!",
+        "subscribed": "Subscription activated!"
+      },
+      "titleTrialExpired": "Subscribe",
+      "subtitleTrialExpired": "Your free trial has ended. Choose a plan and enter a payment method to continue.",
+      "confirmButtonSubscribe": "Confirm and subscribe"
     }
   },
   "cotisations": {

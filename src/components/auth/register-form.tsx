@@ -23,7 +23,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
-// ─── Step indicator ───────────────────────────────────────────────────────────
+// ─── Step indicator (offer flow only) ─────────────────────────────────────────
 
 function StepIndicator({ current }: { current: "info" | "payment" }) {
   const t = useTranslations("auth.register.steps")
@@ -67,28 +67,42 @@ function StepIndicator({ current }: { current: "info" | "payment" }) {
   )
 }
 
-// ─── Step 1: info ─────────────────────────────────────────────────────────────
+// ─── Account form ─────────────────────────────────────────────────────────────
 
 type Info = { associationName: string; city: string; firstName: string; lastName: string; email: string; password: string; acceptedTerms: true }
+
+// label is deliberately absent here — it's the staff-only internal note (see
+// PricingOffer.label) and the public lookup route never sends it to the browser.
+type OfferSummary = { token: string; phases: OfferPhase[] }
 
 function StepInfo({
   defaultValues,
   existingCustomerId,
   viaGoogle,
   pricing,
-  hasOffer,
+  offer,
+  tier,
+  plan,
   onNext,
+  onSuccess,
 }: {
   defaultValues?:      Partial<Info>
   existingCustomerId?: string
   viaGoogle?:          boolean
   pricing:             PricingInfo
-  // A custom-pricing offer link replaces the trial entirely (see /api/register's
-  // offerToken branch) — the "X jours gratuits" perk would be misleading here.
-  hasOffer?:           boolean
-  onNext: (info: Info, customerId: string, clientSecret: string) => void
+  // A custom-pricing offer link (see /api/register's offerToken branch) is paid from its
+  // first phase, so it keeps a card step: this form only prepares the SetupIntent and
+  // hands over to PaymentForm via onNext. The standard signup has no card step at all —
+  // the trial runs without one (see /api/register) — so this form is the whole wizard
+  // and creates the account itself, then calls onSuccess.
+  offer?:              OfferSummary
+  tier:                PlanTier
+  plan:                Plan
+  onNext:              (info: Info, customerId: string, clientSecret: string) => void
+  onSuccess:           (info: Info) => void
 }) {
-  const t = useTranslations("auth.register.form")
+  const t   = useTranslations("auth.register.form")
+  const loc = useLocale()
   const [loading,  setLoading]  = useState(false)
   const [apiError, setApiError] = useState("")
 
@@ -101,23 +115,45 @@ function StepInfo({
   async function onSubmit(data: RegisterInput) {
     setApiError("")
     setLoading(true)
+    const info: Info = {
+      associationName: data.associationName, city: data.city ?? "", firstName: data.firstName, lastName: data.lastName,
+      email: data.email, password: data.password, acceptedTerms: data.acceptedTerms,
+    }
     try {
-      const res  = await fetch("/api/stripe/setup-intent", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
-          name:       `${data.firstName} ${data.lastName}`,
-          email:      data.email,
-          customerId: existingCustomerId,
-        }),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error ?? t("genericError"))
-      onNext(
-        { associationName: data.associationName, city: data.city ?? "", firstName: data.firstName, lastName: data.lastName, email: data.email, password: data.password, acceptedTerms: data.acceptedTerms },
-        json.customerId,
-        json.clientSecret,
-      )
+      if (offer) {
+        const res  = await fetch("/api/stripe/setup-intent", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({
+            name:       `${data.firstName} ${data.lastName}`,
+            email:      data.email,
+            customerId: existingCustomerId,
+          }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error ?? t("genericError"))
+        onNext(info, json.customerId, json.clientSecret)
+      } else {
+        const res = await fetch("/api/register", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({
+            associationName: info.associationName,
+            city:            info.city || undefined,
+            firstName:       info.firstName,
+            lastName:        info.lastName,
+            email:           info.email,
+            password:        info.password,
+            acceptedTerms:   info.acceptedTerms,
+            plan,
+            tier,
+            locale:          loc,
+          }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error ?? t("createAccountError"))
+        onSuccess(info)
+      }
     } catch (err) {
       setApiError(err instanceof Error ? err.message : t("genericError"))
     } finally {
@@ -125,9 +161,11 @@ function StepInfo({
     }
   }
 
-  const perks = hasOffer
+  // A custom-pricing offer replaces the trial entirely (see /api/register's offerToken
+  // branch) — the trial perks would be misleading there.
+  const perks = offer
     ? [t("perkNoCommitment"), t("perkEasyCancel")]
-    : [t("perkTrialDays", { days: pricing.trialDays }), t("perkNoCommitment"), t("perkEasyCancel")]
+    : [t("perkTrialDays", { days: pricing.trialDays }), t("perkNoCard"), t("perkNoCommitment")]
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -215,7 +253,7 @@ function StepInfo({
       )}
 
       <Button type="submit" className="w-full h-11 text-sm font-medium mt-2" disabled={loading}>
-        {t("continueToPayment")}
+        {offer ? t("continueToPayment") : t("startTrial")}
         {loading
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
@@ -233,19 +271,12 @@ function StepInfo({
   )
 }
 
-// ─── Step 2: payment ──────────────────────────────────────────────────────────
-
-// label is deliberately absent here — it's the staff-only internal note (see
-// PricingOffer.label) and the public lookup route never sends it to the browser.
-type OfferSummary = { token: string; phases: OfferPhase[] }
+// ─── Card step (offer flow only) ──────────────────────────────────────────────
 
 function PaymentForm({
   info,
   customerId,
   clientSecret,
-  tier,
-  plan,
-  pricing,
   offer,
   onBack,
   onSuccess,
@@ -253,18 +284,13 @@ function PaymentForm({
   info:         Info
   customerId:   string
   clientSecret: string
-  // Standard catalog signup passes tier/plan/pricing; a custom-pricing offer link (see
-  // /api/register's offerToken branch) passes `offer` instead — never both.
-  tier?:        PlanTier
-  plan?:        Plan
-  pricing?:     PricingInfo
-  offer?:       OfferSummary
+  offer:        OfferSummary
   onBack:       () => void
   onSuccess:    () => void
 }) {
-  const t  = useTranslations("auth.register.payment")
+  const t      = useTranslations("auth.register.payment")
   const tOffer = useTranslations("auth.register.offer")
-  const loc = useLocale()
+  const loc    = useLocale()
   const stripe   = useStripe()
   const elements = useElements()
   const [loading, setLoading] = useState(false)
@@ -314,8 +340,8 @@ function PaymentForm({
           acceptedTerms:   info.acceptedTerms,
           customerId,
           paymentMethodId,
-          locale: loc,
-          ...(offer ? { offerToken: offer.token } : { plan, tier }),
+          locale:          loc,
+          offerToken:      offer.token,
         }),
       })
       const data = await res.json()
@@ -329,58 +355,22 @@ function PaymentForm({
     }
   }
 
-  const tierPricing  = pricing && tier ? pricing.plans[tier] : null
-  const monthlyPrice = tierPricing ? euros(tierPricing.monthlyAmountCents) : ""
-  const yearlyEquiv  = tierPricing ? euros(Math.round(tierPricing.yearlyAmountCents / 12)) : ""
-  const yearlyTotal  = tierPricing ? euros(tierPricing.yearlyAmountCents) : ""
-  const discountPct  = tierPricing ? Math.round((1 - (tierPricing.yearlyAmountCents / 12) / tierPricing.monthlyAmountCents) * 100) : 0
-
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {offer ? (
-        <div className="rounded-lg border bg-card p-4 space-y-3">
-          <span className="text-sm font-medium">{APP_NAME}</span>
-          <div className="h-px bg-border" />
-          <div className="space-y-1.5 text-sm">
-            <div className="text-muted-foreground">{info.associationName}</div>
-            {offer.phases.map((phase, i) => (
-              <div key={i} className="font-medium text-foreground">
-                {phase.months === null
-                  ? tOffer("phaseRecurring", { amount: euros(phase.amountCents) })
-                  : tOffer("phaseFixed", { amount: euros(phase.amountCents), months: phase.months })}
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-lg border bg-card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">{APP_NAME} · {t("trialBadge")}</span>
-            <span className="text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-              {t("freeToday")}
-            </span>
-          </div>
-          <div className="h-px bg-border" />
-          <div className="space-y-1.5 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>{info.associationName}</span>
-              <span>{t("trialOffered", { days: pricing!.trialDays })}</span>
+      <div className="rounded-lg border bg-card p-4 space-y-3">
+        <span className="text-sm font-medium">{APP_NAME}</span>
+        <div className="h-px bg-border" />
+        <div className="space-y-1.5 text-sm">
+          <div className="text-muted-foreground">{info.associationName}</div>
+          {offer.phases.map((phase, i) => (
+            <div key={i} className="font-medium text-foreground">
+              {phase.months === null
+                ? tOffer("phaseRecurring", { amount: euros(phase.amountCents) })
+                : tOffer("phaseFixed", { amount: euros(phase.amountCents), months: phase.months })}
             </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>{t("afterTrial")}</span>
-              <span className="font-medium text-foreground">
-                {t("perMonth", { price: plan === "yearly" ? yearlyEquiv : monthlyPrice })}
-              </span>
-            </div>
-            {plan === "yearly" && (
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span className="text-amber-600 dark:text-amber-400">{t("billedOnce", { total: yearlyTotal })}</span>
-                <span className="text-emerald-600">{t("discount", { pct: discountPct })}</span>
-              </div>
-            )}
-          </div>
+          ))}
         </div>
-      )}
+      </div>
 
       <div className="rounded-lg border bg-card p-4">
         <PaymentElement
@@ -401,13 +391,13 @@ function PaymentForm({
         </Button>
         <Button type="submit" className="flex-1 h-11 text-sm font-medium" disabled={loading || !stripe}>
           {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-          {offer ? tOffer("confirmButton") : t("startTrial")}
+          {tOffer("confirmButton")}
         </Button>
       </div>
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <LockIcon className="size-3" />
-        <span>{offer ? tOffer("securePayment") : t("securePayment", { days: pricing!.trialDays })}</span>
+        <span>{tOffer("securePayment")}</span>
       </div>
     </form>
   )
@@ -445,8 +435,9 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
 
   // A custom-pricing signup link (?offer=<token>, see /api/register's offerToken branch
   // and src/lib/pricing-offers.ts) replaces the standard Essential/Pro plan picker with a
-  // fixed set of phases fetched from the public offer lookup route. offerToken absent =
-  // completely unaffected standard flow.
+  // fixed set of phases fetched from the public offer lookup route, and is the only flow
+  // that still collects a card at signup. offerToken absent = completely unaffected
+  // standard flow.
   const offerToken = searchParams.get("offer")
   const [offer,        setOffer]        = useState<OfferSummary | "invalid" | null>(null)
   const [offerLoading, setOfferLoading] = useState(!!offerToken)
@@ -496,8 +487,8 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }, [step])
 
   if (step === "done") {
-    // The email field in step 1 is pre-filled from Google but stays editable — only offer
-    // the Google CTA if the email actually submitted still matches the Google account's,
+    // The email field is pre-filled from Google but stays editable — only offer the
+    // Google CTA if the email actually submitted still matches the Google account's,
     // otherwise signInWithGoogleDashboard() would find no matching user and bounce them
     // straight back to /register right after they just successfully signed up.
     const showGoogleCta = !!(
@@ -542,7 +533,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
         )}
         {/* Always keep a way to the plain login, even when the Google CTA is shown above —
             it can fail (existing account elsewhere, blocked third-party cookies, etc.) and
-            the account does have a password set (see the step-1 hint). */}
+            the account does have a password set (see the form's password hint). */}
         <Link
           href="/login"
           className={cn(
@@ -578,9 +569,10 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
 
   return (
     <div className="space-y-6">
-      {!offer && <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />}
-
-      <StepIndicator current={step as "info" | "payment"} />
+      {offer
+        ? <StepIndicator current={step as "info" | "payment"} />
+        : <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />
+      }
 
       {step === "info" && (
         <StepInfo
@@ -592,26 +584,29 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
           existingCustomerId={customerId || undefined}
           viaGoogle={!!googlePrefill}
           pricing={pricing}
-          hasOffer={!!offer}
+          offer={offer ?? undefined}
+          tier={tier}
+          plan={plan}
           onNext={(i, cid, cs) => {
             setInfo(i)
             setCustomerId(cid)
             setClientSecret(cs)
             setStep("payment")
           }}
+          onSuccess={(i) => {
+            setInfo(i)
+            setStep("done")
+          }}
         />
       )}
 
-      {step === "payment" && info && clientSecret && (
+      {step === "payment" && offer && info && clientSecret && (
         <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance }}>
           <PaymentForm
             info={info}
             customerId={customerId}
             clientSecret={clientSecret}
-            tier={offer ? undefined : tier}
-            plan={offer ? undefined : plan}
-            pricing={offer ? undefined : pricing}
-            offer={offer ?? undefined}
+            offer={offer}
             onBack={() => setStep("info")}
             onSuccess={() => setStep("done")}
           />

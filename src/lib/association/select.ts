@@ -35,6 +35,7 @@ export const ASSOCIATION_SAFE_SELECT = {
   customBrandingEnabled: true,
   subscriptionStatus: true,
   trialEndsAt: true,
+  trialExpiredAt: true,
   suspendedAt: true,
   cancelAtPeriodEnd: true,
   currentPeriodEndsAt: true,

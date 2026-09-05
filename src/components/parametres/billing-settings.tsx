@@ -4,6 +4,7 @@ import { CancelPlanDialog } from "@/components/parametres/cancel-plan-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
+import { cn } from "@/lib/utils"
 import { CheckCircleIcon, ClockIcon, WarningCircleIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
@@ -14,6 +15,8 @@ import { toast } from "sonner"
 type BillingStatus = {
   subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
   trialEndsAt:         string | null
+  // Only resolved while TRIAL (see /api/billing); null = Stripe couldn't say.
+  hasPaymentMethod:    boolean | null
   cancelAtPeriodEnd:   boolean
   currentPeriodEndsAt: string | null
   hasBilling:          boolean
@@ -80,6 +83,9 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
 
   const status = data?.subscriptionStatus ?? null
   const cfg    = status ? statusConfig[status] : null
+  // A card-free trial (see /api/register) with still nothing on file: Stripe will cancel
+  // it at the end instead of charging, so adding a card becomes the tab's main action.
+  const needsCard = status === "TRIAL" && data?.hasPaymentMethod === false
 
   return (
     <div className="space-y-4">
@@ -116,8 +122,11 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
       {!isLoading && !isError && (
         <div className="space-y-3">
           {status === "TRIAL" && data?.trialEndsAt && !data?.cancelAtPeriodEnd && (
-            <p className="text-xs text-muted-foreground">
-              {t("trialEndsAt", { date: new Date(data.trialEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
+            <p className={cn("text-xs", needsCard ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground")}>
+              {t(
+                data.hasPaymentMethod === true ? "trialEndsAt" : needsCard ? "trialEndsAtNoCard" : "trialEndsAtNeutral",
+                { date: new Date(data.trialEndsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) },
+              )}
             </p>
           )}
 
@@ -165,11 +174,11 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant={status === "PAST_DUE" ? "default" : "outline"}
+                variant={status === "PAST_DUE" || needsCard ? "default" : "outline"}
                 loading={portalMutation.isPending}
                 onClick={() => portalMutation.mutate()}
               >
-                {status === "PAST_DUE" ? t("updatePayment") : t("manageSubscription")}
+                {status === "PAST_DUE" ? t("updatePayment") : needsCard ? t("addPayment") : t("manageSubscription")}
               </Button>
 
               {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (
