@@ -10,7 +10,7 @@ export default async function AbonnementSuspenduPage() {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: u.associationId },
-    select: { subscriptionStatus: true, suspendedAt: true },
+    select: { subscriptionStatus: true, suspendedAt: true, trialExpiredAt: true },
   })
 
   // Authoritative guard read straight from the DB: without this, any admin could reach
@@ -26,6 +26,7 @@ export default async function AbonnementSuspenduPage() {
       canEdit={canEdit}
       subscriptionStatus={assoc.subscriptionStatus as "SUSPENDED" | "CANCELLED"}
       suspendedAt={assoc.suspendedAt?.toISOString() ?? null}
+      trialExpired={!!assoc.trialExpiredAt}
     />
   )
 }

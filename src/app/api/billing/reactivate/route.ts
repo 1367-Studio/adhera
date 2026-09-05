@@ -98,6 +98,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       plan:                 tier === "pro" ? "PRO" : "ESSENTIAL",
       subscriptionStatus:   toSubscriptionStatus(subscription.status),
       suspendedAt:          null,
+      trialExpiredAt:       null,
       cancelAtPeriodEnd:    false,
       currentPeriodEndsAt:  subscriptionPeriodEnd(subscription),
     },

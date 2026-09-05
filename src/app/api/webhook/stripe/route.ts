@@ -31,6 +31,7 @@ import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
 import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
+import { isTrialExpiry, handleTrialWillEnd, handleTrialExpired } from "@/lib/webhook/platform-trial"
 import {
   isMembershipInstallmentEvent, handleMembershipInstallmentCheckout, handleInstallmentInvoicePaid,
   tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
@@ -1070,7 +1071,7 @@ export async function POST(req: Request) {
       // drives the "suspended since" messaging on the standby screen and backoffice.
       const assoc = await prisma.association.findFirst({
         where:  { stripeSubscriptionId: sub.id },
-        select: { id: true, subscriptionStatus: true, plan: true },
+        select: { id: true, name: true, subscriptionStatus: true, plan: true, cancelAtPeriodEnd: true },
       })
       if (!assoc) break
 
@@ -1083,6 +1084,12 @@ export async function POST(req: Request) {
       const newTier    = priceId ? tierForPriceId(priceId) : null
       const newPlan    = newTier ? (newTier === "pro" ? "PRO" as const : "ESSENTIAL" as const) : null
 
+      // A card-free trial Stripe just cancelled for lack of a payment method (see
+      // src/lib/webhook/platform-trial.ts). Normally arrives as customer.subscription.
+      // deleted below; handled here too since Stripe doesn't promise which of the two
+      // events lands first.
+      const trialExpired = isTrialExpiry(sub, assoc)
+
       await prisma.association.update({
         where: { id: assoc.id },
         data:  {
@@ -1092,10 +1099,17 @@ export async function POST(req: Request) {
             newStatus === "SUSPENDED"
               ? (assoc.subscriptionStatus === "SUSPENDED" ? undefined : new Date())
               : null,
+          // Cleared as soon as the association is back on a live subscription (card added
+          // and re-subscribed), kept as-is while it stays CANCELLED for another reason.
+          trialExpiredAt:      newStatus === "CANCELLED" ? (trialExpired ? new Date() : undefined) : null,
           cancelAtPeriodEnd:   sub.cancel_at_period_end,
           currentPeriodEndsAt: subscriptionPeriodEnd(sub),
         },
       })
+
+      if (trialExpired) {
+        await handleTrialExpired({ associationId: assoc.id, associationName: assoc.name, stripeSubscriptionId: sub.id, stripeEventId: event.id })
+      }
 
       // Unlike /api/billing/reactivate, a Customer Portal downgrade can't be blocked ahead
       // of time — Stripe has already committed the price change by the time this event
@@ -1174,10 +1188,40 @@ export async function POST(req: Request) {
         break
       }
 
-      await prisma.association.updateMany({
-        where: { stripeSubscriptionId: sub.id },
-        data:  { subscriptionStatus: "CANCELLED", suspendedAt: null, cancelAtPeriodEnd: false, currentPeriodEndsAt: null },
+      // Fetched (rather than a blind updateMany) to tell a card-free trial Stripe ended for
+      // lack of a payment method apart from an admin's own cancellation — see
+      // isTrialExpiry() and the same branch in customer.subscription.updated above.
+      const assoc = await prisma.association.findFirst({
+        where:  { stripeSubscriptionId: sub.id },
+        select: { id: true, name: true, subscriptionStatus: true, cancelAtPeriodEnd: true },
       })
+      if (!assoc) break
+
+      const trialExpired = isTrialExpiry(sub, assoc)
+      await prisma.association.update({
+        where: { id: assoc.id },
+        data:  {
+          subscriptionStatus:  "CANCELLED",
+          suspendedAt:         null,
+          cancelAtPeriodEnd:   false,
+          currentPeriodEndsAt: null,
+          ...(trialExpired ? { trialExpiredAt: new Date() } : {}),
+        },
+      })
+      if (trialExpired) {
+        await handleTrialExpired({ associationId: assoc.id, associationName: assoc.name, stripeSubscriptionId: sub.id, stripeEventId: event.id })
+      }
+      break
+    }
+
+    // 3 days before a trial ends. Only an association's own card-free trial (see
+    // /api/register) has anything to do here; a donor's or member's recurring
+    // subscription never carries a trial but is filtered out all the same, for the same
+    // reason as in customer.subscription.created/updated above.
+    case "customer.subscription.trial_will_end": {
+      const sub = event.data.object as Stripe.Subscription
+      if (isDonationSubscriptionEvent(sub) || isCotisationSubscriptionEvent(sub) || isMembershipInstallmentEvent(sub)) break
+      await handleTrialWillEnd(sub, event.id)
       break
     }
 

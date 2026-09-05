@@ -84,7 +84,7 @@
     "register": {
       "pageTitle": "Criar uma conta",
       "heading": "Criar uma conta",
-      "subtitle": "{trialDays} dias de teste grátis · Sem compromisso · Cancelamento fácil",
+      "subtitle": "{trialDays} dias de teste grátis · Sem cartão de crédito · Sem compromisso",
       "subtitleOffer": "Complete seu cadastro para ativar sua assinatura.",
       "alreadyAccount": "Já tem uma conta?",
       "signIn": "Entrar",
@@ -114,21 +114,15 @@
         "perkTrialDays": "{days} dias grátis",
         "perkNoCommitment": "Sem compromisso",
         "perkEasyCancel": "Cancelamento fácil",
-        "genericError": "Erro"
+        "genericError": "Erro",
+        "startTrial": "Começar meu teste grátis",
+        "perkNoCard": "Sem cartão de crédito",
+        "createAccountError": "Erro ao criar a conta"
       },
       "payment": {
-        "trialBadge": "Teste grátis",
-        "freeToday": "0 € hoje",
-        "trialOffered": "{days} dias oferecidos",
-        "afterTrial": "Após o período de teste",
-        "perMonth": "{price}/mês",
-        "billedOnce": "Cobrado uma vez · {total}/ano",
-        "discount": "−{pct} %",
         "paymentError": "Erro de pagamento",
         "createAccountError": "Erro ao criar a conta",
-        "genericError": "Erro",
-        "startTrial": "Iniciar meu teste grátis",
-        "securePayment": "Pagamento seguro pela Stripe · Cancele antes de {days} dias para não pagar nada"
+        "genericError": "Erro"
       },
       "offer": {
         "invalidTitle": "Link inválido",
@@ -3598,7 +3592,10 @@
         },
         "confirmLabel": "Confirmar cancelamento",
         "successToast": "Cancelamento programado. Você mantém acesso até o fim do período atual."
-      }
+      },
+      "trialEndsAtNoCard": "Seu teste gratuito termina em {date}. Nenhum método de pagamento está cadastrado: adicione um antes dessa data para manter o acesso, caso contrário o acesso será suspenso ao final do teste.",
+      "trialEndsAtNeutral": "Seu teste gratuito termina em {date}.",
+      "addPayment": "Adicionar um método de pagamento"
     },
     "stripeConnect": {
       "title": "Pagamento online (Stripe)",
@@ -3650,7 +3647,12 @@
       },
       "toasts": {
         "reactivated": "Assinatura reativada!"
-      }
+      },
+      "titleTrialExpired": "Teste gratuito encerrado",
+      "trialExpiredDesc": "Seu teste gratuito terminou sem um método de pagamento cadastrado e o acesso ao painel está bloqueado. Seus dados estão preservados: {action}",
+      "trialExpiredDescCanEdit": "escolha um plano e adicione um método de pagamento para continuar, ou exporte-os.",
+      "trialExpiredDescCannotEdit": "entre em contato com um administrador da associação para assinar.",
+      "subscribe": "Escolher um plano"
     },
     "reactivateSubscription": {
       "back": "Voltar",
@@ -3666,8 +3668,12 @@
       "paymentError": "Erro de pagamento",
       "reactivateError": "Erro ao reativar",
       "toasts": {
-        "reactivated": "Assinatura reativada!"
-      }
+        "reactivated": "Assinatura reativada!",
+        "subscribed": "Assinatura ativada!"
+      },
+      "titleTrialExpired": "Assinar",
+      "subtitleTrialExpired": "Seu teste gratuito terminou. Escolha um plano e informe um método de pagamento para continuar.",
+      "confirmButtonSubscribe": "Confirmar e assinar"
     }
   },
   "cotisations": {

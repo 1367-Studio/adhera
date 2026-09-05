@@ -466,6 +466,12 @@ model Association {
   customBrandingEnabled          Boolean?
   subscriptionStatus             SubscriptionStatus @default(TRIAL)
   trialEndsAt                    DateTime?
+  // Stamped by the Stripe webhook when a card-free trial (see /api/register) reached its
+  // end with still no payment method on file and Stripe cancelled the subscription — as
+  // opposed to an admin resigning. Drives the "Essai terminé" wording on the standby and
+  // re-subscribe screens instead of the generic "Abonnement résilié"; cleared as soon as
+  // the association is back on a live subscription.
+  trialExpiredAt                 DateTime?
   suspendedAt                    DateTime?
   cancelAtPeriodEnd              Boolean            @default(false)
   currentPeriodEndsAt            DateTime?

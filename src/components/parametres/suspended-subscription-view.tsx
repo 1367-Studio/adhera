@@ -21,10 +21,15 @@ export function SuspendedSubscriptionView({
   canEdit,
   subscriptionStatus,
   suspendedAt,
+  trialExpired,
 }: {
   canEdit:             boolean
   subscriptionStatus:  "SUSPENDED" | "CANCELLED"
   suspendedAt:         string | null
+  // CANCELLED because a card-free trial ran out with no payment method added (see
+  // Association.trialExpiredAt) — same screen, but "your trial ended" wording rather
+  // than "your subscription was cancelled", which the admin never did.
+  trialExpired:        boolean
 }) {
   const t                    = useTranslations("parametres.suspended")
   const tCommon              = useTranslations("common")
@@ -118,11 +123,15 @@ export function SuspendedSubscriptionView({
         <CardHeader>
           <div className="flex items-center gap-2 text-destructive">
             <WarningCircleIcon className="size-5" />
-            <CardTitle>{isCancelled ? t("titleCancelled") : t("titleSuspended")}</CardTitle>
+            <CardTitle>
+              {isCancelled ? (trialExpired ? t("titleTrialExpired") : t("titleCancelled")) : t("titleSuspended")}
+            </CardTitle>
           </div>
           <CardDescription>
             {polling ? (
               t("pollingText")
+            ) : isCancelled && trialExpired ? (
+              t("trialExpiredDesc", { action: canEdit ? t("trialExpiredDescCanEdit") : t("trialExpiredDescCannotEdit") })
             ) : isCancelled ? (
               t("cancelledDesc", { action: canEdit ? t("cancelledDescCanEdit") : t("cancelledDescCannotEdit") })
             ) : (
@@ -147,7 +156,7 @@ export function SuspendedSubscriptionView({
             {isCancelled ? (
               <Button onClick={() => router.push("/dashboard/reactiver-abonnement")}>
                 <ArrowClockwiseIcon className="mr-2 size-4" />
-                {t("resubscribe")}
+                {trialExpired ? t("subscribe") : t("resubscribe")}
               </Button>
             ) : (
               <Button loading={portalMutation.isPending} onClick={() => portalMutation.mutate()}>

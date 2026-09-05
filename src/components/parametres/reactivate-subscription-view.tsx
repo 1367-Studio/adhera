@@ -13,11 +13,12 @@ import { CircleNotchIcon, LockIcon, ArrowLeftIcon, ArrowClockwiseIcon } from "@p
 import { apiErrorMessage } from "@/lib/api-error"
 import { BASE_PATH } from "@/lib/env"
 
-function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
+function PaymentForm({ tier, plan, pricing, clientSecret, trialExpired, onSuccess }: {
   tier:         PlanTier
   plan:         Plan
   pricing:      PricingInfo
   clientSecret: string
+  trialExpired: boolean
   onSuccess:    () => void
 }) {
   const t        = useTranslations("parametres.reactivateSubscription")
@@ -110,7 +111,7 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
 
       <Button type="submit" size="lg" className="w-full" disabled={loading || !stripe}>
         {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        {t("confirmButton")}
+        {trialExpired ? t("confirmButtonSubscribe") : t("confirmButton")}
       </Button>
 
       <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
@@ -121,7 +122,14 @@ function PaymentForm({ tier, plan, pricing, clientSecret, onSuccess }: {
   )
 }
 
-export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: PricingInfo; initialTier: PlanTier }) {
+export function ReactivateSubscriptionView({ pricing, initialTier, trialExpired }: {
+  pricing:     PricingInfo
+  initialTier: PlanTier
+  // Reached because a card-free trial ran out with no payment method added (see
+  // Association.trialExpiredAt): this is the association's first subscription, not a
+  // re-subscription, and the wording says so.
+  trialExpired: boolean
+}) {
   const t       = useTranslations("parametres.reactivateSubscription")
   const tCommon = useTranslations("common")
   const router = useRouter()
@@ -147,7 +155,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
   useEffect(() => { loadSetupIntent() }, [])
 
   function handleSuccess() {
-    toast.success(t("toasts.reactivated"))
+    toast.success(trialExpired ? t("toasts.subscribed") : t("toasts.reactivated"))
     router.replace("/dashboard")
   }
 
@@ -164,9 +172,9 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
             <ArrowLeftIcon className="mr-1.5 size-3.5" />
             {t("back")}
           </Button>
-          <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
+          <h1 className="text-xl font-semibold tracking-tight">{trialExpired ? t("titleTrialExpired") : t("title")}</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {t("subtitle")}
+            {trialExpired ? t("subtitleTrialExpired") : t("subtitle")}
           </p>
         </div>
 
@@ -191,7 +199,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier }: { pricing: 
 
         {clientSecret && !loadingIntent && (
           <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts }}>
-            <PaymentForm tier={tier} plan={plan} pricing={pricing} clientSecret={clientSecret} onSuccess={handleSuccess} />
+            <PaymentForm tier={tier} plan={plan} pricing={pricing} clientSecret={clientSecret} trialExpired={trialExpired} onSuccess={handleSuccess} />
           </Elements>
         )}
       </div>

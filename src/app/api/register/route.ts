@@ -3,6 +3,7 @@ import { randomUUID } from "crypto"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
+import type Stripe from "stripe"
 import { stripe, priceIdFor, TRIAL_DAYS } from "@/lib/stripe"
 import { createSubscriptionScheduleFromOffer, type OfferPhase } from "@/lib/pricing-offers"
 import { generateUniqueSlug } from "@/lib/slug"
@@ -20,8 +21,13 @@ const schema = z.object({
   email:           z.string().email(),
   password:        z.string().min(8),
   acceptedTerms:   z.literal(true),
-  customerId:      z.string(),
-  paymentMethodId: z.string(),
+  // The standard signup collects no card: the trial runs without one and the admin adds
+  // a payment method later from Paramètres → Abonnement (see the trial_settings below).
+  // Both fields only arrive together, from the card step /api/stripe/setup-intent
+  // prepared — mandatory for a custom-pricing offer, whose first phase is paid from day
+  // one, and merely accepted for a catalog plan.
+  customerId:      z.string().optional(),
+  paymentMethodId: z.string().optional(),
   // Standard signup picks a catalog plan; a custom-pricing link (see
   // src/lib/pricing-offers.ts) supplies offerToken instead — never both.
   plan:            z.enum(["monthly", "yearly"]).optional(),
@@ -31,6 +37,12 @@ const schema = z.object({
 }).refine(
   d => (d.offerToken != null) !== (d.plan != null && d.tier != null),
   { message: "Choisissez soit un plan, soit un lien d'offre, pas les deux." },
+).refine(
+  d => (d.customerId != null) === (d.paymentMethodId != null),
+  { message: "Moyen de paiement incomplet." },
+).refine(
+  d => d.offerToken == null || d.paymentMethodId != null,
+  { message: "Un moyen de paiement est requis pour cette offre." },
 )
 
 export async function POST(req: Request) {
@@ -38,7 +50,7 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { associationName, city, firstName, lastName, email, password, customerId, paymentMethodId, plan, tier, offerToken, locale } = parsed.data
+  const { associationName, city, firstName, lastName, email, password, customerId: browserCustomerId, paymentMethodId, plan, tier, offerToken, locale } = parsed.data
   const acceptedIp = consentIp(req)
 
   // Custom-pricing signup link: claimed atomically (PENDING → USED) before anything else
@@ -72,17 +84,30 @@ export async function POST(req: Request) {
   // association below always gets a fresh id, so there's nothing to collide with here.
   const priceId = offer ? null : priceIdFor(tier!, plan === "yearly" ? "yearly" : "monthly")
 
+  let customerId: string
   let subscriptionId: string
   let scheduleId: string | null = null
+  const hasPaymentMethod = paymentMethodId != null
+  // Set once a Customer has been created server-side (card-free path), so the two failure
+  // paths below can delete it again instead of leaving a stray Customer behind in Stripe.
+  let createdCustomerId: string | null = null
   try {
-    await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId })
-    await stripe.customers.update(customerId, {
-      invoice_settings: { default_payment_method: paymentMethodId },
-    })
+    if (browserCustomerId && paymentMethodId) {
+      customerId = browserCustomerId
+      await stripe.paymentMethods.attach(paymentMethodId, { customer: customerId })
+      await stripe.customers.update(customerId, {
+        invoice_settings: { default_payment_method: paymentMethodId },
+      })
+    } else {
+      // No card step ran in the browser, so no Customer exists yet (/api/stripe/setup-intent
+      // is what normally creates it, ahead of the card form) — create it here.
+      const customer = await stripe.customers.create({ email: email.toLowerCase(), name: `${firstName} ${lastName}` })
+      customerId = createdCustomerId = customer.id
+    }
 
     if (offer) {
       const schedule = await createSubscriptionScheduleFromOffer({
-        customerId, paymentMethodId,
+        customerId, paymentMethodId: paymentMethodId!,
         phases:          offer.phases,
         stripeProductId: offer.stripeProductId,
         // Stable per (customer, offer): a network retry or accidental double-submit
@@ -95,12 +120,25 @@ export async function POST(req: Request) {
       scheduleId    = schedule.id
       subscriptionId = typeof schedule.subscription === "string" ? schedule.subscription : schedule.subscription!.id
     } else {
-      let subscription = await stripe.subscriptions.create({
-        customer:               customerId,
-        items:                  [{ price: priceId! }],
-        trial_period_days:      TRIAL_DAYS,
-        default_payment_method: paymentMethodId,
-      }, {
+      const subscriptionParams: Stripe.SubscriptionCreateParams = {
+        customer:          customerId,
+        items:             [{ price: priceId! }],
+        trial_period_days: TRIAL_DAYS,
+        ...(paymentMethodId
+          ? { default_payment_method: paymentMethodId }
+          : {
+              // Card-free trial. Stripe itself cancels the subscription if the trial ends
+              // with still no payment method on the customer — that arrives as
+              // customer.subscription.deleted, which the webhook turns into CANCELLED
+              // (locked out, "Se réabonner" path with a card). A card added meanwhile from
+              // the Customer Portal becomes the customer's default and the first invoice
+              // simply charges it. Not left to Stripe's default ("create_invoice"), which
+              // would spin up an unpayable invoice and a PAST_DUE → SUSPENDED dunning cycle
+              // for an association that never entered a card in the first place.
+              trial_settings: { end_behavior: { missing_payment_method: "cancel" } },
+            }),
+      }
+      let subscription = await stripe.subscriptions.create(subscriptionParams, {
         // Stable per (customer, plan): a network retry or accidental double-submit of this
         // same registration attempt returns the subscription already created instead of
         // opening a second one on the same customer. Changing plan and resubmitting (e.g.
@@ -113,18 +151,20 @@ export async function POST(req: Request) {
       // retry with the same inputs would otherwise silently get that dead subscription back.
       // Detect that and force a genuinely new one instead of proceeding with a cancelled sub.
       if (subscription.status === "canceled") {
-        subscription = await stripe.subscriptions.create({
-          customer:               customerId,
-          items:                  [{ price: priceId! }],
-          trial_period_days:      TRIAL_DAYS,
-          default_payment_method: paymentMethodId,
-        }, { idempotencyKey: `register-sub-${customerId}-${priceId}-retry-${randomUUID()}` })
+        subscription = await stripe.subscriptions.create(subscriptionParams, { idempotencyKey: `register-sub-${customerId}-${priceId}-retry-${randomUUID()}` })
       }
       subscriptionId = subscription.id
     }
-  } catch {
+  } catch (err) {
     if (offer) await prisma.pricingOffer.update({ where: { id: offer.id }, data: { status: "PENDING" } }).catch(() => {})
-    return NextResponse.json({ error: "Erreur de paiement. Vérifiez vos informations." }, { status: 402 })
+    if (createdCustomerId) {
+      try { await stripe.customers.del(createdCustomerId) } catch (delErr) { console.error(`[register] failed to delete orphaned customer ${createdCustomerId}:`, delErr) }
+    }
+    // With a card in play the likely cause is the card itself (declined, 3DS abandoned…);
+    // without one there's nothing the person can "check" — it's Stripe or us.
+    if (hasPaymentMethod) return NextResponse.json({ error: "Erreur de paiement. Vérifiez vos informations." }, { status: 402 })
+    console.error("[register] failed to create card-free trial subscription:", err)
+    return NextResponse.json({ error: "Erreur lors de la création du compte. Réessayez dans un instant." }, { status: 502 })
   }
 
   try {
@@ -189,7 +229,7 @@ export async function POST(req: Request) {
     const loginUrl = `${APP_URL}/login`
     // Awaited (not fire-and-forget) — see forgot-password/route.ts for why an un-awaited
     // promise here silently never sends on Vercel's serverless runtime.
-    await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS })).catch((err: unknown) => {
+    await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS, hasPaymentMethod })).catch((err: unknown) => {
       console.error("[register] failed to send welcome email:", err)
     })
 

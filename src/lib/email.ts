@@ -482,15 +482,21 @@ export function adminWelcomeEmail(p: {
   associationName: string
   loginUrl:        string
   trialDays:       number
+  // The standard signup collects no card (see /api/register) — the admin has to know
+  // that continuing after the trial is a deliberate step on their side, not automatic.
+  hasPaymentMethod: boolean
 }) {
   // trialDays: 0 means the account started on a paid custom-pricing offer instead of the
   // standard trial (see /api/register's offerToken branch) — no trial sentence to show.
+  const trialSentence = p.trialDays > 0
+    ? `<br>Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.${p.hasPaymentMethod
+        ? ""
+        : ` Aucune carte bancaire ne vous a été demandée : pour continuer ensuite, ajoutez un moyen de paiement depuis <strong>Paramètres → Abonnement</strong> avant la fin de l'essai.`}`
+    : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Votre association <strong>${p.associationName}</strong> a été créée avec succès.${p.trialDays > 0
-        ? `<br>Vous disposez de <strong>${p.trialDays} jours d'essai gratuit</strong> pour découvrir toutes les fonctionnalités.`
-        : ""}
+      Votre association <strong>${p.associationName}</strong> a été créée avec succès.${trialSentence}
     </p>
     ${btn("Accéder à mon tableau de bord", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`
@@ -531,6 +537,59 @@ export function subscriptionPaymentFailedEmail(p: {
   return {
     to:      p.email,
     subject: `Échec de paiement — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// 3 days before a card-free trial ends (customer.subscription.trial_will_end) — only sent
+// while there is still no payment method on file, see src/lib/webhook/platform-trial.ts.
+export function trialEndingNoPaymentMethodEmail(p: {
+  email:           string
+  associationName: string
+  trialEndsAt:     Date | null
+  billingUrl:      string
+}) {
+  const dateStr = p.trialEndsAt
+    ? p.trialEndsAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
+    : null
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre essai gratuit se termine ${dateStr ? `le ${dateStr}` : "bientôt"}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      L'essai gratuit de <strong>${p.associationName}</strong> sur ${APP_NAME} touche à sa fin et aucun moyen de paiement n'est enregistré.<br>
+      Ajoutez-en un avant cette date pour conserver l'accès à votre tableau de bord — sans cela, l'accès sera suspendu à la fin de l'essai. Vos données seront conservées.
+    </p>
+    ${btn("Ajouter un moyen de paiement", p.billingUrl)}
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Aucun prélèvement n'aura lieu avant la fin de l'essai.
+    </p>`
+  return {
+    to:      p.email,
+    subject: `Votre essai gratuit se termine bientôt — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+// A card-free trial reached its end with still no payment method and Stripe cancelled the
+// subscription (see src/lib/webhook/platform-trial.ts) — the admin is now locked out on
+// the standby screen and this is how they learn why.
+export function trialExpiredEmail(p: {
+  email:           string
+  associationName: string
+  subscribeUrl:    string
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre essai gratuit est terminé</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      L'essai gratuit de <strong>${p.associationName}</strong> sur ${APP_NAME} est arrivé à son terme sans moyen de paiement enregistré, et l'accès au tableau de bord est suspendu.<br>
+      Vos données sont conservées : choisissez une formule et ajoutez un moyen de paiement pour reprendre là où vous en étiez.
+    </p>
+    ${btn("Choisir une formule", p.subscribeUrl)}
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Vous pouvez aussi exporter vos données à tout moment après connexion.
+    </p>`
+  return {
+    to:      p.email,
+    subject: `Votre essai gratuit est terminé — ${p.associationName}`,
     html:    layout(APP_NAME, content),
   }
 }
