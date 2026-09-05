@@ -652,13 +652,15 @@
       "customize": "Personnaliser",
       "done": "Terminé",
       "reset": "Réinitialiser",
-      "dragHint": "Glisser pour réorganiser"
+      "dragHint": "Glisser pour réorganiser",
+      "resizeHint": "Glisser le coin pour redimensionner"
     },
     "stats": {
       "activeMembers": "Membres actifs",
       "eventsThisMonth": "Événements ce mois",
       "cotisationsPending": "Cotisations en attente",
-      "financialBalance": "Solde financier"
+      "financialBalance": "Solde financier",
+      "donationsReceived": "Dons reçus {year}"
     },
     "nextEvent": {
       "title": "Prochain événement",
@@ -668,6 +670,14 @@
       "title": "Cotisations {year}",
       "collectedThisYear": "encaissé cette année",
       "pendingPayment": "{count} en attente de paiement"
+    },
+    "recentDonations": {
+      "title": "Dons récents",
+      "pending": "À encaisser ({count})",
+      "recent": "Dons reçus",
+      "anonymous": "Anonyme",
+      "viewAll": "Voir tous les dons",
+      "empty": "Aucun don pour le moment."
     },
     "recentOrders": {
       "title": "Commandes récentes",

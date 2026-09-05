@@ -652,13 +652,15 @@
       "customize": "Customize",
       "done": "Done",
       "reset": "Reset",
-      "dragHint": "Drag to reorder"
+      "dragHint": "Drag to reorder",
+      "resizeHint": "Drag the corner to resize"
     },
     "stats": {
       "activeMembers": "Active members",
       "eventsThisMonth": "Events this month",
       "cotisationsPending": "Pending membership fees",
-      "financialBalance": "Financial balance"
+      "financialBalance": "Financial balance",
+      "donationsReceived": "Donations received {year}"
     },
     "nextEvent": {
       "title": "Next event",
@@ -668,6 +670,14 @@
       "title": "Membership fees {year}",
       "collectedThisYear": "collected this year",
       "pendingPayment": "{count} awaiting payment"
+    },
+    "recentDonations": {
+      "title": "Recent donations",
+      "pending": "To collect ({count})",
+      "recent": "Donations received",
+      "anonymous": "Anonymous",
+      "viewAll": "View all donations",
+      "empty": "No donations yet."
     },
     "recentOrders": {
       "title": "Recent orders",

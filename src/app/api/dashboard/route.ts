@@ -2,6 +2,24 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
+// Same gate as /api/dons and the sidebar's Dons entry — a role that can't open the dons
+// list must not receive its yearly total here either (see donsRecus below).
+const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+
+// Shared by the pending and paid halves of the dons card so both sides carry identical
+// fields — the card renders one list out of the two and can't branch on their shape.
+const DON_CARD_SELECT = {
+  id:          true,
+  amount:      true,
+  donorType:   true,
+  firstName:   true,
+  lastName:    true,
+  companyName: true,
+  anonymous:   true,
+  paidAt:      true,
+  createdAt:   true,
+} as const
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -16,6 +34,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // just without crowding out real recent activity here.
   const pendingCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
 
+  const canSeeDons = FINANCE.includes(ctx.role)
+
   const [
     membresActifs,
     evenementsMois,
@@ -28,6 +48,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
     commandesEnAttente,
     materielEnRetardCount,
     materielEmpruntsListe,
+    donsAnnee,
+    donsEnAttente,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
@@ -113,31 +135,66 @@ export const GET = withAdminAuth(async (req, ctx) => {
         membre:           { select: { firstName: true, lastName: true } },
       },
     }),
+    // Encaissés only, scoped to the current year — the exact window the Dons page's own
+    // "Total {year}" KPI uses (paidAt within the year implies paidAt not null), so the tile
+    // and the page it links to never show two different numbers.
+    canSeeDons
+      ? prisma.don.aggregate({
+          where: { associationId, paidAt: { gte: new Date(`${year}-01-01`), lt: new Date(`${year + 1}-01-01`) } },
+          _sum:  { amount: true },
+        })
+      : Promise.resolve(null),
+    // Offline dons (espèces/chèque/virement) still awaiting encaissement — exactly the
+    // bucket the Dons page's own "en attente" table uses. Ordered by createdAt, not paidAt:
+    // every row here has paidAt null by definition, so ordering by it would be arbitrary.
+    canSeeDons
+      ? prisma.don.findMany({
+          where:   { associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } },
+          orderBy: { createdAt: "desc" },
+          take:    5,
+          select:  DON_CARD_SELECT,
+        })
+      : [],
   ])
 
+  // Both "fill the remaining slots" queries depend on a count from the batch above, so they
+  // can't join it — but they don't depend on each other either, so they share one round-trip
+  // rather than running back to back.
+  const donsSlots      = 5 - donsEnAttente.length
   const remainingSlots = 5 - commandesEnAttente.length
-  const ventesPayees = remainingSlots > 0
-    ? await prisma.boutiqueCommande.findMany({
-        where:   { associationId, status: "PAID" },
-        // `paidAt` (not `updatedAt`) — a later payment-type correction on an old sale
-        // updates the row without changing when it was actually paid, and ordering by
-        // `updatedAt` would resurface that old sale at the top of the list.
-        orderBy: { paidAt: "desc" },
-        take:    remainingSlots,
-        select: {
-          id:          true,
-          totalAmount: true,
-          paidAt:      true,
-          // Fallback source for `date` below — `paidAt` should always be set on a PAID row
-          // (backfilled by migration, always written going forward), but nothing here
-          // actually enforces that at the DB level, so a null slipping through renders a
-          // real date instead of silently producing "1 Jan 1970".
-          createdAt:   true,
-          guestName:   true,
-          membre:      { select: { firstName: true, lastName: true } },
-        },
-      })
-    : []
+
+  const [donsPayes, ventesPayees] = await Promise.all([
+    canSeeDons && donsSlots > 0
+      ? prisma.don.findMany({
+          where:   { associationId, paidAt: { not: null } },
+          orderBy: { paidAt: "desc" },
+          take:    donsSlots,
+          select:  DON_CARD_SELECT,
+        })
+      : [],
+    remainingSlots > 0
+      ? prisma.boutiqueCommande.findMany({
+          where:   { associationId, status: "PAID" },
+          // `paidAt` (not `updatedAt`) — a later payment-type correction on an old sale
+          // updates the row without changing when it was actually paid, and ordering by
+          // `updatedAt` would resurface that old sale at the top of the list.
+          orderBy: { paidAt: "desc" },
+          take:    remainingSlots,
+          select: {
+            id:          true,
+            totalAmount: true,
+            paidAt:      true,
+            // Fallback source for `date` below — `paidAt` should always be set on a PAID row
+            // (backfilled by migration, always written going forward), but nothing here
+            // actually enforces that at the DB level, so a null slipping through renders a
+            // real date instead of silently producing "1 Jan 1970".
+            createdAt:   true,
+            guestName:   true,
+            membre:      { select: { firstName: true, lastName: true } },
+          },
+        })
+      : [],
+  ])
 
   const ventesRecentes = [
     ...commandesEnAttente.map(c => ({ ...c, date: c.createdAt, status: "PENDING" as const })),
@@ -147,12 +204,25 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
   const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0) + Number(cotisationsPartielles._sum.amountPaid ?? 0)
 
+  // Same PENDING-block-then-PAID-block shape as ventesRecentes above, so the card can find
+  // the boundary by watching for a status change between two consecutive rows.
+  const donsRecents = [
+    ...donsEnAttente.map(d => ({ ...d, amount: Number(d.amount), date: d.createdAt, status: "PENDING" as const })),
+    ...donsPayes.map(d => ({ ...d, amount: Number(d.amount), date: d.paidAt ?? d.createdAt, status: "PAID" as const })),
+  ]
+
+  // null (not 0) for a role that can't see dons — the tile is hidden for them anyway, and a
+  // 0 would read as "no donations this year" rather than "not your data".
+  const donsRecus = canSeeDons ? Number(donsAnnee?._sum.amount ?? 0) : null
+
   return NextResponse.json({
     membresActifs,
     evenementsMois,
     cotisationsEnAttente,
     cotisationsEncaissees,
     solde,
+    donsRecus,
+    donsRecents,
     prochainEvenement,
     ventesRecentes,
     materielEnRetardCount,
