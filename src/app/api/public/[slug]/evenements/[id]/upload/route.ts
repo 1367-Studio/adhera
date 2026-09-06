@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { evenementRefWhere } from "@/lib/slug"
 import { parseModules } from "@/lib/modules"
 import { uploadToR2 } from "@/lib/r2"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
@@ -49,7 +50,7 @@ export async function POST(
   // independently of any real registration context, i.e. a free file host for anyone who
   // finds the URL.
   const evenement = await prisma.evenement.findFirst({
-    where:  { id, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
+    where:  { ...evenementRefWhere(id), associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
     select: { customFields: { where: { type: "FILE" }, select: { id: true }, take: 1 } },
   })
   if (!evenement || evenement.customFields.length === 0)

@@ -12,6 +12,7 @@ function toHtml(content: string): string {
 
 type PublicEvent = {
   id:          string
+  slug:        string | null
   title:       string
   date:        string
   endDate:     string | null
@@ -45,7 +46,7 @@ export function SiteEventsSection({ section, events, color, slug }: Props) {
             {displayed.map(event => (
               <Link
                 key={event.id}
-                href={`/${slug}/evenements/${event.id}`}
+                href={`/${slug}/evenements/${event.slug ?? event.id}`}
                 className="block bg-white rounded-lg border border-gray-100 overflow-hidden transition-shadow"
               >
                 {event.imageUrl && (

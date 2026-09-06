@@ -50,6 +50,7 @@ type Visibility            = "LINK" | "PRIVATE"
 type Evenement = {
   id:     string
   title:  string
+  slug:   string | null
   status: EvenementStatus
 
   description: string | null
@@ -463,12 +464,12 @@ export default function EvenementDetailPage() {
   // draft can be checked before publishing.
   function handlePreview() {
     if (!user.associationSlug || !evenement) return
-    window.open(`${BASE_PATH}/${user.associationSlug}/evenements/${evenement.id}?preview=1`, "_blank", "noopener")
+    window.open(`${BASE_PATH}/${user.associationSlug}/evenements/${evenement.slug ?? evenement.id}?preview=1`, "_blank", "noopener")
   }
 
   async function handleCopyLink() {
     if (!user.associationSlug || !evenement) return
-    const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/evenements/${evenement.id}`
+    const url = `${window.location.origin}${BASE_PATH}/${user.associationSlug}/evenements/${evenement.slug ?? evenement.id}`
     try {
       await navigator.clipboard.writeText(url)
       setLinkCopied(true)

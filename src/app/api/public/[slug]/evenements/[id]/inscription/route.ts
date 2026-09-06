@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
+import { evenementRefWhere } from "@/lib/slug"
 import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
@@ -138,13 +139,15 @@ export async function POST(
   if (!mods.site || !mods.evenements) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
   const evenement = await prisma.evenement.findFirst({
-    where:   { id, associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
+    where:   { ...evenementRefWhere(id), associationId: assoc.id, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
     include: {
       customFields: true, ticketTypes: true, discountCodes: true,
       products: { include: { variante: { include: { produit: { select: { status: true } } } } } },
     },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
+  // Public URL segment for the confirmation emails and Stripe return URLs (see Evenement.slug).
+  const evenementRef = evenement.slug ?? evenement.id
   if (evenement.date < new Date())
     return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
   const now = new Date()
@@ -357,7 +360,7 @@ export async function POST(
 
     // Dedup by email — only meaningful for the resume/reuse logic below.
     const existing = await prisma.participation.findFirst({
-      where:  { evenementId: id, email: { equals: email, mode: "insensitive" } },
+      where:  { evenementId: evenement.id, email: { equals: email, mode: "insensitive" } },
       select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true, ticketToken: true, discountCodeId: true },
     })
 
@@ -385,7 +388,7 @@ export async function POST(
     try {
       ;({ pid: participationId, waitlisted } = await prisma.$transaction(async (tx) => {
         if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
-          await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
+          await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenement.id} FOR UPDATE`
         }
 
         // Snapshot immédiat (pas seulement au paiement confirmé) — permet au webhook Stripe et
@@ -408,7 +411,7 @@ export async function POST(
           const created = await tx.participation.create({
             data: {
               associationId: assoc.id,
-              evenementId: id,
+              evenementId: evenement.id,
               orderId,
               firstName, lastName, email,
               phone:     phone || null,
@@ -435,7 +438,7 @@ export async function POST(
         let isWaitlisted = false
         if (evenement.capacity != null) {
           const occupied = await tx.participation.count({
-            where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+            where: { evenementId: evenement.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
           })
           if (occupied > evenement.capacity) {
             if (!evenement.waitlistEnabled) throw new EventFullError()
@@ -445,7 +448,7 @@ export async function POST(
 
         if (!isWaitlisted && ticketType?.capacity != null) {
           const occupiedTier = await tx.participation.count({
-            where: { evenementId: id, ticketTypeId: ticketType.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+            where: { evenementId: evenement.id, ticketTypeId: ticketType.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
           })
           if (occupiedTier > ticketType.capacity) {
             if (!evenement.waitlistEnabled) throw new TicketTypeFullError(ticketType.label)
@@ -513,12 +516,12 @@ export async function POST(
         eventTitle:      evenement.title,
         eventDate:       evenement.date,
         eventLocation:   evenement.location,
-        portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+        portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
         branding:        resolveDocumentBranding(assoc),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
       await notifyEventRegistration({
-        associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+        associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
         attendeeNames: [`${firstName} ${lastName}`], amount: 0,
         adminNotificationEmail: evenement.adminNotificationEmail,
       }).catch(() => {})
@@ -532,7 +535,7 @@ export async function POST(
         eventTitle:      evenement.title,
         eventDate:       evenement.date,
         eventLocation:   evenement.location,
-        portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+        portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
         ticketQr: {
           imageUrl: `${APP_URL}/api/public/billet/${ticketToken}/qr`,
@@ -546,7 +549,7 @@ export async function POST(
       // later via the same "marquer payé" flow as a walk-in cash entry (see
       // /api/evenements/[id]/participations), which is what actually sets ticketPaidAt/amount.
       await notifyEventRegistration({
-        associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+        associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
         attendeeNames: [`${firstName} ${lastName}`], amount: isOffline ? discountedSeatPrice(attendee) : 0,
         adminNotificationEmail: evenement.adminNotificationEmail,
       }).catch(() => {})
@@ -594,8 +597,8 @@ export async function POST(
         ...(resolvedProducts.length > 0 ? { products: JSON.stringify(resolvedProducts.map(p => ({ v: p.varianteId, q: p.quantity }))) } : {}),
       },
       customer_email: email,
-      success_url:    `${APP_URL}/${slug}/evenements/${id}?ticket=success`,
-      cancel_url:     `${APP_URL}/${slug}/evenements/${id}?ticket=cancelled`,
+      success_url:    `${APP_URL}/${slug}/evenements/${evenementRef}?ticket=success`,
+      cancel_url:     `${APP_URL}/${slug}/evenements/${evenementRef}?ticket=cancelled`,
       expires_at:     Math.floor(Date.now() / 1000) + 30 * 60,
     })
 
@@ -614,7 +617,7 @@ export async function POST(
   // self-heals in 30min when its Stripe session expires (handled by the webhook, same
   // as everywhere else this pattern is used).
   const existingByEmail = await prisma.participation.findMany({
-    where:  { evenementId: id, email: { in: resolvedAttendees.map(a => a.email), mode: "insensitive" } },
+    where:  { evenementId: evenement.id, email: { in: resolvedAttendees.map(a => a.email), mode: "insensitive" } },
     select: { id: true, email: true, ticketPaidAt: true, rsvp: true, stripeSessionId: true, ticketTypeId: true },
   })
   const isBlocked = (existing: (typeof existingByEmail)[number]): boolean => {
@@ -669,7 +672,7 @@ export async function POST(
       if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
         // Serialize concurrent registrations for this event — without it, two orders
         // racing for the last spot(s) could both pass the occupancy check below.
-        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${id} FOR UPDATE`
+        await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenement.id} FOR UPDATE`
       }
 
       // Sequential, not Promise.all — a transaction runs on a single connection, so
@@ -680,7 +683,7 @@ export async function POST(
         const created = await tx.participation.create({
           data: {
             associationId: assoc.id,
-            evenementId: id,
+            evenementId: evenement.id,
             orderId,
             firstName: a.firstName,
             lastName:  a.lastName,
@@ -709,7 +712,7 @@ export async function POST(
       let isWaitlisted = false
       if (evenement.capacity != null) {
         const occupied = await tx.participation.count({
-          where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+          where: { evenementId: evenement.id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
         })
         if (occupied > evenement.capacity) {
           if (!evenement.waitlistEnabled) throw new EventFullError()
@@ -724,7 +727,7 @@ export async function POST(
       if (!isWaitlisted && cappedTiers.length) {
         const occupancy = await tx.participation.groupBy({
           by:     ["ticketTypeId"],
-          where:  { evenementId: id, ticketTypeId: { in: cappedTiers.map(tt => tt.id) }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
+          where:  { evenementId: evenement.id, ticketTypeId: { in: cappedTiers.map(tt => tt.id) }, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
           _count: { _all: true },
         })
         const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
@@ -761,12 +764,12 @@ export async function POST(
       eventTitle:      evenement.title,
       eventDate:       evenement.date,
       eventLocation:   evenement.location,
-      portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+      portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
       cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
       branding:        resolveDocumentBranding(assoc),
     }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
     await notifyEventRegistration({
-      associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+      associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
       attendeeNames: newAttendees.map(a => `${a.firstName} ${a.lastName}`), amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
     }).catch(() => {})
@@ -781,7 +784,7 @@ export async function POST(
       eventTitle:      evenement.title,
       eventDate:       evenement.date,
       eventLocation:   evenement.location,
-      portalUrl:       `${APP_URL}/${slug}/evenements/${id}`,
+      portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
       cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
       ticketQr: {
         imageUrl: `${APP_URL}/api/public/billet/${ticketTokens[i]}/qr`,
@@ -792,7 +795,7 @@ export async function POST(
     // One notification for the whole order, not one per seat — a family booking four places
     // is a single thing that happened, and four identical bells would read as four bookings.
     await notifyEventRegistration({
-      associationId: assoc.id, evenementId: id, eventTitle: evenement.title, eventDate: evenement.date,
+      associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
       attendeeNames: newAttendees.map(a => `${a.firstName} ${a.lastName}`), amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
     }).catch(() => {})
@@ -831,8 +834,8 @@ export async function POST(
     // Carries the skipped count through the Stripe round-trip so the confirmation page can
     // still tell the buyer about it — the JSON response's own `skippedEmails` never reaches
     // the browser here since it redirects straight to Stripe instead of reading this reply.
-    success_url:    `${APP_URL}/${slug}/evenements/${id}?ticket=success${skippedEmails.length ? `&skipped=${skippedEmails.length}` : ""}`,
-    cancel_url:     `${APP_URL}/${slug}/evenements/${id}?ticket=cancelled`,
+    success_url:    `${APP_URL}/${slug}/evenements/${evenementRef}?ticket=success${skippedEmails.length ? `&skipped=${skippedEmails.length}` : ""}`,
+    cancel_url:     `${APP_URL}/${slug}/evenements/${evenementRef}?ticket=cancelled`,
     expires_at:     Math.floor(Date.now() / 1000) + 30 * 60,
   })
 

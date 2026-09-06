@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { evenementRefWhere } from "@/lib/slug"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 
 // Ne mute rien — valide juste le code et renvoie sa définition pour que le client recalcule
@@ -25,11 +26,11 @@ export async function POST(
   const assoc = await prisma.association.findUnique({ where: { slug }, select: { id: true, sitePublished: true } })
   if (!assoc || !assoc.sitePublished) return NextResponse.json({ valid: false, reason: "NOT_FOUND" }, { status: 200 })
 
-  const evenement = await prisma.evenement.findFirst({ where: { id, associationId: assoc.id }, select: { id: true } })
+  const evenement = await prisma.evenement.findFirst({ where: { ...evenementRefWhere(id), associationId: assoc.id }, select: { id: true } })
   if (!evenement) return NextResponse.json({ valid: false, reason: "NOT_FOUND" }, { status: 200 })
 
   const discountCode = await prisma.evenementDiscountCode.findUnique({
-    where: { evenementId_code: { evenementId: id, code } },
+    where: { evenementId_code: { evenementId: evenement.id, code } },
   })
 
   const now = new Date()

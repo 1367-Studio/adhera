@@ -15,7 +15,7 @@ const ADMINS = ["ADMIN", "PRESIDENT"]
 
 type AssocData  = { name: string; slug: string; city: string | null; country: string }
 type PublicEvent = {
-  id: string; title: string; date: string; endDate: string | null
+  id: string; slug: string | null; title: string; date: string; endDate: string | null
   location: string | null; description: string | null; price: string | null; capacity: number | null
   ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
