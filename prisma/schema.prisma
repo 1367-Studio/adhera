@@ -718,6 +718,13 @@ model Membre {
 model Evenement {
   id                     String                    @id @default(cuid())
   title                  String
+  // Readable public URL segment (/[assocSlug]/evenements/[slug]), derived from the title at
+  // creation and on duplicate — never regenerated on rename, so links already shared, printed
+  // or sent by email keep working. The public routes accept the cuid too (see evenementRefWhere
+  // in src/lib/slug.ts) for the same reason. Nullable on purpose: the migration backfills every
+  // existing event, but a row without one (created by code older than the column) must still
+  // get a working link, so every URL builder falls back to the id (`slug ?? id`).
+  slug                   String?
   description            String?
   imageUrl               String?
   date                   DateTime
@@ -794,6 +801,7 @@ model Evenement {
   products       EvenementProduct[]
   discountCodes  EvenementDiscountCode[]
 
+  @@unique([associationId, slug])
   @@index([associationId, date])
   @@index([associationId, status])
 }

@@ -47,7 +47,7 @@ async function getSiteData(slug: string) {
           // Une tarif désactivée n'est plus achetable — même filtre que le formulaire public
           // (realTicketTypes dans inscription/route.ts), pour ne jamais annoncer un prix que
           // personne ne peut plus obtenir.
-          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true, ticketTypes: { where: { active: true }, orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } } },
+          select:  { id: true, slug: true, title: true, date: true, endDate: true, location: true, description: true, imageUrl: true, price: true, capacity: true, ticketTypes: { where: { active: true }, orderBy: { order: "asc" }, select: { id: true, label: true, price: true, capacity: true } } },
         })
       : Promise.resolve([]),
     mods.actualites

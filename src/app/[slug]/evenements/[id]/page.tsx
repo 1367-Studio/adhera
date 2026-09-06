@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
+import { evenementRefWhere } from "@/lib/slug"
 import { EvenementRegisterForm } from "./evenement-register-form"
 
 async function getEventMeta(slug: string, id: string) {
   return prisma.evenement.findFirst({
-    where:  { id, association: { slug } },
+    where:  { ...evenementRefWhere(id), association: { slug } },
     select: { title: true, description: true, imageUrl: true, association: { select: { name: true } } },
   })
 }

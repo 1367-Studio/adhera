@@ -5,6 +5,7 @@ import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { translateFields } from "@/lib/i18n/translate"
 import { canPreviewForm } from "@/lib/form-preview"
+import { evenementRefWhere } from "@/lib/slug"
 import type { Locale } from "@/i18n/locales"
 
 export async function GET(
@@ -29,7 +30,7 @@ export async function GET(
 
   const evenement = await prisma.evenement.findFirst({
     where: {
-      id, associationId: assoc.id,
+      ...evenementRefWhere(id), associationId: assoc.id,
       ...(preview ? {} : { status: "PUBLISHED" as const, visibility: { not: "PRIVATE" as const } }),
     },
     select: {

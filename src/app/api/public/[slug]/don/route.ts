@@ -106,9 +106,12 @@ export async function POST(
 
   const { donorType, firstName, lastName, companyName, siret, email, address, amount, message, anonymous, evenementId } = parsed.data
 
+  // The Stripe return URLs below point at the readable public URL (Evenement.slug), not the id.
+  let evenementSlug: string | null = null
   if (evenementId) {
-    const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId: assoc.id } })
+    const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId: assoc.id }, select: { slug: true } })
     if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 400 })
+    evenementSlug = evenement.slug ?? evenementId
   }
 
   const don = await prisma.don.create({
@@ -153,10 +156,10 @@ export async function POST(
     },
     metadata:    { donId: don.id, evenementId: evenementId ?? "" },
     success_url: evenementId
-      ? `${APP_URL}/${slug}/evenements/${evenementId}?donation=success`
+      ? `${APP_URL}/${slug}/evenements/${evenementSlug}?donation=success`
       : `${APP_URL}/portal/${slug}/don?payment=success`,
     cancel_url: evenementId
-      ? `${APP_URL}/${slug}/evenements/${evenementId}?donation=cancelled`
+      ? `${APP_URL}/${slug}/evenements/${evenementSlug}?donation=cancelled`
       : `${APP_URL}/portal/${slug}/don?payment=cancelled`,
   })
 

@@ -4,6 +4,7 @@ import { evenementSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { generateEvenementSlug } from "@/lib/slug"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -115,10 +116,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // than fighting Prisma's stricter JSON-create typing (a bare `null` for `attachments` isn't
   // assignable to its create input, unlike its update input).
   const { date, endDate, description, imageUrl, location, lat, lng, price, capacity, adminNotificationEmail, conditions: _conditions, attachments: _attachments, requireCguvSignature: _requireCguvSignature, ...rest } = parsed.data
+  const slug = await generateEvenementSlug(associationId, rest.title, prisma)
   const evenement = await prisma.evenement.create({
     data: {
       ...rest,
       associationId,
+      slug,
       date:        new Date(date),
       endDate:     endDate  ? new Date(endDate)  : null,
       description: description || null,

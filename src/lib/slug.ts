@@ -31,3 +31,29 @@ export async function generateUniqueSlug(name: string, prisma: PrismaClient): Pr
     slug = `${base}-${++attempt}`
   }
 }
+
+// Scoped to the association, like MembershipForm/DonationForm slugs (generateFormSlug in their
+// routes): two associations may both have a "soiree-de-gala", one association may not. Falls
+// back to "evenement" for a title with no latin letters or digits at all.
+export async function generateEvenementSlug(
+  associationId: string,
+  title: string,
+  db: Pick<PrismaClient, "evenement">,
+): Promise<string> {
+  const base = toSlug(title) || "evenement"
+  let slug    = base
+  let attempt = 0
+  while (await db.evenement.findFirst({ where: { associationId, slug }, select: { id: true } })) {
+    slug = `${base}-${++attempt}`
+  }
+  return slug
+}
+
+// The public event routes accept either the readable slug or the historical cuid in the same
+// URL segment: cuid links are already in the wild (emails, printed QR codes, Stripe return
+// URLs) and must keep resolving. The two cannot collide in practice — a cuid is 25 chars of
+// [a-z0-9] starting with "c", a slug is derived from a title — and every caller scopes the
+// lookup to the association anyway.
+export function evenementRefWhere(ref: string) {
+  return { OR: [{ slug: ref }, { id: ref }] }
+}

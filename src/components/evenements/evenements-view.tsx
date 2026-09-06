@@ -30,6 +30,7 @@ type EvenementTicketType = { id: string; label: string; price: string; remaining
 
 type Evenement = {
   id:          string
+  slug:        string | null
   title:       string
   status:      EvenementStatus
   date:        string
@@ -95,9 +96,9 @@ export function EvenementsView() {
     queryFn:  () => fetch("/api/association").then(r => r.json()),
   })
 
-  async function handleCopyLink(evenementId: string) {
+  async function handleCopyLink(evenementSlug: string) {
     if (!assoc?.slug) return
-    const url = `${window.location.origin}${BASE_PATH}/${assoc.slug}/evenements/${evenementId}`
+    const url = `${window.location.origin}${BASE_PATH}/${assoc.slug}/evenements/${evenementSlug}`
     try {
       await navigator.clipboard.writeText(url)
       toast.success(t("evenements.view.toasts.linkCopied"))
@@ -255,7 +256,7 @@ export function EvenementsView() {
           { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
           { label: t("evenements.view.actions.avaliacoes"), icon: <StarIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/avaliacoes`) },
           ...(e.status === "PUBLISHED"
-            ? [{ label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.id), separator: true }]
+            ? [{ label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.slug ?? e.id), separator: true }]
             : []),
           ...(e.status !== "PUBLISHED"
             ? [{ label: t("evenements.view.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "publish" }), separator: true }]

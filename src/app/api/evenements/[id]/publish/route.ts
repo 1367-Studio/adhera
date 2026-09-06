@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { generateEvenementSlug } from "@/lib/slug"
 import { pusherServer } from "@/lib/pusher-server"
 import { revalidatePublicSite } from "@/lib/association/revalidate-site"
 import { APP_TIME_ZONE } from "@/lib/date-format"
@@ -33,10 +34,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (action === "duplicate") {
     const t     = await getTranslations("evenements")
     const title = `${evenement.title} ${t("duplicateSuffix")}`
+    const slug  = await generateEvenementSlug(associationId, title, prisma)
 
     const copy = await prisma.evenement.create({
       data: {
-        associationId, title,
+        associationId, title, slug,
         description: evenement.description,
         imageUrl:    evenement.imageUrl,
         date:        evenement.date,

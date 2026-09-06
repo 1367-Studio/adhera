@@ -36,7 +36,7 @@ export async function GET(
           where:   { associationId: assoc.id, date: { gte: now } },
           orderBy: { date: "asc" },
           take:    20,
-          select:  { id: true, title: true, date: true, endDate: true, location: true, description: true, price: true, capacity: true },
+          select:  { id: true, slug: true, title: true, date: true, endDate: true, location: true, description: true, price: true, capacity: true },
         })
       : Promise.resolve([]),
     mods.actualites
