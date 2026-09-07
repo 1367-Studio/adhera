@@ -700,6 +700,7 @@
       "expense": "Udgifter",
       "emptyState": "Graferne vil dukke op her, så snart bidrag eller økonomiske bevægelser er registreret.",
       "collectedPercent": " % indløst",
+      "uncategorized": "Ukategoriseret",
       "trendTitle": "Indkomst vs. udgifter — De sidste 6 måneder",
       "categoryTitle": "Indtægter efter kategori — {year}"
     }

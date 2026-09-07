@@ -700,6 +700,7 @@
       "expense": "Spese",
       "emptyState": "I grafici appariranno qui non appena verranno registrati contributi o movimenti finanziari.",
       "collectedPercent": " % Incassato",
+      "uncategorized": "Non categorizzato",
       "trendTitle": "Reddito vs. Spesa — Ultimi 6 mesi",
       "categoryTitle": "Ricevute per categoria — {year}"
     }

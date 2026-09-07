@@ -700,6 +700,7 @@
       "expense": "Wydatki",
       "emptyState": "Wykresy pojawią się tutaj, gdy tylko zostaną zarejestrowane wpłaty lub ruchy finansowe.",
       "collectedPercent": " % Zrealizowanych",
+      "uncategorized": "Nieskategoryzowane",
       "trendTitle": "Dochód vs. wydatki — Ostatnie 6 miesięcy",
       "categoryTitle": "Paragony według kategorii — {year}"
     }

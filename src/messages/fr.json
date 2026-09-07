@@ -700,6 +700,7 @@
       "expense": "Dépenses",
       "emptyState": "Les graphiques apparaîtront ici dès que des cotisations ou des mouvements financiers seront enregistrés.",
       "collectedPercent": " % encaissé",
+      "uncategorized": "Non catégorisé",
       "trendTitle": "Recettes vs dépenses — 6 derniers mois",
       "categoryTitle": "Recettes par catégorie — {year}"
     }

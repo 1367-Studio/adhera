@@ -700,6 +700,7 @@
       "expense": "Stroški",
       "emptyState": "Grafi se bodo tukaj pojavili takoj, ko bodo prispevki ali finančna gibanja zabeležena.",
       "collectedPercent": " % Unovčenih",
+      "uncategorized": "Nekategorizirano",
       "trendTitle": "Dohodek proti izdatkom — zadnjih 6 mesecev",
       "categoryTitle": "Prihodki po kategorijah — {year}"
     }

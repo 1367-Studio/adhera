@@ -700,6 +700,7 @@
       "expense": "Despesas",
       "emptyState": "Os gráficos aparecerão aqui assim que houver quotas ou movimentos financeiros registados.",
       "collectedPercent": "% cobrado",
+      "uncategorized": "Não categorizado",
       "trendTitle": "Receitas vs. despesas — últimos 6 meses",
       "categoryTitle": "Receitas por categoria — {year}"
     }
