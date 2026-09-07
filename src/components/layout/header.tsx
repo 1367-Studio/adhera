@@ -28,6 +28,7 @@ function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, s
   return {
     dashboard:    t("layout.appSidebar.dashboard"),
     membres:      t("layout.appSidebar.membres"),
+    adhesions:    t("layout.appSidebar.adhesions"),
     evenements:   t("layout.appSidebar.evenements"),
     cotisations:  t("layout.appSidebar.cotisations"),
     actualites:   t("layout.appSidebar.actualites"),
@@ -39,6 +40,16 @@ function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, s
     profil:       t("layout.header.myProfile"),
     backoffice:   t("layout.backofficeSidebar.backoffice"),
     associations: t("layout.appSidebar.associations"),
+    boutique:     t("layout.appSidebar.boutique"),
+    devis:        t("layout.appSidebar.devis"),
+    dons:         t("layout.appSidebar.dons"),
+    factures:     t("layout.appSidebar.factures"),
+    finances:     t("layout.appSidebar.finances"),
+    fournisseurs: t("layout.appSidebar.fournisseurs"),
+    activite:     t("layout.appSidebar.activite"),
+    reunions:     t("layout.appSidebar.reunions"),
+    sondages:     t("layout.appSidebar.sondages"),
+    suporte:      t("layout.appSidebar.suporte"),
   }
 }
 

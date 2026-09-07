@@ -2555,7 +2555,8 @@
         "status": "Estado",
         "donors": "Doadores",
         "total": "Total angariado",
-        "created": "Criado em"
+        "created": "Criado em",
+        "donorsInline": "doadores"
       },
       "noForms": "Nenhum formulário de donativo",
       "actions": {
@@ -2653,6 +2654,9 @@
           "conditionsPlaceholder": "Condições gerais do formulário…",
           "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
+          "contactSectionTitle": "Informações de contacto para os doadores",
+          "contactSectionHint": "Os dados de contacto aparecem no formulário online.",
+          "contactSectionHintAria": "Para que servem estes dados de contacto?",
           "contactEmailLabel": "E-mail de contacto",
           "contactPhoneLabel": "Telefone de contacto"
         },
@@ -2831,7 +2835,8 @@
         "status": "Estado",
         "members": "Membros",
         "total": "Total angariado",
-        "created": "Criado em"
+        "created": "Criado em",
+        "membersInline": "membros"
       },
       "noForms": "Nenhum formulário de adesão",
       "actions": {

@@ -76,6 +76,37 @@ export function decomposeIcu(message: string): Piece[] {
   }
 
   for (let i = 0; i < message.length; i++) {
+    // A mail-merge token quoted for ICU, e.g. '{{prenom}}' — kept as one opaque unit so the
+    // quote marks never end up alone in a neighbouring text piece. Split as text+verbatim+text
+    // (the old behaviour), a lone quote earns no letter of its own and Azure's translator
+    // freely drops or reshapes it as "stray punctuation" when it sits at the edge of whatever
+    // real words border it — which is exactly what happened to "Bonjour '{{prenom}}',…"
+    // (bg: "Здравей.{{prenom}}',…", the opening quote gone, a period grown in its place). The
+    // trigger is narrow (quote immediately followed by "{{") on purpose: a bare ICU apostrophe,
+    // as in contractions like "l'association", must keep flowing through translation normally.
+    if (message.startsWith("'{{", i)) {
+      const close = message.indexOf("}}'", i + 3)
+      if (close !== -1) {
+        flush()
+        pieces.push({ kind: "verbatim", value: message.slice(i, close + 3) })
+        i = close + 2
+        continue
+      }
+    }
+
+    // An inline HTML tag, e.g. <b> or </b>. Left as ordinary text it travels to Azure as its
+    // own segment (split from its pair by whatever placeholder sits between them) — textType=
+    // html then reads an unpaired tag as broken markup and silently drops it, e.g.
+    // "<b>{email}</b>" losing its closing tag entirely in bg. Tags never need translating, so
+    // keep them out of every request instead of relying on Azure to repair the fragment.
+    const tag = /^<\/?[a-zA-Z][\w-]*>/.exec(message.slice(i))
+    if (tag) {
+      flush()
+      pieces.push({ kind: "verbatim", value: tag[0] })
+      i += tag[0].length - 1
+      continue
+    }
+
     if (message[i] !== "{") {
       buffer += message[i]
       continue
@@ -153,8 +184,33 @@ export const isTranslatable = (text: string) => /\p{L}/u.test(text)
 // silently breaks the message.
 export const protectHash = (text: string) =>
   text.replace(/#/g, '<span class="notranslate">#</span>')
+
+// French file-size abbreviations (Mo/Ko/Go for octet, not the internationally recognised
+// byte) read as ordinary short words to a general-domain translator with no unit context —
+// confirmed producing "max 5 Mo" → "max 5 months" in bg. Normalised to MB/KB/GB rather than
+// merely protected: the already-reviewed en/es catalogues both localise "Mo" to "MB", the form
+// every EU target language actually uses, so leaving the French abbreviation untranslated would
+// swap one wrong reading for an unfamiliar one. Only the digit-adjacent form is touched so real
+// words are never at risk of a false match.
+const UNIT_MAP: Record<string, string> = { Mo: "MB", Ko: "KB", Go: "GB" }
+export const protectUnits = (text: string) =>
+  text.replace(
+    /(\d)(\s?)(Mo|Ko|Go)\b/g,
+    (_, digit, space, unit) => `${digit}${space}<span class="notranslate">${UNIT_MAP[unit]}</span>`,
+  )
+
 export const unprotect = (text: string) =>
   text.replace(/<span class="notranslate">(.*?)<\/span>/g, "$1")
+
+// A literal apostrophe in ICU MessageFormat toggles quoting, so any natural-language word the
+// target language spells with one — confirmed with Maltese "baqa'" landing inside a plural
+// branch and throwing EXPECT_ARGUMENT_CLOSING_BRACE at render time — corrupts the message
+// unless doubled first (ICU's own escape for a literal quote). This is unrelated to the
+// source-side '{{token}}' quoting decomposeIcu already protects: that guards French syntax
+// before translation, this guards whatever spelling Azure hands back afterwards. Only text
+// pieces ever reach this function (verbatim ICU syntax is never sent to Azure), so escaping
+// every quote unconditionally is safe.
+export const escapeIcuQuotes = (text: string) => text.replace(/'/g, "''")
 
 // ─── Azure ────────────────────────────────────────────────────────────────────
 
@@ -171,20 +227,62 @@ async function azureTranslate(texts: string[], target: string): Promise<string[]
   const out: string[] = []
   for (let i = 0; i < texts.length; i += BATCH_SIZE) {
     const batch = texts.slice(i, i + BATCH_SIZE)
-    const res = await fetch(`${AZURE_ENDPOINT}&to=${target}`, {
-      method: "POST",
-      headers: {
-        "Ocp-Apim-Subscription-Key": key,
-        "Ocp-Apim-Subscription-Region": region,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(batch.map((text) => ({ text }))),
-    })
-    if (!res.ok) throw new Error(`Azure ${res.status}: ${await res.text()}`)
 
-    const data = (await res.json()) as { translations: { text: string }[] }[]
-    out.push(...data.map((d) => d.translations[0].text))
-    process.stdout.write(`    ${Math.min(i + BATCH_SIZE, texts.length)}/${texts.length}\r`)
+    // The tier's burst limit (requests/second) is well below what firing batches back-to-back
+    // produces, so a 429 here is routine, not exceptional — retry with growing backoff instead
+    // of aborting the whole locale over one throttled batch.
+    let attempt = 0
+    for (;;) {
+      let res: Response
+      try {
+        res = await fetch(`${AZURE_ENDPOINT}&to=${target}`, {
+          method: "POST",
+          headers: {
+            "Ocp-Apim-Subscription-Key": key,
+            "Ocp-Apim-Subscription-Region": region,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(batch.map((text) => ({ text }))),
+        })
+      } catch (err) {
+        // A dropped connection after minutes of backoff waits, not Azure rejecting the
+        // request — same retry treatment as a 429, since aborting the whole locale over one
+        // transient network blip is exactly the failure mode the 429 handling already exists
+        // to avoid.
+        attempt++
+        if (attempt > 8) throw err
+        const waitMs = 2 ** attempt * 1000
+        process.stdout.write(
+          `    ${i}/${texts.length} network error (${(err as Error).message}), waiting ${waitMs / 1000}s (retry ${attempt}/8)…\n`,
+        )
+        await new Promise((resolve) => setTimeout(resolve, waitMs))
+        continue
+      }
+
+      if (res.status === 429) {
+        attempt++
+        if (attempt > 8) throw new Error(`Azure 429: gave up after ${attempt} retries`)
+        const retryAfter = Number(res.headers.get("retry-after"))
+        const waitMs = (Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : 2 ** attempt) * 1000
+        process.stdout.write(
+          `    ${i}/${texts.length} throttled (429), waiting ${waitMs / 1000}s (retry ${attempt}/8)…\n`,
+        )
+        await new Promise((resolve) => setTimeout(resolve, waitMs))
+        continue
+      }
+
+      if (!res.ok) throw new Error(`Azure ${res.status}: ${await res.text()}`)
+
+      const data = (await res.json()) as { translations: { text: string }[] }[]
+      out.push(...data.map((d) => d.translations[0].text))
+      process.stdout.write(`    ${Math.min(i + BATCH_SIZE, texts.length)}/${texts.length}\r`)
+      break
+    }
+
+    // A constant pace between batches. Empirically this tier's burst limit trips after 1-2
+    // back-to-back requests, so pacing proactively avoids far more time lost to 429 backoff
+    // than it costs by waiting here.
+    if (i + BATCH_SIZE < texts.length) await new Promise((resolve) => setTimeout(resolve, 3000))
   }
   return out
 }
@@ -246,7 +344,7 @@ function build(source: Node, existing: Node | undefined, force: boolean, map: Ma
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-async function generate(locale: string, dryRun: boolean, force: boolean): Promise<void> {
+async function generate(locale: string, dryRun: boolean, force: boolean): Promise<number> {
   const source = JSON.parse(fs.readFileSync(SOURCE_FILE, "utf-8")) as Node
   const targetPath = path.join(MESSAGES_DIR, `${locale}.json`)
   const existing = fs.existsSync(targetPath)
@@ -259,20 +357,26 @@ async function generate(locale: string, dryRun: boolean, force: boolean): Promis
   const label = existing ? "update" : "create"
   if (needed.size === 0) {
     console.log(`  ${locale}: already complete, nothing to do`)
-    return
+    return 0
   }
-  console.log(`  ${locale}: ${label}, ${needed.size} segments to translate`)
-  if (dryRun) return
 
   const texts = [...needed]
+  // What Azure bills on: the length of each source string handed to /translate, summed. This
+  // is an estimate computed client-side (the API response carries no usage figure) but it is
+  // the same count Azure meters against your quota, so it is accurate barring rounding.
+  const chars = texts.reduce((sum, t) => sum + t.length, 0)
+  console.log(`  ${locale}: ${label}, ${needed.size} segments to translate (~${chars} chars)`)
+  if (dryRun) return chars
+
   const translated = await azureTranslate(
-    texts.map(protectHash),
+    texts.map((t) => protectUnits(protectHash(t))),
     AZURE_TAG[locale] ?? locale,
   )
-  const map = new Map(texts.map((t, i) => [t, unprotect(translated[i])]))
+  const map = new Map(texts.map((t, i) => [t, escapeIcuQuotes(unprotect(translated[i]))]))
 
   fs.writeFileSync(targetPath, JSON.stringify(build(source, existing, force, map), null, 2) + "\n", "utf-8")
   console.log(`  ${locale}: wrote ${path.relative(process.cwd(), targetPath)}`)
+  return chars
 }
 
 async function main() {
@@ -299,8 +403,10 @@ async function main() {
   }
 
   console.log(`${dryRun ? "[dry run] " : ""}Source: fr.json → ${targets.join(", ")}\n`)
-  for (const locale of targets) await generate(locale, dryRun, force)
-  console.log("\nDone. Add the new locales to SUPPORTED_LOCALES in src/i18n/locales.ts to enable them.")
+  let totalChars = 0
+  for (const locale of targets) totalChars += await generate(locale, dryRun, force)
+  console.log(`\n~${totalChars} chars ${dryRun ? "would be" : ""} sent to Azure this run.`)
+  console.log("Done. Add the new locales to SUPPORTED_LOCALES in src/i18n/locales.ts to enable them.")
 }
 
 // Guarded so the ICU helpers above can be imported by a test without kicking off a run.

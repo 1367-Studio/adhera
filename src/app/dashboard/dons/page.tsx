@@ -644,7 +644,7 @@ function DonsPageInner() {
                     <span className="text-xs text-muted-foreground">{format(new Date(f.createdAt), "dd/MM/yyyy", { locale: fr })}</span>
                   </div>
                   <div className="flex items-center justify-between border-t pt-3 text-sm">
-                    <span className="text-muted-foreground">{f._count.dons} {t("formsView.columns.donors").toLowerCase()}</span>
+                    <span className="text-muted-foreground">{f._count.dons} {t("formsView.columns.donorsInline")}</span>
                     <span className="font-semibold tabular-nums">
                       {f.totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
                     </span>
