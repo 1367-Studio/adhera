@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Abi-IA",
-    "description": "Kasutatakse abistavaks kirjutamiseks tekstiredaktorites. Vaikimisi kasutatakse platvormi võtit tasuta. Seadista oma võti (Groq, OpenAI või Mistral), et kulud arvestataks sinu kontolt.",
+    "description": "Kasutatakse abistavaks kirjutamiseks tekstiredaktorites. Vaikimisi kasutatakse platvormi võtit tasuta. Seadista oma võti (Groq, OpenAI või Mistral), et kulud arvestataks sinu kontolt. Seda kasutatakse ka avaliku sisu (ürituste, vormide) automaatseks tõlkimiseks.",
     "configuredTitle": "Kohandatud võtme seadistamine",
     "providerLabel": "Tarnija:",
     "modelLabel": "· Mudel:",

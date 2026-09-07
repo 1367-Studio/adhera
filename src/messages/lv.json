@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistents IA",
-    "description": "Izmantots asistētai rakstīšanai teksta redaktoros. Pēc noklusējuma platformas atslēga tiek izmantota bez maksas. Iestatiet savu atslēgu (Groq, OpenAI vai Mistral), lai izmaksas tiktu iekasētas no jūsu konta.",
+    "description": "Izmantots asistētai rakstīšanai teksta redaktoros. Pēc noklusējuma platformas atslēga tiek izmantota bez maksas. Iestatiet savu atslēgu (Groq, OpenAI vai Mistral), lai izmaksas tiktu iekasētas no jūsu konta. To izmanto arī publiskā satura (pasākumu, veidlapu) automātiskai tulkošanai.",
     "configuredTitle": "Pielāgota taustiņu konfigurācija",
     "providerLabel": "Piegādātājs:",
     "modelLabel": "· Modelis:",

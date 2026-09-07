@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistent IA",
-    "description": "Użat għall-kitba assistita f'editors tat-test. B'mod default, iċ-ċavetta tal-pjattaforma tintuża b'xejn. Issettja ċ-ċavetta tiegħek stess (Groq, OpenAI, jew Mistral) biex l-ispejjeż jiġu mħallsa fuq il-kont tiegħek.",
+    "description": "Użat għall-kitba assistita f'editors tat-test. B'mod default, iċ-ċavetta tal-pjattaforma tintuża b'xejn. Issettja ċ-ċavetta tiegħek stess (Groq, OpenAI, jew Mistral) biex l-ispejjeż jiġu mħallsa fuq il-kont tiegħek. Tintuża wkoll biex tittraduċi awtomatikament il-kontenut pubbliku (avvenimenti, formoli).",
     "configuredTitle": "Ċavetta personalizzata kkonfigurata",
     "providerLabel": "Fornitur:",
     "modelLabel": "· Mudell:",

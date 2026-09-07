@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Pomoćnik IA",
-    "description": "Koristi se za asistirano pisanje u uređivačima teksta. Po defaultu, platformski ključ se koristi besplatno. Postavite vlastiti ključ (Groq, OpenAI ili Mistral) da se troškovi naplaćuju na vaš račun.",
+    "description": "Koristi se za asistirano pisanje u uređivačima teksta. Po defaultu, platformski ključ se koristi besplatno. Postavite vlastiti ključ (Groq, OpenAI ili Mistral) da se troškovi naplaćuju na vaš račun. Također se koristi za automatsko prevođenje javnog sadržaja (događaji, obrasci).",
     "configuredTitle": "Prilagođeni ključ konfiguriran",
     "providerLabel": "Dobavljač:",
     "modelLabel": "· Model:",

@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistent IA",
-    "description": "Gebruikt voor geassisteerd schrijven in teksteditors. Standaard wordt de platformsleutel gratis gebruikt. Stel je eigen sleutel in (Groq, OpenAI of Mistral) zodat de kosten op je account worden berekend.",
+    "description": "Gebruikt voor geassisteerd schrijven in teksteditors. Standaard wordt de platformsleutel gratis gebruikt. Stel je eigen sleutel in (Groq, OpenAI of Mistral) zodat de kosten op je account worden berekend. Wordt ook gebruikt om openbare inhoud (evenementen, formulieren) automatisch te vertalen.",
     "configuredTitle": "Aangepaste sleutel geconfigureerd",
     "providerLabel": "Leverancier:",
     "modelLabel": "· Model:",

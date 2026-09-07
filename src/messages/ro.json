@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistent IA",
-    "description": "Folosită pentru scriere asistată în editoare de text. Implicit, cheia platformei este folosită gratuit. Configurează-ți propria cheie (Groq, OpenAI sau Mistral) pentru a primi costurile pe contul tău.",
+    "description": "Folosită pentru scriere asistată în editoare de text. Implicit, cheia platformei este folosită gratuit. Configurează-ți propria cheie (Groq, OpenAI sau Mistral) pentru a primi costurile pe contul tău. Este folosită și pentru traducerea automată a conținutului public (evenimente, formulare).",
     "configuredTitle": "Chei personalizate configurate",
     "providerLabel": "Furnizor:",
     "modelLabel": "· Model:",

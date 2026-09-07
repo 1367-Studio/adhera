@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Apulais-IA",
-    "description": "Käytetään avustettuun kirjoittamiseen tekstieditoreissa. Oletuksena alustan avainta käytetään ilmaiseksi. Aseta oma avain (Groq, OpenAI tai Mistral), jotta kustannukset veloitetaan tililtäsi.",
+    "description": "Käytetään avustettuun kirjoittamiseen tekstieditoreissa. Oletuksena alustan avainta käytetään ilmaiseksi. Aseta oma avain (Groq, OpenAI tai Mistral), jotta kustannukset veloitetaan tililtäsi. Sitä käytetään myös julkisen sisällön (tapahtumat, lomakkeet) automaattiseen kääntämiseen.",
     "configuredTitle": "Mukautettu avain konfiguroitu",
     "providerLabel": "Toimittaja:",
     "modelLabel": "· Malli:",

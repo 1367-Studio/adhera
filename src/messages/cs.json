@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistent IA",
-    "description": "Používá se pro asistované psaní v textových editorech. Ve výchozím nastavení je platformový klíč zdarma. Nastavte si vlastní klíč (Groq, OpenAI nebo Mistral), aby se náklady zaplatily na váš účet.",
+    "description": "Používá se pro asistované psaní v textových editorech. Ve výchozím nastavení je platformový klíč zdarma. Nastavte si vlastní klíč (Groq, OpenAI nebo Mistral), aby se náklady zaplatily na váš účet. Používá se také k automatickému překladu veřejného obsahu (události, formuláře).",
     "configuredTitle": "Konfigurace vlastního klíče",
     "providerLabel": "Dodavatel:",
     "modelLabel": "· Model:",

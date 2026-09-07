@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistant IA",
-    "description": "Utilisé pour la rédaction assistée dans les éditeurs de texte. Par défaut, la clé de la plateforme est utilisée gratuitement. Configurez votre propre clé (Groq, OpenAI ou Mistral) pour que les coûts soient facturés sur votre compte.",
+    "description": "Utilisé pour la rédaction assistée dans les éditeurs de texte. Par défaut, la clé de la plateforme est utilisée gratuitement. Configurez votre propre clé (Groq, OpenAI ou Mistral) pour que les coûts soient facturés sur votre compte. Elle sert aussi à traduire automatiquement le contenu public (événements, formulaires).",
     "configuredTitle": "Clé personnalisée configurée",
     "providerLabel": "Fournisseur :",
     "modelLabel": "· Modèle :",

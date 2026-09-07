@@ -65,9 +65,10 @@ export async function GET(
     }],
     ["title", "description", "conditions", "confirmationMessage", "offlineInstructions"],
     locale,
+    assoc.id,
   )
-  const tiers        = await translateFields(form.tiers, ["label"], locale)
-  const customFields = await translateFields(form.customFields, ["label"], locale)
+  const tiers        = await translateFields(form.tiers, ["label"], locale, assoc.id)
+  const customFields = await translateFields(form.customFields, ["label"], locale, assoc.id)
 
   return NextResponse.json({
     associationName:     assoc.name,

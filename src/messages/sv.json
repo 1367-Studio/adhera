@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assisterande IA",
-    "description": "Används för assisterat skrivande i textredigerare. Som standard används plattformsnyckeln gratis. Sätt upp din egen nyckel (Groq, OpenAI eller Mistral) så att kostnaderna debiteras på ditt konto.",
+    "description": "Används för assisterat skrivande i textredigerare. Som standard används plattformsnyckeln gratis. Sätt upp din egen nyckel (Groq, OpenAI eller Mistral) så att kostnaderna debiteras på ditt konto. Den används också för att automatiskt översätta offentligt innehåll (evenemang, formulär).",
     "configuredTitle": "Anpassad nyckel konfigurerad",
     "providerLabel": "Leverantör:",
     "modelLabel": "· Modell:",

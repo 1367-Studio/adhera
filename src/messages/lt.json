@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistentas IA",
-    "description": "Naudojama pagalbiniam rašymui teksto redaktoriuose. Pagal numatytuosius nustatymus platformos raktas naudojamas nemokamai. Nustatykite savo raktą (Groq, OpenAI arba Mistral), kad jūsų sąskaita būtų priskaičiuota už kaštus.",
+    "description": "Naudojama pagalbiniam rašymui teksto redaktoriuose. Pagal numatytuosius nustatymus platformos raktas naudojamas nemokamai. Nustatykite savo raktą (Groq, OpenAI arba Mistral), kad jūsų sąskaita būtų priskaičiuota už kaštus. Ji taip pat naudojama automatiniam viešo turinio (renginių, formų) vertimui.",
     "configuredTitle": "Individuali klavišo konfigūracija",
     "providerLabel": "Tiekėjas:",
     "modelLabel": "· Modelis:",

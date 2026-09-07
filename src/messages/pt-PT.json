@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistente de IA",
-    "description": "Usado para redação assistida nos editores de texto. Por predefinição, a chave da plataforma é usada gratuitamente. Configure a sua própria chave (Groq, OpenAI ou Mistral) para que os custos sejam cobrados na sua conta.",
+    "description": "Usado para redação assistida nos editores de texto. Por predefinição, a chave da plataforma é usada gratuitamente. Configure a sua própria chave (Groq, OpenAI ou Mistral) para que os custos sejam cobrados na sua conta. Também é utilizada para traduzir automaticamente o conteúdo público (eventos, formulários).",
     "configuredTitle": "Chave personalizada configurada",
     "providerLabel": "Fornecedor:",
     "modelLabel": "· Modelo:",

@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Segéd IA",
-    "description": "Szövegszerkesztőkben segített írásra használják. Alapértelmezés szerint a platform kulcsot ingyenesen használják. Állítsd be saját kulcsodat (Groq, OpenAI vagy Mistral), hogy a költségeket a számládra terheljék.",
+    "description": "Szövegszerkesztőkben segített írásra használják. Alapértelmezés szerint a platform kulcsot ingyenesen használják. Állítsd be saját kulcsodat (Groq, OpenAI vagy Mistral), hogy a költségeket a számládra terheljék. A nyilvános tartalmak (események, űrlapok) automatikus fordítására is használjuk.",
     "configuredTitle": "Egyedi kulcs konfigurálása",
     "providerLabel": "Beszállító:",
     "modelLabel": "· Modell:",
