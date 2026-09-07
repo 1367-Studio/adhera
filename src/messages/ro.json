@@ -700,6 +700,7 @@
       "expense": "Cheltuieli",
       "emptyState": "Graficele vor apărea aici imediat ce contribuțiile sau mișcările financiare vor fi înregistrate.",
       "collectedPercent": " % Încasat",
+      "uncategorized": "Necategorizat",
       "trendTitle": "Venit vs. cheltuieli — Ultimele 6 luni",
       "categoryTitle": "Chitanțe pe categorii — {year}"
     }

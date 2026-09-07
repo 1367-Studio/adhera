@@ -700,6 +700,7 @@
       "expense": "Išlaidos",
       "emptyState": "Grafikai čia bus matomi, kai tik bus užfiksuoti įnašai ar finansiniai pokyčiai.",
       "collectedPercent": " % Išgryninta",
+      "uncategorized": "Nekategorizuota",
       "trendTitle": "Pajamos prieš išlaidas — paskutiniai 6 mėnesiai",
       "categoryTitle": "Kvitos pagal kategorijas — {year}"
     }

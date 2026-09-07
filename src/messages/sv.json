@@ -700,6 +700,7 @@
       "expense": "Utgifter",
       "emptyState": "Graferna kommer att visas här så snart bidrag eller ekonomiska rörelser har registrerats.",
       "collectedPercent": " % inlöst",
+      "uncategorized": "Okategoriserad",
       "trendTitle": "Inkomst vs. utgifter — Senaste 6 månader",
       "categoryTitle": "Intäkter per kategori — {year}"
     }

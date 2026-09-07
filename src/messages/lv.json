@@ -700,6 +700,7 @@
       "expense": "Izdevumi",
       "emptyState": "Grafiki šeit parādīsies, tiklīdz tiks reģistrētas iemaksas vai finanšu kustības.",
       "collectedPercent": " % Izņemts",
+      "uncategorized": "Nekategorizēts",
       "trendTitle": "Ienākumi pret izdevumiem — pēdējie 6 mēneši",
       "categoryTitle": "Ieņēmumi pēc kategorijām — {year}"
     }

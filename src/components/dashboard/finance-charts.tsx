@@ -15,7 +15,7 @@ type FinanceChartsData = {
   year:             number
   hasCotisations:   boolean
   hasFinances:      boolean
-  cotisations:      { status: string; label: string; count: number; amount: number }[]
+  cotisations:      { status: string; count: number; amount: number }[]
   monthly:          { label: string; recettes: number; depenses: number }[]
   incomeByCategory: { name: string; amount: number }[]
 }
@@ -134,6 +134,10 @@ export function CotisationsGaugeCard() {
     PAYE: pal.payees, EN_ATTENTE: pal.enAttente, EXONERE: pal.exonerees,
     PARTIELLEMENT_PAYEE: pal.partiellementPayee, EN_RETARD: pal.enRetard,
   }
+  const cotisationLabelKey: Record<string, string> = {
+    PAYE: "payees", EN_ATTENTE: "enAttente", EXONERE: "exonerees",
+    PARTIELLEMENT_PAYEE: "partiellementPayees", EN_RETARD: "enRetard",
+  }
   const paidAmount = data.cotisations.find(c => c.status === "PAYE")?.amount ?? 0
   const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
 
@@ -165,7 +169,9 @@ export function CotisationsGaugeCard() {
           <div key={c.status} className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <span className="size-2 shrink-0 rounded-full" style={{ background: cotisationColor[c.status] ?? pal.axis }} />
-              <span className="text-muted-foreground">{c.label}</span>
+              <span className="text-muted-foreground">
+                {t(`cotisations.view.statusFilter.${cotisationLabelKey[c.status] ?? c.status}`)}
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <span className="tabular-nums text-muted-foreground">{c.count}</span>

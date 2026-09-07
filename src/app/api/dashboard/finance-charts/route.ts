@@ -1,23 +1,18 @@
 import { NextResponse } from "next/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { fetchModules } from "@/lib/auth/require-module"
 
-const COTISATION_LABELS: Record<string, string> = {
-  PAYE:                "Payées",
-  EN_ATTENTE:          "En attente",
-  PARTIELLEMENT_PAYEE: "Partiellement payées",
-  EN_RETARD:           "En retard",
-  EXONERE:             "Exonérées",
-}
-
-function monthLabel(d: Date): string {
-  return d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", "")
+function monthLabel(d: Date, locale: string): string {
+  return d.toLocaleDateString(locale, { month: "short" }).replace(".", "")
 }
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
   const modules = await fetchModules(associationId)
+  const locale  = await getLocale()
+  const t       = await getTranslations("dashboard.charts")
 
   const now         = new Date()
   const year        = now.getFullYear()
@@ -66,7 +61,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   const categories  = categoryIds.length
     ? await prisma.financeCategory.findMany({ where: { id: { in: categoryIds } }, select: { id: true, name: true } })
     : []
-  const categoryName = (id: string | null) => (id && categories.find(c => c.id === id)?.name) || "Non catégorisé"
+  const categoryName = (id: string | null) => (id && categories.find(c => c.id === id)?.name) || t("uncategorized")
 
   const incomeCategoryRows = incomeByCategory
     .map(c => ({ name: categoryName(c.categoryId), amount: Number(c._sum.amount ?? 0) }))
@@ -77,7 +72,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   // Last 6 months, oldest first — Recettes vs Dépenses.
   const months = Array.from({ length: 6 }, (_, i) => {
     const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1)
-    return { year: d.getFullYear(), month: d.getMonth(), label: monthLabel(d) }
+    return { year: d.getFullYear(), month: d.getMonth(), label: monthLabel(d, locale) }
   })
   const monthly = months.map(({ year: y, month: m, label }) => {
     const recettes = monthlyIncomes
@@ -92,7 +87,6 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   const cotisations = cotisationsByStatus
     .map(c => ({
       status: c.status,
-      label:  COTISATION_LABELS[c.status] ?? c.status,
       count:  c._count._all,
       amount: Number(c._sum.amount ?? 0),
     }))
