@@ -216,7 +216,7 @@ export default function AdhesionsPage() {
                   <span className="text-xs text-muted-foreground">{format(new Date(f.createdAt), "dd/MM/yyyy", { locale: fr })}</span>
                 </div>
                 <div className="flex items-center justify-between border-t pt-3 text-sm">
-                  <span className="text-muted-foreground">{f.memberCount} {t("formsView.columns.members").toLowerCase()}</span>
+                  <span className="text-muted-foreground">{f.memberCount} {t("formsView.columns.membersInline")}</span>
                   <span className="font-semibold tabular-nums">
                     {f.totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
                   </span>

@@ -2555,7 +2555,8 @@
         "status": "Statut",
         "donors": "Donateurs",
         "total": "Total collecté",
-        "created": "Créé le"
+        "created": "Créé le",
+        "donorsInline": "donateurs"
       },
       "noForms": "Aucun formulaire de don",
       "actions": {
@@ -2653,6 +2654,9 @@
           "conditionsPlaceholder": "Conditions générales du formulaire…",
           "conditionsPdfLabel": "Document des conditions (PDF ou image)",
           "requireCguvLabel": "Exiger la signature des conditions générales",
+          "contactSectionTitle": "Informations de contact à destination des donateurs",
+          "contactSectionHint": "Les coordonnées apparaissent sur le formulaire en ligne.",
+          "contactSectionHintAria": "À quoi servent ces coordonnées ?",
           "contactEmailLabel": "E-mail de contact",
           "contactPhoneLabel": "Téléphone de contact"
         },
@@ -2831,7 +2835,8 @@
         "status": "Statut",
         "members": "Adhérents",
         "total": "Total collecté",
-        "created": "Créé le"
+        "created": "Créé le",
+        "membersInline": "adhérents"
       },
       "noForms": "Aucun formulaire d'adhésion",
       "actions": {

@@ -2555,7 +2555,8 @@
         "status": "Status",
         "donors": "Doadores",
         "total": "Total arrecadado",
-        "created": "Criado em"
+        "created": "Criado em",
+        "donorsInline": "doadores"
       },
       "noForms": "Nenhum formulário de doação",
       "actions": {
@@ -2653,6 +2654,9 @@
           "conditionsPlaceholder": "Condições gerais do formulário…",
           "conditionsPdfLabel": "Documento das condições (PDF ou imagem)",
           "requireCguvLabel": "Exigir assinatura das condições gerais",
+          "contactSectionTitle": "Informações de contato para os doadores",
+          "contactSectionHint": "Os dados de contato aparecem no formulário on-line.",
+          "contactSectionHintAria": "Para que servem esses dados de contato?",
           "contactEmailLabel": "E-mail de contato",
           "contactPhoneLabel": "Telefone de contato"
         },
@@ -2831,7 +2835,8 @@
         "status": "Status",
         "members": "Membros",
         "total": "Total arrecadado",
-        "created": "Criado em"
+        "created": "Criado em",
+        "membersInline": "membros"
       },
       "noForms": "Nenhum formulário de adesão",
       "actions": {
@@ -3997,7 +4002,12 @@
       "addViaForm": "Por um formulário de adesão",
       "addManual": "Adicionar manualmente",
       "changeRoleDescription": "Função de {name} na associação.",
-      "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}"
+      "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}",
+      "sortDefault": "Ordem alfabética",
+      "sortOptions": {
+        "recent": "Adicionados recentemente",
+        "oldest": "Adicionados primeiro"
+      }
     },
     "detail": {
       "notFound": "Este membro não foi encontrado ou foi excluído.",
