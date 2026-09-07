@@ -700,6 +700,7 @@
       "expense": "Költségek",
       "emptyState": "A grafikonok itt jelennek meg, amint a hozzájárulásokat vagy pénzügyi mozgásokat rögzítik.",
       "collectedPercent": " Kiváltott százalék",
+      "uncategorized": "Nincs kategorizálva",
       "trendTitle": "Jövedelem vs. kiadás — Az utolsó 6 hónap",
       "categoryTitle": "Bevételek kategóriák szerint — {year}"
     }

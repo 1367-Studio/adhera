@@ -700,6 +700,7 @@
       "expense": "Gastos",
       "emptyState": "Los gráficos aparecerán aquí en cuanto se registren cuotas o movimientos financieros.",
       "collectedPercent": " % recaudado",
+      "uncategorized": "Sin categorizar",
       "trendTitle": "Ingresos vs gastos — últimos 6 meses",
       "categoryTitle": "Ingresos por categoría — {year}"
     }

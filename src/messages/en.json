@@ -700,6 +700,7 @@
       "expense": "Expenses",
       "emptyState": "Charts will appear here once membership fees or financial transactions are recorded.",
       "collectedPercent": "% collected",
+      "uncategorized": "Uncategorized",
       "trendTitle": "Income vs expenses — last 6 months",
       "categoryTitle": "Income by category — {year}"
     }

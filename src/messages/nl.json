@@ -700,6 +700,7 @@
       "expense": "Uitgaven",
       "emptyState": "De grafieken verschijnen hier zodra bijdragen of financiële bewegingen zijn geregistreerd.",
       "collectedPercent": " % Verzilverd",
+      "uncategorized": "Niet gecategoriseerd",
       "trendTitle": "Inkomsten versus uitgaven — Laatste 6 maanden",
       "categoryTitle": "Ontvangsten per categorie — {year}"
     }

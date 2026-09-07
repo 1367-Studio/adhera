@@ -700,6 +700,7 @@
       "expense": "Kulud",
       "emptyState": "Graafikud ilmuvad siia kohe, kui sissemaksed või finantsliikumised on registreeritud.",
       "collectedPercent": " % Lunastatud protsent",
+      "uncategorized": "Kategoriseerimata",
       "trendTitle": "Tulu vs. kulutus — viimased 6 kuud",
       "categoryTitle": "Kviitungid kategooriate kaupa — {year}"
     }

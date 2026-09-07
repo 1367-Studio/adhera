@@ -700,6 +700,7 @@
       "expense": "Costais",
       "emptyState": "Beidh na graif le feiceáil anseo a luaithe a thaifeadtar ranníocaíochtaí nó gluaiseachtaí airgeadais.",
       "collectedPercent": " % Airgead Tirim",
+      "uncategorized": "Neamhchatagóirithe",
       "trendTitle": "Ioncam vs. Caiteachas — 6 mhí dheireanacha",
       "categoryTitle": "Fáltais de réir catagóir— {year}"
     }

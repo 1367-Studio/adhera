@@ -700,6 +700,7 @@
       "expense": "Ausgaben",
       "emptyState": "Die Grafiken erscheinen hier, sobald Beiträge oder finanzielle Bewegungen erfasst sind.",
       "collectedPercent": " % Eingelöst",
+      "uncategorized": "Nicht kategorisiert",
       "trendTitle": "Einkommen vs. Ausgaben – Letzte 6 Monate",
       "categoryTitle": "Einnahmen nach Kategorie — {year}"
     }

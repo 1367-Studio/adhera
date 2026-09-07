@@ -700,6 +700,7 @@
       "expense": "Kulut",
       "emptyState": "Kaaviot näkyvät täällä heti, kun sijoitukset tai taloudelliset liikkeet on kirjattu.",
       "collectedPercent": " % lunastettuja",
+      "uncategorized": "Luokittelematon",
       "trendTitle": "Tulot vs. menot — viimeiset 6 kuukautta",
       "categoryTitle": "Tulot kategorioittain — {year}"
     }

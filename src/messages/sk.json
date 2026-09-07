@@ -700,6 +700,7 @@
       "expense": "Výdavky",
       "emptyState": "Grafy sa tu objavia hneď, ako budú zaznamenané príspevky alebo finančné pohyby.",
       "collectedPercent": " % Hotovo",
+      "uncategorized": "Nezaradené",
       "trendTitle": "Príjem vs. výdavky — posledných 6 mesiacov",
       "categoryTitle": "Príjmy podľa kategórií — {year}"
     }
