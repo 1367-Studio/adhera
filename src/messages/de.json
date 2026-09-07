@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistenz-IA",
-    "description": "Wird für unterstütztes Schreiben in Texteditoren verwendet. Standardmäßig wird der Plattformschlüssel kostenlos verwendet. Richte deinen eigenen Schlüssel ein (Groq, OpenAI oder Mistral), sodass die Kosten auf dein Konto abgerechnet werden.",
+    "description": "Wird für unterstütztes Schreiben in Texteditoren verwendet. Standardmäßig wird der Plattformschlüssel kostenlos verwendet. Richte deinen eigenen Schlüssel ein (Groq, OpenAI oder Mistral), sodass die Kosten auf dein Konto abgerechnet werden. Sie wird auch verwendet, um öffentliche Inhalte (Veranstaltungen, Formulare) automatisch zu übersetzen.",
     "configuredTitle": "Benutzerdefinierte Schlüsselkonfiguration",
     "providerLabel": "Lieferant:",
     "modelLabel": "· Modell:",

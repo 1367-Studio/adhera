@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asystent IA",
-    "description": "Używany do wspomaganego pisania w edytorach tekstu. Domyślnie klucz platformy jest używany za darmo. Ustaw własny klucz (Groq, OpenAI lub Mistral), aby koszty były obciążane na Twoim koncie.",
+    "description": "Używany do wspomaganego pisania w edytorach tekstu. Domyślnie klucz platformy jest używany za darmo. Ustaw własny klucz (Groq, OpenAI lub Mistral), aby koszty były obciążane na Twoim koncie. Jest również używany do automatycznego tłumaczenia treści publicznych (wydarzenia, formularze).",
     "configuredTitle": "Konfiguracja klucza niestandardowego",
     "providerLabel": "Dostawca:",
     "modelLabel": "· Model:",

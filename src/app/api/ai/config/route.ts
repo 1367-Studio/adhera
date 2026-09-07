@@ -65,7 +65,16 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     const providerToValidate = aiProvider !== undefined ? (aiProvider ?? "groq") : (current?.aiProvider ?? "groq")
     const { client } = makeAiClient({ provider: providerToValidate, apiKey: aiApiKey })
     try {
-      await client.models.list()
+      const models = await client.models.list()
+      // Model is a free-text field (providers add/retire models faster than this list could
+      // be hardcoded), so this only catches it here, at save time, instead of every one of
+      // the 4 features that read it later failing with a confusing "model not found" error.
+      if (aiModel && !models.data.some((m) => m.id === aiModel)) {
+        return NextResponse.json(
+          { error: `Le modèle "${aiModel}" n'est pas disponible pour ${providerToValidate}.` },
+          { status: 422 },
+        )
+      }
     } catch {
       return NextResponse.json(
         { error: `Impossible de valider cette clé API auprès de ${providerToValidate}. Vérifiez qu'elle est correcte et active.` },

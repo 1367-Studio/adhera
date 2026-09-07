@@ -821,7 +821,7 @@
         "description": "Pronađite dnevnik aktivnosti provedenih u upravljačkom prostoru kako biste pratili što se promijenilo."
       },
       "parametres": {
-        "title": "Okruženja",
+        "title": "Postavke",
         "description": "Postavi svoju asocijaciju i omogući ili onemogući svaki modul. Onemogućen modul nestaje iz izbornika, ali tvoji podaci ostaju sačuvani."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Okruženja",
+      "title": "Postavke",
       "description": "Osnivanje vaše udruge",
       "tabs": {
         "general": "Općenito",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modeli",
         "automationRule": "Automatizacije",
         "membreType": "Vrste članova",
-        "association": "Okruženja",
+        "association": "Postavke",
         "boutiqueProduit": "Trgovina – Proizvodi",
         "boutiqueCommande": "Trgovina – Narudžbe",
         "sondage": "Istraživanja",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Pomoćnik IA",
-    "description": "Koristi se za asistirano pisanje u uređivačima teksta. Po defaultu, platformski ključ se koristi besplatno. Postavite vlastiti ključ (Groq, OpenAI ili Mistral) da se troškovi naplaćuju na vaš račun.",
+    "description": "Koristi se za asistirano pisanje u uređivačima teksta. Po defaultu, platformski ključ se koristi besplatno. Postavite vlastiti ključ (Groq, OpenAI ili Mistral) da se troškovi naplaćuju na vaš račun. Također se koristi za automatsko prevođenje javnog sadržaja (događaji, obrasci).",
     "configuredTitle": "Prilagođeni ključ konfiguriran",
     "providerLabel": "Dobavljač:",
     "modelLabel": "· Model:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Udruge",
-      "parametres": "Okruženja",
+      "parametres": "Postavke",
       "dashboard": "Nadzorna ploča",
       "membres": "Članovi",
       "evenements": "Događaji",

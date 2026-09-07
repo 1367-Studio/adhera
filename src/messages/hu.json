@@ -821,7 +821,7 @@
         "description": "Keresd meg a menedzsment térben végrehajtott műveletek naplóját, hogy nyomon kövesd, mi változott."
       },
       "parametres": {
-        "title": "Helyszínek",
+        "title": "Beállítások",
         "description": "Állítsd be az assosiációt, és engedélyezd vagy tiltsd ki az egyes modulokat. Egy letiltott modul eltűnik a menüből, de az adataid megmaradnak."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Helyszínek",
+      "title": "Beállítások",
       "description": "A szövetség létrehozása",
       "tabs": {
         "general": "Általános",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modellek",
         "automationRule": "Automatizációk",
         "membreType": "Tagtípusok",
-        "association": "Helyszínek",
+        "association": "Beállítások",
         "boutiqueProduit": "Bolt – Termékek",
         "boutiqueCommande": "Bolt – Rendelések",
         "sondage": "Felmérések",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Segéd IA",
-    "description": "Szövegszerkesztőkben segített írásra használják. Alapértelmezés szerint a platform kulcsot ingyenesen használják. Állítsd be saját kulcsodat (Groq, OpenAI vagy Mistral), hogy a költségeket a számládra terheljék.",
+    "description": "Szövegszerkesztőkben segített írásra használják. Alapértelmezés szerint a platform kulcsot ingyenesen használják. Állítsd be saját kulcsodat (Groq, OpenAI vagy Mistral), hogy a költségeket a számládra terheljék. A nyilvános tartalmak (események, űrlapok) automatikus fordítására is használjuk.",
     "configuredTitle": "Egyedi kulcs konfigurálása",
     "providerLabel": "Beszállító:",
     "modelLabel": "· Modell:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Szövetségek",
-      "parametres": "Helyszínek",
+      "parametres": "Beállítások",
       "dashboard": "Dashboard",
       "membres": "Tagok",
       "evenements": "Események",

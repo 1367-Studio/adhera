@@ -821,7 +821,7 @@
         "description": "Raskite valdymo erdvėje atliktų veiksmų žurnalą, kad galėtumėte sekti, kas pasikeitė."
       },
       "parametres": {
-        "title": "Aplinka",
+        "title": "Nustatymai",
         "description": "Nustatykite asociaciją ir įjunkite arba išjunkite kiekvieną modulį. Išjungtas modulis dingsta iš meniu, bet jūsų duomenys išsaugomi."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Aplinka",
+      "title": "Nustatymai",
       "description": "Jūsų asociacijos įkūrimas",
       "tabs": {
         "general": "Bendra",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modeliai",
         "automationRule": "Automatizacijos",
         "membreType": "Narių tipai",
-        "association": "Aplinka",
+        "association": "Nustatymai",
         "boutiqueProduit": "Parduotuvė – Produktai",
         "boutiqueCommande": "Parduotuvė – užsakymai",
         "sondage": "Tyrimai",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistentas IA",
-    "description": "Naudojama pagalbiniam rašymui teksto redaktoriuose. Pagal numatytuosius nustatymus platformos raktas naudojamas nemokamai. Nustatykite savo raktą (Groq, OpenAI arba Mistral), kad jūsų sąskaita būtų priskaičiuota už kaštus.",
+    "description": "Naudojama pagalbiniam rašymui teksto redaktoriuose. Pagal numatytuosius nustatymus platformos raktas naudojamas nemokamai. Nustatykite savo raktą (Groq, OpenAI arba Mistral), kad jūsų sąskaita būtų priskaičiuota už kaštus. Ji taip pat naudojama automatiniam viešo turinio (renginių, formų) vertimui.",
     "configuredTitle": "Individuali klavišo konfigūracija",
     "providerLabel": "Tiekėjas:",
     "modelLabel": "· Modelis:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Asociacijos",
-      "parametres": "Aplinka",
+      "parametres": "Nustatymai",
       "dashboard": "Dashboard",
       "membres": "Nariai",
       "evenements": "Renginiai",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { makeAiClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
+import { getAiConfig } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { rateLimit } from "@/lib/rate-limit"
@@ -32,12 +32,9 @@ ${transcript}
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
-  const [meeting, assoc] = await Promise.all([
+  const [meeting, aiConfig] = await Promise.all([
     prisma.meeting.findFirst({ where: { id, associationId } }),
-    prisma.association.findUnique({
-      where:  { id: associationId },
-      select: { aiProvider: true, aiApiKey: true, aiModel: true },
-    }),
+    getAiConfig(associationId),
   ])
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
@@ -45,19 +42,18 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     return NextResponse.json({ error: "Aucune transcription disponible." }, { status: 422 })
   }
 
-  if (!assoc?.aiApiKey && !(await rateLimit(`ai-summarize:${associationId}`, 20, 10 * 60_000))) {
+  const usingOwnKey = !!aiConfig && !aiConfig.usingPlatform
+  if (!usingOwnKey && !(await rateLimit(`ai-summarize:${associationId}`, 20, 10 * 60_000))) {
     return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
   }
 
-  const { client, model } = assoc?.aiApiKey
-    ? makeAiClient({ provider: assoc.aiProvider ?? "groq", apiKey: assoc.aiApiKey, model: assoc.aiModel })
-    : { client: platformClient, model: GROQ_MODEL }
-  if (!client) {
+  if (!aiConfig) {
     return NextResponse.json(
       { error: "Aucune clé API IA configurée." },
       { status: 503 },
     )
   }
+  const { client, model } = aiConfig
 
   try {
     const completion = await client.chat.completions.create({

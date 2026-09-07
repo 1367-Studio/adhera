@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Cúntóir IA",
-    "description": "Úsáidtear é le haghaidh scríbhneoireachta cuidithe in eagarthóirí téacs. De réir réamhshocraithe, úsáidtear eochair an ardáin saor in aisce. Socraigh d'eochair féin (Groq, OpenAI, nó Mistral) chun na costais a ghearradh ar do chuntas.",
+    "description": "Úsáidtear é le haghaidh scríbhneoireachta cuidithe in eagarthóirí téacs. De réir réamhshocraithe, úsáidtear eochair an ardáin saor in aisce. Socraigh d'eochair féin (Groq, OpenAI, nó Mistral) chun na costais a ghearradh ar do chuntas. Úsáidtear í freisin chun ábhar poiblí (imeachtaí, foirmeacha) a aistriú go huathoibríoch.",
     "configuredTitle": "Eochair saincheaptha cumraithe",
     "providerLabel": "Soláthraí:",
     "modelLabel": "· Múnla:",

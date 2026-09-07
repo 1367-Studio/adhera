@@ -821,7 +821,7 @@
         "description": "Najděte záznam akcí provedených v oblasti managementu, abyste měli přehled o změnách."
       },
       "parametres": {
-        "title": "Prostředí",
+        "title": "Nastavení",
         "description": "Nastavte si asociaci a povolte nebo vypněte každý modul. Deaktivovaný modul zmizí z menu, ale vaše data zůstanou zachována."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Prostředí",
+      "title": "Nastavení",
       "description": "Založení vaší asociace",
       "tabs": {
         "general": "Obecné",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modely",
         "automationRule": "Automatizace",
         "membreType": "Typy členů",
-        "association": "Prostředí",
+        "association": "Nastavení",
         "boutiqueProduit": "Obchod – Produkty",
         "boutiqueCommande": "Obchod – Objednávky",
         "sondage": "Průzkumy",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistent IA",
-    "description": "Používá se pro asistované psaní v textových editorech. Ve výchozím nastavení je platformový klíč zdarma. Nastavte si vlastní klíč (Groq, OpenAI nebo Mistral), aby se náklady zaplatily na váš účet.",
+    "description": "Používá se pro asistované psaní v textových editorech. Ve výchozím nastavení je platformový klíč zdarma. Nastavte si vlastní klíč (Groq, OpenAI nebo Mistral), aby se náklady zaplatily na váš účet. Používá se také k automatickému překladu veřejného obsahu (události, formuláře).",
     "configuredTitle": "Konfigurace vlastního klíče",
     "providerLabel": "Dodavatel:",
     "modelLabel": "· Model:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Sdružení",
-      "parametres": "Prostředí",
+      "parametres": "Nastavení",
       "dashboard": "Dashboard",
       "membres": "Členové",
       "evenements": "Události",

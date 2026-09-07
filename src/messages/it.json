@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assistente IA",
-    "description": "Utilizzato per la scrittura assistita negli editor di testo. Di default, la chiave della piattaforma è usata gratuitamente. Imposta la tua chiave (Groq, OpenAI o Mistral) per far addebitare i costi sul tuo account.",
+    "description": "Utilizzato per la scrittura assistita negli editor di testo. Di default, la chiave della piattaforma è usata gratuitamente. Imposta la tua chiave (Groq, OpenAI o Mistral) per far addebitare i costi sul tuo account. Viene anche usata per tradurre automaticamente i contenuti pubblici (eventi, moduli).",
     "configuredTitle": "Chiave personalizzata configurata",
     "providerLabel": "Fornitore:",
     "modelLabel": "· Modello:",

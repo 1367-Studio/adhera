@@ -821,7 +821,7 @@
         "description": "Găsiți jurnalul acțiunilor efectuate în spațiul de management pentru a urmări ce s-a schimbat."
       },
       "parametres": {
-        "title": "Decoruri",
+        "title": "Setări",
         "description": "Configurează asocierea și activează sau dezactivează fiecare modul. Un modul dezactivat dispare din meniu, dar datele tale sunt păstrate."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Decoruri",
+      "title": "Setări",
       "description": "Înființarea asociației tale",
       "tabs": {
         "general": "General",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modele",
         "automationRule": "Automatizări",
         "membreType": "Tipuri de membri",
-        "association": "Decoruri",
+        "association": "Setări",
         "boutiqueProduit": "Magazin – Produse",
         "boutiqueCommande": "Magazin – Comenzi",
         "sondage": "Sondaje",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Asistent IA",
-    "description": "Folosită pentru scriere asistată în editoare de text. Implicit, cheia platformei este folosită gratuit. Configurează-ți propria cheie (Groq, OpenAI sau Mistral) pentru a primi costurile pe contul tău.",
+    "description": "Folosită pentru scriere asistată în editoare de text. Implicit, cheia platformei este folosită gratuit. Configurează-ți propria cheie (Groq, OpenAI sau Mistral) pentru a primi costurile pe contul tău. Este folosită și pentru traducerea automată a conținutului public (evenimente, formulare).",
     "configuredTitle": "Chei personalizate configurate",
     "providerLabel": "Furnizor:",
     "modelLabel": "· Model:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Asociații",
-      "parametres": "Decoruri",
+      "parametres": "Setări",
       "dashboard": "Dashboard",
       "membres": "Membri",
       "evenements": "Evenimente",

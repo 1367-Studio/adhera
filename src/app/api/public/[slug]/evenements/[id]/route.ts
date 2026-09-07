@@ -72,9 +72,10 @@ export async function GET(
     [{ title: evenement.title, description: evenement.description, conditions: evenement.conditions }],
     ["title", "description", "conditions"],
     locale,
+    assoc.id,
   )
-  const customFields  = await translateFields(evenement.customFields, ["label"], locale)
-  const allTicketTypes = await translateFields(evenement.ticketTypes, ["label"], locale)
+  const customFields  = await translateFields(evenement.customFields, ["label"], locale, assoc.id)
+  const allTicketTypes = await translateFields(evenement.ticketTypes, ["label"], locale, assoc.id)
   // DONATION rows are optional extras alongside the ticket, never a tier a participant picks
   // one of — kept out of `ticketTypes`/`hasTicketTypes` entirely so an event that only offers
   // a donation (no real ticket) doesn't force the "choose your tier" picker with nothing to

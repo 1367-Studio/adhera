@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Assisterende IA",
-    "description": "Bruges til assisteret skrivning i teksteditorer. Som standard bruges platformnøglen gratis. Opret din egen nøgle (Groq, OpenAI eller Mistral), så omkostningerne bliver trukket på din konto.",
+    "description": "Bruges til assisteret skrivning i teksteditorer. Som standard bruges platformnøglen gratis. Opret din egen nøgle (Groq, OpenAI eller Mistral), så omkostningerne bliver trukket på din konto. Den bruges også til automatisk at oversætte offentligt indhold (begivenheder, formularer).",
     "configuredTitle": "Konfigureret brugerdefineret nøgle",
     "providerLabel": "Leverandør:",
     "modelLabel": "· Model:",

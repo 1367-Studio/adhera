@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "AI Assistant",
-    "description": "Used for AI-assisted writing in text editors. By default, the platform key is used for free. Configure your own key (Groq, OpenAI or Mistral) so costs are billed to your account.",
+    "description": "Used for AI-assisted writing in text editors. By default, the platform key is used for free. Configure your own key (Groq, OpenAI or Mistral) so costs are billed to your account. It's also used to automatically translate public content (events, forms).",
     "configuredTitle": "Custom key configured",
     "providerLabel": "Provider:",
     "modelLabel": "· Model:",

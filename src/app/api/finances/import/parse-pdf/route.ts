@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
 import { getDocumentProxy, extractText } from "unpdf"
-import { prisma } from "@/lib/prisma/client"
 import { aiExtractedRowSchema } from "@/lib/schemas"
-import { makeAiClient, platformClient, GROQ_MODEL } from "@/lib/ai/client"
+import { getAiConfig } from "@/lib/ai/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 import { rateLimit } from "@/lib/rate-limit"
@@ -75,28 +74,23 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Relevé trop long à traiter automatiquement" }, { status: 422 })
   }
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: associationId },
-    select: { aiProvider: true, aiApiKey: true, aiModel: true },
-  })
+  const aiConfig   = await getAiConfig(associationId)
+  const usingOwnKey = !!aiConfig && !aiConfig.usingPlatform
 
   // Only throttle associations riding on the platform's shared fallback key — one with
   // its own key uses its own quota/cost, not ours. Not the Whisper-style shared hard cap
   // that transcribe protects against, so a single per-association bucket is enough here.
-  if (!assoc?.aiApiKey && !(await rateLimit(`ai-pdf-import:${associationId}`, 8, 60 * 60_000))) {
+  if (!usingOwnKey && !(await rateLimit(`ai-pdf-import:${associationId}`, 8, 60 * 60_000))) {
     return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
   }
 
-  const { client, model } = assoc?.aiApiKey
-    ? makeAiClient({ provider: assoc.aiProvider ?? "groq", apiKey: assoc.aiApiKey, model: assoc.aiModel })
-    : { client: platformClient, model: GROQ_MODEL }
-
-  if (!client) {
+  if (!aiConfig) {
     return NextResponse.json(
       { error: "Aucune clé API configurée. Ajoutez votre clé API dans Paramètres → IA." },
       { status: 503 },
     )
   }
+  const { client, model } = aiConfig
 
   let raw: unknown
   try {
