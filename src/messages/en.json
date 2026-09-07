@@ -2555,7 +2555,8 @@
         "status": "Status",
         "donors": "Donors",
         "total": "Total raised",
-        "created": "Created on"
+        "created": "Created on",
+        "donorsInline": "donors"
       },
       "noForms": "No donation forms",
       "actions": {
@@ -2653,6 +2654,9 @@
           "conditionsPlaceholder": "General terms for this form…",
           "conditionsPdfLabel": "Terms document (PDF or image)",
           "requireCguvLabel": "Require terms signature",
+          "contactSectionTitle": "Contact information for donors",
+          "contactSectionHint": "These contact details appear on the online form.",
+          "contactSectionHintAria": "What are these contact details for?",
           "contactEmailLabel": "Contact email",
           "contactPhoneLabel": "Contact phone"
         },
@@ -2831,7 +2835,8 @@
         "status": "Status",
         "members": "Members",
         "total": "Total raised",
-        "created": "Created on"
+        "created": "Created on",
+        "membersInline": "members"
       },
       "noForms": "No membership forms",
       "actions": {

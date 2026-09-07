@@ -15,9 +15,11 @@ export type EuLocale = (typeof EU_LOCALES)[number]
 
 // Locales the app can actually render today — one entry per catalogue in src/messages.
 // To enable a new one: run `npx tsx scripts/generate-locale.ts <tag>`, review the output,
-// then add the tag here. Nothing else needs changing; detection, the switcher, the "langue
-// parlée" list and content translation all read from this array.
-export const SUPPORTED_LOCALES = ["fr", "en", "pt", "pt-PT", "es"] as const satisfies readonly EuLocale[]
+// then add the tag here. Detection, the switcher, the "langue parlée" list and content
+// translation all read from this array, no changes needed there. The one other spot: add a
+// matching entry to DATE_FNS_LOCALES in src/lib/date-fns-locale.ts — tsc will fail the build
+// until you do (it's a Record over every Locale) so this can't be silently skipped.
+export const SUPPORTED_LOCALES = ["fr", "en", "pt", "pt-PT", "es", "bg", "cs", "da", "de", "el", "et", "fi", "ga", "hr", "hu", "it", "lt", "lv", "mt", "nl", "pl", "ro", "sk", "sl", "sv"] as const satisfies readonly EuLocale[]
 export type Locale = (typeof SUPPORTED_LOCALES)[number]
 export const DEFAULT_LOCALE: Locale = "fr"
 
