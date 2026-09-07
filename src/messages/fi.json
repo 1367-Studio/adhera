@@ -821,7 +821,7 @@
         "description": "Etsi hallintatilassa suoritettujen toimenpiteiden loki pysyäksesi kärryillä siitä, mitä on muuttunut."
       },
       "parametres": {
-        "title": "Ympäristöt",
+        "title": "Asetukset",
         "description": "Aseta assosiaatio ja ota käyttöön tai poista käytöstä jokainen moduuli. Poistettu moduuli katoaa valikosta, mutta tietosi säilyvät."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Ympäristöt",
+      "title": "Asetukset",
       "description": "Yhdistyksen perustaminen",
       "tabs": {
         "general": "Yleiset",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Mallit",
         "automationRule": "Automaatiot",
         "membreType": "Jäsentyypit",
-        "association": "Ympäristöt",
+        "association": "Asetukset",
         "boutiqueProduit": "Kauppa – Tuotteet",
         "boutiqueCommande": "Kauppa – Tilaukset",
         "sondage": "Kyselyt",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Yhdistykset",
-      "parametres": "Ympäristöt",
+      "parametres": "Asetukset",
       "dashboard": "Hallintapaneeli",
       "membres": "Jäsenet",
       "evenements": "Tapahtumat",

@@ -821,7 +821,7 @@
         "description": "Raskite valdymo erdvėje atliktų veiksmų žurnalą, kad galėtumėte sekti, kas pasikeitė."
       },
       "parametres": {
-        "title": "Aplinka",
+        "title": "Nustatymai",
         "description": "Nustatykite asociaciją ir įjunkite arba išjunkite kiekvieną modulį. Išjungtas modulis dingsta iš meniu, bet jūsų duomenys išsaugomi."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Aplinka",
+      "title": "Nustatymai",
       "description": "Jūsų asociacijos įkūrimas",
       "tabs": {
         "general": "Bendra",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modeliai",
         "automationRule": "Automatizacijos",
         "membreType": "Narių tipai",
-        "association": "Aplinka",
+        "association": "Nustatymai",
         "boutiqueProduit": "Parduotuvė – Produktai",
         "boutiqueCommande": "Parduotuvė – užsakymai",
         "sondage": "Tyrimai",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Asociacijos",
-      "parametres": "Aplinka",
+      "parametres": "Nustatymai",
       "dashboard": "Dashboard",
       "membres": "Nariai",
       "evenements": "Renginiai",

@@ -821,7 +821,7 @@
         "description": "Atrodiet pārvaldības telpā veikto darbību žurnālu, lai sekotu līdzi izmaiņām."
       },
       "parametres": {
-        "title": "Vides",
+        "title": "Iestatījumi",
         "description": "Iestatiet savu asociāciju un ieslēdziet vai atspējojiet katru moduli. Atspējots modulis pazūd no izvēlnes, bet jūsu dati tiek saglabāti."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Vides",
+      "title": "Iestatījumi",
       "description": "Jūsu asociācijas izveide",
       "tabs": {
         "general": "Vispārīgi",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modeļi",
         "automationRule": "Automatizācijas",
         "membreType": "Dalībnieku veidi",
-        "association": "Vides",
+        "association": "Iestatījumi",
         "boutiqueProduit": "Veikals – Produkti",
         "boutiqueCommande": "Veikals – Pasūtījumi",
         "sondage": "Apsekojumi",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Asociācijas",
-      "parametres": "Vides",
+      "parametres": "Iestatījumi",
       "dashboard": "Informācijas panelis",
       "membres": "Dalībnieki",
       "evenements": "Notikumi",

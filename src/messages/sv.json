@@ -821,7 +821,7 @@
         "description": "Hitta loggen över åtgärder som utförts i förvaltningsrummet för att hålla koll på vad som har förändrats."
       },
       "parametres": {
-        "title": "Miljöer",
+        "title": "Inställningar",
         "description": "Sätt in din association och aktivera eller inaktivera varje modul. En inaktiverad modul försvinner från menyn, men din data sparas."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Miljöer",
+      "title": "Inställningar",
       "description": "Att starta din förening",
       "tabs": {
         "general": "Allmänt",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Modeller",
         "automationRule": "Automationer",
         "membreType": "Medlemstyper",
-        "association": "Miljöer",
+        "association": "Inställningar",
         "boutiqueProduit": "Butik – Produkter",
         "boutiqueCommande": "Butik – Beställningar",
         "sondage": "Undersökningar",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Föreningar",
-      "parametres": "Miljöer",
+      "parametres": "Inställningar",
       "dashboard": "Dashboard",
       "membres": "Medlemmar",
       "evenements": "Evenemang",
