@@ -136,7 +136,7 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   // One batched Azure call (cached per locale) covers title/description for every
   // event on the page instead of one call per event.
   const locale     = (await getLocale()) as Locale
-  const translated = await translateFields([...upcomingWithCounts, ...pastWithCounts], ["title", "description"], locale)
+  const translated = await translateFields([...upcomingWithCounts, ...pastWithCounts], ["title", "description"], locale, associationId)
 
   return NextResponse.json({
     upcoming:        translated.slice(0, upcomingWithCounts.length),

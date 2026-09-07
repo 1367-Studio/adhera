@@ -821,7 +821,7 @@
         "description": "Leia juhtimisruumis tehtud tegevuste logi, et jälgida, mis on muutunud."
       },
       "parametres": {
-        "title": "Keskkonnad",
+        "title": "Seaded",
         "description": "Seadista oma seos ja luba või keela iga moodul. Keelatud moodul kaob menüüst, kuid sinu andmed jäävad alles."
       },
       "viewSwitcher": {
@@ -3448,7 +3448,7 @@
   },
   "parametres": {
     "view": {
-      "title": "Keskkonnad",
+      "title": "Seaded",
       "description": "Ühingu loomine",
       "tabs": {
         "general": "Üldine",
@@ -4330,7 +4330,7 @@
         "messageTemplate": "Mudelid",
         "automationRule": "Automaatika",
         "membreType": "Liikmetüübid",
-        "association": "Keskkonnad",
+        "association": "Seaded",
         "boutiqueProduit": "Pood – Tooted",
         "boutiqueCommande": "Pood – Tellimused",
         "sondage": "Küsitlused",
@@ -5013,7 +5013,7 @@
   },
   "ai": {
     "heading": "Abi-IA",
-    "description": "Kasutatakse abistavaks kirjutamiseks tekstiredaktorites. Vaikimisi kasutatakse platvormi võtit tasuta. Seadista oma võti (Groq, OpenAI või Mistral), et kulud arvestataks sinu kontolt.",
+    "description": "Kasutatakse abistavaks kirjutamiseks tekstiredaktorites. Vaikimisi kasutatakse platvormi võtit tasuta. Seadista oma võti (Groq, OpenAI või Mistral), et kulud arvestataks sinu kontolt. Seda kasutatakse ka avaliku sisu (ürituste, vormide) automaatseks tõlkimiseks.",
     "configuredTitle": "Kohandatud võtme seadistamine",
     "providerLabel": "Tarnija:",
     "modelLabel": "· Mudel:",
@@ -5063,7 +5063,7 @@
   "layout": {
     "appSidebar": {
       "associations": "Ühendused",
-      "parametres": "Keskkonnad",
+      "parametres": "Seaded",
       "dashboard": "Dashboard",
       "membres": "Liikmed",
       "evenements": "Sündmused",

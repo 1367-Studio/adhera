@@ -1,4 +1,5 @@
 import OpenAI from "openai"
+import { prisma } from "@/lib/prisma/client"
 
 // All three expose an OpenAI-compatible REST API, so the same SDK client works for all —
 // only the base URL and default model differ. Ported from eduwise's src/lib/ai/client.ts.
@@ -38,6 +39,26 @@ export function makeAiClient(config: AiConfig): { client: OpenAI; model: string 
     client: new OpenAI({ apiKey: config.apiKey, baseURL }),
     model:  config.model || DEFAULT_MODELS[config.provider] || DEFAULT_MODELS.groq,
   }
+}
+
+// Shared "own key or platform fallback" resolver for chat-completion features (PDF import,
+// meeting summaries, AI writing assist, content translation) — previously duplicated inline
+// in each of those routes. `usingPlatform` lets callers gate their own rate-limiting the same
+// way the duplicated code did: only throttle associations riding on the shared key.
+export type ResolvedAiConfig = { client: OpenAI; model: string; usingPlatform: boolean }
+
+export async function getAiConfig(associationId: string): Promise<ResolvedAiConfig | null> {
+  const assoc = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: { aiProvider: true, aiApiKey: true, aiModel: true },
+  })
+
+  if (assoc?.aiApiKey) {
+    const { client, model } = makeAiClient({ provider: assoc.aiProvider ?? "groq", apiKey: assoc.aiApiKey, model: assoc.aiModel })
+    return { client, model, usingPlatform: false }
+  }
+
+  return platformClient ? { client: platformClient, model: GROQ_MODEL, usingPlatform: true } : null
 }
 
 // Meeting transcription (src/app/api/meetings/[id]/transcribe/route.ts) only ever talks to
