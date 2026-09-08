@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Privat",
           "opensAtLabel": "Öppning",
           "closesAtLabel": "Nedläggning",
+          "siteSectionLabel": "Platssektion",
+          "siteSectionPlaceholder": "Välj...",
+          "siteSectionCreateOption": "+ Skapa en ny sektion",
+          "siteSectionCreateError": "Fel som skapar sidan.",
+          "siteSectionRequiredError": "Välj vilken sektion på sidan du vill posta detta formulär i.",
           "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
         }
       }

@@ -9,9 +9,15 @@ type Props = {
   // Ne promet le reçu fiscal que si l'association est réellement habilitée à en émettre
   // (Paramètres → Identité). Le mentionner à tort serait un engagement fiscal faux.
   canIssueTaxReceipts: boolean
+  // A DonationForm published with visibility SITE and bound to this section (see
+  // getSiteData in [slug]/page.tsx). Unlike membership, null here doesn't hide the
+  // section — it falls back to the legacy standalone /portal/[slug]/don page, which keeps
+  // working for associations that never created a configurable DonationForm.
+  donationForm: { slug: string; title: string } | null
 }
 
-export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts }: Props) {
+export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts, donationForm }: Props) {
+  const href = donationForm ? `/${slug}/dons/${donationForm.slug}` : `/portal/${slug}/don`
   return (
     <section className="py-16 px-4">
       <div className="max-w-md mx-auto text-center">
@@ -21,7 +27,7 @@ export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts }: P
         {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
 
         <Link
-          href={`/portal/${slug}/don`}
+          href={href}
           className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
           style={{ background: color }}
         >

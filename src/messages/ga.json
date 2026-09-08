@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Príobháideach",
           "opensAtLabel": "Ag oscailt",
           "closesAtLabel": "Dúnadh",
+          "siteSectionLabel": "Rannóg an tSuímh",
+          "siteSectionPlaceholder": "Roghnaigh...",
+          "siteSectionCreateOption": "+ Cruthaigh rannóg nua",
+          "siteSectionCreateError": "Earráid agus rannóg an tsuímh á chruthú.",
+          "siteSectionRequiredError": "Roghnaigh an chuid den láithreán chun an fhoirm seo a phostáil chuige.",
           "datesOrderError": "Caithfidh an dáta deiridh a bheith níos déanaí ná an dáta oscailte."
         }
       }

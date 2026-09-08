@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Prywatny",
           "opensAtLabel": "Otwarcie",
           "closesAtLabel": "Zamknięcie",
+          "siteSectionLabel": "Sekcja Site",
+          "siteSectionPlaceholder": "Wybierz...",
+          "siteSectionCreateOption": "+ Stwórz nową sekcję",
+          "siteSectionCreateError": "Błąd przy tworzeniu sekcji strony.",
+          "siteSectionRequiredError": "Wybierz sekcję strony, do której chcesz opublikować ten formularz.",
           "datesOrderError": "Data zamknięcia musi być późniejsza niż data otwarcia."
         }
       }

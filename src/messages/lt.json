@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Privatus",
           "opensAtLabel": "Atidarymas",
           "closesAtLabel": "Uždarymas",
+          "siteSectionLabel": "Vietos skyrius",
+          "siteSectionPlaceholder": "Pasirink...",
+          "siteSectionCreateOption": "+ Sukurti naują skyrių",
+          "siteSectionCreateError": "Klaida kuriant svetainės skyrių.",
+          "siteSectionRequiredError": "Pasirinkite svetainės skiltį, į kurią skelbti šią formą.",
           "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data."
         }
       }

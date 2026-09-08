@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Privaatne",
           "opensAtLabel": "Avamine",
           "closesAtLabel": "Sulgemine",
+          "siteSectionLabel": "Objekti sektsioon",
+          "siteSectionPlaceholder": "Vali...",
+          "siteSectionCreateOption": "+ Loo uus sektsioon",
+          "siteSectionCreateError": "Viga saidi sektsiooni loomisel.",
+          "siteSectionRequiredError": "Vali saidi sektsioon, kuhu selle vormi postitada.",
           "datesOrderError": "Sulgemiskuupäev peab olema hilisem kui avamiskuupäev."
         }
       }

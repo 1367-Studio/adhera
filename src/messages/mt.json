@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Privat",
           "opensAtLabel": "Ftuħ",
           "closesAtLabel": "Għeluq",
+          "siteSectionLabel": "Sezzjoni tas-Sit",
+          "siteSectionPlaceholder": "Għażel...",
+          "siteSectionCreateOption": "+ Oħloq sezzjoni ġdida",
+          "siteSectionCreateError": "Żball fil-ħolqien tas-sezzjoni tas-sit.",
+          "siteSectionRequiredError": "Agħżel is-sezzjoni tas-sit biex tippubblika din il-formola.",
           "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ."
         }
       }

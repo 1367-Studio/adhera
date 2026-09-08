@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Yksityinen",
           "opensAtLabel": "Avaaminen",
           "closesAtLabel": "Lopettaminen",
+          "siteSectionLabel": "Kohdeosasto",
+          "siteSectionPlaceholder": "Valitse...",
+          "siteSectionCreateOption": "+ Luo uusi osio",
+          "siteSectionCreateError": "Virhe sivustoosion luomisessa.",
+          "siteSectionRequiredError": "Valitse sivuston osio, johon voit laittaa tämän lomakkeen.",
           "datesOrderError": "Sulkemispäivän on oltava myöhempi kuin avajaispäivä."
         }
       }

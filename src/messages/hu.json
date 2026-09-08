@@ -2740,6 +2740,11 @@
           "visibilityPrivate": "Magán",
           "opensAtLabel": "Megnyitó",
           "closesAtLabel": "Lezárás",
+          "siteSectionLabel": "Helyszín szekció",
+          "siteSectionPlaceholder": "Válassz...",
+          "siteSectionCreateOption": "+ Hozzon létre egy új szakaszt",
+          "siteSectionCreateError": "Hiba a weboldal szekció létrehozása.",
+          "siteSectionRequiredError": "Válaszd ki az oldal azon részét, ahol ezt az űrlapot közzéteszed.",
           "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás."
         }
       }
