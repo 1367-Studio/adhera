@@ -1510,6 +1510,7 @@
       "removeOption": "Премахнете тази опция",
       "labelRequiredError": "Всяко поле трябва да има етикет.",
       "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+      "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални.",
       "saved": "Запазени персонализирани полета"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Задължително",
           "typeText": "Текст",
           "typeNumber": "Брой",
+          "typeSelect": "Падащ списък",
           "labelRequiredError": "Всяко поле трябва да има етикет",
           "saved": "Спасени полета",
-          "saveFields": "Запази полетата"
+          "saveFields": "Запази полетата",
+          "optionPlaceholder": "Опция {n}",
+          "addOption": "Добави опция",
+          "removeOption": "Премахнете тази опция",
+          "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
         },
         "payment": {
           "title": "Плащане",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Задължително",
           "typeText": "Текст",
           "typeNumber": "Брой",
+          "typeSelect": "Падащ списък",
           "labelRequiredError": "Всяко поле трябва да има етикет",
           "saved": "Спасени полета",
-          "saveFields": "Запази полетата"
+          "saveFields": "Запази полетата",
+          "optionPlaceholder": "Опция {n}",
+          "addOption": "Добави опция",
+          "removeOption": "Премахнете тази опция",
+          "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
         },
         "payment": {
           "title": "Плащане",

@@ -1510,6 +1510,7 @@
       "removeOption": "Fjern denne mulighed",
       "labelRequiredError": "Hvert felt skal have en etiket.",
       "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
+      "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke.",
       "saved": "Gemte brugerdefinerede felter"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Påkrævet",
           "typeText": "Tekst",
           "typeNumber": "Antal",
+          "typeSelect": "Rullemenu",
           "labelRequiredError": "Hvert felt skal have en etiket",
           "saved": "Gemte felter",
-          "saveFields": "Gem felter"
+          "saveFields": "Gem felter",
+          "optionPlaceholder": "Mulighed {n}",
+          "addOption": "Tilføj en mulighed",
+          "removeOption": "Fjern denne mulighed",
+          "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
         },
         "payment": {
           "title": "Betaling",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Påkrævet",
           "typeText": "Tekst",
           "typeNumber": "Antal",
+          "typeSelect": "Rullemenu",
           "labelRequiredError": "Hvert felt skal have en etiket",
           "saved": "Gemte felter",
-          "saveFields": "Gem felter"
+          "saveFields": "Gem felter",
+          "optionPlaceholder": "Mulighed {n}",
+          "addOption": "Tilføj en mulighed",
+          "removeOption": "Fjern denne mulighed",
+          "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
         },
         "payment": {
           "title": "Betaling",

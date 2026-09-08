@@ -1510,6 +1510,7 @@
       "removeOption": "Odstráňte túto možnosť",
       "labelRequiredError": "Každé pole musí mať označenie.",
       "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+      "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné.",
       "saved": "Uložené vlastné polia"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbaľovací zoznam",
           "labelRequiredError": "Každé pole musí mať označenie",
           "saved": "Uložené polia",
-          "saveFields": "Uložiť polia"
+          "saveFields": "Uložiť polia",
+          "optionPlaceholder": "Opcia {n}",
+          "addOption": "Pridať možnosť",
+          "removeOption": "Odstráňte túto možnosť",
+          "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
         },
         "payment": {
           "title": "Platba",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbaľovací zoznam",
           "labelRequiredError": "Každé pole musí mať označenie",
           "saved": "Uložené polia",
-          "saveFields": "Uložiť polia"
+          "saveFields": "Uložiť polia",
+          "optionPlaceholder": "Opcia {n}",
+          "addOption": "Pridať možnosť",
+          "removeOption": "Odstráňte túto možnosť",
+          "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
         },
         "payment": {
           "title": "Platba",

@@ -1510,6 +1510,7 @@
       "removeOption": "Uklonite ovu opciju",
       "labelRequiredError": "Svako polje mora imati oznaku.",
       "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+      "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene.",
       "saved": "Spremljena prilagođena polja"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obavezno",
           "typeText": "Tekst",
           "typeNumber": "Broj",
+          "typeSelect": "Padajući izbornik",
           "labelRequiredError": "Svako polje mora imati oznaku",
           "saved": "Sačuvana polja",
-          "saveFields": "Spremi polja"
+          "saveFields": "Spremi polja",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Dodaj opciju",
+          "removeOption": "Uklonite ovu opciju",
+          "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
         },
         "payment": {
           "title": "Plaćanje",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obavezno",
           "typeText": "Tekst",
           "typeNumber": "Broj",
+          "typeSelect": "Padajući izbornik",
           "labelRequiredError": "Svako polje mora imati oznaku",
           "saved": "Sačuvana polja",
-          "saveFields": "Spremi polja"
+          "saveFields": "Spremi polja",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Dodaj opciju",
+          "removeOption": "Uklonite ovu opciju",
+          "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
         },
         "payment": {
           "title": "Plaćanje",

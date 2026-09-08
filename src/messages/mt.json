@@ -1510,6 +1510,7 @@
       "removeOption": "Neħħi din l-għażla",
       "labelRequiredError": "Kull kamp irid ikollu tikketta.",
       "optionsRequiredError": "Kull qasam ta' lista/għażla jeħtieġ mill-inqas 2 għażliet.",
+      "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika.",
       "saved": "Kampijiet Personalizzati Salvati"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Meħtieġ",
           "typeText": "Test",
           "typeNumber": "Numru",
+          "typeSelect": "Lista drop-down",
           "labelRequiredError": "Kull qasam irid ikollu tikketta",
           "saved": "Fields salvati",
-          "saveFields": "Issejvja l-oqsma"
+          "saveFields": "Issejvja l-oqsma",
+          "optionPlaceholder": "Għażla {n}",
+          "addOption": "Żid għażla",
+          "removeOption": "Neħħi din l-għażla",
+          "optionsRequiredError": "Kull qasam ta' lista/għażla jeħtieġ mill-inqas 2 għażliet.",
+          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika."
         },
         "payment": {
           "title": "Ħlas",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Meħtieġ",
           "typeText": "Test",
           "typeNumber": "Numru",
+          "typeSelect": "Lista drop-down",
           "labelRequiredError": "Kull qasam irid ikollu tikketta",
           "saved": "Fields salvati",
-          "saveFields": "Issejvja l-oqsma"
+          "saveFields": "Issejvja l-oqsma",
+          "optionPlaceholder": "Għażla {n}",
+          "addOption": "Żid għażla",
+          "removeOption": "Neħħi din l-għażla",
+          "optionsRequiredError": "Kull qasam ta' lista/għażla jeħtieġ mill-inqas 2 għażliet.",
+          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika."
         },
         "payment": {
           "title": "Ħlas",

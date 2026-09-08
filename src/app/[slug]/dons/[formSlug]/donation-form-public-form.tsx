@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { HandHeartIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
@@ -19,7 +20,7 @@ import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
-type CustomField = { id: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
+type CustomField = { id: string; type: "TEXT" | "NUMBER" | "SELECT"; label: string; required: boolean; options: string[] | null }
 type Tier = {
   id: string; label: string; kind: "ONE_OFF" | "RECURRING"; interval: "MONTH" | "QUARTER" | "YEAR" | null
   freeAmount: boolean; amount: string | null; receiptMode: "NONE" | "FULL" | "PARTIAL"
@@ -451,7 +452,16 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
               </div>
 
-              {form.customFields.map(field => (
+              {form.customFields.map(field => field.type === "SELECT" ? (
+                <SelectField
+                  key={field.id}
+                  label={field.label}
+                  required={field.required}
+                  options={(field.options ?? []).map(o => ({ value: o, label: o }))}
+                  value={answers[field.id] ?? ""}
+                  onValueChange={v => setAnswers(prev => ({ ...prev, [field.id]: v }))}
+                />
+              ) : (
                 <FormField
                   key={field.id}
                   label={field.label}

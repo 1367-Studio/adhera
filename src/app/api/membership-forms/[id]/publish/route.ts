@@ -109,7 +109,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         },
         customFields: {
           create: form.customFields.map(f => ({
-            type: f.type, label: f.label, required: f.required, order: f.order,
+            type: f.type, label: f.label, required: f.required, order: f.order, options: f.options ?? undefined,
           })),
         },
         products: {

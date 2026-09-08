@@ -1510,6 +1510,7 @@
       "removeOption": "Eemalda see valik",
       "labelRequiredError": "Igal väljal peab olema silt.",
       "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
+      "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed.",
       "saved": "Salvestatud kohandatud väljad"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Vajalik",
           "typeText": "Tekst",
           "typeNumber": "Number",
+          "typeSelect": "Rippmenüü nimekiri",
           "labelRequiredError": "Igal väljal peab olema silt",
           "saved": "Salvestatud väljad",
-          "saveFields": "Salvesta väljad"
+          "saveFields": "Salvesta väljad",
+          "optionPlaceholder": "Valik {n}",
+          "addOption": "Lisa valik",
+          "removeOption": "Eemalda see valik",
+          "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
         },
         "payment": {
           "title": "Makse",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Vajalik",
           "typeText": "Tekst",
           "typeNumber": "Number",
+          "typeSelect": "Rippmenüü nimekiri",
           "labelRequiredError": "Igal väljal peab olema silt",
           "saved": "Salvestatud väljad",
-          "saveFields": "Salvesta väljad"
+          "saveFields": "Salvesta väljad",
+          "optionPlaceholder": "Valik {n}",
+          "addOption": "Lisa valik",
+          "removeOption": "Eemalda see valik",
+          "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
         },
         "payment": {
           "title": "Makse",

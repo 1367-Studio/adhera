@@ -10,14 +10,17 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 
-type MembershipFormFieldDraft = { id?: string; type: "TEXT" | "NUMBER"; label: string; required: boolean }
+type MembershipFieldType = "TEXT" | "NUMBER" | "SELECT"
+type MembershipFormFieldDraft = { id?: string; type: MembershipFieldType; label: string; required: boolean; options: string[] | null }
 type MembershipFormField      = MembershipFormFieldDraft & { id: string }
+
+const CHOICE_TYPES: MembershipFieldType[] = ["SELECT"]
 
 let nextTempId = 0
 
 // Mirrors the handleSave() payload — see the same helper in membership-tiers-editor.tsx.
 function fieldsSignature(rows: MembershipFormFieldDraft[]): string {
-  return JSON.stringify(rows.map(f => [f.type, f.label, f.required]))
+  return JSON.stringify(rows.map(f => [f.type, f.label, f.required, f.options ?? null]))
 }
 
 // Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
@@ -53,7 +56,11 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
 
   const [fields, setFields] = useState<(MembershipFormFieldDraft & { key: string })[]>([])
 
-  useEffect(() => { if (data) setFields(data.map(f => ({ ...f, key: f.id }))) }, [data])
+  useEffect(() => {
+    // Normalisé une seule fois ici, à la frontière avec le serveur — voir la même note dans
+    // evenement-custom-fields-editor.tsx.
+    if (data) setFields(data.map(f => ({ ...f, key: f.id, options: Array.isArray(f.options) ? f.options : null })))
+  }, [data])
 
   const isDirty = fieldsSignature(fields) !== fieldsSignature(data ?? [])
   useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
@@ -61,10 +68,32 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addField() {
-    setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false }])
+    setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false, options: null }])
   }
   function updateField(key: string, patch: Partial<MembershipFormFieldDraft>) {
     setFields(prev => prev.map(f => f.key === key ? { ...f, ...patch } : f))
+  }
+  // Switching away from SELECT drops its options (nothing reads them anymore); switching into
+  // it seeds 2 empty rows — same convention as evenement-custom-fields-editor.tsx.
+  function updateFieldType(key: string, type: MembershipFieldType) {
+    setFields(prev => prev.map(f => f.key === key ? {
+      ...f, type,
+      options: CHOICE_TYPES.includes(type) ? (f.options ?? ["", ""]) : null,
+    } : f))
+  }
+  function updateOption(key: string, i: number, value: string) {
+    setFields(prev => prev.map(f => {
+      if (f.key !== key) return f
+      const options = [...(f.options ?? [])]
+      options[i] = value
+      return { ...f, options }
+    }))
+  }
+  function addOption(key: string) {
+    setFields(prev => prev.map(f => f.key === key ? { ...f, options: [...(f.options ?? []), ""] } : f))
+  }
+  function removeOption(key: string, i: number) {
+    setFields(prev => prev.map(f => f.key === key ? { ...f, options: (f.options ?? []).filter((_, j) => j !== i) } : f))
   }
   function removeField(key: string) {
     setFields(prev => prev.filter(f => f.key !== key))
@@ -75,8 +104,23 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
       toast.error(t("labelRequiredError"))
       return false
     }
+    if (fields.some(f => CHOICE_TYPES.includes(f.type) && (f.options ?? []).filter(o => o.trim()).length < 2)) {
+      toast.error(t("optionsRequiredError"))
+      return false
+    }
+    if (fields.some(f => {
+      if (!CHOICE_TYPES.includes(f.type)) return false
+      const opts = (f.options ?? []).map(o => o.trim().toLowerCase()).filter(Boolean)
+      return new Set(opts).size !== opts.length
+    })) {
+      toast.error(t("duplicateOptionsError"))
+      return false
+    }
     try {
-      await saveMutation.mutateAsync(fields.map(f => ({ type: f.type, label: f.label, required: f.required, id: f.id })))
+      await saveMutation.mutateAsync(fields.map(f => ({
+        type: f.type, label: f.label, required: f.required, id: f.id,
+        options: CHOICE_TYPES.includes(f.type) ? (f.options ?? []).map(o => o.trim()).filter(Boolean) : null,
+      })))
       toast.success(t("saved"))
       return true
     } catch (err) {
@@ -88,6 +132,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   const typeOptions = [
     { value: "TEXT",   label: t("typeText") },
     { value: "NUMBER", label: t("typeNumber") },
+    { value: "SELECT", label: t("typeSelect") },
   ]
 
   if (isLoading) return <p className="text-sm text-muted-foreground">{tCommon("loading")}</p>
@@ -119,7 +164,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
                     label={t("fieldType")}
                     options={typeOptions}
                     value={field.type}
-                    onValueChange={v => updateField(field.key, { type: v as "TEXT" | "NUMBER" })}
+                    onValueChange={v => updateFieldType(field.key, v as MembershipFieldType)}
                   />
                 </div>
                 <div className="pb-2.5">
@@ -130,6 +175,37 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
                   />
                 </div>
               </div>
+              {CHOICE_TYPES.includes(field.type) && (
+                <div className="space-y-1.5 pl-1">
+                  {(field.options ?? []).map((opt, i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={opt}
+                        placeholder={t("optionPlaceholder", { n: i + 1 })}
+                        onChange={e => updateOption(field.key, i, e.target.value)}
+                        className="h-8 flex-1 rounded-md border border-input bg-background px-2.5 text-sm outline-none focus:ring-1 focus:ring-ring"
+                      />
+                      <button
+                        type="button"
+                        disabled={(field.options ?? []).length <= 2}
+                        onClick={() => removeOption(field.key, i)}
+                        className="text-muted-foreground hover:text-destructive disabled:opacity-30"
+                        aria-label={t("removeOption")}
+                      >
+                        <TrashIcon className="size-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addOption(field.key)}
+                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <PlusIcon className="size-3" /> {t("addOption")}
+                  </button>
+                </div>
+              )}
             </div>
             <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.key)} aria-label={t("removeField")}>
               <TrashIcon className="size-4" />

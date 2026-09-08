@@ -308,6 +308,7 @@ enum DonationFieldRequirement {
 enum DonationFieldType {
   TEXT
   NUMBER
+  SELECT
 }
 
 enum DonationTierKind {
@@ -360,6 +361,7 @@ enum MembershipFieldRequirement {
 enum MembershipFieldType {
   TEXT
   NUMBER
+  SELECT
 }
 
 enum MembershipTierKind {
@@ -1385,6 +1387,8 @@ model DonationFormField {
   label    String
   required Boolean           @default(false)
   order    Int
+  // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
+  options  Json?
 
   form DonationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 
@@ -1674,6 +1678,8 @@ model MembershipFormField {
   label    String
   required Boolean             @default(false)
   order    Int
+  // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
+  options  Json?
 
   form MembershipForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 
