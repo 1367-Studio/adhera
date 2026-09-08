@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Privé",
           "opensAtLabel": "Opening",
           "closesAtLabel": "Sluiting",
+          "siteSectionLabel": "Sitesectie",
+          "siteSectionPlaceholder": "Kies...",
+          "siteSectionCreateOption": "+ Maak een nieuwe sectie aan",
+          "siteSectionCreateError": "Fout bij het aanmaken van de sitesectie.",
+          "siteSectionRequiredError": "Kies het gedeelte van de site waar je dit formulier wilt plaatsen.",
           "datesOrderError": "De sluitingsdatum moet later zijn dan de openingsdatum."
         }
       }

@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Частен",
           "opensAtLabel": "Откриване",
           "closesAtLabel": "Закриване",
+          "siteSectionLabel": "Секция за обекта",
+          "siteSectionPlaceholder": "Избери...",
+          "siteSectionCreateOption": "+ Създай нов раздел",
+          "siteSectionCreateError": "Грешка при създаването на секцията за сайта.",
+          "siteSectionRequiredError": "Изберете секцията на сайта, в която да публикувате тази форма.",
           "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване."
         }
       }

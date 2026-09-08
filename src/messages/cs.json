@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Soukromý",
           "opensAtLabel": "Otevření",
           "closesAtLabel": "Uzavření",
+          "siteSectionLabel": "Sekce lokality",
+          "siteSectionPlaceholder": "Vyber si...",
+          "siteSectionCreateOption": "+ Vytvořit novou sekci",
+          "siteSectionCreateError": "Chyba při vytváření sekce webu.",
+          "siteSectionRequiredError": "Vyberte sekci stránky, kam tento formulář zveřejníte.",
           "datesOrderError": "Termín uzavření musí být pozdější než datum otevření."
         }
       }

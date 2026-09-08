@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Privat",
           "opensAtLabel": "Åbning",
           "closesAtLabel": "Lukning",
+          "siteSectionLabel": "Stedssektion",
+          "siteSectionPlaceholder": "Vælg...",
+          "siteSectionCreateOption": "+ Opret en ny sektion",
+          "siteSectionCreateError": "Fejl ved oprettelse af siden-sektionen.",
+          "siteSectionRequiredError": "Vælg den sektion på siden, hvor du vil indsende denne formular.",
           "datesOrderError": "Afslutningsdatoen skal være senere end åbningsdatoen."
         }
       }

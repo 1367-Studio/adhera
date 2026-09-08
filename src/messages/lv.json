@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Privāts",
           "opensAtLabel": "Atklāšana",
           "closesAtLabel": "Slēgšana",
+          "siteSectionLabel": "Vietas sadaļa",
+          "siteSectionPlaceholder": "Izvēlies...",
+          "siteSectionCreateOption": "+ Izveidot jaunu sadaļu",
+          "siteSectionCreateError": "Kļūda, izveidojot vietnes sadaļu.",
+          "siteSectionRequiredError": "Izvēlieties vietnes sadaļu, kurā ievietot šo formu.",
           "datesOrderError": "Slēgšanas datumam jābūt vēlākam par atvēršanas datumu."
         }
       }

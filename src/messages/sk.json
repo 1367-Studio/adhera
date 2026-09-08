@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Súkromný",
           "opensAtLabel": "Otvorenie",
           "closesAtLabel": "Zatvorenie",
+          "siteSectionLabel": "Sekcia lokality",
+          "siteSectionPlaceholder": "Vyber si...",
+          "siteSectionCreateOption": "+ Vytvoriť novú sekciu",
+          "siteSectionCreateError": "Chyba pri vytváraní sekcie stránky.",
+          "siteSectionRequiredError": "Vyberte sekciu stránky, kam tento formulár zverejníte.",
           "datesOrderError": "Dátum uzávierky musí byť neskôr, než je dátum otvorenia."
         }
       }

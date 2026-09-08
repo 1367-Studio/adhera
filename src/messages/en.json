@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Private",
           "opensAtLabel": "Opens",
           "closesAtLabel": "Closes",
+          "siteSectionLabel": "Site section",
+          "siteSectionPlaceholder": "Choose…",
+          "siteSectionCreateOption": "+ Create new section",
+          "siteSectionCreateError": "Error creating the site section.",
+          "siteSectionRequiredError": "Choose which site section this form should be published on.",
           "datesOrderError": "The closing date must be after the opening date."
         }
       }

@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Soldat",
           "opensAtLabel": "Deschidere",
           "closesAtLabel": "Închidere",
+          "siteSectionLabel": "Secțiunea de amplasament",
+          "siteSectionPlaceholder": "Alege...",
+          "siteSectionCreateOption": "+ Creează o secțiune nouă",
+          "siteSectionCreateError": "Eroare la crearea secțiunii site-ului.",
+          "siteSectionRequiredError": "Alege secțiunea site-ului unde să postezi acest formular.",
           "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
         }
       }

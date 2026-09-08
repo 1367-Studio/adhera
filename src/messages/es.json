@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Privado",
           "opensAtLabel": "Apertura",
           "closesAtLabel": "Cierre",
+          "siteSectionLabel": "Sección del sitio",
+          "siteSectionPlaceholder": "Elegir…",
+          "siteSectionCreateOption": "+ Crear nueva sección",
+          "siteSectionCreateError": "Error al crear la sección del sitio.",
+          "siteSectionRequiredError": "Elige en qué sección del sitio se publicará este formulario.",
           "datesOrderError": "La fecha de cierre debe ser posterior a la fecha de apertura."
         }
       }

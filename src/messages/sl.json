@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Vojak",
           "opensAtLabel": "Otvoritev",
           "closesAtLabel": "Zaprtje",
+          "siteSectionLabel": "Odsek lokacije",
+          "siteSectionPlaceholder": "Izberi...",
+          "siteSectionCreateOption": "+ Ustvari nov razdelek",
+          "siteSectionCreateError": "Napaka pri ustvarjanju spletnega odseka.",
+          "siteSectionRequiredError": "Izberite razdelek strani, kamor boste objavili ta obrazec.",
           "datesOrderError": "Datum zaključka mora biti kasnejši od datuma odprtja."
         }
       }

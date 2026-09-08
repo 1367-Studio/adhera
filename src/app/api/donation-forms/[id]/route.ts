@@ -31,9 +31,10 @@ const updateSchema = z.object({
   offlineInstructions: z.string().max(5000).optional().nullable(),
   confirmationMessage: z.string().max(2000).optional().nullable(),
 
-  visibility: z.enum(["LINK", "SITE", "PRIVATE"]).optional(),
-  opensAt:    z.string().datetime().optional().nullable(),
-  closesAt:   z.string().datetime().optional().nullable(),
+  visibility:    z.enum(["LINK", "SITE", "PRIVATE"]).optional(),
+  siteSectionId: z.string().optional().nullable(),
+  opensAt:       z.string().datetime().optional().nullable(),
+  closesAt:      z.string().datetime().optional().nullable(),
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -59,7 +60,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const form = await prisma.donationForm.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, title: true, opensAt: true, closesAt: true },
+    select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -77,6 +78,24 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const finalClosesAt = data.closesAt !== undefined ? (data.closesAt ? new Date(data.closesAt) : null) : form.closesAt
   if (finalOpensAt && finalClosesAt && finalOpensAt >= finalClosesAt)
     return NextResponse.json({ error: "La date de clôture doit être postérieure à la date d'ouverture." }, { status: 422 })
+
+  const finalVisibility    = data.visibility    !== undefined ? data.visibility    : form.visibility
+  const finalSiteSectionId = data.siteSectionId !== undefined ? data.siteSectionId : form.siteSectionId
+  if (finalVisibility === "SITE" && !finalSiteSectionId)
+    return NextResponse.json({ error: "Choisissez une section du site sur laquelle publier ce formulaire." }, { status: 422 })
+
+  // Two PUBLISHED forms can't both occupy the same site section — mirrors
+  // MembershipForm.siteSectionId's own conflict check: an admin publishing a second form
+  // onto an already-taken "dons" section would otherwise silently orphan whichever one the
+  // site data loader doesn't pick.
+  if (form.status === "PUBLISHED" && finalVisibility === "SITE" && finalSiteSectionId) {
+    const conflict = await prisma.donationForm.findFirst({
+      where:  { associationId: ctx.associationId, id: { not: id }, status: "PUBLISHED", visibility: "SITE", siteSectionId: finalSiteSectionId },
+      select: { title: true },
+    })
+    if (conflict)
+      return NextResponse.json({ error: `Cette section est déjà utilisée par le formulaire publié « ${conflict.title} ». Choisissez une autre section ou dépubliez l'autre formulaire.` }, { status: 409 })
+  }
 
   const updated = await prisma.donationForm.update({
     where: { id },
@@ -101,6 +120,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(data.offlineInstructions  !== undefined ? { offlineInstructions: data.offlineInstructions }      : {}),
       ...(data.confirmationMessage  !== undefined ? { confirmationMessage: data.confirmationMessage }      : {}),
       ...(data.visibility           !== undefined ? { visibility: data.visibility }                        : {}),
+      ...(data.siteSectionId        !== undefined ? { siteSectionId: data.siteSectionId }                  : {}),
       ...(data.opensAt              !== undefined ? { opensAt: data.opensAt ? new Date(data.opensAt) : null }   : {}),
       ...(data.closesAt             !== undefined ? { closesAt: data.closesAt ? new Date(data.closesAt) : null } : {}),
     },

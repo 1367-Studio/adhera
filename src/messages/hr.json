@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Vojnik",
           "opensAtLabel": "Otvaranje",
           "closesAtLabel": "Zatvaranje",
+          "siteSectionLabel": "Sekcija lokacije",
+          "siteSectionPlaceholder": "Izaberi...",
+          "siteSectionCreateOption": "+ Kreiraj novi odjeljak",
+          "siteSectionCreateError": "Greška pri kreiranju odjeljka stranice.",
+          "siteSectionRequiredError": "Odaberite odjeljak stranice na kojem ćete objaviti ovaj obrazac.",
           "datesOrderError": "Datum zatvaranja mora biti kasniji od datuma otvaranja."
         }
       }

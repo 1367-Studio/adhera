@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Ιδιωτικό",
           "opensAtLabel": "Εγκαίνια",
           "closesAtLabel": "Κλείσιμο",
+          "siteSectionLabel": "Ενότητα τοποθεσίας",
+          "siteSectionPlaceholder": "Επιλέξτε...",
+          "siteSectionCreateOption": "+ Δημιουργήστε μια νέα ενότητα",
+          "siteSectionCreateError": "Σφάλμα κατά τη δημιουργία της ενότητας τοποθεσίας.",
+          "siteSectionRequiredError": "Επιλέξτε την ενότητα του ιστότοπου στην οποία θα δημοσιεύσετε αυτήν τη φόρμα.",
           "datesOrderError": "Η καταληκτική ημερομηνία πρέπει να είναι μεταγενέστερη της καταληκτικής ημερομηνίας."
         }
       }

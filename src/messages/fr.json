@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Privé",
           "opensAtLabel": "Ouverture",
           "closesAtLabel": "Fermeture",
+          "siteSectionLabel": "Section du site",
+          "siteSectionPlaceholder": "Choisir…",
+          "siteSectionCreateOption": "+ Créer une nouvelle section",
+          "siteSectionCreateError": "Erreur lors de la création de la section du site.",
+          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire.",
           "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
         }
       }

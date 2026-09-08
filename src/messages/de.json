@@ -2748,6 +2748,11 @@
           "visibilityPrivate": "Gefreiter",
           "opensAtLabel": "Eröffnung",
           "closesAtLabel": "Schließung",
+          "siteSectionLabel": "Standortabschnitt",
+          "siteSectionPlaceholder": "Wähle...",
+          "siteSectionCreateOption": "+ Erstelle einen neuen Abschnitt",
+          "siteSectionCreateError": "Fehler beim Erstellen des Seitenabschnitts.",
+          "siteSectionRequiredError": "Wählen Sie den Bereich der Seite aus, in dem Sie dieses Formular posten möchten.",
           "datesOrderError": "Das Abschlussdatum muss später als das Eröffnungsdatum liegen."
         }
       }
