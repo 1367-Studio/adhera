@@ -80,6 +80,14 @@ const evenementCustomFieldSchema = z.object({
   // formulaire public ne peut plus jamais répondre (rien à afficher/cocher).
   (d) => !CHOICE_FIELD_TYPES.includes(d.type) || (d.options?.length ?? 0) >= 2,
   { message: "Un champ à choix doit avoir au moins 2 options", path: ["options"] },
+).refine(
+  // Deux options identiques (à la casse/aux espaces près) rendraient l'une des deux
+  // impossible à distinguer une fois sélectionnée/cochée dans le formulaire public.
+  (d) => {
+    const opts = (d.options ?? []).map(o => o.trim().toLowerCase())
+    return new Set(opts).size === opts.length
+  },
+  { message: "Les options d'un champ à choix doivent être uniques", path: ["options"] },
 )
 
 // PUT remplace toujours la liste entière — plus simple qu'un diff add/remove/reorder,

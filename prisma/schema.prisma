@@ -308,6 +308,7 @@ enum DonationFieldRequirement {
 enum DonationFieldType {
   TEXT
   NUMBER
+  SELECT
 }
 
 enum DonationTierKind {
@@ -360,6 +361,7 @@ enum MembershipFieldRequirement {
 enum MembershipFieldType {
   TEXT
   NUMBER
+  SELECT
 }
 
 enum MembershipTierKind {
@@ -1330,8 +1332,16 @@ model DonationForm {
 
   // Étape 5 — Publication
   visibility DonationVisibility @default(LINK)
-  opensAt    DateTime?
-  closesAt   DateTime?
+  // Id of the "dons"-type SiteSection (Association.siteConfig JSON, see
+  // src/types/site-config.ts) this form is bound to when visibility = SITE — mirrors
+  // MembershipForm.siteSectionId: an explicit form→section pick instead of an implicit
+  // "most recently touched SITE form wins" heuristic. Required by the API whenever
+  // visibility is set to SITE; null for LINK/PRIVATE. Unlike MembershipForm, a "dons"
+  // section with nothing bound still works — it falls back to the legacy standalone
+  // /portal/[slug]/don page (see SiteDonsSection) instead of rendering nothing.
+  siteSectionId String?
+  opensAt       DateTime?
+  closesAt      DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1385,6 +1395,8 @@ model DonationFormField {
   label    String
   required Boolean           @default(false)
   order    Int
+  // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
+  options  Json?
 
   form DonationForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 
@@ -1674,6 +1686,8 @@ model MembershipFormField {
   label    String
   required Boolean             @default(false)
   order    Int
+  // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
+  options  Json?
 
   form MembershipForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 

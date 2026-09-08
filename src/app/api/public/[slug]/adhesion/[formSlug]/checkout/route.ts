@@ -313,6 +313,13 @@ export async function POST(
     const value = parsed.data.answers[field.id]
     if (field.required && (value == null || value.trim() === ""))
       return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
+    // Même contrôle que le formulaire d'inscription des événements — évite qu'une réponse
+    // fabriquée à la main atterrisse hors de la liste de choix configurée.
+    if (field.type === "SELECT" && value != null && value !== "") {
+      const options = Array.isArray(field.options) ? field.options as string[] : []
+      if (!options.includes(value))
+        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
+    }
   }
 
   // birthDate/sexe ont leurs propres colonnes sur Membre (voir plus bas) — seul "mobile"
@@ -939,6 +946,11 @@ async function handleMultiRegistrantCheckout(
       const value = r.answers[field.id]
       if (field.required && (value == null || value.trim() === ""))
         return NextResponse.json({ error: `Le champ « ${field.label} » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
+      if (field.type === "SELECT" && value != null && value !== "") {
+        const options = Array.isArray(field.options) ? field.options as string[] : []
+        if (!options.includes(value))
+          return NextResponse.json({ error: `Le champ « ${field.label} » est invalide pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
+      }
     }
 
     // birthDate/sexe ont leurs propres colonnes sur Membre — seul "mobile" (pas de colonne

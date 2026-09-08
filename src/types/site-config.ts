@@ -38,10 +38,12 @@ export type MembershipSection = {
   body:  string
 }
 
-// Renvoie vers /portal/[slug]/don, la page de don publique (accessible sans compte —
-// voir src/proxy.ts). Volontairement un simple appel à l'action et non un formulaire :
-// le don passe par Stripe Checkout, et dupliquer le formulaire ici dupliquerait aussi
-// la validation SIRET, le choix particulier/entreprise et la gestion du reçu fiscal.
+// Renvoie vers le DonationForm explicitement lié à cette section (DonationForm.siteSectionId,
+// choisi dans l'étape Publication du formulaire — voir dashboard/dons/[id]/page.tsx), ou vers
+// /portal/[slug]/don, l'ancienne page de don standalone (accessible sans compte — voir
+// src/proxy.ts) quand aucun formulaire n'est lié. Volontairement un simple appel à l'action et
+// non un formulaire inline ici : le rendu réel (paliers, visuel, reçu fiscal) vit dans la page
+// du DonationForm ou dans l'ancienne page standalone, jamais dupliqué dans ce composant.
 export type DonsSection = {
   id:          string
   type:        "dons"

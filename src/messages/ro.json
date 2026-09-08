@@ -116,6 +116,7 @@
         "perkEasyCancel": "Anulare ușoară",
         "genericError": "Eroare",
         "startTrial": "Începe perioada mea de probă gratuită",
+        "createAccount": "Creează cont",
         "perkNoCard": "Nu este nevoie de card de credit",
         "createAccountError": "Crearea contului de eroare"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Elimină această opțiune",
       "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă.",
       "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+      "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice.",
       "saved": "Câmpuri personalizate salvate"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obligatoriu",
           "typeText": "Text",
           "typeNumber": "Număr",
+          "typeSelect": "Listă derulantă",
           "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă",
           "saved": "Câmpuri salvate",
-          "saveFields": "Salvează câmpurile"
+          "saveFields": "Salvează câmpurile",
+          "optionPlaceholder": "Opțiune {n}",
+          "addOption": "Adaugă o opțiune",
+          "removeOption": "Elimină această opțiune",
+          "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
         },
         "payment": {
           "title": "Plata",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Soldat",
           "opensAtLabel": "Deschidere",
           "closesAtLabel": "Închidere",
+          "siteSectionLabel": "Secțiunea de amplasament",
+          "siteSectionPlaceholder": "Alege...",
+          "siteSectionCreateOption": "+ Creează o secțiune nouă",
+          "siteSectionCreateError": "Eroare la crearea secțiunii site-ului.",
+          "siteSectionRequiredError": "Alege secțiunea site-ului unde să postezi acest formular.",
           "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obligatoriu",
           "typeText": "Text",
           "typeNumber": "Număr",
+          "typeSelect": "Listă derulantă",
           "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă",
           "saved": "Câmpuri salvate",
-          "saveFields": "Salvează câmpurile"
+          "saveFields": "Salvează câmpurile",
+          "optionPlaceholder": "Opțiune {n}",
+          "addOption": "Adaugă o opțiune",
+          "removeOption": "Elimină această opțiune",
+          "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
         },
         "payment": {
           "title": "Plata",

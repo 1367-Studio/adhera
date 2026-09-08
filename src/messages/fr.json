@@ -116,6 +116,7 @@
         "perkEasyCancel": "Annulation facile",
         "genericError": "Erreur",
         "startTrial": "Démarrer mon essai gratuit",
+        "createAccount": "Créer le compte",
         "perkNoCard": "Sans carte bancaire",
         "createAccountError": "Erreur lors de la création du compte"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Supprimer cette option",
       "labelRequiredError": "Chaque champ doit avoir un intitulé.",
       "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+      "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques.",
       "saved": "Champs personnalisés enregistrés"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obligatoire",
           "typeText": "Texte",
           "typeNumber": "Nombre",
+          "typeSelect": "Liste déroulante",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
-          "saveFields": "Enregistrer les champs"
+          "saveFields": "Enregistrer les champs",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Ajouter une option",
+          "removeOption": "Supprimer cette option",
+          "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+          "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques."
         },
         "payment": {
           "title": "Paiement",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privé",
           "opensAtLabel": "Ouverture",
           "closesAtLabel": "Fermeture",
+          "siteSectionLabel": "Section du site",
+          "siteSectionPlaceholder": "Choisir…",
+          "siteSectionCreateOption": "+ Créer une nouvelle section",
+          "siteSectionCreateError": "Erreur lors de la création de la section du site.",
+          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire.",
           "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obligatoire",
           "typeText": "Texte",
           "typeNumber": "Nombre",
+          "typeSelect": "Liste déroulante",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
-          "saveFields": "Enregistrer les champs"
+          "saveFields": "Enregistrer les champs",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Ajouter une option",
+          "removeOption": "Supprimer cette option",
+          "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+          "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques."
         },
         "payment": {
           "title": "Paiement",

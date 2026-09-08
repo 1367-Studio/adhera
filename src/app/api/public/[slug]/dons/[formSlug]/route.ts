@@ -106,6 +106,6 @@ export async function GET(
         : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
       ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
-    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
+    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required, options: f.options })),
   })
 }

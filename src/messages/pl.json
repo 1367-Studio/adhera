@@ -116,6 +116,7 @@
         "perkEasyCancel": "Łatwe anulowanie",
         "genericError": "Błąd",
         "startTrial": "Rozpocznij mój darmowy okres próbny",
+        "createAccount": "Utwórz konto",
         "perkNoCard": "Nie potrzeba karty kredytowej",
         "createAccountError": "Błąd w tworzeniu konta"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Usuń tę opcję",
       "labelRequiredError": "Każde pole musi mieć etykietę.",
       "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+      "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne.",
       "saved": "Zapisane pola niestandardowe"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Wymagane",
           "typeText": "Tekst",
           "typeNumber": "Liczba",
+          "typeSelect": "Lista rozwijana",
           "labelRequiredError": "Każde pole musi mieć etykietę",
           "saved": "Zachowane pola",
-          "saveFields": "Zapisz pola"
+          "saveFields": "Zapisz pola",
+          "optionPlaceholder": "Opcja {n}",
+          "addOption": "Dodaj opcję",
+          "removeOption": "Usuń tę opcję",
+          "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
         },
         "payment": {
           "title": "Płatność",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Prywatny",
           "opensAtLabel": "Otwarcie",
           "closesAtLabel": "Zamknięcie",
+          "siteSectionLabel": "Sekcja Site",
+          "siteSectionPlaceholder": "Wybierz...",
+          "siteSectionCreateOption": "+ Stwórz nową sekcję",
+          "siteSectionCreateError": "Błąd przy tworzeniu sekcji strony.",
+          "siteSectionRequiredError": "Wybierz sekcję strony, do której chcesz opublikować ten formularz.",
           "datesOrderError": "Data zamknięcia musi być późniejsza niż data otwarcia."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Wymagane",
           "typeText": "Tekst",
           "typeNumber": "Liczba",
+          "typeSelect": "Lista rozwijana",
           "labelRequiredError": "Każde pole musi mieć etykietę",
           "saved": "Zachowane pola",
-          "saveFields": "Zapisz pola"
+          "saveFields": "Zapisz pola",
+          "optionPlaceholder": "Opcja {n}",
+          "addOption": "Dodaj opcję",
+          "removeOption": "Usuń tę opcję",
+          "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
         },
         "payment": {
           "title": "Płatność",

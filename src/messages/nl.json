@@ -116,6 +116,7 @@
         "perkEasyCancel": "Makkelijke annulering",
         "genericError": "Fout",
         "startTrial": "Start mijn gratis proefperiode",
+        "createAccount": "Account aanmaken",
         "perkNoCard": "Geen creditcard nodig",
         "createAccountError": "Fout account aanmaken"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Verwijder deze optie",
       "labelRequiredError": "Elk veld moet een label hebben.",
       "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+      "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
       "saved": "Opgeslagen aangepaste velden"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Verplicht",
           "typeText": "Tekst",
           "typeNumber": "Aantal",
+          "typeSelect": "Keuzelijst",
           "labelRequiredError": "Elk veld moet een label hebben",
           "saved": "Opgeslagen velden",
-          "saveFields": "Velden opslaan"
+          "saveFields": "Velden opslaan",
+          "optionPlaceholder": "Optie {n}",
+          "addOption": "Voeg een optie toe",
+          "removeOption": "Verwijder deze optie",
+          "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privé",
           "opensAtLabel": "Opening",
           "closesAtLabel": "Sluiting",
+          "siteSectionLabel": "Sitesectie",
+          "siteSectionPlaceholder": "Kies...",
+          "siteSectionCreateOption": "+ Maak een nieuwe sectie aan",
+          "siteSectionCreateError": "Fout bij het aanmaken van de sitesectie.",
+          "siteSectionRequiredError": "Kies het gedeelte van de site waar je dit formulier wilt plaatsen.",
           "datesOrderError": "De sluitingsdatum moet later zijn dan de openingsdatum."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Verplicht",
           "typeText": "Tekst",
           "typeNumber": "Aantal",
+          "typeSelect": "Keuzelijst",
           "labelRequiredError": "Elk veld moet een label hebben",
           "saved": "Opgeslagen velden",
-          "saveFields": "Velden opslaan"
+          "saveFields": "Velden opslaan",
+          "optionPlaceholder": "Optie {n}",
+          "addOption": "Voeg een optie toe",
+          "removeOption": "Verwijder deze optie",
+          "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",

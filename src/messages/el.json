@@ -116,6 +116,7 @@
         "perkEasyCancel": "Εύκολη ακύρωση",
         "genericError": "Λάθος",
         "startTrial": "Ξεκινήστε τη δωρεάν δοκιμή μου",
+        "createAccount": "Δημιουργία λογαριασμού",
         "perkNoCard": "Δεν απαιτείται πιστωτική κάρτα",
         "createAccountError": "Σφάλμα κατά τη δημιουργία λογαριασμού"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Κατάργηση αυτής της επιλογής",
       "labelRequiredError": "Κάθε πεδίο πρέπει να έχει μια ετικέτα.",
       "optionsRequiredError": "Κάθε πεδίο λίστας/επιλογής χρειάζεται τουλάχιστον 2 επιλογές.",
+      "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές.",
       "saved": "Αποθηκευμένα προσαρμοσμένα πεδία"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Απαιτείται",
           "typeText": "Κείμενο",
           "typeNumber": "Αριθμός",
+          "typeSelect": "Αναπτυσσόμενη λίστα",
           "labelRequiredError": "Κάθε πεδίο πρέπει να έχει ετικέτα",
           "saved": "Αποθηκευμένα πεδία",
-          "saveFields": "Αποθήκευση πεδίων"
+          "saveFields": "Αποθήκευση πεδίων",
+          "optionPlaceholder": "Επιλογή {n}",
+          "addOption": "Προσθήκη επιλογής",
+          "removeOption": "Κατάργηση αυτής της επιλογής",
+          "optionsRequiredError": "Κάθε πεδίο λίστας/επιλογής χρειάζεται τουλάχιστον 2 επιλογές.",
+          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές."
         },
         "payment": {
           "title": "Πληρωμή",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Ιδιωτικό",
           "opensAtLabel": "Εγκαίνια",
           "closesAtLabel": "Κλείσιμο",
+          "siteSectionLabel": "Ενότητα τοποθεσίας",
+          "siteSectionPlaceholder": "Επιλέξτε...",
+          "siteSectionCreateOption": "+ Δημιουργήστε μια νέα ενότητα",
+          "siteSectionCreateError": "Σφάλμα κατά τη δημιουργία της ενότητας τοποθεσίας.",
+          "siteSectionRequiredError": "Επιλέξτε την ενότητα του ιστότοπου στην οποία θα δημοσιεύσετε αυτήν τη φόρμα.",
           "datesOrderError": "Η καταληκτική ημερομηνία πρέπει να είναι μεταγενέστερη της καταληκτικής ημερομηνίας."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Απαιτείται",
           "typeText": "Κείμενο",
           "typeNumber": "Αριθμός",
+          "typeSelect": "Αναπτυσσόμενη λίστα",
           "labelRequiredError": "Κάθε πεδίο πρέπει να έχει ετικέτα",
           "saved": "Αποθηκευμένα πεδία",
-          "saveFields": "Αποθήκευση πεδίων"
+          "saveFields": "Αποθήκευση πεδίων",
+          "optionPlaceholder": "Επιλογή {n}",
+          "addOption": "Προσθήκη επιλογής",
+          "removeOption": "Κατάργηση αυτής της επιλογής",
+          "optionsRequiredError": "Κάθε πεδίο λίστας/επιλογής χρειάζεται τουλάχιστον 2 επιλογές.",
+          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές."
         },
         "payment": {
           "title": "Πληρωμή",

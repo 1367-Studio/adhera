@@ -116,6 +116,7 @@
         "perkEasyCancel": "Könnyű törlés",
         "genericError": "Hiba",
         "startTrial": "Indítsd el az ingyenes próbaidőszakomat",
+        "createAccount": "Fiók létrehozása",
         "perkNoCard": "Nincs szükség hitelkártyára",
         "createAccountError": "Hiba fiók létrehozása"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Távolítsd el ezt az opciót",
       "labelRequiredError": "Minden mezőnek kell lennie egy címkével.",
       "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+      "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük.",
       "saved": "Mentett egyedi mezők"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Kötelező",
           "typeText": "Szöveg",
           "typeNumber": "Szám",
+          "typeSelect": "Legördülő lista",
           "labelRequiredError": "Minden mezőnek kell lennie egy címkével",
           "saved": "Mentett mezők",
-          "saveFields": "Mezők mentése"
+          "saveFields": "Mezők mentése",
+          "optionPlaceholder": "Opció {n}",
+          "addOption": "Opció hozzáadása",
+          "removeOption": "Távolítsd el ezt az opciót",
+          "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
         },
         "payment": {
           "title": "Fizetés",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Magán",
           "opensAtLabel": "Megnyitó",
           "closesAtLabel": "Lezárás",
+          "siteSectionLabel": "Helyszín szekció",
+          "siteSectionPlaceholder": "Válassz...",
+          "siteSectionCreateOption": "+ Hozzon létre egy új szakaszt",
+          "siteSectionCreateError": "Hiba a weboldal szekció létrehozása.",
+          "siteSectionRequiredError": "Válaszd ki az oldal azon részét, ahol ezt az űrlapot közzéteszed.",
           "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Kötelező",
           "typeText": "Szöveg",
           "typeNumber": "Szám",
+          "typeSelect": "Legördülő lista",
           "labelRequiredError": "Minden mezőnek kell lennie egy címkével",
           "saved": "Mentett mezők",
-          "saveFields": "Mezők mentése"
+          "saveFields": "Mezők mentése",
+          "optionPlaceholder": "Opció {n}",
+          "addOption": "Opció hozzáadása",
+          "removeOption": "Távolítsd el ezt az opciót",
+          "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
         },
         "payment": {
           "title": "Fizetés",

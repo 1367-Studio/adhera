@@ -102,6 +102,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const value = parsed.data.answers[field.id]
     if (field.required && (value == null || value.trim() === ""))
       return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
+    if (field.type === "SELECT" && value != null && value !== "") {
+      const options = Array.isArray(field.options) ? field.options as string[] : []
+      if (!options.includes(value))
+        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
+    }
   }
   // Même convention que le checkout public : seul "mobile" (pas de colonne dédiée) et les
   // réponses aux champs du formulaire vont dans Membre.answers.

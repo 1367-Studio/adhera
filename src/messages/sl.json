@@ -116,6 +116,7 @@
         "perkEasyCancel": "Enostavna odpoved",
         "genericError": "Napaka",
         "startTrial": "Začni mojo brezplačno preizkusno obdobje",
+        "createAccount": "Ustvari račun",
         "perkNoCard": "Kreditna kartica ni potrebna",
         "createAccountError": "Račun za ustvarjanje napake"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Odstranite to možnost",
       "labelRequiredError": "Vsako polje mora imeti oznako.",
       "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+      "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene.",
       "saved": "Shranjena prilagojena polja"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obvezno",
           "typeText": "Besedilo",
           "typeNumber": "Število",
+          "typeSelect": "Spustni seznam",
           "labelRequiredError": "Vsako polje mora imeti oznako",
           "saved": "Shranjena polja",
-          "saveFields": "Shrani polja"
+          "saveFields": "Shrani polja",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Dodaj možnost",
+          "removeOption": "Odstranite to možnost",
+          "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Vojak",
           "opensAtLabel": "Otvoritev",
           "closesAtLabel": "Zaprtje",
+          "siteSectionLabel": "Odsek lokacije",
+          "siteSectionPlaceholder": "Izberi...",
+          "siteSectionCreateOption": "+ Ustvari nov razdelek",
+          "siteSectionCreateError": "Napaka pri ustvarjanju spletnega odseka.",
+          "siteSectionRequiredError": "Izberite razdelek strani, kamor boste objavili ta obrazec.",
           "datesOrderError": "Datum zaključka mora biti kasnejši od datuma odprtja."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obvezno",
           "typeText": "Besedilo",
           "typeNumber": "Število",
+          "typeSelect": "Spustni seznam",
           "labelRequiredError": "Vsako polje mora imeti oznako",
           "saved": "Shranjena polja",
-          "saveFields": "Shrani polja"
+          "saveFields": "Shrani polja",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Dodaj možnost",
+          "removeOption": "Odstranite to možnost",
+          "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",

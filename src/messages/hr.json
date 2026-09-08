@@ -116,6 +116,7 @@
         "perkEasyCancel": "Lako otkazivanje",
         "genericError": "Pogreška",
         "startTrial": "Pokreni moj besplatni probni period",
+        "createAccount": "Stvori račun",
         "perkNoCard": "Nije potrebna kreditna kartica",
         "createAccountError": "Pogreška u kreiranju računa"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Uklonite ovu opciju",
       "labelRequiredError": "Svako polje mora imati oznaku.",
       "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+      "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene.",
       "saved": "Spremljena prilagođena polja"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obavezno",
           "typeText": "Tekst",
           "typeNumber": "Broj",
+          "typeSelect": "Padajući izbornik",
           "labelRequiredError": "Svako polje mora imati oznaku",
           "saved": "Sačuvana polja",
-          "saveFields": "Spremi polja"
+          "saveFields": "Spremi polja",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Dodaj opciju",
+          "removeOption": "Uklonite ovu opciju",
+          "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
         },
         "payment": {
           "title": "Plaćanje",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Vojnik",
           "opensAtLabel": "Otvaranje",
           "closesAtLabel": "Zatvaranje",
+          "siteSectionLabel": "Sekcija lokacije",
+          "siteSectionPlaceholder": "Izaberi...",
+          "siteSectionCreateOption": "+ Kreiraj novi odjeljak",
+          "siteSectionCreateError": "Greška pri kreiranju odjeljka stranice.",
+          "siteSectionRequiredError": "Odaberite odjeljak stranice na kojem ćete objaviti ovaj obrazac.",
           "datesOrderError": "Datum zatvaranja mora biti kasniji od datuma otvaranja."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obavezno",
           "typeText": "Tekst",
           "typeNumber": "Broj",
+          "typeSelect": "Padajući izbornik",
           "labelRequiredError": "Svako polje mora imati oznaku",
           "saved": "Sačuvana polja",
-          "saveFields": "Spremi polja"
+          "saveFields": "Spremi polja",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Dodaj opciju",
+          "removeOption": "Uklonite ovu opciju",
+          "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
         },
         "payment": {
           "title": "Plaćanje",

@@ -116,6 +116,7 @@
         "perkEasyCancel": "Лесно анулиране",
         "genericError": "Грешка",
         "startTrial": "Започни безплатния си пробен период",
+        "createAccount": "Създаване на акаунт",
         "perkNoCard": "Не се изисква кредитна карта",
         "createAccountError": "Създаване на грешка при създаване на акаунт"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Премахнете тази опция",
       "labelRequiredError": "Всяко поле трябва да има етикет.",
       "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+      "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални.",
       "saved": "Запазени персонализирани полета"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Задължително",
           "typeText": "Текст",
           "typeNumber": "Брой",
+          "typeSelect": "Падащ списък",
           "labelRequiredError": "Всяко поле трябва да има етикет",
           "saved": "Спасени полета",
-          "saveFields": "Запази полетата"
+          "saveFields": "Запази полетата",
+          "optionPlaceholder": "Опция {n}",
+          "addOption": "Добави опция",
+          "removeOption": "Премахнете тази опция",
+          "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
         },
         "payment": {
           "title": "Плащане",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Частен",
           "opensAtLabel": "Откриване",
           "closesAtLabel": "Закриване",
+          "siteSectionLabel": "Секция за обекта",
+          "siteSectionPlaceholder": "Избери...",
+          "siteSectionCreateOption": "+ Създай нов раздел",
+          "siteSectionCreateError": "Грешка при създаването на секцията за сайта.",
+          "siteSectionRequiredError": "Изберете секцията на сайта, в която да публикувате тази форма.",
           "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Задължително",
           "typeText": "Текст",
           "typeNumber": "Брой",
+          "typeSelect": "Падащ списък",
           "labelRequiredError": "Всяко поле трябва да има етикет",
           "saved": "Спасени полета",
-          "saveFields": "Запази полетата"
+          "saveFields": "Запази полетата",
+          "optionPlaceholder": "Опция {n}",
+          "addOption": "Добави опция",
+          "removeOption": "Премахнете тази опция",
+          "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
         },
         "payment": {
           "title": "Плащане",

@@ -116,6 +116,7 @@
         "perkEasyCancel": "Helppo peruutus",
         "genericError": "Virhe",
         "startTrial": "Aloita ilmainen kokeilujaksoni",
+        "createAccount": "Luo tili",
         "perkNoCard": "Luottokorttia ei tarvita",
         "createAccountError": "Virhe tilin luomisessa"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Poista tämä vaihtoehto",
       "labelRequiredError": "Jokaisella kentällä täytyy olla nimitys.",
       "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+      "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
       "saved": "Tallennetut mukautetut kentät"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Vaaditaan",
           "typeText": "Tekstiviesti",
           "typeNumber": "Numero",
+          "typeSelect": "Pudotusvalikko",
           "labelRequiredError": "Jokaisella kentällä täytyy olla tunniste",
           "saved": "Tallennetut kentät",
-          "saveFields": "Tallenna kentät"
+          "saveFields": "Tallenna kentät",
+          "optionPlaceholder": "Vaihtoehto {n}",
+          "addOption": "Lisää vaihtoehto",
+          "removeOption": "Poista tämä vaihtoehto",
+          "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Yksityinen",
           "opensAtLabel": "Avaaminen",
           "closesAtLabel": "Lopettaminen",
+          "siteSectionLabel": "Kohdeosasto",
+          "siteSectionPlaceholder": "Valitse...",
+          "siteSectionCreateOption": "+ Luo uusi osio",
+          "siteSectionCreateError": "Virhe sivustoosion luomisessa.",
+          "siteSectionRequiredError": "Valitse sivuston osio, johon voit laittaa tämän lomakkeen.",
           "datesOrderError": "Sulkemispäivän on oltava myöhempi kuin avajaispäivä."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Vaaditaan",
           "typeText": "Tekstiviesti",
           "typeNumber": "Numero",
+          "typeSelect": "Pudotusvalikko",
           "labelRequiredError": "Jokaisella kentällä täytyy olla tunniste",
           "saved": "Tallennetut kentät",
-          "saveFields": "Tallenna kentät"
+          "saveFields": "Tallenna kentät",
+          "optionPlaceholder": "Vaihtoehto {n}",
+          "addOption": "Lisää vaihtoehto",
+          "removeOption": "Poista tämä vaihtoehto",
+          "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",

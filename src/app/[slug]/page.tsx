@@ -97,6 +97,18 @@ async function getSiteData(slug: string) {
     .find(Boolean)
   const membershipCta = firstBoundMembershipForm ? { href: `/${slug}/adhesion/${firstBoundMembershipForm.slug}` } : null
 
+  // Same explicit form→section binding as membership (DonationForm.siteSectionId) — but
+  // unlike membership, a "dons" section with nothing bound isn't left empty: SiteDonsSection
+  // falls back to the legacy standalone /portal/[slug]/don page (see its own comment).
+  const donationForms = mods.dons
+    ? await prisma.donationForm.findMany({
+        where:  { association: { slug }, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
+        select: { slug: true, title: true, siteSectionId: true },
+      })
+    : []
+  const donationFormBySection: Record<string, { slug: string; title: string }> =
+    Object.fromEntries(donationForms.map(f => [f.siteSectionId as string, { slug: f.slug, title: f.title }]))
+
   return {
     name:        assoc.name,
     slug:        assoc.slug,
@@ -106,6 +118,7 @@ async function getSiteData(slug: string) {
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
     membershipFormBySection,
     membershipCta,
+    donationFormBySection,
     city:        assoc.city,
     country:     assoc.country,
     config:      assoc.siteConfig as SiteConfig | null,
@@ -179,7 +192,13 @@ export default async function PublicSitePage(
               )
             case "dons":
               return data.donsEnabled
-                ? <SiteDonsSection key={section.id} section={section} slug={slug} color={color} canIssueTaxReceipts={data.canIssueTaxReceipts} />
+                ? (
+                  <SiteDonsSection
+                    key={section.id} section={section} slug={slug} color={color}
+                    canIssueTaxReceipts={data.canIssueTaxReceipts}
+                    donationForm={data.donationFormBySection[section.id] ?? null}
+                  />
+                )
                 : null
             case "contact":
               return <SiteContactSection key={section.id} section={section} city={data.city} country={data.country} />

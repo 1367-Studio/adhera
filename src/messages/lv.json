@@ -116,6 +116,7 @@
         "perkEasyCancel": "Viegla atcelšana",
         "genericError": "Kļūda",
         "startTrial": "Sāc manu bezmaksas izmēģinājumu",
+        "createAccount": "Izveidot kontu",
         "perkNoCard": "Kredītkarte nav nepieciešama",
         "createAccountError": "Kļūdu radīšanas konts"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Noņem šo iespēju",
       "labelRequiredError": "Katram laukam jābūt ar etiķeti.",
       "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+      "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
       "saved": "Saglabātie pielāgotie lauki"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Nepieciešams",
           "typeText": "Teksts",
           "typeNumber": "Numurs",
+          "typeSelect": "Nolaižamais saraksts",
           "labelRequiredError": "Katram laukam jābūt ar etiķeti",
           "saved": "Saglabātie lauki",
-          "saveFields": "Saglabāt laukus"
+          "saveFields": "Saglabāt laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pievienot opciju",
+          "removeOption": "Noņem šo iespēju",
+          "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privāts",
           "opensAtLabel": "Atklāšana",
           "closesAtLabel": "Slēgšana",
+          "siteSectionLabel": "Vietas sadaļa",
+          "siteSectionPlaceholder": "Izvēlies...",
+          "siteSectionCreateOption": "+ Izveidot jaunu sadaļu",
+          "siteSectionCreateError": "Kļūda, izveidojot vietnes sadaļu.",
+          "siteSectionRequiredError": "Izvēlieties vietnes sadaļu, kurā ievietot šo formu.",
           "datesOrderError": "Slēgšanas datumam jābūt vēlākam par atvēršanas datumu."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Nepieciešams",
           "typeText": "Teksts",
           "typeNumber": "Numurs",
+          "typeSelect": "Nolaižamais saraksts",
           "labelRequiredError": "Katram laukam jābūt ar etiķeti",
           "saved": "Saglabātie lauki",
-          "saveFields": "Saglabāt laukus"
+          "saveFields": "Saglabāt laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pievienot opciju",
+          "removeOption": "Noņem šo iespēju",
+          "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",

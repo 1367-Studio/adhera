@@ -116,6 +116,7 @@
         "perkEasyCancel": "Snadné zrušení",
         "genericError": "Chyba",
         "startTrial": "Začněte s bezplatnou zkušební verzí",
+        "createAccount": "Vytvořit účet",
         "perkNoCard": "Není potřeba kreditní karta",
         "createAccountError": "Chyba při vytváření účtu"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Tuto možnost odstranit",
       "labelRequiredError": "Každé pole musí mít štítek.",
       "optionsRequiredError": "Každé pole pro seznam/volbu potřebuje alespoň 2 možnosti.",
+      "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné.",
       "saved": "Uložená vlastní pole"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbalovací seznam",
           "labelRequiredError": "Každé pole musí mít štítek",
           "saved": "Zachráněná pole",
-          "saveFields": "Uložit pole"
+          "saveFields": "Uložit pole",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Přidat možnost",
+          "removeOption": "Tuto možnost odstranit",
+          "optionsRequiredError": "Každé pole pro seznam/volbu potřebuje alespoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné."
         },
         "payment": {
           "title": "Platba",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Soukromý",
           "opensAtLabel": "Otevření",
           "closesAtLabel": "Uzavření",
+          "siteSectionLabel": "Sekce lokality",
+          "siteSectionPlaceholder": "Vyber si...",
+          "siteSectionCreateOption": "+ Vytvořit novou sekci",
+          "siteSectionCreateError": "Chyba při vytváření sekce webu.",
+          "siteSectionRequiredError": "Vyberte sekci stránky, kam tento formulář zveřejníte.",
           "datesOrderError": "Termín uzavření musí být pozdější než datum otevření."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbalovací seznam",
           "labelRequiredError": "Každé pole musí mít štítek",
           "saved": "Zachráněná pole",
-          "saveFields": "Uložit pole"
+          "saveFields": "Uložit pole",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Přidat možnost",
+          "removeOption": "Tuto možnost odstranit",
+          "optionsRequiredError": "Každé pole pro seznam/volbu potřebuje alespoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné."
         },
         "payment": {
           "title": "Platba",

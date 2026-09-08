@@ -22,6 +22,8 @@ import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_PATH } from "@/lib/env"
 import { useCurrentUser } from "@/lib/user-context"
+import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
+import { SECTION_LABELS } from "@/types/site-config"
 import {
   ArchiveIcon,
   CheckIcon,
@@ -43,6 +45,8 @@ type DonationFormStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type FieldRequirement   = "HIDDEN" | "OPTIONAL" | "REQUIRED"
 type Attachment = { url: string; filename: string; size: number }
 type Visibility         = "LINK" | "SITE" | "PRIVATE"
+
+const CREATE_SITE_SECTION_VALUE = "__create__"
 
 type DonationForm = {
   id:     string
@@ -71,9 +75,10 @@ type DonationForm = {
   allowTransfer:       boolean
   offlineInstructions: string | null
 
-  visibility: Visibility
-  opensAt:    string | null
-  closesAt:   string | null
+  visibility:    Visibility
+  siteSectionId: string | null
+  opensAt:       string | null
+  closesAt:      string | null
 }
 
 type SaveableFields = Partial<Omit<DonationForm, "id" | "slug" | "status" | "_count">>
@@ -99,6 +104,7 @@ export default function DonationFormDetailPage() {
   const t       = useTranslations("donationForms")
   const tSteps  = useTranslations("donationForms.detail.steps")
   const tCommon = useTranslations("common")
+  const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
 
   const [title, setTitle]                 = useState("")
@@ -141,9 +147,10 @@ export default function DonationFormDetailPage() {
   const [offlineInstructions, setOfflineInstructions] = useState("")
 
   // Step 5 — Publication
-  const [visibility, setVisibility] = useState<Visibility>("LINK")
-  const [opensAt, setOpensAt]       = useState("")
-  const [closesAt, setClosesAt]     = useState("")
+  const [visibility, setVisibility]       = useState<Visibility>("LINK")
+  const [siteSectionId, setSiteSectionId] = useState("")
+  const [opensAt, setOpensAt]             = useState("")
+  const [closesAt, setClosesAt]           = useState("")
 
   const { data: form, isLoading, isError } = useQuery<DonationForm>({
     queryKey: ["donation-form", id],
@@ -152,6 +159,30 @@ export default function DonationFormDetailPage() {
       return r.json()
     }),
   })
+
+  // Feeds the Publication step's section picker — same query key/hook the site editor
+  // itself uses (useSiteConfig), so the list always matches what an admin sees under Site
+  // internet, and stays in sync when this page creates a new section below.
+  const { data: siteConfigData } = useSiteConfig()
+  const saveSiteConfig = useSaveSiteConfig()
+  const donsSiteSections = (siteConfigData?.config?.sections ?? []).filter(s => s.type === "dons")
+  const [creatingSection, setCreatingSection] = useState(false)
+
+  // Mirrors MembershipForm's own createMembershipSection: lets an admin create the target
+  // "dons" section inline instead of forcing a detour to the site editor first.
+  async function createDonsSection() {
+    setCreatingSection(true)
+    try {
+      const newSection = { id: crypto.randomUUID(), type: "dons" as const, title: tSiteDefaults("dons"), body: "", buttonLabel: "" }
+      const sections = [...(siteConfigData?.config?.sections ?? []), newSection]
+      await saveSiteConfig.mutateAsync({ sections })
+      setSiteSectionId(newSection.id)
+    } catch {
+      toast.error(tSteps("publish.siteSectionCreateError"))
+    } finally {
+      setCreatingSection(false)
+    }
+  }
 
   useEffect(() => {
     if (!form) return
@@ -174,6 +205,7 @@ export default function DonationFormDetailPage() {
     setAllowTransfer(form.allowTransfer)
     setOfflineInstructions(form.offlineInstructions ?? "")
     setVisibility(form.visibility)
+    setSiteSectionId(form.siteSectionId ?? "")
     setOpensAt(toDatetimeLocal(form.opensAt))
     setClosesAt(toDatetimeLocal(form.closesAt))
   }, [form])
@@ -576,6 +608,23 @@ export default function DonationFormDetailPage() {
                 value={visibility}
                 onValueChange={v => setVisibility(v as Visibility)}
               />
+              {visibility === "SITE" && (
+                <SelectField
+                  label={tSteps("publish.siteSectionLabel")}
+                  required
+                  disabled={creatingSection}
+                  placeholder={tSteps("publish.siteSectionPlaceholder")}
+                  options={[
+                    ...donsSiteSections.map(s => ({ value: s.id, label: s.title || SECTION_LABELS.dons })),
+                    { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
+                  ]}
+                  value={siteSectionId}
+                  onValueChange={v => {
+                    if (v === CREATE_SITE_SECTION_VALUE) createDonsSection()
+                    else setSiteSectionId(v)
+                  }}
+                />
+              )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <DateTimeField
                   label={tSteps("publish.opensAtLabel")}
@@ -600,8 +649,13 @@ export default function DonationFormDetailPage() {
                       toast.error(tSteps("publish.datesOrderError"))
                       return
                     }
+                    if (visibility === "SITE" && !siteSectionId) {
+                      toast.error(tSteps("publish.siteSectionRequiredError"))
+                      return
+                    }
                     saveMutation.mutate({
                       visibility,
+                      siteSectionId: visibility === "SITE" ? siteSectionId : null,
                       opensAt: fromDatetimeLocal(opensAt),
                       closesAt: fromDatetimeLocal(closesAt),
                     })

@@ -116,6 +116,7 @@
         "perkEasyCancel": "Cancellazione Facile",
         "genericError": "Errore",
         "startTrial": "Inizia la mia prova gratuita",
+        "createAccount": "Crea account",
         "perkNoCard": "Nessuna carta di credito richiesta",
         "createAccountError": "Errore nella creazione dell'account"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Rimuovi questa opzione",
       "labelRequiredError": "Ogni campo deve avere un'etichetta.",
       "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+      "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche.",
       "saved": "Campi personalizzati salvati"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Richiesto",
           "typeText": "Testo",
           "typeNumber": "Numero",
+          "typeSelect": "Lista a tendina",
           "labelRequiredError": "Ogni campo deve avere un'etichetta",
           "saved": "Campi salvati",
-          "saveFields": "Salva i campi"
+          "saveFields": "Salva i campi",
+          "optionPlaceholder": "Opzione {n}",
+          "addOption": "Aggiungi un'opzione",
+          "removeOption": "Rimuovi questa opzione",
+          "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+          "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche."
         },
         "payment": {
           "title": "Pagamento",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privato",
           "opensAtLabel": "Apertura",
           "closesAtLabel": "Chiusura",
+          "siteSectionLabel": "Sezione del sito",
+          "siteSectionPlaceholder": "Scegli...",
+          "siteSectionCreateOption": "+ Crea una nuova sezione",
+          "siteSectionCreateError": "Errore nella creazione della sezione del sito.",
+          "siteSectionRequiredError": "Scegli la sezione del sito dove pubblicare questo modulo.",
           "datesOrderError": "La data di chiusura deve essere successiva rispetto a quella di apertura."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Richiesto",
           "typeText": "Testo",
           "typeNumber": "Numero",
+          "typeSelect": "Lista a tendina",
           "labelRequiredError": "Ogni campo deve avere un'etichetta",
           "saved": "Campi salvati",
-          "saveFields": "Salva i campi"
+          "saveFields": "Salva i campi",
+          "optionPlaceholder": "Opzione {n}",
+          "addOption": "Aggiungi un'opzione",
+          "removeOption": "Rimuovi questa opzione",
+          "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+          "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche."
         },
         "payment": {
           "title": "Pagamento",

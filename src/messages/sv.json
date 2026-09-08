@@ -116,6 +116,7 @@
         "perkEasyCancel": "Enkel avbokning",
         "genericError": "Fel",
         "startTrial": "Starta min gratis provperiod",
+        "createAccount": "Skapa konto",
         "perkNoCard": "Inget kreditkort krävs",
         "createAccountError": "Felskapande konto"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Ta bort detta alternativ",
       "labelRequiredError": "Varje fält måste ha en etikett.",
       "optionsRequiredError": "Varje lista/valfält behöver minst två alternativ.",
+      "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika.",
       "saved": "Sparade anpassade fält"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obligatoriskt",
           "typeText": "Text",
           "typeNumber": "Antal",
+          "typeSelect": "Rullgardinslista",
           "labelRequiredError": "Varje fält måste ha en etikett",
           "saved": "Sparade fält",
-          "saveFields": "Spara fält"
+          "saveFields": "Spara fält",
+          "optionPlaceholder": "Alternativ {n}",
+          "addOption": "Lägg till ett alternativ",
+          "removeOption": "Ta bort detta alternativ",
+          "optionsRequiredError": "Varje lista/valfält behöver minst två alternativ.",
+          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika."
         },
         "payment": {
           "title": "Betalning",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privat",
           "opensAtLabel": "Öppning",
           "closesAtLabel": "Nedläggning",
+          "siteSectionLabel": "Platssektion",
+          "siteSectionPlaceholder": "Välj...",
+          "siteSectionCreateOption": "+ Skapa en ny sektion",
+          "siteSectionCreateError": "Fel som skapar sidan.",
+          "siteSectionRequiredError": "Välj vilken sektion på sidan du vill posta detta formulär i.",
           "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obligatoriskt",
           "typeText": "Text",
           "typeNumber": "Antal",
+          "typeSelect": "Rullgardinslista",
           "labelRequiredError": "Varje fält måste ha en etikett",
           "saved": "Sparade fält",
-          "saveFields": "Spara fält"
+          "saveFields": "Spara fält",
+          "optionPlaceholder": "Alternativ {n}",
+          "addOption": "Lägg till ett alternativ",
+          "removeOption": "Ta bort detta alternativ",
+          "optionsRequiredError": "Varje lista/valfält behöver minst två alternativ.",
+          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika."
         },
         "payment": {
           "title": "Betalning",

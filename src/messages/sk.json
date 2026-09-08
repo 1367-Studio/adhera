@@ -116,6 +116,7 @@
         "perkEasyCancel": "Jednoduché zrušenie",
         "genericError": "Chyba",
         "startTrial": "Začnite moju bezplatnú skúšobnú verziu",
+        "createAccount": "Vytvoriť účet",
         "perkNoCard": "Kreditná karta nie je potrebná",
         "createAccountError": "Chyba pri vytváraní účtu"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Odstráňte túto možnosť",
       "labelRequiredError": "Každé pole musí mať označenie.",
       "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+      "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné.",
       "saved": "Uložené vlastné polia"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbaľovací zoznam",
           "labelRequiredError": "Každé pole musí mať označenie",
           "saved": "Uložené polia",
-          "saveFields": "Uložiť polia"
+          "saveFields": "Uložiť polia",
+          "optionPlaceholder": "Opcia {n}",
+          "addOption": "Pridať možnosť",
+          "removeOption": "Odstráňte túto možnosť",
+          "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
         },
         "payment": {
           "title": "Platba",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Súkromný",
           "opensAtLabel": "Otvorenie",
           "closesAtLabel": "Zatvorenie",
+          "siteSectionLabel": "Sekcia lokality",
+          "siteSectionPlaceholder": "Vyber si...",
+          "siteSectionCreateOption": "+ Vytvoriť novú sekciu",
+          "siteSectionCreateError": "Chyba pri vytváraní sekcie stránky.",
+          "siteSectionRequiredError": "Vyberte sekciu stránky, kam tento formulár zverejníte.",
           "datesOrderError": "Dátum uzávierky musí byť neskôr, než je dátum otvorenia."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Povinné",
           "typeText": "Text",
           "typeNumber": "Počet",
+          "typeSelect": "Rozbaľovací zoznam",
           "labelRequiredError": "Každé pole musí mať označenie",
           "saved": "Uložené polia",
-          "saveFields": "Uložiť polia"
+          "saveFields": "Uložiť polia",
+          "optionPlaceholder": "Opcia {n}",
+          "addOption": "Pridať možnosť",
+          "removeOption": "Odstráňte túto možnosť",
+          "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
         },
         "payment": {
           "title": "Platba",

@@ -146,6 +146,13 @@ export async function POST(
     const value = parsed.data.answers[field.id]
     if (field.required && (value == null || value.trim() === ""))
       return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
+    // Même contrôle que le formulaire d'inscription des événements — évite qu'une réponse
+    // fabriquée à la main atterrisse hors de la liste de choix configurée.
+    if (field.type === "SELECT" && value != null && value !== "") {
+      const options = Array.isArray(field.options) ? field.options as string[] : []
+      if (!options.includes(value))
+        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
+    }
   }
 
   // Don.answers regroupe les réponses aux champs standards (adresse mise à part — elle a

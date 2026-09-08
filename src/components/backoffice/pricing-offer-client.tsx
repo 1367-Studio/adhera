@@ -26,7 +26,7 @@ const PLAN_OPTIONS = [
 
 function toCents(amountEuros: number): number | null {
   const n = Math.round(amountEuros * 100)
-  return Number.isFinite(n) && n > 0 ? n : null
+  return Number.isFinite(n) && n >= 0 ? n : null
 }
 
 export function NewPricingOfferButton() {
@@ -220,6 +220,12 @@ export function NewPricingOfferButton() {
                 )
               })}
 
+              {phases.some(p => Math.round(p.amount * 100) === 0) && (
+                <p className="text-xs text-muted-foreground">
+                  Une phase à 0 € ne demandera aucune carte bancaire à l&apos;inscription.
+                </p>
+              )}
+
               <CheckboxField
                 id="last-open-ended"
                 label="La dernière phase est récurrente sans fin (facturée jusqu'à annulation)"
@@ -228,7 +234,7 @@ export function NewPricingOfferButton() {
               />
               {!lastOpenEnded && (
                 <p className="text-xs text-amber-600 dark:text-amber-400">
-                  Attention : sans phase finale « récurrente », l&apos;abonnement se termine et l&apos;accès à {APP_NAME} est automatiquement coupé dès la fin de la dernière phase. Si le prix doit repasser au tarif standard Essentiel/Pro ensuite, il faudra le refaire manuellement avant cette date.
+                  Attention : sans phase finale « récurrente », l&apos;abonnement se termine et l&apos;accès à {APP_NAME} est automatiquement coupé dès la fin de la dernière phase{Math.round(phases[phases.length - 1].amount * 100) === 0 ? ", même si cette dernière phase est à 0 €" : ""}. Si le prix doit repasser au tarif standard Essentiel/Pro ensuite, il faudra le refaire manuellement avant cette date.
                 </p>
               )}
             </div>

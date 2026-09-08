@@ -116,6 +116,7 @@
         "perkEasyCancel": "Einfache Kündigung",
         "genericError": "Fehler",
         "startTrial": "Starte meine kostenlose Testphase",
+        "createAccount": "Konto erstellen",
         "perkNoCard": "Keine Kreditkarte erforderlich",
         "createAccountError": "Fehler-Kontoerstellung"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Entfernen Sie diese Option",
       "labelRequiredError": "Jedes Feld muss ein Label haben.",
       "optionsRequiredError": "Jede Liste oder jedes Wahlfeld benötigt mindestens zwei Optionen.",
+      "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein.",
       "saved": "Gespeicherte benutzerdefinierte Felder"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Erforderlich",
           "typeText": "Text",
           "typeNumber": "Anzahl",
+          "typeSelect": "Dropdown-Liste",
           "labelRequiredError": "Jedes Feld muss eine Bezeichnung haben",
           "saved": "Gespeicherte Felder",
-          "saveFields": "Felder speichern"
+          "saveFields": "Felder speichern",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Fügen Sie eine Option hinzu",
+          "removeOption": "Entfernen Sie diese Option",
+          "optionsRequiredError": "Jede Liste oder jedes Wahlfeld benötigt mindestens zwei Optionen.",
+          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein."
         },
         "payment": {
           "title": "Zahlung",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Gefreiter",
           "opensAtLabel": "Eröffnung",
           "closesAtLabel": "Schließung",
+          "siteSectionLabel": "Standortabschnitt",
+          "siteSectionPlaceholder": "Wähle...",
+          "siteSectionCreateOption": "+ Erstelle einen neuen Abschnitt",
+          "siteSectionCreateError": "Fehler beim Erstellen des Seitenabschnitts.",
+          "siteSectionRequiredError": "Wählen Sie den Bereich der Seite aus, in dem Sie dieses Formular posten möchten.",
           "datesOrderError": "Das Abschlussdatum muss später als das Eröffnungsdatum liegen."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Erforderlich",
           "typeText": "Text",
           "typeNumber": "Anzahl",
+          "typeSelect": "Dropdown-Liste",
           "labelRequiredError": "Jedes Feld muss eine Bezeichnung haben",
           "saved": "Gespeicherte Felder",
-          "saveFields": "Felder speichern"
+          "saveFields": "Felder speichern",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Fügen Sie eine Option hinzu",
+          "removeOption": "Entfernen Sie diese Option",
+          "optionsRequiredError": "Jede Liste oder jedes Wahlfeld benötigt mindestens zwei Optionen.",
+          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein."
         },
         "payment": {
           "title": "Zahlung",

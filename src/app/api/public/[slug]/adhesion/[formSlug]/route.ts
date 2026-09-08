@@ -126,7 +126,7 @@ export async function GET(
         : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
       ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
     })),
-    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required })),
+    customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required, options: f.options })),
     // Un produit archivé après avoir été lié au formulaire n'est pas retiré de
     // MembershipFormProduct (voir products/route.ts) — filtré ici plutôt, à la lecture,
     // même logique que le statut des tiers. Si le module Boutique a été désactivé depuis

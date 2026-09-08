@@ -116,6 +116,7 @@
         "perkEasyCancel": "Cancelamento fácil",
         "genericError": "Erro",
         "startTrial": "Começar meu teste grátis",
+        "createAccount": "Criar conta",
         "perkNoCard": "Sem cartão de crédito",
         "createAccountError": "Erro ao criar a conta"
       },
@@ -1510,6 +1511,7 @@
       "removeOption": "Remover esta opção",
       "labelRequiredError": "Todo campo precisa de um nome.",
       "optionsRequiredError": "Todo campo de lista/escolha precisa de pelo menos 2 opções.",
+      "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas.",
       "saved": "Campos personalizados salvos"
     },
     "ticketTypes": {
@@ -2719,9 +2721,15 @@
           "fieldRequired": "Obrigatório",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista suspensa",
           "labelRequiredError": "Cada campo precisa de um rótulo",
           "saved": "Campos salvos",
-          "saveFields": "Salvar campos"
+          "saveFields": "Salvar campos",
+          "optionPlaceholder": "Opção {n}",
+          "addOption": "Adicionar uma opção",
+          "removeOption": "Remover esta opção",
+          "optionsRequiredError": "Todo campo de lista/escolha precisa de pelo menos 2 opções.",
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
         },
         "payment": {
           "title": "Pagamento",
@@ -2740,6 +2748,11 @@
           "visibilityPrivate": "Privado",
           "opensAtLabel": "Abertura",
           "closesAtLabel": "Encerramento",
+          "siteSectionLabel": "Seção do site",
+          "siteSectionPlaceholder": "Escolher…",
+          "siteSectionCreateOption": "+ Criar nova seção",
+          "siteSectionCreateError": "Erro ao criar a seção do site.",
+          "siteSectionRequiredError": "Escolha em qual seção do site este formulário será publicado.",
           "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
         }
       }
@@ -2988,9 +3001,15 @@
           "fieldRequired": "Obrigatório",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista suspensa",
           "labelRequiredError": "Cada campo precisa de um rótulo",
           "saved": "Campos salvos",
-          "saveFields": "Salvar campos"
+          "saveFields": "Salvar campos",
+          "optionPlaceholder": "Opção {n}",
+          "addOption": "Adicionar uma opção",
+          "removeOption": "Remover esta opção",
+          "optionsRequiredError": "Todo campo de lista/escolha precisa de pelo menos 2 opções.",
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
         },
         "payment": {
           "title": "Pagamento",
