@@ -1510,6 +1510,7 @@
       "removeOption": "Verwijder deze optie",
       "labelRequiredError": "Elk veld moet een label hebben.",
       "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+      "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
       "saved": "Opgeslagen aangepaste velden"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Verplicht",
           "typeText": "Tekst",
           "typeNumber": "Aantal",
+          "typeSelect": "Keuzelijst",
           "labelRequiredError": "Elk veld moet een label hebben",
           "saved": "Opgeslagen velden",
-          "saveFields": "Velden opslaan"
+          "saveFields": "Velden opslaan",
+          "optionPlaceholder": "Optie {n}",
+          "addOption": "Voeg een optie toe",
+          "removeOption": "Verwijder deze optie",
+          "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Verplicht",
           "typeText": "Tekst",
           "typeNumber": "Aantal",
+          "typeSelect": "Keuzelijst",
           "labelRequiredError": "Elk veld moet een label hebben",
           "saved": "Opgeslagen velden",
-          "saveFields": "Velden opslaan"
+          "saveFields": "Velden opslaan",
+          "optionPlaceholder": "Optie {n}",
+          "addOption": "Voeg een optie toe",
+          "removeOption": "Verwijder deze optie",
+          "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",

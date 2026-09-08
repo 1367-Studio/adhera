@@ -1510,6 +1510,7 @@
       "removeOption": "Usuń tę opcję",
       "labelRequiredError": "Każde pole musi mieć etykietę.",
       "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+      "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne.",
       "saved": "Zapisane pola niestandardowe"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Wymagane",
           "typeText": "Tekst",
           "typeNumber": "Liczba",
+          "typeSelect": "Lista rozwijana",
           "labelRequiredError": "Każde pole musi mieć etykietę",
           "saved": "Zachowane pola",
-          "saveFields": "Zapisz pola"
+          "saveFields": "Zapisz pola",
+          "optionPlaceholder": "Opcja {n}",
+          "addOption": "Dodaj opcję",
+          "removeOption": "Usuń tę opcję",
+          "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
         },
         "payment": {
           "title": "Płatność",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Wymagane",
           "typeText": "Tekst",
           "typeNumber": "Liczba",
+          "typeSelect": "Lista rozwijana",
           "labelRequiredError": "Każde pole musi mieć etykietę",
           "saved": "Zachowane pola",
-          "saveFields": "Zapisz pola"
+          "saveFields": "Zapisz pola",
+          "optionPlaceholder": "Opcja {n}",
+          "addOption": "Dodaj opcję",
+          "removeOption": "Usuń tę opcję",
+          "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
         },
         "payment": {
           "title": "Płatność",

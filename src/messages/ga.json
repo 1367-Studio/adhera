@@ -1510,6 +1510,7 @@
       "removeOption": "Bain an rogha seo",
       "labelRequiredError": "Caithfidh lipéad a bheith ar gach réimse.",
       "optionsRequiredError": "Teastaíonn 2 rogha ar a laghad ó gach réimse liosta/rogha.",
+      "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil.",
       "saved": "Réimsí Saincheaptha Sábhála"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Riachtanach",
           "typeText": "Téacs",
           "typeNumber": "Uimhir",
+          "typeSelect": "Liosta anuas",
           "labelRequiredError": "Caithfidh lipéad a bheith ag gach réimse",
           "saved": "Réimsí Sábhála",
-          "saveFields": "Sábháil réimsí"
+          "saveFields": "Sábháil réimsí",
+          "optionPlaceholder": "Rogha {n}",
+          "addOption": "Cuir rogha leis",
+          "removeOption": "Bain an rogha seo",
+          "optionsRequiredError": "Teastaíonn 2 rogha ar a laghad ó gach réimse liosta/rogha.",
+          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil."
         },
         "payment": {
           "title": "Íocaíocht",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Riachtanach",
           "typeText": "Téacs",
           "typeNumber": "Uimhir",
+          "typeSelect": "Liosta anuas",
           "labelRequiredError": "Caithfidh lipéad a bheith ag gach réimse",
           "saved": "Réimsí Sábhála",
-          "saveFields": "Sábháil réimsí"
+          "saveFields": "Sábháil réimsí",
+          "optionPlaceholder": "Rogha {n}",
+          "addOption": "Cuir rogha leis",
+          "removeOption": "Bain an rogha seo",
+          "optionsRequiredError": "Teastaíonn 2 rogha ar a laghad ó gach réimse liosta/rogha.",
+          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil."
         },
         "payment": {
           "title": "Íocaíocht",

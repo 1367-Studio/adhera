@@ -1510,6 +1510,7 @@
       "removeOption": "Távolítsd el ezt az opciót",
       "labelRequiredError": "Minden mezőnek kell lennie egy címkével.",
       "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+      "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük.",
       "saved": "Mentett egyedi mezők"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Kötelező",
           "typeText": "Szöveg",
           "typeNumber": "Szám",
+          "typeSelect": "Legördülő lista",
           "labelRequiredError": "Minden mezőnek kell lennie egy címkével",
           "saved": "Mentett mezők",
-          "saveFields": "Mezők mentése"
+          "saveFields": "Mezők mentése",
+          "optionPlaceholder": "Opció {n}",
+          "addOption": "Opció hozzáadása",
+          "removeOption": "Távolítsd el ezt az opciót",
+          "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
         },
         "payment": {
           "title": "Fizetés",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Kötelező",
           "typeText": "Szöveg",
           "typeNumber": "Szám",
+          "typeSelect": "Legördülő lista",
           "labelRequiredError": "Minden mezőnek kell lennie egy címkével",
           "saved": "Mentett mezők",
-          "saveFields": "Mezők mentése"
+          "saveFields": "Mezők mentése",
+          "optionPlaceholder": "Opció {n}",
+          "addOption": "Opció hozzáadása",
+          "removeOption": "Távolítsd el ezt az opciót",
+          "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
         },
         "payment": {
           "title": "Fizetés",

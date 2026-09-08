@@ -100,6 +100,14 @@ export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }:
       toast.error(t("optionsRequiredError"))
       return false
     }
+    if (fields.some(f => {
+      if (!CHOICE_TYPES.includes(f.type)) return false
+      const opts = (f.options ?? []).map(o => o.trim().toLowerCase()).filter(Boolean)
+      return new Set(opts).size !== opts.length
+    })) {
+      toast.error(t("duplicateOptionsError"))
+      return false
+    }
     try {
       await saveMutation.mutateAsync(fields.map(f => ({
         type: f.type, label: f.label, required: f.required, id: f.id,

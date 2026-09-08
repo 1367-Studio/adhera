@@ -1510,6 +1510,7 @@
       "removeOption": "Noņem šo iespēju",
       "labelRequiredError": "Katram laukam jābūt ar etiķeti.",
       "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+      "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
       "saved": "Saglabātie pielāgotie lauki"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Nepieciešams",
           "typeText": "Teksts",
           "typeNumber": "Numurs",
+          "typeSelect": "Nolaižamais saraksts",
           "labelRequiredError": "Katram laukam jābūt ar etiķeti",
           "saved": "Saglabātie lauki",
-          "saveFields": "Saglabāt laukus"
+          "saveFields": "Saglabāt laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pievienot opciju",
+          "removeOption": "Noņem šo iespēju",
+          "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Nepieciešams",
           "typeText": "Teksts",
           "typeNumber": "Numurs",
+          "typeSelect": "Nolaižamais saraksts",
           "labelRequiredError": "Katram laukam jābūt ar etiķeti",
           "saved": "Saglabātie lauki",
-          "saveFields": "Saglabāt laukus"
+          "saveFields": "Saglabāt laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pievienot opciju",
+          "removeOption": "Noņem šo iespēju",
+          "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",

@@ -1510,6 +1510,7 @@
       "removeOption": "Supprimer cette option",
       "labelRequiredError": "Chaque champ doit avoir un intitulé.",
       "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+      "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques.",
       "saved": "Champs personnalisés enregistrés"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obligatoire",
           "typeText": "Texte",
           "typeNumber": "Nombre",
+          "typeSelect": "Liste déroulante",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
-          "saveFields": "Enregistrer les champs"
+          "saveFields": "Enregistrer les champs",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Ajouter une option",
+          "removeOption": "Supprimer cette option",
+          "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+          "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques."
         },
         "payment": {
           "title": "Paiement",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obligatoire",
           "typeText": "Texte",
           "typeNumber": "Nombre",
+          "typeSelect": "Liste déroulante",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
-          "saveFields": "Enregistrer les champs"
+          "saveFields": "Enregistrer les champs",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Ajouter une option",
+          "removeOption": "Supprimer cette option",
+          "optionsRequiredError": "Chaque champ liste/choix a besoin d'au moins 2 options.",
+          "duplicateOptionsError": "Les options d'un champ liste/choix doivent être uniques."
         },
         "payment": {
           "title": "Paiement",

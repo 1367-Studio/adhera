@@ -1510,6 +1510,7 @@
       "removeOption": "Remove this option",
       "labelRequiredError": "Every field needs a label.",
       "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
+      "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
       "saved": "Custom fields saved"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Required",
           "typeText": "Text",
           "typeNumber": "Number",
+          "typeSelect": "Dropdown",
           "labelRequiredError": "Every field must have a label",
           "saved": "Fields saved",
-          "saveFields": "Save fields"
+          "saveFields": "Save fields",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Add an option",
+          "removeOption": "Remove this option",
+          "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Required",
           "typeText": "Text",
           "typeNumber": "Number",
+          "typeSelect": "Dropdown",
           "labelRequiredError": "Every field must have a label",
           "saved": "Fields saved",
-          "saveFields": "Save fields"
+          "saveFields": "Save fields",
+          "optionPlaceholder": "Option {n}",
+          "addOption": "Add an option",
+          "removeOption": "Remove this option",
+          "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",

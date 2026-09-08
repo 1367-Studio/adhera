@@ -1510,6 +1510,7 @@
       "removeOption": "Eliminar esta opción",
       "labelRequiredError": "Cada campo debe tener una etiqueta.",
       "optionsRequiredError": "Cada campo de lista/opción necesita al menos 2 opciones.",
+      "duplicateOptionsError": "Las opciones de un campo de lista/opción deben ser únicas.",
       "saved": "Campos personalizados guardados"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obligatorio",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista desplegable",
           "labelRequiredError": "Cada campo debe tener una etiqueta",
           "saved": "Campos guardados",
-          "saveFields": "Guardar campos"
+          "saveFields": "Guardar campos",
+          "optionPlaceholder": "Opción {n}",
+          "addOption": "Añadir una opción",
+          "removeOption": "Eliminar esta opción",
+          "optionsRequiredError": "Cada campo de lista/opción necesita al menos 2 opciones.",
+          "duplicateOptionsError": "Las opciones de un campo de lista/opción deben ser únicas."
         },
         "payment": {
           "title": "Pago",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obligatorio",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista desplegable",
           "labelRequiredError": "Cada campo debe tener una etiqueta",
           "saved": "Campos guardados",
-          "saveFields": "Guardar campos"
+          "saveFields": "Guardar campos",
+          "optionPlaceholder": "Opción {n}",
+          "addOption": "Añadir una opción",
+          "removeOption": "Eliminar esta opción",
+          "optionsRequiredError": "Cada campo de lista/opción necesita al menos 2 opciones.",
+          "duplicateOptionsError": "Las opciones de un campo de lista/opción deben ser únicas."
         },
         "payment": {
           "title": "Pago",

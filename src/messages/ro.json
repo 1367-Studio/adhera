@@ -1510,6 +1510,7 @@
       "removeOption": "Elimină această opțiune",
       "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă.",
       "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+      "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice.",
       "saved": "Câmpuri personalizate salvate"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obligatoriu",
           "typeText": "Text",
           "typeNumber": "Număr",
+          "typeSelect": "Listă derulantă",
           "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă",
           "saved": "Câmpuri salvate",
-          "saveFields": "Salvează câmpurile"
+          "saveFields": "Salvează câmpurile",
+          "optionPlaceholder": "Opțiune {n}",
+          "addOption": "Adaugă o opțiune",
+          "removeOption": "Elimină această opțiune",
+          "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
         },
         "payment": {
           "title": "Plata",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obligatoriu",
           "typeText": "Text",
           "typeNumber": "Număr",
+          "typeSelect": "Listă derulantă",
           "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă",
           "saved": "Câmpuri salvate",
-          "saveFields": "Salvează câmpurile"
+          "saveFields": "Salvează câmpurile",
+          "optionPlaceholder": "Opțiune {n}",
+          "addOption": "Adaugă o opțiune",
+          "removeOption": "Elimină această opțiune",
+          "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
         },
         "payment": {
           "title": "Plata",

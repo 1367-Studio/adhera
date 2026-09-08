@@ -1510,6 +1510,7 @@
       "removeOption": "Remover esta opção",
       "labelRequiredError": "Todos os campos precisam de um nome.",
       "optionsRequiredError": "Todos os campos de lista/escolha precisam de pelo menos 2 opções.",
+      "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas.",
       "saved": "Campos personalizados guardados"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obrigatório",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista pendente",
           "labelRequiredError": "Cada campo precisa de um rótulo",
           "saved": "Campos guardados",
-          "saveFields": "Guardar campos"
+          "saveFields": "Guardar campos",
+          "optionPlaceholder": "Opção {n}",
+          "addOption": "Adicionar uma opção",
+          "removeOption": "Remover esta opção",
+          "optionsRequiredError": "Todos os campos de lista/escolha precisam de pelo menos 2 opções.",
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
         },
         "payment": {
           "title": "Pagamento",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obrigatório",
           "typeText": "Texto",
           "typeNumber": "Número",
+          "typeSelect": "Lista pendente",
           "labelRequiredError": "Cada campo precisa de um rótulo",
           "saved": "Campos guardados",
-          "saveFields": "Guardar campos"
+          "saveFields": "Guardar campos",
+          "optionPlaceholder": "Opção {n}",
+          "addOption": "Adicionar uma opção",
+          "removeOption": "Remover esta opção",
+          "optionsRequiredError": "Todos os campos de lista/escolha precisam de pelo menos 2 opções.",
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
         },
         "payment": {
           "title": "Pagamento",

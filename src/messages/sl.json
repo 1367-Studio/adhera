@@ -1510,6 +1510,7 @@
       "removeOption": "Odstranite to možnost",
       "labelRequiredError": "Vsako polje mora imeti oznako.",
       "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+      "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene.",
       "saved": "Shranjena prilagojena polja"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Obvezno",
           "typeText": "Besedilo",
           "typeNumber": "Število",
+          "typeSelect": "Spustni seznam",
           "labelRequiredError": "Vsako polje mora imeti oznako",
           "saved": "Shranjena polja",
-          "saveFields": "Shrani polja"
+          "saveFields": "Shrani polja",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Dodaj možnost",
+          "removeOption": "Odstranite to možnost",
+          "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Obvezno",
           "typeText": "Besedilo",
           "typeNumber": "Število",
+          "typeSelect": "Spustni seznam",
           "labelRequiredError": "Vsako polje mora imeti oznako",
           "saved": "Shranjena polja",
-          "saveFields": "Shrani polja"
+          "saveFields": "Shrani polja",
+          "optionPlaceholder": "Možnost {n}",
+          "addOption": "Dodaj možnost",
+          "removeOption": "Odstranite to možnost",
+          "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",

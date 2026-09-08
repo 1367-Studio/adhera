@@ -1510,6 +1510,7 @@
       "removeOption": "Rimuovi questa opzione",
       "labelRequiredError": "Ogni campo deve avere un'etichetta.",
       "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+      "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche.",
       "saved": "Campi personalizzati salvati"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Richiesto",
           "typeText": "Testo",
           "typeNumber": "Numero",
+          "typeSelect": "Lista a tendina",
           "labelRequiredError": "Ogni campo deve avere un'etichetta",
           "saved": "Campi salvati",
-          "saveFields": "Salva i campi"
+          "saveFields": "Salva i campi",
+          "optionPlaceholder": "Opzione {n}",
+          "addOption": "Aggiungi un'opzione",
+          "removeOption": "Rimuovi questa opzione",
+          "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+          "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche."
         },
         "payment": {
           "title": "Pagamento",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Richiesto",
           "typeText": "Testo",
           "typeNumber": "Numero",
+          "typeSelect": "Lista a tendina",
           "labelRequiredError": "Ogni campo deve avere un'etichetta",
           "saved": "Campi salvati",
-          "saveFields": "Salva i campi"
+          "saveFields": "Salva i campi",
+          "optionPlaceholder": "Opzione {n}",
+          "addOption": "Aggiungi un'opzione",
+          "removeOption": "Rimuovi questa opzione",
+          "optionsRequiredError": "Ogni lista/campo di scelta richiede almeno 2 opzioni.",
+          "duplicateOptionsError": "Le opzioni di un campo lista/scelta devono essere uniche."
         },
         "payment": {
           "title": "Pagamento",

@@ -1510,6 +1510,7 @@
       "removeOption": "Poista tämä vaihtoehto",
       "labelRequiredError": "Jokaisella kentällä täytyy olla nimitys.",
       "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+      "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
       "saved": "Tallennetut mukautetut kentät"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Vaaditaan",
           "typeText": "Tekstiviesti",
           "typeNumber": "Numero",
+          "typeSelect": "Pudotusvalikko",
           "labelRequiredError": "Jokaisella kentällä täytyy olla tunniste",
           "saved": "Tallennetut kentät",
-          "saveFields": "Tallenna kentät"
+          "saveFields": "Tallenna kentät",
+          "optionPlaceholder": "Vaihtoehto {n}",
+          "addOption": "Lisää vaihtoehto",
+          "removeOption": "Poista tämä vaihtoehto",
+          "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Vaaditaan",
           "typeText": "Tekstiviesti",
           "typeNumber": "Numero",
+          "typeSelect": "Pudotusvalikko",
           "labelRequiredError": "Jokaisella kentällä täytyy olla tunniste",
           "saved": "Tallennetut kentät",
-          "saveFields": "Tallenna kentät"
+          "saveFields": "Tallenna kentät",
+          "optionPlaceholder": "Vaihtoehto {n}",
+          "addOption": "Lisää vaihtoehto",
+          "removeOption": "Poista tämä vaihtoehto",
+          "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",

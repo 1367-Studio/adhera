@@ -1510,6 +1510,7 @@
       "removeOption": "Pašalinkite šią galimybę",
       "labelRequiredError": "Kiekvienas laukas turi turėti etiketę.",
       "optionsRequiredError": "Kiekvienam sąrašo/pasirinkimo laukui reikia bent 2 variantų.",
+      "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs.",
       "saved": "Išsaugoti individualūs laukai"
     },
     "ticketTypes": {
@@ -2719,9 +2720,15 @@
           "fieldRequired": "Privaloma",
           "typeText": "SMS žinutė",
           "typeNumber": "Skaičius",
+          "typeSelect": "Išskleidžiamasis sąrašas",
           "labelRequiredError": "Kiekvienas laukas turi turėti etiketę",
           "saved": "Išsaugoti laukai",
-          "saveFields": "Išsaugoti laukus"
+          "saveFields": "Išsaugoti laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pridėti parinktį",
+          "removeOption": "Pašalinkite šią galimybę",
+          "optionsRequiredError": "Kiekvienam sąrašo/pasirinkimo laukui reikia bent 2 variantų.",
+          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs."
         },
         "payment": {
           "title": "Mokėjimas",
@@ -2988,9 +2995,15 @@
           "fieldRequired": "Privaloma",
           "typeText": "SMS žinutė",
           "typeNumber": "Skaičius",
+          "typeSelect": "Išskleidžiamasis sąrašas",
           "labelRequiredError": "Kiekvienas laukas turi turėti etiketę",
           "saved": "Išsaugoti laukai",
-          "saveFields": "Išsaugoti laukus"
+          "saveFields": "Išsaugoti laukus",
+          "optionPlaceholder": "Opcija {n}",
+          "addOption": "Pridėti parinktį",
+          "removeOption": "Pašalinkite šią galimybę",
+          "optionsRequiredError": "Kiekvienam sąrašo/pasirinkimo laukui reikia bent 2 variantų.",
+          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs."
         },
         "payment": {
           "title": "Mokėjimas",
