@@ -4708,6 +4708,8 @@
       "membershipHint": "Žiadosti sa zobrazujú v zozname členov so stavom \"Čakajúce\".",
       "donsIntro": "Úvodný text",
       "donsIntroPlaceholder": "Váš dar nám pomáha financovať naše aktivity počas celého roka...",
+      "donsButtonLabel": "Text tlačidla",
+      "donsButtonLabelPlaceholder": "Darovať",
       "donsHint": "Tlačidlo odkazuje na verejnú stránku s darmi, ku ktorej je možné pristupovať aj bez účtu. Potvrdenie o dani sa odosiela automaticky, ak je združenie oprávnené ho vydať.",
       "contactHint": "Táto sekcia automaticky zobrazuje mesto a krajinu nastavené v nastaveniach asociácie.",
       "cancel": "Zrušiť",

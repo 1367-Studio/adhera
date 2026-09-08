@@ -4708,6 +4708,8 @@
       "membershipHint": "Cereri apar în lista membrilor cu statut \"În așteptare\".",
       "donsIntro": "Text introductiv",
       "donsIntroPlaceholder": "Donația dumneavoastră ne ajută să finanțăm acțiunile noastre pe tot parcursul anului...",
+      "donsButtonLabel": "Textul butonului",
+      "donsButtonLabelPlaceholder": "Donează",
       "donsHint": "Butonul face legătura către pagina publică de donații, care poate fi accesată fără cont. Chitanța fiscală este trimisă automat dacă asociația este autorizată să emită unul.",
       "contactHint": "Această secțiune afișează automat orașul și țara configurate în setările asociației.",
       "cancel": "Anulează",

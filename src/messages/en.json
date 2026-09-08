@@ -4708,6 +4708,8 @@
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
       "donsIntro": "Introductory text",
       "donsIntroPlaceholder": "Your donation helps us fund our work throughout the year…",
+      "donsButtonLabel": "Button text",
+      "donsButtonLabelPlaceholder": "Donate",
       "donsHint": "The button links to the public donation page, which works without an account. The tax receipt is sent automatically if the association is authorised to issue one.",
       "contactHint": "This section automatically displays the city and country configured in the association's settings.",
       "cancel": "Cancel",

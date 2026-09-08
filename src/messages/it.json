@@ -4708,6 +4708,8 @@
       "membershipHint": "Le richieste appaiono nell'elenco dei membri con lo stato \"In attesa\".",
       "donsIntro": "Testo introduttivo",
       "donsIntroPlaceholder": "La tua donazione ci aiuta a finanziare le nostre azioni durante tutto l'anno...",
+      "donsButtonLabel": "Testo del pulsante",
+      "donsButtonLabelPlaceholder": "Dona",
       "donsHint": "Il pulsante collega alla pagina delle donazioni pubbliche, accessibile senza un conto. La ricevuta fiscale viene inviata automaticamente se l'associazione è autorizzata a emetterla.",
       "contactHint": "Questa sezione mostra automaticamente la città e il paese configurati nelle impostazioni dell'associazione.",
       "cancel": "Annulla",

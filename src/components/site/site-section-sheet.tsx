@@ -217,15 +217,26 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
 
             {/* Dons */}
             {draft.type === "dons" && (
-              <div className="space-y-1.5">
-                <Label className="text-xs">{t("donsIntro")}</Label>
-                <Textarea
-                  value={"body" in draft ? draft.body : ""}
-                  onChange={e => set("body", e.target.value as never)}
-                  rows={4}
-                  maxLength={500}
-                  placeholder={t("donsIntroPlaceholder")}
-                />
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">{t("donsIntro")}</Label>
+                  <Textarea
+                    value={"body" in draft ? draft.body : ""}
+                    onChange={e => set("body", e.target.value as never)}
+                    rows={4}
+                    maxLength={500}
+                    placeholder={t("donsIntroPlaceholder")}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">{t("donsButtonLabel")}</Label>
+                  <Input
+                    value={"buttonLabel" in draft ? (draft.buttonLabel ?? "") : ""}
+                    onChange={e => set("buttonLabel", e.target.value)}
+                    maxLength={40}
+                    placeholder={t("donsButtonLabelPlaceholder")}
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {t("donsHint")}
                 </p>

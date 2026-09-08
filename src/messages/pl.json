@@ -4708,6 +4708,8 @@
       "membershipHint": "Wnioski pojawiają się na liście członków o statusie \"W trakcie oczekiwania\".",
       "donsIntro": "Tekst wprowadzający",
       "donsIntroPlaceholder": "Twoja darowizna pomaga nam finansować nasze działania przez cały rok...",
+      "donsButtonLabel": "Tekst przycisku",
+      "donsButtonLabelPlaceholder": "Wpłać",
       "donsHint": "Przycisk prowadzi do publicznej strony darowizn, do której można uzyskać dostęp bez posiadania konta. Potwierdzenie podatkowe jest wysyłane automatycznie, jeśli stowarzyszenie uzyska upoważnienie do jego wydania.",
       "contactHint": "Ta sekcja automatycznie wyświetla miasto i kraj skonfigurowane w ustawieniach stowarzyszenia.",
       "cancel": "Anuluj",

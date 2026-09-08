@@ -23,7 +23,7 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
     case "about":      return { id: newId(), type: "about",      title: defaultTitles.about,      content: "" }
     case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
     case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
-    case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "" }
+    case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "", buttonLabel: "" }
     case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
     case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
   }

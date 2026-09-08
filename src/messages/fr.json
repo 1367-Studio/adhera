@@ -4708,6 +4708,8 @@
       "membershipHint": "Les demandes apparaissent dans la liste des membres avec le statut \"En attente\".",
       "donsIntro": "Texte introductif",
       "donsIntroPlaceholder": "Votre don nous aide à financer nos actions tout au long de l'année…",
+      "donsButtonLabel": "Texte du bouton",
+      "donsButtonLabelPlaceholder": "Faire un don",
       "donsHint": "Le bouton renvoie vers la page de don publique, accessible sans compte. Le reçu fiscal est envoyé automatiquement si l'association est habilitée à en émettre.",
       "contactHint": "Cette section affiche automatiquement la ville et le pays configurés dans les paramètres de l'association.",
       "cancel": "Annuler",

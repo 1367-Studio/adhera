@@ -4708,6 +4708,8 @@
       "membershipHint": "Prašymai pateikiami narių sąraše, kurių statusas yra \"Laukiama\".",
       "donsIntro": "Įvadinis tekstas",
       "donsIntroPlaceholder": "Jūsų auka padeda mums finansuoti mūsų veiklą visus metus...",
+      "donsButtonLabel": "Mygtuko tekstas",
+      "donsButtonLabelPlaceholder": "Aukoti",
       "donsHint": "Mygtukas nukreipia į viešą aukojimo puslapį, prie kurio galima patekti be paskyros. Mokesčių kvitas siunčiamas automatiškai, jei asociacija turi teisę jį išduoti.",
       "contactHint": "Ši skiltis automatiškai rodo miestą ir šalį asociacijos nustatymuose.",
       "cancel": "Atšaukti",

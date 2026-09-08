@@ -43,10 +43,11 @@ export type MembershipSection = {
 // le don passe par Stripe Checkout, et dupliquer le formulaire ici dupliquerait aussi
 // la validation SIRET, le choix particulier/entreprise et la gestion du reçu fiscal.
 export type DonsSection = {
-  id:    string
-  type:  "dons"
-  title: string
-  body:  string
+  id:          string
+  type:        "dons"
+  title:       string
+  body:        string
+  buttonLabel?: string
 }
 
 export type ContactSection = {

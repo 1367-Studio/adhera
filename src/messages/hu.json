@@ -4708,6 +4708,8 @@
       "membershipHint": "A kérések a \"Függőben\" státuszú tagok listáján jelennek meg.",
       "donsIntro": "Bevezető szöveg",
       "donsIntroPlaceholder": "Az Ön adománya segít abban, hogy egész évben finanszírozzuk tevékenységeinket...",
+      "donsButtonLabel": "Gomb szövege",
+      "donsButtonLabelPlaceholder": "Adományozás",
       "donsHint": "A gomb a nyilvános adományozási oldalra vezet, amely fiók nélkül is elérhető. Az adóbevallás automatikusan elérkezik, ha az egyesület jogosult kibocsátani egyet.",
       "contactHint": "Ez a rész automatikusan megjeleníti a várost és országot, amelyet az assosiáció beállításaiban konfiguráltak.",
       "cancel": "Mégse",
