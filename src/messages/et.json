@@ -4708,6 +4708,8 @@
       "membershipHint": "Taotlused kuvatakse liikmete nimekirjas staatusega \"Ootel\".",
       "donsIntro": "Sissejuhatav tekst",
       "donsIntroPlaceholder": "Teie annetus aitab meil rahastada meie tegevust kogu aasta vältel...",
+      "donsButtonLabel": "Nupu tekst",
+      "donsButtonLabelPlaceholder": "Anneta",
       "donsHint": "Nupp viitab avaliku annetuse lehele, kuhu pääseb ligi ilma kontota. Maksutšekk saadetakse automaatselt, kui ühingul on õigus seda väljastada.",
       "contactHint": "See sektsioon kuvab automaatselt linna ja riigi, mis on assotsiatsiooni seadetes seadistatud.",
       "cancel": "Tühista",

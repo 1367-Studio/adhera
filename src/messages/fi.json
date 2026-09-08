@@ -4708,6 +4708,8 @@
       "membershipHint": "Pyynnöt näkyvät jäsenten listalla, joiden tila on \"Odottamassa\".",
       "donsIntro": "Johdantoteksti",
       "donsIntroPlaceholder": "Lahjoituksesi auttaa meitä rahoittamaan toimintaamme vuoden aikana...",
+      "donsButtonLabel": "Painikkeen teksti",
+      "donsButtonLabelPlaceholder": "Lahjoita",
       "donsHint": "Painike linkittää julkisen lahjoitussivun sivulle, johon pääsee käsiksi ilman tiliä. Verokuitti lähetetään automaattisesti, jos yhdistyksellä on oikeus myöntää sellainen kuitti.",
       "contactHint": "Tämä osio näyttää automaattisesti kaupungin ja maan, jotka on määritetty assosiaatioasetuksissa.",
       "cancel": "Peruuta",

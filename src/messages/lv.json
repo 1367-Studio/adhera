@@ -4708,6 +4708,8 @@
       "membershipHint": "Pieprasījumi parādās biedru sarakstā ar statusu \"Gaida\".",
       "donsIntro": "Ievada teksts",
       "donsIntroPlaceholder": "Jūsu ziedojums palīdz mums finansēt mūsu darbības visa gada garumā...",
+      "donsButtonLabel": "Pogas teksts",
+      "donsButtonLabelPlaceholder": "Ziedot",
       "donsHint": "Poga ved uz publisko ziedojumu lapu, kurai var piekļūt bez konta. Nodokļu kvīts tiek nosūtīta automātiski, ja asociācijai ir atļauts to izsniegt.",
       "contactHint": "Šī sadaļa automātiski parāda pilsētu un valsti, kas konfigurēta asociācijas iestatījumos.",
       "cancel": "Atcelt",

@@ -4708,6 +4708,8 @@
       "membershipHint": "Zahtjevi se pojavljuju na popisu članova sa statusom \"Na čekanju\".",
       "donsIntro": "Uvodni tekst",
       "donsIntroPlaceholder": "Vaša donacija nam pomaže financirati naše aktivnosti tijekom godine...",
+      "donsButtonLabel": "Tekst gumba",
+      "donsButtonLabelPlaceholder": "Doniraj",
       "donsHint": "Gumb vodi na javnu stranicu za donacije, kojoj se može pristupiti bez računa. Potvrda o porezu šalje se automatski ako je udruga ovlaštena za izdavanje.",
       "contactHint": "Ovaj odjeljak automatski prikazuje grad i državu konfiguriranu u postavkama udruge.",
       "cancel": "Otkaži",
