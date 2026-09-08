@@ -4647,7 +4647,8 @@
       "actualites": "Novice",
       "membership": "Pridružite se združenju",
       "dons": "Donirajte",
-      "contact": "Stik"
+      "contact": "Stik",
+      "boutique": "Trgovina"
     },
     "defaultTitles": {
       "hero": "Dobrodošli",
@@ -4656,7 +4657,8 @@
       "membership": "Pridružite se združenju",
       "dons": "Donirajte",
       "actualites": "Novice",
-      "contact": "Stik"
+      "contact": "Stik",
+      "boutique": "Trgovina"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# slike ni bilo mogoče prenesti.} other {# slik ni bilo mogoče naložiti.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Dodajte odsek",
       "donsModuleDisabled": "Modul za donacije onemogočen — neviden na javni strani",
       "deleteSectionTitle": "Odsek za brisanje",
-      "deleteSectionDescription": "To dejanje je nepovratno."
+      "deleteSectionDescription": "To dejanje je nepovratno.",
+      "boutiqueModuleDisabled": "Modul Trgovina je onemogočen — ni viden na javnem spletnem mestu"
     },
     "sectionSheet": {
       "editTitle": "Uredi — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Prijavite se",
       "discardTitle": "Ignorirati spremembe?",
       "discardDescription": "Neuporabljene spremembe bodo izgubljene.",
-      "discardConfirm": "Ignoriraj"
+      "discardConfirm": "Ignoriraj",
+      "boutiqueLimit": "Število prikazanih izdelkov",
+      "boutiqueLimitHint": "Na spletnem mestu bo prikazanih le prvih N aktivnih izdelkov."
     },
     "editor": {
       "viewSite": "Oglejte si spletno stran",
@@ -4823,7 +4828,16 @@
         "orderError": "Napaka med naročilom",
         "orderUpdated": "Posodobljen vrstni red",
         "orderCancelled": "Naročilo preklicano"
-      }
+      },
+      "paymentSuccessTitle": "Plačilo potrjeno!",
+      "paymentSuccessDescription": "Hvala za nakup. Poslali smo vam potrditveno e-sporočilo z vašim računom.",
+      "stockAdjustedNotice": "Zaloga nekaterih izdelkov se je spremenila — vaša košarica je bila prilagojena, preverite jo pred nadaljevanjem.",
+      "trackOrderButton": "Sledi moji naročilu",
+      "trackingPageTitle": "Sledenje naročilu",
+      "trackingStatusPending": "Čaka na plačilo",
+      "trackingStatusPaid": "Naročilo plačano",
+      "trackingStatusCancelled": "Naročilo preklicano",
+      "trackingNotFound": "Naročilo ni najdeno"
     },
     "dons": {
       "title": "Moje donacije",

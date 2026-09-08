@@ -4647,6 +4647,7 @@
       "actualites": "Actualités",
       "membership": "Rejoindre l'association",
       "dons": "Faire un don",
+      "boutique": "Boutique",
       "contact": "Contact"
     },
     "defaultTitles": {
@@ -4655,6 +4656,7 @@
       "events": "Prochains événements",
       "membership": "Rejoindre l'association",
       "dons": "Faire un don",
+      "boutique": "Boutique",
       "actualites": "Actualités",
       "contact": "Contact"
     },
@@ -4700,6 +4702,7 @@
       "noSections": "Aucune section. Ajoutez-en une ci-dessous.",
       "addSection": "Ajouter une section",
       "donsModuleDisabled": "Module Dons désactivé — invisible sur le site public",
+      "boutiqueModuleDisabled": "Module Boutique désactivé — invisible sur le site public",
       "deleteSectionTitle": "Supprimer la section",
       "deleteSectionDescription": "Cette action est irréversible."
     },
@@ -4722,6 +4725,8 @@
       "eventsLimitHint": "Les événements sont automatiquement tirés de votre calendrier.",
       "actualitesLimit": "Nombre d'actualités à afficher",
       "actualitesLimitHint": "Seules les N premières actualités publiées seront affichées sur le site.",
+      "boutiqueLimit": "Nombre de produits à afficher",
+      "boutiqueLimitHint": "Seuls les N premiers produits actifs seront affichés sur le site.",
       "membershipIntro": "Texte introductif",
       "membershipIntroPlaceholder": "Remplissez ce formulaire pour demander à rejoindre l'association…",
       "membershipHint": "Les demandes apparaissent dans la liste des membres avec le statut \"En attente\".",
@@ -4786,6 +4791,15 @@
       "viewShop": "Voir la boutique",
       "orderPlacedTitle": "Commande enregistrée !",
       "orderPlacedDescription": "Votre commande est en attente de paiement. L'administration vous contactera pour finaliser.",
+      "paymentSuccessTitle": "Paiement confirmé !",
+      "paymentSuccessDescription": "Merci pour votre achat. Un e-mail de confirmation avec votre reçu vous a été envoyé.",
+      "stockAdjustedNotice": "Le stock de certains articles a changé — votre panier a été ajusté, vérifiez avant de continuer.",
+      "trackOrderButton": "Suivre ma commande",
+      "trackingPageTitle": "Suivi de commande",
+      "trackingStatusPending": "En attente de paiement",
+      "trackingStatusPaid": "Commande payée",
+      "trackingStatusCancelled": "Commande annulée",
+      "trackingNotFound": "Commande introuvable",
       "myOrdersButton": "Mes commandes",
       "continueShopping": "Continuer les achats",
       "maxStockReached": "Stock max atteint",

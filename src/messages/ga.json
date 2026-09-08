@@ -4647,7 +4647,8 @@
       "actualites": "Nuacht",
       "membership": "Bí páirteach sa chumann",
       "dons": "Síntiús",
-      "contact": "Teagmháil"
+      "contact": "Teagmháil",
+      "boutique": "Siopa"
     },
     "defaultTitles": {
       "hero": "Fáilte",
@@ -4656,7 +4657,8 @@
       "membership": "Bí páirteach sa chumann",
       "dons": "Síntiús",
       "actualites": "Nuacht",
-      "contact": "Teagmháil"
+      "contact": "Teagmháil",
+      "boutique": "Siopa"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {Níorbh fhéidir # íomhá a íoslódáil.} other {Níorbh fhéidir # íomhánna a uaslódáil.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Cuir rannóg leis",
       "donsModuleDisabled": "Modúl síntiús díchumasaithe — dofheicthe ar an suíomh poiblí",
       "deleteSectionTitle": "Scrios alt",
-      "deleteSectionDescription": "Tá an gníomh seo dochúlaithe."
+      "deleteSectionDescription": "Tá an gníomh seo dochúlaithe.",
+      "boutiqueModuleDisabled": "Modúl an tSiopa díchumasaithe — ní fheictear é ar an suíomh poiblí"
     },
     "sectionSheet": {
       "editTitle": "Cuir in Eagar - {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Déan iarratas",
       "discardTitle": "Neamhaird a dhéanamh ar athruithe?",
       "discardDescription": "Caillfear athruithe gan chur i bhfeidhm.",
-      "discardConfirm": "Déan neamhaird"
+      "discardConfirm": "Déan neamhaird",
+      "boutiqueLimit": "Líon na dtáirgí le taispeáint",
+      "boutiqueLimitHint": "Ní thaispeánfar ar an suíomh ach an chéad N táirgí gníomhacha."
     },
     "editor": {
       "viewSite": "Féach ar an suíomh gréasáin",
@@ -4823,7 +4828,16 @@
         "orderError": "Earráid le linn an ordaithe",
         "orderUpdated": "Ord nuashonraithe",
         "orderCancelled": "Ordú curtha ar ceal"
-      }
+      },
+      "paymentSuccessTitle": "Íocaíocht deimhnithe!",
+      "paymentSuccessDescription": "Go raibh maith agat as do cheannach. Seoladh ríomhphost deimhnithe chugat lena n-áirítear d'admháil.",
+      "stockAdjustedNotice": "Tá athrú tagtha ar stoc roinnt earraí — coigeartaíodh do chairt, seiceáil í sula leanann tú ar aghaidh.",
+      "trackOrderButton": "Rianaigh m'ordú",
+      "trackingPageTitle": "Rianú ordaithe",
+      "trackingStatusPending": "Ag fanacht le híocaíocht",
+      "trackingStatusPaid": "Ordú íoctha",
+      "trackingStatusCancelled": "Ordú cealaithe",
+      "trackingNotFound": "Ordú gan aimsiú"
     },
     "dons": {
       "title": "Mo Síntiúis",

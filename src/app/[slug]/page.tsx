@@ -7,6 +7,7 @@ import { SiteEventsSection }      from "@/components/site/sections/site-events-s
 import { SiteActualitesSection }  from "@/components/site/sections/site-actualites-section"
 import { SiteMembershipSection }  from "@/components/site/sections/site-membership-section"
 import { SiteDonsSection }        from "@/components/site/sections/site-dons-section"
+import { SiteBoutiqueSection }    from "@/components/site/sections/site-boutique-section"
 import { SiteContactSection }     from "@/components/site/sections/site-contact-section"
 import { SiteNavbar }             from "@/components/site/site-navbar"
 import { SiteFooter }             from "@/components/site/site-footer"
@@ -24,6 +25,11 @@ type PublicActualite = {
   pinned: boolean; publishedAt: string
 }
 
+type PublicBoutiqueProduit = {
+  id: string; name: string; imageUrl: string | null
+  variantes: { price: number }[]
+}
+
 async function getSiteData(slug: string) {
   const assoc = await prisma.association.findUnique({
     where:  { slug },
@@ -38,7 +44,7 @@ async function getSiteData(slug: string) {
   if (!mods.site) return null
 
   const now = new Date()
-  const [events, actualites] = await Promise.all([
+  const [events, actualites, boutiqueProduits] = await Promise.all([
     mods.evenements
       ? prisma.evenement.findMany({
           where:   { association: { slug }, date: { gte: now }, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
@@ -57,6 +63,14 @@ async function getSiteData(slug: string) {
           orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
           take:    20,
           select:  { id: true, title: true, content: true, imageUrl: true, pinned: true, publishedAt: true },
+        })
+      : Promise.resolve([]),
+    mods.boutique
+      ? prisma.boutiqueProduit.findMany({
+          where:   { association: { slug }, status: "ACTIVE" },
+          orderBy: { createdAt: "desc" },
+          take:    20,
+          select:  { id: true, name: true, imageUrl: true, variantes: { select: { price: true } } },
         })
       : Promise.resolve([]),
   ])
@@ -112,9 +126,10 @@ async function getSiteData(slug: string) {
   return {
     name:        assoc.name,
     slug:        assoc.slug,
-    // Une section "dons" peut rester dans siteConfig après désactivation du module —
-    // c'est ce drapeau, pas la présence de la section, qui décide de son affichage.
-    donsEnabled: mods.dons,
+    // Une section "dons"/"boutique" peut rester dans siteConfig après désactivation du
+    // module — c'est ce drapeau, pas la présence de la section, qui décide de son affichage.
+    donsEnabled:     mods.dons,
+    boutiqueEnabled: mods.boutique,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
     membershipFormBySection,
     membershipCta,
@@ -136,6 +151,7 @@ async function getSiteData(slug: string) {
       ...a,
       publishedAt: a.publishedAt!.toISOString(),
     })) satisfies PublicActualite[],
+    boutiqueProduits: boutiqueProduits satisfies PublicBoutiqueProduit[],
   }
 }
 
@@ -199,6 +215,10 @@ export default async function PublicSitePage(
                     donationForm={data.donationFormBySection[section.id] ?? null}
                   />
                 )
+                : null
+            case "boutique":
+              return data.boutiqueEnabled
+                ? <SiteBoutiqueSection key={section.id} section={section} produits={data.boutiqueProduits} color={color} slug={slug} />
                 : null
             case "contact":
               return <SiteContactSection key={section.id} section={section} city={data.city} country={data.country} />

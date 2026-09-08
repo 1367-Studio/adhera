@@ -27,6 +27,7 @@ function createSection(type: SectionType, t: Translator): SiteSection {
     case "actualites": return { id: newId(), type: "actualites", title: t("site.defaultTitles.actualites"), limit: 6 }
     case "membership": return { id: newId(), type: "membership", title: t("site.defaultTitles.membership"), body: "" }
     case "dons":       return { id: newId(), type: "dons",       title: t("site.defaultTitles.dons"),       body: "" }
+    case "boutique":   return { id: newId(), type: "boutique",   title: t("site.defaultTitles.boutique"),   limit: 6 }
     case "contact":    return { id: newId(), type: "contact",    title: t("site.defaultTitles.contact") }
   }
 }

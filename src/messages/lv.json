@@ -4647,7 +4647,8 @@
       "actualites": "Ziņas",
       "membership": "Pievienojies asociācijai",
       "dons": "Ziedo",
-      "contact": "Kontakti"
+      "contact": "Kontakti",
+      "boutique": "Veikals"
     },
     "defaultTitles": {
       "hero": "Laipni lūdzam",
@@ -4656,7 +4657,8 @@
       "membership": "Pievienojies asociācijai",
       "dons": "Ziedo",
       "actualites": "Ziņas",
-      "contact": "Kontakti"
+      "contact": "Kontakti",
+      "boutique": "Veikals"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# attēlu nevarēja lejupielādēt.} other {# attēlus nevarēja augšupielādēt.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Pievienot sadaļu",
       "donsModuleDisabled": "Ziedojumu modulis atspējots — neredzams publiskajā vietnē",
       "deleteSectionTitle": "Dzēst sadaļu",
-      "deleteSectionDescription": "Šī rīcība ir neatgriezeniska."
+      "deleteSectionDescription": "Šī rīcība ir neatgriezeniska.",
+      "boutiqueModuleDisabled": "Veikala modulis atspējots — nav redzams publiskajā vietnē"
     },
     "sectionSheet": {
       "editTitle": "Rediģēt — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Piesakies",
       "discardTitle": "Ignorēt izmaiņas?",
       "discardDescription": "Nepiemērotās izmaiņas tiks zaudētas.",
-      "discardConfirm": "Ignorēt"
+      "discardConfirm": "Ignorēt",
+      "boutiqueLimit": "Rādāmo produktu skaits",
+      "boutiqueLimitHint": "Vietnē tiks rādīti tikai pirmie N aktīvie produkti."
     },
     "editor": {
       "viewSite": "Skatīt mājaslapu",
@@ -4823,7 +4828,16 @@
         "orderError": "Kļūda pasūtījuma laikā",
         "orderUpdated": "Atjauninātā secība",
         "orderCancelled": "Pasūtījums atcelts"
-      }
+      },
+      "paymentSuccessTitle": "Maksājums apstiprināts!",
+      "paymentSuccessDescription": "Paldies par pirkumu! Jums nosūtīts apstiprinājuma e-pasts ar kvīti.",
+      "stockAdjustedNotice": "Dažu preču krājums ir mainījies — jūsu grozs tika pielāgots, pārskatiet to pirms turpināt.",
+      "trackOrderButton": "Izsekot manam pasūtījumam",
+      "trackingPageTitle": "Pasūtījuma izsekošana",
+      "trackingStatusPending": "Gaida maksājumu",
+      "trackingStatusPaid": "Pasūtījums apmaksāts",
+      "trackingStatusCancelled": "Pasūtījums atcelts",
+      "trackingNotFound": "Pasūtījums nav atrasts"
     },
     "dons": {
       "title": "Mani ziedojumi",

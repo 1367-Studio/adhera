@@ -110,6 +110,9 @@ export async function POST(req: Request) {
           where:   { id: commandeId },
           include: {
             membre:      { select: { firstName: true, lastName: true, userId: true, user: { select: { email: true } } } },
+            // guestName/guestEmail are already selected by default (no `select` on the
+            // top-level query) — kept here as a pointer for readers looking for the
+            // anonymous-storefront-checkout path.
             association: { select: { id: true, name: true, slug: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
             items:       {
               include: {
@@ -122,7 +125,9 @@ export async function POST(req: Request) {
 
         let claimed = false
         let receiptNumber = ""
-        const buyerLabel = commande?.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
+        const buyerLabel = commande?.membre
+          ? `${commande.membre.firstName} ${commande.membre.lastName}`
+          : commande?.guestName ?? null
 
         if (commande && commande.status === "PENDING") {
           // Best-effort: link to whichever exercice covers today's date, but never block —
@@ -195,10 +200,19 @@ export async function POST(req: Request) {
         }
 
         if (commande && claimed) {
-          // Email confirmation to member, with the receipt PDF attached when it builds cleanly
-          const memberEmail = commande.membre?.user?.email
-          if (memberEmail && commande.membre) {
-            const portalUrl = `${APP_URL}/portal/${commande.association.slug}/boutique/commandes`
+          // Email confirmation to the buyer — a logged-in member or an anonymous storefront
+          // guest (source = STOREFRONT/EVENEMENT, no Membre attached) — with the receipt PDF
+          // attached when it builds cleanly.
+          const recipientEmail = commande.membre?.user?.email ?? commande.guestEmail
+          const recipientFirstName = commande.membre?.firstName ?? commande.guestName?.split(" ")[0] ?? "Client"
+          if (recipientEmail) {
+            // A guest has no portal account to link to — send them to the public site
+            // homepage instead of the member portal's order history.
+            const portalUrl = commande.membre
+              ? `${APP_URL}/portal/${commande.association.slug}/boutique/commandes`
+              : commande.trackingToken
+                ? `${APP_URL}/${commande.association.slug}/boutique/pedido/${commande.trackingToken}`
+                : `${APP_URL}/${commande.association.slug}`
 
             let pdfAttachment: { filename: string; content: Buffer } | undefined
             try {
@@ -210,7 +224,7 @@ export async function POST(req: Request) {
                 secondaryDate:  paidAt,
                 association: { ...commande.association, ...resolveDocumentBranding(commande.association) },
                 fournisseur: {
-                  companyName: buyerLabel ?? `${commande.membre.firstName} ${commande.membre.lastName}`,
+                  companyName: buyerLabel ?? recipientFirstName,
                   address: null, city: null, postalCode: null, siret: null, vatNumber: null,
                 },
                 items: commande.items.map(i => ({
@@ -235,8 +249,8 @@ export async function POST(req: Request) {
 
             sendEmail({
               ...boutiqueConfirmationEmail({
-                firstName:       commande.membre.firstName,
-                email:           memberEmail,
+                firstName:       recipientFirstName,
+                email:           recipientEmail,
                 associationName: commande.association.name,
                 totalAmount:     commande.totalAmount,
                 paidAt,
@@ -258,7 +272,7 @@ export async function POST(req: Request) {
             select: { id: true, email: true },
           })
           if (admins.length) {
-            const memberName = commande.membre?.firstName ?? "Un membre"
+            const memberName = commande.membre?.firstName ?? commande.guestName ?? "Un invité"
             await prisma.notification.createMany({
               data: admins.map(a => ({
                 userId: a.id,
@@ -280,7 +294,7 @@ export async function POST(req: Request) {
               sendEmail(boutiqueNewOrderAdminEmail({
                 email:           admin.email,
                 associationName: commande.association.name,
-                buyerLabel:      commande.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : "Un invité",
+                buyerLabel:      buyerLabel ?? "Un invité",
                 totalAmount:     commande.totalAmount,
                 dashboardUrl,
               }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })

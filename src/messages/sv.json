@@ -4647,7 +4647,8 @@
       "actualites": "Nyheter",
       "membership": "Gå med i föreningen",
       "dons": "Donera",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "defaultTitles": {
       "hero": "Välkommen",
@@ -4656,7 +4657,8 @@
       "membership": "Gå med i föreningen",
       "dons": "Donera",
       "actualites": "Nyheter",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# bild kunde inte laddas ner.} other {# bilder kunde inte laddas upp.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Lägg till en sektion",
       "donsModuleDisabled": "Donationsmodulen inaktiverad — osynlig på den offentliga sidan",
       "deleteSectionTitle": "Ta bort avsnittet",
-      "deleteSectionDescription": "Denna åtgärd är oåterkallelig."
+      "deleteSectionDescription": "Denna åtgärd är oåterkallelig.",
+      "boutiqueModuleDisabled": "Butiksmodulen är inaktiverad — visas inte på den offentliga webbplatsen"
     },
     "sectionSheet": {
       "editTitle": "Redigering — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Ansök",
       "discardTitle": "Ignorera förändringar?",
       "discardDescription": "Oapplicerade ändringar kommer att gå förlorade.",
-      "discardConfirm": "Ignorera"
+      "discardConfirm": "Ignorera",
+      "boutiqueLimit": "Antal produkter att visa",
+      "boutiqueLimitHint": "Endast de första N aktiva produkterna visas på webbplatsen."
     },
     "editor": {
       "viewSite": "Se webbplatsen",
@@ -4823,7 +4828,16 @@
         "orderError": "Fel under beställning",
         "orderUpdated": "Uppdaterad ordning",
         "orderCancelled": "Beställning avbokad"
-      }
+      },
+      "paymentSuccessTitle": "Betalning bekräftad!",
+      "paymentSuccessDescription": "Tack för ditt köp. Ett bekräftelsemail med ditt kvitto har skickats till dig.",
+      "stockAdjustedNotice": "Lagersaldot för vissa artiklar har ändrats — din varukorg har justerats, granska den innan du fortsätter.",
+      "trackOrderButton": "Spåra min beställning",
+      "trackingPageTitle": "Orderspårning",
+      "trackingStatusPending": "Väntar på betalning",
+      "trackingStatusPaid": "Order betald",
+      "trackingStatusCancelled": "Order avbruten",
+      "trackingNotFound": "Beställningen hittades inte"
     },
     "dons": {
       "title": "Mina donationer",

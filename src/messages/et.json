@@ -4647,7 +4647,8 @@
       "actualites": "Uudised",
       "membership": "Liitu ühinguga",
       "dons": "Annetage",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Pood"
     },
     "defaultTitles": {
       "hero": "Tere tulemast",
@@ -4656,7 +4657,8 @@
       "membership": "Liitu ühinguga",
       "dons": "Annetage",
       "actualites": "Uudised",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Pood"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# pilti ei saanud alla laadida.} other {# pilte ei saanud üles laadida.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Lisa sektsioon",
       "donsModuleDisabled": "Annetusmoodul on keelatud — avalikul saidil nähtamatu",
       "deleteSectionTitle": "Kustuta sektsioon",
-      "deleteSectionDescription": "See tegevus on pöördumatu."
+      "deleteSectionDescription": "See tegevus on pöördumatu.",
+      "boutiqueModuleDisabled": "Poe moodul on välja lülitatud — avalikul veebisaidil ei kuvata"
     },
     "sectionSheet": {
       "editTitle": "Muuda — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Kandideeri",
       "discardTitle": "Ignoreerida muudatusi?",
       "discardDescription": "Rakendamata muudatused kaovad.",
-      "discardConfirm": "Ignoreeri"
+      "discardConfirm": "Ignoreeri",
+      "boutiqueLimit": "Kuvatavate toodete arv",
+      "boutiqueLimitHint": "Veebisaidil kuvatakse ainult esimesed N aktiivset toodet."
     },
     "editor": {
       "viewSite": "Vaata veebilehte",
@@ -4823,7 +4828,16 @@
         "orderError": "Viga tellimuse ajal",
         "orderUpdated": "Uuendatud järjekord",
         "orderCancelled": "Tellimus tühistatud"
-      }
+      },
+      "paymentSuccessTitle": "Makse kinnitatud!",
+      "paymentSuccessDescription": "Täname ostu eest. Teile on saadetud kinnituskiri koos kviitungiga.",
+      "stockAdjustedNotice": "Mõne toote laoseis on muutunud — teie ostukorvi on kohandatud, vaadake see enne jätkamist üle.",
+      "trackOrderButton": "Jälgi mu tellimust",
+      "trackingPageTitle": "Tellimuse jälgimine",
+      "trackingStatusPending": "Ootab makset",
+      "trackingStatusPaid": "Tellimus makstud",
+      "trackingStatusCancelled": "Tellimus tühistatud",
+      "trackingNotFound": "Tellimust ei leitud"
     },
     "dons": {
       "title": "Minu annetused",

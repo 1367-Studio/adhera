@@ -4647,7 +4647,8 @@
       "actualites": "Nieuws",
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Winkel"
     },
     "defaultTitles": {
       "hero": "Welkom",
@@ -4656,7 +4657,8 @@
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
       "actualites": "Nieuws",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Winkel"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# afbeelding kon niet worden gedownload.} other {# afbeeldingen konden niet worden geüpload.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Voeg een sectie toe",
       "donsModuleDisabled": "Donatiemodule uitgeschakeld — onzichtbaar op de openbare site",
       "deleteSectionTitle": "Sectie verwijderen",
-      "deleteSectionDescription": "Deze handeling is onomkeerbaar."
+      "deleteSectionDescription": "Deze handeling is onomkeerbaar.",
+      "boutiqueModuleDisabled": "Winkelmodule uitgeschakeld — niet zichtbaar op de openbare site"
     },
     "sectionSheet": {
       "editTitle": "Bewerking — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Solliciteer",
       "discardTitle": "Veranderingen negeren?",
       "discardDescription": "Niet-toegepaste wijzigingen gaan verloren.",
-      "discardConfirm": "Negeer"
+      "discardConfirm": "Negeer",
+      "boutiqueLimit": "Aantal weer te geven producten",
+      "boutiqueLimitHint": "Alleen de eerste N actieve producten worden op de site getoond."
     },
     "editor": {
       "viewSite": "Zie de website",
@@ -4823,7 +4828,16 @@
         "orderError": "Fout tijdens opdracht",
         "orderUpdated": "Bijgewerkte volgorde",
         "orderCancelled": "Bestelling geannuleerd"
-      }
+      },
+      "paymentSuccessTitle": "Betaling bevestigd!",
+      "paymentSuccessDescription": "Bedankt voor uw aankoop. Er is een bevestigingsmail met uw bon naar u verzonden.",
+      "stockAdjustedNotice": "De voorraad van sommige artikelen is gewijzigd — uw winkelwagen is aangepast, controleer deze voordat u verdergaat.",
+      "trackOrderButton": "Mijn bestelling volgen",
+      "trackingPageTitle": "Bestelling volgen",
+      "trackingStatusPending": "In afwachting van betaling",
+      "trackingStatusPaid": "Bestelling betaald",
+      "trackingStatusCancelled": "Bestelling geannuleerd",
+      "trackingNotFound": "Bestelling niet gevonden"
     },
     "dons": {
       "title": "Mijn Donaties",

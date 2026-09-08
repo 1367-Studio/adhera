@@ -4647,7 +4647,8 @@
       "actualites": "Notizie",
       "membership": "Unisciti all'associazione",
       "dons": "Dona",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "boutique": "Negozio"
     },
     "defaultTitles": {
       "hero": "Benvenuto",
@@ -4656,7 +4657,8 @@
       "membership": "Unisciti all'associazione",
       "dons": "Dona",
       "actualites": "Notizie",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "boutique": "Negozio"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# immagine non poteva essere scaricata.} other {# immagini non potevano essere caricate.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Aggiungi una sezione",
       "donsModuleDisabled": "Modulo donazioni disabilitato — invisibile sul sito pubblico",
       "deleteSectionTitle": "Sezione elimina",
-      "deleteSectionDescription": "Questa azione è irreversibile."
+      "deleteSectionDescription": "Questa azione è irreversibile.",
+      "boutiqueModuleDisabled": "Modulo Negozio disattivato — non visibile sul sito pubblico"
     },
     "sectionSheet": {
       "editTitle": "Modifica — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Candidati",
       "discardTitle": "Ignorare i cambiamenti?",
       "discardDescription": "Le modifiche non applicate andranno perse.",
-      "discardConfirm": "Ignora"
+      "discardConfirm": "Ignora",
+      "boutiqueLimit": "Numero di prodotti da visualizzare",
+      "boutiqueLimitHint": "Sul sito verranno mostrati solo i primi N prodotti attivi."
     },
     "editor": {
       "viewSite": "Consulta il sito web",
@@ -4823,7 +4828,16 @@
         "orderError": "Errore durante l'ordine",
         "orderUpdated": "Ordine aggiornato",
         "orderCancelled": "Ordine cancellato"
-      }
+      },
+      "paymentSuccessTitle": "Pagamento confermato!",
+      "paymentSuccessDescription": "Grazie per il tuo acquisto. Ti è stata inviata un'email di conferma con la tua ricevuta.",
+      "stockAdjustedNotice": "Lo stock di alcuni articoli è cambiato — il tuo carrello è stato modificato, controlla prima di continuare.",
+      "trackOrderButton": "Traccia il mio ordine",
+      "trackingPageTitle": "Tracciamento ordine",
+      "trackingStatusPending": "In attesa di pagamento",
+      "trackingStatusPaid": "Ordine pagato",
+      "trackingStatusCancelled": "Ordine annullato",
+      "trackingNotFound": "Ordine non trovato"
     },
     "dons": {
       "title": "Le mie donazioni",

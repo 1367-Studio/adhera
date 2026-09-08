@@ -4647,7 +4647,8 @@
       "actualites": "Vijesti",
       "membership": "Pridružite se udruzi",
       "dons": "Donirajte",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Trgovina"
     },
     "defaultTitles": {
       "hero": "Dobrodošli",
@@ -4656,7 +4657,8 @@
       "membership": "Pridružite se udruzi",
       "dons": "Donirajte",
       "actualites": "Vijesti",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Trgovina"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# slika nije mogla biti preuzeta.} other {# slike nisu se mogle učitati.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Dodajte odjeljak",
       "donsModuleDisabled": "Modul za donacije onemogućen — nevidljiv na javnoj stranici",
       "deleteSectionTitle": "Odjeljak za brisanje",
-      "deleteSectionDescription": "Ova radnja je nepovratna."
+      "deleteSectionDescription": "Ova radnja je nepovratna.",
+      "boutiqueModuleDisabled": "Modul Trgovina onemogućen — nije vidljiv na javnoj stranici"
     },
     "sectionSheet": {
       "editTitle": "Uređivanje — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Prijavite se",
       "discardTitle": "Ignorirati promjene?",
       "discardDescription": "Neprimijenjene promjene bit će izgubljene.",
-      "discardConfirm": "Ignoriraj"
+      "discardConfirm": "Ignoriraj",
+      "boutiqueLimit": "Broj proizvoda za prikaz",
+      "boutiqueLimitHint": "Na stranici će biti prikazano samo prvih N aktivnih proizvoda."
     },
     "editor": {
       "viewSite": "Pogledajte web stranicu",
@@ -4823,7 +4828,16 @@
         "orderError": "Pogreška tijekom narudžbe",
         "orderUpdated": "Ažurirani redoslijed",
         "orderCancelled": "Narudžba otkazana"
-      }
+      },
+      "paymentSuccessTitle": "Plaćanje potvrđeno!",
+      "paymentSuccessDescription": "Hvala vam na kupnji. Poslana vam je potvrda e-poštom s vašim računom.",
+      "stockAdjustedNotice": "Zaliha nekih artikala se promijenila — vaša košarica je prilagođena, provjerite prije nastavka.",
+      "trackOrderButton": "Prati moju narudžbu",
+      "trackingPageTitle": "Praćenje narudžbe",
+      "trackingStatusPending": "Čeka se plaćanje",
+      "trackingStatusPaid": "Narudžba plaćena",
+      "trackingStatusCancelled": "Narudžba otkazana",
+      "trackingNotFound": "Narudžba nije pronađena"
     },
     "dons": {
       "title": "Moje donacije",
