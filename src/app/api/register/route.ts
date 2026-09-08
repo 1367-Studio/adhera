@@ -5,7 +5,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import type Stripe from "stripe"
 import { stripe, priceIdFor, TRIAL_DAYS } from "@/lib/stripe"
-import { createSubscriptionScheduleFromOffer, type OfferPhase } from "@/lib/pricing-offers"
+import { createSubscriptionScheduleFromOffer, offerRequiresPaymentMethod, type OfferPhase } from "@/lib/pricing-offers"
 import { generateUniqueSlug } from "@/lib/slug"
 import { sendEmail } from "@/lib/mail"
 import { adminWelcomeEmail } from "@/lib/email"
@@ -40,10 +40,10 @@ const schema = z.object({
 ).refine(
   d => (d.customerId != null) === (d.paymentMethodId != null),
   { message: "Moyen de paiement incomplet." },
-).refine(
-  d => d.offerToken == null || d.paymentMethodId != null,
-  { message: "Un moyen de paiement est requis pour cette offre." },
 )
+// Whether an offer needs a payment method depends on its phases' amounts, only known once
+// the token is looked up below — a fully free offer (every phase at 0€) is exempt, so that
+// check happens against the DB record rather than here.
 
 export async function POST(req: Request) {
   const body   = await req.json().catch(() => null)
@@ -59,6 +59,15 @@ export async function POST(req: Request) {
   // fails past this point, so a transient error doesn't permanently burn an unused link.
   let offer: { id: string; planTier: "ESSENTIAL" | "PRO"; phases: OfferPhase[]; stripeProductId: string } | null = null
   if (offerToken) {
+    // Read before the atomic claim below so a missing payment method on a paid offer can be
+    // rejected without burning the link's one-time use — only a genuinely free offer (every
+    // phase at 0€) is allowed through without one.
+    const preCheck = await prisma.pricingOffer.findUnique({ where: { token: offerToken } })
+    if (!preCheck) return NextResponse.json({ error: "Ce lien n'est plus valide." }, { status: 409 })
+    if (offerRequiresPaymentMethod(preCheck.phases as OfferPhase[]) && !paymentMethodId) {
+      return NextResponse.json({ error: "Un moyen de paiement est requis pour cette offre." }, { status: 422 })
+    }
+
     // Expiry is enforced here too, not just on the public lookup route (GET /api/public/
     // pricing-offers/[token]) — that route only gates what the browser renders; without
     // this check here a PENDING-but-past-expiresAt offer could still be redeemed by
@@ -73,9 +82,9 @@ export async function POST(req: Request) {
     })
     if (claim.count === 0) return NextResponse.json({ error: "Ce lien n'est plus valide." }, { status: 409 })
 
-    const found = await prisma.pricingOffer.findUnique({ where: { token: offerToken } })
-    if (!found) return NextResponse.json({ error: "Ce lien n'est plus valide." }, { status: 409 })
-    offer = { id: found.id, planTier: found.planTier, phases: found.phases as OfferPhase[], stripeProductId: found.stripeProductId }
+    // claim.count > 0 guarantees preCheck's row is the one just claimed (updateMany matched
+    // on this exact token) — no need to re-fetch it.
+    offer = { id: preCheck.id, planTier: preCheck.planTier, phases: preCheck.phases as OfferPhase[], stripeProductId: preCheck.stripeProductId }
   }
 
   // Email is only unique per-association (@@unique([email, associationId])), same as
@@ -107,7 +116,7 @@ export async function POST(req: Request) {
 
     if (offer) {
       const schedule = await createSubscriptionScheduleFromOffer({
-        customerId, paymentMethodId: paymentMethodId!,
+        customerId, paymentMethodId,
         phases:          offer.phases,
         stripeProductId: offer.stripeProductId,
         // Stable per (customer, offer): a network retry or accidental double-submit

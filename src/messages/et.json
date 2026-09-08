@@ -116,6 +116,7 @@
         "perkEasyCancel": "Lihtne tühistamine",
         "genericError": "Viga",
         "startTrial": "Alusta minu tasuta prooviperioodi",
+        "createAccount": "Loo konto",
         "perkNoCard": "Krediitkaarti pole vaja",
         "createAccountError": "Konto loomise viga"
       },

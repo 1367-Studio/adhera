@@ -116,6 +116,7 @@
         "perkEasyCancel": "Helppo peruutus",
         "genericError": "Virhe",
         "startTrial": "Aloita ilmainen kokeilujaksoni",
+        "createAccount": "Luo tili",
         "perkNoCard": "Luottokorttia ei tarvita",
         "createAccountError": "Virhe tilin luomisessa"
       },

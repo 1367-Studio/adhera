@@ -90,11 +90,12 @@ function StepInfo({
   existingCustomerId?: string
   viaGoogle?:          boolean
   pricing:             PricingInfo
-  // A custom-pricing offer link (see /api/register's offerToken branch) is paid from its
-  // first phase, so it keeps a card step: this form only prepares the SetupIntent and
-  // hands over to PaymentForm via onNext. The standard signup has no card step at all —
-  // the trial runs without one (see /api/register) — so this form is the whole wizard
-  // and creates the account itself, then calls onSuccess.
+  // A custom-pricing offer link (see /api/register's offerToken branch) is normally paid
+  // from its first phase, so it keeps a card step: this form only prepares the SetupIntent
+  // and hands over to PaymentForm via onNext. A €0 offer (isFreeOffer) and the standard
+  // signup both skip the card step entirely — the trial runs without one, and a free offer
+  // has nothing to charge — so this form is the whole wizard for them and creates the
+  // account itself, then calls onSuccess.
   offer?:              OfferSummary
   tier:                PlanTier
   plan:                Plan
@@ -105,6 +106,11 @@ function StepInfo({
   const loc = useLocale()
   const [loading,  setLoading]  = useState(false)
   const [apiError, setApiError] = useState("")
+
+  // A €0 offer (every phase at 0€) never has anything for Stripe to collect — /api/register
+  // doesn't require a payment method for it either (see offerRequiresPaymentMethod), so this
+  // form creates the account directly instead of handing off to the card step.
+  const isFreeOffer = !!offer && offer.phases.every(p => p.amountCents === 0)
 
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({
     resolver:      zodResolver(registerSchema),
@@ -120,7 +126,26 @@ function StepInfo({
       email: data.email, password: data.password, acceptedTerms: data.acceptedTerms,
     }
     try {
-      if (offer) {
+      if (offer && isFreeOffer) {
+        const res = await fetch("/api/register", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({
+            associationName: info.associationName,
+            city:            info.city || undefined,
+            firstName:       info.firstName,
+            lastName:        info.lastName,
+            email:           info.email,
+            password:        info.password,
+            acceptedTerms:   info.acceptedTerms,
+            locale:          loc,
+            offerToken:      offer.token,
+          }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error ?? t("createAccountError"))
+        onSuccess(info)
+      } else if (offer) {
         const res  = await fetch("/api/stripe/setup-intent", {
           method:  "POST",
           headers: { "Content-Type": "application/json" },
@@ -253,7 +278,7 @@ function StepInfo({
       )}
 
       <Button type="submit" className="w-full h-11 text-sm font-medium mt-2" disabled={loading}>
-        {offer ? t("continueToPayment") : t("startTrial")}
+        {offer ? (isFreeOffer ? t("createAccount") : t("continueToPayment")) : t("startTrial")}
         {loading
           ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
           : <ArrowRightIcon    className="mr-2 size-4" />
@@ -441,6 +466,9 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   const offerToken = searchParams.get("offer")
   const [offer,        setOffer]        = useState<OfferSummary | "invalid" | null>(null)
   const [offerLoading, setOfferLoading] = useState(!!offerToken)
+  // A €0 offer skips the card step entirely (see StepInfo above) — the 2-step "Votre
+  // compte / Paiement" indicator would be misleading since there's no second step to reach.
+  const isFreeOffer = !!offer && offer !== "invalid" && offer.phases.every(p => p.amountCents === 0)
 
   useEffect(() => {
     if (!offerToken) return
@@ -570,7 +598,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   return (
     <div className="space-y-6">
       {offer
-        ? <StepIndicator current={step as "info" | "payment"} />
+        ? (isFreeOffer ? null : <StepIndicator current={step as "info" | "payment"} />)
         : <PlanPicker tier={tier} onTierChange={setTier} plan={plan} onPlanChange={setPlan} pricing={pricing} />
       }
 
