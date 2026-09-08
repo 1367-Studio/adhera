@@ -133,10 +133,28 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const upcomingWithCounts = withCounts(upcoming)
   const pastWithCounts     = withCounts(past)
 
+  const locale = (await getLocale()) as Locale
+
+  // translateFields only maps the top-level string keys it's given — it doesn't recurse
+  // into nested arrays — so ticket-type labels need their own batched call, separate from
+  // title/description below. Mirrors the ticketTypes translation on the public event page.
+  const flatTicketTypes       = [...upcomingWithCounts, ...pastWithCounts].flatMap(e => e.ticketTypes)
+  const translatedTicketTypes = await translateFields(flatTicketTypes, ["label"], locale, associationId)
+  const translatedLabelById   = new Map(translatedTicketTypes.map(tt => [tt.id, tt.label]))
+  const withTranslatedLabels  = (list: typeof upcomingWithCounts) =>
+    list.map(e => ({
+      ...e,
+      ticketTypes: e.ticketTypes.map(tt => ({ ...tt, label: translatedLabelById.get(tt.id) ?? tt.label })),
+    }))
+
   // One batched Azure call (cached per locale) covers title/description for every
   // event on the page instead of one call per event.
-  const locale     = (await getLocale()) as Locale
-  const translated = await translateFields([...upcomingWithCounts, ...pastWithCounts], ["title", "description"], locale, associationId)
+  const translated = await translateFields(
+    [...withTranslatedLabels(upcomingWithCounts), ...withTranslatedLabels(pastWithCounts)],
+    ["title", "description"],
+    locale,
+    associationId,
+  )
 
   return NextResponse.json({
     upcoming:        translated.slice(0, upcomingWithCounts.length),
