@@ -4708,6 +4708,8 @@
       "membershipHint": "It-talbiet jidhru fil-lista tal-membri b'status ta' \"Pendenti\".",
       "donsIntro": "Test introduttorju",
       "donsIntroPlaceholder": "Id-donazzjoni tiegħek tgħinna finanzjaw l-azzjonijiet tagħna matul is-sena...",
+      "donsButtonLabel": "Test tal-buttuna",
+      "donsButtonLabelPlaceholder": "Agħti",
       "donsHint": "Il-buttuna tgħaqqad mal-paġna tad-donazzjonijiet pubbliċi, li tista' tiġi aċċessata mingħajr kont. Ir-riċevuta tat-taxxa tintbagħat awtomatikament jekk l-assoċjazzjoni tkun awtorizzata toħroġ waħda.",
       "contactHint": "Din is-sezzjoni turi awtomatikament il-belt u l-pajjiż kkonfigurati fis-settings tal-assoċjazzjoni.",
       "cancel": "Ikkanċella",

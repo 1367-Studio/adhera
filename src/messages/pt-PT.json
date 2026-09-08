@@ -4708,6 +4708,8 @@
       "membershipHint": "Os pedidos aparecem na lista de membros com o estado \"Pendente\".",
       "donsIntro": "Texto introdutório",
       "donsIntroPlaceholder": "O seu donativo ajuda-nos a financiar as nossas ações ao longo do ano…",
+      "donsButtonLabel": "Texto do botão",
+      "donsButtonLabelPlaceholder": "Doar",
       "donsHint": "O botão remete para a página de donativos pública, acessível sem conta. O recibo fiscal é enviado automaticamente se a associação estiver habilitada a emiti-lo.",
       "contactHint": "Esta secção mostra automaticamente a cidade e o país configurados nas definições da associação.",
       "cancel": "Cancelar",

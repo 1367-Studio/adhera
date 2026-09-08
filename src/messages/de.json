@@ -4708,6 +4708,8 @@
       "membershipHint": "Anfragen erscheinen in der Liste der Mitglieder mit dem Status \"Ausstehend\".",
       "donsIntro": "Einleitungstext",
       "donsIntroPlaceholder": "Ihre Spende hilft uns, unsere Aktivitäten das ganze Jahr über zu finanzieren...",
+      "donsButtonLabel": "Button-Text",
+      "donsButtonLabelPlaceholder": "Spenden",
       "donsHint": "Der Button verweist auf die öffentliche Spendenseite, die ohne Konto zugänglich ist. Die Steuerquittung wird automatisch gesendet, wenn der Verein dazu befugt ist.",
       "contactHint": "Dieser Abschnitt zeigt automatisch die Stadt und das Land an, das in den Association-Einstellungen konfiguriert war.",
       "cancel": "Abbrechen",

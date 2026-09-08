@@ -25,7 +25,7 @@ export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts }: P
           className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
           style={{ background: color }}
         >
-          Faire un don
+          {section.buttonLabel?.trim() || "Faire un don"}
         </Link>
 
         {canIssueTaxReceipts && (

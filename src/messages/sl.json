@@ -4708,6 +4708,8 @@
       "membershipHint": "Zahteve se pojavijo na seznamu članov s statusom \"V obravnavi\".",
       "donsIntro": "Uvodno besedilo",
       "donsIntroPlaceholder": "Vaša donacija nam pomaga financirati naše dejavnosti skozi vse leto...",
+      "donsButtonLabel": "Besedilo gumba",
+      "donsButtonLabelPlaceholder": "Doniraj",
       "donsHint": "Gumb vodi do javne strani za donacije, do katere je mogoče dostopati brez računa. Potrdilo o davku se pošlje samodejno, če je združenje pooblaščeno za izdajo takšnega.",
       "contactHint": "Ta razdelek samodejno prikazuje mesto in državo, konfigurirano v nastavitvah združenja.",
       "cancel": "Prekliči",

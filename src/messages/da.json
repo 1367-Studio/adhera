@@ -4708,6 +4708,8 @@
       "membershipHint": "Anmodninger vises på listen over medlemmer med status \"Afventende\".",
       "donsIntro": "Introduktionstekst",
       "donsIntroPlaceholder": "Din donation hjælper os med at finansiere vores aktiviteter gennem året...",
+      "donsButtonLabel": "Knaptekst",
+      "donsButtonLabelPlaceholder": "Donér",
       "donsHint": "Knappen linker til den offentlige donationsside, som kan tilgås uden konto. Skattekvitteringen sendes automatisk, hvis foreningen er autoriseret til at udstede en.",
       "contactHint": "Denne sektion viser automatisk byen og landet konfigureret i associationsindstillingerne.",
       "cancel": "Annuller",

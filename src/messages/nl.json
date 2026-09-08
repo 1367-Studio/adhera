@@ -4708,6 +4708,8 @@
       "membershipHint": "Verzoeken verschijnen in de lijst van leden met de status \"In behandeling\".",
       "donsIntro": "Inleidende tekst",
       "donsIntroPlaceholder": "Uw donatie helpt ons om onze activiteiten het hele jaar door te financieren...",
+      "donsButtonLabel": "Knoptekst",
+      "donsButtonLabelPlaceholder": "Doneren",
       "donsHint": "De knop verwijst naar de openbare donatiepagina, die zonder account toegankelijk is. De belastingbon wordt automatisch verzonden als de vereniging toestemming heeft om er een uit te geven.",
       "contactHint": "Deze sectie toont automatisch de stad en het land dat in de associatie-instellingen is geconfigureerd.",
       "cancel": "Annuleren",

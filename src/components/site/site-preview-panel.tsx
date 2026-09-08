@@ -252,7 +252,9 @@ export function SitePreviewPanel({ config, name, slug, city, country, events, ac
                     {"body" in section && section.body && (
                       <p className="text-gray-500 text-sm mb-6">{section.body}</p>
                     )}
-                    <div className="h-10 rounded-lg" style={{ background: color }} />
+                    <div className="h-10 rounded-lg flex items-center justify-center text-sm font-medium text-white" style={{ background: color }}>
+                      {("buttonLabel" in section && section.buttonLabel?.trim()) || "Faire un don"}
+                    </div>
                   </div>
                 </section>
               )

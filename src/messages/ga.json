@@ -4708,6 +4708,8 @@
       "membershipHint": "Tá iarratais le feiceáil ar liosta na mball a bhfuil stádas \"Ar feitheamh\" acu.",
       "donsIntro": "Téacs réamhráiteach",
       "donsIntroPlaceholder": "Cuidíonn do shíntiús linn ár ngníomhartha a mhaoiniú i rith na bliana...",
+      "donsButtonLabel": "Téacs an chnaipe",
+      "donsButtonLabelPlaceholder": "Deonaigh",
       "donsHint": "Nascann an cnaipe leis an leathanach síntiúis phoiblí, ar féidir rochtain a fháil air gan cuntas. Seoltar an admháil chánach go huathoibríoch má tá údarú ag an gcumann ceann a eisiúint.",
       "contactHint": "Taispeánann an chuid seo an chathair agus an tír atá cumraithe go huathoibríoch sna socruithe cumainn.",
       "cancel": "Cuir ar ceal",

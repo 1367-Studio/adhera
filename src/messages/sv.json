@@ -4708,6 +4708,8 @@
       "membershipHint": "Förfrågningar visas i listan över medlemmar med statusen \"Väntande\".",
       "donsIntro": "Introduktionstext",
       "donsIntroPlaceholder": "Din donation hjälper oss att finansiera våra aktiviteter under hela året...",
+      "donsButtonLabel": "Knapptext",
+      "donsButtonLabelPlaceholder": "Donera",
       "donsHint": "Knappen länkar till den offentliga donationssidan, som kan nås utan konto. Skattekvittot skickas automatiskt om föreningen har befogenhet att utfärda ett.",
       "contactHint": "Denna sektion visar automatiskt staden och landet som konfigurerats i associationsinställningarna.",
       "cancel": "Avbryt",
