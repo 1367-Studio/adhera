@@ -9,8 +9,12 @@ const MANAGERS = ["ADMIN", "PRESIDENT"]
 
 const schema = z.object({
   aiProvider: z.enum(SUPPORTED_PROVIDERS as [string, ...string[]]).nullable().optional(),
-  // Key is optional — omitting it preserves the stored value; explicit null clears it
-  aiApiKey:   z.string().max(256).nullable().optional(),
+  // Key is optional — omitting it preserves the stored value; explicit null clears it.
+  // Trimmed because a pasted key with trailing whitespace/newline still passes client-side
+  // "looks non-empty" checks but fails provider auth with a bare 401 (no useful error body),
+  // which is indistinguishable from a genuinely wrong key without this.
+  aiApiKey: z.string().max(256).nullable().optional()
+    .transform((v) => (v == null ? v : v.trim() || null)),
   aiModel:    z.string().max(128).nullable().optional(),
 })
 
@@ -75,7 +79,8 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
           { status: 422 },
         )
       }
-    } catch {
+    } catch (err) {
+      console.error("[ai/config] key validation failed:", err)
       return NextResponse.json(
         { error: `Impossible de valider cette clé API auprès de ${providerToValidate}. Vérifiez qu'elle est correcte et active.` },
         { status: 422 },
