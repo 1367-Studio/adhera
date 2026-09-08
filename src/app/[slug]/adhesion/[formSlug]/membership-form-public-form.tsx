@@ -13,6 +13,7 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/password-requirements"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
@@ -1228,10 +1229,15 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                         const quantity = productQuantities[product.varianteId] ?? 0
                         return (
                           <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                            <div>
-                              <div>{product.productName} — {product.variantLabel}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                            <div className="flex items-center gap-3 min-w-0">
+                              {product.productImageUrl && (
+                                <ImageThumbnail src={product.productImageUrl} alt={product.productName} />
+                              )}
+                              <div className="min-w-0">
+                                <div className="truncate">{product.productName} — {product.variantLabel}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                </div>
                               </div>
                             </div>
                             {product.stock === 0 ? (

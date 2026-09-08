@@ -7,6 +7,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon, MinusIcon, PlusIcon, FileIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
+import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -1075,10 +1076,15 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                             const quantity = productQuantities[product.varianteId] ?? 0
                             return (
                               <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                                <div>
-                                  <div>{product.productName} — {product.variantLabel}</div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                <div className="flex items-center gap-3 min-w-0">
+                                  {product.productImageUrl && (
+                                    <ImageThumbnail src={product.productImageUrl} alt={product.productName} />
+                                  )}
+                                  <div className="min-w-0">
+                                    <div className="truncate">{product.productName} — {product.variantLabel}</div>
+                                    <div className="text-xs text-muted-foreground">
+                                      {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                    </div>
                                   </div>
                                 </div>
                                 {product.stock === 0 ? (
