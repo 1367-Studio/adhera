@@ -6,7 +6,7 @@ import { withSuperAdminAuth } from "@/lib/api-wrapper"
 import { createOfferProduct, validateOfferPhases } from "@/lib/pricing-offers"
 
 const phaseSchema = z.object({
-  amountCents: z.number().int().positive(),
+  amountCents: z.number().int().nonnegative(),
   months:      z.number().int().positive().nullable(),
 })
 

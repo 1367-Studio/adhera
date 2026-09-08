@@ -14,7 +14,7 @@ export function validateOfferPhases(phases: unknown): phases is OfferPhase[] {
   return phases.every((p, i) => {
     if (typeof p !== "object" || p === null) return false
     const { amountCents, months } = p as Record<string, unknown>
-    if (typeof amountCents !== "number" || !Number.isInteger(amountCents) || amountCents <= 0) return false
+    if (typeof amountCents !== "number" || !Number.isInteger(amountCents) || amountCents < 0) return false
     const isLast = i === phases.length - 1
     if (months === null) return isLast
     return typeof months === "number" && Number.isInteger(months) && months > 0
@@ -49,6 +49,13 @@ function toPhaseParams(phase: OfferPhase, stripeProductId: string): Stripe.Subsc
   }
 }
 
+// A payment method is only mandatory when some phase actually charges something — a fully
+// free offer (every phase at 0€) never bills, so there's nothing for Stripe to collect and
+// no card needs to be captured at signup.
+export function offerRequiresPaymentMethod(phases: OfferPhase[]): boolean {
+  return phases.some(p => p.amountCents > 0)
+}
+
 export async function createSubscriptionScheduleFromOffer({
   customerId,
   paymentMethodId,
@@ -57,7 +64,7 @@ export async function createSubscriptionScheduleFromOffer({
   idempotencyKey,
 }: {
   customerId:      string
-  paymentMethodId: string
+  paymentMethodId?: string
   phases:          OfferPhase[]
   stripeProductId: string
   idempotencyKey?: string
@@ -74,9 +81,7 @@ export async function createSubscriptionScheduleFromOffer({
     customer:     customerId,
     start_date:   "now",
     end_behavior: lastPhaseIsOpenEnded ? "release" : "cancel",
-    default_settings: {
-      default_payment_method: paymentMethodId,
-    },
+    ...(paymentMethodId ? { default_settings: { default_payment_method: paymentMethodId } } : {}),
     phases: phases.map(p => toPhaseParams(p, stripeProductId)),
   }, idempotencyKey ? { idempotencyKey } : undefined)
 }
