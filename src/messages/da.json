@@ -4647,7 +4647,8 @@
       "actualites": "Nyheder",
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "defaultTitles": {
       "hero": "Velkommen",
@@ -4656,7 +4657,8 @@
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
       "actualites": "Nyheder",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# billede kunne ikke downloades.} other {# billeder kunne ikke uploades.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Tilføj et afsnit",
       "donsModuleDisabled": "Donationsmodulet deaktiveret — usynligt på det offentlige site",
       "deleteSectionTitle": "Slet-sektionen",
-      "deleteSectionDescription": "Denne handling er uigenkaldelig."
+      "deleteSectionDescription": "Denne handling er uigenkaldelig.",
+      "boutiqueModuleDisabled": "Butiksmodulet er deaktiveret — skjult på den offentlige side"
     },
     "sectionSheet": {
       "editTitle": "Redigering — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Ansøg",
       "discardTitle": "Ignorere ændringer?",
       "discardDescription": "Uanvendte ændringer vil gå tabt.",
-      "discardConfirm": "Ignorer"
+      "discardConfirm": "Ignorer",
+      "boutiqueLimit": "Antal produkter, der skal vises",
+      "boutiqueLimitHint": "Kun de første N aktive produkter vises på siden."
     },
     "editor": {
       "viewSite": "Se hjemmesiden",
@@ -4823,7 +4828,16 @@
         "orderError": "Fejl under ordre",
         "orderUpdated": "Opdateret ordre",
         "orderCancelled": "Ordre annulleret"
-      }
+      },
+      "paymentSuccessTitle": "Betaling bekræftet!",
+      "paymentSuccessDescription": "Tak for dit køb. En bekræftelsesmail med din kvittering er sendt til dig.",
+      "stockAdjustedNotice": "Lagerbeholdningen for nogle varer er ændret — din kurv er blevet justeret, gennemgå den før du fortsætter.",
+      "trackOrderButton": "Følg min ordre",
+      "trackingPageTitle": "Ordresporing",
+      "trackingStatusPending": "Afventer betaling",
+      "trackingStatusPaid": "Ordre betalt",
+      "trackingStatusCancelled": "Ordre annulleret",
+      "trackingNotFound": "Ordre ikke fundet"
     },
     "dons": {
       "title": "Mine donationer",

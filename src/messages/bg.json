@@ -4647,7 +4647,8 @@
       "actualites": "Новини",
       "membership": "Присъединете се към асоциацията",
       "dons": "Дарете",
-      "contact": "Контакт"
+      "contact": "Контакт",
+      "boutique": "Магазин"
     },
     "defaultTitles": {
       "hero": "Добре дошли",
@@ -4656,7 +4657,8 @@
       "membership": "Присъединете се към асоциацията",
       "dons": "Дарете",
       "actualites": "Новини",
-      "contact": "Контакт"
+      "contact": "Контакт",
+      "boutique": "Магазин"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# изображение не можеше да бъде изтеглено.} other {# изображения не можеха да бъдат качени.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Добави секция",
       "donsModuleDisabled": "Модулът за дарения е изключен — невидим на публичния обект",
       "deleteSectionTitle": "Секция за изтриване",
-      "deleteSectionDescription": "Това действие е необратимо."
+      "deleteSectionDescription": "Това действие е необратимо.",
+      "boutiqueModuleDisabled": "Модулът „Магазин“ е деактивиран — невидим на публичния сайт"
     },
     "sectionSheet": {
       "editTitle": "Редакция — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Кандидатствайте",
       "discardTitle": "Да игнорирам промените?",
       "discardDescription": "Неприложените промени ще бъдат загубени.",
-      "discardConfirm": "Игнорирай"
+      "discardConfirm": "Игнорирай",
+      "boutiqueLimit": "Брой продукти за показване",
+      "boutiqueLimitHint": "На сайта ще се показват само първите N активни продукта."
     },
     "editor": {
       "viewSite": "Вижте уебсайта",
@@ -4823,7 +4828,16 @@
         "orderError": "Грешка по време на поръчка",
         "orderUpdated": "Актуализиран ред",
         "orderCancelled": "Поръчката е отменена"
-      }
+      },
+      "paymentSuccessTitle": "Плащането е потвърдено!",
+      "paymentSuccessDescription": "Благодарим ви за покупката. Изпратен ви е имейл за потвърждение с касовата бележка.",
+      "stockAdjustedNotice": "Наличността на някои артикули се промени — количката ви беше коригирана, прегледайте я, преди да продължите.",
+      "trackOrderButton": "Проследяване на поръчката",
+      "trackingPageTitle": "Проследяване на поръчка",
+      "trackingStatusPending": "Очаква плащане",
+      "trackingStatusPaid": "Поръчката е платена",
+      "trackingStatusCancelled": "Поръчката е анулирана",
+      "trackingNotFound": "Поръчката не е намерена"
     },
     "dons": {
       "title": "Моите дарения",

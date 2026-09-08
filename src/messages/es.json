@@ -4647,7 +4647,8 @@
       "actualites": "Noticias",
       "membership": "Únete a la asociación",
       "dons": "Hacer una donación",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Tienda"
     },
     "defaultTitles": {
       "hero": "Bienvenido",
@@ -4656,7 +4657,8 @@
       "membership": "Únete a la asociación",
       "dons": "Hacer una donación",
       "actualites": "Noticias",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Tienda"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagen no se pudo subir.} other {# imágenes no se pudieron subir.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Añadir una sección",
       "donsModuleDisabled": "Módulo de donaciones desactivado — oculto en el sitio público",
       "deleteSectionTitle": "Eliminar la sección",
-      "deleteSectionDescription": "Esta acción es irreversible."
+      "deleteSectionDescription": "Esta acción es irreversible.",
+      "boutiqueModuleDisabled": "Módulo Tienda desactivado — invisible en el sitio público"
     },
     "sectionSheet": {
       "editTitle": "Editar — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Aplicar",
       "discardTitle": "¿Descartar los cambios?",
       "discardDescription": "Los cambios no aplicados se perderán.",
-      "discardConfirm": "Descartar"
+      "discardConfirm": "Descartar",
+      "boutiqueLimit": "Número de productos a mostrar",
+      "boutiqueLimitHint": "Solo se mostrarán en el sitio los primeros N productos activos."
     },
     "editor": {
       "viewSite": "Ver el sitio",
@@ -4823,7 +4828,16 @@
         "orderError": "Error al registrar el pedido",
         "orderUpdated": "Pedido actualizado",
         "orderCancelled": "Pedido cancelado"
-      }
+      },
+      "paymentSuccessTitle": "¡Pago confirmado!",
+      "paymentSuccessDescription": "Gracias por su compra. Se le ha enviado un correo de confirmación con su recibo.",
+      "stockAdjustedNotice": "El stock de algunos artículos ha cambiado — se ajustó su carrito, revíselo antes de continuar.",
+      "trackOrderButton": "Seguir mi pedido",
+      "trackingPageTitle": "Seguimiento del pedido",
+      "trackingStatusPending": "Pendiente de pago",
+      "trackingStatusPaid": "Pedido pagado",
+      "trackingStatusCancelled": "Pedido cancelado",
+      "trackingNotFound": "Pedido no encontrado"
     },
     "dons": {
       "title": "Mis donaciones",

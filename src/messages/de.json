@@ -4647,7 +4647,8 @@
       "actualites": "Nachrichten",
       "membership": "Tritt der Vereinigung bei",
       "dons": "Spenden",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Shop"
     },
     "defaultTitles": {
       "hero": "Willkommen",
@@ -4656,7 +4657,8 @@
       "membership": "Tritt der Vereinigung bei",
       "dons": "Spenden",
       "actualites": "Nachrichten",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Shop"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# Bild konnte nicht heruntergeladen werden.} other {# Bilder konnten nicht hochgeladen werden.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Fügen Sie einen Abschnitt hinzu",
       "donsModuleDisabled": "Spendenmodul deaktiviert – auf der öffentlichen Seite unsichtbar",
       "deleteSectionTitle": "Abschnitt löschen",
-      "deleteSectionDescription": "Diese Maßnahme ist unumkehrbar."
+      "deleteSectionDescription": "Diese Maßnahme ist unumkehrbar.",
+      "boutiqueModuleDisabled": "Modul „Shop“ deaktiviert — auf der öffentlichen Website nicht sichtbar"
     },
     "sectionSheet": {
       "editTitle": "Nachtrag — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Bewerben Sie sich",
       "discardTitle": "Änderungen ignorieren?",
       "discardDescription": "Nicht angewandte Änderungen gehen verloren.",
-      "discardConfirm": "Ignorieren"
+      "discardConfirm": "Ignorieren",
+      "boutiqueLimit": "Anzahl anzuzeigender Produkte",
+      "boutiqueLimitHint": "Es werden nur die ersten N aktiven Produkte auf der Website angezeigt."
     },
     "editor": {
       "viewSite": "Siehe die Website",
@@ -4823,7 +4828,16 @@
         "orderError": "Fehler während der Bestellung",
         "orderUpdated": "Aktualisierte Reihenfolge",
         "orderCancelled": "Bestellung storniert"
-      }
+      },
+      "paymentSuccessTitle": "Zahlung bestätigt!",
+      "paymentSuccessDescription": "Vielen Dank für Ihren Einkauf. Eine Bestätigungs-E-Mail mit Ihrer Quittung wurde an Sie gesendet.",
+      "stockAdjustedNotice": "Der Bestand einiger Artikel hat sich geändert — Ihr Warenkorb wurde angepasst, bitte prüfen Sie ihn, bevor Sie fortfahren.",
+      "trackOrderButton": "Bestellung verfolgen",
+      "trackingPageTitle": "Bestellverfolgung",
+      "trackingStatusPending": "Zahlung ausstehend",
+      "trackingStatusPaid": "Bestellung bezahlt",
+      "trackingStatusCancelled": "Bestellung storniert",
+      "trackingNotFound": "Bestellung nicht gefunden"
     },
     "dons": {
       "title": "Meine Spenden",

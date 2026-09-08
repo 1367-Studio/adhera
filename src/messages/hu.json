@@ -4647,7 +4647,8 @@
       "actualites": "Hírek",
       "membership": "Csatlakozz az egyesülethez",
       "dons": "Adományozás",
-      "contact": "Kapcsolat"
+      "contact": "Kapcsolat",
+      "boutique": "Bolt"
     },
     "defaultTitles": {
       "hero": "Üdvözlöm",
@@ -4656,7 +4657,8 @@
       "membership": "Csatlakozz az egyesülethez",
       "dons": "Adományozás",
       "actualites": "Hírek",
-      "contact": "Kapcsolat"
+      "contact": "Kapcsolat",
+      "boutique": "Bolt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# képet nem lehetett letölteni.} other {# képeket nem lehetett feltölteni.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Szekció hozzáadása",
       "donsModuleDisabled": "Adományozó modul letiltva — láthatatlan a nyilvános oldalon",
       "deleteSectionTitle": "Törlés szakasz",
-      "deleteSectionDescription": "Ez a cselekedet visszafordíthatatlan."
+      "deleteSectionDescription": "Ez a cselekedet visszafordíthatatlan.",
+      "boutiqueModuleDisabled": "A Bolt modul letiltva — nem látható a nyilvános oldalon"
     },
     "sectionSheet": {
       "editTitle": "Szerkesztés — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Jelentkezz",
       "discardTitle": "Figyelmen kívül hagyni a változásokat?",
       "discardDescription": "A be nem alkalmazott változtatások elvesznek.",
-      "discardConfirm": "Figyelmen kívül hagyás"
+      "discardConfirm": "Figyelmen kívül hagyás",
+      "boutiqueLimit": "Megjelenítendő termékek száma",
+      "boutiqueLimitHint": "Csak az első N aktív termék jelenik meg az oldalon."
     },
     "editor": {
       "viewSite": "Tekintse meg a weboldalt",
@@ -4823,7 +4828,16 @@
         "orderError": "Hiba a rendelés során",
         "orderUpdated": "Frissített sorrend",
         "orderCancelled": "Rendelés törölve"
-      }
+      },
+      "paymentSuccessTitle": "A fizetés megerősítve!",
+      "paymentSuccessDescription": "Köszönjük a vásárlást. Elküldtük Önnek a visszaigazoló e-mailt a nyugtával.",
+      "stockAdjustedNotice": "Néhány termék készlete megváltozott — a kosarát módosítottuk, kérjük, ellenőrizze, mielőtt folytatja.",
+      "trackOrderButton": "Rendelésem nyomon követése",
+      "trackingPageTitle": "Rendeléskövetés",
+      "trackingStatusPending": "Fizetésre vár",
+      "trackingStatusPaid": "Rendelés kifizetve",
+      "trackingStatusCancelled": "Rendelés törölve",
+      "trackingNotFound": "A rendelés nem található"
     },
     "dons": {
       "title": "Az adományaim",

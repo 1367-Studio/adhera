@@ -4647,7 +4647,8 @@
       "actualites": "Νέα",
       "membership": "Γίνετε μέλος του συλλόγου",
       "dons": "Δωρεά",
-      "contact": "Επικοινωνία"
+      "contact": "Επικοινωνία",
+      "boutique": "Κατάστημα"
     },
     "defaultTitles": {
       "hero": "Καλωσόρισμα",
@@ -4656,7 +4657,8 @@
       "membership": "Γίνετε μέλος του συλλόγου",
       "dons": "Δωρεά",
       "actualites": "Νέα",
-      "contact": "Επικοινωνία"
+      "contact": "Επικοινωνία",
+      "boutique": "Κατάστημα"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {Δεν ήταν δυνατή η λήψη # εικόνας.} other {# εικόνες δεν ήταν δυνατό να μεταφορτωθούν.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Προσθήκη ενότητας",
       "donsModuleDisabled": "Η ενότητα δωρεών είναι απενεργοποιημένη — αόρατη στον δημόσιο ιστότοπο",
       "deleteSectionTitle": "Διαγραφή ενότητας",
-      "deleteSectionDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη."
+      "deleteSectionDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "boutiqueModuleDisabled": "Η ενότητα Κατάστημα είναι απενεργοποιημένη — δεν εμφανίζεται στον δημόσιο ιστότοπο"
     },
     "sectionSheet": {
       "editTitle": "Επεξεργασία — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Εφαρμογή",
       "discardTitle": "Να αγνοήσετε τις αλλαγές;",
       "discardDescription": "Οι αλλαγές που δεν έχουν εφαρμοστεί θα χαθούν.",
-      "discardConfirm": "Παράβλεψη"
+      "discardConfirm": "Παράβλεψη",
+      "boutiqueLimit": "Αριθμός προϊόντων προς εμφάνιση",
+      "boutiqueLimitHint": "Στον ιστότοπο θα εμφανίζονται μόνο τα πρώτα Ν ενεργά προϊόντα."
     },
     "editor": {
       "viewSite": "Δείτε την ιστοσελίδα",
@@ -4823,7 +4828,16 @@
         "orderError": "Σφάλμα κατά την παραγγελία",
         "orderUpdated": "Ενημερωμένη παραγγελία",
         "orderCancelled": "Η παραγγελία ακυρώθηκε"
-      }
+      },
+      "paymentSuccessTitle": "Η πληρωμή επιβεβαιώθηκε!",
+      "paymentSuccessDescription": "Ευχαριστούμε για την αγορά σας. Σας έχει σταλεί email επιβεβαίωσης με την απόδειξή σας.",
+      "stockAdjustedNotice": "Το απόθεμα ορισμένων προϊόντων άλλαξε — το καλάθι σας προσαρμόστηκε, ελέγξτε το πριν συνεχίσετε.",
+      "trackOrderButton": "Παρακολούθηση παραγγελίας",
+      "trackingPageTitle": "Παρακολούθηση παραγγελίας",
+      "trackingStatusPending": "Σε αναμονή πληρωμής",
+      "trackingStatusPaid": "Η παραγγελία πληρώθηκε",
+      "trackingStatusCancelled": "Η παραγγελία ακυρώθηκε",
+      "trackingNotFound": "Η παραγγελία δεν βρέθηκε"
     },
     "dons": {
       "title": "Οι δωρεές μου",

@@ -4647,7 +4647,8 @@
       "actualites": "Naujienos",
       "membership": "Prisijunk prie asociacijos",
       "dons": "Aukoti",
-      "contact": "Kontaktai"
+      "contact": "Kontaktai",
+      "boutique": "Parduotuvė"
     },
     "defaultTitles": {
       "hero": "Sveikas atvykęs",
@@ -4656,7 +4657,8 @@
       "membership": "Prisijunk prie asociacijos",
       "dons": "Aukoti",
       "actualites": "Naujienos",
-      "contact": "Kontaktai"
+      "contact": "Kontaktai",
+      "boutique": "Parduotuvė"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# paveikslėlio nebuvo galima atsisiųsti.} other {# vaizdai negalėjo būti įkelti.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Pridėti skyrių",
       "donsModuleDisabled": "Aukojimo modulis išjungtas — nematomas viešoje svetainėje",
       "deleteSectionTitle": "Ištrinti skyrių",
-      "deleteSectionDescription": "Šis veiksmas yra negrįžtamas."
+      "deleteSectionDescription": "Šis veiksmas yra negrįžtamas.",
+      "boutiqueModuleDisabled": "Parduotuvės modulis išjungtas — nerodomas viešoje svetainėje"
     },
     "sectionSheet": {
       "editTitle": "Redagavimas — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Pateikite paraišką",
       "discardTitle": "Ignoruoti pokyčius?",
       "discardDescription": "Netaikomi pakeitimai bus prarasti.",
-      "discardConfirm": "Ignoruoti"
+      "discardConfirm": "Ignoruoti",
+      "boutiqueLimit": "Rodomų produktų skaičius",
+      "boutiqueLimitHint": "Svetainėje bus rodomi tik pirmieji N aktyvūs produktai."
     },
     "editor": {
       "viewSite": "Žiūrėkite svetainę",
@@ -4823,7 +4828,16 @@
         "orderError": "Klaida užsakymo metu",
         "orderUpdated": "Atnaujinta tvarka",
         "orderCancelled": "Užsakymas atšauktas"
-      }
+      },
+      "paymentSuccessTitle": "Mokėjimas patvirtintas!",
+      "paymentSuccessDescription": "Dėkojame už pirkinį. Jums išsiųstas patvirtinimo el. laiškas su kvitu.",
+      "stockAdjustedNotice": "Kai kurių prekių atsargos pasikeitė — jūsų krepšelis buvo pakoreguotas, peržiūrėkite prieš tęsdami.",
+      "trackOrderButton": "Sekti mano užsakymą",
+      "trackingPageTitle": "Užsakymo sekimas",
+      "trackingStatusPending": "Laukiama mokėjimo",
+      "trackingStatusPaid": "Užsakymas apmokėtas",
+      "trackingStatusCancelled": "Užsakymas atšauktas",
+      "trackingNotFound": "Užsakymas nerastas"
     },
     "dons": {
       "title": "Mano aukos",

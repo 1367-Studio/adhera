@@ -4647,7 +4647,8 @@
       "actualites": "Wiadomości",
       "membership": "Dołącz do stowarzyszenia",
       "dons": "Przekaż darowiznę",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Sklep"
     },
     "defaultTitles": {
       "hero": "Witamy",
@@ -4656,7 +4657,8 @@
       "membership": "Dołącz do stowarzyszenia",
       "dons": "Przekaż darowiznę",
       "actualites": "Wiadomości",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Sklep"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# obraz nie mógł zostać pobrany.} other {# obrazów nie można było przesłać.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Dodaj sekcję",
       "donsModuleDisabled": "Moduł darowizn wyłączony — niewidoczny na publicznej stronie",
       "deleteSectionTitle": "Usuń sekcję",
-      "deleteSectionDescription": "Ten czyn jest nieodwracalny."
+      "deleteSectionDescription": "Ten czyn jest nieodwracalny.",
+      "boutiqueModuleDisabled": "Moduł Sklep wyłączony — niewidoczny na stronie publicznej"
     },
     "sectionSheet": {
       "editTitle": "Edycja — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Aplikuj",
       "discardTitle": "Ignorować zmiany?",
       "discardDescription": "Niezastosowane zmiany zostaną utracone.",
-      "discardConfirm": "Ignoruj"
+      "discardConfirm": "Ignoruj",
+      "boutiqueLimit": "Liczba wyświetlanych produktów",
+      "boutiqueLimitHint": "Na stronie wyświetlonych zostanie tylko pierwszych N aktywnych produktów."
     },
     "editor": {
       "viewSite": "Zobacz stronę internetową",
@@ -4823,7 +4828,16 @@
         "orderError": "Błąd podczas zamówienia",
         "orderUpdated": "Zaktualizowana kolejność",
         "orderCancelled": "Zamówienie anulowane"
-      }
+      },
+      "paymentSuccessTitle": "Płatność potwierdzona!",
+      "paymentSuccessDescription": "Dziękujemy za zakup. Wysłaliśmy Ci e-mail z potwierdzeniem i paragonem.",
+      "stockAdjustedNotice": "Stan magazynowy niektórych produktów się zmienił — Twój koszyk został dostosowany, sprawdź go przed kontynuowaniem.",
+      "trackOrderButton": "Śledź moje zamówienie",
+      "trackingPageTitle": "Śledzenie zamówienia",
+      "trackingStatusPending": "Oczekuje na płatność",
+      "trackingStatusPaid": "Zamówienie opłacone",
+      "trackingStatusCancelled": "Zamówienie anulowane",
+      "trackingNotFound": "Nie znaleziono zamówienia"
     },
     "dons": {
       "title": "Moje darowizny",

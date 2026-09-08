@@ -1,4 +1,4 @@
-export type SectionType = "hero" | "about" | "events" | "actualites" | "membership" | "dons" | "contact"
+export type SectionType = "hero" | "about" | "events" | "actualites" | "membership" | "dons" | "boutique" | "contact"
 
 export type HeroSection = {
   id:          string
@@ -52,6 +52,13 @@ export type DonsSection = {
   buttonLabel?: string
 }
 
+export type BoutiqueSection = {
+  id:    string
+  type:  "boutique"
+  title: string
+  limit: number
+}
+
 export type ContactSection = {
   id:    string
   type:  "contact"
@@ -65,6 +72,7 @@ export type SiteSection =
   | ActualitesSection
   | MembershipSection
   | DonsSection
+  | BoutiqueSection
   | ContactSection
 
 export type FooterLink = { label: string; url: string }
@@ -97,5 +105,6 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   actualites: "Actualités",
   membership: "Rejoindre l'association",
   dons:       "Faire un don",
+  boutique:   "Boutique",
   contact:    "Contact",
 }

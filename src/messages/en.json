@@ -4647,7 +4647,8 @@
       "actualites": "News",
       "membership": "Join the association",
       "dons": "Make a donation",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Store"
     },
     "defaultTitles": {
       "hero": "Welcome",
@@ -4656,7 +4657,8 @@
       "membership": "Join the association",
       "dons": "Make a donation",
       "actualites": "News",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Store"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
       "deleteSectionTitle": "Delete the section",
-      "deleteSectionDescription": "This action is irreversible."
+      "deleteSectionDescription": "This action is irreversible.",
+      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site"
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Apply",
       "discardTitle": "Discard changes?",
       "discardDescription": "Unapplied changes will be lost.",
-      "discardConfirm": "Discard"
+      "discardConfirm": "Discard",
+      "boutiqueLimit": "Number of products to display",
+      "boutiqueLimitHint": "Only the first N active products will be shown on the site."
     },
     "editor": {
       "viewSite": "View site",
@@ -4823,7 +4828,16 @@
         "orderError": "Error placing the order",
         "orderUpdated": "Order updated",
         "orderCancelled": "Order cancelled"
-      }
+      },
+      "paymentSuccessTitle": "Payment confirmed!",
+      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
+      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
+      "trackOrderButton": "Track my order",
+      "trackingPageTitle": "Order tracking",
+      "trackingStatusPending": "Awaiting payment",
+      "trackingStatusPaid": "Order paid",
+      "trackingStatusCancelled": "Order cancelled",
+      "trackingNotFound": "Order not found"
     },
     "dons": {
       "title": "My donations",

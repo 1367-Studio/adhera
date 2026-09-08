@@ -1,6 +1,6 @@
 "use client"
 
-import { HandshakeIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
+import { HandshakeIcon, MapPinIcon, ShoppingBagIcon } from "@phosphor-icons/react/dist/ssr";
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { isColorDark } from "@/lib/color"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -30,10 +30,11 @@ type Props = {
   events:      PublicEvent[]
   actualites?: PublicActualite[]
   donsEnabled: boolean
+  boutiqueEnabled: boolean
 }
 
 
-export function SitePreviewPanel({ config, name, slug, city, country, events, actualites = [], donsEnabled }: Props) {
+export function SitePreviewPanel({ config, name, slug, city, country, events, actualites = [], donsEnabled, boutiqueEnabled }: Props) {
   const sections    = config?.sections ?? []
   const color       = config?.primaryColor ?? "#6366f1"
   const logoUrl     = config?.logoUrl
@@ -254,6 +255,28 @@ export function SitePreviewPanel({ config, name, slug, city, country, events, ac
                     )}
                     <div className="h-10 rounded-lg flex items-center justify-center text-sm font-medium text-white" style={{ background: color }}>
                       {("buttonLabel" in section && section.buttonLabel?.trim()) || "Faire un don"}
+                    </div>
+                  </div>
+                </section>
+              )
+
+            // Pas de données produits en direct dans l'éditeur (contrairement à actualites) —
+            // un aperçu non interactif suffit, même raisonnement que "dons" ci-dessus.
+            case "boutique":
+              return (
+                <section key={section.id} className="py-12 px-4 relative">
+                  {!boutiqueEnabled && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-600 text-white">
+                        Module Boutique désactivé — invisible sur le site public
+                      </span>
+                    </div>
+                  )}
+                  <div className="max-w-sm mx-auto text-center pointer-events-none select-none">
+                    <ShoppingBagIcon className="size-8 mx-auto mb-3" style={{ color }} />
+                    <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Boutique"}</h2>
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      {[0, 1, 2].map(i => <div key={i} className="aspect-square rounded-lg bg-gray-100" />)}
                     </div>
                   </div>
                 </section>

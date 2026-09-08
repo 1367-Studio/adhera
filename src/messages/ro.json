@@ -4647,7 +4647,8 @@
       "actualites": "Știri",
       "membership": "Alătură-te asociației",
       "dons": "Donează",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Magazin"
     },
     "defaultTitles": {
       "hero": "Bine ai venit",
@@ -4656,7 +4657,8 @@
       "membership": "Alătură-te asociației",
       "dons": "Donează",
       "actualites": "Știri",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Magazin"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagine nu a putut fi descărcată.} other {# imagini nu puteau fi încărcate.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Adaugă o secțiune",
       "donsModuleDisabled": "Modulul donațiilor dezactivat — invizibil pe site-ul public",
       "deleteSectionTitle": "Secțiunea Șterge",
-      "deleteSectionDescription": "Această acțiune este ireversibilă."
+      "deleteSectionDescription": "Această acțiune este ireversibilă.",
+      "boutiqueModuleDisabled": "Modulul Magazin dezactivat — invizibil pe site-ul public"
     },
     "sectionSheet": {
       "editTitle": "Editare — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Aplică",
       "discardTitle": "Să ignor schimbările?",
       "discardDescription": "Modificările neaplicate vor fi pierdute.",
-      "discardConfirm": "Ignoră"
+      "discardConfirm": "Ignoră",
+      "boutiqueLimit": "Numărul de produse afișate",
+      "boutiqueLimitHint": "Pe site vor fi afișate doar primele N produse active."
     },
     "editor": {
       "viewSite": "Vezi site-ul",
@@ -4823,7 +4828,16 @@
         "orderError": "Eroare în timpul comenzii",
         "orderUpdated": "Ordine actualizată",
         "orderCancelled": "Ordin anulat"
-      }
+      },
+      "paymentSuccessTitle": "Plată confirmată!",
+      "paymentSuccessDescription": "Vă mulțumim pentru achiziție. V-a fost trimis un e-mail de confirmare cu chitanța dvs.",
+      "stockAdjustedNotice": "Stocul unor articole s-a modificat — coșul dvs. a fost ajustat, verificați-l înainte de a continua.",
+      "trackOrderButton": "Urmărește comanda mea",
+      "trackingPageTitle": "Urmărire comandă",
+      "trackingStatusPending": "În așteptarea plății",
+      "trackingStatusPaid": "Comandă plătită",
+      "trackingStatusCancelled": "Comandă anulată",
+      "trackingNotFound": "Comanda nu a fost găsită"
     },
     "dons": {
       "title": "Donațiile mele",

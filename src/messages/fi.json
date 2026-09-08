@@ -4647,7 +4647,8 @@
       "actualites": "Uutiset",
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
-      "contact": "Yhteystiedot"
+      "contact": "Yhteystiedot",
+      "boutique": "Kauppa"
     },
     "defaultTitles": {
       "hero": "Tervetuloa",
@@ -4656,7 +4657,8 @@
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
       "actualites": "Uutiset",
-      "contact": "Yhteystiedot"
+      "contact": "Yhteystiedot",
+      "boutique": "Kauppa"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# kuvaa ei voitu ladata.} other {# kuvia ei voitu ladata.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Lisää osio",
       "donsModuleDisabled": "Lahjoitusmoduuli poistettu käytöstä — näkymätön julkisella sivustolla",
       "deleteSectionTitle": "Poista osio",
-      "deleteSectionDescription": "Tämä teko on peruuttamaton."
+      "deleteSectionDescription": "Tämä teko on peruuttamaton.",
+      "boutiqueModuleDisabled": "Kauppa-moduuli pois käytöstä — ei näy julkisella sivustolla"
     },
     "sectionSheet": {
       "editTitle": "Muokkaus — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Hae",
       "discardTitle": "Jättää muutokset huomiotta?",
       "discardDescription": "Soveltamattomat muutokset katoavat.",
-      "discardConfirm": "Jätä huomiotta"
+      "discardConfirm": "Jätä huomiotta",
+      "boutiqueLimit": "Näytettävien tuotteiden määrä",
+      "boutiqueLimitHint": "Sivustolla näytetään vain ensimmäiset N aktiivista tuotetta."
     },
     "editor": {
       "viewSite": "Katso verkkosivusto",
@@ -4823,7 +4828,16 @@
         "orderError": "Virhe tilauksen aikana",
         "orderUpdated": "Päivitetty järjestys",
         "orderCancelled": "Tilaus peruttu"
-      }
+      },
+      "paymentSuccessTitle": "Maksu vahvistettu!",
+      "paymentSuccessDescription": "Kiitos ostoksestasi. Sinulle on lähetetty vahvistussähköposti kuitin kanssa.",
+      "stockAdjustedNotice": "Joidenkin tuotteiden varastosaldo on muuttunut — ostoskoriasi mukautettiin, tarkista se ennen jatkamista.",
+      "trackOrderButton": "Seuraa tilaustani",
+      "trackingPageTitle": "Tilauksen seuranta",
+      "trackingStatusPending": "Odottaa maksua",
+      "trackingStatusPaid": "Tilaus maksettu",
+      "trackingStatusCancelled": "Tilaus peruttu",
+      "trackingNotFound": "Tilausta ei löytynyt"
     },
     "dons": {
       "title": "Lahjoitukseni",

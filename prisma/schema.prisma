@@ -2237,6 +2237,10 @@ model BoutiqueCommande {
   membreId              String?
   guestName             String?
   guestEmail            String?
+  // Self-service order-status lookup link for guest (non-membre) storefront buyers, same
+  // convention as Participation.cancelToken/DonationSubscription.cancelToken — a guest has
+  // no portal account to authenticate a status page any other way.
+  trackingToken         String?                @unique
   status                BoutiqueCommandeStatus @default(PENDING)
   paymentMethod         BoutiquePaymentMethod  @default(MANUAL)
   manualPaymentType     BoutiquePaymentMethod?

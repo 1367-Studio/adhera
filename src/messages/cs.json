@@ -4647,7 +4647,8 @@
       "actualites": "Zprávy",
       "membership": "Přidejte se k asociaci",
       "dons": "Darujte",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Obchod"
     },
     "defaultTitles": {
       "hero": "Vítejte",
@@ -4656,7 +4657,8 @@
       "membership": "Přidejte se k asociaci",
       "dons": "Darujte",
       "actualites": "Zprávy",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Obchod"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# obrázek nebylo možné stáhnout.} other {# obrázky nebylo možné nahrát.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Přidat sekci",
       "donsModuleDisabled": "Modul darů deaktivován — neviditelný na veřejném webu",
       "deleteSectionTitle": "Sekce smazat",
-      "deleteSectionDescription": "Tento čin je nevratný."
+      "deleteSectionDescription": "Tento čin je nevratný.",
+      "boutiqueModuleDisabled": "Modul Obchod je vypnutý — na veřejném webu není vidět"
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Přihlaste se",
       "discardTitle": "Ignorovat změny?",
       "discardDescription": "Neaplikované změny budou ztraceny.",
-      "discardConfirm": "Ignorujte"
+      "discardConfirm": "Ignorujte",
+      "boutiqueLimit": "Počet zobrazených produktů",
+      "boutiqueLimitHint": "Na webu se zobrazí pouze prvních N aktivních produktů."
     },
     "editor": {
       "viewSite": "Podívejte se na webové stránky",
@@ -4823,7 +4828,16 @@
         "orderError": "Chyba při rozkazu",
         "orderUpdated": "Aktualizované pořadí",
         "orderCancelled": "Objednávka zrušena"
-      }
+      },
+      "paymentSuccessTitle": "Platba potvrzena!",
+      "paymentSuccessDescription": "Děkujeme za váš nákup. Byl vám odeslán potvrzovací e-mail s účtenkou.",
+      "stockAdjustedNotice": "Sklad u některých položek se změnil — váš košík byl upraven, zkontrolujte jej před pokračováním.",
+      "trackOrderButton": "Sledovat objednávku",
+      "trackingPageTitle": "Sledování objednávky",
+      "trackingStatusPending": "Čeká na platbu",
+      "trackingStatusPaid": "Objednávka zaplacena",
+      "trackingStatusCancelled": "Objednávka zrušena",
+      "trackingNotFound": "Objednávka nenalezena"
     },
     "dons": {
       "title": "Mé dary",

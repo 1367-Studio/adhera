@@ -4647,7 +4647,8 @@
       "actualites": "Notícias",
       "membership": "Junte-se à associação",
       "dons": "Fazer um donativo",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Loja"
     },
     "defaultTitles": {
       "hero": "Bem-vindo",
@@ -4656,7 +4657,8 @@
       "membership": "Junte-se à associação",
       "dons": "Fazer um donativo",
       "actualites": "Notícias",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Loja"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagem não pôde ser enviada.} other {# imagens não puderam ser enviadas.}}",
@@ -4701,7 +4703,8 @@
       "addSection": "Adicionar uma secção",
       "donsModuleDisabled": "Módulo de donativos desativado — oculto no site público",
       "deleteSectionTitle": "Eliminar a secção",
-      "deleteSectionDescription": "Esta ação é irreversível."
+      "deleteSectionDescription": "Esta ação é irreversível.",
+      "boutiqueModuleDisabled": "Módulo Loja desativado — invisível no site público"
     },
     "sectionSheet": {
       "editTitle": "Editar — {label}",
@@ -4735,7 +4738,9 @@
       "apply": "Aplicar",
       "discardTitle": "Descartar as alterações?",
       "discardDescription": "As alterações não aplicadas serão perdidas.",
-      "discardConfirm": "Descartar"
+      "discardConfirm": "Descartar",
+      "boutiqueLimit": "Número de produtos a apresentar",
+      "boutiqueLimitHint": "Apenas os primeiros N produtos ativos serão apresentados no site."
     },
     "editor": {
       "viewSite": "Ver o site",
@@ -4823,7 +4828,16 @@
         "orderError": "Erro ao registar a encomenda",
         "orderUpdated": "Encomenda atualizada",
         "orderCancelled": "Encomenda cancelada"
-      }
+      },
+      "paymentSuccessTitle": "Pagamento confirmado!",
+      "paymentSuccessDescription": "Obrigado pela sua compra. Foi-lhe enviado um e-mail de confirmação com o seu recibo.",
+      "stockAdjustedNotice": "O stock de alguns artigos mudou — o seu carrinho foi ajustado, reveja antes de continuar.",
+      "trackOrderButton": "Acompanhar a minha encomenda",
+      "trackingPageTitle": "Acompanhamento da encomenda",
+      "trackingStatusPending": "A aguardar pagamento",
+      "trackingStatusPaid": "Encomenda paga",
+      "trackingStatusCancelled": "Encomenda cancelada",
+      "trackingNotFound": "Encomenda não encontrada"
     },
     "dons": {
       "title": "As minhas doações",

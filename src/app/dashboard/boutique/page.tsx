@@ -60,6 +60,8 @@ type Commande = {
   note:          string | null
   createdAt:     string
   membre:        { firstName: string; lastName: string; email: string } | null
+  guestName:     string | null
+  guestEmail:    string | null
   items:         CommandeItem[]
 }
 
@@ -307,7 +309,9 @@ function BoutiquePageInner() {
       header: t("view.commandeColumns.membre"),
       cell: (c) => c.membre
         ? <div><p className="font-medium">{c.membre.firstName} {c.membre.lastName}</p><p className="text-xs text-muted-foreground">{c.membre.email}</p></div>
-        : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
+        : c.guestName
+          ? <div><p className="font-medium">{c.guestName}</p><p className="text-xs text-muted-foreground">{c.guestEmail}</p></div>
+          : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
     },
     {
       key:    "items",
@@ -483,11 +487,11 @@ function BoutiquePageInner() {
           >
             {payTarget && (
               <div className="space-y-4 py-1">
-                {payTarget.membre && (
+                {(payTarget.membre || payTarget.guestName) && (
                   <p className="text-sm text-muted-foreground">
                     {t("payModal.orderOf")}{" "}
                     <span className="font-medium text-foreground">
-                      {payTarget.membre.firstName} {payTarget.membre.lastName}
+                      {payTarget.membre ? `${payTarget.membre.firstName} ${payTarget.membre.lastName}` : payTarget.guestName}
                     </span>
                   </p>
                 )}
@@ -559,8 +563,8 @@ function BoutiquePageInner() {
         onOpenChange={o => { if (!o) setCancelTarget(null) }}
         title={t("view.cancelOrderTitle")}
         description={
-          cancelTarget?.membre
-            ? t("view.cancelOrderDescriptionWithName", { name: `${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName}` })
+          cancelTarget?.membre || cancelTarget?.guestName
+            ? t("view.cancelOrderDescriptionWithName", { name: cancelTarget.membre ? `${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName}` : cancelTarget.guestName! })
             : t("view.cancelOrderDescription")
         }
         confirmLabel={t("view.cancelOrderConfirm")}
