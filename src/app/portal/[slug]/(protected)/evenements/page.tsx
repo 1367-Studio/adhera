@@ -3,8 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState, useRef, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useTranslations, useLocale } from "next-intl"
 import { format } from "date-fns"
-import { fr } from "date-fns/locale"
 import { CalendarBlankIcon, MapPinIcon, CircleNotchIcon, ArrowSquareOutIcon, CaretRightIcon, TicketIcon, CheckCircleIcon, ProhibitIcon, BookmarkSimpleIcon, HourglassIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { useSetRsvp, useSubmitReview, type GuestInput } from "@/hooks/use-evenements"
@@ -19,6 +19,8 @@ import { StarRating } from "@/components/ui/star-rating"
 import { apiErrorMessage } from "@/lib/api-error"
 import { cn } from "@/lib/utils"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import type { Locale } from "@/i18n/locales"
 
 type RsvpStatus = "CONFIRME" | "PROVAVEL" | "INCERTO" | "ABSENT" | "LISTA_ESPERA"
 
@@ -45,10 +47,10 @@ type Evenement = {
   confirmedCount: number
 }
 
-function ticketTypeOptionLabel(tt: EvenementTicketType): string {
+function ticketTypeOptionLabel(tt: EvenementTicketType, locale: string, t: ReturnType<typeof useTranslations>, tCommon: ReturnType<typeof useTranslations>): string {
   const price = Number(tt.price)
-  const label = `${tt.label} — ${price === 0 ? "Gratuit" : price.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`
-  return tt.full ? `${label} (complet)` : label
+  const label = `${tt.label} — ${price === 0 ? tCommon("free") : price.toLocaleString(locale, { style: "currency", currency: "EUR" })}`
+  return tt.full ? `${label} ${t("ticketTypeFullSuffix")}` : label
 }
 
 function TicketTypeSelect({
@@ -60,6 +62,9 @@ function TicketTypeSelect({
   value:       string | undefined
   onChange:    (ticketTypeId: string) => void
 }) {
+  const t       = useTranslations("portalMembre.evenements")
+  const tCommon = useTranslations("common")
+  const locale  = useLocale()
   return (
     <select
       value={value ?? (ticketTypes.find(tt => !tt.full) ?? ticketTypes[0])?.id}
@@ -67,7 +72,7 @@ function TicketTypeSelect({
       className="w-full rounded-md border border-input bg-background px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-ring"
     >
       {ticketTypes.map(tt => (
-        <option key={tt.id} value={tt.id} disabled={tt.full}>{ticketTypeOptionLabel(tt)}</option>
+        <option key={tt.id} value={tt.id} disabled={tt.full}>{ticketTypeOptionLabel(tt, locale, t, tCommon)}</option>
       ))}
     </select>
   )
@@ -84,10 +89,11 @@ function GuestNameFields({
   onChange: (guests: GuestInput[]) => void
   ticketTypes?: EvenementTicketType[]
 }) {
+  const t = useTranslations("portalMembre.evenements")
   if (count <= 0) return null
   return (
     <div className="space-y-1.5">
-      <span className="text-xs text-muted-foreground">Vos invités :</span>
+      <span className="text-xs text-muted-foreground">{t("guestsLabel")}</span>
       {Array.from({ length: count }).map((_, i) => {
         const g = guests[i] ?? { firstName: "", lastName: "" }
         return (
@@ -95,7 +101,7 @@ function GuestNameFields({
             <div className="flex gap-1.5">
               <input
                 type="text"
-                placeholder={`Prénom invité ${i + 1}`}
+                placeholder={t("guestFirstNamePlaceholder", { n: i + 1 })}
                 value={g.firstName}
                 onChange={e => {
                   const next = [...guests]
@@ -106,7 +112,7 @@ function GuestNameFields({
               />
               <input
                 type="text"
-                placeholder={`Nom invité ${i + 1}`}
+                placeholder={t("guestLastNamePlaceholder", { n: i + 1 })}
                 value={g.lastName}
                 onChange={e => {
                   const next = [...guests]
@@ -118,7 +124,7 @@ function GuestNameFields({
             </div>
             <input
               type="email"
-              placeholder="Email invité (optionnel)"
+              placeholder={t("guestEmailPlaceholder")}
               value={g.email ?? ""}
               onChange={e => {
                 const next = [...guests]
@@ -157,31 +163,31 @@ type TicketRow = {
   rsvp:         RsvpStatus | null
 }
 
-const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: string; activeColor: string }[] = [
+const RSVP_OPTIONS: { value: RsvpStatus; labelKey: "rsvpConfirme" | "rsvpProvavel" | "rsvpIncerto" | "rsvpAbsent"; dot: string; color: string; activeColor: string }[] = [
   {
     value:       "CONFIRME",
-    label:       "J'y serai !",
+    labelKey:    "rsvpConfirme",
     dot:         "bg-green-500",
     color:       "border-border text-muted-foreground hover:border-green-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30",
     activeColor: "border-green-500 bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-400",
   },
   {
     value:       "PROVAVEL",
-    label:       "Si possible",
+    labelKey:    "rsvpProvavel",
     dot:         "bg-yellow-400",
     color:       "border-border text-muted-foreground hover:border-yellow-400 hover:text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-950/30",
     activeColor: "border-yellow-400 bg-yellow-50 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400",
   },
   {
     value:       "INCERTO",
-    label:       "Peut-être",
+    labelKey:    "rsvpIncerto",
     dot:         "bg-orange-400",
     color:       "border-border text-muted-foreground hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/30",
     activeColor: "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-400",
   },
   {
     value:       "ABSENT",
-    label:       "Je ne viens pas",
+    labelKey:    "rsvpAbsent",
     dot:         "bg-red-500",
     color:       "border-border text-muted-foreground hover:border-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30",
     activeColor: "border-red-400 bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400",
@@ -189,6 +195,8 @@ const RSVP_OPTIONS: { value: RsvpStatus; label: string; dot: string; color: stri
 ]
 
 function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { evenementId: string; quantity: number; guests: GuestInput[]; ticketTypeId?: string; free?: boolean }) {
+  const t       = useTranslations("portalMembre.evenements")
+  const tCommon = useTranslations("common")
   const qc = useQueryClient()
   const mutation = useMutation({
     mutationFn: async () => {
@@ -197,19 +205,19 @@ function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { e
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ quantity, guests, ticketTypeId }),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du paiement"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, t("paymentError")))
       return res.json() as Promise<{ url: string } | { waitlisted: true }>
     },
     onSuccess: (data) => {
       if ("waitlisted" in data) {
-        toast.success("Vous êtes sur liste d'attente — nous vous préviendrons par e-mail si une place se libère.")
+        toast.success(t("waitlistedToast"))
         qc.invalidateQueries({ queryKey: ["portal-evenements"] })
         return
       }
       window.location.href = data.url
     },
     onError:   (err) => {
-      toast.error(err instanceof Error ? err.message : "Erreur")
+      toast.error(err instanceof Error ? err.message : tCommon("error"))
       // A tier could have just filled up (someone else took the last spot) — refresh so
       // the picker reflects that instead of letting the visitor retry the same dead end.
       qc.invalidateQueries({ queryKey: ["portal-evenements"] })
@@ -219,7 +227,7 @@ function TicketButton({ evenementId, quantity, guests, ticketTypeId, free }: { e
   return (
     <Button size="sm" loading={mutation.isPending} onClick={() => mutation.mutate()} className="w-full">
       <TicketIcon className="size-3.5 mr-1.5" />
-      {free ? "Confirmer" : "Payer en ligne"}{quantity > 1 ? ` (×${quantity})` : ""}
+      {free ? tCommon("confirm") : t("payOnline")}{quantity > 1 ? ` (×${quantity})` : ""}
     </Button>
   )
 }
@@ -245,6 +253,9 @@ function PaidEventSection({
   price:             string | null
   ticketTypes:       EvenementTicketType[]
 }) {
+  const t       = useTranslations("portalMembre.evenements")
+  const tCommon = useTranslations("common")
+  const locale  = useLocale()
   const [quantity, setQuantity] = useState(ticketQuantity)
   const [guests, setGuests]     = useState<GuestInput[]>([])
   const [selfTicketTypeId, setSelfTicketTypeId] = useState<string | undefined>((ticketTypes.find(tt => !tt.full) ?? ticketTypes[0])?.id)
@@ -270,15 +281,15 @@ function PaidEventSection({
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(participationId ? { participationId } : {}),
       })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+      if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json()
     },
     onSuccess: () => {
-      toast.success("Billet annulé — vous serez remboursé sous quelques jours.")
+      toast.success(t("ticketCancelledToast"))
       qc.invalidateQueries({ queryKey: ["portal-evenements"] })
       qc.invalidateQueries({ queryKey: ["portal-evenements", evenementId, "tickets"] })
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+    onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
   })
 
   useEffect(() => { setQuantity(ticketQuantity) }, [ticketQuantity])
@@ -324,9 +335,9 @@ function PaidEventSection({
 
   const TotalLine = quantity > 1 && total != null ? (
     <div className="flex items-center justify-between text-xs">
-      <span className="text-muted-foreground">Total :</span>
+      <span className="text-muted-foreground">{t("totalLabel")}</span>
       <span className="font-medium tabular-nums">
-        {total.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+        {total.toLocaleString(locale, { style: "currency", currency: "EUR" })}
       </span>
     </div>
   ) : null
@@ -336,24 +347,24 @@ function PaidEventSection({
       <div className="space-y-1.5">
         <div className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400 font-medium">
           <CheckCircleIcon className="size-3.5" />
-          {ticketQuantity > 1 ? `${ticketQuantity} billets achetés` : "Billet acheté"}
+          {t("ticketsPurchased", { n: ticketQuantity })}
         </div>
         {ticketQuantity > 1 ? (
           <div className="space-y-1">
             {tickets.length === 0 && ticketsQuery.isLoading && (
-              <p className="text-xs text-muted-foreground">Chargement…</p>
+              <p className="text-xs text-muted-foreground">{tCommon("loading")}</p>
             )}
-            {tickets.map(t => (
-              <div key={t.id} className="flex items-center justify-between gap-2 text-xs">
+            {tickets.map(ticket => (
+              <div key={ticket.id} className="flex items-center justify-between gap-2 text-xs">
                 <span className="truncate">
-                  {t.lastName} {t.firstName}{t.isSelf ? " (vous)" : ""}
+                  {ticket.lastName} {ticket.firstName}{ticket.isSelf ? t("youSuffix") : ""}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setCancelTarget(t.id)}
+                  onClick={() => setCancelTarget(ticket.id)}
                   className="shrink-0 text-xs text-muted-foreground hover:text-destructive underline-offset-2 hover:underline"
                 >
-                  Annuler
+                  {tCommon("cancel")}
                 </button>
               </div>
             ))}
@@ -365,22 +376,22 @@ function PaidEventSection({
             className="w-full text-muted-foreground"
             onClick={() => setCancelTarget("ALL")}
           >
-            Annuler et demander un remboursement
+            {t("cancelAndRefund")}
           </Button>
         )}
         <ConfirmDialog
           open={!!cancelTarget}
           onOpenChange={o => { if (!o) setCancelTarget(null) }}
-          title={ticketQuantity > 1 ? "Annuler cette place ?" : "Annuler ce billet ?"}
+          title={ticketQuantity > 1 ? t("cancelSeatTitle") : t("cancelTicketTitle")}
           description={(() => {
             if (cancelTarget === "ALL" || ticketQuantity <= 1)
-              return "Vous serez remboursé·e sur votre moyen de paiement d'origine."
-            const target = tickets.find(t => t.id === cancelTarget)
+              return t("refundOriginalMethod")
+            const target = tickets.find(ticket => ticket.id === cancelTarget)
             return target?.isSelf
-              ? "Vous serez remboursé·e pour votre place. Vos invité·e·s resteront inscrit·e·s et ne seront pas remboursé·e·s."
-              : "Vous serez remboursé·e pour cette place. Le reste de votre réservation n'est pas affecté."
+              ? t("refundSelfOnly")
+              : t("refundGuestOnly")
           })()}
-          confirmLabel="Annuler et rembourser"
+          confirmLabel={t("cancelAndRefundConfirm")}
           loading={cancelTicketMutation.isPending}
           onConfirm={() => {
             const target = cancelTarget && cancelTarget !== "ALL" ? cancelTarget : undefined
@@ -400,10 +411,10 @@ function PaidEventSection({
       <div className="space-y-2">
         <div className="flex items-center gap-1.5 text-xs font-medium text-primary">
           <BookmarkSimpleIcon className="size-3.5" />
-          Réservé – paiement sur place
+          {t("reservedPayOnSite")}
         </div>
         {maxQtyConfirme > 1 && (
-          <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} label="Nombre de places :" />
+          <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} label={t("seatsCountLabel")} />
         )}
         {ticketTypes.length > 0 && (
           <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
@@ -418,25 +429,25 @@ function PaidEventSection({
           loading={setRsvpMutation.isPending}
           onClick={() => setConfirmCancelReservation(true)}
         >
-          Annuler la réservation
+          {t("cancelReservation")}
         </Button>
         <ConfirmDialog
           open={confirmCancelReservation}
           onOpenChange={setConfirmCancelReservation}
-          title="Annuler la réservation ?"
+          title={t("cancelReservation")}
           description={(() => {
-            if (ticketQuantity <= 1) return "Vous pourrez réserver à nouveau si vous changez d'avis."
-            const paidCompanions = tickets.filter(t => !t.isSelf && t.ticketPaidAt).length
+            if (ticketQuantity <= 1) return t("cancelReservationSimple")
+            const paidCompanions = tickets.filter(ticket => !ticket.isSelf && ticket.ticketPaidAt).length
             return paidCompanions > 0
-              ? `Vos invité·e·s pas encore payé·e·s seront retiré·e·s. Les ${paidCompanions} invité·e·s déjà payé·e·s en espèces resteront inscrit·e·s.`
-              : `Cela annulera aussi la réservation de vos ${ticketQuantity - 1} invité·e·s.`
+              ? t("cancelReservationPaidCompanions", { n: paidCompanions })
+              : t("cancelReservationWithCompanions", { n: ticketQuantity - 1 })
           })()}
-          confirmLabel="Annuler la réservation"
+          confirmLabel={t("cancelReservation")}
           loading={setRsvpMutation.isPending}
           onConfirm={() => {
             setConfirmCancelReservation(false)
             setRsvpMutation.mutate({ rsvp: "ABSENT" }, {
-              onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+              onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
             })
           }}
         />
@@ -448,7 +459,7 @@ function PaidEventSection({
     return (
       <div className="flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 font-medium">
         <HourglassIcon className="size-3.5" />
-        Vous êtes sur liste d&apos;attente
+        {t("onWaitlist")}
       </div>
     )
   }
@@ -457,7 +468,7 @@ function PaidEventSection({
     return (
       <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400 font-medium">
         <ProhibitIcon className="size-3.5" />
-        Événement complet
+        {t("eventFull")}
       </div>
     )
   }
@@ -465,7 +476,7 @@ function PaidEventSection({
   return (
     <div className="space-y-2">
       {maxQty > 1 && (
-        <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label="Nombre de places :" />
+        <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label={t("seatsCountLabel")} />
       )}
       {ticketTypes.length > 0 && (
         <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
@@ -480,11 +491,11 @@ function PaidEventSection({
           className="w-full"
           loading={setRsvpMutation.isPending}
           onClick={() => setRsvpMutation.mutate({ rsvp: "CONFIRME", quantity, guests, ticketTypeId: selfTicketTypeId }, {
-            onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+            onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
           })}
         >
           <BookmarkSimpleIcon className="size-3.5 mr-1.5" />
-          Réserver – payer sur place
+          {t("reserveButton")}
         </Button>
       )}
     </div>
@@ -492,6 +503,7 @@ function PaidEventSection({
 }
 
 function RsvpButtons({ evenementId, current }: { evenementId: string; current: RsvpStatus | null }) {
+  const t                         = useTranslations("portalMembre.evenements")
   const mutation                  = useSetRsvp(evenementId)
   const [pending, setPending]     = useState<RsvpStatus | null>(null)
   const selected = mutation.isPending ? pending : current
@@ -502,13 +514,13 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
     try {
       const data = await mutation.mutateAsync({ rsvp })
       if (data?.waitlisted) {
-        toast.success("Vous êtes sur liste d'attente — nous vous préviendrons par e-mail si une place se libère.")
+        toast.success(t("waitlistedToast"))
       } else {
-        const label = RSVP_OPTIONS.find(o => o.value === rsvp)?.label ?? rsvp
-        toast.success(`Réponse enregistrée : ${label}`)
+        const label = t(RSVP_OPTIONS.find(o => o.value === rsvp)?.labelKey ?? "rsvpConfirme")
+        toast.success(t("rsvpRecordedToast", { label }))
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erreur lors de l'enregistrement")
+      toast.error(err instanceof Error ? err.message : t("rsvpSaveError"))
     } finally {
       setPending(null)
     }
@@ -535,7 +547,7 @@ function RsvpButtons({ evenementId, current }: { evenementId: string; current: R
               ? <CircleNotchIcon className="size-3 shrink-0 animate-spin" />
               : <span className={cn("size-2 rounded-full shrink-0", opt.dot)} />
             }
-            {opt.label}
+            {t(opt.labelKey)}
           </button>
         )
       })}
@@ -552,6 +564,8 @@ function FreeEventGuestsPanel({
   partySize:         number
   remainingCapacity: number | null
 }) {
+  const t = useTranslations("portalMembre.evenements")
+  const tCommon = useTranslations("common")
   const [quantity, setQuantity] = useState(partySize)
   const [guests, setGuests]     = useState<GuestInput[]>([])
   // Only pre-expand when the member already has companions — otherwise the panel would
@@ -573,14 +587,14 @@ function FreeEventGuestsPanel({
         onClick={() => setExpanded(true)}
         className="text-xs text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
       >
-        + Ajouter des invités
+        {t("addGuestsButton")}
       </button>
     )
   }
 
   return (
     <div className="space-y-2 rounded-lg border border-dashed p-2.5">
-      <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label="Nombre de places :" />
+      <QuantityStepper value={quantity} onChange={setQuantity} max={maxQty} label={t("seatsCountLabel")} />
       <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} />
       {dirty && (
         <Button
@@ -589,11 +603,11 @@ function FreeEventGuestsPanel({
           className="w-full"
           loading={mutation.isPending}
           onClick={() => mutation.mutate({ rsvp: "CONFIRME", quantity, guests }, {
-            onSuccess: () => toast.success("Invités mis à jour"),
-            onError:   (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
+            onSuccess: () => toast.success(t("guestsUpdatedToast")),
+            onError:   (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
           })}
         >
-          Mettre à jour mes invités
+          {t("updateGuestsButton")}
         </Button>
       )}
     </div>
@@ -601,16 +615,17 @@ function FreeEventGuestsPanel({
 }
 
 function RsvpCounters({ counts }: { counts: RsvpCounts }) {
+  const t = useTranslations("portalMembre.evenements")
   const total = counts.CONFIRME + counts.PROVAVEL + counts.INCERTO + counts.ABSENT + counts.LISTA_ESPERA
   if (total === 0) return null
 
   return (
     <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-      {counts.CONFIRME > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-green-500" />{counts.CONFIRME} confirmé{counts.CONFIRME > 1 ? "s" : ""}</span>}
-      {counts.PROVAVEL > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-yellow-400" />{counts.PROVAVEL} si possible</span>}
-      {counts.INCERTO  > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-orange-400" />{counts.INCERTO} peut-être</span>}
-      {counts.ABSENT   > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-red-500" />{counts.ABSENT} absent{counts.ABSENT > 1 ? "s" : ""}</span>}
-      {counts.LISTA_ESPERA > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-blue-400" />{counts.LISTA_ESPERA} en liste d&apos;attente</span>}
+      {counts.CONFIRME > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-green-500" />{t("countConfirmed", { n: counts.CONFIRME })}</span>}
+      {counts.PROVAVEL > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-yellow-400" />{t("countProvavel", { n: counts.PROVAVEL })}</span>}
+      {counts.INCERTO  > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-orange-400" />{t("countIncerto", { n: counts.INCERTO })}</span>}
+      {counts.ABSENT   > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-red-500" />{t("countAbsent", { n: counts.ABSENT })}</span>}
+      {counts.LISTA_ESPERA > 0 && <span className="flex items-center gap-1.5"><span className="size-2 rounded-full bg-blue-400" />{t("countWaitlist", { n: counts.LISTA_ESPERA })}</span>}
     </div>
   )
 }
@@ -626,6 +641,9 @@ function EventCard({
   connectEnabled: boolean
   optimisticPaidId: string | null
 }) {
+  const t              = useTranslations("portalMembre.evenements")
+  const locale         = useLocale()
+  const dateFnsLocale  = getDateFnsLocale(locale as Locale)
   const participation    = ev.participations[0] ?? null
   const currentRsvp      = participation?.rsvp ?? null
   const ticketPaid       = participation?.ticketPaidAt != null || optimisticPaidId === ev.id
@@ -661,7 +679,7 @@ function EventCard({
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground pt-0.5">
           <span className="flex items-center gap-1">
             <CalendarBlankIcon className="size-3" />
-            {format(new Date(ev.date), "d MMM yyyy 'à' HH'h'mm", { locale: fr })}
+            {format(new Date(ev.date), "d MMM yyyy, HH:mm", { locale: dateFnsLocale })}
           </span>
           {ev.location && (
             <span className="flex items-center gap-1">
@@ -686,7 +704,7 @@ function EventCard({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground text-xs">Tarif :</span>
+              <span className="text-muted-foreground text-xs">{t("priceLabel")}</span>
               {ev.ticketTypes.length > 1
                 ? <PriceBadge price={cheapestTicketTypePrice} fromPrice />
                 : hasTicketTypes
@@ -700,8 +718,8 @@ function EventCard({
                   ? "text-red-600 dark:text-red-400"
                   : "text-muted-foreground",
               )}>
-                {ev.confirmedCount}/{ev.capacity} réservés
-                {ev.confirmedCount >= ev.capacity && " · Complet"}
+                {t("reservedCount", { confirmed: ev.confirmedCount, capacity: ev.capacity })}
+                {ev.confirmedCount >= ev.capacity && t("fullSuffix")}
               </span>
             )}
           </div>
@@ -721,7 +739,7 @@ function EventCard({
           {isPast && ticketPaid && (
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <CheckCircleIcon className="size-3.5" />
-              Billet acheté
+              {t("ticketsPurchased", { n: 1 })}
             </div>
           )}
         </div>
@@ -734,19 +752,19 @@ function EventCard({
       {isPast ? (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-muted-foreground">Présence :</span>
+            <span className="text-muted-foreground">{t("presenceLabel")}</span>
             {participation ? (
               participation.present
-                ? <span className="font-medium text-green-600 dark:text-green-400">Présent</span>
-                : <span className="font-medium text-muted-foreground">Absent</span>
+                ? <span className="font-medium text-green-600 dark:text-green-400">{t("present")}</span>
+                : <span className="font-medium text-muted-foreground">{t("presenceAbsent")}</span>
             ) : (
-              <span className="text-muted-foreground italic">Non enregistrée</span>
+              <span className="text-muted-foreground italic">{t("presenceNotRecorded")}</span>
             )}
             {currentRsvp && !hasFee && (
               <>
                 <span className="text-muted-foreground/40">·</span>
                 <span className="text-muted-foreground">
-                  RSVP : {RSVP_OPTIONS.find(o => o.value === currentRsvp)?.label}
+                  {t("rsvpDisplay", { label: t(RSVP_OPTIONS.find(o => o.value === currentRsvp)?.labelKey ?? "rsvpConfirme") })}
                 </span>
               </>
             )}
@@ -762,7 +780,7 @@ function EventCard({
             "text-xs font-medium",
             currentRsvp ? "text-muted-foreground" : "text-foreground",
           )}>
-            {currentRsvp ? "Votre réponse :" : "Confirmez votre participation :"}
+            {currentRsvp ? t("yourResponseLabel") : t("confirmParticipationLabel")}
           </p>
           <RsvpButtons evenementId={ev.id} current={currentRsvp} />
           {currentRsvp === "CONFIRME" && (
@@ -775,35 +793,37 @@ function EventCard({
 }
 
 function EventReviewSection({ evenementId, alreadySubmitted }: { evenementId: string; alreadySubmitted: boolean }) {
+  const t                     = useTranslations("portalMembre.evenements")
+  const tCommon               = useTranslations("common")
   const [open, setOpen]       = useState(false)
   const [rating, setRating]   = useState(0)
   const [comment, setComment] = useState("")
   const submitReview          = useSubmitReview(evenementId)
 
   if (alreadySubmitted) {
-    return <p className="text-xs text-muted-foreground">Avis envoyé — merci !</p>
+    return <p className="text-xs text-muted-foreground">{t("reviewSentThanks")}</p>
   }
 
   function handleSubmit() {
-    if (rating < 1) { toast.error("Choisissez une note"); return }
+    if (rating < 1) { toast.error(t("chooseRatingError")); return }
     submitReview.mutate({ rating, comment: comment.trim() || undefined }, {
       onSuccess: () => setOpen(false),
-      onError:   err => toast.error(err instanceof Error ? err.message : "Erreur"),
+      onError:   err => toast.error(err instanceof Error ? err.message : tCommon("error")),
     })
   }
 
   return (
     <>
       <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
-        Laisser un avis
+        {t("leaveReview")}
       </Button>
       <Modal
         open={open}
         onOpenChange={setOpen}
-        title="Laisser un avis"
+        title={t("leaveReview")}
         footer={
           <Button loading={submitReview.isPending} onClick={handleSubmit}>
-            Envoyer
+            {t("send")}
           </Button>
         }
       >
@@ -812,7 +832,7 @@ function EventReviewSection({ evenementId, alreadySubmitted }: { evenementId: st
           <textarea
             value={comment}
             onChange={e => setComment(e.target.value)}
-            placeholder="Un commentaire ? (facultatif)"
+            placeholder={t("commentPlaceholder")}
             rows={3}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
           />
@@ -852,6 +872,7 @@ export default function EvenementsPortalPage() {
 // useSearchParams() (for the Stripe ticket=success/cancelled redirect) requires a
 // Suspense boundary above it, or `next build` fails prerendering this page.
 function EvenementsPortalPageInner() {
+  const t              = useTranslations("portalMembre.evenements")
   const searchParams   = useSearchParams()
   const router         = useRouter()
   const queryClient    = useQueryClient()
@@ -882,15 +903,15 @@ function EvenementsPortalPageInner() {
     if (result === "success") {
       const eid = searchParams.get("eid")
       if (eid) setOptimisticPaidId(eid)
-      toast.success("Billet acheté avec succès !")
+      toast.success(t("ticketPurchaseSuccessToast"))
       queryClient.invalidateQueries({ queryKey: ["portal-evenements"] })
     } else if (result === "cancelled") {
-      toast.info("Paiement annulé. Votre place est toujours réservée — payez plus tard ou annulez la réservation sur la carte de l'événement.")
+      toast.info(t("paymentCancelledToast"))
     }
 
     // Clean URL so refresh/share doesn't re-trigger
     router.replace(window.location.pathname, { scroll: false })
-  }, [searchParams, router, queryClient])
+  }, [searchParams, router, queryClient, t])
 
   const upcoming       = data?.upcoming        ?? []
   const past           = data?.past            ?? []
@@ -901,19 +922,19 @@ function EvenementsPortalPageInner() {
   return (
     <div className="space-y-8 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Événements</h1>
-        <p className="text-muted-foreground text-sm mt-1">Vos prochains rendez-vous et votre historique.</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">À venir</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("upcomingHeading")}</h2>
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[0,1,2].map(i => <SkeletonCard key={i} />)}
           </div>
         ) : upcoming.length === 0 ? (
           <p className="text-sm text-muted-foreground py-4 text-center">
-            Aucun événement à venir.
+            {t("noneUpcoming")}
           </p>
         ) : (
           <div className="space-y-4">
@@ -930,7 +951,7 @@ function EvenementsPortalPageInner() {
             {upcomingHasMore && (
               <p className="text-xs text-center text-muted-foreground flex items-center justify-center gap-1">
                 <CaretRightIcon className="size-3.5" />
-                D&apos;autres événements à venir ne sont pas affichés. Contactez votre association pour plus d&apos;informations.
+                {t("moreUpcomingHint")}
               </p>
             )}
           </div>
@@ -939,7 +960,7 @@ function EvenementsPortalPageInner() {
 
       {(isLoading || past.length > 0) && (
         <section className="space-y-3">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Passés</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{t("pastHeading")}</h2>
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <SkeletonCard />
@@ -959,7 +980,7 @@ function EvenementsPortalPageInner() {
               </div>
               {pastHasMore && (
                 <p className="text-xs text-center text-muted-foreground">
-                  Seuls les 10 derniers événements sont affichés.
+                  {t("pastLimitHint")}
                 </p>
               )}
             </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { cn } from "@/lib/utils"
 
 interface PriceBadgeProps {
@@ -14,10 +14,11 @@ interface PriceBadgeProps {
 
 export function PriceBadge({ price, className, fromPrice }: PriceBadgeProps) {
   const t = useTranslations("common")
+  const locale = useLocale()
   if (price == null) return null
   const amount = Number(price)
   const isFree = !fromPrice && amount === 0
-  const formatted = amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const formatted = amount.toLocaleString(locale, { style: "currency", currency: "EUR" })
   return (
     <span className={cn(
       // Matches Badge geometry (h-5 / rounded-md / text-xs); paid amounts stay neutral —
