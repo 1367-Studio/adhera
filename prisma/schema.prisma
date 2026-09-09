@@ -592,6 +592,10 @@ model User {
   termsAcceptedIp         String?
   fiscalPeriodPopupSeenAt DateTime?
 
+  // TOTP 2FA — staff only (role !== MEMBRE), self-service opt-in via the user menu.
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+
   association           Association?           @relation(fields: [associationId], references: [id])
   notifications         Notification[]
   membre                Membre?
@@ -600,6 +604,7 @@ model User {
   supportTicketMessages SupportTicketMessage[]
   emailMessages         EmailMessage[]
   pricingOffersCreated  PricingOffer[]
+  twoFactorBackupCodes  TwoFactorBackupCode[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -2190,6 +2195,21 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([email])
+}
+
+// One-time recovery codes for 2FA, generated 8 at a time whenever TOTP is enabled or
+// regenerated (see src/lib/auth/two-factor.ts) — bcrypt-hashed, consumed (usedAt set) on
+// first use.
+model TwoFactorBackupCode {
+  id       String    @id @default(cuid())
+  userId   String
+  codeHash String
+  usedAt   DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // ─── Boutique ─────────────────────────────────────────────────────────────────

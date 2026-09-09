@@ -11,13 +11,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t("pageTitle") };
 }
 
+const LOGIN_ERROR_KEYS: Record<string, string> = {
+  multi:         "errorMulti",
+  "2fa_required": "error2faRequired",
+};
+
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ callbackUrl?: string; suspended?: string }>;
+  searchParams: Promise<{ callbackUrl?: string; suspended?: string; error?: string }>;
 }) {
-  const { callbackUrl, suspended } = await searchParams;
+  const { callbackUrl, suspended, error } = await searchParams;
   const t = await getTranslations("auth.login");
+  const errorKey = error ? LOGIN_ERROR_KEYS[error] : undefined;
 
   return (
     <div className="w-full max-w-sm">
@@ -37,6 +43,12 @@ export default async function LoginPage({
         {suspended && (
           <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {t("suspended")}
+          </p>
+        )}
+
+        {errorKey && (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {t(errorKey)}
           </p>
         )}
 
