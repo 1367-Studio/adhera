@@ -11,10 +11,12 @@ import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { GoogleIcon } from "@/components/icons/google-icon"
+import { TwoFactorChallengeForm } from "@/components/layout/two-factor-challenge-form"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackUrl?: string }) {
   const t = useTranslations("portal.login")
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [pendingToken, setPendingToken] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     mode:     "onSubmit",
@@ -28,6 +30,14 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
     if (callbackUrl) formData.append("callbackUrl", callbackUrl)
 
     const result = await authenticate(undefined, formData)
+    // 2FA is staff-only (see requireStaffSession() in two-factor.ts), but staff can also
+    // sign in through this same form on their own association's portal — without this
+    // branch, that case silently went nowhere: authenticate() returns requires2FA instead
+    // of ever calling signIn(), so ignoring it here meant no session, no error, no redirect.
+    if (result?.requires2FA && result.pendingToken) {
+      setPendingToken(result.pendingToken)
+      return
+    }
     if (result?.error) toast.error(result.error)
   }
 
@@ -38,6 +48,10 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
     } finally {
       setGoogleLoading(false)
     }
+  }
+
+  if (pendingToken) {
+    return <TwoFactorChallengeForm pendingToken={pendingToken} onBack={() => setPendingToken(null)} />
   }
 
   return (

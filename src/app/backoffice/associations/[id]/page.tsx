@@ -9,6 +9,7 @@ import { SupportEmailComposer } from "@/components/backoffice/support-email-comp
 import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { CustomMemberLimitEditor } from "@/components/backoffice/custom-member-limit-editor"
 import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-editor"
+import { TwoFactorAdminReset } from "@/components/backoffice/two-factor-admin-reset"
 import { parseModules }     from "@/lib/modules"
 import { getPricingInfo }   from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
@@ -90,6 +91,15 @@ export default async function AssociationDetailPage({ params }: { params: Promis
   const modules       = parseModules(assoc.modules)
   const pricing       = await getPricingInfo()
   const standardLimit = memberLimitForPlan(assoc.plan, pricing)
+
+  // Support recovery path for an account locked out of its own 2FA (lost authenticator +
+  // exhausted backup codes) — see adminDisableTwoFactor's doc comment in
+  // src/lib/auth/two-factor.ts. Only staff can have 2FA enabled in the first place.
+  const staffWithTwoFactor = await prisma.user.findMany({
+    where:  { associationId: id, deletedAt: null, role: { not: "MEMBRE" }, twoFactorEnabled: true },
+    select: { id: true, name: true, email: true, role: true },
+    orderBy: { email: "asc" },
+  })
 
   return (
     <div className="space-y-6 mt-4">
@@ -224,6 +234,18 @@ export default async function AssociationDetailPage({ params }: { params: Promis
           <SupportEmailComposer associationId={assoc.id} />
         </CardContent>
       </Card>
+
+      {/* 2FA recovery — only shown when it's actually actionable */}
+      {staffWithTwoFactor.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Récupération 2FA</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TwoFactorAdminReset users={staffWithTwoFactor} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
