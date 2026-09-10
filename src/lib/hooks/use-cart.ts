@@ -11,6 +11,8 @@ export type CartItem = {
   quantity:      number
   imageUrl:      string | null
   stock:         number // snapshot of available stock when added — server re-validates at checkout
+  shippable:     boolean
+  weightGrams:   number | null
 }
 
 const STORAGE_KEY = "adhera_boutique_cart"
@@ -20,8 +22,9 @@ function readCart(slug: string): CartItem[] {
   try {
     const raw = localStorage.getItem(`${STORAGE_KEY}_${slug}`)
     const items = raw ? (JSON.parse(raw) as CartItem[]) : []
-    // Carts persisted before the `stock` field existed won't have it — don't let that break capping.
-    return items.map(i => ({ ...i, stock: i.stock ?? 99 }))
+    // Carts persisted before the `stock`/`shippable` fields existed won't have them — don't
+    // let that break capping, and treat pre-existing items as pickup-only (safe default).
+    return items.map(i => ({ ...i, stock: i.stock ?? 99, shippable: i.shippable ?? false, weightGrams: i.weightGrams ?? null }))
   } catch {
     return []
   }

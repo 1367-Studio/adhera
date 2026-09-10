@@ -9,9 +9,14 @@ import { assertIncomeCategory } from "@/lib/validate-finance-category"
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
 const varianteSchema = z.object({
-  label: z.string().trim().min(1).max(100),
-  price: z.number().int().min(0),
-  stock: z.number().int().min(0).default(0),
+  label:       z.string().trim().min(1).max(100),
+  price:       z.number().int().min(0),
+  stock:       z.number().int().min(0).default(0),
+  shippable:   z.boolean().default(false),
+  weightGrams: z.number().int().positive().optional(),
+}).superRefine((v, ctx) => {
+  if (v.shippable && !v.weightGrams)
+    ctx.addIssue({ code: "custom", path: ["weightGrams"], message: "weightGrams is required when shippable is true" })
 })
 
 const createSchema = z.object({

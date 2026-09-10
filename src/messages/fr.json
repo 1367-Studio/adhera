@@ -2435,8 +2435,12 @@
       "validation": {
         "nameRequired": "Le nom est obligatoire",
         "atLeastOneVariant": "Au moins une variante est requise",
-        "variantLabelRequired": "Chaque variante doit avoir un libellé"
-      }
+        "variantLabelRequired": "Chaque variante doit avoir un libellé",
+        "weightRequiredWhenShippable": "Le poids est obligatoire pour une variante avec envoi postal"
+      },
+      "shippableColumn": "Envoi",
+      "weightColumn": "Poids (g)",
+      "weightPlaceholder": "500"
     },
     "view": {
       "title": "Boutique",
@@ -2485,7 +2489,8 @@
       "toasts": {
         "productDeleted": "Produit supprimé",
         "deleteError": "Erreur lors de la suppression",
-        "orderUpdated": "Commande mise à jour"
+        "orderUpdated": "Commande mise à jour",
+        "orderNotInRecentList": "Cette commande n'est pas dans les 50 plus récentes. Utilisez les filtres pour la retrouver."
       }
     },
     "payModal": {
@@ -4825,9 +4830,9 @@
       "summary": "Récapitulatif",
       "total": "Total",
       "paymentMethod": "Mode de paiement",
-      "paymentManual": "Au retrait",
+      "paymentManual": "Paiement manuel",
       "paymentStripe": "En ligne",
-      "paymentManualHint": "Le paiement s'effectue au retrait. L'administration vous contactera.",
+      "paymentManualHint": "Le paiement sera à régler directement avec l'administration.",
       "paymentStripeHint": "Vous recevrez un lien de paiement sécurisé après confirmation de la commande.",
       "note": "Note",
       "optional": "(optionnel)",
@@ -5407,5 +5412,26 @@
       "closed": "Demande fermée",
       "reopened": "Demande réouverte"
     }
+  },
+  "boutiqueShipping": {
+    "title": "Livraison",
+    "description": "Adresse d'expédition utilisée pour calculer les frais de livraison postale de la boutique.",
+    "addressLabel": "Adresse",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Ville",
+    "postalCodeLabel": "Code postal",
+    "countryLabel": "Pays",
+    "saved": "Adresse de livraison enregistrée",
+    "deliveryMethodLabel": "Mode de réception",
+    "pickupOption": "Retrait en main",
+    "deliveryOption": "Envoi postal",
+    "shippingAddressHint": "Nécessaire pour calculer les frais de livraison.",
+    "shippingOptionsLabel": "Frais de livraison",
+    "loadingRates": "Calcul des frais de livraison…",
+    "noShippingOptions": "Aucune option de livraison disponible pour cette adresse.",
+    "shippingUnavailable": "La livraison postale n'est pas encore configurée par cette association.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Frais de livraison",
+    "mixedCartPickupOnlyHint": "Envoi indisponible : votre panier contient un article qui ne peut être que retiré en main."
   }
 }

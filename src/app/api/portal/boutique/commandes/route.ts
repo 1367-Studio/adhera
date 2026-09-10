@@ -7,6 +7,8 @@ import { sendEmail } from "@/lib/mail"
 import { boutiqueNewOrderAdminEmail } from "@/lib/email"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
+import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
+import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -18,6 +20,7 @@ const checkoutSchema = z.object({
   items:         z.array(itemSchema).min(1).max(50),
   paymentMethod: z.enum(["STRIPE", "MANUAL"]).default("MANUAL"),
   note:          z.string().trim().max(500).optional().nullable(),
+  ...deliveryFieldsSchema,
 })
 
 export const GET = withPortalAuth(async (_req, ctx) => {
@@ -43,7 +46,30 @@ export const POST = withPortalAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { items, paymentMethod, note } = parsed.data
+  const deliveryError = validateDeliveryFields(parsed.data)
+  if (deliveryError) return NextResponse.json({ error: deliveryError }, { status: 422 })
+
+  const { items, paymentMethod, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode } = parsed.data
+
+  let shippingCost = 0
+  let shippingCarrierLabel: string | null = null
+  if (deliveryMethod === "DELIVERY") {
+    try {
+      const resolved = await resolveShippingCost({
+        associationId:  ctx.associationId,
+        items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+        destCountry:    shippingCountry!,
+        destPostalCode: shippingPostalCode!,
+        optionCode:     shippingOptionCode!,
+      })
+      shippingCost = resolved.costCents
+      shippingCarrierLabel = resolved.carrierLabel
+    } catch (err) {
+      if (err instanceof ShippingUnavailableError)
+        return NextResponse.json({ error: err.message }, { status: 422 })
+      throw err
+    }
+  }
 
   const commande = await prisma.$transaction(async tx => {
     let totalAmount = 0
@@ -85,8 +111,15 @@ export const POST = withPortalAuth(async (req, ctx) => {
         membreId:      ctx.membreId!,
         status:        "PENDING",
         paymentMethod,
-        totalAmount,
+        totalAmount:   totalAmount + shippingCost,
         note: note ?? null,
+        deliveryMethod,
+        shippingAddress:      deliveryMethod === "DELIVERY" ? shippingAddress    : null,
+        shippingCity:         deliveryMethod === "DELIVERY" ? shippingCity       : null,
+        shippingPostalCode:   deliveryMethod === "DELIVERY" ? shippingPostalCode : null,
+        shippingCountry:      deliveryMethod === "DELIVERY" ? shippingCountry    : null,
+        shippingCost,
+        shippingCarrierLabel,
         items: { create: lineItems },
       },
       include: {
@@ -125,7 +158,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
           userId: a.id,
           title:  "Nouvelle commande boutique",
           body:   `${buyerLabel} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
-          link:   `/dashboard/boutique`,
+          link:   `/dashboard/boutique?tab=commandes&commandeId=${commande.id}`,
           scope:  "GESTION",
         })),
         skipDuplicates: true,

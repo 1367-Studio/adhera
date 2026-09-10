@@ -62,19 +62,30 @@ export const GET = withPortalAuth<{ id: string }>(async (_req, ctx, { id }) => {
       siret:       null,
       vatNumber:   null,
     } : null,
-    items: commande.items.map(i => ({
-      description: `${i.produit.name} – ${i.variante.label}`,
-      quantity:    i.quantity,
-      unitPrice:   i.unitPrice / 100,
-      vatRate:     0,
-      discount:    0,
-    })),
+    items: [
+      ...commande.items.map(i => ({
+        description: `${i.produit.name} – ${i.variante.label}`,
+        quantity:    i.quantity,
+        unitPrice:   i.unitPrice / 100,
+        vatRate:     0,
+        discount:    0,
+      })),
+      ...(commande.shippingCost > 0 ? [{
+        description: commande.shippingCarrierLabel ?? "Livraison",
+        quantity:    1,
+        unitPrice:   commande.shippingCost / 100,
+        vatRate:     0,
+        discount:    0,
+      }] : []),
+    ],
     subtotal:       commande.totalAmount / 100,
     vatAmount:      0,
     discountAmount: 0,
     total:          commande.totalAmount / 100,
     amountPaid:     commande.totalAmount / 100,
-    notes:          commande.note,
+    notes:          commande.deliveryMethod === "DELIVERY"
+      ? [commande.note, `Livraison : ${commande.shippingAddress}, ${commande.shippingPostalCode} ${commande.shippingCity}, ${commande.shippingCountry}`].filter(Boolean).join("\n")
+      : commande.note,
     paymentTerms:   paidMethod ? `Payé par ${PAYMENT_METHOD_LABEL[paidMethod] ?? paidMethod.toLowerCase()}.` : null,
   })
 

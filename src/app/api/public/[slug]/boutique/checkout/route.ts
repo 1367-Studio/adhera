@@ -7,6 +7,8 @@ import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
 import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
+import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
+import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
 import { randomBytes } from "crypto"
 
 const itemSchema = z.object({
@@ -27,6 +29,7 @@ const schema = z.object({
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention
   // que les formulaires publics de dons/adhésion/inscription.
   website:   z.string().optional().or(z.literal("")),
+  ...deliveryFieldsSchema,
 })
 
 export async function POST(
@@ -42,6 +45,9 @@ export async function POST(
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+
+  const deliveryError = validateDeliveryFields(parsed.data)
+  if (deliveryError) return NextResponse.json({ error: deliveryError }, { status: 422 })
 
   // Pretend success without touching the DB or Stripe — same anti-bot convention as the
   // donation/event registration routes.
@@ -59,8 +65,28 @@ export async function POST(
   if (!assoc.stripeConnectId || !(await connectAccountChargesEnabled(assoc.stripeConnectId)))
     return NextResponse.json({ error: "Le paiement en ligne n'est pas encore configuré par cette association" }, { status: 400 })
 
-  const { items, firstName, lastName, email, phone, note } = parsed.data
+  const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode } = parsed.data
   const guestName = `${firstName} ${lastName}`.trim()
+
+  let shippingCost = 0
+  let shippingCarrierLabel: string | null = null
+  if (deliveryMethod === "DELIVERY") {
+    try {
+      const resolved = await resolveShippingCost({
+        associationId:  assoc.id,
+        items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+        destCountry:    shippingCountry!,
+        destPostalCode: shippingPostalCode!,
+        optionCode:     shippingOptionCode!,
+      })
+      shippingCost = resolved.costCents
+      shippingCarrierLabel = resolved.carrierLabel
+    } catch (err) {
+      if (err instanceof ShippingUnavailableError)
+        return NextResponse.json({ error: err.message }, { status: 422 })
+      throw err
+    }
+  }
 
   // Reserve stock at creation time, same reasoning as the portal boutique checkout
   // (src/app/api/portal/boutique/checkout/route.ts): this is a direct purchase, not a
@@ -106,8 +132,15 @@ export async function POST(
           status:        "PENDING",
           paymentMethod: "STRIPE",
           source:        "STOREFRONT",
-          totalAmount,
+          totalAmount:   totalAmount + shippingCost,
           note:          note || (phone ? `Tél: ${phone}` : null),
+          deliveryMethod,
+          shippingAddress:      deliveryMethod === "DELIVERY" ? shippingAddress    : null,
+          shippingCity:         deliveryMethod === "DELIVERY" ? shippingCity       : null,
+          shippingPostalCode:   deliveryMethod === "DELIVERY" ? shippingPostalCode : null,
+          shippingCountry:      deliveryMethod === "DELIVERY" ? shippingCountry    : null,
+          shippingCost,
+          shippingCarrierLabel,
           items:         { create: lineItems },
         },
       })
@@ -131,14 +164,24 @@ export async function POST(
   try {
     checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: commandeItems.map(item => ({
-        price_data: {
-          currency:     "eur",
-          unit_amount:  item.unitPrice,
-          product_data: { name: `${item.produit.name} – ${item.variante.label}` },
-        },
-        quantity: item.quantity,
-      })),
+      line_items: [
+        ...commandeItems.map(item => ({
+          price_data: {
+            currency:     "eur",
+            unit_amount:  item.unitPrice,
+            product_data: { name: `${item.produit.name} – ${item.variante.label}` },
+          },
+          quantity: item.quantity,
+        })),
+        ...(commande.shippingCost > 0 ? [{
+          price_data: {
+            currency:     "eur",
+            unit_amount:  commande.shippingCost,
+            product_data: { name: commande.shippingCarrierLabel ?? "Livraison" },
+          },
+          quantity: 1,
+        }] : []),
+      ],
       customer_email: email,
       payment_intent_data: {
         transfer_data: { destination: assoc.stripeConnectId },

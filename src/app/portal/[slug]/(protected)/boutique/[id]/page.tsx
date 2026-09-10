@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/hooks/use-cart"
 import { cn } from "@/lib/utils"
 
-type Variante = { id: string; label: string; price: number; stock: number }
+type Variante = { id: string; label: string; price: number; stock: number; shippable: boolean; weightGrams: number | null }
 type Produit  = {
   id:          string
   name:        string
@@ -85,6 +85,8 @@ export default function ProduitDetailPage() {
       price:         selectedVariante.price,
       imageUrl:      produit.imageUrl,
       stock:         selectedVariante.stock,
+      shippable:     selectedVariante.shippable,
+      weightGrams:   selectedVariante.weightGrams,
     }, quantity)
     toast.success(t("addedToCart"))
   }

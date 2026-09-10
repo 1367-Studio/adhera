@@ -9,6 +9,8 @@ import { boutiqueNewOrderAdminEmail, boutiquePendingOrderEmail } from "@/lib/ema
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
+import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
+import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
 import { randomBytes } from "crypto"
 
 const itemSchema = z.object({
@@ -25,6 +27,7 @@ const schema = z.object({
   phone:     z.string().trim().max(30).optional(),
   note:      z.string().trim().max(500).optional().nullable(),
   website:   z.string().optional().or(z.literal("")),
+  ...deliveryFieldsSchema,
 })
 
 // Pay-on-pickup: no Stripe session at all — the commande is created straight in PENDING,
@@ -49,6 +52,9 @@ export async function POST(
 
   if (parsed.data.website) return NextResponse.json({ ok: true })
 
+  const deliveryError = validateDeliveryFields(parsed.data)
+  if (deliveryError) return NextResponse.json({ error: deliveryError }, { status: 422 })
+
   const assoc = await prisma.association.findUnique({
     where:  { slug },
     select: { id: true, name: true, modules: true },
@@ -58,8 +64,28 @@ export async function POST(
   const modules = parseModules(assoc.modules)
   if (!modules.boutique) return NextResponse.json({ error: "Module boutique désactivé" }, { status: 403 })
 
-  const { items, firstName, lastName, email, phone, note } = parsed.data
+  const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode } = parsed.data
   const guestName = `${firstName} ${lastName}`.trim()
+
+  let shippingCost = 0
+  let shippingCarrierLabel: string | null = null
+  if (deliveryMethod === "DELIVERY") {
+    try {
+      const resolved = await resolveShippingCost({
+        associationId:  assoc.id,
+        items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+        destCountry:    shippingCountry!,
+        destPostalCode: shippingPostalCode!,
+        optionCode:     shippingOptionCode!,
+      })
+      shippingCost = resolved.costCents
+      shippingCarrierLabel = resolved.carrierLabel
+    } catch (err) {
+      if (err instanceof ShippingUnavailableError)
+        return NextResponse.json({ error: err.message }, { status: 422 })
+      throw err
+    }
+  }
 
   let commande
   try {
@@ -100,8 +126,15 @@ export async function POST(
           status:        "PENDING",
           paymentMethod: "MANUAL",
           source:        "STOREFRONT",
-          totalAmount,
+          totalAmount:   totalAmount + shippingCost,
           note:          note || (phone ? `Tél: ${phone}` : null),
+          deliveryMethod,
+          shippingAddress:      deliveryMethod === "DELIVERY" ? shippingAddress    : null,
+          shippingCity:         deliveryMethod === "DELIVERY" ? shippingCity       : null,
+          shippingPostalCode:   deliveryMethod === "DELIVERY" ? shippingPostalCode : null,
+          shippingCountry:      deliveryMethod === "DELIVERY" ? shippingCountry    : null,
+          shippingCost,
+          shippingCarrierLabel,
           items:         { create: lineItems },
         },
         include: {
@@ -153,7 +186,7 @@ export async function POST(
         userId: a.id,
         title:  "Nouvelle commande boutique",
         body:   `${guestName} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} € (paiement à la remise)`,
-        link:   `/dashboard/boutique`,
+        link:   `/dashboard/boutique?tab=commandes&commandeId=${commande.id}`,
         scope:  "GESTION",
       })),
       skipDuplicates: true,

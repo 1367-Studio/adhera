@@ -10,7 +10,7 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { id }) => {
     include: {
       variantes: {
         orderBy: { createdAt: "asc" },
-        select:  { id: true, label: true, price: true, stock: true },
+        select:  { id: true, label: true, price: true, stock: true, shippable: true, weightGrams: true },
       },
     },
   })

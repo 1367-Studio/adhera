@@ -39,8 +39,8 @@ function getManualPaymentTypeOptions(t: Translator) {
   ]
 }
 
-type VarianteRow = { _key: string; id?: string; label: string; price: number; stock: string }
-type Variante    = { id: string; label: string; price: number; stock: number }
+type VarianteRow = { _key: string; id?: string; label: string; price: number; stock: string; shippable: boolean; weightGrams: string }
+type Variante    = { id: string; label: string; price: number; stock: number; shippable: boolean; weightGrams: number | null }
 type Produit     = {
   id: string; name: string; description: string | null; imageUrl: string | null
   status: "DRAFT" | "ACTIVE" | "ARCHIVED"; categoryId: string | null; variantes: Variante[]
@@ -73,10 +73,13 @@ const STATUS_COMMANDE_VARIANT: Record<string, "secondary" | "default" | "destruc
 }
 
 function toRow(v: Variante): VarianteRow {
-  return { _key: v.id, id: v.id, label: v.label, price: v.price / 100, stock: String(v.stock) }
+  return {
+    _key: v.id, id: v.id, label: v.label, price: v.price / 100, stock: String(v.stock),
+    shippable: v.shippable, weightGrams: v.weightGrams != null ? String(v.weightGrams) : "",
+  }
 }
 function newRow(): VarianteRow {
-  return { _key: crypto.randomUUID(), label: "", price: 0, stock: "0" }
+  return { _key: crypto.randomUUID(), label: "", price: 0, stock: "0", shippable: false, weightGrams: "" }
 }
 
 export default function EditProduitPage() {
@@ -150,9 +153,11 @@ export default function EditProduitPage() {
     mutationFn: async () => {
       const parsedVariantes = variantes.map(v => ({
         ...(v.id ? { id: v.id } : {}),
-        label: v.label.trim(),
-        price: Math.round(v.price * 100),
-        stock: parseInt(v.stock, 10) || 0,
+        label:       v.label.trim(),
+        price:       Math.round(v.price * 100),
+        stock:       parseInt(v.stock, 10) || 0,
+        shippable:   v.shippable,
+        weightGrams: v.shippable ? parseInt(v.weightGrams, 10) || undefined : undefined,
       }))
       const res = await fetch(`/api/boutique/produits/${id}`, {
         method:  "PATCH",
@@ -270,6 +275,7 @@ export default function EditProduitPage() {
     if (variantes.length === 0) { toast.error(t("form.validation.atLeastOneVariant")); return }
     for (const v of variantes) {
       if (!v.label.trim()) { toast.error(t("form.validation.variantLabelRequired")); return }
+      if (v.shippable && !(parseInt(v.weightGrams, 10) > 0)) { toast.error(t("form.validation.weightRequiredWhenShippable")); return }
     }
     saveMutation.mutate()
   }
@@ -494,15 +500,17 @@ export default function EditProduitPage() {
                   </h2>
 
                   <div className="space-y-2">
-                    <div className="grid grid-cols-[1fr_140px_80px_32px] gap-2 px-1">
+                    <div className="grid grid-cols-[1fr_130px_70px_60px_90px_32px] gap-2 px-1">
                       <p className="text-xs text-muted-foreground font-medium">{t("form.variantLabelColumn")}</p>
                       <p className="text-xs text-muted-foreground font-medium">{t("form.priceColumn")}</p>
                       <p className="text-xs text-muted-foreground font-medium">{t("form.stockColumn")}</p>
+                      <p className="text-xs text-muted-foreground font-medium text-center">{t("form.shippableColumn")}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{t("form.weightColumn")}</p>
                       <span />
                     </div>
 
                     {variantes.map(v => (
-                      <div key={v._key} className="grid grid-cols-[1fr_140px_80px_32px] gap-2 items-center">
+                      <div key={v._key} className="grid grid-cols-[1fr_130px_70px_60px_90px_32px] gap-2 items-center">
                         <Input
                           className="h-9"
                           placeholder={t("form.variantLabelPlaceholder")}
@@ -518,6 +526,21 @@ export default function EditProduitPage() {
                           type="number" min="0" placeholder="0"
                           value={v.stock}
                           onChange={e => updateVariante(v._key, "stock", e.target.value)}
+                        />
+                        <div className="flex items-center justify-center">
+                          <input
+                            type="checkbox"
+                            checked={v.shippable}
+                            onChange={e => updateVariante(v._key, "shippable", e.target.checked)}
+                            className="size-4 cursor-pointer rounded border border-input accent-primary"
+                          />
+                        </div>
+                        <Input
+                          className="h-9"
+                          type="number" min="0" placeholder={t("form.weightPlaceholder")}
+                          value={v.weightGrams}
+                          disabled={!v.shippable}
+                          onChange={e => updateVariante(v._key, "weightGrams", e.target.value)}
                         />
                         <button
                           type="button"

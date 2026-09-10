@@ -188,6 +188,28 @@ export async function POST(req: Request) {
                     },
                   })
                 }
+
+                // Shipping is its own Income line, deliberately uncategorized (same "no
+                // category" convention as an item with a null categoryId snapshot) — it must
+                // never get silently folded into a product category's total.
+                if (commande.shippingCost > 0) {
+                  await tx.income.create({
+                    data: {
+                      associationId: commande.associationId,
+                      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+                      memberId:      commande.membreId ?? undefined,
+                      amount:        commande.shippingCost / 100,
+                      description:   buyerLabel
+                        ? `Frais de livraison — ${buyerLabel}${commande.shippingCarrierLabel ? ` (${commande.shippingCarrierLabel})` : ""}`
+                        : `Frais de livraison${commande.shippingCarrierLabel ? ` (${commande.shippingCarrierLabel})` : ""}`,
+                      paymentMethod: "STRIPE",
+                      source:        "STRIPE",
+                      status:        "PAID",
+                      date:          paidAt,
+                      reference:     paymentIntentId,
+                    },
+                  })
+                }
                 return true
               })
               receiptNumber = candidateNumber
@@ -278,7 +300,7 @@ export async function POST(req: Request) {
                 userId: a.id,
                 title:  "Nouvelle commande boutique",
                 body:   `${memberName} a passé une commande de ${(commande.totalAmount / 100).toFixed(2)} €`,
-                link:   `/dashboard/boutique`,
+                link:   `/dashboard/boutique?tab=commandes&commandeId=${commande.id}`,
                 scope:  "GESTION",
               })),
               skipDuplicates: true,
