@@ -22,6 +22,7 @@ import { SmsSettings } from "@/components/sms/sms-settings"
 import { LiveKitSettings } from "@/components/reunions/livekit-settings"
 import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
 import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
+import { ShippingSettings } from "@/components/parametres/shipping-settings"
 import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
@@ -203,6 +204,12 @@ function ParametresViewInner() {
           )}
 
           <MembreTypesManager canEdit={canEdit} />
+
+          {modules.boutique && (
+            <div className="rounded-lg border bg-card p-6">
+              <ShippingSettings canEdit={canEdit} />
+            </div>
+          )}
 
           {assoc?.slug && (
             <div className="rounded-lg border bg-card p-6">

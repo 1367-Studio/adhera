@@ -22,7 +22,7 @@ export async function GET(
     include: {
       variantes: {
         orderBy: { createdAt: "asc" },
-        select:  { id: true, label: true, price: true, stock: true },
+        select:  { id: true, label: true, price: true, stock: true, shippable: true, weightGrams: true },
       },
     },
   })

@@ -2435,8 +2435,12 @@
       "validation": {
         "nameRequired": "Name is required",
         "atLeastOneVariant": "At least one variant is required",
-        "variantLabelRequired": "Each variant must have a label"
-      }
+        "variantLabelRequired": "Each variant must have a label",
+        "weightRequiredWhenShippable": "Weight is required for a variant with shipping enabled"
+      },
+      "shippableColumn": "Shipping",
+      "weightColumn": "Weight (g)",
+      "weightPlaceholder": "500"
     },
     "view": {
       "title": "Shop",
@@ -2485,7 +2489,8 @@
       "toasts": {
         "productDeleted": "Product deleted",
         "deleteError": "Error while deleting",
-        "orderUpdated": "Order updated"
+        "orderUpdated": "Order updated",
+        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it."
       }
     },
     "payModal": {
@@ -4816,9 +4821,9 @@
       "summary": "Summary",
       "total": "Total",
       "paymentMethod": "Payment method",
-      "paymentManual": "On pickup",
+      "paymentManual": "Manual payment",
       "paymentStripe": "Online",
-      "paymentManualHint": "Payment is made on pickup. The administration will contact you.",
+      "paymentManualHint": "Payment will be arranged directly with the administration.",
       "paymentStripeHint": "You'll receive a secure payment link after the order is confirmed.",
       "note": "Note",
       "optional": "(optional)",
@@ -5407,5 +5412,26 @@
       "closed": "Request closed",
       "reopened": "Request reopened"
     }
+  },
+  "boutiqueShipping": {
+    "title": "Shipping",
+    "description": "Shipping origin address used to calculate Boutique postal delivery costs.",
+    "addressLabel": "Address",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "City",
+    "postalCodeLabel": "Postal code",
+    "countryLabel": "Country",
+    "saved": "Shipping address saved",
+    "deliveryMethodLabel": "Receiving method",
+    "pickupOption": "Pickup",
+    "deliveryOption": "Postal delivery",
+    "shippingAddressHint": "Needed to calculate delivery costs.",
+    "shippingOptionsLabel": "Delivery cost",
+    "loadingRates": "Calculating delivery cost…",
+    "noShippingOptions": "No delivery option available for this address.",
+    "shippingUnavailable": "Postal delivery isn't configured by this association yet.",
+    "leadTimeApprox": "~{days}d",
+    "shippingCostLabel": "Delivery cost",
+    "mixedCartPickupOnlyHint": "Delivery unavailable: your cart contains an item that can only be picked up in person."
   }
 }

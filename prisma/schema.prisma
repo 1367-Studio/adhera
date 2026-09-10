@@ -402,6 +402,15 @@ model Association {
   address                        String?
   phone                          String?
   website                        String?
+  // Adresse d'expédition utilisée comme point de départ ("from_address") lors des cotations
+  // de frais de livraison Boutique (Sendcloud) — distincte de `address` ci-dessus, qui sert
+  // à l'identité légale (reçus fiscaux), pas à la logistique.
+  shippingAddress                String?
+  shippingPostalCode             String?
+  shippingCity                   String?
+  // Code pays ISO 3166-1 alpha-2 (ex: "FR") — contrairement à `country` ci-dessus qui stocke
+  // un nom complet pour un autre usage, celui-ci alimente directement l'API de cotation.
+  shippingCountry                String?            @default("FR")
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
@@ -798,7 +807,7 @@ model Evenement {
   createdAt              DateTime                  @default(now())
   updatedAt              DateTime                  @updatedAt
 
-  association    Association            @relation(fields: [associationId], references: [id])
+  association    Association             @relation(fields: [associationId], references: [id])
   participations Participation[]
   actualites     Actualite[]
   customFields   EvenementCustomField[]
@@ -943,28 +952,28 @@ enum EvenementDiscountKind {
 // Leandro. Ne s'applique jamais aux tarifs DONATION (déjà un "montant libre") ni aux produits
 // Boutique/dons embarqués — seulement au prix du billet, voir inscription/route.ts.
 model EvenementDiscountCode {
-  id          String                @id @default(cuid())
-  evenementId String
+  id            String                @id @default(cuid())
+  evenementId   String
   // Toujours comparé en majuscules (normalisé à l'écriture et à la lecture) — jamais une
   // contrainte de collation DB, pour rester portable.
-  code        String
-  kind        EvenementDiscountKind
+  code          String
+  kind          EvenementDiscountKind
   // FIXED = montant en euros retiré du prix ; PERCENT = pourcentage (0-100) retiré du prix.
-  value       Decimal               @db.Decimal(10, 2)
-  startsAt    DateTime?
-  endsAt      DateTime?
-  maxUses     Int?
-  usesCount   Int                   @default(0)
-  active      Boolean               @default(true)
+  value         Decimal               @db.Decimal(10, 2)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  maxUses       Int?
+  usesCount     Int                   @default(0)
+  active        Boolean               @default(true)
   // Vide = s'applique à toutes les tarifs TICKET de l'événement. Sinon, liste d'ids
   // EvenementTicketType — jamais validé par une FK (simple tableau de strings, comme
   // BoutiqueCommandeItem.varianteId ailleurs) car une tarif supprimée ne doit pas faire
   // disparaître le code, juste cesser de s'y appliquer.
   ticketTypeIds String[]
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 
-  evenement Evenement @relation(fields: [evenementId], references: [id], onDelete: Cascade)
+  evenement      Evenement       @relation(fields: [evenementId], references: [id], onDelete: Cascade)
   participations Participation[]
 
   @@unique([evenementId, code])
@@ -1048,13 +1057,13 @@ model Participation {
   signedName        String?
   createdAt         DateTime                @default(now())
 
-  membre         Membre?              @relation(fields: [membreId], references: [id])
-  evenement      Evenement            @relation(fields: [evenementId], references: [id])
-  ticketType     EvenementTicketType? @relation(fields: [ticketTypeId], references: [id])
-  discountCode   EvenementDiscountCode? @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
-  incomes        Income[]
-  automationLogs AutomationLog[]
-  avis           EvenementAvis?
+  membre            Membre?                @relation(fields: [membreId], references: [id])
+  evenement         Evenement              @relation(fields: [evenementId], references: [id])
+  ticketType        EvenementTicketType?   @relation(fields: [ticketTypeId], references: [id])
+  discountCode      EvenementDiscountCode? @relation(fields: [discountCodeId], references: [id], onDelete: SetNull)
+  incomes           Income[]
+  automationLogs    AutomationLog[]
+  avis              EvenementAvis?
   boutiqueCommandes BoutiqueCommande[]
 
   @@unique([associationId, receiptNumber])
@@ -1336,7 +1345,7 @@ model DonationForm {
   confirmationMessage String?
 
   // Étape 5 — Publication
-  visibility DonationVisibility @default(LINK)
+  visibility    DonationVisibility @default(LINK)
   // Id of the "dons"-type SiteSection (Association.siteConfig JSON, see
   // src/types/site-config.ts) this form is bound to when visibility = SITE — mirrors
   // MembershipForm.siteSectionId: an explicit form→section pick instead of an implicit
@@ -2201,11 +2210,11 @@ model PasswordResetToken {
 // regenerated (see src/lib/auth/two-factor.ts) — bcrypt-hashed, consumed (usedAt set) on
 // first use.
 model TwoFactorBackupCode {
-  id       String    @id @default(cuid())
-  userId   String
-  codeHash String
-  usedAt   DateTime?
-  createdAt DateTime @default(now())
+  id        String    @id @default(cuid())
+  userId    String
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -2232,23 +2241,32 @@ model BoutiqueProduit {
 }
 
 model BoutiqueVariante {
-  id        String   @id @default(cuid())
-  produitId String
-  label     String
-  price     Int
-  stock     Int      @default(0)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  produitId   String
+  label       String
+  price       Int
+  stock       Int      @default(0)
+  // Quand shippable = true, weightGrams est obligatoire (validé côté API) — utilisé pour
+  // calculer le poids total du colis lors de la cotation de frais de livraison Sendcloud.
+  shippable   Boolean  @default(false)
+  weightGrams Int?
+  createdAt   DateTime @default(now())
 
-  produit          BoutiqueProduit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
-  commandeItems    BoutiqueCommandeItem[]
-  formOffers       MembershipFormProduct[]
-  evenementOffers  EvenementProduct[]
+  produit         BoutiqueProduit         @relation(fields: [produitId], references: [id], onDelete: Cascade)
+  commandeItems   BoutiqueCommandeItem[]
+  formOffers      MembershipFormProduct[]
+  evenementOffers EvenementProduct[]
 }
 
 enum BoutiqueCommandeSource {
   STOREFRONT
   MEMBERSHIP_FORM
   EVENEMENT
+}
+
+enum BoutiqueDeliveryMethod {
+  PICKUP
+  DELIVERY
 }
 
 model BoutiqueCommande {
@@ -2286,14 +2304,27 @@ model BoutiqueCommande {
   stripePaymentIntentId String?
   totalAmount           Int
   note                  String?
+  // PICKUP (défaut, historique) = retrait en main. DELIVERY = envoi postal — les champs
+  // shipping* ci-dessous ne sont renseignés que dans ce cas.
+  deliveryMethod        BoutiqueDeliveryMethod @default(PICKUP)
+  shippingAddress       String?
+  shippingPostalCode    String?
+  shippingCity          String?
+  shippingCountry       String?
+  // Inclus dans totalAmount — jamais recalculé à partir de la valeur envoyée par le client,
+  // toujours recoté côté serveur auprès de Sendcloud au moment de la commande.
+  shippingCost          Int                    @default(0)
+  // Nom du service choisi par l'acheteur parmi les options cotées (ex: "Colissimo Domicile")
+  // — traçabilité pour l'admin, pas juste un montant brut.
+  shippingCarrierLabel  String?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
 
-  association Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  membre      Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
-  cotisation  Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
-  participation Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
-  items       BoutiqueCommandeItem[]
+  association   Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre        Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
+  cotisation    Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
+  participation Participation?         @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  items         BoutiqueCommandeItem[]
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, status])

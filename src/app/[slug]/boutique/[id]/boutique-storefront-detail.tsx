@@ -12,7 +12,7 @@ import { useCart } from "@/lib/hooks/use-cart"
 import { cn } from "@/lib/utils"
 import { RichTextView } from "@/components/ui/rich-text-view"
 
-type Variante = { id: string; label: string; price: number; stock: number }
+type Variante = { id: string; label: string; price: number; stock: number; shippable: boolean; weightGrams: number | null }
 type Produit  = {
   id:          string
   name:        string
@@ -54,6 +54,8 @@ export function BoutiqueStorefrontDetail({ slug, id }: Props) {
       price:         variante.price,
       imageUrl:      produit.imageUrl,
       stock:         variante.stock,
+      shippable:     variante.shippable,
+      weightGrams:   variante.weightGrams,
     }, quantity)
     toast.success(t("addedToCart"))
     setQuantity(1)

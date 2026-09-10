@@ -5,18 +5,20 @@ import { useParams, useRouter, useSearchParams, usePathname } from "next/navigat
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import { ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon, CreditCardIcon, HandCoinsIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon, CreditCardIcon, HandCoinsIcon, TruckIcon, StorefrontIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { useCart } from "@/lib/hooks/use-cart"
 
 type CheckoutError = Error & { insufficientItems?: { varianteId: string; available: number }[] }
+type ShippingOption = { code: string; carrierLabel: string; costCents: number; leadTimeHours: number | null }
 
 function PanierContent() {
   const t        = useTranslations("portalMembre.boutique")
   const tPublic  = useTranslations("donationForms.public")
   const tCommon  = useTranslations("common")
+  const tShip    = useTranslations("boutiqueShipping")
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
   const pathname = usePathname()
@@ -33,6 +35,16 @@ function PanierContent() {
   const [trackingToken, setTrackingToken] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState<"STRIPE" | "MANUAL">("STRIPE")
 
+  const [deliveryMethod, setDeliveryMethod] = useState<"PICKUP" | "DELIVERY">("PICKUP")
+  const [shippingAddress, setShippingAddress]       = useState("")
+  const [shippingCity, setShippingCity]             = useState("")
+  const [shippingPostalCode, setShippingPostalCode] = useState("")
+  const [shippingCountry, setShippingCountry]       = useState("FR")
+  const [shippingOptions, setShippingOptions]       = useState<ShippingOption[]>([])
+  const [selectedShipping, setSelectedShipping]     = useState<ShippingOption | null>(null)
+  const [ratesLoading, setRatesLoading]             = useState(false)
+  const [ratesFetched, setRatesFetched]             = useState(false)
+
   // Drives whether "En ligne" is even offered — without this, a visitor could fill the
   // whole cart + guest form and only discover Stripe isn't configured after clicking
   // submit. Defaults to enabled while loading so the toggle doesn't flash MANUAL-only for
@@ -45,6 +57,50 @@ function PanierContent() {
   useEffect(() => {
     if (shopData && !shopData.paymentEnabled) setPaymentMethod("MANUAL")
   }, [shopData])
+
+  // Delivery is only ever offered when every line in the cart supports it — a mixed cart
+  // has no way to split shipping vs. pickup in this flow.
+  const allShippable = items.length > 0 && items.every(i => i.shippable)
+  useEffect(() => {
+    if (!allShippable && deliveryMethod === "DELIVERY") setDeliveryMethod("PICKUP")
+  }, [allShippable, deliveryMethod])
+
+  // Debounced real-time quote — re-fires whenever the destination or the cart contents
+  // change, and always invalidates whatever option was picked for a previous address.
+  useEffect(() => {
+    setSelectedShipping(null)
+    setShippingOptions([])
+    if (deliveryMethod !== "DELIVERY" || shippingPostalCode.trim().length < 3 || shippingCountry.trim().length !== 2) {
+      setRatesFetched(false)
+      return
+    }
+    setRatesLoading(true)
+    setRatesFetched(false)
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/public/${slug}/boutique/shipping-rate`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify({
+            items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+            destPostalCode: shippingPostalCode.trim(),
+            destCountry:    shippingCountry.trim().toUpperCase(),
+          }),
+        })
+        const d = await res.json()
+        const options: ShippingOption[] = res.ok ? (d.options ?? []) : []
+        setShippingOptions(options)
+        if (options.length > 0) setSelectedShipping(options[0])
+      } catch {
+        setShippingOptions([])
+      } finally {
+        setRatesLoading(false)
+        setRatesFetched(true)
+      }
+    }, 600)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deliveryMethod, shippingPostalCode, shippingCountry, slug, items.length])
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -63,7 +119,10 @@ function PanierContent() {
   const fmt = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  const canSubmit  = firstName.trim() && lastName.trim() && emailValid && items.length > 0
+  const deliveryReady = deliveryMethod === "PICKUP" || (
+    shippingAddress.trim() && shippingCity.trim() && shippingPostalCode.trim() && shippingCountry.trim().length === 2 && selectedShipping
+  )
+  const canSubmit  = firstName.trim() && lastName.trim() && emailValid && items.length > 0 && deliveryReady
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -74,6 +133,14 @@ function PanierContent() {
         email:     email.trim(),
         phone:     phone.trim() || undefined,
         website,
+        deliveryMethod,
+        ...(deliveryMethod === "DELIVERY" ? {
+          shippingAddress:    shippingAddress.trim(),
+          shippingCity:       shippingCity.trim(),
+          shippingPostalCode: shippingPostalCode.trim(),
+          shippingCountry:    shippingCountry.trim().toUpperCase(),
+          shippingOptionCode: selectedShipping?.code,
+        } : {}),
       }
       const endpoint = paymentMethod === "STRIPE" ? "checkout" : "commande"
       const res = await fetch(`/api/public/${slug}/boutique/${endpoint}`, {
@@ -243,9 +310,89 @@ function PanierContent() {
               ))}
             </div>
 
+            {allShippable && (
+              <div className="space-y-1.5 border-t pt-3">
+                <label className="text-xs font-medium text-muted-foreground">{tShip("deliveryMethodLabel")}</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { v: "PICKUP",   label: tShip("pickupOption"),   icon: StorefrontIcon },
+                    { v: "DELIVERY", label: tShip("deliveryOption"), icon: TruckIcon },
+                  ] as const).map(opt => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => setDeliveryMethod(opt.v)}
+                      className={`flex flex-col items-center gap-1.5 rounded-md border p-3 text-xs font-medium transition-colors ${
+                        deliveryMethod === opt.v
+                          ? "border-primary bg-primary/5 text-primary"
+                          : "border-input text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                      }`}
+                    >
+                      <opt.icon className="size-4" />
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!allShippable && items.some(i => i.shippable) && (
+              <p className="text-xs text-muted-foreground border-t pt-3">{tShip("mixedCartPickupOnlyHint")}</p>
+            )}
+
+            {deliveryMethod === "DELIVERY" && (
+              <div className="space-y-3">
+                <FormField label={tShip("addressLabel")} placeholder={tShip("addressPlaceholder")} required value={shippingAddress} onChange={e => setShippingAddress(e.target.value)} />
+                <div className="grid grid-cols-2 gap-2">
+                  <FormField label={tShip("postalCodeLabel")} required value={shippingPostalCode} onChange={e => setShippingPostalCode(e.target.value)} />
+                  <FormField label={tShip("cityLabel")} required value={shippingCity} onChange={e => setShippingCity(e.target.value)} />
+                </div>
+                <FormField label={tShip("countryLabel")} required maxLength={2} value={shippingCountry} onChange={e => setShippingCountry(e.target.value.toUpperCase())} />
+
+                {ratesLoading && <p className="text-xs text-muted-foreground">{tShip("loadingRates")}</p>}
+                {!ratesLoading && ratesFetched && shippingOptions.length === 0 && (
+                  <p className="text-xs text-muted-foreground">{tShip("noShippingOptions")}</p>
+                )}
+                {!ratesLoading && shippingOptions.length > 0 && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-muted-foreground">{tShip("shippingOptionsLabel")}</label>
+                    <div className="space-y-1.5">
+                      {shippingOptions.map(opt => (
+                        <button
+                          key={opt.code}
+                          type="button"
+                          onClick={() => setSelectedShipping(opt)}
+                          className={`flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm text-left transition-colors ${
+                            selectedShipping?.code === opt.code
+                              ? "border-primary bg-primary/5"
+                              : "border-input hover:border-primary/40"
+                          }`}
+                        >
+                          <span className="min-w-0">
+                            <span className="block truncate font-medium">{opt.carrierLabel}</span>
+                            {opt.leadTimeHours != null && (
+                              <span className="block text-xs text-muted-foreground">{tShip("leadTimeApprox", { days: Math.ceil(opt.leadTimeHours / 24) })}</span>
+                            )}
+                          </span>
+                          <span className="shrink-0 tabular-nums font-medium">{fmt(opt.costCents)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {selectedShipping && deliveryMethod === "DELIVERY" && (
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>{tShip("shippingCostLabel")}</span>
+                <span className="tabular-nums">{fmt(selectedShipping.costCents)}</span>
+              </div>
+            )}
+
             <div className="border-t pt-3 flex justify-between font-semibold">
               <span>{t("total")}</span>
-              <span className="tabular-nums text-primary">{fmt(total)}</span>
+              <span className="tabular-nums text-primary">{fmt(total + (deliveryMethod === "DELIVERY" ? (selectedShipping?.costCents ?? 0) : 0))}</span>
             </div>
 
             {/* Honeypot — jamais visible pour un vrai visiteur */}
