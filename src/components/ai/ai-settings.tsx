@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
+import { apiErrorMessage } from "@/lib/api-error"
 import { useTranslations } from "next-intl"
 import { RobotIcon, CheckCircleIcon, CircleNotchIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
@@ -21,15 +22,17 @@ type AiConfig = {
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
-  groq:    "Groq",
-  openai:  "OpenAI",
-  mistral: "Mistral AI",
+  groq:      "Groq",
+  openai:    "OpenAI",
+  mistral:   "Mistral AI",
+  anthropic: "Anthropic (Claude)",
 }
 
 const PROVIDER_DOCS: Record<string, string> = {
-  groq:    "console.groq.com/keys",
-  openai:  "platform.openai.com/api-keys",
-  mistral: "console.mistral.ai/api-keys",
+  groq:      "console.groq.com/keys",
+  openai:    "platform.openai.com/api-keys",
+  mistral:   "console.mistral.ai/api-keys",
+  anthropic: "console.anthropic.com/settings/keys",
 }
 
 export function AiSettings({ canEdit }: { canEdit: boolean }) {
@@ -81,14 +84,16 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(body),
       })
-      if (!res.ok) throw new Error()
+      // The route explains a rejected key ("impossible de valider…", "modèle non disponible…"):
+      // that message is the only clue the user has, so it must reach the toast.
+      if (!res.ok) throw new Error(await apiErrorMessage(res, t("toasts.saveError")))
       toast.success(t("toasts.saved"))
       setApiKey("")
       setInitialized(false)
       refetch()
       qc.invalidateQueries({ queryKey: ["ai-config"] })
-    } catch {
-      toast.error(t("toasts.saveError"))
+    } catch (error) {
+      toast.error(error instanceof Error && error.message ? error.message : t("toasts.saveError"))
     } finally {
       setSaving(false)
     }
@@ -166,13 +171,17 @@ export function AiSettings({ canEdit }: { canEdit: boolean }) {
 
       {canEdit && (
         <div className="space-y-4">
-          <SelectField
-            label={t("providerFieldLabel")}
-            placeholder={t("providerFieldPlaceholder")}
-            options={(data?.supportedProviders ?? []).map(p => ({ value: p, label: PROVIDER_LABELS[p] ?? p }))}
-            value={provider}
-            onValueChange={v => { setProvider(v); setModel("") }}
-          />
+          {/* Same layout FormField gives its own `hint` — SelectField has no hint slot. */}
+          <div className="flex flex-col gap-1.5">
+            <SelectField
+              label={t("providerFieldLabel")}
+              placeholder={t("providerFieldPlaceholder")}
+              options={(data?.supportedProviders ?? []).map(p => ({ value: p, label: PROVIDER_LABELS[p] ?? p }))}
+              value={provider}
+              onValueChange={v => { setProvider(v); setModel("") }}
+            />
+            <p className="text-xs text-muted-foreground">{t("anthropicAssistantHint")}</p>
+          </div>
 
           <FormField
             label={t("apiKeyLabel")}

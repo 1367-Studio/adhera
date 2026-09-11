@@ -771,8 +771,6 @@
     "previous": "Précédent",
     "finish": "Terminer",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Aide et visite guidée",
-    "helpButtonTooltip": "Visite guidée",
     "steps": {
       "welcome": {
         "title": "Bienvenue sur {appName} 👋",
@@ -856,7 +854,7 @@
       },
       "help": {
         "title": "Besoin d'aide ?",
-        "description": "C'est fini ! Un oubli ou une question plus tard ? Cliquez sur ce bouton pour relancer la visite quand vous voulez."
+        "description": "C'est fini ! Ce bouton ouvre le centre d'aide : articles, questions fréquentes, assistant et nouveautés. Vous pourrez aussi relancer cette visite depuis son pied de page."
       }
     }
   },
@@ -5140,7 +5138,7 @@
   },
   "ai": {
     "heading": "Assistant IA",
-    "description": "Utilisé pour la rédaction assistée dans les éditeurs de texte. Par défaut, la clé de la plateforme est utilisée gratuitement. Configurez votre propre clé (Groq, OpenAI ou Mistral) pour que les coûts soient facturés sur votre compte. Elle sert aussi à traduire automatiquement le contenu public (événements, formulaires).",
+    "description": "Utilisé pour la rédaction assistée dans les éditeurs de texte, la traduction automatique du contenu public (événements, formulaires) et l'assistant du centre d'aide. Par défaut, la clé de la plateforme est utilisée gratuitement. Configurez votre propre clé (Anthropic, Groq, OpenAI ou Mistral) pour que les coûts soient facturés sur votre compte.",
     "configuredTitle": "Clé personnalisée configurée",
     "providerLabel": "Fournisseur :",
     "modelLabel": "· Modèle :",
@@ -5148,6 +5146,7 @@
     "platformKeyActive": "Clé de la plateforme active — vous pouvez utiliser l'IA sans configuration.",
     "providerFieldLabel": "Fournisseur",
     "providerFieldPlaceholder": "Choisir un fournisseur…",
+    "anthropicAssistantHint": "L'assistant du centre d'aide ne répond sur les données de votre association (membres, cotisations, finances) qu'avec une clé Anthropic. Avec un autre fournisseur, il répond uniquement à partir de la documentation.",
     "apiKeyLabel": "Clé API",
     "apiKeyPlaceholderReplace": "Clé existante — saisissez pour remplacer",
     "apiKeyPlaceholderNew": "Coller votre clé API…",
@@ -5411,6 +5410,100 @@
       "error": "Une erreur est survenue",
       "closed": "Demande fermée",
       "reopened": "Demande réouverte"
+    },
+    "suggestReply": "Suggérer une réponse",
+    "suggestReplyConfirmTitle": "Remplacer votre brouillon ?",
+    "suggestReplyConfirmDescription": "Le texte déjà saisi sera remplacé par la suggestion de l'IA.",
+    "suggestReplyConfirmAction": "Remplacer",
+    "suggestReplyNote": "Suggestion générée par l'IA — relisez avant d'envoyer.",
+    "suggestReplySources": "Sources : {titles}",
+    "suggestReplyError": "Impossible de générer une suggestion."
+  },
+  "help": {
+    "buttonLabel": "Aide",
+    "title": "Centre d'aide",
+    "moduleGeneral": "Général",
+    "tabs": {
+      "guide": "Aide",
+      "assistant": "Assistant",
+      "changelog": "Nouveautés"
+    },
+    "searchPlaceholder": "Rechercher dans l'aide…",
+    "searchResultsCount": "{count, plural, one {# résultat} other {# résultats}}",
+    "searchNoResults": "Aucun résultat pour « {query} ».",
+    "searchError": "La recherche est indisponible pour le moment.",
+    "articlesSection": "Articles",
+    "faqSection": "Questions fréquentes",
+    "noArticles": "Aucun article pour cette section pour l'instant.",
+    "noContent": "Aucun contenu d'aide pour cette section pour l'instant.",
+    "loadError": "Impossible de charger l'aide.",
+    "retry": "Réessayer",
+    "back": "Retour",
+    "updatedOn": "Mis à jour le {date}",
+    "articleNotFound": "Article introuvable.",
+    "callout": {
+      "info": "Info",
+      "tip": "Astuce",
+      "warning": "Attention"
+    },
+    "assistant": {
+      "questionLabel": "Votre question",
+      "questionPlaceholder": "Posez votre question…",
+      "send": "Envoyer",
+      "sendShortcut": "Ctrl + Entrée (⌘ + Entrée sur Mac)",
+      "disclaimer": "Réponses générées par IA — vérifiez les informations importantes.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Vous",
+      "assistantLabel": "Assistant",
+      "newConversation": "Nouvelle conversation",
+      "intro": "Posez une question sur l'utilisation de Formwise ou sur les données de votre association : membres, cotisations, finances, événements.",
+      "introDocs": "Posez une question sur l'utilisation de Formwise.",
+      "examplesLabel": "Exemples de questions",
+      "examples": {
+        "unpaid": "Qui n'a pas payé sa cotisation cette année ?",
+        "donations": "Combien de dons ce mois-ci ?",
+        "createEvent": "Comment créer un événement ?"
+      },
+      "examplesDocs": {
+        "reminder": "Comment relancer une cotisation impayée ?",
+        "export": "Comment exporter la liste des membres ?",
+        "createEvent": "Comment créer un événement ?"
+      },
+      "loadingCopilot": "Consultation des données…",
+      "loadingDocs": "Rédaction…",
+      "dataConsulted": "Données consultées :",
+      "tools": {
+        "search_members": "Membres",
+        "get_member": "Membres",
+        "list_cotisations": "Cotisations",
+        "get_finance_summary": "Synthèse financière",
+        "list_events": "Événements",
+        "list_donations": "Dons",
+        "list_invoices": "Factures"
+      },
+      "sources": "Sources :",
+      "docsOnlyNotice": "Les questions sur vos membres, cotisations et finances nécessitent une clé Anthropic.",
+      "docsOnlyConfigure": "Configurer dans Paramètres → Intégrations.",
+      "error": "Impossible d'obtenir une réponse.",
+      "noApiKey": "Aucune clé API configurée.",
+      "noApiKeyConfigure": "Ajoutez votre clé API dans Paramètres → Intégrations.",
+      "noApiKeyAskAdmin": "Demandez à un administrateur d'ajouter une clé API dans Paramètres → Intégrations.",
+      "apiKeyInvalid": "La clé API configurée est refusée par le fournisseur.",
+      "apiKeyInvalidConfigure": "Vérifiez-la dans Paramètres → Intégrations.",
+      "apiKeyInvalidAskAdmin": "Demandez à un administrateur de la vérifier dans Paramètres → Intégrations."
+    },
+    "changelog": {
+      "empty": "Aucune nouveauté pour l'instant.",
+      "loadError": "Impossible de charger les nouveautés.",
+      "kind": {
+        "feature": "Nouveauté",
+        "improvement": "Amélioration",
+        "fix": "Correctif"
+      }
+    },
+    "footer": {
+      "tour": "Visite guidée",
+      "contactSupport": "Contacter le support"
     }
   },
   "boutiqueShipping": {

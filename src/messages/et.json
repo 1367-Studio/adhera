@@ -758,8 +758,6 @@
     "previous": "Eelmine",
     "finish": "Lõpp",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Abi ja giidiga ekskursioon",
-    "helpButtonTooltip": "Giidiga ekskursioon",
     "steps": {
       "welcome": {
         "title": "Tere tulemast {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Sinu profiil",
         "description": "Muuda oma profiili, muuda parool ja logi sellest menüüst välja."
-      },
-      "help": {
-        "title": "Vajad abi?",
-        "description": "See on läbi! Kas mõni möödalaskmine või küsimus hiljem? Klõpsa sellel nupul, et visiiti igal ajal uuesti alustada."
       }
     }
   },

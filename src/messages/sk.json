@@ -758,8 +758,6 @@
     "previous": "Predchádzajúce",
     "finish": "Cieľ",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pomoc a prehliadka so sprievodcom",
-    "helpButtonTooltip": "Prehliadka so sprievodcom",
     "steps": {
       "welcome": {
         "title": "Vitajte v {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Tvoj profil",
         "description": "Upravte svoj profil, zmeňte heslo a odhláste sa z tohto menu."
-      },
-      "help": {
-        "title": "Potrebujete pomoc?",
-        "description": "Je koniec! Prehliadnutie alebo otázka neskôr? Kliknite na toto tlačidlo a obnovte návštevu kedykoľvek chcete."
       }
     }
   },

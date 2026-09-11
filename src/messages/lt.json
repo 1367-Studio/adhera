@@ -758,8 +758,6 @@
     "previous": "Ankstesnė",
     "finish": "Pabaiga",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pagalba ir ekskursija su gidu",
-    "helpButtonTooltip": "Ekskursija su gidu",
     "steps": {
       "welcome": {
         "title": "Sveiki atvykę {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Jūsų profilis",
         "description": "Redaguok savo profilį, pakeisk slaptažodį ir atsijunk nuo šio meniu."
-      },
-      "help": {
-        "title": "Reikia pagalbos?",
-        "description": "Viskas baigta! Vėliau praleidimas ar klausimas? Spustelėkite šį mygtuką ir bet kada atnaujinkite vizitą."
       }
     }
   },

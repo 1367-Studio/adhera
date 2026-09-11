@@ -758,8 +758,6 @@
     "previous": "Tidigare",
     "finish": "Slut",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hjälp och guidad tur",
-    "helpButtonTooltip": "Guidad tur",
     "steps": {
       "welcome": {
         "title": "Välkommen till {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Din profil",
         "description": "Redigera din profil, byt lösenord och logga ut från denna meny."
-      },
-      "help": {
-        "title": "Behöver du hjälp?",
-        "description": "Det är över! En miss eller en fråga senare? Klicka på den här knappen för att starta om besöket när du vill."
       }
     }
   },

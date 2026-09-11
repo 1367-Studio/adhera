@@ -758,8 +758,6 @@
     "previous": "Iepriekšējais",
     "finish": "Nobeigums",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Palīdzība un ekskursija ar gidu",
-    "helpButtonTooltip": "Ekskursija ar gidu",
     "steps": {
       "welcome": {
         "title": "Laipni lūdzam {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Tavs profils",
         "description": "Rediģē savu profilu, nomaini paroli un izraksties no šīs izvēlnes."
-      },
-      "help": {
-        "title": "Nepieciešama palīdzība?",
-        "description": "Viss ir beidzies! Kāda kļūda vai jautājums vēlāk? Noklikšķini uz šīs pogas, lai atsāktu vizīti jebkurā laikā."
       }
     }
   },

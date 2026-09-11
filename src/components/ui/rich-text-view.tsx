@@ -8,7 +8,7 @@ interface RichTextViewProps {
   className?: string
 }
 
-const ALLOWED_TAGS = ["p", "br", "strong", "em", "u", "s", "ul", "ol", "li", "a", "h1", "h2", "h3", "h4", "blockquote", "hr"]
+const ALLOWED_TAGS = ["p", "br", "strong", "em", "u", "s", "ul", "ol", "li", "a", "h1", "h2", "h3", "h4", "blockquote", "hr", "table", "thead", "tbody", "tr", "th", "td"]
 const ALLOWED_ATTR = ["href", "target", "rel"]
 
 // Dynamically imported inside the effect (client-only) rather than statically at the top —
@@ -32,7 +32,8 @@ export function RichTextView({ content, className }: RichTextViewProps) {
   if (!clean) return null
   return (
     <div
-      className={cn("prose prose-sm dark:prose-invert max-w-none", className)}
+      // Tables scroll inside their own box so a wide one never scrolls the page or a panel.
+      className={cn("prose prose-sm dark:prose-invert max-w-none [&_table]:block [&_table]:overflow-x-auto [&_table]:whitespace-nowrap", className)}
       dangerouslySetInnerHTML={{ __html: clean }}
     />
   )

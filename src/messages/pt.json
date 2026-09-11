@@ -771,8 +771,6 @@
     "previous": "Anterior",
     "finish": "Concluir",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Ajuda e tour guiado",
-    "helpButtonTooltip": "Tour guiado",
     "steps": {
       "welcome": {
         "title": "Bem-vindo ao {appName} 👋",
@@ -853,10 +851,6 @@
       "userMenu": {
         "title": "Seu perfil",
         "description": "Edite seu perfil, altere sua senha e saia a partir deste menu."
-      },
-      "help": {
-        "title": "Precisa de ajuda?",
-        "description": "Pronto! Esqueceu algo ou tem uma pergunta mais tarde? Clique neste botão para reiniciar o tour quando quiser."
       }
     }
   },

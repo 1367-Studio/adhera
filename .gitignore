@@ -50,3 +50,6 @@ seed-full-demo.ts
 # MediaPipe WASM copied out of node_modules by scripts/copy-mediapipe-assets.mjs
 /public/mediapipe/wasm
 .env*
+
+# Sanity TypeGen output (regenerate with `npm run sanity:typegen`; the app uses hand-written DTOs in src/sanity/types.ts)
+src/sanity/sanity.types.ts

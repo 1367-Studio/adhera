@@ -4,11 +4,17 @@ import { Accordion as AccordionPrimitive } from "@base-ui/react/accordion"
 import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 
-function Accordion({ className, ...props }: AccordionPrimitive.Root.Props) {
+type AccordionProps = AccordionPrimitive.Root.Props & {
+  // "plain": no card chrome — for lists that sit directly on the page/panel background
+  // (help panel FAQ, changelog), where a bordered card would be a container inside a container.
+  variant?: "default" | "plain"
+}
+
+function Accordion({ className, variant = "default", ...props }: AccordionProps) {
   return (
     <AccordionPrimitive.Root
       data-slot="accordion"
-      className={cn("rounded-lg border bg-card divide-y", className)}
+      className={cn(variant === "plain" ? "divide-y divide-border/60" : "rounded-lg border bg-card divide-y", className)}
       {...props}
     />
   )

@@ -758,8 +758,6 @@
     "previous": "Prejšnje",
     "finish": "Konec",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pomoč in vodeni ogled",
-    "helpButtonTooltip": "Vodeni ogled",
     "steps": {
       "welcome": {
         "title": "Dobrodošli v {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Tvoj profil",
         "description": "Uredite svoj profil, spremenite geslo in se odjavite iz tega menija."
-      },
-      "help": {
-        "title": "Potrebujete pomoč?",
-        "description": "Konec je! Kasneje spregledano ali vprašanje? Kliknite na ta gumb, da obisk ponovno začnete kadarkoli želite."
       }
     }
   },

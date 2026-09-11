@@ -758,8 +758,6 @@
     "previous": "Korábbi",
     "finish": "Befejezés",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Segítség és vezetett túra",
-    "helpButtonTooltip": "Vezetett túra",
     "steps": {
       "welcome": {
         "title": "Üdvözlünk {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "A profilod",
         "description": "Szerkesztés a profilod, a jelszó megváltoztatása, és kijelentkezz ebből a menüből."
-      },
-      "help": {
-        "title": "Segítségre van szüksége?",
-        "description": "Vége! Később egy mulasztás vagy kérdés? Kattints erre a gombra, hogy bármikor újraindítsd a látogatást."
       }
     }
   },
