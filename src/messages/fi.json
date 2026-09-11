@@ -758,8 +758,6 @@
     "previous": "Edellinen",
     "finish": "Viimeistely",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Apu ja opastettu kierros",
-    "helpButtonTooltip": "Opastettu kierros",
     "steps": {
       "welcome": {
         "title": "Tervetuloa {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Profiilisi",
         "description": "Muokkaa profiiliasi, vaihda salasanasi ja kirjaudu ulos tästä valikosta."
-      },
-      "help": {
-        "title": "Tarvitsetko apua?",
-        "description": "Se on ohi! Virhe vai kysymys myöhemmin? Klikkaa tätä painiketta aloittaaksesi vierailun uudelleen milloin haluat."
       }
     }
   },

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getAiConfig } from "@/lib/ai/client"
+import { resolveAiConfig } from "@/lib/ai/client"
+import { completeText } from "@/lib/ai/complete"
+import { normalizeAiHtml } from "@/lib/ai/normalize-html"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { rateLimit } from "@/lib/rate-limit"
 
@@ -18,23 +20,6 @@ const SYSTEM_PROMPT =
   "en utilisant uniquement les balises <p>, <strong>, <em>, <u>, <h2>, <h3>, <ul>, <ol>, <li>, " +
   "<a href=\"...\">, <blockquote> et <hr>. N'utilise jamais de syntaxe markdown (**, #, -, etc.), " +
   "et n'entoure pas la réponse de balises <html>/<body> ni de bloc de code."
-
-// Some models still wrap the answer in a ```html fence or ignore the HTML instruction
-// entirely despite SYSTEM_PROMPT — normalize both cases so the result is always safe to
-// feed straight into the Tiptap editor and the sanitized preview.
-function normalizeAiHtml(raw: string): string {
-  const fenced = raw.match(/^```(?:html)?\s*\n?([\s\S]*?)\n?```$/i)
-  const text   = (fenced ? fenced[1] : raw).trim()
-
-  if (/<[a-z][\s\S]*>/i.test(text)) return text
-
-  const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-  return text
-    .split(/\n\s*\n/)
-    .map(block => `<p>${escape(block.trim()).replace(/\n/g, "<br>")}</p>`)
-    .filter(p => p !== "<p></p>")
-    .join("")
-}
 
 function buildUserPrompt(action: string, instruction?: string, currentText?: string): string {
   const text = currentText?.trim()
@@ -59,7 +44,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const { action, instruction, currentText } = parsed.data
 
-  const aiConfig   = await getAiConfig(ctx.associationId)
+  const aiConfig    = await resolveAiConfig(ctx.associationId)
   const usingOwnKey = !!aiConfig && !aiConfig.usingPlatform
 
   // Only throttle associations riding on the platform's shared fallback key — one with
@@ -74,20 +59,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
       { status: 503 }
     )
   }
-  const { client, model } = aiConfig
 
   try {
-    const completion = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: "system",  content: SYSTEM_PROMPT },
-        { role: "user",    content: buildUserPrompt(action, instruction, currentText) },
-      ],
+    const raw = await completeText(aiConfig, {
+      system:      SYSTEM_PROMPT,
+      user:        buildUserPrompt(action, instruction, currentText),
       temperature: 0.7,
-      max_tokens:  1500,
+      maxTokens:   1500,
     })
 
-    const raw  = completion.choices[0]?.message?.content?.trim() ?? ""
     const text = normalizeAiHtml(raw)
     return NextResponse.json({ text })
   } catch (err: unknown) {

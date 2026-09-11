@@ -758,8 +758,6 @@
     "previous": "Eerder",
     "finish": "Fins",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hulp en rondleiding",
-    "helpButtonTooltip": "Rondleiding",
     "steps": {
       "welcome": {
         "title": "Welkom bij {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Jouw profiel",
         "description": "Bewerk je profiel, verander je wachtwoord en log uit via dit menu."
-      },
-      "help": {
-        "title": "Hulp nodig?",
-        "description": "Het is voorbij! Een vergissing of een vraag later? Klik op deze knop om het bezoek te herstarten wanneer je maar wilt."
       }
     }
   },

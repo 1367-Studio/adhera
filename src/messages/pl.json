@@ -758,8 +758,6 @@
     "previous": "Poprzednie",
     "finish": "Zakończenie",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pomoc i wycieczka z przewodnikiem",
-    "helpButtonTooltip": "Wycieczka z przewodnikiem",
     "steps": {
       "welcome": {
         "title": "Witamy w {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Twój profil",
         "description": "Edytuj swój profil, zmień hasło i wyloguj się z tego menu."
-      },
-      "help": {
-        "title": "Potrzebujesz pomocy?",
-        "description": "To koniec! Przeoczenie czy pytanie później? Kliknij ten przycisk, aby wznowić wizytę, kiedy tylko chcesz."
       }
     }
   },

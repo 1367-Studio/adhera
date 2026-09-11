@@ -758,8 +758,6 @@
     "previous": "Precedente",
     "finish": "Fine",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Aiuto e visite guidate",
-    "helpButtonTooltip": "Visita guidata",
     "steps": {
       "welcome": {
         "title": "Benvenuti a {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Il tuo profilo",
         "description": "Modifica il tuo profilo, cambia la password e disconnettiti da questo menu."
-      },
-      "help": {
-        "title": "Hai bisogno di aiuto?",
-        "description": "È finita! Una svista o una domanda dopo? Clicca su questo pulsante per riavviare la visita quando vuoi."
       }
     }
   },

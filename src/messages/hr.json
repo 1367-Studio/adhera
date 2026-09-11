@@ -758,8 +758,6 @@
     "previous": "Prethodno",
     "finish": "Završetak",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pomoć i vođeni obilazak",
-    "helpButtonTooltip": "Vođeni obilazak",
     "steps": {
       "welcome": {
         "title": "Dobrodošli u {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Tvoj profil",
         "description": "Uredite svoj profil, promijenite lozinku i odjavite se iz ovog izbornika."
-      },
-      "help": {
-        "title": "Trebaš pomoć?",
-        "description": "Gotovo je! Previd ili pitanje kasnije? Kliknite na ovaj gumb da ponovno pokrenete posjet kad god želite."
       }
     }
   },

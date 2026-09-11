@@ -758,8 +758,6 @@
     "previous": "Anterior",
     "finish": "Finish",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Ajutor și tur ghidat",
-    "helpButtonTooltip": "Tur ghidat",
     "steps": {
       "welcome": {
         "title": "Bine ați venit la {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Profilul tău",
         "description": "Editează-ți profilul, schimbă-ți parola și deconectează-te din acest meniu."
-      },
-      "help": {
-        "title": "Ai nevoie de ajutor?",
-        "description": "S-a terminat! O scăpare sau o întrebare mai târziu? Apasă pe acest buton pentru a relua vizita oricând dorești."
       }
     }
   },

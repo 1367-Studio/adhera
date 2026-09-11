@@ -758,8 +758,6 @@
     "previous": "Preċedenti",
     "finish": "Tmiem",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Għajnuna u żjara gwidata",
-    "helpButtonTooltip": "Żjara gwidata",
     "steps": {
       "welcome": {
         "title": "Merħba {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Il-profil tiegħek",
         "description": "Editja l-profil tiegħek, biddel il-password tiegħek, u ħareġ minn dan il-menu."
-      },
-      "help": {
-        "title": "Trid għajnuna?",
-        "description": "Spiċċat! Xi żball jew mistoqsija aktar tard? Ikklikkja fuq din il-buttuna biex terġa' tibda ż-żjara meta trid."
       }
     }
   },

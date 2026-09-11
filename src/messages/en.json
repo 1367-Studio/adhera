@@ -771,8 +771,6 @@
     "previous": "Previous",
     "finish": "Finish",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Help and guided tour",
-    "helpButtonTooltip": "Guided tour",
     "steps": {
       "welcome": {
         "title": "Welcome to {appName} 👋",
@@ -856,7 +854,7 @@
       },
       "help": {
         "title": "Need help?",
-        "description": "That's it! Forgot something or have a question later? Click this button to restart the tour whenever you like."
+        "description": "That's it! This button opens the help center: articles, FAQs, the assistant and what's new. You can also restart this tour from its footer."
       }
     }
   },
@@ -5140,7 +5138,7 @@
   },
   "ai": {
     "heading": "AI Assistant",
-    "description": "Used for AI-assisted writing in text editors. By default, the platform key is used for free. Configure your own key (Groq, OpenAI or Mistral) so costs are billed to your account. It's also used to automatically translate public content (events, forms).",
+    "description": "Used for AI-assisted writing in text editors, automatic translation of public content (events, forms) and the help-center assistant. By default, the platform key is used for free. Configure your own key (Anthropic, Groq, OpenAI or Mistral) so costs are billed to your account.",
     "configuredTitle": "Custom key configured",
     "providerLabel": "Provider:",
     "modelLabel": "· Model:",
@@ -5148,6 +5146,7 @@
     "platformKeyActive": "Platform key active — you can use AI without any configuration.",
     "providerFieldLabel": "Provider",
     "providerFieldPlaceholder": "Choose a provider…",
+    "anthropicAssistantHint": "The help-center assistant only answers about your association's data (members, fees, finances) with an Anthropic key. With another provider it answers from the documentation only.",
     "apiKeyLabel": "API Key",
     "apiKeyPlaceholderReplace": "Existing key — enter to replace",
     "apiKeyPlaceholderNew": "Paste your API key…",
@@ -5411,6 +5410,104 @@
       "error": "Something went wrong",
       "closed": "Request closed",
       "reopened": "Request reopened"
+    },
+    "suggestReply": "Suggest a reply",
+    "suggestReplyConfirmTitle": "Replace your draft?",
+    "suggestReplyConfirmDescription": "The text you already typed will be replaced by the AI suggestion.",
+    "suggestReplyConfirmAction": "Replace",
+    "suggestReplyNote": "AI-generated suggestion — review before sending.",
+    "suggestReplySources": "Sources: {titles}",
+    "suggestReplyError": "Couldn't generate a suggestion."
+  },
+  "help": {
+    "buttonLabel": "Help",
+    "title": "Help center",
+    "moduleGeneral": "General",
+    "tabs": {
+      "guide": "Help",
+      "assistant": "Assistant",
+      "changelog": "What's new"
+    },
+    "searchPlaceholder": "Search the help…",
+    "searchResultsCount": "{count, plural, one {# result} other {# results}}",
+    "searchNoResults": "No results for \"{query}\".",
+    "searchError": "Search is unavailable right now.",
+    "articlesSection": "Articles",
+    "faqSection": "Frequently asked questions",
+    "noArticles": "No articles for this section yet.",
+    "noContent": "No help content for this section yet.",
+    "loadError": "Couldn't load the help.",
+    "retry": "Retry",
+    "back": "Back",
+    "updatedOn": "Updated on {date}",
+    "articleNotFound": "Article not found.",
+    "callout": {
+      "info": "Note",
+      "tip": "Tip",
+      "warning": "Warning"
+    },
+    "assistant": {
+      "questionLabel": "Your question",
+      "questionPlaceholder": "Ask your question…",
+      "send": "Send",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter on Mac)",
+      "disclaimer": "AI-generated answers — double-check anything important.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "You",
+      "assistantLabel": "Assistant",
+      "newConversation": "New conversation",
+      "conversationRestoreFailed": "Your previous conversation couldn't be restored.",
+      "intro": "Ask about how to use Formwise or about your association's data: members, fees, finances, events.",
+      "introDocs": "Ask about how to use Formwise.",
+      "examplesLabel": "Example questions",
+      "examples": {
+        "unpaid": "Who hasn't paid their membership fee this year?",
+        "donations": "How many donations this month?",
+        "createEvent": "How do I create an event?"
+      },
+      "examplesDocs": {
+        "reminder": "How do I send a reminder for an unpaid membership fee?",
+        "export": "How do I export the member list?",
+        "createEvent": "How do I create an event?"
+      },
+      "loadingCopilot": "Checking your data…",
+      "loadingDocs": "Writing…",
+      "dataConsulted": "Data consulted:",
+      "tools": {
+        "search_members": "Members",
+        "get_member": "Members",
+        "list_cotisations": "Membership fees",
+        "get_finance_summary": "Financial summary",
+        "list_events": "Events",
+        "list_donations": "Donations",
+        "list_invoices": "Invoices"
+      },
+      "sources": "Sources:",
+      "docsOnlyNotice": "Questions about your members, fees and finances require an Anthropic key.",
+      "docsOnlyConfigure": "Set it up in Settings → Integrations.",
+      "error": "Couldn't get an answer.",
+      "errorTimeout": "The assistant couldn't finish in time. Try a shorter or more precise question.",
+      "errorRateLimit": "Too many requests, try again shortly.",
+      "errorProvider": "The AI provider couldn't respond, try again later.",
+      "noApiKey": "No API key configured.",
+      "noApiKeyConfigure": "Add your API key in Settings → Integrations.",
+      "noApiKeyAskAdmin": "Ask an administrator to add an API key in Settings → Integrations.",
+      "apiKeyInvalid": "The configured API key was rejected by the provider.",
+      "apiKeyInvalidConfigure": "Check it in Settings → Integrations.",
+      "apiKeyInvalidAskAdmin": "Ask an administrator to check it in Settings → Integrations."
+    },
+    "changelog": {
+      "empty": "Nothing new yet.",
+      "loadError": "Couldn't load what's new.",
+      "kind": {
+        "feature": "New",
+        "improvement": "Improvement",
+        "fix": "Fix"
+      }
+    },
+    "footer": {
+      "tour": "Guided tour",
+      "contactSupport": "Contact support"
     }
   },
   "boutiqueShipping": {

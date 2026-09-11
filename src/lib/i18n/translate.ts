@@ -1,10 +1,10 @@
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma/client"
-import { getAiConfig, type ResolvedAiConfig } from "@/lib/ai/client"
+import { resolveAiConfig, type ResolvedAnyAiConfig } from "@/lib/ai/client"
+import { completeText } from "@/lib/ai/complete"
 import { rateLimit } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
-import type OpenAI from "openai"
 
 // These public routes are anonymous and uncached-on-first-hit, unlike the other 3 AI
 // features (which sit behind withAdminAuth) — an association's own key can otherwise be
@@ -30,13 +30,13 @@ const AI_TRANSLATE_MAX_CHARS = 20_000
 // Memoizes the association lookup for a few seconds so that a single public page issuing
 // several translateFields() calls back-to-back (e.g. content + tiers + customFields on the
 // adhesion form) doesn't re-query the same association's AI config on every cache miss.
-const aiConfigCache = new Map<string, { config: ResolvedAiConfig | null; expires: number }>()
+const aiConfigCache = new Map<string, { config: ResolvedAnyAiConfig | null; expires: number }>()
 
-async function getCachedAiConfig(associationId: string): Promise<ResolvedAiConfig | null> {
+async function getCachedAiConfig(associationId: string): Promise<ResolvedAnyAiConfig | null> {
   const cached = aiConfigCache.get(associationId)
   if (cached && cached.expires > Date.now()) return cached.config
 
-  const config = await getAiConfig(associationId)
+  const config = await resolveAiConfig(associationId)
   aiConfigCache.set(associationId, { config, expires: Date.now() + 5_000 })
   return config
 }
@@ -96,30 +96,22 @@ async function azureTranslate(texts: string[], targetLang: string): Promise<stri
 // Only ever called with an association's *own* key (see batchTranslate below) — never with
 // the platform's shared Groq fallback, so translation doesn't compete with the Groq budget
 // already shared by the PDF import/summarize/write features.
-async function aiTranslate(texts: string[], targetLang: string, client: OpenAI, model: string): Promise<string[]> {
-  const completion = await client.chat.completions.create(
-    {
-      model,
-      messages: [
-        {
-          role:    "system",
-          content:
-            `You are a professional translator. Translate each string in the JSON array to the language ` +
-            `identified by the BCP-47 tag "${targetLang}". Preserve any HTML tags and attributes exactly as-is, ` +
-            `translating only the visible text nodes. Keep the same array order and length as the input — one ` +
-            `translation per input string, never merged or split. Respond with a JSON object of the exact shape ` +
-            `{"translations": ["...", "..."]} and nothing else.`,
-        },
-        { role: "user", content: JSON.stringify(texts) },
-      ],
-      temperature:      0,
-      max_tokens:       AI_TRANSLATE_MAX_TOKENS,
-      response_format:  { type: "json_object" },
-    },
-    { timeout: AI_TRANSLATE_TIMEOUT_MS },
-  )
+async function aiTranslate(texts: string[], targetLang: string, aiConfig: ResolvedAnyAiConfig): Promise<string[]> {
+  const content = await completeText(aiConfig, {
+    system:
+      `You are a professional translator. Translate each string in the JSON array to the language ` +
+      `identified by the BCP-47 tag "${targetLang}". Preserve any HTML tags and attributes exactly as-is, ` +
+      `translating only the visible text nodes. Keep the same array order and length as the input — one ` +
+      `translation per input string, never merged or split. Respond with a JSON object of the exact shape ` +
+      `{"translations": ["...", "..."]} and nothing else.`,
+    user:        JSON.stringify(texts),
+    temperature: 0,
+    maxTokens:   AI_TRANSLATE_MAX_TOKENS,
+    json:        true,
+    timeoutMs:   AI_TRANSLATE_TIMEOUT_MS,
+  })
 
-  const parsed = JSON.parse(completion.choices[0]?.message?.content ?? "") as { translations?: unknown }
+  const parsed = JSON.parse(content) as { translations?: unknown }
   if (!Array.isArray(parsed.translations) || parsed.translations.length !== texts.length) {
     throw new Error("AI translation returned a malformed or mismatched result")
   }
@@ -155,8 +147,10 @@ async function batchTranslate(
     let translated: string[] | null = null
 
     // Own AI first (BYOK) — never the platform's shared Groq fallback, only a real own key.
+    // Anthropic keys are skipped: a reasoning model with no JSON mode inside the 10 s budget
+    // below would mostly time out and log a spurious failure — Azure serves those directly.
     const aiConfig = await getCachedAiConfig(associationId)
-    if (aiConfig && !aiConfig.usingPlatform) {
+    if (aiConfig && !aiConfig.usingPlatform && aiConfig.kind === "openai-compatible") {
       const totalChars = missTexts.reduce((sum, t) => sum + t.length, 0)
       // Both checks below are silent, expected skips (not failures) — an oversized batch or
       // a throttled association just falls through to Azure without anything to log.
@@ -167,7 +161,7 @@ async function batchTranslate(
 
       if (withinSizeLimit && withinRateLimit) {
         try {
-          translated = await aiTranslate(missTexts, locale, aiConfig.client, aiConfig.model)
+          translated = await aiTranslate(missTexts, locale, aiConfig)
         } catch (err) {
           console.error("[translate] AI translation failed, falling back to Azure:", err)
           // Surfaces a genuine failure (bad model, dead key, malformed output) to the admin —

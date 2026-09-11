@@ -758,8 +758,6 @@
     "previous": "Tidligere",
     "finish": "Afslutning",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hjælp og guidet tur",
-    "helpButtonTooltip": "Guidet tur",
     "steps": {
       "welcome": {
         "title": "Velkommen til {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Din profil",
         "description": "Rediger din profil, skift din adgangskode, og log ud fra denne menu."
-      },
-      "help": {
-        "title": "Brug for hjælp?",
-        "description": "Det er slut! En forglemmelse eller et spørgsmål senere? Klik på denne knap for at genstarte besøget, når du vil."
       }
     }
   },

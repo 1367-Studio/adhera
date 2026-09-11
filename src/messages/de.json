@@ -758,8 +758,6 @@
     "previous": "Früher",
     "finish": "Ziel",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hilfe und geführte Tour",
-    "helpButtonTooltip": "Geführte Tour",
     "steps": {
       "welcome": {
         "title": "Willkommen bei {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Dein Profil",
         "description": "Bearbeiten Sie Ihr Profil, ändern Sie Ihr Passwort und melden Sie sich aus diesem Menü aus."
-      },
-      "help": {
-        "title": "Brauchst du Hilfe?",
-        "description": "Es ist vorbei! Ein Versehen oder eine Frage später? Klicken Sie auf diesen Button, um den Besuch jederzeit neu zu starten."
       }
     }
   },

@@ -758,8 +758,6 @@
     "previous": "Roimhe Seo",
     "finish": "Críochnaigh",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Cabhair agus turas treoraithe",
-    "helpButtonTooltip": "Turas treoraithe",
     "steps": {
       "welcome": {
         "title": "Fáilte go dtí {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Do phróifíl",
         "description": "Cuir do phróifíl in eagar, athraigh do phasfhocal, agus logáil amach ón roghchlár seo."
-      },
-      "help": {
-        "title": "An bhfuil cabhair uait?",
-        "description": "Tá sé thart! An oversight nó ceist níos déanaí? Cliceáil ar an gcnaipe seo chun an chuairt a atosú aon uair is mian leat."
       }
     }
   },
