@@ -17,6 +17,29 @@ function formatTodayInParis(today: Date): string {
   return new Intl.DateTimeFormat("fr-FR", { timeZone: "Europe/Paris", dateStyle: "full" }).format(today)
 }
 
+// BCP-47 tags for Intl formatting — one per Locale, distinct from the app's own locale codes
+// where the two differ (LOCALE_LABELS documents "pt" as Brazilian Portuguese; Ireland has no
+// Intl data of its own, English is the same substitute date-fns-locale.ts uses for "ga").
+// Only used for the two example strings below: the currency stays EUR everywhere (this is a
+// euro-only product), just its separators and symbol position, and the date's day/month/year
+// order, should match the language the answer is actually written in.
+const INTL_LOCALE_TAGS: Record<Locale, string> = {
+  fr: "fr-FR", en: "en-US", pt: "pt-BR", "pt-PT": "pt-PT", es: "es-ES", bg: "bg-BG", cs: "cs-CZ",
+  da: "da-DK", de: "de-DE", el: "el-GR", et: "et-EE", fi: "fi-FI", ga: "en-IE", hr: "hr-HR",
+  hu: "hu-HU", it: "it-IT", lt: "lt-LT", lv: "lv-LV", mt: "mt-MT", nl: "nl-NL", pl: "pl-PL",
+  ro: "ro-RO", sk: "sk-SK", sl: "sl-SI", sv: "sv-SE",
+}
+
+// `today` is already used at day granularity only (formatTodayInParis above only ever shows
+// the date, never the time), so this stays byte-stable for the prompt-cache breakpoint too.
+function formatExampleAmount(locale: Locale): string {
+  return new Intl.NumberFormat(INTL_LOCALE_TAGS[locale], { style: "currency", currency: "EUR" }).format(1250)
+}
+
+function formatExampleDate(locale: Locale, today: Date): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE_TAGS[locale], { dateStyle: "long" }).format(today)
+}
+
 function enabledModuleLabels(modules: AssocModules): string[] {
   return (Object.keys(MODULE_LABELS) as Array<keyof AssocModules>)
     .filter((moduleKey) => modules[moduleKey])
@@ -57,6 +80,6 @@ export function buildSystemPrompt(input: {
     "Format de la réponse :",
     "- HTML simple uniquement, avec les balises <p>, <ul>, <ol>, <li>, <strong>, <em>, et <table>, <thead>, <tbody>, <tr>, <th>, <td> pour les données tabulaires.",
     "- Aucun lien, aucune image, aucune syntaxe markdown (**, #, -, |), pas de bloc de code, pas de balises <html>/<body>.",
-    "- Montants en euros avec deux décimales et le symbole € (par exemple 1 250,00 €). Dates au format français (par exemple 11 septembre 2026).",
+    `- Montants toujours en euros, avec les séparateurs et le symbole de la langue de réponse (par exemple ${formatExampleAmount(input.locale)}). Dates au format de cette langue (par exemple ${formatExampleDate(input.locale, input.today)}).`,
   ].join("\n")
 }

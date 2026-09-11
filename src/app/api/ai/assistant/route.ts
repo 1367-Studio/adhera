@@ -128,14 +128,20 @@ function providerErrorResponse(error: unknown): NextResponse {
     )
   }
   if (error instanceof Anthropic.RateLimitError || error instanceof OpenAI.RateLimitError) {
-    return NextResponse.json({ error: "Le fournisseur IA limite les requêtes, réessayez dans quelques instants." }, { status: 429 })
+    return NextResponse.json(
+      { error: "Le fournisseur IA limite les requêtes, réessayez dans quelques instants.", code: "AI_PROVIDER_RATE_LIMIT" },
+      { status: 429 },
+    )
   }
   if (error instanceof Anthropic.APIError || error instanceof OpenAI.APIError) {
     console.error("[assistant] provider error:", error.status, error.message)
-    return NextResponse.json({ error: "Le fournisseur IA n'a pas pu répondre, réessayez plus tard." }, { status: 502 })
+    return NextResponse.json(
+      { error: "Le fournisseur IA n'a pas pu répondre, réessayez plus tard.", code: "AI_PROVIDER_ERROR" },
+      { status: 502 },
+    )
   }
   console.error("[assistant] unexpected error:", error)
-  return NextResponse.json({ error: "Erreur de l'assistant, réessayez plus tard." }, { status: 500 })
+  return NextResponse.json({ error: "Erreur de l'assistant, réessayez plus tard.", code: "AI_UNEXPECTED" }, { status: 500 })
 }
 
 // No module gate on the route itself: docs mode must work for everyone; data tools are
@@ -157,7 +163,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const rateLimitMax = aiConfig.usingPlatform ? RATE_LIMIT_PLATFORM_KEY : RATE_LIMIT_OWN_KEY
   if (!(await rateLimit(`ai-assistant:${associationId}`, rateLimitMax, RATE_LIMIT_WINDOW_MS))) {
-    return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
+    return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard.", code: "AI_RATE_LIMIT" }, { status: 429 })
   }
 
   try {

@@ -33,11 +33,16 @@ const HELP_SEARCH_STALE_TIME  = 60_000
 export const HELP_SEARCH_MIN_LENGTH = 3
 
 // Error codes the help routes attach to their JSON errors — clients branch on these, never on
-// the (translatable) message text.
+// the (untranslated, server-language) message text.
 export const HELP_ERROR_CODES = {
-  notFound:      "NOT_FOUND",
-  aiKeyMissing:  "AI_KEY_MISSING",
-  aiKeyInvalid:  "AI_KEY_INVALID",
+  notFound:            "NOT_FOUND",
+  aiKeyMissing:        "AI_KEY_MISSING",
+  aiKeyInvalid:        "AI_KEY_INVALID",
+  aiTimeout:           "AI_TIMEOUT",
+  aiRateLimit:         "AI_RATE_LIMIT",
+  aiProviderRateLimit: "AI_PROVIDER_RATE_LIMIT",
+  aiProviderError:     "AI_PROVIDER_ERROR",
+  aiUnexpected:        "AI_UNEXPECTED",
 } as const
 
 async function fetchHelpArticles(module: HelpModuleKey): Promise<HelpModuleContent> {

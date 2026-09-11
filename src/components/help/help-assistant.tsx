@@ -3,6 +3,7 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 import { canAccessDashboardRoute } from "@/components/layout/app-sidebar"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -57,9 +58,14 @@ type StoredConversation = {
 type RestoredConversation = {
   mode:      AssistantMode | null
   exchanges: CompletedExchange[]
+  /** True when sessionStorage held something for this key but it could not be restored — as
+   *  opposed to there simply being nothing to restore (new tab, cleared storage, private
+   *  mode). Drives a one-time notice so a lost transcript isn't a silent, confusing gap. */
+  discarded: boolean
 }
 
-const EMPTY_CONVERSATION: RestoredConversation = { mode: null, exchanges: [] }
+const EMPTY_CONVERSATION:     RestoredConversation = { mode: null, exchanges: [], discarded: false }
+const DISCARDED_CONVERSATION: RestoredConversation = { mode: null, exchanges: [], discarded: true }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value)
@@ -99,7 +105,9 @@ function parseStoredToolNames(value: unknown): string[] | null {
 /**
  * Reads the conversation of this browser tab. Malformed JSON, another `version` or anything
  * that is not a strict user/assistant pairing starts an empty transcript rather than a
- * half-restored one.
+ * half-restored one — but is reported as `discarded` (see RestoredConversation) once we know
+ * there actually was something under this key, so the caller can tell the user their earlier
+ * conversation is gone instead of just showing the empty state.
  */
 function readStoredConversation(storageKey: string | null): RestoredConversation {
   if (!storageKey || typeof window === "undefined") return EMPTY_CONVERSATION
@@ -108,7 +116,8 @@ function readStoredConversation(storageKey: string | null): RestoredConversation
   try {
     rawConversation = window.sessionStorage.getItem(storageKey)
   } catch {
-    // Private mode or storage disabled — the transcript is in-memory for this session.
+    // Private mode or storage disabled — the transcript is in-memory for this session. Nothing
+    // was actually lost (there was never anything readable to begin with).
     return EMPTY_CONVERSATION
   }
   if (!rawConversation) return EMPTY_CONVERSATION
@@ -116,7 +125,7 @@ function readStoredConversation(storageKey: string | null): RestoredConversation
   try {
     const parsed: unknown = JSON.parse(rawConversation)
     if (!isRecord(parsed) || parsed.version !== STORAGE_VERSION || !Array.isArray(parsed.messages)) {
-      return EMPTY_CONVERSATION
+      return DISCARDED_CONVERSATION
     }
 
     const storedMessages = parsed.messages
@@ -125,21 +134,21 @@ function readStoredConversation(storageKey: string | null): RestoredConversation
       const userMessage      = storedMessages[index]
       const assistantMessage = storedMessages[index + 1]
       if (!isRecord(userMessage) || userMessage.role !== "user" || typeof userMessage.content !== "string") {
-        return EMPTY_CONVERSATION
+        return DISCARDED_CONVERSATION
       }
       if (!isRecord(assistantMessage) || assistantMessage.role !== "assistant" || typeof assistantMessage.content !== "string") {
-        return EMPTY_CONVERSATION
+        return DISCARDED_CONVERSATION
       }
       const toolsUsed = parseStoredToolNames(assistantMessage.toolsUsed)
       const sources   = parseStoredSources(assistantMessage.sources)
-      if (!toolsUsed || !sources) return EMPTY_CONVERSATION
+      if (!toolsUsed || !sources) return DISCARDED_CONVERSATION
 
       exchanges.push({ question: userMessage.content, answer: assistantMessage.content, toolsUsed, sources })
     }
 
-    return { mode: isAssistantMode(parsed.mode) ? parsed.mode : null, exchanges }
+    return { mode: isAssistantMode(parsed.mode) ? parsed.mode : null, exchanges, discarded: false }
   } catch {
-    return EMPTY_CONVERSATION
+    return DISCARDED_CONVERSATION
   }
 }
 
@@ -189,6 +198,14 @@ export function HelpAssistant({ module, isActive, onOpenArticle, onClosePanel }:
   // `ssr: false` and only mounted once the help button is clicked, so there is no server
   // snapshot to mismatch — and no cascading re-render on every open.
   const [restoredConversation] = useState<RestoredConversation>(() => readStoredConversation(storageKey))
+
+  // Tells the user their earlier conversation is gone instead of leaving them wondering why
+  // the panel opened empty — fires once, on mount, only when something was actually discarded
+  // (see readStoredConversation / RestoredConversation.discarded).
+  useEffect(() => {
+    if (restoredConversation.discarded) toast.message(t("assistant.conversationRestoreFailed"))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const [completedExchanges, setCompletedExchanges] = useState<CompletedExchange[]>(restoredConversation.exchanges)
   // Configuration knowledge, not conversation: it outlives "Nouvelle conversation".
@@ -451,16 +468,25 @@ interface AssistantAnswerFooterProps {
   onOpenArticle: (slug: string) => void
 }
 
+// A tool without a translation entry falls back to its snake_case name humanised ("list
+// cotisations" rather than the raw "list_cotisations") — never as pretty as a real label, so
+// it still stands out and gets caught in review, but it no longer looks like a leaked internal
+// identifier to the person reading the answer. Logged once per occurrence so it actually gets
+// noticed instead of only showing up if someone happens to read the transcript.
+function humanizeToolName(toolName: string): string {
+  return toolName.replace(/_/g, " ")
+}
+
 function AssistantAnswerFooter({ toolsUsed, sources, onOpenArticle }: AssistantAnswerFooterProps) {
   const t = useTranslations("help")
 
-  // De-duplicated after mapping, not before: two tools share the "Membres" label. A tool added
-  // later without a label renders raw — ugly on purpose, so it is caught in review.
+  // De-duplicated after mapping, not before: two tools share the "Membres" label.
   const dataLabels: string[] = []
   for (const toolName of toolsUsed) {
     if (toolName === DOCS_TOOL_NAME) continue
     const toolLabelKey = `assistant.tools.${toolName}`
-    const toolLabel    = t.has(toolLabelKey) ? t(toolLabelKey) : toolName
+    if (!t.has(toolLabelKey)) console.warn(`[help-assistant] missing translation for tool "${toolName}" at "help.${toolLabelKey}"`)
+    const toolLabel = t.has(toolLabelKey) ? t(toolLabelKey) : humanizeToolName(toolName)
     if (!dataLabels.includes(toolLabel)) dataLabels.push(toolLabel)
   }
 
@@ -592,10 +618,19 @@ function AssistantFailure({ error, canConfigureApiKey, onClosePanel, onRetry }: 
     )
   }
 
+  // Every other code maps to its own translated sentence. The server's message is always in
+  // French (see route.ts) and must never reach the UI directly — a Swedish or Romanian user
+  // would otherwise read it verbatim. An error with no code, or one this client build
+  // doesn't know yet, falls back to the generic "assistant.error" string.
+  const genericMessageKey =
+    errorCode === HELP_ERROR_CODES.aiTimeout ? "assistant.errorTimeout" :
+    errorCode === HELP_ERROR_CODES.aiRateLimit || errorCode === HELP_ERROR_CODES.aiProviderRateLimit ? "assistant.errorRateLimit" :
+    errorCode === HELP_ERROR_CODES.aiProviderError ? "assistant.errorProvider" :
+    "assistant.error"
+
   return (
     <div className="mt-1.5 flex flex-col items-start gap-2">
-      {/* The server's French sentence is shown verbatim when it has one. */}
-      <p className="text-sm text-destructive">{error.message || t("assistant.error")}</p>
+      <p className="text-sm text-destructive">{t(genericMessageKey)}</p>
       <Button variant="ghost" size="sm" onClick={onRetry}>{t("retry")}</Button>
     </div>
   )
