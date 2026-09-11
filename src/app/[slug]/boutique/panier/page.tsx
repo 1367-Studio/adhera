@@ -65,6 +65,11 @@ function PanierContent() {
     if (!allShippable && deliveryMethod === "DELIVERY") setDeliveryMethod("PICKUP")
   }, [allShippable, deliveryMethod])
 
+  // Identifies the cart's weight, not just which lines are present — a bare items.length
+  // dependency would miss a quantity bump on an already-added line (the +/- steppers below),
+  // leaving a stale, now-underweight quote on screen.
+  const itemsKey = items.map(i => `${i.varianteId}:${i.quantity}`).join(",")
+
   // Debounced real-time quote — re-fires whenever the destination or the cart contents
   // change, and always invalidates whatever option was picked for a previous address.
   useEffect(() => {
@@ -76,31 +81,35 @@ function PanierContent() {
     }
     setRatesLoading(true)
     setRatesFetched(false)
-    const timer = setTimeout(async () => {
-      try {
-        const res = await fetch(`/api/public/${slug}/boutique/shipping-rate`, {
-          method:  "POST",
-          headers: { "Content-Type": "application/json" },
-          body:    JSON.stringify({
-            items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
-            destPostalCode: shippingPostalCode.trim(),
-            destCountry:    shippingCountry.trim().toUpperCase(),
-          }),
-        })
-        const d = await res.json()
-        const options: ShippingOption[] = res.ok ? (d.options ?? []) : []
-        setShippingOptions(options)
-        if (options.length > 0) setSelectedShipping(options[0])
-      } catch {
-        setShippingOptions([])
-      } finally {
-        setRatesLoading(false)
-        setRatesFetched(true)
-      }
-    }, 600)
+    const timer = setTimeout(() => fetchShippingRates(), 600)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deliveryMethod, shippingPostalCode, shippingCountry, slug, items.length])
+  }, [deliveryMethod, shippingPostalCode, shippingCountry, slug, itemsKey])
+
+  async function fetchShippingRates() {
+    setRatesLoading(true)
+    try {
+      const res = await fetch(`/api/public/${slug}/boutique/shipping-rate`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({
+          items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+          destPostalCode: shippingPostalCode.trim(),
+          destCountry:    shippingCountry.trim().toUpperCase(),
+        }),
+      })
+      const d = await res.json()
+      const options: ShippingOption[] = res.ok ? (d.options ?? []) : []
+      setShippingOptions(options)
+      setSelectedShipping(options.length > 0 ? options[0] : null)
+    } catch {
+      setShippingOptions([])
+      setSelectedShipping(null)
+    } finally {
+      setRatesLoading(false)
+      setRatesFetched(true)
+    }
+  }
 
   const shownPaymentToast = useRef<string | null>(null)
   useEffect(() => {
@@ -135,11 +144,12 @@ function PanierContent() {
         website,
         deliveryMethod,
         ...(deliveryMethod === "DELIVERY" ? {
-          shippingAddress:    shippingAddress.trim(),
-          shippingCity:       shippingCity.trim(),
-          shippingPostalCode: shippingPostalCode.trim(),
-          shippingCountry:    shippingCountry.trim().toUpperCase(),
-          shippingOptionCode: selectedShipping?.code,
+          shippingAddress:         shippingAddress.trim(),
+          shippingCity:            shippingCity.trim(),
+          shippingPostalCode:      shippingPostalCode.trim(),
+          shippingCountry:         shippingCountry.trim().toUpperCase(),
+          shippingOptionCode:      selectedShipping?.code,
+          shippingOptionCostCents: selectedShipping?.costCents,
         } : {}),
       }
       const endpoint = paymentMethod === "STRIPE" ? "checkout" : "commande"
@@ -182,6 +192,12 @@ function PanierContent() {
         toast.error(t("stockAdjustedNotice"))
       } else {
         toast.error(err.message || tCommon("error"))
+        // Most likely cause of a non-stock failure while DELIVERY is selected: the quoted
+        // price drifted (markup change, carrier repricing) between fetch and submit —
+        // resolveShippingCost rejects a mismatch rather than silently charging the new
+        // price. Re-quote immediately so the buyer sees the current price without having
+        // to nudge the address fields to force a refetch.
+        if (deliveryMethod === "DELIVERY") fetchShippingRates()
       }
     },
   })
