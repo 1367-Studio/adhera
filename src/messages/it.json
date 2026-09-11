@@ -3640,14 +3640,14 @@
         "updated": "Account Stripe aggiornato",
         "notFinalized": "La connessione Stripe non è stata finalizzata. Riprova se necessario."
       },
-      "enabledText": "I tuoi membri possono pagare le quote online. I fondi vengono versati direttamente sul tuo conto Stripe.",
+      "enabledText": "I tuoi membri possono pagare le quote online. I fondi vengono versati direttamente sul tuo conto Stripe. La piattaforma applica una commissione dell'1%.",
       "editAccount": "Modifica Account",
       "dashboardButton": "Striscia sul cruscotto",
       "pendingText": "Il tuo account viene verificato da Stripe. Riceverai un'email di conferma.",
       "completeOnboarding": "Registrazione completa",
       "invalidText": "La connessione con il tuo account Stripe è stata persa (account cancellato o accesso revocato). Il pagamento online è disabilitato finché non accedi di nuovo.",
       "reconnect": "Striscia di riconnessione",
-      "connectText": "Collega un account Stripe per permettere il pagamento online delle quote di pagamento.",
+      "connectText": "Collega un account Stripe per permettere il pagamento online delle quote di pagamento. La piattaforma applicherà una commissione dell'1%.",
       "connect": "Striscia di collegamento"
     },
     "suspended": {

@@ -3640,14 +3640,14 @@
         "updated": "Uppdaterat Stripe-konto",
         "notFinalized": "Stripe-anslutningen var inte slutgiltig. Försök igen om det behövs."
       },
-      "enabledText": "Dina medlemmar kan betala sina avgifter online. Pengarna betalas direkt till ditt Stripe-konto.",
+      "enabledText": "Dina medlemmar kan betala sina avgifter online. Pengarna betalas direkt till ditt Stripe-konto. Plattformen tar ut en avgift på 1 %.",
       "editAccount": "Redigera konto",
       "dashboardButton": "Instrumentbrädan",
       "pendingText": "Ditt konto verifieras av Stripe. Du kommer att få ett bekräftelsemail.",
       "completeOnboarding": "Fullständig registrering",
       "invalidText": "Anslutningen till ditt Stripe-konto har gått förlorad (konto borttaget eller åtkomst indragen). Onlinebetalning är inaktiverad tills du loggar in igen.",
       "reconnect": "Reconnecter-stripe",
-      "connectText": "Koppla ett Stripe-konto för att möjliggöra onlinebetalning av avgifter.",
+      "connectText": "Koppla ett Stripe-konto för att möjliggöra onlinebetalning av avgifter. Plattformen kommer att ta ut en avgift på 1 %.",
       "connect": "Anslutningsrand"
     },
     "suspended": {

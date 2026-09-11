@@ -3640,14 +3640,14 @@
         "updated": "Atjaunināts Stripe konts",
         "notFinalized": "Savienojums ar Stripe vēl nav pabeigts. Mēģiniet vēlreiz, ja nepieciešams."
       },
-      "enabledText": "Jūsu biedri var samaksāt biedra naudu tiešsaistē. Līdzekļi tiek pārskaitīti tieši jūsu Stripe kontā.",
+      "enabledText": "Jūsu biedri var samaksāt biedra naudu tiešsaistē. Līdzekļi tiek pārskaitīti tieši jūsu Stripe kontā. Platforma iekasē 1% komisijas maksu.",
       "editAccount": "Rediģēt kontu",
       "dashboardButton": "Paneļa svītra",
       "pendingText": "Jūsu kontu verifikē Stripe. Jūs saņemsiet apstiprinājuma e-pastu.",
       "completeOnboarding": "Pilnīga reģistrācija",
       "invalidText": "Savienojums ar tavu Stripe kontu ir zaudēts (konts dzēsts vai piekļuve atsaukta). Tiešsaistes maksājumi ir atspējoti, līdz tu atkal pieslēdzies.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Pieslēdziet Stripe kontu, lai iespējotu biedru maksājumu tiešsaistē.",
+      "connectText": "Pieslēdziet Stripe kontu, lai iespējotu biedru maksājumu tiešsaistē. Platforma iekasēs 1% komisijas maksu.",
       "connect": "Savienojošā svītra"
     },
     "suspended": {

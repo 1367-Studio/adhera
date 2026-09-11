@@ -3640,14 +3640,14 @@
         "updated": "Uuendatud Stripe'i konto",
         "notFinalized": "Stripe'i ühendus polnud veel lõplik. Proovi uuesti, kui vaja."
       },
-      "enabledText": "Sinu liikmed saavad oma liikmemaksu maksta veebis. Vahendid kantakse otse sinu Stripe'i kontole.",
+      "enabledText": "Sinu liikmed saavad oma liikmemaksu maksta veebis. Vahendid kantakse otse sinu Stripe'i kontole. Platvorm võtab 1% komisjonitasu.",
       "editAccount": "Muuda konto",
       "dashboardButton": "Armatuurlaua triip",
       "pendingText": "Sinu konto kinnitab Stripe. Saad kinnituse-kirja.",
       "completeOnboarding": "Täielik registreerimine",
       "invalidText": "Ühendus sinu Stripe'i kontoga on kadunud (konto kustutatud või ligipääs tühistatud). Veebimakse on keelatud kuni uuesti sisselogimiseni.",
       "reconnect": "Ühendustriip",
-      "connectText": "Ühenda Stripe'i konto, et võimaldada liikmemaksu tasumist veebis.",
+      "connectText": "Ühenda Stripe'i konto, et võimaldada liikmemaksu tasumist veebis. Platvorm hakkab võtma 1% komisjonitasu.",
       "connect": "Ühendustriip"
     },
     "suspended": {

@@ -3640,14 +3640,14 @@
         "updated": "Conta Stripe atualizada",
         "notFinalized": "A ligação Stripe não foi concluída. Tente novamente se necessário."
       },
-      "enabledText": "Os seus membros podem pagar a quota online. Os valores são depositados diretamente na sua conta Stripe.",
+      "enabledText": "Os seus membros podem pagar a quota online. Os valores são depositados diretamente na sua conta Stripe. É cobrada uma comissão de 1% pela plataforma.",
       "editAccount": "Editar conta",
       "dashboardButton": "Painel Stripe",
       "pendingText": "A sua conta está a ser verificada pela Stripe. Receberá um e-mail de confirmação.",
       "completeOnboarding": "Concluir registo",
       "invalidText": "A ligação à sua conta Stripe foi perdida (conta eliminada ou acesso revogado). O pagamento online está desativado até à reconexão.",
       "reconnect": "Reconectar o Stripe",
-      "connectText": "Ligue uma conta Stripe para ativar o pagamento online das quotas.",
+      "connectText": "Ligue uma conta Stripe para ativar o pagamento online das quotas. Será cobrada uma comissão de 1% pela plataforma.",
       "connect": "Ligar o Stripe"
     },
     "suspended": {

@@ -3640,14 +3640,14 @@
         "updated": "Frissített Stripe fiók",
         "notFinalized": "A Stripe kapcsolat még nem volt végleges. Ha szükséges, próbáld meg újra."
       },
-      "enabledText": "A tagok online fizethetik a tagdíjaikat. A pénzt közvetlenül a Stripe számládra fizetik.",
+      "enabledText": "A tagok online fizethetik a tagdíjaikat. A pénzt közvetlenül a Stripe számládra fizetik. A platform 1%-os jutalékot számít fel.",
       "editAccount": "Szerkesztés fiók",
       "dashboardButton": "Dashboard Stripe",
       "pendingText": "A fiókodat a Stripe ellenőrzi. Megerősítő e-mailt kapsz.",
       "completeOnboarding": "Teljes regisztráció",
       "invalidText": "A kapcsolat a Stripe fiókoddal elveszett (fiók törölve vagy hozzáférés visszavonva). Az online fizetés le van tiltva, amíg újra be nem jelentkezel.",
       "reconnect": "Visszakapcsoló csík",
-      "connectText": "Kapcsolj egy Stripe fiókot az online tagdíjfizetéshez.",
+      "connectText": "Kapcsolj egy Stripe fiókot az online tagdíjfizetéshez. A platform 1%-os jutalékot fog felszámítani.",
       "connect": "Csatlakozó csík"
     },
     "suspended": {

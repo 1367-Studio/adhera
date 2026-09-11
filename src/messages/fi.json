@@ -3640,14 +3640,14 @@
         "updated": "Päivitetty Stripe-tili",
         "notFinalized": "Stripe-yhteys ei ollut vielä valmis. Yritä uudelleen, jos on pakko."
       },
-      "enabledText": "Jäsenesi voivat maksaa jäsenmaksunsa verkossa. Varat maksetaan suoraan Stripe-tilillesi.",
+      "enabledText": "Jäsenesi voivat maksaa jäsenmaksunsa verkossa. Varat maksetaan suoraan Stripe-tilillesi. Alusta veloittaa 1 %:n palkkion.",
       "editAccount": "Muokkaustili",
       "dashboardButton": "Kojelaudan raita",
       "pendingText": "Tilisi vahvistetaan Stripen toimesta. Saat vahvistussähköpostin.",
       "completeOnboarding": "Täydellinen ilmoittautuminen",
       "invalidText": "Yhteys Stripe-tilillesi on menetetty (tili poistettu tai käyttöoikeus peruutettu). Verkkomaksu on pois päältä, kunnes kirjaudut uudelleen sisään.",
       "reconnect": "Relinker-raita",
-      "connectText": "Yhdistä Stripe-tili, jotta voit maksaa jäsenmaksut verkossa.",
+      "connectText": "Yhdistä Stripe-tili, jotta voit maksaa jäsenmaksut verkossa. Alusta tulee veloittamaan 1 %:n palkkion.",
       "connect": "Yhdistäjäraita"
     },
     "suspended": {

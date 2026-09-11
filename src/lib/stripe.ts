@@ -15,6 +15,10 @@ export const STRIPE_PRICE_MONTHLY = process.env.STRIPE_PRICE_MONTHLY!
 export const STRIPE_PRICE_YEARLY  = process.env.STRIPE_PRICE_YEARLY!
 export const TRIAL_DAYS           = 15
 
+// Platform commission on Connect destination charges (cotisations, dons, tickets,
+// boutique, adhésion) — single source so every checkout route computes the same fee.
+export const PLATFORM_FEE = 0.01
+
 export type PlanTier   = "essential" | "pro"
 export type BillingCycle = "monthly" | "yearly"
 

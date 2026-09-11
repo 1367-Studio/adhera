@@ -3640,14 +3640,14 @@
         "updated": "Opdateret Stripe-konto",
         "notFinalized": "Stripe-forbindelsen blev ikke endeligt fastlagt. Prøv igen, hvis det er nødvendigt."
       },
-      "enabledText": "Dine medlemmer kan betale deres kontingent online. Pengene indbetales direkte til din Stripe-konto.",
+      "enabledText": "Dine medlemmer kan betale deres kontingent online. Pengene indbetales direkte til din Stripe-konto. Platformen opkræver et gebyr på 1 %.",
       "editAccount": "Rediger konto",
       "dashboardButton": "Instrumentbrætstribe",
       "pendingText": "Din konto bliver verificeret af Stripe. Du vil modtage en bekræftelsesmail.",
       "completeOnboarding": "Fuldstændig registrering",
       "invalidText": "Forbindelsen til din Stripe-konto er blevet mistet (kontoen slettet eller adgangen inddraget). Online betaling er deaktiveret, indtil du logger ind igen.",
       "reconnect": "Reconnecter-stribe",
-      "connectText": "Opret en Stripe-konto for at muliggøre online betaling af kontingenter.",
+      "connectText": "Opret en Stripe-konto for at muliggøre online betaling af kontingenter. Platformen vil opkræve et gebyr på 1 %.",
       "connect": "Forbindelsesstribe"
     },
     "suspended": {

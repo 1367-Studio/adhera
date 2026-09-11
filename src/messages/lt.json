@@ -3640,14 +3640,14 @@
         "updated": "Atnaujinta Stripe paskyra",
         "notFinalized": "Ryšys su Stripe dar nebuvo galutinai patvirtintas. Jei reikia, bandykite dar kartą."
       },
-      "enabledText": "Jūsų nariai gali sumokėti nario mokestį internetu. Lėšos pervedamos tiesiogiai į jūsų Stripe sąskaitą.",
+      "enabledText": "Jūsų nariai gali sumokėti nario mokestį internetu. Lėšos pervedamos tiesiogiai į jūsų Stripe sąskaitą. Platforma taiko 1 % komisinį mokestį.",
       "editAccount": "Redaguoti paskyrą",
       "dashboardButton": "Prietaisų skydelio juosta",
       "pendingText": "Jūsų paskyrą patvirtina Stripe. Gausite patvirtinimo el. laišką.",
       "completeOnboarding": "Pilna registracija",
       "invalidText": "Ryšys su jūsų Stripe paskyra buvo prarastas (paskyra ištrinta arba prieiga atšaukta). Internetinis mokėjimas išjungtas, kol vėl neprisijungiate.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Prijunkite Stripe paskyrą, kad galėtumėte internetu apmokėti nario mokesčius.",
+      "connectText": "Prijunkite Stripe paskyrą, kad galėtumėte internetu apmokėti nario mokesčius. Platforma taikys 1 % komisinį mokestį.",
       "connect": "Jungiamoji juosta"
     },
     "suspended": {
