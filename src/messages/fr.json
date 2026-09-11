@@ -5432,6 +5432,10 @@
     "shippingUnavailable": "La livraison postale n'est pas encore configurée par cette association.",
     "leadTimeApprox": "~{days} j",
     "shippingCostLabel": "Frais de livraison",
-    "mixedCartPickupOnlyHint": "Envoi indisponible : votre panier contient un article qui ne peut être que retiré en main."
+    "mixedCartPickupOnlyHint": "Envoi indisponible : votre panier contient un article qui ne peut être que retiré en main.",
+    "markupLabel": "Marge de sécurité sur le frais de port",
+    "markupHint": "Ajoutée au tarif affiché à l'acheteur. Vous protège si le tarif transporteur augmente avant l'envoi réel, mais un prix plus élevé peut dissuader l'achat.",
+    "markupRangeError": "La marge doit être un nombre entier entre 0 et 50.",
+    "markupHintTooltip": "Aucune étiquette n'est achetée au moment de la commande : le tarif affiché n'est qu'une estimation. Si le prix réel du transporteur a augmenté au moment où vous affranchissez le colis, c'est l'association qui paie la différence — sauf si cette marge la couvre. À l'inverse, une marge trop élevée renchérit le prix affiché au client et peut le décourager d'acheter."
   }
 }

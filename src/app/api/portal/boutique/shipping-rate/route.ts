@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
-import { getShippingRates } from "@/lib/boutique/shipping-rate"
+import { getShippingRates, applyShippingMarkup } from "@/lib/boutique/shipping-rate"
 
 const schema = z.object({
   items: z.array(z.object({
@@ -20,7 +20,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { shippingCountry: true, shippingPostalCode: true },
+    select: { shippingCountry: true, shippingPostalCode: true, shippingMarkupPercent: true },
   })
   if (!assoc?.shippingCountry || !assoc.shippingPostalCode)
     return NextResponse.json({ options: [] })
@@ -48,5 +48,5 @@ export const POST = withPortalAuth(async (req, ctx) => {
     weightGrams,
   })
 
-  return NextResponse.json({ options })
+  return NextResponse.json({ options: applyShippingMarkup(options, assoc.shippingMarkupPercent) })
 }, { module: "boutique" })

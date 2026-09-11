@@ -13,12 +13,17 @@ const schema = z.object({
   // ISO 3166-1 alpha-2 — validated at the shape level, the Sendcloud call itself is the
   // real authority on whether the code is actually usable.
   shippingCountry:    z.string().trim().length(2).optional().or(z.literal("")),
+  // Buffer added on top of the Sendcloud quote shown to the buyer, to absorb the gap between
+  // the quoted price and what the association actually pays when it buys the real label
+  // later (see shipping-rate.ts — no label is purchased at order time). Capped at 50%: past
+  // that it stops being a buffer and starts being a stealth price hike on the customer.
+  shippingMarkupPercent: z.number().int().min(0).max(50).optional(),
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { shippingAddress: true, shippingCity: true, shippingPostalCode: true, shippingCountry: true },
+    select: { shippingAddress: true, shippingCity: true, shippingPostalCode: true, shippingCountry: true, shippingMarkupPercent: true },
   })
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -31,15 +36,16 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { shippingAddress, shippingCity, shippingPostalCode, shippingCountry } = parsed.data
+  const { shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingMarkupPercent } = parsed.data
 
   await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
-      ...(shippingAddress    !== undefined ? { shippingAddress:    shippingAddress || null }              : {}),
-      ...(shippingCity       !== undefined ? { shippingCity:       shippingCity || null }                 : {}),
-      ...(shippingPostalCode !== undefined ? { shippingPostalCode: shippingPostalCode || null }            : {}),
-      ...(shippingCountry    !== undefined ? { shippingCountry:    shippingCountry.toUpperCase() || null } : {}),
+      ...(shippingAddress       !== undefined ? { shippingAddress:    shippingAddress || null }              : {}),
+      ...(shippingCity          !== undefined ? { shippingCity:       shippingCity || null }                 : {}),
+      ...(shippingPostalCode    !== undefined ? { shippingPostalCode: shippingPostalCode || null }            : {}),
+      ...(shippingCountry       !== undefined ? { shippingCountry:    shippingCountry.toUpperCase() || null } : {}),
+      ...(shippingMarkupPercent !== undefined ? { shippingMarkupPercent }                                    : {}),
     },
   })
 

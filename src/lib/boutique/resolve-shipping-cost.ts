@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma/client"
-import { getShippingRates } from "@/lib/boutique/shipping-rate"
+import { getShippingRates, applyShippingMarkup } from "@/lib/boutique/shipping-rate"
 
 export class ShippingUnavailableError extends Error {}
 
@@ -14,10 +14,16 @@ export async function resolveShippingCost(params: {
   destCountry:    string
   destPostalCode: string
   optionCode:     string
+  // The price (cents) the buyer saw and agreed to pay for `optionCode`. Rejected below if a
+  // fresh quote for that same code comes back at a different price — e.g. the association
+  // changed its shipping markup, or the carrier's own rate moved, between the buyer loading
+  // the cart and submitting the order. Without this check that drift would be charged
+  // silently instead of prompting the buyer to see the new price first.
+  expectedCostCents: number
 }): Promise<{ costCents: number; carrierLabel: string }> {
   const assoc = await prisma.association.findUnique({
     where:  { id: params.associationId },
-    select: { shippingCountry: true, shippingPostalCode: true },
+    select: { shippingCountry: true, shippingPostalCode: true, shippingMarkupPercent: true },
   })
   if (!assoc?.shippingCountry || !assoc.shippingPostalCode)
     throw new ShippingUnavailableError("La livraison postale n'est pas configurée par cette association")
@@ -36,15 +42,16 @@ export async function resolveShippingCost(params: {
     weightGrams += v.weightGrams * item.quantity
   }
 
-  const options = await getShippingRates({
+  const rawOptions = await getShippingRates({
     originCountry:    assoc.shippingCountry,
     originPostalCode: assoc.shippingPostalCode,
     destCountry:      params.destCountry,
     destPostalCode:   params.destPostalCode,
     weightGrams,
   })
+  const options = applyShippingMarkup(rawOptions, assoc.shippingMarkupPercent)
   const match = options.find(o => o.code === params.optionCode)
-  if (!match)
+  if (!match || match.costCents !== params.expectedCostCents)
     throw new ShippingUnavailableError("Cette option de livraison n'est plus disponible, merci de recalculer le frais de port")
 
   return { costCents: match.costCents, carrierLabel: match.carrierLabel }

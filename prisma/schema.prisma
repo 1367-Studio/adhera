@@ -411,6 +411,10 @@ model Association {
   // Code pays ISO 3166-1 alpha-2 (ex: "FR") — contrairement à `country` ci-dessus qui stocke
   // un nom complet pour un autre usage, celui-ci alimente directement l'API de cotation.
   shippingCountry                String?            @default("FR")
+  // Marge ajoutée par-dessus le tarif Sendcloud coté au client (ex: 10 = +10%), pour couvrir
+  // l'écart possible entre le prix coté et le prix réel payé par l'association au moment de
+  // l'affranchissement (aucune étiquette n'est achetée à la commande, voir shipping-rate.ts).
+  shippingMarkupPercent          Int                @default(0)
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.

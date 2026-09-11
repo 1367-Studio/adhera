@@ -64,7 +64,7 @@ export async function POST(
   const modules = parseModules(assoc.modules)
   if (!modules.boutique) return NextResponse.json({ error: "Module boutique désactivé" }, { status: 403 })
 
-  const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode } = parsed.data
+  const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode, shippingOptionCostCents } = parsed.data
   const guestName = `${firstName} ${lastName}`.trim()
 
   let shippingCost = 0
@@ -72,11 +72,12 @@ export async function POST(
   if (deliveryMethod === "DELIVERY") {
     try {
       const resolved = await resolveShippingCost({
-        associationId:  assoc.id,
-        items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
-        destCountry:    shippingCountry!,
-        destPostalCode: shippingPostalCode!,
-        optionCode:     shippingOptionCode!,
+        associationId:     assoc.id,
+        items:             items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+        destCountry:       shippingCountry!,
+        destPostalCode:    shippingPostalCode!,
+        optionCode:        shippingOptionCode!,
+        expectedCostCents: shippingOptionCostCents!,
       })
       shippingCost = resolved.costCents
       shippingCarrierLabel = resolved.carrierLabel

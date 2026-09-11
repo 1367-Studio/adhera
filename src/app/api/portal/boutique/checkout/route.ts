@@ -39,18 +39,19 @@ export const POST = withPortalAuth(async (req, ctx) => {
   const deliveryError = validateDeliveryFields(parsed.data)
   if (deliveryError) return NextResponse.json({ error: deliveryError }, { status: 422 })
 
-  const { items, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode } = parsed.data
+  const { items, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode, shippingOptionCostCents } = parsed.data
 
   let shippingCost = 0
   let shippingCarrierLabel: string | null = null
   if (deliveryMethod === "DELIVERY") {
     try {
       const resolved = await resolveShippingCost({
-        associationId:  ctx.associationId,
-        items:          items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
-        destCountry:    shippingCountry!,
-        destPostalCode: shippingPostalCode!,
-        optionCode:     shippingOptionCode!,
+        associationId:     ctx.associationId,
+        items:             items.map(i => ({ varianteId: i.varianteId, quantity: i.quantity })),
+        destCountry:       shippingCountry!,
+        destPostalCode:    shippingPostalCode!,
+        optionCode:        shippingOptionCode!,
+        expectedCostCents: shippingOptionCostCents!,
       })
       shippingCost = resolved.costCents
       shippingCarrierLabel = resolved.carrierLabel

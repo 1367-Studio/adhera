@@ -8,10 +8,11 @@ import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 
 type ShippingData = {
-  shippingAddress:    string | null
-  shippingCity:       string | null
-  shippingPostalCode: string | null
-  shippingCountry:    string | null
+  shippingAddress:       string | null
+  shippingCity:          string | null
+  shippingPostalCode:    string | null
+  shippingCountry:       string | null
+  shippingMarkupPercent: number
 }
 
 interface ShippingSettingsProps {
@@ -28,11 +29,22 @@ export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
     queryFn:  () => fetch("/api/association/shipping").then(r => r.json()),
   })
 
-  const [address, setAddress]       = useState("")
-  const [city, setCity]             = useState("")
-  const [postalCode, setPostalCode] = useState("")
-  const [country, setCountry]       = useState("FR")
-  const [dirty, setDirty]           = useState(false)
+  const [address, setAddress]         = useState("")
+  const [city, setCity]               = useState("")
+  const [postalCode, setPostalCode]   = useState("")
+  const [country, setCountry]         = useState("FR")
+  // Kept as the raw typed string, not a number — a controlled number input whose value is
+  // round-tripped through Number() on every keystroke can't hold an in-progress decimal
+  // ("12." parses to 12, so React re-renders the field back to "12" and silently eats the
+  // dot the user just typed, corrupting whatever they type next). The string form always
+  // reflects exactly what was typed; only markupValue below turns it into a number.
+  const [markupInput, setMarkupInput] = useState("0")
+  const [dirty, setDirty]             = useState(false)
+
+  const markupValue = markupInput.trim() === "" ? NaN : Number(markupInput)
+  const markupError = !Number.isInteger(markupValue) || markupValue < 0 || markupValue > 50
+    ? t("markupRangeError")
+    : undefined
 
   useEffect(() => {
     if (!data) return
@@ -40,6 +52,7 @@ export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
     setCity(data.shippingCity ?? "")
     setPostalCode(data.shippingPostalCode ?? "")
     setCountry(data.shippingCountry ?? "FR")
+    setMarkupInput(String(data.shippingMarkupPercent ?? 0))
     setDirty(false)
   }, [data])
 
@@ -49,15 +62,18 @@ export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({
-          shippingAddress:    address,
-          shippingCity:       city,
-          shippingPostalCode: postalCode,
-          shippingCountry:    country,
+          shippingAddress:       address,
+          shippingCity:          city,
+          shippingPostalCode:    postalCode,
+          shippingCountry:       country,
+          shippingMarkupPercent: markupValue,
         }),
       })
       if (!res.ok) {
         const d = await res.json()
-        throw new Error(d.error ?? tCommon("error"))
+        // On a zod failure `d.error` is an array of issues, not a string (see the PATCH
+        // route) — stringifying that directly would show "[object Object]" in the toast.
+        throw new Error(typeof d.error === "string" ? d.error : tCommon("error"))
       }
       return res.json()
     },
@@ -105,12 +121,31 @@ export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
           value={country}
           onChange={e => { setCountry(e.target.value.toUpperCase()); setDirty(true) }}
         />
+        <FormField
+          label={`${t("markupLabel")} (%)`}
+          hint={markupError ? undefined : t("markupHint")}
+          hintTooltip={t("markupHintTooltip")}
+          error={markupError}
+          type="number"
+          min={0}
+          max={50}
+          disabled={!canEdit}
+          value={markupInput}
+          // Kept unclamped while typing — silently snapping 75 down to 50 mid-keystroke
+          // reads as the field ignoring input. The error message + disabled Save below
+          // are what actually enforce the 0-50 range.
+          onChange={e => { setMarkupInput(e.target.value); setDirty(true) }}
+          // Native number inputs change value on mouse wheel when focused — a real risk
+          // here since this field sits mid-page in a scrollable settings form. Blurring
+          // on wheel turns that scroll back into an ordinary page scroll.
+          onWheel={e => e.currentTarget.blur()}
+        />
       </div>
 
       {canEdit && (
         <Button
           size="sm"
-          disabled={!dirty}
+          disabled={!dirty || !!markupError}
           loading={mutation.isPending}
           onClick={() => mutation.mutate()}
         >

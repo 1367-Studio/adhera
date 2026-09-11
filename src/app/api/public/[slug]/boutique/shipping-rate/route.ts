@@ -3,7 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
-import { getShippingRates } from "@/lib/boutique/shipping-rate"
+import { getShippingRates, applyShippingMarkup } from "@/lib/boutique/shipping-rate"
 
 const schema = z.object({
   items: z.array(z.object({
@@ -29,7 +29,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, modules: true, shippingCountry: true, shippingPostalCode: true },
+    select: { id: true, modules: true, shippingCountry: true, shippingPostalCode: true, shippingMarkupPercent: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -62,5 +62,5 @@ export async function POST(
     weightGrams,
   })
 
-  return NextResponse.json({ options })
+  return NextResponse.json({ options: applyShippingMarkup(options, assoc.shippingMarkupPercent) })
 }

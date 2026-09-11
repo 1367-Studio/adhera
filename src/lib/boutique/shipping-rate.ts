@@ -29,6 +29,10 @@ type SendcloudOption = {
   carrier?: { name: string }
   quotes?: SendcloudQuote[]
   quote_error?: unknown
+  // "parcel" = an actual box/package; "mailbox" = a letterbox-slot service (e.g. "Unstamped
+  // letter") that a real shippable product (mug, t-shirt…) physically won't fit through —
+  // filtered out below, see functionalities.form_factor in the Sendcloud response.
+  functionalities?: { form_factor?: string }
 }
 
 // Keyed by the exact route+weight combo — short TTL only to absorb a buyer retyping the
@@ -67,7 +71,12 @@ export async function getShippingRates(input: ShippingQuoteInput): Promise<Shipp
     if (res.ok) {
       const body = (await res.json()) as { data?: SendcloudOption[] }
       options = (body.data ?? [])
-        .filter((o): o is SendcloudOption & { quotes: SendcloudQuote[] } => !o.quote_error && !!o.quotes?.length)
+        .filter((o): o is SendcloudOption & { quotes: SendcloudQuote[] } =>
+          !o.quote_error && !!o.quotes?.length && o.functionalities?.form_factor === "parcel")
+        // The app assumes EUR everywhere downstream (Stripe checkout sessions are created
+        // with currency: "eur", totals are formatted as EUR) — a quote in another currency
+        // would otherwise be priced as if its numeric value were euros.
+        .filter(o => o.quotes[0].price.total.currency === "EUR")
         .map(o => {
           const quote = o.quotes[0]
           return {
@@ -87,4 +96,13 @@ export async function getShippingRates(input: ShippingQuoteInput): Promise<Shipp
 
   cache.set(cacheKey, { options, expires: Date.now() + CACHE_TTL_MS })
   return options
+}
+
+// Applied by callers after getShippingRates (never baked into the cached quote itself, so
+// the same cached options stay reusable regardless of which association's markup is asked
+// for). Covers the gap between the price quoted to the buyer and the price the association
+// actually pays when it buys the real label later — see Association.shippingMarkupPercent.
+export function applyShippingMarkup(options: ShippingOption[], markupPercent: number): ShippingOption[] {
+  if (!markupPercent) return options
+  return options.map(o => ({ ...o, costCents: Math.round(o.costCents * (1 + markupPercent / 100)) }))
 }

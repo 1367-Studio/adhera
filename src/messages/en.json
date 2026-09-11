@@ -5432,6 +5432,10 @@
     "shippingUnavailable": "Postal delivery isn't configured by this association yet.",
     "leadTimeApprox": "~{days}d",
     "shippingCostLabel": "Delivery cost",
-    "mixedCartPickupOnlyHint": "Delivery unavailable: your cart contains an item that can only be picked up in person."
+    "mixedCartPickupOnlyHint": "Delivery unavailable: your cart contains an item that can only be picked up in person.",
+    "markupLabel": "Safety margin on shipping cost",
+    "markupHint": "Added on top of the price shown to the buyer. Protects you if the carrier's price rises before you actually ship, but a higher price may discourage the purchase.",
+    "markupRangeError": "The margin must be a whole number between 0 and 50.",
+    "markupHintTooltip": "No label is purchased at order time — the price shown is only an estimate. If the carrier's real price has gone up by the time you ship the parcel, the association pays the difference, unless this margin covers it. Conversely, too high a margin raises the price shown to the customer and can discourage them from buying."
   }
 }
