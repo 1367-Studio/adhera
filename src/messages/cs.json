@@ -3646,14 +3646,14 @@
         "updated": "Aktualizovaný účet Stripe",
         "notFinalized": "Spojení se Stripem nebylo dokončeno. Pokud bude třeba, zkuste to znovu."
       },
-      "enabledText": "Vaši členové mohou platit své příspěvky online. Prostředky jsou posílány přímo na váš účet Stripe.",
+      "enabledText": "Vaši členové mohou platit své příspěvky online. Prostředky jsou posílány přímo na váš účet Stripe. Platforma si účtuje provizi 1 %.",
       "editAccount": "Upravit účet",
       "dashboardButton": "Pruh na palubní desce",
       "pendingText": "Váš účet je ověřován společností Stripe. Obdržíte potvrzovací e-mail.",
       "completeOnboarding": "Kompletní registrace",
       "invalidText": "Spojení s vaším účtem Stripe bylo ztraceno (účet smazán nebo přístup odebrán). Online platby jsou zakázány, dokud se znovu nepřihlásíte.",
       "reconnect": "Rekonjunkovací pruh",
-      "connectText": "Připojte účet Stripe, abyste umožnili online platbu příspěvků.",
+      "connectText": "Připojte účet Stripe, abyste umožnili online platbu příspěvků. Platforma si bude účtovat provizi 1 %.",
       "connect": "Propojovací pruh"
     },
     "suspended": {

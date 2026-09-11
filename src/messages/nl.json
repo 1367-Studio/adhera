@@ -3646,14 +3646,14 @@
         "updated": "Bijgewerkt Stripe-account",
         "notFinalized": "De Stripe-verbinding is niet afgerond. Probeer het opnieuw indien nodig."
       },
-      "enabledText": "Je leden kunnen hun contributie online betalen. Het geld wordt rechtstreeks op je Stripe-account gestort.",
+      "enabledText": "Je leden kunnen hun contributie online betalen. Het geld wordt rechtstreeks op je Stripe-account gestort. Het platform brengt een commissie van 1% in rekening.",
       "editAccount": "Account bewerken",
       "dashboardButton": "Dashboardstreep",
       "pendingText": "Je account wordt geverifieerd door Stripe. Je ontvangt een bevestigingsmail.",
       "completeOnboarding": "Volledige registratie",
       "invalidText": "De verbinding met je Stripe-account is verloren (account verwijderd of toegang ingetrokken). Online betaling is uitgeschakeld totdat je opnieuw inlogt.",
       "reconnect": "Reconnecter-stripe",
-      "connectText": "Koppel een Stripe-account om online betaling van contributie mogelijk te maken.",
+      "connectText": "Koppel een Stripe-account om online betaling van contributie mogelijk te maken. Het platform zal een commissie van 1% in rekening brengen.",
       "connect": "Verbindingsstreep"
     },
     "suspended": {

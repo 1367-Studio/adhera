@@ -3646,14 +3646,14 @@
         "updated": "Kont aġġornat ta' Stripe",
         "notFinalized": "Il-konnessjoni ma' Stripe ma ġietx finalizzata. Ipprova mill-ġdid jekk ikun meħtieġ."
       },
-      "enabledText": "Il-membri tiegħek jistgħu jħallsu d-dħul tagħhom online. Il-fondi jitħallsu direttament fil-kont Stripe tiegħek.",
+      "enabledText": "Il-membri tiegħek jistgħu jħallsu d-dħul tagħhom online. Il-fondi jitħallsu direttament fil-kont Stripe tiegħek. Il-pjattaforma tiġbor kummissjoni ta' 1%.",
       "editAccount": "Edit Account",
       "dashboardButton": "Strixxa tal-Dashboard",
       "pendingText": "Il-kont tiegħek qed jiġi vverifikat minn Stripe. Se tirċievi email ta' konferma.",
       "completeOnboarding": "Reġistrazzjoni sħiħa",
       "invalidText": "Il-konnessjoni mal-kont Stripe tiegħek intilfet (kont imħassar jew aċċess revokat). Il-ħlas online huwa diżattivat sakemm terġa' tidħol fil-log.",
       "reconnect": "Strixxa ta' Rekonnessjoni",
-      "connectText": "Ikkonnettja kont ta' Stripe biex tippermetti l-ħlas online tad-dħul.",
+      "connectText": "Ikkonnettja kont ta' Stripe biex tippermetti l-ħlas online tad-dħul. Il-pjattaforma se tiġbor kummissjoni ta' 1%.",
       "connect": "Strixxa ta' Konnessjoni"
     },
     "suspended": {

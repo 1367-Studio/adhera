@@ -3646,14 +3646,14 @@
         "updated": "Aktualisiertes Stripe-Konto",
         "notFinalized": "Die Stripe-Verbindung wurde nicht abgeschlossen. Versuchen Sie es bei Bedarf erneut."
       },
-      "enabledText": "Ihre Mitglieder können ihre Beiträge online bezahlen. Die Gelder werden direkt auf Ihr Stripe-Konto eingezahlt.",
+      "enabledText": "Ihre Mitglieder können ihre Beiträge online bezahlen. Die Gelder werden direkt auf Ihr Stripe-Konto eingezahlt. Die Plattform erhebt eine Provision von 1 %.",
       "editAccount": "Account bearbeiten",
       "dashboardButton": "Armaturenbrettstreifen",
       "pendingText": "Ihr Konto wird von Stripe verifiziert. Sie erhalten eine Bestätigungs-E-Mail.",
       "completeOnboarding": "Vollständige Registrierung",
       "invalidText": "Die Verbindung zu deinem Stripe-Konto wurde verloren (Konto gelöscht oder Zugriff widerrufen). Online-Zahlung ist deaktiviert, bis du dich erneut anmeldest.",
       "reconnect": "Reconnecter-Streifen",
-      "connectText": "Verbinden Sie ein Stripe-Konto, um die Online-Zahlung von Beiträgen zu ermöglichen.",
+      "connectText": "Verbinden Sie ein Stripe-Konto, um die Online-Zahlung von Beiträgen zu ermöglichen. Die Plattform wird eine Provision von 1 % erheben.",
       "connect": "Verbindungsstreifen"
     },
     "suspended": {

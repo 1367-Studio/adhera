@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomUUID, randomBytes } from "crypto"
 import { Prisma } from "@prisma/client"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { APP_URL } from "@/lib/env"
@@ -330,12 +330,15 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         },
       ]
 
+  const applicationFee = Math.round(totalCents * PLATFORM_FEE)
+
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
     payment_intent_data: {
-      transfer_data: { destination: evenement.association.stripeConnectId },
-      metadata:      { orderId, associationId: ctx.associationId },
+      application_fee_amount: applicationFee,
+      transfer_data:          { destination: evenement.association.stripeConnectId },
+      metadata:               { orderId, associationId: ctx.associationId },
     },
     metadata:    { orderId },
     success_url: successUrl,

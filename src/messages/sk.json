@@ -3646,14 +3646,14 @@
         "updated": "Aktualizovaný účet Stripe",
         "notFinalized": "Spojenie so Stripeom nebolo dokončené. Ak bude treba, skúste to znova."
       },
-      "enabledText": "Vaši členovia môžu platiť svoje členské príspevky online. Prostriedky sa posielajú priamo na váš Stripe účet.",
+      "enabledText": "Vaši členovia môžu platiť svoje členské príspevky online. Prostriedky sa posielajú priamo na váš Stripe účet. Platforma si účtuje províziu 1 %.",
       "editAccount": "Upraviť účet",
       "dashboardButton": "Pásik na palubnej doske",
       "pendingText": "Váš účet je overovaný spoločnosťou Stripe. Dostanete potvrdzovací e-mail.",
       "completeOnboarding": "Kompletná registrácia",
       "invalidText": "Spojenie s vaším Stripe účtom bolo stratené (účet vymazaný alebo prístup zrušený). Online platby sú vypnuté, kým sa znovu neprihlásite.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Pripojte si účet Stripe, aby ste umožnili online platenie členských príspevkov.",
+      "connectText": "Pripojte si účet Stripe, aby ste umožnili online platenie členských príspevkov. Platforma si bude účtovať províziu 1 %.",
       "connect": "Spojovací pás"
     },
     "suspended": {

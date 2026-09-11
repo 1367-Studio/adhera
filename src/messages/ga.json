@@ -3646,14 +3646,14 @@
         "updated": "Cuntas Stripe nuashonraithe",
         "notFinalized": "Níor cuireadh an nasc Stripe i gcrích. Bain triail as arís más gá."
       },
-      "enabledText": "Is féidir le do bhaill a gcuid dleachtanna a íoc ar líne. Íoctar cistí go díreach isteach i do chuntas Stripe.",
+      "enabledText": "Is féidir le do bhaill a gcuid dleachtanna a íoc ar líne. Íoctar cistí go díreach isteach i do chuntas Stripe. Gearrann an t-ardán coimisiún 1%.",
       "editAccount": "Cuir Cuntas in Eagar",
       "dashboardButton": "Stríoc an Phainéil",
       "pendingText": "Tá do chuntas á fhíorú ag Stripe. Gheobhaidh tú ríomhphost dearbhaithe.",
       "completeOnboarding": "Comhlánaigh clárú",
       "invalidText": "Cailleadh an nasc le do chuntas Stripe (scriosadh cuntas nó cúlghaireadh an rochtain). Tá íocaíocht ar líne díchumasaithe go dtí go logálann tú isteach arís.",
       "reconnect": "Stríoc Athnascaire",
-      "connectText": "Ceangail cuntas Stripe chun dleachtanna a íoc ar líne.",
+      "connectText": "Ceangail cuntas Stripe chun dleachtanna a íoc ar líne. Gearrfaidh an t-ardán coimisiún 1%.",
       "connect": "Stríoc Ceangail"
     },
     "suspended": {

@@ -3646,14 +3646,14 @@
         "updated": "Posodobljen Stripe račun",
         "notFinalized": "Povezava s Stripe ni bila dokončana. Poskusite znova, če bo potrebno."
       },
-      "enabledText": "Vaši člani lahko članarino plačujejo prek spleta. Sredstva se nakažejo neposredno na vaš Stripe račun.",
+      "enabledText": "Vaši člani lahko članarino plačujejo prek spleta. Sredstva se nakažejo neposredno na vaš Stripe račun. Platforma zaračuna 1-odstotno provizijo.",
       "editAccount": "Uredi račun",
       "dashboardButton": "Črta na armaturni plošči",
       "pendingText": "Vaš račun potrjuje Stripe. Prejeli boste potrditveno e-pošto.",
       "completeOnboarding": "Popolna registracija",
       "invalidText": "Povezava s tvojim Stripe računom je bila izgubljena (račun izbrisan ali dostop preklican). Spletno plačilo je onemogočeno, dokler se ponovno ne prijaviš.",
       "reconnect": "Trak za ponovno povezovanje",
-      "connectText": "Povežite Stripe račun, da omogočite spletno plačilo članarine.",
+      "connectText": "Povežite Stripe račun, da omogočite spletno plačilo članarine. Platforma bo zaračunala 1-odstotno provizijo.",
       "connect": "Povezovalni trak"
     },
     "suspended": {

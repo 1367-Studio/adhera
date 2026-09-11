@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -161,6 +161,8 @@ export async function POST(
     },
   })
 
+  const applicationFee = Math.round(commande.totalAmount * PLATFORM_FEE)
+
   let checkoutSession: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>
   try {
     checkoutSession = await stripe.checkout.sessions.create({
@@ -185,8 +187,9 @@ export async function POST(
       ],
       customer_email: email,
       payment_intent_data: {
-        transfer_data: { destination: assoc.stripeConnectId },
-        metadata:      { commandeId: commande.id, associationId: assoc.id },
+        application_fee_amount: applicationFee,
+        transfer_data:          { destination: assoc.stripeConnectId },
+        metadata:               { commandeId: commande.id, associationId: assoc.id },
       },
       metadata:    { commandeId: commande.id },
       success_url: `${APP_URL}/${slug}/boutique/panier?payment=success&token=${commande.trackingToken}`,

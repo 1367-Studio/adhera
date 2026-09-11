@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled, stripeRecurringInterval } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -253,8 +253,9 @@ export async function POST(
         subscription_data: {
           // Non-null: the `else` branch above already returned if this were unset — but that
           // narrowing doesn't survive past the offline branch's own early return in between.
-          transfer_data: { destination: assoc.stripeConnectId! },
-          metadata:      subscriptionMeta,
+          transfer_data:           { destination: assoc.stripeConnectId! },
+          application_fee_percent: PLATFORM_FEE * 100,
+          metadata:                subscriptionMeta,
         },
         metadata:       subscriptionMeta,
         customer_email: email,
@@ -303,6 +304,8 @@ export async function POST(
     label: `${firstName} ${lastName} — ${amount}€ (${form.title})`,
   })
 
+  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+
   let checkoutSession: Stripe.Checkout.Session
   try {
     checkoutSession = await stripe.checkout.sessions.create({
@@ -318,8 +321,9 @@ export async function POST(
         },
       ],
       payment_intent_data: {
-        transfer_data: { destination: assoc.stripeConnectId! },
-        metadata:      { donId: don.id, associationId: assoc.id },
+        application_fee_amount: applicationFee,
+        transfer_data:          { destination: assoc.stripeConnectId! },
+        metadata:               { donId: don.id, associationId: assoc.id },
       },
       metadata:    { donId: don.id },
       success_url: successUrl,

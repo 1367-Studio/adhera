@@ -141,9 +141,10 @@ export async function POST(
   if (refundAmountCents > 0) {
     try {
       await stripe.refunds.create({
-        payment_intent:   paymentIntentId,
-        amount:           refundAmountCents,
-        reverse_transfer: true,
+        payment_intent:         paymentIntentId,
+        amount:                 refundAmountCents,
+        reverse_transfer:       true,
+        refund_application_fee: true,
       }, {
         // Stable per participation — a network retry of this same call reaches the original
         // refund instead of creating a second one.

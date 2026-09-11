@@ -3646,14 +3646,14 @@
         "updated": "Zaktualizowane konto Stripe",
         "notFinalized": "Połączenie ze Stripe nie zostało sfinalizowane. Spróbuj ponownie, jeśli trzeba."
       },
-      "enabledText": "Twoi członkowie mogą opłacać składki online. Środki są wpłacane bezpośrednio na Twoje konto Stripe.",
+      "enabledText": "Twoi członkowie mogą opłacać składki online. Środki są wpłacane bezpośrednio na Twoje konto Stripe. Platforma pobiera prowizję w wysokości 1%.",
       "editAccount": "Edytuj konto",
       "dashboardButton": "Pas na desce rozdzielczej",
       "pendingText": "Twoje konto jest weryfikowane przez Stripe. Otrzymasz potwierdzenie e-mailem.",
       "completeOnboarding": "Pełna rejestracja",
       "invalidText": "Połączenie z kontem Stripe zostało utracone (konto usunięte lub dostęp cofnięty). Płatności online są wyłączone, dopóki nie zalogujesz się ponownie.",
       "reconnect": "Pasek Reconnecter",
-      "connectText": "Podłącz konto Stripe, aby umożliwić opłacanie składek online.",
+      "connectText": "Podłącz konto Stripe, aby umożliwić opłacanie składek online. Platforma pobierze prowizję w wysokości 1%.",
       "connect": "Łączny pasek"
     },
     "suspended": {

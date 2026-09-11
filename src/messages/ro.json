@@ -3646,14 +3646,14 @@
         "updated": "Cont Stripe actualizat",
         "notFinalized": "Conexiunea cu Stripe nu a fost finalizată. Încearcă din nou dacă este necesar."
       },
-      "enabledText": "Membrii tăi își pot plăti cotizațiile online. Fondurile sunt depuse direct în contul tău Stripe.",
+      "enabledText": "Membrii tăi își pot plăti cotizațiile online. Fondurile sunt depuse direct în contul tău Stripe. Platforma percepe un comision de 1%.",
       "editAccount": "Editează contul",
       "dashboardButton": "Dungă pe bord",
       "pendingText": "Contul tău este verificat de Stripe. Vei primi un e-mail de confirmare.",
       "completeOnboarding": "Înregistrare completă",
       "invalidText": "Conexiunea cu contul tău Stripe a fost pierdută (contul a fost șters sau accesul a fost retras). Plata online este dezactivată până te conectezi din nou.",
       "reconnect": "Dungă de reconectare",
-      "connectText": "Conectează-ți un cont Stripe pentru a permite plata online a cotizațiilor.",
+      "connectText": "Conectează-ți un cont Stripe pentru a permite plata online a cotizațiilor. Platforma va percepe un comision de 1%.",
       "connect": "Dungă de legătură"
     },
     "suspended": {
