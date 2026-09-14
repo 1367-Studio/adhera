@@ -1,5 +1,5 @@
+import Link from "next/link"
 import type { ActualitesSection } from "@/types/site-config"
-import { RichTextView } from "@/components/ui/rich-text-view"
 
 type PublicActualite = {
   id:          string
@@ -14,13 +14,23 @@ type Props = {
   section:    ActualitesSection
   actualites: PublicActualite[]
   color:      string
+  slug:       string
 }
 
-export function SiteActualitesSection({ section, actualites, color }: Props) {
+// A plain-text teaser, not RichTextView — the whole card is a <Link>, and rich content can
+// contain its own <a> (the editor supports inserting links), which would nest an anchor
+// inside an anchor and break the card's click target in some browsers.
+function excerpt(html: string) {
+  return html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+}
+
+export function SiteActualitesSection({ section, actualites, color, slug }: Props) {
   const displayed = actualites.slice(0, section.limit ?? 6)
 
   return (
-    <section className="py-16 px-4">
+    // scroll-mt-16 offsets for SiteNavbar's sticky h-16 header when the detail page's "back to
+    // site" link lands here via #<section.id>, so the section title isn't hidden behind it.
+    <section id={section.id} className="py-16 px-4 scroll-mt-16">
       <div className="max-w-5xl mx-auto">
         <h2 className="text-2xl font-bold mb-8 text-gray-900">{section.title || "Actualités"}</h2>
 
@@ -29,7 +39,11 @@ export function SiteActualitesSection({ section, actualites, color }: Props) {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayed.map(actu => (
-              <article key={actu.id} className="rounded-lg border border-gray-100 overflow-hidden transition-shadow">
+              <Link
+                key={actu.id}
+                href={`/${slug}/actualites/${actu.id}`}
+                className="block rounded-lg border border-gray-100 overflow-hidden transition-colors hover:bg-gray-50"
+              >
                 {actu.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -50,9 +64,9 @@ export function SiteActualitesSection({ section, actualites, color }: Props) {
                     </time>
                   </div>
                   <h3 className="font-semibold text-gray-900 leading-snug">{actu.title}</h3>
-                  <RichTextView content={actu.content} className="text-sm text-gray-500 line-clamp-3" />
+                  <p className="text-sm text-gray-500 line-clamp-3">{excerpt(actu.content)}</p>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         )}
