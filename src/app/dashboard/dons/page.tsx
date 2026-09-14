@@ -11,7 +11,7 @@ import { fr } from "date-fns/locale"
 import {
   DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon, PlusIcon,
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
-  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon,
+  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { useCurrentUser } from "@/lib/user-context"
 import { PageHeader } from "@/components/ui/page-header"
@@ -41,6 +41,16 @@ type DonationForm = {
   _count:      { dons: number; subscriptions: number }
 }
 
+type CustomFieldType = "TEXT" | "NUMBER" | "SELECT" | "RADIO" | "CHECKBOX_MULTI"
+type CustomField = { id: string; type: CustomFieldType; label: string; options: string[] | null }
+
+// Formats a Don.answers value for display — same convention as formatFieldAnswer() in
+// dashboard/evenements/[id]/presences/page.tsx (no BOOLEAN/DATE/FILE here, donation custom
+// fields don't have those types).
+function formatFieldAnswer(value: string | string[]): string {
+  return Array.isArray(value) ? value.join(", ") : value
+}
+
 type Don = {
   id:            string
   donorType:     "INDIVIDUAL" | "COMPANY"
@@ -56,7 +66,8 @@ type Don = {
   receiptMode:   "NONE" | "FULL" | "PARTIAL" | null
   deductibleAmount: string | null
   paymentMethod: "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT" | null
-  donationForm:  { id: string; title: string } | null
+  answers:       Record<string, string | string[]> | null
+  donationForm:  { id: string; title: string; customFields: CustomField[] } | null
   membreId:      string | null
   // Set only for a don embarqué on a MembershipForm signup — see membershipAddonTier include
   // in /api/dons. Lets the pending table point back at the member, who also has an
@@ -263,6 +274,15 @@ function DonsPageInner() {
 
   const dons = donsResult?.data ?? []
 
+  const [infoTarget, setInfoTarget] = useState<Don | null>(null)
+  function donAnswers(d: Don): { field: CustomField; value: string | string[] }[] {
+    return (d.donationForm?.customFields ?? []).flatMap(field => {
+      const value = d.answers?.[field.id]
+      const isEmpty = Array.isArray(value) ? value.length === 0 : !value
+      return isEmpty ? [] : [{ field, value: value! }]
+    })
+  }
+
   // ─── Dons hors ligne en attente d'encaissement ─────────────────────────
   const [pendingPage, setPendingPage] = useState(1)
   const PENDING_PAGE_SIZE = 25
@@ -407,6 +427,16 @@ function DonsPageInner() {
               {d.donorType === "COMPANY" ? (d.companyName ?? `${d.firstName} ${d.lastName}`) : `${d.firstName} ${d.lastName}`}
               {d.donorType === "COMPANY" && <Badge variant="secondary">Entreprise</Badge>}
               {d.anonymous && <Badge variant="outline">Anonyme</Badge>}
+              {donAnswers(d).length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setInfoTarget(d)}
+                  title={t("donationsView.columns.infoTooltip")}
+                  className="flex items-center justify-center size-5 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                >
+                  <InfoIcon className="size-3.5" />
+                </button>
+              )}
             </p>
             <p className="text-xs text-muted-foreground">{d.email}</p>
           </div>
@@ -800,6 +830,25 @@ function DonsPageInner() {
           />
         </>
       )}
+
+      {/* Donation custom field answers */}
+      <Modal
+        open={!!infoTarget}
+        onOpenChange={(open) => !open && setInfoTarget(null)}
+        title={infoTarget ? (infoTarget.donorType === "COMPANY" ? (infoTarget.companyName ?? `${infoTarget.firstName} ${infoTarget.lastName}`) : `${infoTarget.firstName} ${infoTarget.lastName}`) : ""}
+        size="sm"
+      >
+        {infoTarget && (
+          <div className="space-y-3 py-2 text-sm">
+            {donAnswers(infoTarget).map(({ field, value }) => (
+              <div key={field.id}>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{field.label}</p>
+                <p>{formatFieldAnswer(value)}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </Modal>
 
       {/* New form modal */}
       <Modal

@@ -6,27 +6,30 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
+const CHOICE_FIELD_TYPES = ["SELECT", "RADIO", "CHECKBOX_MULTI"]
+
 const donationFormFieldSchema = z.object({
   id:       z.string().optional(), // absent = nouveau champ
-  type:     z.enum(["TEXT", "NUMBER", "SELECT"]),
+  type:     z.enum(["TEXT", "NUMBER", "SELECT", "RADIO", "CHECKBOX_MULTI"]),
   label:    z.string().trim().min(1).max(100),
   required: z.boolean().optional().default(false),
-  // Liste de choix — uniquement pour SELECT, ignoré sinon. Même convention qu'EvenementCustomField.
+  // Liste de choix — uniquement pour SELECT/RADIO/CHECKBOX_MULTI, ignoré sinon. Même
+  // convention qu'EvenementCustomField.
   options:  z.array(z.string().trim().min(1).max(200)).max(50).optional().nullable(),
 }).refine(
   // Revalidé ici, pas seulement côté client (donation-form-fields-editor.tsx) — sinon un
-  // champ SELECT sans au moins 2 options atteint la DB et devient une question à laquelle le
+  // champ à choix sans au moins 2 options atteint la DB et devient une question à laquelle le
   // formulaire public ne peut plus jamais répondre.
-  (d) => d.type !== "SELECT" || (d.options?.length ?? 0) >= 2,
-  { message: "Un champ liste déroulante doit avoir au moins 2 options", path: ["options"] },
+  (d) => !CHOICE_FIELD_TYPES.includes(d.type) || (d.options?.length ?? 0) >= 2,
+  { message: "Un champ à choix doit avoir au moins 2 options", path: ["options"] },
 ).refine(
   // Deux options identiques (à la casse/aux espaces près) rendraient l'une des deux
-  // impossible à distinguer une fois sélectionnée dans le formulaire public.
+  // impossible à distinguer une fois sélectionnée/cochée dans le formulaire public.
   (d) => {
     const opts = (d.options ?? []).map(o => o.trim().toLowerCase())
     return new Set(opts).size === opts.length
   },
-  { message: "Les options d'un champ liste déroulante doivent être uniques", path: ["options"] },
+  { message: "Les options d'un champ à choix doivent être uniques", path: ["options"] },
 )
 
 // PUT remplace toujours la liste entière — même convention qu'EvenementCustomField.

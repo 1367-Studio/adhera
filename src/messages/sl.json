@@ -2585,7 +2585,8 @@
         "message": "Sporočilo",
         "date": "Datum",
         "amount": "Znesek",
-        "method": "Srednji"
+        "method": "Srednji",
+        "infoTooltip": "Prikaži odgovore"
       },
       "noDonations": "Brez zabeleženih donacij",
       "noDonationsFiltered": "Nobena donacija ne ustreza tem filtrom.",
@@ -2716,6 +2717,8 @@
           "typeText": "Besedilo",
           "typeNumber": "Število",
           "typeSelect": "Spustni seznam",
+          "typeRadio": "Edinstvena izbira",
+          "typeCheckboxMulti": "Izbirni postopki",
           "labelRequiredError": "Vsako polje mora imeti oznako",
           "saved": "Shranjena polja",
           "saveFields": "Shrani polja",

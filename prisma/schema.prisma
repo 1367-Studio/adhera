@@ -308,7 +308,13 @@ enum DonationFieldRequirement {
 enum DonationFieldType {
   TEXT
   NUMBER
+  // SELECT/RADIO/CHECKBOX_MULTI all read their choice list from DonationFormField.options —
+  // same storage, different input widget. SELECT/RADIO answers are a single string (must be
+  // one of `options`); CHECKBOX_MULTI answers are a JSON string array (each entry must be one
+  // of `options`) — same convention as EvenementFieldType/Participation.answers.
   SELECT
+  RADIO
+  CHECKBOX_MULTI
 }
 
 enum DonationTierKind {
@@ -1269,7 +1275,8 @@ model Don {
   // le billet.
   evenementTicketTypeId String?
   // Réponses aux DonationFormField du formulaire, keyed by field id — même convention que
-  // Participation.answers.
+  // Participation.answers (string pour TEXT/NUMBER/SELECT/RADIO, tableau JSON de strings pour
+  // CHECKBOX_MULTI).
   answers               Json?
   // Null = Stripe (the only method before offline donations existed). Set explicitly for
   // ESPECES/CHEQUE/VIREMENT — those are the only ones where paidAt isn't written by the
@@ -1413,7 +1420,8 @@ model DonationFormField {
   label    String
   required Boolean           @default(false)
   order    Int
-  // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
+  // Choice list for SELECT/RADIO/CHECKBOX_MULTI — a plain string array. Null/ignored for
+  // TEXT/NUMBER.
   options  Json?
 
   form DonationForm @relation(fields: [formId], references: [id], onDelete: Cascade)

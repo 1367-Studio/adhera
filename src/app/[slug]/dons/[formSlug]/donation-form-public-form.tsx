@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { HandHeartIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { Label } from "@/components/ui/label"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
@@ -20,7 +21,10 @@ import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
-type CustomField = { id: string; type: "TEXT" | "NUMBER" | "SELECT"; label: string; required: boolean; options: string[] | null }
+type CustomField = { id: string; type: "TEXT" | "NUMBER" | "SELECT" | "RADIO" | "CHECKBOX_MULTI"; label: string; required: boolean; options: string[] | null }
+// A plain string for every type except CHECKBOX_MULTI, which is a string array — same
+// convention as Participation.answers/Don.answers in schema.prisma.
+type AnswerValue = string | string[]
 type Tier = {
   id: string; label: string; kind: "ONE_OFF" | "RECURRING"; interval: "MONTH" | "QUARTER" | "YEAR" | null
   freeAmount: boolean; amount: string | null; receiptMode: "NONE" | "FULL" | "PARTIAL"
@@ -107,7 +111,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const [message, setMessage]       = useState("")
   const [anonymous, setAnonymous]   = useState(false)
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
-  const [answers, setAnswers]       = useState<Record<string, string>>({})
+  const [answers, setAnswers]       = useState<Record<string, AnswerValue>>({})
   const [website, setWebsite]       = useState("") // honeypot
 
   useEffect(() => {
@@ -206,7 +210,11 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || gender.trim()) &&
     (!form.requireCguvSignature || conditionsAgreed) &&
-    form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
+    form.customFields.every(f => {
+      if (!f.required) return true
+      const v = answers[f.id]
+      return Array.isArray(v) ? v.length > 0 : (v ?? "").trim() !== ""
+    })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -452,25 +460,71 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
               </div>
 
-              {form.customFields.map(field => field.type === "SELECT" ? (
-                <SelectField
-                  key={field.id}
-                  label={field.label}
-                  required={field.required}
-                  options={(field.options ?? []).map(o => ({ value: o, label: o }))}
-                  value={answers[field.id] ?? ""}
-                  onValueChange={v => setAnswers(prev => ({ ...prev, [field.id]: v }))}
-                />
-              ) : (
-                <FormField
-                  key={field.id}
-                  label={field.label}
-                  required={field.required}
-                  type={field.type === "NUMBER" ? "number" : "text"}
-                  value={answers[field.id] ?? ""}
-                  onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
-                />
-              ))}
+              {form.customFields.map(field => {
+                const stringValue = (): string => {
+                  const v = answers[field.id]
+                  return Array.isArray(v) ? "" : (v ?? "")
+                }
+                const arrayValue = (): string[] => {
+                  const v = answers[field.id]
+                  return Array.isArray(v) ? v : []
+                }
+                const setAnswer = (value: AnswerValue) => setAnswers(prev => ({ ...prev, [field.id]: value }))
+
+                if (field.type === "SELECT") return (
+                  <SelectField
+                    key={field.id}
+                    label={field.label}
+                    required={field.required}
+                    options={(field.options ?? []).map(o => ({ value: o, label: o }))}
+                    value={stringValue()}
+                    onValueChange={setAnswer}
+                  />
+                )
+                if (field.type === "RADIO") return (
+                  <div key={field.id} className="space-y-1.5">
+                    <Label>{field.label}{field.required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}</Label>
+                    <div className="flex flex-col gap-1.5">
+                      {(field.options ?? []).map(o => (
+                        <label key={o} className="flex items-center gap-1.5 text-sm">
+                          <input type="radio" name={`custom-${field.id}`} required={field.required} checked={stringValue() === o} onChange={() => setAnswer(o)} />
+                          {o}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )
+                if (field.type === "CHECKBOX_MULTI") return (
+                  <div key={field.id} className="space-y-1.5">
+                    <Label>{field.label}{field.required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}</Label>
+                    <div className="flex flex-col gap-1.5">
+                      {(field.options ?? []).map(o => {
+                        const checked = arrayValue().includes(o)
+                        return (
+                          <label key={o} className="flex items-center gap-1.5 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={e => setAnswer(e.target.checked ? [...arrayValue(), o] : arrayValue().filter(v => v !== o))}
+                            />
+                            {o}
+                          </label>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+                return (
+                  <FormField
+                    key={field.id}
+                    label={field.label}
+                    required={field.required}
+                    type={field.type === "NUMBER" ? "number" : "text"}
+                    value={stringValue()}
+                    onChange={e => setAnswer(e.target.value)}
+                  />
+                )
+              })}
 
               <FormField
                 label={t("messageLabel")}
