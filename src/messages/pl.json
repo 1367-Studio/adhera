@@ -2585,7 +2585,8 @@
         "message": "Wiadomość",
         "date": "Data",
         "amount": "Ilość",
-        "method": "Medium"
+        "method": "Medium",
+        "infoTooltip": "Zobacz odpowiedzi"
       },
       "noDonations": "Brak odnotowanych darowizn",
       "noDonationsFiltered": "Żadne darowizny nie pasują do tych filtrów.",
@@ -2716,6 +2717,8 @@
           "typeText": "Tekst",
           "typeNumber": "Liczba",
           "typeSelect": "Lista rozwijana",
+          "typeRadio": "Unikalny wybór",
+          "typeCheckboxMulti": "Wielokrotny wybór",
           "labelRequiredError": "Każde pole musi mieć etykietę",
           "saved": "Zachowane pola",
           "saveFields": "Zapisz pola",

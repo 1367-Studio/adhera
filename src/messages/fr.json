@@ -2615,7 +2615,8 @@
         "message": "Message",
         "date": "Date",
         "amount": "Montant",
-        "method": "Moyen"
+        "method": "Moyen",
+        "infoTooltip": "Voir les réponses"
       },
       "noDonations": "Aucun don enregistré",
       "noDonationsFiltered": "Aucun don ne correspond à ces filtres.",
@@ -2746,6 +2747,8 @@
           "typeText": "Texte",
           "typeNumber": "Nombre",
           "typeSelect": "Liste déroulante",
+          "typeRadio": "Choix unique",
+          "typeCheckboxMulti": "Choix multiple",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
           "saveFields": "Enregistrer les champs",

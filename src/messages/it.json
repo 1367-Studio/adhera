@@ -2585,7 +2585,8 @@
         "message": "Messaggio",
         "date": "Data",
         "amount": "Importo",
-        "method": "Medium"
+        "method": "Medium",
+        "infoTooltip": "Visualizza risposte"
       },
       "noDonations": "Nessuna donazione registrata",
       "noDonationsFiltered": "Nessuna donazione corrisponde a questi filtri.",
@@ -2716,6 +2717,8 @@
           "typeText": "Testo",
           "typeNumber": "Numero",
           "typeSelect": "Lista a tendina",
+          "typeRadio": "Scelta unica",
+          "typeCheckboxMulti": "A scelta multipla",
           "labelRequiredError": "Ogni campo deve avere un'etichetta",
           "saved": "Campi salvati",
           "saveFields": "Salva i campi",

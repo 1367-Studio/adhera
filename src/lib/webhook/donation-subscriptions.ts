@@ -65,7 +65,7 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
   const unitAmount = sub.items.data[0]?.price.unit_amount
   const amount     = unitAmount != null ? unitAmount / 100 : Number(tier?.amount ?? 0)
 
-  let answers: Record<string, string> = {}
+  let answers: Record<string, string | string[]> = {}
   try { answers = meta.answers ? JSON.parse(meta.answers) : {} } catch { answers = {} }
 
   const created = await prisma.donationSubscription.create({

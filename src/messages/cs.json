@@ -2585,7 +2585,8 @@
         "message": "Zpráva",
         "date": "Datum",
         "amount": "Množství",
-        "method": "Medium"
+        "method": "Medium",
+        "infoTooltip": "Zobrazit odpovědi"
       },
       "noDonations": "Žádné dary nejsou zaznamenány",
       "noDonationsFiltered": "Žádné dary se těmto filtrům nevyrovnají.",
@@ -2716,6 +2717,8 @@
           "typeText": "Text",
           "typeNumber": "Počet",
           "typeSelect": "Rozbalovací seznam",
+          "typeRadio": "Jedinečná volba",
+          "typeCheckboxMulti": "Výběr z možností",
           "labelRequiredError": "Každé pole musí mít štítek",
           "saved": "Zachráněná pole",
           "saveFields": "Uložit pole",

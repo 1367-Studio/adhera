@@ -2585,7 +2585,8 @@
         "message": "Teachtaireacht",
         "date": "Dáta",
         "amount": "Méid",
-        "method": "Measartha"
+        "method": "Measartha",
+        "infoTooltip": "Féach ar na freagraí"
       },
       "noDonations": "Níor taifeadadh aon síntiúis",
       "noDonationsFiltered": "Ní mheaitseálann aon síntiúis leis na scagairí seo.",
@@ -2716,6 +2717,8 @@
           "typeText": "Téacs",
           "typeNumber": "Uimhir",
           "typeSelect": "Liosta anuas",
+          "typeRadio": "Rogha uathúil",
+          "typeCheckboxMulti": "Ilrogha",
           "labelRequiredError": "Caithfidh lipéad a bheith ag gach réimse",
           "saved": "Réimsí Sábhála",
           "saveFields": "Sábháil réimsí",

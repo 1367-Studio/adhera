@@ -2585,7 +2585,8 @@
         "message": "Mensaje",
         "date": "Fecha",
         "amount": "Importe",
-        "method": "Método"
+        "method": "Método",
+        "infoTooltip": "Ver respuestas"
       },
       "noDonations": "Ninguna donación registrada",
       "noDonationsFiltered": "Ninguna donación coincide con estos filtros.",
@@ -2716,6 +2717,8 @@
           "typeText": "Texto",
           "typeNumber": "Número",
           "typeSelect": "Lista desplegable",
+          "typeRadio": "Opción única",
+          "typeCheckboxMulti": "Opción múltiple",
           "labelRequiredError": "Cada campo debe tener una etiqueta",
           "saved": "Campos guardados",
           "saveFields": "Guardar campos",

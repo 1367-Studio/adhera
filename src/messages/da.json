@@ -2585,7 +2585,8 @@
         "message": "Besked",
         "date": "Dato",
         "amount": "Beløb",
-        "method": "Medium"
+        "method": "Medium",
+        "infoTooltip": "Vis svar"
       },
       "noDonations": "Ingen donationer registreret",
       "noDonationsFiltered": "Ingen donationer matcher disse filtre.",
@@ -2716,6 +2717,8 @@
           "typeText": "Tekst",
           "typeNumber": "Antal",
           "typeSelect": "Rullemenu",
+          "typeRadio": "Unikt valg",
+          "typeCheckboxMulti": "Multiple choice",
           "labelRequiredError": "Hvert felt skal have en etiket",
           "saved": "Gemte felter",
           "saveFields": "Gem felter",

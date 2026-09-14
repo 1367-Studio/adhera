@@ -2598,7 +2598,8 @@
         "message": "Mensagem",
         "date": "Data",
         "amount": "Valor",
-        "method": "Meio"
+        "method": "Meio",
+        "infoTooltip": "Ver respostas"
       },
       "noDonations": "Nenhuma doação registrada",
       "noDonationsFiltered": "Nenhuma doação corresponde a esses filtros.",
@@ -2729,6 +2730,8 @@
           "typeText": "Texto",
           "typeNumber": "Número",
           "typeSelect": "Lista suspensa",
+          "typeRadio": "Escolha única",
+          "typeCheckboxMulti": "Escolha múltipla",
           "labelRequiredError": "Cada campo precisa de um rótulo",
           "saved": "Campos salvos",
           "saveFields": "Salvar campos",

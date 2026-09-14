@@ -2585,7 +2585,8 @@
         "message": "Mesaj",
         "date": "Data",
         "amount": "Sumă",
-        "method": "Mediu"
+        "method": "Mediu",
+        "infoTooltip": "Vezi răspunsurile"
       },
       "noDonations": "Nu s-au înregistrat donații",
       "noDonationsFiltered": "Nicio donație nu corespunde acestor filtre.",
@@ -2716,6 +2717,8 @@
           "typeText": "Text",
           "typeNumber": "Număr",
           "typeSelect": "Listă derulantă",
+          "typeRadio": "Alegere unică",
+          "typeCheckboxMulti": "Grilă multiplă",
           "labelRequiredError": "Fiecare câmp trebuie să aibă o etichetă",
           "saved": "Câmpuri salvate",
           "saveFields": "Salvează câmpurile",

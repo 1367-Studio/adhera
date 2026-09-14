@@ -2607,7 +2607,8 @@
         "message": "Message",
         "date": "Date",
         "amount": "Amount",
-        "method": "Method"
+        "method": "Method",
+        "infoTooltip": "View answers"
       },
       "noDonations": "No donations recorded",
       "noDonationsFiltered": "No donations match these filters.",
@@ -2738,6 +2739,8 @@
           "typeText": "Text",
           "typeNumber": "Number",
           "typeSelect": "Dropdown",
+          "typeRadio": "Single choice",
+          "typeCheckboxMulti": "Multiple choice",
           "labelRequiredError": "Every field must have a label",
           "saved": "Fields saved",
           "saveFields": "Save fields",
