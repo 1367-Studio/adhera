@@ -7,6 +7,9 @@ type Props = {
   name:               string
   logoUrl?:           string
   color:              string
+  // Accent color for the outlined "Adhérer" CTA — falls back to `color` when not given
+  // (e.g. call sites that only ever had a single palette color before secondaryColor existed).
+  secondaryColor?:    string
   portalSlug:         string
   headerBgColor?:     string
   headerShowMembres?: boolean
@@ -17,7 +20,7 @@ type Props = {
   membershipCta?:     { href: string } | null
 }
 
-export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null }: Props) {
+export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null }: Props) {
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
   const textColor = isDark ? "#fff" : "#111827"
@@ -30,7 +33,10 @@ export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, he
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoUrl} alt={name} width={40} height={40} className="rounded size-10 object-contain" />
           ) : (
-            <span className="size-10 rounded flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ background: color }}>
+            <span
+              className="size-10 rounded flex items-center justify-center text-xs font-bold shrink-0"
+              style={{ background: color, color: "var(--site-primary-foreground)" }}
+            >
               {name[0]?.toUpperCase()}
             </span>
           )}
@@ -43,7 +49,7 @@ export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, he
               <Link
                 href={membershipCta.href}
                 className="text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
-                style={{ color, borderColor: color }}
+                style={{ color: secondaryColor ?? color, borderColor: secondaryColor ?? color }}
               >
                 Adhérer
               </Link>
@@ -51,8 +57,8 @@ export function SiteNavbar({ name, logoUrl, color, portalSlug, headerBgColor, he
             {headerShowMembres && (
               <Link
                 href={`/portal/${portalSlug}/login`}
-                className="text-sm font-medium px-3 py-1.5 rounded-lg text-white transition-opacity hover:opacity-90"
-                style={{ background: color }}
+                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
+                style={{ background: color, color: "var(--site-primary-foreground)" }}
               >
                 Se connecter
               </Link>

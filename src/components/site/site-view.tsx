@@ -16,8 +16,26 @@ const ADMINS = ["ADMIN", "PRESIDENT"]
 type AssocData  = { name: string; slug: string; city: string | null; country: string }
 type PublicEvent = {
   id: string; slug: string | null; title: string; date: string; endDate: string | null
-  location: string | null; description: string | null; price: string | null; capacity: number | null
+  location: string | null; description: string | null; imageUrl: string | null
+  price: string | null; capacity: number | null
   ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
+}
+type PublicActualite = {
+  id: string; title: string; content: string; imageUrl: string | null
+  pinned: boolean; publishedAt: string
+}
+type PublicBoutiqueProduit = {
+  id: string; name: string; imageUrl: string | null
+  variantes: { price: number }[]
+}
+type FormBinding = { slug: string; title: string }
+type SitePreviewData = {
+  actualites: PublicActualite[]
+  boutiqueProduits: PublicBoutiqueProduit[]
+  membershipFormBySection: Record<string, FormBinding>
+  donationFormBySection: Record<string, FormBinding>
+  membershipCta: { href: string } | null
+  canIssueTaxReceipts: boolean
 }
 
 export function SiteView() {
@@ -42,6 +60,11 @@ export function SiteView() {
         .then((data: PublicEvent[]) =>
           data.map(e => ({ ...e, price: e.price != null ? String(e.price) : null }))
         ),
+  })
+
+  const { data: previewData } = useQuery<SitePreviewData>({
+    queryKey: ["site-preview-data"],
+    queryFn:  () => fetch("/api/site-preview-data").then(r => r.json()),
   })
 
   const [config, setConfig]     = useState<SiteConfig | null>(null)
@@ -175,6 +198,12 @@ export function SiteView() {
           city={assoc?.city ?? null}
           country={assoc?.country ?? "France"}
           events={events}
+          actualites={previewData?.actualites ?? []}
+          boutiqueProduits={previewData?.boutiqueProduits ?? []}
+          membershipFormBySection={previewData?.membershipFormBySection ?? {}}
+          donationFormBySection={previewData?.donationFormBySection ?? {}}
+          membershipCta={previewData?.membershipCta ?? null}
+          canIssueTaxReceipts={previewData?.canIssueTaxReceipts ?? false}
           donsEnabled={modules.dons}
           boutiqueEnabled={modules.boutique}
         />

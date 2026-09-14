@@ -1,15 +1,8 @@
 import type { AboutSection } from "@/types/site-config"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { toHtml } from "@/lib/site-content"
 
 type Props = { section: AboutSection }
-
-function toHtml(content: string): string {
-  if (!content) return ""
-  // If it's already HTML (from a rich text editor), pass it through.
-  // Otherwise convert plain-text line breaks to <br> so they're preserved.
-  if (content.trimStart().startsWith("<")) return content
-  return content.replace(/\n/g, "<br>")
-}
 
 export function SiteAboutSection({ section }: Props) {
   return (

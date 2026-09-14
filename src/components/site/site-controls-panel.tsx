@@ -9,9 +9,12 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SiteSectionSheet } from "./site-section-sheet"
 import type { SiteConfig, SiteSection, SectionType, FooterLink } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG } from "@/types/site-config"
+import { SITE_FONTS, SITE_FONT_KEYS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
+import { SITE_DEFAULT_SECONDARY_COLOR } from "@/lib/site-theme"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
@@ -129,6 +132,10 @@ export function SiteControlsPanel({
   const sections     = config?.sections ?? []
   const cfg          = config ?? DEFAULT_SITE_CONFIG
   const existingTypes = new Set(sections.map(s => s.type))
+  // A stored value that no longer matches any curated font key (e.g. the list changes later)
+  // must not crash the panel — fall back to the default rather than indexing SITE_FONTS with
+  // an invalid key.
+  const currentFontKey = isSiteFontKey(cfg.fontFamily) ? cfg.fontFamily : SITE_DEFAULT_FONT
 
   function copyLink() {
     if (!siteUrl) return
@@ -267,6 +274,46 @@ export function SiteControlsPanel({
                 placeholder="#6366f1"
               />
             </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("secondaryColor")}</Label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={cfg.secondaryColor ?? SITE_DEFAULT_SECONDARY_COLOR}
+                onChange={e => update({ secondaryColor: e.target.value })}
+                className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
+              />
+              <Input
+                value={cfg.secondaryColor ?? SITE_DEFAULT_SECONDARY_COLOR}
+                onChange={e => update({ secondaryColor: e.target.value })}
+                className="font-mono text-xs h-8"
+                placeholder={SITE_DEFAULT_SECONDARY_COLOR}
+              />
+            </div>
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("fontFamily")}</Label>
+            <Select
+              value={currentFontKey}
+              onValueChange={v => update({ fontFamily: isSiteFontKey(v ?? undefined) ? v! : SITE_DEFAULT_FONT })}
+            >
+              <SelectTrigger className="h-8 w-full">
+                <SelectValue>{SITE_FONTS[currentFontKey].label}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {SITE_FONT_KEYS.map(key => (
+                  <SelectItem key={key} value={key}>
+                    {/* The variable class both defines --font-site-<key> and consumes it here —
+                        SelectContent portals outside the panel's own DOM subtree, so relying on
+                        an ancestor to already carry the variable wouldn't reach it. */}
+                    <span className={SITE_FONTS[key].variable} style={{ fontFamily: SITE_FONTS[key].cssVar }}>
+                      {SITE_FONTS[key].label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs">{t("logo")}</Label>

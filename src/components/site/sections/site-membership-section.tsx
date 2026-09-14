@@ -3,6 +3,8 @@
 import Link from "next/link"
 import type { MembershipSection } from "@/types/site-config"
 import { IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
+import { RichTextView } from "@/components/ui/rich-text-view"
+import { toHtml } from "@/lib/site-content"
 
 type Props = {
   section:     MembershipSection
@@ -33,12 +35,12 @@ function SiteMembershipFormCta({ section, slug, color, membershipForm }: {
         <IdentificationCardIcon className="size-10 mx-auto mb-4" style={{ color }} />
 
         <h2 className="text-2xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
-        {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
+        {section.body && <RichTextView content={toHtml(section.body)} className="text-gray-500 text-sm mb-8" />}
 
         <Link
           href={`/${slug}/adhesion/${membershipForm.slug}`}
-          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-          style={{ background: color }}
+          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
+          style={{ background: color, color: "var(--site-primary-foreground)" }}
         >
           {membershipForm.title}
         </Link>

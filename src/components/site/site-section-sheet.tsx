@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import type { SiteSection, SectionType } from "@/types/site-config"
+import { toHtml } from "@/lib/site-content"
 
 type Props = {
   section:        SiteSection
@@ -157,16 +159,13 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
 
             {/* About */}
             {draft.type === "about" && (
-              <div className="space-y-1.5">
-                <Label className="text-xs">{t("content")}</Label>
-                <Textarea
-                  value={"content" in draft ? draft.content : ""}
-                  onChange={e => set("content", e.target.value as never)}
-                  rows={8}
-                  maxLength={5000}
-                  placeholder={t("contentPlaceholder")}
-                />
-              </div>
+              <RichTextEditor
+                label={t("content")}
+                value={toHtml("content" in draft ? draft.content : "")}
+                onChange={v => set("content", v)}
+                placeholder={t("contentPlaceholder")}
+                minHeight="180px"
+              />
             )}
 
             {/* Events */}
@@ -202,13 +201,12 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {/* Membership */}
             {draft.type === "membership" && (
               <div className="space-y-1.5">
-                <Label className="text-xs">{t("membershipIntro")}</Label>
-                <Textarea
-                  value={"body" in draft ? draft.body : ""}
-                  onChange={e => set("body", e.target.value as never)}
-                  rows={4}
-                  maxLength={500}
+                <RichTextEditor
+                  label={t("membershipIntro")}
+                  value={toHtml("body" in draft ? draft.body : "")}
+                  onChange={v => set("body", v)}
                   placeholder={t("membershipIntroPlaceholder")}
+                  minHeight="120px"
                 />
                 <p className="text-xs text-muted-foreground">
                   {t("membershipHint")}
@@ -219,16 +217,13 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
             {/* Dons */}
             {draft.type === "dons" && (
               <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label className="text-xs">{t("donsIntro")}</Label>
-                  <Textarea
-                    value={"body" in draft ? draft.body : ""}
-                    onChange={e => set("body", e.target.value as never)}
-                    rows={4}
-                    maxLength={500}
-                    placeholder={t("donsIntroPlaceholder")}
-                  />
-                </div>
+                <RichTextEditor
+                  label={t("donsIntro")}
+                  value={toHtml("body" in draft ? draft.body : "")}
+                  onChange={v => set("body", v)}
+                  placeholder={t("donsIntroPlaceholder")}
+                  minHeight="120px"
+                />
                 <div className="space-y-1.5">
                   <Label className="text-xs">{t("donsButtonLabel")}</Label>
                   <Input

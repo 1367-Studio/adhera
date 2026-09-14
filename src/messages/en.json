@@ -4707,6 +4707,8 @@
       "save": "Save",
       "appearance": "Appearance",
       "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "fontFamily": "Font",
       "logo": "Logo",
       "header": "Header",
       "headerBgColor": "Background color",

@@ -4715,6 +4715,8 @@
       "save": "Enregistrer",
       "appearance": "Apparence",
       "primaryColor": "Couleur principale",
+      "secondaryColor": "Couleur secondaire",
+      "fontFamily": "Police",
       "logo": "Logo",
       "header": "En-tête",
       "headerBgColor": "Couleur de fond",
