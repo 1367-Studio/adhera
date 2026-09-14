@@ -216,10 +216,17 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
       return Array.isArray(v) ? v.length > 0 : (v ?? "").trim() !== ""
     })
 
+  // `loading` alone doesn't close a fast double-click: it's React state, so a second click
+  // dispatched before the first's setLoading(true) has been committed/repainted still reads
+  // the stale `false` from canSubmit. A ref is mutated synchronously, so it's read correctly
+  // by the very next invocation regardless of render timing.
+  const submittingRef = useRef(false)
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!canSubmit || !form || !selectedTier) return
+    if (submittingRef.current || !canSubmit || !form || !selectedTier) return
 
+    submittingRef.current = true
     setLoading(true)
     try {
       const res = await fetch(`/api/public/${slug}/dons/${formSlug}/checkout`, {
@@ -258,6 +265,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
       toast.error(t("errorNetwork"))
     } finally {
       setLoading(false)
+      submittingRef.current = false
     }
   }
 
