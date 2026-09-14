@@ -198,7 +198,7 @@ export default async function PublicSitePage(
             case "events":
               return <SiteEventsSection key={section.id} section={section} events={data.events} color={color} slug={slug} />
             case "actualites":
-              return <SiteActualitesSection key={section.id} section={section} actualites={data.actualites} color={color} />
+              return <SiteActualitesSection key={section.id} section={section} actualites={data.actualites} color={color} slug={slug} />
             case "membership":
               return (
                 <SiteMembershipSection
