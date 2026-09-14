@@ -867,6 +867,60 @@ export function meetingInviteEmail(p: {
   }
 }
 
+const OFFLINE_PAYMENT_METHOD_LABEL: Record<"ESPECES" | "CHEQUE" | "VIREMENT", string> = {
+  ESPECES: "espèces", CHEQUE: "chèque", VIREMENT: "virement",
+}
+
+// Sent right after an offline (espèces/chèque/virement) don is submitted on the public
+// form — before any admin has confirmed receipt, so unlike donConfirmationEmail this never
+// claims the don is received yet, and never attaches a fiscal receipt (see checkout/
+// route.ts's offline branch). donConfirmationEmail follows once an admin encaisses it
+// (/api/dons/[id]/encaisser) or, for a Stripe don, as soon as the webhook confirms payment.
+export function donPendingEmail(p: {
+  firstName:            string
+  email:                string
+  associationName:      string
+  amount:               number
+  paymentMethod:        "ESPECES" | "CHEQUE" | "VIREMENT"
+  offlineInstructions?: string | null
+  branding?:            EmailBranding
+}) {
+  const amountStr   = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const methodLabel = OFFLINE_PAYMENT_METHOD_LABEL[p.paymentMethod]
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>nous vous remercions chaleureusement pour votre don de
+      <strong>${amountStr}</strong> à <strong>${p.associationName}</strong>. Votre soutien est
+      précieux et contribue aux actions et aux projets de notre association.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Moyen de paiement choisi</span>
+        <span style="font-size:14px;">Vous avez choisi de régler votre don par ${methodLabel}.</span>
+      </td></tr>
+    </table>
+    ${p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+      Voici les instructions communiquées par l'association :<br>${escapeHtml(p.offlineInstructions)}
+    </p>` : ""}
+    <p style="margin:0 0 20px;font-size:13px;color:#71717a;">
+      Votre don sera considéré comme définitivement reçu une fois le paiement réceptionné et
+      validé par l'association.
+    </p>
+    <p style="margin:16px 0 0;font-size:12px;color:#71717a;">Encore merci pour votre générosité et votre soutien.</p>`
+
+  return {
+    to:      p.email,
+    subject: `Merci pour votre don à ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function donConfirmationEmail(p: {
   firstName:           string
   email:               string
