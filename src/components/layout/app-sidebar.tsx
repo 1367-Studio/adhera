@@ -24,6 +24,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { FinanceNavTree } from "@/components/layout/finance-nav-tree"
 import type { Icon } from "@phosphor-icons/react"
 import { NavIcon } from "@/components/layout/nav-icon"
+import { FINANCE_ROLES, MANAGER_ROLES, PARAMETRES_ROLES } from "@/lib/roles"
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
@@ -43,8 +44,8 @@ interface NavItem {
   categoryKey?: CategoryKey
 }
 
-const MANAGERS: UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE:  UserRole[] = ["ADMIN", "PRESIDENT", "TRESORIER"]
+const MANAGERS: UserRole[] = [...MANAGER_ROLES]
+const FINANCE:  UserRole[] = [...FINANCE_ROLES]
 
 const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
   { key: "adherents",      icon: UsersThreeIcon },
@@ -85,6 +86,17 @@ const navigationItems: NavItem[] = [
 
   { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
 ]
+
+// Paramètres lives in the footer, outside navigationItems, but its access rule belongs here
+// with every other route's.
+
+// Single owner of "who may open which dashboard screen": the sidebar filter and the help
+// panel's in-panel links both read from here, so they can never disagree.
+export function canAccessDashboardRoute(role: string, href: string): boolean {
+  if (href === "/dashboard/parametres") return (PARAMETRES_ROLES as readonly string[]).includes(role)
+  const navigationItem = navigationItems.find((item) => item.href === href)
+  return !!navigationItem && navigationItem.roles.includes(role as UserRole)
+}
 
 function isActive(href: string, pathname: string): boolean {
   if (href === "/dashboard") return pathname === href
@@ -401,7 +413,7 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-sidebar-border pt-3">
         <LegalLinksMenuItem />
-        {["ADMIN", "PRESIDENT"].includes(userRole) && (
+        {canAccessDashboardRoute(userRole, "/dashboard/parametres") && (
           <SidebarMenu>
             <SidebarMenuItem data-tour="nav-parametres">
               <SidebarMenuButton

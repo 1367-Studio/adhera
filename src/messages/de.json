@@ -758,8 +758,6 @@
     "previous": "Früher",
     "finish": "Ziel",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hilfe und geführte Tour",
-    "helpButtonTooltip": "Geführte Tour",
     "steps": {
       "welcome": {
         "title": "Willkommen bei {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Dein Profil",
         "description": "Bearbeiten Sie Ihr Profil, ändern Sie Ihr Passwort und melden Sie sich aus diesem Menü aus."
-      },
-      "help": {
-        "title": "Brauchst du Hilfe?",
-        "description": "Es ist vorbei! Ein Versehen oder eine Frage später? Klicken Sie auf diesen Button, um den Besuch jederzeit neu zu starten."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Aktualisiertes Stripe-Konto",
         "notFinalized": "Die Stripe-Verbindung wurde nicht abgeschlossen. Versuchen Sie es bei Bedarf erneut."
       },
-      "enabledText": "Ihre Mitglieder können ihre Beiträge online bezahlen. Die Gelder werden direkt auf Ihr Stripe-Konto eingezahlt.",
+      "enabledText": "Ihre Mitglieder können ihre Beiträge online bezahlen. Die Gelder werden direkt auf Ihr Stripe-Konto eingezahlt. Die Plattform erhebt eine Provision von 1 %.",
       "editAccount": "Account bearbeiten",
       "dashboardButton": "Armaturenbrettstreifen",
       "pendingText": "Ihr Konto wird von Stripe verifiziert. Sie erhalten eine Bestätigungs-E-Mail.",
       "completeOnboarding": "Vollständige Registrierung",
       "invalidText": "Die Verbindung zu deinem Stripe-Konto wurde verloren (Konto gelöscht oder Zugriff widerrufen). Online-Zahlung ist deaktiviert, bis du dich erneut anmeldest.",
       "reconnect": "Reconnecter-Streifen",
-      "connectText": "Verbinden Sie ein Stripe-Konto, um die Online-Zahlung von Beiträgen zu ermöglichen.",
+      "connectText": "Verbinden Sie ein Stripe-Konto, um die Online-Zahlung von Beiträgen zu ermöglichen. Die Plattform wird eine Provision von 1 % erheben.",
       "connect": "Verbindungsstreifen"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Nachrichten",
       "membership": "Tritt der Vereinigung bei",
       "dons": "Spenden",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Shop"
     },
     "defaultTitles": {
       "hero": "Willkommen",
@@ -4656,7 +4651,8 @@
       "membership": "Tritt der Vereinigung bei",
       "dons": "Spenden",
       "actualites": "Nachrichten",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Shop"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# Bild konnte nicht heruntergeladen werden.} other {# Bilder konnten nicht hochgeladen werden.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Fügen Sie einen Abschnitt hinzu",
       "donsModuleDisabled": "Spendenmodul deaktiviert – auf der öffentlichen Seite unsichtbar",
       "deleteSectionTitle": "Abschnitt löschen",
-      "deleteSectionDescription": "Diese Maßnahme ist unumkehrbar."
+      "deleteSectionDescription": "Diese Maßnahme ist unumkehrbar.",
+      "boutiqueModuleDisabled": "Modul „Shop“ deaktiviert — auf der öffentlichen Website nicht sichtbar"
     },
     "sectionSheet": {
       "editTitle": "Nachtrag — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Bewerben Sie sich",
       "discardTitle": "Änderungen ignorieren?",
       "discardDescription": "Nicht angewandte Änderungen gehen verloren.",
-      "discardConfirm": "Ignorieren"
+      "discardConfirm": "Ignorieren",
+      "boutiqueLimit": "Anzahl anzuzeigender Produkte",
+      "boutiqueLimitHint": "Es werden nur die ersten N aktiven Produkte auf der Website angezeigt."
     },
     "editor": {
       "viewSite": "Siehe die Website",
@@ -4823,7 +4822,16 @@
         "orderError": "Fehler während der Bestellung",
         "orderUpdated": "Aktualisierte Reihenfolge",
         "orderCancelled": "Bestellung storniert"
-      }
+      },
+      "paymentSuccessTitle": "Zahlung bestätigt!",
+      "paymentSuccessDescription": "Vielen Dank für Ihren Einkauf. Eine Bestätigungs-E-Mail mit Ihrer Quittung wurde an Sie gesendet.",
+      "stockAdjustedNotice": "Der Bestand einiger Artikel hat sich geändert — Ihr Warenkorb wurde angepasst, bitte prüfen Sie ihn, bevor Sie fortfahren.",
+      "trackOrderButton": "Bestellung verfolgen",
+      "trackingPageTitle": "Bestellverfolgung",
+      "trackingStatusPending": "Zahlung ausstehend",
+      "trackingStatusPaid": "Bestellung bezahlt",
+      "trackingStatusCancelled": "Bestellung storniert",
+      "trackingNotFound": "Bestellung nicht gefunden"
     },
     "dons": {
       "title": "Meine Spenden",

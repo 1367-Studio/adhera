@@ -4,7 +4,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
 import { parseModules } from "@/lib/modules"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -582,6 +582,10 @@ export async function POST(
       price_data: { currency: "eur", unit_amount: p.unitPriceCents, product_data: { name: `${p.label} — ${assoc.name}` } },
       quantity: p.quantity,
     }))
+    const totalCents = amountCents
+      + resolvedDonations.reduce((sum, d) => sum + Math.round(d.amount * 100), 0)
+      + resolvedProducts.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0)
+    const applicationFee = Math.round(totalCents * PLATFORM_FEE)
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -590,7 +594,7 @@ export async function POST(
         ...donationLineItems,
         ...productLineItems,
       ],
-      payment_intent_data: { transfer_data: { destination: assoc.stripeConnectId! }, metadata: { orderId, associationId: assoc.id } },
+      payment_intent_data: { application_fee_amount: applicationFee, transfer_data: { destination: assoc.stripeConnectId! }, metadata: { orderId, associationId: assoc.id } },
       metadata: {
         orderId,
         ...(resolvedDonations.length > 0 ? { donations: JSON.stringify(resolvedDonations.map(d => ({ ticketTypeId: d.tier.id, label: d.tier.label, amount: d.amount, receiptMode: d.tier.receiptMode }))) } : {}),
@@ -821,13 +825,16 @@ export async function POST(
     },
     quantity: g.quantity,
   }))
+  const totalCents    = lineItems.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0)
+  const applicationFee = Math.round(totalCents * PLATFORM_FEE)
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: lineItems,
     payment_intent_data: {
-      transfer_data: { destination: assoc.stripeConnectId! },
-      metadata:      { orderId, associationId: assoc.id },
+      application_fee_amount: applicationFee,
+      transfer_data:          { destination: assoc.stripeConnectId! },
+      metadata:               { orderId, associationId: assoc.id },
     },
     metadata:       { orderId },
     customer_email: newAttendees[0].email,

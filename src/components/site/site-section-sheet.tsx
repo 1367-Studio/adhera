@@ -32,6 +32,7 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
     actualites: tSections("actualites"),
     membership: tSections("membership"),
     dons:       tSections("dons"),
+    boutique:   tSections("boutique"),
     contact:    tSections("contact"),
   }
   const [draft, setDraft]           = useState<SiteSection>(section)
@@ -240,6 +241,21 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
                 <p className="text-xs text-muted-foreground">
                   {t("donsHint")}
                 </p>
+              </div>
+            )}
+
+            {/* Boutique */}
+            {draft.type === "boutique" && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">{t("boutiqueLimit")}</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={"limit" in draft ? (draft.limit || 1) : 6}
+                  onChange={e => setLimit(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">{t("boutiqueLimitHint")}</p>
               </div>
             )}
 

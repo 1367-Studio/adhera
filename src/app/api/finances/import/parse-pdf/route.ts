@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
 import { getDocumentProxy, extractText } from "unpdf"
 import { aiExtractedRowSchema } from "@/lib/schemas"
-import { getAiConfig } from "@/lib/ai/client"
+import { resolveAiConfig } from "@/lib/ai/client"
+import { completeText } from "@/lib/ai/complete"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 import { rateLimit } from "@/lib/rate-limit"
@@ -74,7 +75,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Relevé trop long à traiter automatiquement" }, { status: 422 })
   }
 
-  const aiConfig   = await getAiConfig(associationId)
+  const aiConfig    = await resolveAiConfig(associationId)
   const usingOwnKey = !!aiConfig && !aiConfig.usingPlatform
 
   // Only throttle associations riding on the platform's shared fallback key — one with
@@ -90,29 +91,26 @@ export const POST = withAdminAuth(async (req, ctx) => {
       { status: 503 },
     )
   }
-  const { client, model } = aiConfig
 
   let raw: unknown
   try {
-    const completion = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: buildUserPrompt(text) },
-      ],
-      temperature:     0,
-      max_tokens:      4000,
-      response_format: { type: "json_object" },
+    const content = await completeText(aiConfig, {
+      system:      SYSTEM_PROMPT,
+      user:        buildUserPrompt(text),
+      temperature: 0,
+      maxTokens:   4000,
+      json:        true,
     })
-    raw = JSON.parse(completion.choices[0]?.message?.content ?? "{}")
+    raw = JSON.parse(content || "{}")
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Erreur lors de l'analyse IA du relevé"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
 
   // Prompted to wrap rows in { transactions: [...] }, but not every provider/model honors
-  // that under json_object mode — fall back to accepting a bare array so a model that
-  // ignores the wrapper instruction doesn't silently look like "found nothing".
+  // that under json_object mode (or, on Anthropic, under a prompt-only JSON instruction) —
+  // fall back to accepting a bare array so a model that ignores the wrapper instruction
+  // doesn't silently look like "found nothing".
   const transactions = Array.isArray(raw)
     ? raw
     : raw && typeof raw === "object" && Array.isArray((raw as { transactions?: unknown }).transactions)

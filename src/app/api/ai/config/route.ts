@@ -1,8 +1,10 @@
+import Anthropic from "@anthropic-ai/sdk"
+import OpenAI from "openai"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, makeAiClient } from "@/lib/ai/client"
+import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, isAnthropicProvider, makeAiClient, makeAnthropicClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
 const MANAGERS = ["ADMIN", "PRESIDENT"]
@@ -17,6 +19,43 @@ const schema = z.object({
     .transform((v) => (v == null ? v : v.trim() || null)),
   aiModel:    z.string().max(128).nullable().optional(),
 })
+
+// Model is a free-text field (providers add/retire models faster than this list could be
+// hardcoded), so it is only checked here, at save time, instead of every feature that reads
+// it later failing with a confusing "model not found" error. Throws when the provider
+// rejects the key itself; resolves to false when the key works but the model does not exist.
+
+function describeValidationError(error: unknown): string {
+  if (error instanceof Anthropic.APIError) return `réponse ${error.status ?? "?"} — ${error.message.slice(0, 160)}`
+  if (error instanceof OpenAI.APIError)    return `réponse ${error.status ?? "?"} — ${error.message.slice(0, 160)}`
+  if (error instanceof Error)              return error.message.slice(0, 160)
+  return "erreur inconnue"
+}
+
+async function providerAcceptsModel(provider: string, apiKey: string, model: string | null | undefined): Promise<boolean> {
+  if (isAnthropicProvider(provider)) {
+    const { client } = makeAnthropicClient({ provider, apiKey })
+    // Iterating the page auto-paginates; a wrong key throws (AuthenticationError) right here.
+    const modelIds: string[] = []
+    for await (const modelInfo of client.models.list()) modelIds.push(modelInfo.id)
+    if (!model || modelIds.includes(model)) return true
+
+    // Older generations are only listed under their dated ids, so an alias such as
+    // "claude-opus-4-1" is absent from the listing — retrieve resolves aliases and 404s for
+    // a model that genuinely does not exist.
+    try {
+      await client.models.retrieve(model)
+      return true
+    } catch (error) {
+      if (error instanceof Anthropic.NotFoundError) return false
+      throw error
+    }
+  }
+
+  const { client } = makeAiClient({ provider, apiKey })
+  const models = await client.models.list()
+  return !model || models.data.some((modelInfo) => modelInfo.id === model)
+}
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
@@ -67,13 +106,8 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   // (aiApiKey === null) or leaving it untouched (undefined).
   if (aiApiKey) {
     const providerToValidate = aiProvider !== undefined ? (aiProvider ?? "groq") : (current?.aiProvider ?? "groq")
-    const { client } = makeAiClient({ provider: providerToValidate, apiKey: aiApiKey })
     try {
-      const models = await client.models.list()
-      // Model is a free-text field (providers add/retire models faster than this list could
-      // be hardcoded), so this only catches it here, at save time, instead of every one of
-      // the 4 features that read it later failing with a confusing "model not found" error.
-      if (aiModel && !models.data.some((m) => m.id === aiModel)) {
+      if (!(await providerAcceptsModel(providerToValidate, aiApiKey, aiModel))) {
         return NextResponse.json(
           { error: `Le modèle "${aiModel}" n'est pas disponible pour ${providerToValidate}.` },
           { status: 422 },
@@ -81,8 +115,10 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
       }
     } catch (err) {
       console.error("[ai/config] key validation failed:", err)
+      // The provider's own answer (401 invalid key, 403 permission, network…) is the only
+      // clue the user gets, so it travels with the message — it never contains the key.
       return NextResponse.json(
-        { error: `Impossible de valider cette clé API auprès de ${providerToValidate}. Vérifiez qu'elle est correcte et active.` },
+        { error: `Impossible de valider cette clé API auprès de ${providerToValidate} : ${describeValidationError(err)}. Vérifiez qu'elle est correcte et active.` },
         { status: 422 },
       )
     }

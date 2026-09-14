@@ -69,6 +69,8 @@
       "heading": "Entrar",
       "subtitle": "Digite suas credenciais para acessar seu espaço.",
       "suspended": "A assinatura da sua associação está suspensa. Entre em contato com o administrador para regularizar a situação.",
+      "errorMulti": "Várias contas correspondem a este email do Google. Entre com sua senha.",
+      "error2faRequired": "A autenticação de dois fatores está ativada nesta conta. Entre com sua senha.",
       "noAccount": "Ainda não tem uma conta?",
       "createAccount": "Criar uma conta",
       "form": {
@@ -79,6 +81,17 @@
         "submit": "Entrar",
         "or": "ou",
         "continueWithGoogle": "Continuar com o Google"
+      },
+      "twoFactor": {
+        "title": "Verificação em duas etapas",
+        "descriptionTotp": "Digite o código de 6 dígitos exibido no seu aplicativo autenticador.",
+        "descriptionBackup": "Digite um dos seus códigos de backup.",
+        "codeLabel": "Código de verificação",
+        "backupCodeLabel": "Código de backup",
+        "submit": "Verificar",
+        "back": "Voltar",
+        "useBackupCode": "Usar um código de backup",
+        "useAuthenticatorCode": "Usar o código do aplicativo"
       }
     },
     "register": {
@@ -758,8 +771,6 @@
     "previous": "Anterior",
     "finish": "Concluir",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Ajuda e tour guiado",
-    "helpButtonTooltip": "Tour guiado",
     "steps": {
       "welcome": {
         "title": "Bem-vindo ao {appName} 👋",
@@ -840,10 +851,6 @@
       "userMenu": {
         "title": "Seu perfil",
         "description": "Edite seu perfil, altere sua senha e saia a partir deste menu."
-      },
-      "help": {
-        "title": "Precisa de ajuda?",
-        "description": "Pronto! Esqueceu algo ou tem uma pergunta mais tarde? Clique neste botão para reiniciar o tour quando quiser."
       }
     }
   },
@@ -3646,14 +3653,14 @@
         "updated": "Conta Stripe atualizada",
         "notFinalized": "A conexão Stripe não foi concluída. Tente novamente se necessário."
       },
-      "enabledText": "Seus membros podem pagar a mensalidade online. Os valores são depositados diretamente na sua conta Stripe.",
+      "enabledText": "Seus membros podem pagar a mensalidade online. Os valores são depositados diretamente na sua conta Stripe. Uma comissão de 1% é cobrada pela plataforma.",
       "editAccount": "Editar conta",
       "dashboardButton": "Painel Stripe",
       "pendingText": "Sua conta está sendo verificada pela Stripe. Você receberá um e-mail de confirmação.",
       "completeOnboarding": "Concluir cadastro",
       "invalidText": "A conexão com sua conta Stripe foi perdida (conta excluída ou acesso revogado). O pagamento online está desativado até a reconexão.",
       "reconnect": "Reconectar Stripe",
-      "connectText": "Conecte uma conta Stripe para ativar o pagamento online das mensalidades.",
+      "connectText": "Conecte uma conta Stripe para ativar o pagamento online das mensalidades. Uma comissão de 1% será cobrada pela plataforma.",
       "connect": "Conectar Stripe"
     },
     "suspended": {
@@ -4428,6 +4435,12 @@
         "profileUpdated": "Perfil atualizado",
         "passwordChanged": "Senha alterada",
         "passwordReset": "Senha redefinida",
+        "twoFactorEnabled": "Autenticação de dois fatores ativada",
+        "twoFactorDisabled": "Autenticação de dois fatores desativada",
+        "twoFactorBackupRegenerated": "Códigos de backup regenerados",
+        "twoFactorDisabledByAdmin": "Autenticação de dois fatores desativada pelo suporte",
+        "loginSuccess": "Login realizado",
+        "loginFailed": "Tentativa de login falhou",
         "emailSentBulk": "Email enviado",
         "smsSentBulk": "SMS enviado",
         "supportEmailSent": "Email enviado pelo Suporte Formwise",
@@ -4647,7 +4660,8 @@
       "actualites": "Notícias",
       "membership": "Junte-se à associação",
       "dons": "Fazer uma doação",
-      "contact": "Contato"
+      "contact": "Contato",
+      "boutique": "Loja"
     },
     "defaultTitles": {
       "hero": "Bem-vindo",
@@ -4656,7 +4670,8 @@
       "membership": "Junte-se à associação",
       "dons": "Fazer uma doação",
       "actualites": "Notícias",
-      "contact": "Contato"
+      "contact": "Contato",
+      "boutique": "Loja"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagem não pôde ser enviada.} other {# imagens não puderam ser enviadas.}}",
@@ -4701,7 +4716,8 @@
       "addSection": "Adicionar uma seção",
       "donsModuleDisabled": "Módulo de doações desativado — oculto no site público",
       "deleteSectionTitle": "Excluir a seção",
-      "deleteSectionDescription": "Esta ação é irreversível."
+      "deleteSectionDescription": "Esta ação é irreversível.",
+      "boutiqueModuleDisabled": "Módulo Loja desativado — invisível no site público"
     },
     "sectionSheet": {
       "editTitle": "Editar — {label}",
@@ -4735,7 +4751,9 @@
       "apply": "Aplicar",
       "discardTitle": "Descartar as alterações?",
       "discardDescription": "As alterações não aplicadas serão perdidas.",
-      "discardConfirm": "Descartar"
+      "discardConfirm": "Descartar",
+      "boutiqueLimit": "Número de produtos a exibir",
+      "boutiqueLimitHint": "Apenas os primeiros N produtos ativos serão exibidos no site."
     },
     "editor": {
       "viewSite": "Ver o site",
@@ -4823,7 +4841,16 @@
         "orderError": "Erro ao registrar o pedido",
         "orderUpdated": "Pedido atualizado",
         "orderCancelled": "Pedido cancelado"
-      }
+      },
+      "paymentSuccessTitle": "Pagamento confirmado!",
+      "paymentSuccessDescription": "Obrigado pela sua compra. Um e-mail de confirmação com o seu recibo foi enviado para você.",
+      "stockAdjustedNotice": "O estoque de alguns itens mudou — seu carrinho foi ajustado, revise antes de continuar.",
+      "trackOrderButton": "Acompanhar meu pedido",
+      "trackingPageTitle": "Acompanhamento do pedido",
+      "trackingStatusPending": "Aguardando pagamento",
+      "trackingStatusPaid": "Pedido pago",
+      "trackingStatusCancelled": "Pedido cancelado",
+      "trackingNotFound": "Pedido não encontrado"
     },
     "dons": {
       "title": "Minhas doações",
@@ -5214,7 +5241,40 @@
       },
       "editProfile": "Editar perfil",
       "changePassword": "Alterar senha",
+      "security": "Segurança",
       "logout": "Sair"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Autenticação de dois fatores",
+      "statusEnabled": "Ativada",
+      "statusEnabledDescription": "Sua conta está protegida por verificação em duas etapas.",
+      "statusDisabled": "Desativada",
+      "statusDisabledDescription": "Adicione uma verificação extra ao seu login com um aplicativo autenticador.",
+      "backupCodesLabel": "Códigos de backup",
+      "backupCodesRemaining": "{count, plural, =0 {Nenhum código restante} one {# código restante} other {# códigos restantes}}",
+      "regenerate": "Regenerar",
+      "scanTitle": "1. Escaneie este QR code",
+      "scanDescription": "Abra seu aplicativo autenticador (Google Authenticator, Authy…) e escaneie o código abaixo.",
+      "manualEntryLabel": "Não consegue escanear? Digite este código manualmente:",
+      "confirmCodeLabel": "Código de verificação",
+      "backupCodesTitle": "Salve estes códigos agora",
+      "backupCodesDescription": "Estes códigos só serão exibidos uma vez. Cada código só pode ser usado uma vez.",
+      "copyAll": "Copiar todos os códigos",
+      "copied": "Copiado!",
+      "savedCodesConfirm": "Salvei meus códigos de backup em um lugar seguro.",
+      "done": "Concluído",
+      "disableDescription": "Confirme sua senha para desativar a autenticação de dois fatores.",
+      "disableConfirm": "Desativar",
+      "regenDescription": "Confirme com um código do seu aplicativo para regenerar seus códigos de backup.",
+      "passwordLabel": "Senha",
+      "enable": "Ativar",
+      "disable": "Desativar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "close": "Fechar",
+      "enabledToast": "Autenticação de dois fatores ativada.",
+      "disabledToast": "Autenticação de dois fatores desativada.",
+      "regeneratedToast": "Códigos de backup regenerados."
     },
     "changePasswordModal": {
       "title": "Alterar senha",

@@ -758,8 +758,6 @@
     "previous": "Anterior",
     "finish": "Finish",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Ajutor și tur ghidat",
-    "helpButtonTooltip": "Tur ghidat",
     "steps": {
       "welcome": {
         "title": "Bine ați venit la {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Profilul tău",
         "description": "Editează-ți profilul, schimbă-ți parola și deconectează-te din acest meniu."
-      },
-      "help": {
-        "title": "Ai nevoie de ajutor?",
-        "description": "S-a terminat! O scăpare sau o întrebare mai târziu? Apasă pe acest buton pentru a relua vizita oricând dorești."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Cont Stripe actualizat",
         "notFinalized": "Conexiunea cu Stripe nu a fost finalizată. Încearcă din nou dacă este necesar."
       },
-      "enabledText": "Membrii tăi își pot plăti cotizațiile online. Fondurile sunt depuse direct în contul tău Stripe.",
+      "enabledText": "Membrii tăi își pot plăti cotizațiile online. Fondurile sunt depuse direct în contul tău Stripe. Platforma percepe un comision de 1%.",
       "editAccount": "Editează contul",
       "dashboardButton": "Dungă pe bord",
       "pendingText": "Contul tău este verificat de Stripe. Vei primi un e-mail de confirmare.",
       "completeOnboarding": "Înregistrare completă",
       "invalidText": "Conexiunea cu contul tău Stripe a fost pierdută (contul a fost șters sau accesul a fost retras). Plata online este dezactivată până te conectezi din nou.",
       "reconnect": "Dungă de reconectare",
-      "connectText": "Conectează-ți un cont Stripe pentru a permite plata online a cotizațiilor.",
+      "connectText": "Conectează-ți un cont Stripe pentru a permite plata online a cotizațiilor. Platforma va percepe un comision de 1%.",
       "connect": "Dungă de legătură"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Știri",
       "membership": "Alătură-te asociației",
       "dons": "Donează",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Magazin"
     },
     "defaultTitles": {
       "hero": "Bine ai venit",
@@ -4656,7 +4651,8 @@
       "membership": "Alătură-te asociației",
       "dons": "Donează",
       "actualites": "Știri",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Magazin"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagine nu a putut fi descărcată.} other {# imagini nu puteau fi încărcate.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Adaugă o secțiune",
       "donsModuleDisabled": "Modulul donațiilor dezactivat — invizibil pe site-ul public",
       "deleteSectionTitle": "Secțiunea Șterge",
-      "deleteSectionDescription": "Această acțiune este ireversibilă."
+      "deleteSectionDescription": "Această acțiune este ireversibilă.",
+      "boutiqueModuleDisabled": "Modulul Magazin dezactivat — invizibil pe site-ul public"
     },
     "sectionSheet": {
       "editTitle": "Editare — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Aplică",
       "discardTitle": "Să ignor schimbările?",
       "discardDescription": "Modificările neaplicate vor fi pierdute.",
-      "discardConfirm": "Ignoră"
+      "discardConfirm": "Ignoră",
+      "boutiqueLimit": "Numărul de produse afișate",
+      "boutiqueLimitHint": "Pe site vor fi afișate doar primele N produse active."
     },
     "editor": {
       "viewSite": "Vezi site-ul",
@@ -4823,7 +4822,16 @@
         "orderError": "Eroare în timpul comenzii",
         "orderUpdated": "Ordine actualizată",
         "orderCancelled": "Ordin anulat"
-      }
+      },
+      "paymentSuccessTitle": "Plată confirmată!",
+      "paymentSuccessDescription": "Vă mulțumim pentru achiziție. V-a fost trimis un e-mail de confirmare cu chitanța dvs.",
+      "stockAdjustedNotice": "Stocul unor articole s-a modificat — coșul dvs. a fost ajustat, verificați-l înainte de a continua.",
+      "trackOrderButton": "Urmărește comanda mea",
+      "trackingPageTitle": "Urmărire comandă",
+      "trackingStatusPending": "În așteptarea plății",
+      "trackingStatusPaid": "Comandă plătită",
+      "trackingStatusCancelled": "Comandă anulată",
+      "trackingNotFound": "Comanda nu a fost găsită"
     },
     "dons": {
       "title": "Donațiile mele",

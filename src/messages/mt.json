@@ -758,8 +758,6 @@
     "previous": "Preċedenti",
     "finish": "Tmiem",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Għajnuna u żjara gwidata",
-    "helpButtonTooltip": "Żjara gwidata",
     "steps": {
       "welcome": {
         "title": "Merħba {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Il-profil tiegħek",
         "description": "Editja l-profil tiegħek, biddel il-password tiegħek, u ħareġ minn dan il-menu."
-      },
-      "help": {
-        "title": "Trid għajnuna?",
-        "description": "Spiċċat! Xi żball jew mistoqsija aktar tard? Ikklikkja fuq din il-buttuna biex terġa' tibda ż-żjara meta trid."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Kont aġġornat ta' Stripe",
         "notFinalized": "Il-konnessjoni ma' Stripe ma ġietx finalizzata. Ipprova mill-ġdid jekk ikun meħtieġ."
       },
-      "enabledText": "Il-membri tiegħek jistgħu jħallsu d-dħul tagħhom online. Il-fondi jitħallsu direttament fil-kont Stripe tiegħek.",
+      "enabledText": "Il-membri tiegħek jistgħu jħallsu d-dħul tagħhom online. Il-fondi jitħallsu direttament fil-kont Stripe tiegħek. Il-pjattaforma tiġbor kummissjoni ta' 1%.",
       "editAccount": "Edit Account",
       "dashboardButton": "Strixxa tal-Dashboard",
       "pendingText": "Il-kont tiegħek qed jiġi vverifikat minn Stripe. Se tirċievi email ta' konferma.",
       "completeOnboarding": "Reġistrazzjoni sħiħa",
       "invalidText": "Il-konnessjoni mal-kont Stripe tiegħek intilfet (kont imħassar jew aċċess revokat). Il-ħlas online huwa diżattivat sakemm terġa' tidħol fil-log.",
       "reconnect": "Strixxa ta' Rekonnessjoni",
-      "connectText": "Ikkonnettja kont ta' Stripe biex tippermetti l-ħlas online tad-dħul.",
+      "connectText": "Ikkonnettja kont ta' Stripe biex tippermetti l-ħlas online tad-dħul. Il-pjattaforma se tiġbor kummissjoni ta' 1%.",
       "connect": "Strixxa ta' Konnessjoni"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Aħbarijiet",
       "membership": "Ingħaqad mal-assoċjazzjoni",
       "dons": "Dona",
-      "contact": "Kuntatt"
+      "contact": "Kuntatt",
+      "boutique": "Ħanut"
     },
     "defaultTitles": {
       "hero": "Merħba",
@@ -4656,7 +4651,8 @@
       "membership": "Ingħaqad mal-assoċjazzjoni",
       "dons": "Dona",
       "actualites": "Aħbarijiet",
-      "contact": "Kuntatt"
+      "contact": "Kuntatt",
+      "boutique": "Ħanut"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# -immaġni ma setgħetx titniżżel.} other {# -immaġini ma setgħux jittellgħu.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Żid sezzjoni",
       "donsModuleDisabled": "Modulu tad-donazzjonijiet diżattivat — inviżibbli fuq is-sit pubbliku",
       "deleteSectionTitle": "Is-sezzjoni Ħassar",
-      "deleteSectionDescription": "Din l-azzjoni hija irreversibbli."
+      "deleteSectionDescription": "Din l-azzjoni hija irreversibbli.",
+      "boutiqueModuleDisabled": "Il-modulu Ħanut diżattivat — mhux viżibbli fuq is-sit pubbliku"
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Applika",
       "discardTitle": "Tinjora l-bidliet?",
       "discardDescription": "Bidliet mhux applikati jintilfu.",
-      "discardConfirm": "Ignora"
+      "discardConfirm": "Ignora",
+      "boutiqueLimit": "Numru ta' prodotti li għandhom jintwerew",
+      "boutiqueLimitHint": "Fuq is-sit se jidhru biss l-ewwel N prodotti attivi."
     },
     "editor": {
       "viewSite": "Ara s-sit elettroniku",
@@ -4823,7 +4822,16 @@
         "orderError": "Żball waqt l-ordni",
         "orderUpdated": "Ordni aġġornata",
         "orderCancelled": "Ordni kkanċellata"
-      }
+      },
+      "paymentSuccessTitle": "Il-ħlas ġie kkonfermat!",
+      "paymentSuccessDescription": "Grazzi tax-xiri tiegħek. Intbagħtitlek email ta' konferma bir-riċevuta tiegħek.",
+      "stockAdjustedNotice": "L-istokk ta' xi oġġetti nbidel — il-karrell tiegħek ġie aġġustat, irrevedih qabel ma tkompli.",
+      "trackOrderButton": "Segwi l-ordni tiegħi",
+      "trackingPageTitle": "Traċċar tal-ordni",
+      "trackingStatusPending": "Jistenna ħlas",
+      "trackingStatusPaid": "Ordni mħallsa",
+      "trackingStatusCancelled": "Ordni kkanċellata",
+      "trackingNotFound": "L-ordni ma nstabtx"
     },
     "dons": {
       "title": "Id-Donazzjonijiet tiegħi",

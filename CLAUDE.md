@@ -529,3 +529,18 @@ typography over badges
 alignment over cards
 consistency over novelty
 function over visual effects
+
+# CODE RULES
+
+- do not add only one letter for variables
+- each variable need to be word explicit
+
+# AI AGENTS
+
+- create different agents for the tasks
+
+# AI AGENTS
+on the top has myself, then have a agents master he will distrubute the tasks to sub agents expert in a only think, exemple: a agents design thibk only about design
+an agent code do only code not design
+
+

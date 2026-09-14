@@ -758,8 +758,6 @@
     "previous": "Eerder",
     "finish": "Fins",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hulp en rondleiding",
-    "helpButtonTooltip": "Rondleiding",
     "steps": {
       "welcome": {
         "title": "Welkom bij {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Jouw profiel",
         "description": "Bewerk je profiel, verander je wachtwoord en log uit via dit menu."
-      },
-      "help": {
-        "title": "Hulp nodig?",
-        "description": "Het is voorbij! Een vergissing of een vraag later? Klik op deze knop om het bezoek te herstarten wanneer je maar wilt."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Bijgewerkt Stripe-account",
         "notFinalized": "De Stripe-verbinding is niet afgerond. Probeer het opnieuw indien nodig."
       },
-      "enabledText": "Je leden kunnen hun contributie online betalen. Het geld wordt rechtstreeks op je Stripe-account gestort.",
+      "enabledText": "Je leden kunnen hun contributie online betalen. Het geld wordt rechtstreeks op je Stripe-account gestort. Het platform brengt een commissie van 1% in rekening.",
       "editAccount": "Account bewerken",
       "dashboardButton": "Dashboardstreep",
       "pendingText": "Je account wordt geverifieerd door Stripe. Je ontvangt een bevestigingsmail.",
       "completeOnboarding": "Volledige registratie",
       "invalidText": "De verbinding met je Stripe-account is verloren (account verwijderd of toegang ingetrokken). Online betaling is uitgeschakeld totdat je opnieuw inlogt.",
       "reconnect": "Reconnecter-stripe",
-      "connectText": "Koppel een Stripe-account om online betaling van contributie mogelijk te maken.",
+      "connectText": "Koppel een Stripe-account om online betaling van contributie mogelijk te maken. Het platform zal een commissie van 1% in rekening brengen.",
       "connect": "Verbindingsstreep"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Nieuws",
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Winkel"
     },
     "defaultTitles": {
       "hero": "Welkom",
@@ -4656,7 +4651,8 @@
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
       "actualites": "Nieuws",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Winkel"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# afbeelding kon niet worden gedownload.} other {# afbeeldingen konden niet worden geüpload.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Voeg een sectie toe",
       "donsModuleDisabled": "Donatiemodule uitgeschakeld — onzichtbaar op de openbare site",
       "deleteSectionTitle": "Sectie verwijderen",
-      "deleteSectionDescription": "Deze handeling is onomkeerbaar."
+      "deleteSectionDescription": "Deze handeling is onomkeerbaar.",
+      "boutiqueModuleDisabled": "Winkelmodule uitgeschakeld — niet zichtbaar op de openbare site"
     },
     "sectionSheet": {
       "editTitle": "Bewerking — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Solliciteer",
       "discardTitle": "Veranderingen negeren?",
       "discardDescription": "Niet-toegepaste wijzigingen gaan verloren.",
-      "discardConfirm": "Negeer"
+      "discardConfirm": "Negeer",
+      "boutiqueLimit": "Aantal weer te geven producten",
+      "boutiqueLimitHint": "Alleen de eerste N actieve producten worden op de site getoond."
     },
     "editor": {
       "viewSite": "Zie de website",
@@ -4823,7 +4822,16 @@
         "orderError": "Fout tijdens opdracht",
         "orderUpdated": "Bijgewerkte volgorde",
         "orderCancelled": "Bestelling geannuleerd"
-      }
+      },
+      "paymentSuccessTitle": "Betaling bevestigd!",
+      "paymentSuccessDescription": "Bedankt voor uw aankoop. Er is een bevestigingsmail met uw bon naar u verzonden.",
+      "stockAdjustedNotice": "De voorraad van sommige artikelen is gewijzigd — uw winkelwagen is aangepast, controleer deze voordat u verdergaat.",
+      "trackOrderButton": "Mijn bestelling volgen",
+      "trackingPageTitle": "Bestelling volgen",
+      "trackingStatusPending": "In afwachting van betaling",
+      "trackingStatusPaid": "Bestelling betaald",
+      "trackingStatusCancelled": "Bestelling geannuleerd",
+      "trackingNotFound": "Bestelling niet gevonden"
     },
     "dons": {
       "title": "Mijn Donaties",

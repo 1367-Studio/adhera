@@ -69,6 +69,8 @@
       "heading": "Login",
       "subtitle": "Enter your credentials to access your space.",
       "suspended": "Your association's subscription is suspended. Contact your administrator to resolve the situation.",
+      "errorMulti": "Several accounts match this Google email. Sign in with your password instead.",
+      "error2faRequired": "Two-factor authentication is enabled on this account. Sign in with your password instead.",
       "noAccount": "Don't have an account yet?",
       "createAccount": "Create an account",
       "form": {
@@ -79,6 +81,17 @@
         "submit": "Sign in",
         "or": "or",
         "continueWithGoogle": "Continue with Google"
+      },
+      "twoFactor": {
+        "title": "Two-step verification",
+        "descriptionTotp": "Enter the 6-digit code shown in your authenticator app.",
+        "descriptionBackup": "Enter one of your backup codes.",
+        "codeLabel": "Verification code",
+        "backupCodeLabel": "Backup code",
+        "submit": "Verify",
+        "back": "Back",
+        "useBackupCode": "Use a backup code",
+        "useAuthenticatorCode": "Use the authenticator code"
       }
     },
     "register": {
@@ -758,8 +771,6 @@
     "previous": "Previous",
     "finish": "Finish",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Help and guided tour",
-    "helpButtonTooltip": "Guided tour",
     "steps": {
       "welcome": {
         "title": "Welcome to {appName} 👋",
@@ -843,7 +854,7 @@
       },
       "help": {
         "title": "Need help?",
-        "description": "That's it! Forgot something or have a question later? Click this button to restart the tour whenever you like."
+        "description": "That's it! This button opens the help center: articles, FAQs, the assistant and what's new. You can also restart this tour from its footer."
       }
     }
   },
@@ -2422,8 +2433,12 @@
       "validation": {
         "nameRequired": "Name is required",
         "atLeastOneVariant": "At least one variant is required",
-        "variantLabelRequired": "Each variant must have a label"
-      }
+        "variantLabelRequired": "Each variant must have a label",
+        "weightRequiredWhenShippable": "Weight is required for a variant with shipping enabled"
+      },
+      "shippableColumn": "Shipping",
+      "weightColumn": "Weight (g)",
+      "weightPlaceholder": "500"
     },
     "view": {
       "title": "Shop",
@@ -2472,7 +2487,8 @@
       "toasts": {
         "productDeleted": "Product deleted",
         "deleteError": "Error while deleting",
-        "orderUpdated": "Order updated"
+        "orderUpdated": "Order updated",
+        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it."
       }
     },
     "payModal": {
@@ -3646,14 +3662,14 @@
         "updated": "Stripe account updated",
         "notFinalized": "The Stripe connection wasn't completed. Try again if needed."
       },
-      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account.",
+      "enabledText": "Your members can pay their membership fee online. Funds are paid directly into your Stripe account. A 1% commission is charged by the platform.",
       "editAccount": "Edit account",
       "dashboardButton": "Stripe dashboard",
       "pendingText": "Your account is being verified by Stripe. You'll receive a confirmation email.",
       "completeOnboarding": "Complete sign-up",
       "invalidText": "The connection to your Stripe account was lost (account deleted or access revoked). Online payment is disabled until reconnected.",
       "reconnect": "Reconnect Stripe",
-      "connectText": "Connect a Stripe account to enable online membership fee payments.",
+      "connectText": "Connect a Stripe account to enable online membership fee payments. A 1% commission will be charged by the platform.",
       "connect": "Connect Stripe"
     },
     "suspended": {
@@ -4428,6 +4444,12 @@
         "profileUpdated": "Profile updated",
         "passwordChanged": "Password changed",
         "passwordReset": "Password reset",
+        "twoFactorEnabled": "Two-factor authentication enabled",
+        "twoFactorDisabled": "Two-factor authentication disabled",
+        "twoFactorBackupRegenerated": "Backup codes regenerated",
+        "twoFactorDisabledByAdmin": "Two-factor authentication disabled by support",
+        "loginSuccess": "Signed in",
+        "loginFailed": "Failed sign-in attempt",
         "emailSentBulk": "Email sent",
         "smsSentBulk": "SMS sent",
         "supportEmailSent": "Email sent by Formwise Support",
@@ -4647,7 +4669,8 @@
       "actualites": "News",
       "membership": "Join the association",
       "dons": "Make a donation",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Store"
     },
     "defaultTitles": {
       "hero": "Welcome",
@@ -4656,7 +4679,8 @@
       "membership": "Join the association",
       "dons": "Make a donation",
       "actualites": "News",
-      "contact": "Contact"
+      "contact": "Contact",
+      "boutique": "Store"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
@@ -4701,7 +4725,8 @@
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
       "deleteSectionTitle": "Delete the section",
-      "deleteSectionDescription": "This action is irreversible."
+      "deleteSectionDescription": "This action is irreversible.",
+      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site"
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -4735,7 +4760,9 @@
       "apply": "Apply",
       "discardTitle": "Discard changes?",
       "discardDescription": "Unapplied changes will be lost.",
-      "discardConfirm": "Discard"
+      "discardConfirm": "Discard",
+      "boutiqueLimit": "Number of products to display",
+      "boutiqueLimitHint": "Only the first N active products will be shown on the site."
     },
     "editor": {
       "viewSite": "View site",
@@ -4792,9 +4819,9 @@
       "summary": "Summary",
       "total": "Total",
       "paymentMethod": "Payment method",
-      "paymentManual": "On pickup",
+      "paymentManual": "Manual payment",
       "paymentStripe": "Online",
-      "paymentManualHint": "Payment is made on pickup. The administration will contact you.",
+      "paymentManualHint": "Payment will be arranged directly with the administration.",
       "paymentStripeHint": "You'll receive a secure payment link after the order is confirmed.",
       "note": "Note",
       "optional": "(optional)",
@@ -4823,7 +4850,16 @@
         "orderError": "Error placing the order",
         "orderUpdated": "Order updated",
         "orderCancelled": "Order cancelled"
-      }
+      },
+      "paymentSuccessTitle": "Payment confirmed!",
+      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
+      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
+      "trackOrderButton": "Track my order",
+      "trackingPageTitle": "Order tracking",
+      "trackingStatusPending": "Awaiting payment",
+      "trackingStatusPaid": "Order paid",
+      "trackingStatusCancelled": "Order cancelled",
+      "trackingNotFound": "Order not found"
     },
     "dons": {
       "title": "My donations",
@@ -5102,7 +5138,7 @@
   },
   "ai": {
     "heading": "AI Assistant",
-    "description": "Used for AI-assisted writing in text editors. By default, the platform key is used for free. Configure your own key (Groq, OpenAI or Mistral) so costs are billed to your account. It's also used to automatically translate public content (events, forms).",
+    "description": "Used for AI-assisted writing in text editors, automatic translation of public content (events, forms) and the help-center assistant. By default, the platform key is used for free. Configure your own key (Anthropic, Groq, OpenAI or Mistral) so costs are billed to your account.",
     "configuredTitle": "Custom key configured",
     "providerLabel": "Provider:",
     "modelLabel": "· Model:",
@@ -5110,6 +5146,7 @@
     "platformKeyActive": "Platform key active — you can use AI without any configuration.",
     "providerFieldLabel": "Provider",
     "providerFieldPlaceholder": "Choose a provider…",
+    "anthropicAssistantHint": "The help-center assistant only answers about your association's data (members, fees, finances) with an Anthropic key. With another provider it answers from the documentation only.",
     "apiKeyLabel": "API Key",
     "apiKeyPlaceholderReplace": "Existing key — enter to replace",
     "apiKeyPlaceholderNew": "Paste your API key…",
@@ -5214,7 +5251,40 @@
       },
       "editProfile": "Edit profile",
       "changePassword": "Change password",
+      "security": "Security",
       "logout": "Sign out"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Two-factor authentication",
+      "statusEnabled": "Enabled",
+      "statusEnabledDescription": "Your account is protected by two-step verification.",
+      "statusDisabled": "Disabled",
+      "statusDisabledDescription": "Add an extra verification step to your sign-in with an authenticator app.",
+      "backupCodesLabel": "Backup codes",
+      "backupCodesRemaining": "{count, plural, =0 {No codes left} one {# code left} other {# codes left}}",
+      "regenerate": "Regenerate",
+      "scanTitle": "1. Scan this QR code",
+      "scanDescription": "Open your authenticator app (Google Authenticator, Authy…) and scan the code below.",
+      "manualEntryLabel": "Can't scan it? Enter this code manually:",
+      "confirmCodeLabel": "Verification code",
+      "backupCodesTitle": "Save these codes now",
+      "backupCodesDescription": "These codes are shown only once. Each code can only be used once.",
+      "copyAll": "Copy all codes",
+      "copied": "Copied!",
+      "savedCodesConfirm": "I've saved my backup codes somewhere safe.",
+      "done": "Done",
+      "disableDescription": "Confirm your password to disable two-factor authentication.",
+      "disableConfirm": "Disable",
+      "regenDescription": "Confirm with a code from your app to regenerate your backup codes.",
+      "passwordLabel": "Password",
+      "enable": "Enable",
+      "disable": "Disable",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "close": "Close",
+      "enabledToast": "Two-factor authentication enabled.",
+      "disabledToast": "Two-factor authentication disabled.",
+      "regeneratedToast": "Backup codes regenerated."
     },
     "changePasswordModal": {
       "title": "Change password",
@@ -5340,6 +5410,129 @@
       "error": "Something went wrong",
       "closed": "Request closed",
       "reopened": "Request reopened"
+    },
+    "suggestReply": "Suggest a reply",
+    "suggestReplyConfirmTitle": "Replace your draft?",
+    "suggestReplyConfirmDescription": "The text you already typed will be replaced by the AI suggestion.",
+    "suggestReplyConfirmAction": "Replace",
+    "suggestReplyNote": "AI-generated suggestion — review before sending.",
+    "suggestReplySources": "Sources: {titles}",
+    "suggestReplyError": "Couldn't generate a suggestion."
+  },
+  "help": {
+    "buttonLabel": "Help",
+    "title": "Help center",
+    "moduleGeneral": "General",
+    "tabs": {
+      "guide": "Help",
+      "assistant": "Assistant",
+      "changelog": "What's new"
+    },
+    "searchPlaceholder": "Search the help…",
+    "searchResultsCount": "{count, plural, one {# result} other {# results}}",
+    "searchNoResults": "No results for \"{query}\".",
+    "searchError": "Search is unavailable right now.",
+    "articlesSection": "Articles",
+    "faqSection": "Frequently asked questions",
+    "noArticles": "No articles for this section yet.",
+    "noContent": "No help content for this section yet.",
+    "loadError": "Couldn't load the help.",
+    "retry": "Retry",
+    "back": "Back",
+    "updatedOn": "Updated on {date}",
+    "articleNotFound": "Article not found.",
+    "callout": {
+      "info": "Note",
+      "tip": "Tip",
+      "warning": "Warning"
+    },
+    "assistant": {
+      "questionLabel": "Your question",
+      "questionPlaceholder": "Ask your question…",
+      "send": "Send",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter on Mac)",
+      "disclaimer": "AI-generated answers — double-check anything important.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "You",
+      "assistantLabel": "Assistant",
+      "newConversation": "New conversation",
+      "conversationRestoreFailed": "Your previous conversation couldn't be restored.",
+      "intro": "Ask about how to use Formwise or about your association's data: members, fees, finances, events.",
+      "introDocs": "Ask about how to use Formwise.",
+      "examplesLabel": "Example questions",
+      "examples": {
+        "unpaid": "Who hasn't paid their membership fee this year?",
+        "donations": "How many donations this month?",
+        "createEvent": "How do I create an event?"
+      },
+      "examplesDocs": {
+        "reminder": "How do I send a reminder for an unpaid membership fee?",
+        "export": "How do I export the member list?",
+        "createEvent": "How do I create an event?"
+      },
+      "loadingCopilot": "Checking your data…",
+      "loadingDocs": "Writing…",
+      "dataConsulted": "Data consulted:",
+      "tools": {
+        "search_members": "Members",
+        "get_member": "Members",
+        "list_cotisations": "Membership fees",
+        "get_finance_summary": "Financial summary",
+        "list_events": "Events",
+        "list_donations": "Donations",
+        "list_invoices": "Invoices"
+      },
+      "sources": "Sources:",
+      "docsOnlyNotice": "Questions about your members, fees and finances require an Anthropic key.",
+      "docsOnlyConfigure": "Set it up in Settings → Integrations.",
+      "error": "Couldn't get an answer.",
+      "errorTimeout": "The assistant couldn't finish in time. Try a shorter or more precise question.",
+      "errorRateLimit": "Too many requests, try again shortly.",
+      "errorProvider": "The AI provider couldn't respond, try again later.",
+      "noApiKey": "No API key configured.",
+      "noApiKeyConfigure": "Add your API key in Settings → Integrations.",
+      "noApiKeyAskAdmin": "Ask an administrator to add an API key in Settings → Integrations.",
+      "apiKeyInvalid": "The configured API key was rejected by the provider.",
+      "apiKeyInvalidConfigure": "Check it in Settings → Integrations.",
+      "apiKeyInvalidAskAdmin": "Ask an administrator to check it in Settings → Integrations."
+    },
+    "changelog": {
+      "empty": "Nothing new yet.",
+      "loadError": "Couldn't load what's new.",
+      "kind": {
+        "feature": "New",
+        "improvement": "Improvement",
+        "fix": "Fix"
+      }
+    },
+    "footer": {
+      "tour": "Guided tour",
+      "contactSupport": "Contact support"
     }
+  },
+  "boutiqueShipping": {
+    "title": "Shipping",
+    "description": "Shipping origin address used to calculate Boutique postal delivery costs.",
+    "addressLabel": "Address",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "City",
+    "postalCodeLabel": "Postal code",
+    "countryLabel": "Country",
+    "saved": "Shipping address saved",
+    "deliveryMethodLabel": "Receiving method",
+    "pickupOption": "Pickup",
+    "deliveryOption": "Postal delivery",
+    "shippingAddressHint": "Needed to calculate delivery costs.",
+    "shippingOptionsLabel": "Delivery cost",
+    "loadingRates": "Calculating delivery cost…",
+    "noShippingOptions": "No delivery option available for this address.",
+    "shippingUnavailable": "Postal delivery isn't configured by this association yet.",
+    "leadTimeApprox": "~{days}d",
+    "shippingCostLabel": "Delivery cost",
+    "mixedCartPickupOnlyHint": "Delivery unavailable: your cart contains an item that can only be picked up in person.",
+    "markupLabel": "Safety margin on shipping cost",
+    "markupHint": "Added on top of the price shown to the buyer. Protects you if the carrier's price rises before you actually ship, but a higher price may discourage the purchase.",
+    "markupRangeError": "The margin must be a whole number between 0 and 50.",
+    "markupHintTooltip": "No label is purchased at order time — the price shown is only an estimate. If the carrier's real price has gone up by the time you ship the parcel, the association pays the difference, unless this margin covers it. Conversely, too high a margin raises the price shown to the customer and can discourage them from buying."
   }
 }

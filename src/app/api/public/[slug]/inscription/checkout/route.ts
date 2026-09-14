@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
@@ -115,8 +115,9 @@ export async function POST(
         },
       ],
       subscription_data: {
-        transfer_data: { destination: assoc.stripeConnectId },
-        metadata:      subscriptionMeta,
+        transfer_data:           { destination: assoc.stripeConnectId },
+        application_fee_percent: PLATFORM_FEE * 100,
+        metadata:                subscriptionMeta,
       },
       metadata:       subscriptionMeta,
       customer_email: email,

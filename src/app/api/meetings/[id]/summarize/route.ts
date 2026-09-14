@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { getAiConfig } from "@/lib/ai/client"
+import { resolveAiConfig } from "@/lib/ai/client"
+import { completeText } from "@/lib/ai/complete"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { rateLimit } from "@/lib/rate-limit"
@@ -34,7 +35,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   const [meeting, aiConfig] = await Promise.all([
     prisma.meeting.findFirst({ where: { id, associationId } }),
-    getAiConfig(associationId),
+    resolveAiConfig(associationId),
   ])
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
@@ -53,20 +54,15 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       { status: 503 },
     )
   }
-  const { client, model } = aiConfig
 
   try {
-    const completion = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user",   content: buildPrompt(meeting.title, meeting.transcript) },
-      ],
+    const summary = await completeText(aiConfig, {
+      system:      SYSTEM_PROMPT,
+      user:        buildPrompt(meeting.title, meeting.transcript),
       temperature: 0.4,
-      max_tokens:  1500,
+      maxTokens:   1500,
     })
-
-    const summary = completion.choices[0]?.message?.content?.trim() ?? ""
+    if (!summary.trim()) return NextResponse.json({ error: "Le résumé généré est vide, réessayez." }, { status: 502 })
 
     const updated = await prisma.meeting.update({
       where: { id },

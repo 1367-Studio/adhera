@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -60,7 +60,16 @@ type Commande = {
   note:          string | null
   createdAt:     string
   membre:        { firstName: string; lastName: string; email: string } | null
+  guestName:     string | null
+  guestEmail:    string | null
   items:         CommandeItem[]
+  deliveryMethod:       "PICKUP" | "DELIVERY"
+  shippingAddress:      string | null
+  shippingCity:         string | null
+  shippingPostalCode:   string | null
+  shippingCountry:      string | null
+  shippingCost:         number
+  shippingCarrierLabel: string | null
 }
 
 type EditableItem = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
@@ -99,6 +108,7 @@ function BoutiquePageInner() {
   const highlightId  = searchParams.get("commandeId")
   const t            = useTranslations("boutique")
   const tCommon      = useTranslations("common")
+  const tShip        = useTranslations("boutiqueShipping")
 
   const MANUAL_PAYMENT_TYPE_OPTIONS = getManualPaymentTypeOptions(t)
   const STATUS_PRODUIT_LABEL        = getProduitStatusLabel(t)
@@ -130,14 +140,28 @@ function BoutiquePageInner() {
 
   // Deep-link from the dashboard's "Ventes récentes" card: land on the right tab and
   // briefly highlight the row so the admin doesn't have to hunt for it in the list.
+  const missingHighlightNotifiedRef = useRef<string | null>(null)
   useEffect(() => {
     if (!highlightId || tab !== "commandes" || loadingCommandes) return
-    const el = document.querySelector(`[data-row-id="${highlightId}"]`)
-    if (!el) return
-    el.scrollIntoView({ behavior: "smooth", block: "center" })
-    el.classList.add("ring-2", "ring-primary")
-    const t = setTimeout(() => el.classList.remove("ring-2", "ring-primary"), 2500)
-    return () => clearTimeout(t)
+    // DataTable renders both a desktop <tr> and a mobile card sharing this data-row-id;
+    // only one is visible at a given breakpoint, so highlight whichever one is. A ring
+    // (box-shadow) doesn't paint on <tr> in most browsers, so use a background tint instead.
+    const els = [...document.querySelectorAll(`[data-row-id="${highlightId}"]`)] as HTMLElement[]
+    if (!els.length) {
+      // The list only ever fetches the 50 most recent orders (no pagination UI), so an
+      // older order referenced by an aging notification link can silently be absent —
+      // tell the admin instead of leaving them staring at a list with nothing highlighted.
+      // Guarded to fire once per commandeId, since a background refetch (e.g. window
+      // refocus) would otherwise re-run this and toast again.
+      if (missingHighlightNotifiedRef.current !== highlightId) {
+        missingHighlightNotifiedRef.current = highlightId
+        toast.info(t("view.toasts.orderNotInRecentList"))
+      }
+      return
+    }
+    els.forEach(el => { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("bg-primary/10") })
+    const t2 = setTimeout(() => els.forEach(el => el.classList.remove("bg-primary/10")), 2500)
+    return () => clearTimeout(t2)
   }, [highlightId, tab, loadingCommandes, commandeResult])
 
   const deleteMutation = useMutation({
@@ -307,7 +331,9 @@ function BoutiquePageInner() {
       header: t("view.commandeColumns.membre"),
       cell: (c) => c.membre
         ? <div><p className="font-medium">{c.membre.firstName} {c.membre.lastName}</p><p className="text-xs text-muted-foreground">{c.membre.email}</p></div>
-        : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
+        : c.guestName
+          ? <div><p className="font-medium">{c.guestName}</p><p className="text-xs text-muted-foreground">{c.guestEmail}</p></div>
+          : <span className="text-muted-foreground italic">{t("view.guest")}</span>,
     },
     {
       key:    "items",
@@ -320,6 +346,13 @@ function BoutiquePageInner() {
             </p>
           ))}
           {c.items.length > 2 && <p className="text-muted-foreground">{t("view.othersCount", { count: c.items.length - 2 })}</p>}
+          {c.deliveryMethod === "DELIVERY" && (
+            <p className="text-muted-foreground">
+              {tShip("deliveryOption")}
+              {c.shippingCarrierLabel ? ` — ${c.shippingCarrierLabel}` : ""}
+              {c.shippingCity ? ` — ${c.shippingCity}` : ""}
+            </p>
+          )}
         </div>
       ),
     },
@@ -483,13 +516,20 @@ function BoutiquePageInner() {
           >
             {payTarget && (
               <div className="space-y-4 py-1">
-                {payTarget.membre && (
+                {(payTarget.membre || payTarget.guestName) && (
                   <p className="text-sm text-muted-foreground">
                     {t("payModal.orderOf")}{" "}
                     <span className="font-medium text-foreground">
-                      {payTarget.membre.firstName} {payTarget.membre.lastName}
+                      {payTarget.membre ? `${payTarget.membre.firstName} ${payTarget.membre.lastName}` : payTarget.guestName}
                     </span>
                   </p>
+                )}
+                {payTarget.deliveryMethod === "DELIVERY" && (
+                  <div className="text-sm text-muted-foreground space-y-0.5">
+                    <p className="font-medium text-foreground">{tShip("deliveryOption")}{payTarget.shippingCarrierLabel ? ` — ${payTarget.shippingCarrierLabel}` : ""}</p>
+                    <p>{payTarget.shippingAddress}, {payTarget.shippingPostalCode} {payTarget.shippingCity}, {payTarget.shippingCountry}</p>
+                    <p>{tShip("shippingCostLabel")}: {fmt(payTarget.shippingCost)}</p>
+                  </div>
                 )}
                 <SelectField
                   label={t("paymentMethodLabel")}
@@ -559,8 +599,8 @@ function BoutiquePageInner() {
         onOpenChange={o => { if (!o) setCancelTarget(null) }}
         title={t("view.cancelOrderTitle")}
         description={
-          cancelTarget?.membre
-            ? t("view.cancelOrderDescriptionWithName", { name: `${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName}` })
+          cancelTarget?.membre || cancelTarget?.guestName
+            ? t("view.cancelOrderDescriptionWithName", { name: cancelTarget.membre ? `${cancelTarget.membre.firstName} ${cancelTarget.membre.lastName}` : cancelTarget.guestName! })
             : t("view.cancelOrderDescription")
         }
         confirmLabel={t("view.cancelOrderConfirm")}

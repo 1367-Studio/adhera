@@ -758,8 +758,6 @@
     "previous": "Precedente",
     "finish": "Fine",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Aiuto e visite guidate",
-    "helpButtonTooltip": "Visita guidata",
     "steps": {
       "welcome": {
         "title": "Benvenuti a {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Il tuo profilo",
         "description": "Modifica il tuo profilo, cambia la password e disconnettiti da questo menu."
-      },
-      "help": {
-        "title": "Hai bisogno di aiuto?",
-        "description": "È finita! Una svista o una domanda dopo? Clicca su questo pulsante per riavviare la visita quando vuoi."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Account Stripe aggiornato",
         "notFinalized": "La connessione Stripe non è stata finalizzata. Riprova se necessario."
       },
-      "enabledText": "I tuoi membri possono pagare le quote online. I fondi vengono versati direttamente sul tuo conto Stripe.",
+      "enabledText": "I tuoi membri possono pagare le quote online. I fondi vengono versati direttamente sul tuo conto Stripe. La piattaforma applica una commissione dell'1%.",
       "editAccount": "Modifica Account",
       "dashboardButton": "Striscia sul cruscotto",
       "pendingText": "Il tuo account viene verificato da Stripe. Riceverai un'email di conferma.",
       "completeOnboarding": "Registrazione completa",
       "invalidText": "La connessione con il tuo account Stripe è stata persa (account cancellato o accesso revocato). Il pagamento online è disabilitato finché non accedi di nuovo.",
       "reconnect": "Striscia di riconnessione",
-      "connectText": "Collega un account Stripe per permettere il pagamento online delle quote di pagamento.",
+      "connectText": "Collega un account Stripe per permettere il pagamento online delle quote di pagamento. La piattaforma applicherà una commissione dell'1%.",
       "connect": "Striscia di collegamento"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Notizie",
       "membership": "Unisciti all'associazione",
       "dons": "Dona",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "boutique": "Negozio"
     },
     "defaultTitles": {
       "hero": "Benvenuto",
@@ -4656,7 +4651,8 @@
       "membership": "Unisciti all'associazione",
       "dons": "Dona",
       "actualites": "Notizie",
-      "contact": "Contatto"
+      "contact": "Contatto",
+      "boutique": "Negozio"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# immagine non poteva essere scaricata.} other {# immagini non potevano essere caricate.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Aggiungi una sezione",
       "donsModuleDisabled": "Modulo donazioni disabilitato — invisibile sul sito pubblico",
       "deleteSectionTitle": "Sezione elimina",
-      "deleteSectionDescription": "Questa azione è irreversibile."
+      "deleteSectionDescription": "Questa azione è irreversibile.",
+      "boutiqueModuleDisabled": "Modulo Negozio disattivato — non visibile sul sito pubblico"
     },
     "sectionSheet": {
       "editTitle": "Modifica — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Candidati",
       "discardTitle": "Ignorare i cambiamenti?",
       "discardDescription": "Le modifiche non applicate andranno perse.",
-      "discardConfirm": "Ignora"
+      "discardConfirm": "Ignora",
+      "boutiqueLimit": "Numero di prodotti da visualizzare",
+      "boutiqueLimitHint": "Sul sito verranno mostrati solo i primi N prodotti attivi."
     },
     "editor": {
       "viewSite": "Consulta il sito web",
@@ -4823,7 +4822,16 @@
         "orderError": "Errore durante l'ordine",
         "orderUpdated": "Ordine aggiornato",
         "orderCancelled": "Ordine cancellato"
-      }
+      },
+      "paymentSuccessTitle": "Pagamento confermato!",
+      "paymentSuccessDescription": "Grazie per il tuo acquisto. Ti è stata inviata un'email di conferma con la tua ricevuta.",
+      "stockAdjustedNotice": "Lo stock di alcuni articoli è cambiato — il tuo carrello è stato modificato, controlla prima di continuare.",
+      "trackOrderButton": "Traccia il mio ordine",
+      "trackingPageTitle": "Tracciamento ordine",
+      "trackingStatusPending": "In attesa di pagamento",
+      "trackingStatusPaid": "Ordine pagato",
+      "trackingStatusCancelled": "Ordine annullato",
+      "trackingNotFound": "Ordine non trovato"
     },
     "dons": {
       "title": "Le mie donazioni",

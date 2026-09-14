@@ -10,6 +10,7 @@ import {
 } from "@/hooks/use-backoffice-support-tickets"
 import { useSupportStaffTicketListener } from "@/hooks/use-support-ticket-listener"
 import { SupportTicketThread } from "@/components/support/support-ticket-thread"
+import { useSuggestSupportReply } from "@/hooks/use-help"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
@@ -21,6 +22,7 @@ export default function BackofficeSupportTicketDetailPage() {
 
   const { data: ticket, isLoading, isError } = useBackofficeSupportTicket(id)
   const replyMutation = useReplyBackofficeSupportTicket(id)
+  const suggestReplyMutation = useSuggestSupportReply(id)
   const patchMutation = usePatchBackofficeSupportTicket(id)
   // Separate mutation instance from `patchMutation` above — this one fires silently in the
   // background on every ticket open, so it must not share pending state with the Close/Reopen
@@ -81,6 +83,7 @@ export default function BackofficeSupportTicketDetailPage() {
         status={ticket.status}
         messages={ticket.messages ?? []}
         viewerRole="SUPER_ADMIN"
+        onSuggestReply={() => suggestReplyMutation.mutateAsync()}
         onSend={handleSend}
         sending={replyMutation.isPending}
         onClose={handleClose}

@@ -4,7 +4,7 @@ import { z } from "zod"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { Prisma } from "@prisma/client"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -736,8 +736,9 @@ export async function POST(
           },
         ],
         subscription_data: {
-          transfer_data: { destination: assoc.stripeConnectId! },
-          metadata:      installmentMeta,
+          transfer_data:           { destination: assoc.stripeConnectId! },
+          application_fee_percent: PLATFORM_FEE * 100,
+          metadata:                installmentMeta,
         },
         metadata:       installmentMeta,
         customer_email: email,
@@ -774,6 +775,8 @@ export async function POST(
       ...productLineItems,
     ]
 
+    const applicationFee = Math.round(lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0) * PLATFORM_FEE)
+
     let checkoutSession: Stripe.Checkout.Session
     try {
       checkoutSession = await stripe.checkout.sessions.create({
@@ -782,8 +785,9 @@ export async function POST(
         payment_intent_data: {
           // Non-null: the `else` branch above already returned if this were unset — that
           // narrowing doesn't survive past the offline branch's own early return in between.
-          transfer_data: { destination: assoc.stripeConnectId! },
-          metadata:      { kind: "membership-oneoff", ...commonMeta },
+          application_fee_amount: applicationFee,
+          transfer_data:          { destination: assoc.stripeConnectId! },
+          metadata:               { kind: "membership-oneoff", ...commonMeta },
         },
         metadata:       { kind: "membership-oneoff", ...commonMeta },
         customer_email: email,
@@ -835,8 +839,9 @@ export async function POST(
       subscription_data: {
         // Non-null: the `else` branch above already returned if this were unset — see the
         // matching comment on the one-off branch.
-        transfer_data: { destination: assoc.stripeConnectId! },
-        metadata:      subscriptionMeta,
+        transfer_data:           { destination: assoc.stripeConnectId! },
+        application_fee_percent: PLATFORM_FEE * 100,
+        metadata:                subscriptionMeta,
       },
       metadata:       subscriptionMeta,
       customer_email: email,
@@ -1160,6 +1165,8 @@ async function handleMultiRegistrantCheckout(
   const cancelUrl  = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=cancelled`
   const metadata = { kind: "membership-multi", associationId: assoc.id, draftId: draft.id }
 
+  const applicationFee = Math.round(lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0) * PLATFORM_FEE)
+
   let checkoutSession: Stripe.Checkout.Session
   try {
     checkoutSession = await stripe.checkout.sessions.create({
@@ -1168,7 +1175,8 @@ async function handleMultiRegistrantCheckout(
       payment_intent_data: {
         // Non-null: the connectAccountChargesEnabled check above already returned if this
         // were unset.
-        transfer_data: { destination: assoc.stripeConnectId! },
+        application_fee_amount: applicationFee,
+        transfer_data:          { destination: assoc.stripeConnectId! },
         metadata,
       },
       metadata,

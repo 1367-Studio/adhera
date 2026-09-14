@@ -17,41 +17,13 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useNotifications } from "@/hooks/use-notifications"
 import { firstEnabledPortalPath } from "@/lib/modules"
+import { getRouteLabels } from "@/lib/route-labels"
 import { isManager, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 import { SquaresFourIcon, UserIcon } from "@phosphor-icons/react/dist/ssr"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
-function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
-  return {
-    dashboard:    t("layout.appSidebar.dashboard"),
-    membres:      t("layout.appSidebar.membres"),
-    adhesions:    t("layout.appSidebar.adhesions"),
-    evenements:   t("layout.appSidebar.evenements"),
-    cotisations:  t("layout.appSidebar.cotisations"),
-    actualites:   t("layout.appSidebar.actualites"),
-    messages:     t("layout.appSidebar.messages"),
-    materiel:     t("layout.appSidebar.materiel"),
-    site:         t("layout.appSidebar.site"),
-    parametres:   t("layout.appSidebar.parametres"),
-    portal:       t("layout.header.myPortal"),
-    profil:       t("layout.header.myProfile"),
-    backoffice:   t("layout.backofficeSidebar.backoffice"),
-    associations: t("layout.appSidebar.associations"),
-    boutique:     t("layout.appSidebar.boutique"),
-    devis:        t("layout.appSidebar.devis"),
-    dons:         t("layout.appSidebar.dons"),
-    factures:     t("layout.appSidebar.factures"),
-    finances:     t("layout.appSidebar.finances"),
-    fournisseurs: t("layout.appSidebar.fournisseurs"),
-    activite:     t("layout.appSidebar.activite"),
-    reunions:     t("layout.appSidebar.reunions"),
-    sondages:     t("layout.appSidebar.sondages"),
-    suporte:      t("layout.appSidebar.suporte"),
-  }
-}
 
 interface HeaderProps {
   user: {

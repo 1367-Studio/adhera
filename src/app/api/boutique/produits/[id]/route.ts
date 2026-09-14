@@ -9,10 +9,15 @@ import { assertIncomeCategory } from "@/lib/validate-finance-category"
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
 const varianteSchema = z.object({
-  id:    z.string().optional(),
-  label: z.string().trim().min(1).max(100),
-  price: z.number().int().min(0),
-  stock: z.number().int().min(0).default(0),
+  id:          z.string().optional(),
+  label:       z.string().trim().min(1).max(100),
+  price:       z.number().int().min(0),
+  stock:       z.number().int().min(0).default(0),
+  shippable:   z.boolean().default(false),
+  weightGrams: z.number().int().positive().optional(),
+}).superRefine((v, ctx) => {
+  if (v.shippable && !v.weightGrams)
+    ctx.addIssue({ code: "custom", path: ["weightGrams"], message: "weightGrams is required when shippable is true" })
 })
 
 const updateSchema = z.object({
@@ -93,11 +98,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         if (v.id) {
           await tx.boutiqueVariante.update({
             where: { id: v.id },
-            data:  { label: v.label, price: v.price, stock: v.stock },
+            data:  { label: v.label, price: v.price, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
           })
         } else {
           await tx.boutiqueVariante.create({
-            data: { produitId: id, label: v.label, price: v.price, stock: v.stock },
+            data: { produitId: id, label: v.label, price: v.price, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
           })
         }
       }

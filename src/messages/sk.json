@@ -758,8 +758,6 @@
     "previous": "Predchádzajúce",
     "finish": "Cieľ",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Pomoc a prehliadka so sprievodcom",
-    "helpButtonTooltip": "Prehliadka so sprievodcom",
     "steps": {
       "welcome": {
         "title": "Vitajte v {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Tvoj profil",
         "description": "Upravte svoj profil, zmeňte heslo a odhláste sa z tohto menu."
-      },
-      "help": {
-        "title": "Potrebujete pomoc?",
-        "description": "Je koniec! Prehliadnutie alebo otázka neskôr? Kliknite na toto tlačidlo a obnovte návštevu kedykoľvek chcete."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Aktualizovaný účet Stripe",
         "notFinalized": "Spojenie so Stripeom nebolo dokončené. Ak bude treba, skúste to znova."
       },
-      "enabledText": "Vaši členovia môžu platiť svoje členské príspevky online. Prostriedky sa posielajú priamo na váš Stripe účet.",
+      "enabledText": "Vaši členovia môžu platiť svoje členské príspevky online. Prostriedky sa posielajú priamo na váš Stripe účet. Platforma si účtuje províziu 1 %.",
       "editAccount": "Upraviť účet",
       "dashboardButton": "Pásik na palubnej doske",
       "pendingText": "Váš účet je overovaný spoločnosťou Stripe. Dostanete potvrdzovací e-mail.",
       "completeOnboarding": "Kompletná registrácia",
       "invalidText": "Spojenie s vaším Stripe účtom bolo stratené (účet vymazaný alebo prístup zrušený). Online platby sú vypnuté, kým sa znovu neprihlásite.",
       "reconnect": "Reconnecter Stripe",
-      "connectText": "Pripojte si účet Stripe, aby ste umožnili online platenie členských príspevkov.",
+      "connectText": "Pripojte si účet Stripe, aby ste umožnili online platenie členských príspevkov. Platforma si bude účtovať províziu 1 %.",
       "connect": "Spojovací pás"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Správy",
       "membership": "Pridajte sa k združeniu",
       "dons": "Darujte",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Obchod"
     },
     "defaultTitles": {
       "hero": "Vitajte",
@@ -4656,7 +4651,8 @@
       "membership": "Pridajte sa k združeniu",
       "dons": "Darujte",
       "actualites": "Správy",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Obchod"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# obrázok nebolo možné stiahnuť.} other {# obrázky nebolo možné nahrať.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Pridajte sekciu",
       "donsModuleDisabled": "Modul na darovanie deaktivovaný — neviditeľný na verejnej stránke",
       "deleteSectionTitle": "Vymazať sekciu",
-      "deleteSectionDescription": "Tento čin je nezvratný."
+      "deleteSectionDescription": "Tento čin je nezvratný.",
+      "boutiqueModuleDisabled": "Modul Obchod je vypnutý — na verejnom webe nie je vidieť"
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Prihláste sa",
       "discardTitle": "Ignorovať zmeny?",
       "discardDescription": "Neaplikované zmeny budú stratené.",
-      "discardConfirm": "Ignoruj"
+      "discardConfirm": "Ignoruj",
+      "boutiqueLimit": "Počet zobrazených produktov",
+      "boutiqueLimitHint": "Na webe sa zobrazí len prvých N aktívnych produktov."
     },
     "editor": {
       "viewSite": "Pozrite si webovú stránku",
@@ -4823,7 +4822,16 @@
         "orderError": "Chyba počas objednávky",
         "orderUpdated": "Aktualizované poradie",
         "orderCancelled": "Objednávka zrušená"
-      }
+      },
+      "paymentSuccessTitle": "Platba potvrdená!",
+      "paymentSuccessDescription": "Ďakujeme za nákup. Bol vám odoslaný potvrdzovací e-mail s potvrdenkou.",
+      "stockAdjustedNotice": "Sklad niektorých položiek sa zmenil — váš košík bol upravený, skontrolujte ho pred pokračovaním.",
+      "trackOrderButton": "Sledovať objednávku",
+      "trackingPageTitle": "Sledovanie objednávky",
+      "trackingStatusPending": "Čaká sa na platbu",
+      "trackingStatusPaid": "Objednávka zaplatená",
+      "trackingStatusCancelled": "Objednávka zrušená",
+      "trackingNotFound": "Objednávka nenájdená"
     },
     "dons": {
       "title": "Moje dary",

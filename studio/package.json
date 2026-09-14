@@ -1,0 +1,25 @@
+{
+  "name": "formwise-studio",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "sanity deploy",
+    "schema:deploy": "sanity schema deploy",
+    "typegen": "sanity schemas extract --force --enforce-required-fields && sanity typegen generate"
+  },
+  "dependencies": {
+    "@sanity/icons": "^5.2.2",
+    "@sanity/vision": "^6.13.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "sanity": "^6.13.1",
+    "sanity-plugin-internationalized-array": "^5.2.4",
+    "styled-components": "^6.5.3"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  }
+}

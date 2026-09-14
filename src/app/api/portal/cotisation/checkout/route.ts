@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe, connectAccountChargesEnabled } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -64,6 +64,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
     : amountPaid > 0
       ? `${cotisation.association.name} — Cotisation ${cotisation.year} (solde restant)`
       : `${cotisation.association.name} — Cotisation ${cotisation.year}`
+  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -80,8 +81,9 @@ export const POST = withPortalAuth(async (req, ctx) => {
       },
     ],
     payment_intent_data: {
-      transfer_data: { destination: cotisation.association.stripeConnectId },
-      metadata:      { cotisationId, associationId: ctx.associationId },
+      application_fee_amount: applicationFee,
+      transfer_data:          { destination: cotisation.association.stripeConnectId },
+      metadata:               { cotisationId, associationId: ctx.associationId },
     },
     metadata:    { cotisationId },
     success_url: `${APP_URL}/portal/${slug}/cotisation?payment=success`,

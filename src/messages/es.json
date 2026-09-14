@@ -758,8 +758,6 @@
     "previous": "Anterior",
     "finish": "Finalizar",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Ayuda y visita guiada",
-    "helpButtonTooltip": "Visita guiada",
     "steps": {
       "welcome": {
         "title": "Bienvenido a {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Su perfil",
         "description": "Edite su perfil, cambie su contraseña y cierre sesión desde este menú."
-      },
-      "help": {
-        "title": "¿Necesita ayuda?",
-        "description": "¡Eso es todo! ¿Se olvidó de algo o tiene una pregunta más tarde? Haga clic en este botón para reiniciar la visita cuando quiera."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Cuenta Stripe actualizada",
         "notFinalized": "La conexión con Stripe no se finalizó. Vuelva a intentarlo si es necesario."
       },
-      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe.",
+      "enabledText": "Sus miembros pueden pagar su cuota en línea. Los fondos se abonan directamente en su cuenta Stripe. La plataforma cobra una comisión del 1%.",
       "editAccount": "Editar cuenta",
       "dashboardButton": "Panel de Stripe",
       "pendingText": "Su cuenta está siendo verificada por Stripe. Recibirá un correo de confirmación.",
       "completeOnboarding": "Completar el registro",
       "invalidText": "Se perdió la conexión con su cuenta Stripe (cuenta eliminada o acceso revocado). El pago en línea está desactivado hasta la reconexión.",
       "reconnect": "Reconectar Stripe",
-      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas.",
+      "connectText": "Conecte una cuenta Stripe para activar el pago en línea de las cuotas. La plataforma cobrará una comisión del 1%.",
       "connect": "Conectar Stripe"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Noticias",
       "membership": "Únete a la asociación",
       "dons": "Hacer una donación",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Tienda"
     },
     "defaultTitles": {
       "hero": "Bienvenido",
@@ -4656,7 +4651,8 @@
       "membership": "Únete a la asociación",
       "dons": "Hacer una donación",
       "actualites": "Noticias",
-      "contact": "Contacto"
+      "contact": "Contacto",
+      "boutique": "Tienda"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagen no se pudo subir.} other {# imágenes no se pudieron subir.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Añadir una sección",
       "donsModuleDisabled": "Módulo de donaciones desactivado — oculto en el sitio público",
       "deleteSectionTitle": "Eliminar la sección",
-      "deleteSectionDescription": "Esta acción es irreversible."
+      "deleteSectionDescription": "Esta acción es irreversible.",
+      "boutiqueModuleDisabled": "Módulo Tienda desactivado — invisible en el sitio público"
     },
     "sectionSheet": {
       "editTitle": "Editar — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Aplicar",
       "discardTitle": "¿Descartar los cambios?",
       "discardDescription": "Los cambios no aplicados se perderán.",
-      "discardConfirm": "Descartar"
+      "discardConfirm": "Descartar",
+      "boutiqueLimit": "Número de productos a mostrar",
+      "boutiqueLimitHint": "Solo se mostrarán en el sitio los primeros N productos activos."
     },
     "editor": {
       "viewSite": "Ver el sitio",
@@ -4823,7 +4822,16 @@
         "orderError": "Error al registrar el pedido",
         "orderUpdated": "Pedido actualizado",
         "orderCancelled": "Pedido cancelado"
-      }
+      },
+      "paymentSuccessTitle": "¡Pago confirmado!",
+      "paymentSuccessDescription": "Gracias por su compra. Se le ha enviado un correo de confirmación con su recibo.",
+      "stockAdjustedNotice": "El stock de algunos artículos ha cambiado — se ajustó su carrito, revíselo antes de continuar.",
+      "trackOrderButton": "Seguir mi pedido",
+      "trackingPageTitle": "Seguimiento del pedido",
+      "trackingStatusPending": "Pendiente de pago",
+      "trackingStatusPaid": "Pedido pagado",
+      "trackingStatusCancelled": "Pedido cancelado",
+      "trackingNotFound": "Pedido no encontrado"
     },
     "dons": {
       "title": "Mis donaciones",

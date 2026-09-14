@@ -24,6 +24,7 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
     case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
     case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
     case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "", buttonLabel: "" }
+    case "boutique":   return { id: newId(), type: "boutique",   title: defaultTitles.boutique,   limit: 6 }
     case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
     case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
   }
@@ -35,7 +36,7 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
 // block from this menu. Existing "membership" sections (created before this change) stay
 // editable/removable in the section list below — only the ability to add a new one from
 // here is gone.
-const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "dons", "contact"]
+const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "dons", "boutique", "contact"]
 
 // Accordion panel
 function Panel({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
@@ -63,6 +64,7 @@ type Props = {
   siteUrl:           string | null
   isSaving:          boolean
   donsModuleEnabled: boolean
+  boutiqueModuleEnabled: boolean
   onChange:          (patch: Partial<SiteConfig>) => void
   onSave:            () => void
   onTogglePublish:   () => void
@@ -70,7 +72,7 @@ type Props = {
 }
 
 export function SiteControlsPanel({
-  config, published, isDirty, canEdit, siteUrl, isSaving, donsModuleEnabled, onChange, onSave, onTogglePublish, onFilePending,
+  config, published, isDirty, canEdit, siteUrl, isSaving, donsModuleEnabled, boutiqueModuleEnabled, onChange, onSave, onTogglePublish, onFilePending,
 }: Props) {
   const t             = useTranslations("site.controls")
   const tCommon       = useTranslations("common")
@@ -83,6 +85,7 @@ export function SiteControlsPanel({
     actualites: tSections("actualites"),
     membership: tSections("membership"),
     dons:       tSections("dons"),
+    boutique:   tSections("boutique"),
     contact:    tSections("contact"),
   }
   const defaultTitles: Record<SectionType, string> = {
@@ -92,6 +95,7 @@ export function SiteControlsPanel({
     actualites: tDefaults("actualites"),
     membership: tDefaults("membership"),
     dons:       tDefaults("dons"),
+    boutique:   tDefaults("boutique"),
     contact:    tDefaults("contact"),
   }
   const [editingSection, setEditingSection] = useState<SiteSection | null>(null)
@@ -432,6 +436,11 @@ export function SiteControlsPanel({
                       {t("donsModuleDisabled")}
                     </p>
                   )}
+                  {section.type === "boutique" && !boutiqueModuleEnabled && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                      {t("boutiqueModuleDisabled")}
+                    </p>
+                  )}
                 </div>
 
                 {canEdit && (
@@ -458,13 +467,13 @@ export function SiteControlsPanel({
                 <div className="absolute bottom-full left-0 right-0 mb-1 z-20 bg-popover border rounded-lg shadow-md py-1">
                   {SECTION_TYPES.map(type => {
                     const used = existingTypes.has(type)
-                    const moduleOff = type === "dons" && !donsModuleEnabled
+                    const moduleOff = (type === "dons" && !donsModuleEnabled) || (type === "boutique" && !boutiqueModuleEnabled)
                     return (
                       <button
                         key={type}
                         onClick={() => !used && addSection(type)}
                         disabled={used}
-                        title={moduleOff ? t("donsModuleDisabled") : undefined}
+                        title={moduleOff ? (type === "dons" ? t("donsModuleDisabled") : t("boutiqueModuleDisabled")) : undefined}
                         className={cn(
                           "w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between gap-2",
                           used ? "opacity-40 cursor-not-allowed" : "hover:bg-muted"

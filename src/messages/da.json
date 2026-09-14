@@ -758,8 +758,6 @@
     "previous": "Tidligere",
     "finish": "Afslutning",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Hjælp og guidet tur",
-    "helpButtonTooltip": "Guidet tur",
     "steps": {
       "welcome": {
         "title": "Velkommen til {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Din profil",
         "description": "Rediger din profil, skift din adgangskode, og log ud fra denne menu."
-      },
-      "help": {
-        "title": "Brug for hjælp?",
-        "description": "Det er slut! En forglemmelse eller et spørgsmål senere? Klik på denne knap for at genstarte besøget, når du vil."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Opdateret Stripe-konto",
         "notFinalized": "Stripe-forbindelsen blev ikke endeligt fastlagt. Prøv igen, hvis det er nødvendigt."
       },
-      "enabledText": "Dine medlemmer kan betale deres kontingent online. Pengene indbetales direkte til din Stripe-konto.",
+      "enabledText": "Dine medlemmer kan betale deres kontingent online. Pengene indbetales direkte til din Stripe-konto. Platformen opkræver et gebyr på 1 %.",
       "editAccount": "Rediger konto",
       "dashboardButton": "Instrumentbrætstribe",
       "pendingText": "Din konto bliver verificeret af Stripe. Du vil modtage en bekræftelsesmail.",
       "completeOnboarding": "Fuldstændig registrering",
       "invalidText": "Forbindelsen til din Stripe-konto er blevet mistet (kontoen slettet eller adgangen inddraget). Online betaling er deaktiveret, indtil du logger ind igen.",
       "reconnect": "Reconnecter-stribe",
-      "connectText": "Opret en Stripe-konto for at muliggøre online betaling af kontingenter.",
+      "connectText": "Opret en Stripe-konto for at muliggøre online betaling af kontingenter. Platformen vil opkræve et gebyr på 1 %.",
       "connect": "Forbindelsesstribe"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Nyheder",
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "defaultTitles": {
       "hero": "Velkommen",
@@ -4656,7 +4651,8 @@
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
       "actualites": "Nyheder",
-      "contact": "Kontakt"
+      "contact": "Kontakt",
+      "boutique": "Butik"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# billede kunne ikke downloades.} other {# billeder kunne ikke uploades.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Tilføj et afsnit",
       "donsModuleDisabled": "Donationsmodulet deaktiveret — usynligt på det offentlige site",
       "deleteSectionTitle": "Slet-sektionen",
-      "deleteSectionDescription": "Denne handling er uigenkaldelig."
+      "deleteSectionDescription": "Denne handling er uigenkaldelig.",
+      "boutiqueModuleDisabled": "Butiksmodulet er deaktiveret — skjult på den offentlige side"
     },
     "sectionSheet": {
       "editTitle": "Redigering — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Ansøg",
       "discardTitle": "Ignorere ændringer?",
       "discardDescription": "Uanvendte ændringer vil gå tabt.",
-      "discardConfirm": "Ignorer"
+      "discardConfirm": "Ignorer",
+      "boutiqueLimit": "Antal produkter, der skal vises",
+      "boutiqueLimitHint": "Kun de første N aktive produkter vises på siden."
     },
     "editor": {
       "viewSite": "Se hjemmesiden",
@@ -4823,7 +4822,16 @@
         "orderError": "Fejl under ordre",
         "orderUpdated": "Opdateret ordre",
         "orderCancelled": "Ordre annulleret"
-      }
+      },
+      "paymentSuccessTitle": "Betaling bekræftet!",
+      "paymentSuccessDescription": "Tak for dit køb. En bekræftelsesmail med din kvittering er sendt til dig.",
+      "stockAdjustedNotice": "Lagerbeholdningen for nogle varer er ændret — din kurv er blevet justeret, gennemgå den før du fortsætter.",
+      "trackOrderButton": "Følg min ordre",
+      "trackingPageTitle": "Ordresporing",
+      "trackingStatusPending": "Afventer betaling",
+      "trackingStatusPaid": "Ordre betalt",
+      "trackingStatusCancelled": "Ordre annulleret",
+      "trackingNotFound": "Ordre ikke fundet"
     },
     "dons": {
       "title": "Mine donationer",

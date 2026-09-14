@@ -158,6 +158,7 @@ export function SiteView() {
           siteUrl={siteData?.slug ? `/${siteData.slug}` : null}
           isSaving={saving || saveMutation.isPending}
           donsModuleEnabled={modules.dons}
+          boutiqueModuleEnabled={modules.boutique}
           onChange={updateConfig}
           onSave={save}
           onTogglePublish={togglePublish}
@@ -175,6 +176,7 @@ export function SiteView() {
           country={assoc?.country ?? "France"}
           events={events}
           donsEnabled={modules.dons}
+          boutiqueEnabled={modules.boutique}
         />
       </div>
     </div>

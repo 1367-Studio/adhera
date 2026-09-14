@@ -758,8 +758,6 @@
     "previous": "Edellinen",
     "finish": "Viimeistely",
     "progress": "'{{current}}' / '{{total}}'",
-    "helpButtonLabel": "Apu ja opastettu kierros",
-    "helpButtonTooltip": "Opastettu kierros",
     "steps": {
       "welcome": {
         "title": "Tervetuloa {appName} 👋",
@@ -840,10 +838,6 @@
       "userMenu": {
         "title": "Profiilisi",
         "description": "Muokkaa profiiliasi, vaihda salasanasi ja kirjaudu ulos tästä valikosta."
-      },
-      "help": {
-        "title": "Tarvitsetko apua?",
-        "description": "Se on ohi! Virhe vai kysymys myöhemmin? Klikkaa tätä painiketta aloittaaksesi vierailun uudelleen milloin haluat."
       }
     }
   },
@@ -3646,14 +3640,14 @@
         "updated": "Päivitetty Stripe-tili",
         "notFinalized": "Stripe-yhteys ei ollut vielä valmis. Yritä uudelleen, jos on pakko."
       },
-      "enabledText": "Jäsenesi voivat maksaa jäsenmaksunsa verkossa. Varat maksetaan suoraan Stripe-tilillesi.",
+      "enabledText": "Jäsenesi voivat maksaa jäsenmaksunsa verkossa. Varat maksetaan suoraan Stripe-tilillesi. Alusta veloittaa 1 %:n palkkion.",
       "editAccount": "Muokkaustili",
       "dashboardButton": "Kojelaudan raita",
       "pendingText": "Tilisi vahvistetaan Stripen toimesta. Saat vahvistussähköpostin.",
       "completeOnboarding": "Täydellinen ilmoittautuminen",
       "invalidText": "Yhteys Stripe-tilillesi on menetetty (tili poistettu tai käyttöoikeus peruutettu). Verkkomaksu on pois päältä, kunnes kirjaudut uudelleen sisään.",
       "reconnect": "Relinker-raita",
-      "connectText": "Yhdistä Stripe-tili, jotta voit maksaa jäsenmaksut verkossa.",
+      "connectText": "Yhdistä Stripe-tili, jotta voit maksaa jäsenmaksut verkossa. Alusta tulee veloittamaan 1 %:n palkkion.",
       "connect": "Yhdistäjäraita"
     },
     "suspended": {
@@ -4647,7 +4641,8 @@
       "actualites": "Uutiset",
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
-      "contact": "Yhteystiedot"
+      "contact": "Yhteystiedot",
+      "boutique": "Kauppa"
     },
     "defaultTitles": {
       "hero": "Tervetuloa",
@@ -4656,7 +4651,8 @@
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
       "actualites": "Uutiset",
-      "contact": "Yhteystiedot"
+      "contact": "Yhteystiedot",
+      "boutique": "Kauppa"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# kuvaa ei voitu ladata.} other {# kuvia ei voitu ladata.}}",
@@ -4701,7 +4697,8 @@
       "addSection": "Lisää osio",
       "donsModuleDisabled": "Lahjoitusmoduuli poistettu käytöstä — näkymätön julkisella sivustolla",
       "deleteSectionTitle": "Poista osio",
-      "deleteSectionDescription": "Tämä teko on peruuttamaton."
+      "deleteSectionDescription": "Tämä teko on peruuttamaton.",
+      "boutiqueModuleDisabled": "Kauppa-moduuli pois käytöstä — ei näy julkisella sivustolla"
     },
     "sectionSheet": {
       "editTitle": "Muokkaus — {label}",
@@ -4735,7 +4732,9 @@
       "apply": "Hae",
       "discardTitle": "Jättää muutokset huomiotta?",
       "discardDescription": "Soveltamattomat muutokset katoavat.",
-      "discardConfirm": "Jätä huomiotta"
+      "discardConfirm": "Jätä huomiotta",
+      "boutiqueLimit": "Näytettävien tuotteiden määrä",
+      "boutiqueLimitHint": "Sivustolla näytetään vain ensimmäiset N aktiivista tuotetta."
     },
     "editor": {
       "viewSite": "Katso verkkosivusto",
@@ -4823,7 +4822,16 @@
         "orderError": "Virhe tilauksen aikana",
         "orderUpdated": "Päivitetty järjestys",
         "orderCancelled": "Tilaus peruttu"
-      }
+      },
+      "paymentSuccessTitle": "Maksu vahvistettu!",
+      "paymentSuccessDescription": "Kiitos ostoksestasi. Sinulle on lähetetty vahvistussähköposti kuitin kanssa.",
+      "stockAdjustedNotice": "Joidenkin tuotteiden varastosaldo on muuttunut — ostoskoriasi mukautettiin, tarkista se ennen jatkamista.",
+      "trackOrderButton": "Seuraa tilaustani",
+      "trackingPageTitle": "Tilauksen seuranta",
+      "trackingStatusPending": "Odottaa maksua",
+      "trackingStatusPaid": "Tilaus maksettu",
+      "trackingStatusCancelled": "Tilaus peruttu",
+      "trackingNotFound": "Tilausta ei löytynyt"
     },
     "dons": {
       "title": "Lahjoitukseni",

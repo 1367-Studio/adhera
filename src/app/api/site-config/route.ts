@@ -9,7 +9,7 @@ const ADMINS = ["ADMIN", "PRESIDENT"]
 
 const sectionSchema = z.object({
   id:          z.string(),
-  type:        z.enum(["hero", "about", "events", "actualites", "membership", "dons", "contact"]),
+  type:        z.enum(["hero", "about", "events", "actualites", "membership", "dons", "boutique", "contact"]),
   title:       z.string().optional().default(""),
   subtitle:    z.string().optional(),
   bgColor:     z.string().optional(),

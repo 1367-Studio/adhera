@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useQueryClient } from "@tanstack/react-query"
-import { SignOutIcon, PencilSimpleIcon, KeyIcon } from "@phosphor-icons/react/dist/ssr";
+import { SignOutIcon, PencilSimpleIcon, KeyIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +17,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/lib/auth/actions"
 import { BASE_PATH } from "@/lib/env"
-import { ProfileEditModal }    from "./profile-edit-modal"
-import { ChangePasswordModal } from "./change-password-modal"
+import { ProfileEditModal }        from "./profile-edit-modal"
+import { ChangePasswordModal }     from "./change-password-modal"
+import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
 
 function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return {
@@ -39,7 +40,10 @@ interface UserMenuProps {
 export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
   const t = useTranslations("layout.userMenu")
   const roleLabels = getRoleLabels(t)
-  const [modal, setModal] = useState<"profile" | "password" | null>(null)
+  const [modal, setModal] = useState<"profile" | "password" | "security" | null>(null)
+  // 2FA is staff-only for now — the portal's member-facing dropdown reuses this same
+  // component, so it needs an explicit gate rather than relying on the action layer alone.
+  const isStaff = user.role !== "MEMBRE"
   const queryClient = useQueryClient()
   const logoutAction = logout.bind(null, `${BASE_PATH}${logoutRedirect ?? "/login"}`)
 
@@ -93,6 +97,12 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
               <KeyIcon className="mr-2 size-4" />
               {t("changePassword")}
             </DropdownMenuItem>
+            {isStaff && (
+              <DropdownMenuItem onClick={() => setModal("security")}>
+                <ShieldCheckIcon className="mr-2 size-4" />
+                {t("security")}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />
@@ -119,6 +129,10 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
           onClose={() => setModal(null)}
           onSaved={() => setModal(null)}
         />
+      )}
+
+      {modal === "security" && (
+        <TwoFactorSettingsModal onClose={() => setModal(null)} />
       )}
     </>
   )

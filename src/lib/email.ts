@@ -1494,6 +1494,60 @@ export function boutiqueConfirmationEmail(p: {
   }
 }
 
+// Sent to the buyer when a storefront order is placed with "pay on pickup" (MANUAL) —
+// unlike boutiqueConfirmationEmail, nothing has been paid yet, so this only confirms the
+// order was recorded and points to the tracking page instead of a paid receipt.
+export function boutiquePendingOrderEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  totalAmount:     number
+  items:           { name: string; quantity: number; unitPrice: number }[]
+  trackingUrl:     string
+  branding?:       EmailBranding
+}) {
+  const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+  const rows = p.items.map(i => {
+    const unitStr = (i.unitPrice / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+    return `<tr>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;">${i.name}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:center;">${i.quantity}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:right;">${unitStr}</td>
+    </tr>`
+  }).join("")
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Commande enregistrée !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+      Le paiement s'effectue au retrait — l'administration vous contactera pour finaliser.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
+      <thead>
+        <tr>
+          <th style="text-align:left;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Article</th>
+          <th style="text-align:center;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Qté</th>
+          <th style="text-align:right;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Prix</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="padding-top:12px;font-size:14px;font-weight:700;">Total</td>
+          <td style="padding-top:12px;font-size:16px;font-weight:700;text-align:right;">${totalStr}</td>
+        </tr>
+      </tfoot>
+    </table>
+    ${btn("Suivre ma commande", p.trackingUrl)}`
+
+  return {
+    to:      p.email,
+    subject: `Commande enregistrée — ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function boutiqueNewOrderAdminEmail(p: {
   email:           string
   associationName: string
