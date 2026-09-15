@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
@@ -12,19 +12,21 @@ import { Textarea } from "@/components/ui/textarea"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { SiteAiFieldButton } from "./site-ai-field-button"
 import type { SiteSection, SectionType } from "@/types/site-config"
 import { toHtml } from "@/lib/site-content"
 
 type Props = {
   section:        SiteSection
   open:           boolean
+  aiEnabled:      boolean
   onOpenChange:   (open: boolean) => void
   onSave:         (section: SiteSection) => void
   onDraftChange?: (section: SiteSection) => void
   onFilePending?: (blobUrl: string, file: File, prefix: string) => void
 }
 
-export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftChange, onFilePending }: Props) {
+export function SiteSectionSheet({ section, open, aiEnabled, onOpenChange, onSave, onDraftChange, onFilePending }: Props) {
   const t         = useTranslations("site.sectionSheet")
   const tSections = useTranslations("site.sectionLabels")
   const sectionLabels: Record<SectionType, string> = {
@@ -39,16 +41,45 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
   }
   const [draft, setDraft]           = useState<SiteSection>(section)
   const [confirmClose, setConfirmClose] = useState(false)
+  // Distinguishes a real edit (via set()) from draft merely being resynced to a new/unchanged
+  // `section` prop — only the former should notify the parent. Without this, simply opening an
+  // existing section (mount syncs draft to section, which is a no-op — same reference — so no
+  // effect fires) is harmless, but *switching* to a different section while the sheet is still
+  // mounted (editingSection changes, no remount) would otherwise re-fire onDraftChange with the
+  // new section's own untouched data, wrongly marking the site config dirty from a plain click.
+  const editedRef = useRef(false)
 
-  useEffect(() => { setDraft(section) }, [section])
+  useEffect(() => {
+    editedRef.current = false
+    setDraft(section)
+  }, [section])
+
+  // Notified after render, not synchronously inside setDraft's updater (which used to call
+  // onDraftChange there) — that path is "setState on SiteView while SiteSectionSheet renders",
+  // a genuine React warning (Cannot update a component while rendering a different component).
+  // Deliberately keyed only on `draft`: onDraftChange's identity changes on every parent
+  // re-render this triggers (SiteControlsPanel's onDraftChange is a useCallback over
+  // config.sections), so including it here would re-fire on renders where nothing local
+  // actually changed.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (editedRef.current) onDraftChange?.(draft) }, [draft])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function set(key: string, value: any) {
-    setDraft(prev => {
-      const next = { ...prev, [key]: value } as SiteSection
-      onDraftChange?.(next)
-      return next
-    })
+    editedRef.current = true
+    setDraft(prev => ({ ...prev, [key]: value }) as SiteSection)
+  }
+
+  // AI-generated fields only ever include the ones relevant to draft.type (see
+  // buildSectionPrompt/SECTION_FIELD_RULES in the API route) — apply whichever of them the
+  // response actually returned, leaving every other field (image, bgColor, limit, heroHeight…)
+  // untouched.
+  function applyAiResult(result: { title: string; subtitle?: string; content?: string; body?: string; buttonLabel?: string }) {
+    set("title", result.title)
+    if (draft.type === "hero" && result.subtitle !== undefined) set("subtitle", result.subtitle)
+    if (draft.type === "about" && result.content !== undefined) set("content", result.content)
+    if ((draft.type === "dons" || draft.type === "membership") && result.body !== undefined) set("body", result.body)
+    if (draft.type === "dons" && result.buttonLabel !== undefined) set("buttonLabel", result.buttonLabel)
   }
 
   function setLimit(raw: string) {
@@ -77,7 +108,10 @@ export function SiteSectionSheet({ section, open, onOpenChange, onSave, onDraftC
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-md flex flex-col gap-0 p-0 overflow-hidden">
           <SheetHeader className="px-4 pt-10 pb-4 border-b shrink-0">
-            <SheetTitle>{t("editTitle", { label: sectionLabels[draft.type] })}</SheetTitle>
+            <div className="flex items-center gap-2">
+              <SheetTitle className="flex-1">{t("editTitle", { label: sectionLabels[draft.type] })}</SheetTitle>
+              {aiEnabled && <SiteAiFieldButton scope="section" sectionType={draft.type} onApply={applyAiResult} />}
+            </div>
           </SheetHeader>
 
           <div className="flex-1 space-y-4 p-4 overflow-y-auto">

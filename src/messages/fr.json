@@ -4735,6 +4735,7 @@
       "noLinks": "Aucun lien. Cliquez sur Ajouter.",
       "sections": "Sections",
       "noSections": "Aucune section. Ajoutez-en une ci-dessous.",
+      "createWithAi": "Créer avec l'IA",
       "addSection": "Ajouter une section",
       "donsModuleDisabled": "Module Dons désactivé — invisible sur le site public",
       "boutiqueModuleDisabled": "Module Boutique désactivé — invisible sur le site public",
@@ -4781,6 +4782,28 @@
       "viewSite": "Voir le site",
       "logoUrl": "URL du logo (optionnel)",
       "footerText": "Texte du pied de page"
+    },
+    "aiAssistant": {
+      "title": "Créer votre site avec l'IA",
+      "description": "Décrivez votre association, l'IA propose une première version du site (couleurs, police, en-tête, pied de page et sections) que vous pourrez modifier avant de l'enregistrer.",
+      "descriptionLabel": "Décrivez votre association",
+      "descriptionPlaceholder": "Ex : Association culturelle à Lyon qui organise des ateliers de théâtre pour enfants…",
+      "generate": "Générer",
+      "regenerate": "Régénérer",
+      "apply": "Appliquer",
+      "cancel": "Annuler",
+      "error": "Une erreur est survenue, réessayez.",
+      "previewAppearance": "Apparence",
+      "previewHeader": "En-tête",
+      "previewHeaderLogin": "Bouton Se connecter",
+      "previewHeaderRegister": "Bouton Adhérer",
+      "previewFooter": "Pied de page",
+      "previewSections": "Sections",
+      "fieldButtonLabel": "Suggérer avec l'IA",
+      "appearancePlaceholder": "Ex : association sportive, dynamique et conviviale…",
+      "headerPlaceholder": "Ex : quelque chose de sobre qui ressort sur fond blanc…",
+      "footerPlaceholder": "Ex : un message de remerciement court…",
+      "sectionPlaceholder": "Décrivez ce que cette section doit dire…"
     }
   },
   "richTextEditor": {

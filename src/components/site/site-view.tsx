@@ -178,6 +178,7 @@ export function SiteView() {
           published={published}
           isDirty={isDirty}
           canEdit={canEdit}
+          aiEnabled={modules.ia}
           siteUrl={siteData?.slug ? `/${siteData.slug}` : null}
           isSaving={saving || saveMutation.isPending}
           donsModuleEnabled={modules.dons}

@@ -4727,6 +4727,7 @@
       "noLinks": "No links. Click Add.",
       "sections": "Sections",
       "noSections": "No sections. Add one below.",
+      "createWithAi": "Create with AI",
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
       "deleteSectionTitle": "Delete the section",
@@ -4773,6 +4774,28 @@
       "viewSite": "View site",
       "logoUrl": "Logo URL (optional)",
       "footerText": "Footer text"
+    },
+    "aiAssistant": {
+      "title": "Create your site with AI",
+      "description": "Describe your association and the AI will draft a first version of the site (colors, font, header, footer and sections) that you can edit before saving.",
+      "descriptionLabel": "Describe your association",
+      "descriptionPlaceholder": "E.g.: A cultural association in Lyon running theatre workshops for children…",
+      "generate": "Generate",
+      "regenerate": "Regenerate",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "error": "Something went wrong, please try again.",
+      "previewAppearance": "Appearance",
+      "previewHeader": "Header",
+      "previewHeaderLogin": "Login button",
+      "previewHeaderRegister": "Join button",
+      "previewFooter": "Footer",
+      "previewSections": "Sections",
+      "fieldButtonLabel": "Suggest with AI",
+      "appearancePlaceholder": "E.g.: a sports association, energetic and friendly…",
+      "headerPlaceholder": "E.g.: something understated that stands out on white…",
+      "footerPlaceholder": "E.g.: a short thank-you message…",
+      "sectionPlaceholder": "Describe what this section should say…"
     }
   },
   "richTextEditor": {

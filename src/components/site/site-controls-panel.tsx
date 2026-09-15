@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useTranslations } from "next-intl"
-import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { GlobeIcon, EyeSlashIcon, PlusIcon, TrashIcon, CaretUpIcon, CaretDownIcon, ArrowSquareOutIcon, FloppyDiskIcon, PencilSimpleIcon, CaretRightIcon, XIcon, CopyIcon, CheckIcon, WarningCircleIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,25 +11,26 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SiteSectionSheet } from "./site-section-sheet"
+import { SiteAiAssistant, type AiSiteDraft } from "./site-ai-assistant"
+import { SiteAiFieldButton } from "./site-ai-field-button"
 import type { SiteConfig, SiteSection, SectionType, FooterLink } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG } from "@/types/site-config"
 import { SITE_FONTS, SITE_FONT_KEYS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
 import { SITE_DEFAULT_SECONDARY_COLOR } from "@/lib/site-theme"
+import { newSectionId } from "@/lib/site-content"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
 
-function newId() { return Math.random().toString(36).slice(2, 10) }
-
 function createSection(type: SectionType, defaultTitles: Record<SectionType, string>): SiteSection {
   switch (type) {
-    case "hero":       return { id: newId(), type: "hero",       title: defaultTitles.hero,       subtitle: "", heroHeight: "full" as const }
-    case "about":      return { id: newId(), type: "about",      title: defaultTitles.about,      content: "" }
-    case "events":     return { id: newId(), type: "events",     title: defaultTitles.events,     limit: 6 }
-    case "membership": return { id: newId(), type: "membership", title: defaultTitles.membership, body: "" }
-    case "dons":       return { id: newId(), type: "dons",       title: defaultTitles.dons,       body: "", buttonLabel: "" }
-    case "boutique":   return { id: newId(), type: "boutique",   title: defaultTitles.boutique,   limit: 6 }
-    case "actualites": return { id: newId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
-    case "contact":    return { id: newId(), type: "contact",    title: defaultTitles.contact }
+    case "hero":       return { id: newSectionId(), type: "hero",       title: defaultTitles.hero,       subtitle: "", heroHeight: "full" as const }
+    case "about":      return { id: newSectionId(), type: "about",      title: defaultTitles.about,      content: "" }
+    case "events":     return { id: newSectionId(), type: "events",     title: defaultTitles.events,     limit: 6 }
+    case "membership": return { id: newSectionId(), type: "membership", title: defaultTitles.membership, body: "" }
+    case "dons":       return { id: newSectionId(), type: "dons",       title: defaultTitles.dons,       body: "", buttonLabel: "" }
+    case "boutique":   return { id: newSectionId(), type: "boutique",   title: defaultTitles.boutique,   limit: 6 }
+    case "actualites": return { id: newSectionId(), type: "actualites", title: defaultTitles.actualites, limit: 6 }
+    case "contact":    return { id: newSectionId(), type: "contact",    title: defaultTitles.contact }
   }
 }
 
@@ -41,19 +42,24 @@ function createSection(type: SectionType, defaultTitles: Record<SectionType, str
 // here is gone.
 const SECTION_TYPES: SectionType[] = ["hero", "about", "events", "actualites", "dons", "boutique", "contact"]
 
-// Accordion panel
-function Panel({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
+// Accordion panel. headerAction renders as a sibling of the toggle button, not nested inside
+// it — a button-in-a-button would be invalid HTML and would also toggle the accordion open/
+// closed on every click of the action (e.g. the per-block AI trigger).
+function Panel({ title, headerAction, children, defaultOpen = false }: { title: string; headerAction?: React.ReactNode; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
     <div className="border-b">
-      <button
-        type="button"
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
-      >
-        <CaretRightIcon className={`size-3.5 shrink-0 transition-transform duration-150 ${open ? "rotate-90" : ""}`} />
-        {title}
-      </button>
+      <div className="flex items-center gap-0.5 pr-2">
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          className="flex-1 flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 transition-colors"
+        >
+          <CaretRightIcon className={`size-3.5 shrink-0 transition-transform duration-150 ${open ? "rotate-90" : ""}`} />
+          {title}
+        </button>
+        {headerAction}
+      </div>
       {open && <div className="px-4 pb-4 pt-1 space-y-3">{children}</div>}
     </div>
   )
@@ -64,6 +70,7 @@ type Props = {
   published:         boolean
   isDirty:           boolean
   canEdit:           boolean
+  aiEnabled:         boolean
   siteUrl:           string | null
   isSaving:          boolean
   donsModuleEnabled: boolean
@@ -75,7 +82,7 @@ type Props = {
 }
 
 export function SiteControlsPanel({
-  config, published, isDirty, canEdit, siteUrl, isSaving, donsModuleEnabled, boutiqueModuleEnabled, onChange, onSave, onTogglePublish, onFilePending,
+  config, published, isDirty, canEdit, aiEnabled, siteUrl, isSaving, donsModuleEnabled, boutiqueModuleEnabled, onChange, onSave, onTogglePublish, onFilePending,
 }: Props) {
   const t             = useTranslations("site.controls")
   const tCommon       = useTranslations("common")
@@ -106,6 +113,7 @@ export function SiteControlsPanel({
   const [addMenuOpen, setAddMenuOpen]       = useState(false)
   const [deletingId, setDeletingId]         = useState<string | null>(null)
   const [copied, setCopied]                 = useState(false)
+  const [aiDialogOpen, setAiDialogOpen]     = useState(false)
   const addMenuRef      = useRef<HTMLDivElement>(null)
   const originalSection = useRef<SiteSection | null>(null)
   const appliedRef      = useRef(false)
@@ -153,6 +161,15 @@ export function SiteControlsPanel({
     openSheet(section)
   }
 
+  // A single patch covering every aspect the AI assistant drafted (colors, font, header,
+  // footer, sections — already fully-formed SiteSection objects with ids assigned by
+  // SiteAiAssistant) — same Partial<SiteConfig> mechanism every other field in this panel
+  // already goes through, so nothing downstream (isDirty, the live preview) needs special
+  // handling for an AI-originated change.
+  function applyAiDraft(draft: AiSiteDraft) {
+    update({ ...draft })
+  }
+
   function removeSection(id: string) {
     update({ sections: sections.filter(s => s.id !== id) })
     setDeletingId(null)
@@ -188,8 +205,15 @@ export function SiteControlsPanel({
 
   function onSheetOpenChange(open: boolean) {
     if (!open && !appliedRef.current && originalSection.current) {
-      // Cancel — restore original section
-      update({ sections: sections.map(s => s.id === originalSection.current!.id ? originalSection.current! : s) })
+      const current = sections.find(s => s.id === originalSection.current!.id)
+      // Cancel — restore original section, but only (and only then mark the config dirty) if
+      // onDraftChange actually pushed a live-preview edit into config.sections while the sheet
+      // was open. Calling update() unconditionally here used to mark the whole site config
+      // dirty — blocking Publish — from simply opening a section and clicking Annuler without
+      // touching a single field.
+      if (current && JSON.stringify(current) !== JSON.stringify(originalSection.current)) {
+        update({ sections: sections.map(s => s.id === originalSection.current!.id ? originalSection.current! : s) })
+      }
     }
     setSheetOpen(open)
     if (!open) setEditingSection(null)
@@ -257,7 +281,13 @@ export function SiteControlsPanel({
       <div className="flex-1 overflow-y-auto">
 
         {/* Apparence */}
-        <Panel title={t("appearance")} defaultOpen>
+        <Panel
+          title={t("appearance")}
+          defaultOpen
+          headerAction={aiEnabled && canEdit && (
+            <SiteAiFieldButton scope="appearance" onApply={r => update(r)} />
+          )}
+        >
           <div className="space-y-1.5">
             <Label className="text-xs">{t("primaryColor")}</Label>
             <div className="flex items-center gap-2">
@@ -330,7 +360,12 @@ export function SiteControlsPanel({
         </Panel>
 
         {/* En-tête */}
-        <Panel title={t("header")}>
+        <Panel
+          title={t("header")}
+          headerAction={aiEnabled && canEdit && (
+            <SiteAiFieldButton scope="header" onApply={r => update(r)} />
+          )}
+        >
           <div className="space-y-1.5">
             <Label className="text-xs">{t("headerBgColor")}</Label>
             <div className="flex items-center gap-2">
@@ -367,7 +402,12 @@ export function SiteControlsPanel({
         </Panel>
 
         {/* Pied de page */}
-        <Panel title={t("footer")}>
+        <Panel
+          title={t("footer")}
+          headerAction={aiEnabled && canEdit && (
+            <SiteAiFieldButton scope="footer" onApply={r => update(r)} />
+          )}
+        >
           <div className="space-y-1.5">
             <Label className="text-xs">{t("footerTextLabel")}</Label>
             <Input
@@ -444,8 +484,14 @@ export function SiteControlsPanel({
         {/* Sections */}
         <Panel title={t("sections")} defaultOpen>
           {sections.length === 0 && (
-            <div className="border border-dashed rounded-lg p-5 text-center text-xs text-muted-foreground">
-              {t("noSections")}
+            <div className="border border-dashed rounded-lg p-5 text-center space-y-3">
+              <p className="text-xs text-muted-foreground">{t("noSections")}</p>
+              {aiEnabled && canEdit && (
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setAiDialogOpen(true)}>
+                  <SparkleIcon className="size-3 mr-1" />
+                  {t("createWithAi")}
+                </Button>
+              )}
             </div>
           )}
 
@@ -554,10 +600,19 @@ export function SiteControlsPanel({
         <SiteSectionSheet
           section={editingSection}
           open={sheetOpen}
+          aiEnabled={aiEnabled}
           onOpenChange={onSheetOpenChange}
           onSave={onSaveSection}
           onDraftChange={onDraftChange}
           onFilePending={onFilePending}
+        />
+      )}
+
+      {aiEnabled && (
+        <SiteAiAssistant
+          open={aiDialogOpen}
+          onOpenChange={setAiDialogOpen}
+          onApply={applyAiDraft}
         />
       )}
     </div>
