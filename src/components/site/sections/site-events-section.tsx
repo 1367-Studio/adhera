@@ -3,12 +3,7 @@ import type { EventsSection } from "@/types/site-config"
 import { CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
-
-function toHtml(content: string): string {
-  if (!content) return ""
-  if (content.trimStart().startsWith("<")) return content
-  return content.replace(/\n/g, "<br>")
-}
+import { toHtml } from "@/lib/site-content"
 
 type PublicEvent = {
   id:          string
@@ -59,8 +54,8 @@ export function SiteEventsSection({ section, events, color, slug }: Props) {
                 )}
                 <div className="p-5 space-y-3">
                   <div
-                    className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white"
-                    style={{ background: color }}
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block"
+                    style={{ background: color, color: "var(--site-primary-foreground)" }}
                   >
                     {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                   </div>

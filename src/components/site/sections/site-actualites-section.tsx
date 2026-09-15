@@ -55,7 +55,10 @@ export function SiteActualitesSection({ section, actualites, color, slug }: Prop
                 <div className="p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     {actu.pinned && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ background: color }}>
+                      <span
+                        className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background: color, color: "var(--site-primary-foreground)" }}
+                      >
                         À la une
                       </span>
                     )}

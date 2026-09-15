@@ -1,6 +1,8 @@
 import Link from "next/link"
 import type { DonsSection } from "@/types/site-config"
 import { HandshakeIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { RichTextView } from "@/components/ui/rich-text-view"
+import { toHtml } from "@/lib/site-content"
 
 type Props = {
   section: DonsSection
@@ -24,12 +26,12 @@ export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts, don
         <HandshakeIcon className="size-10 mx-auto mb-4" style={{ color }} />
 
         <h2 className="text-2xl font-bold mb-2 text-gray-900">{section.title || "Faire un don"}</h2>
-        {section.body && <p className="text-gray-500 text-sm mb-8">{section.body}</p>}
+        {section.body && <RichTextView content={toHtml(section.body)} className="text-gray-500 text-sm mb-8" />}
 
         <Link
           href={href}
-          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-          style={{ background: color }}
+          className="inline-block w-full py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
+          style={{ background: color, color: "var(--site-primary-foreground)" }}
         >
           {section.buttonLabel?.trim() || "Faire un don"}
         </Link>

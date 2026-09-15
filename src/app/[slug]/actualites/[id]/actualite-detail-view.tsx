@@ -9,6 +9,7 @@ import { RichTextView } from "@/components/ui/rich-text-view"
 import { SiteNavbar } from "@/components/site/site-navbar"
 import { SiteFooter } from "@/components/site/site-footer"
 import type { SiteConfig } from "@/types/site-config"
+import { getSiteColorVars } from "@/lib/site-theme"
 
 type EvenementRef = { id: string; title: string; date: string }
 
@@ -43,13 +44,17 @@ function backHref(slug: string, site?: SiteInfo) {
 
 function Chrome({ site, slug, children }: { site: SiteInfo; slug: string; children: React.ReactNode }) {
   const config = site.config
-  const color  = config?.primaryColor ?? "#6366f1"
+  const color  = "var(--site-primary)"
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900" style={{ colorScheme: "light" }}>
+    <div
+      className="min-h-screen flex flex-col bg-white text-gray-900"
+      style={{ colorScheme: "light", ...getSiteColorVars(config) }}
+    >
       <SiteNavbar
         name={site.name}
         logoUrl={config?.logoUrl}
         color={color}
+        secondaryColor="var(--site-secondary)"
         portalSlug={slug}
         headerBgColor={config?.headerBgColor}
         headerShowMembres={config?.headerShowMembres}
@@ -116,7 +121,7 @@ export function ActualiteDetailView({ slug, id }: Props) {
     return site ? <Chrome site={site} slug={slug}>{notFoundBody}</Chrome> : <div className="min-h-screen">{notFoundBody}</div>
   }
 
-  const color = site!.config?.primaryColor ?? "#6366f1"
+  const color = "var(--site-primary)"
   const ev    = post.evenement
 
   return (
