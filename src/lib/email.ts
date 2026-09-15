@@ -940,19 +940,14 @@ export function donConfirmationEmail(p: {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
 
-  const isCompany   = p.donorType === "COMPANY"
   const isPartial   = p.deductibleAmount != null && p.deductibleAmount < p.amount
   const deductibleStr = isPartial ? p.deductibleAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : amountStr
 
   const receiptBlock = p.canIssueTaxReceipts
     ? `<p style="margin:16px 0 0;font-size:13px;color:#3f3f46;">
-        Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `(n° ${p.receiptNumber}) ` : ""}est joint à cet email.
-        ${isPartial ? `Seule une partie de votre don, <strong>${deductibleStr}</strong>, ouvre droit à réduction d'impôt — le solde correspond à une contrepartie reçue en échange de votre don. ` : ""}
-        Conservez-le pour votre déclaration ${isCompany ? "fiscale" : "de revenus"} — il vous permet de bénéficier
-        d'une réduction d'impôt ${isCompany
-          ? "de <strong>60 %</strong>, dans la limite de 0,5 % de votre chiffre d'affaires HT (ou 20 000 € si ce montant est plus élevé) — Art. 238 bis du CGI."
-          : "de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI)."}
-        ${isPartial ? `sur les <strong>${deductibleStr}</strong> déductibles.` : ""}
+        Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `n° ${p.receiptNumber} ` : ""}est joint à cet email.<br>
+        Sur le montant total de votre don, <strong>${deductibleStr}</strong> ouvrent droit à une réduction d'impôt, selon les conditions et règles fiscales en vigueur.<br>
+        Nous vous invitons à conserver ce reçu fiscal comme justificatif de votre don.
       </p>`
     : ""
 
