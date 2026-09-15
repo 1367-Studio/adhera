@@ -2597,6 +2597,16 @@
         "deleteError": "Error while deleting",
         "statusUpdated": "Status updated",
         "statusError": "Error while updating status"
+      },
+      "publishConfirm": {
+        "title": "Publish this donation form?",
+        "description": "Once published, this form will be immediately visible to members in My space → My donations.",
+        "confirmLabel": "Publish"
+      },
+      "unpublishConfirm": {
+        "title": "Unpublish this donation form?",
+        "description": "It will immediately disappear from My space for members.",
+        "confirmLabel": "Unpublish"
       }
     },
     "donationsView": {
@@ -4916,7 +4926,13 @@
       "toasts": {
         "thanked": "Thank you for your donation! A confirmation email has been sent to you.",
         "cancelled": "Donation cancelled."
-      }
+      },
+      "campaignsHeading": "Current campaigns",
+      "backToDons": "Back to My donations",
+      "donatingAs": "You're donating as {name} ({email}).",
+      "comingSoon": "Coming soon",
+      "campaignClosed": "Campaign closed",
+      "loadCampaignsError": "Unable to load donation campaigns. Try again later."
     },
     "reunions": {
       "title": "Meetings",
