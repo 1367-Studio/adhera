@@ -14,6 +14,10 @@ interface ConfirmDialogProps {
   loading?: boolean
   confirmDisabled?: boolean
   onConfirm: () => void | Promise<void>
+  // Most callers confirm a destructive action (delete, etc.) — "default" is for a
+  // non-destructive-but-still-explicit confirmation (e.g. publish/unpublish), where a red
+  // button would misleadingly suggest data loss.
+  confirmVariant?: "destructive" | "default"
 }
 
 export function ConfirmDialog({
@@ -25,6 +29,7 @@ export function ConfirmDialog({
   loading,
   confirmDisabled,
   onConfirm,
+  confirmVariant = "destructive",
 }: ConfirmDialogProps) {
   const t = useTranslations()
 
@@ -49,7 +54,7 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
             {t("common.cancel")}
           </Button>
-          <Button variant="destructive" onClick={handleConfirm} disabled={loading || confirmDisabled}>
+          <Button variant={confirmVariant} onClick={handleConfirm} disabled={loading || confirmDisabled}>
             {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
             {confirmLabel ?? t("common.confirm")}
           </Button>

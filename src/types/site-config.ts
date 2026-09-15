@@ -80,6 +80,10 @@ export type FooterLink = { label: string; url: string }
 export type SiteConfig = {
   sections:           SiteSection[]
   primaryColor:       string
+  secondaryColor?:    string
+  // Key into SITE_FONTS (src/lib/site-fonts.ts) — kept as a plain string here (not imported
+  // from site-fonts.ts) so this type stays free of next/font/google's server-only imports.
+  fontFamily?:        string
   logoUrl:            string
   // header
   headerBgColor?:      string

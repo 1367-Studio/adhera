@@ -2605,6 +2605,16 @@
         "deleteError": "Erreur lors de la suppression",
         "statusUpdated": "Statut mis à jour",
         "statusError": "Erreur lors du changement de statut"
+      },
+      "publishConfirm": {
+        "title": "Publier ce formulaire de don ?",
+        "description": "Une fois publié, ce formulaire sera immédiatement visible pour les membres dans Mon espace → Mes dons.",
+        "confirmLabel": "Publier"
+      },
+      "unpublishConfirm": {
+        "title": "Dépublier ce formulaire de don ?",
+        "description": "Il disparaîtra immédiatement de Mon espace pour les membres.",
+        "confirmLabel": "Dépublier"
       }
     },
     "donationsView": {
@@ -2615,7 +2625,8 @@
         "message": "Message",
         "date": "Date",
         "amount": "Montant",
-        "method": "Moyen"
+        "method": "Moyen",
+        "infoTooltip": "Voir les réponses"
       },
       "noDonations": "Aucun don enregistré",
       "noDonationsFiltered": "Aucun don ne correspond à ces filtres.",
@@ -2746,6 +2757,8 @@
           "typeText": "Texte",
           "typeNumber": "Nombre",
           "typeSelect": "Liste déroulante",
+          "typeRadio": "Choix unique",
+          "typeCheckboxMulti": "Choix multiple",
           "labelRequiredError": "Chaque champ doit avoir un libellé",
           "saved": "Champs enregistrés",
           "saveFields": "Enregistrer les champs",
@@ -4712,6 +4725,8 @@
       "save": "Enregistrer",
       "appearance": "Apparence",
       "primaryColor": "Couleur principale",
+      "secondaryColor": "Couleur secondaire",
+      "fontFamily": "Police",
       "logo": "Logo",
       "header": "En-tête",
       "headerBgColor": "Couleur de fond",
@@ -4730,6 +4745,7 @@
       "noLinks": "Aucun lien. Cliquez sur Ajouter.",
       "sections": "Sections",
       "noSections": "Aucune section. Ajoutez-en une ci-dessous.",
+      "createWithAi": "Créer avec l'IA",
       "addSection": "Ajouter une section",
       "donsModuleDisabled": "Module Dons désactivé — invisible sur le site public",
       "boutiqueModuleDisabled": "Module Boutique désactivé — invisible sur le site public",
@@ -4776,6 +4792,28 @@
       "viewSite": "Voir le site",
       "logoUrl": "URL du logo (optionnel)",
       "footerText": "Texte du pied de page"
+    },
+    "aiAssistant": {
+      "title": "Créer votre site avec l'IA",
+      "description": "Décrivez votre association, l'IA propose une première version du site (couleurs, police, en-tête, pied de page et sections) que vous pourrez modifier avant de l'enregistrer.",
+      "descriptionLabel": "Décrivez votre association",
+      "descriptionPlaceholder": "Ex : Association culturelle à Lyon qui organise des ateliers de théâtre pour enfants…",
+      "generate": "Générer",
+      "regenerate": "Régénérer",
+      "apply": "Appliquer",
+      "cancel": "Annuler",
+      "error": "Une erreur est survenue, réessayez.",
+      "previewAppearance": "Apparence",
+      "previewHeader": "En-tête",
+      "previewHeaderLogin": "Bouton Se connecter",
+      "previewHeaderRegister": "Bouton Adhérer",
+      "previewFooter": "Pied de page",
+      "previewSections": "Sections",
+      "fieldButtonLabel": "Suggérer avec l'IA",
+      "appearancePlaceholder": "Ex : association sportive, dynamique et conviviale…",
+      "headerPlaceholder": "Ex : quelque chose de sobre qui ressort sur fond blanc…",
+      "footerPlaceholder": "Ex : un message de remerciement court…",
+      "sectionPlaceholder": "Décrivez ce que cette section doit dire…"
     }
   },
   "richTextEditor": {
@@ -4896,7 +4934,13 @@
       "toasts": {
         "thanked": "Merci pour votre don ! Un e-mail de confirmation vous a été envoyé.",
         "cancelled": "Don annulé."
-      }
+      },
+      "campaignsHeading": "Campagnes en cours",
+      "backToDons": "Retour à Mes dons",
+      "donatingAs": "Vous donnez en tant que {name} ({email}).",
+      "comingSoon": "Bientôt disponible",
+      "campaignClosed": "Campagne terminée",
+      "loadCampaignsError": "Impossible de charger les campagnes de don. Réessayez plus tard."
     },
     "reunions": {
       "title": "Réunions",

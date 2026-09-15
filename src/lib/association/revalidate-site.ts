@@ -6,7 +6,10 @@ import { prisma } from "@/lib/prisma/client"
 // call this after any write that changes what it shows (site config, modules, events, ticket
 // types) so visitors stop seeing stale content.
 export function revalidatePublicSite(slug: string) {
-  revalidatePath(`/${slug}`)
+  // "layout" also busts every subpage sharing [slug]/layout.tsx (evenements/[id], boutique/*,
+  // adhesion/*, dons/*, actualites/[id]) — needed since that layout carries the site's
+  // color/font choices, not just the homepage's own render.
+  revalidatePath(`/${slug}`, "layout")
 }
 
 export async function revalidatePublicSiteFor(associationId: string) {

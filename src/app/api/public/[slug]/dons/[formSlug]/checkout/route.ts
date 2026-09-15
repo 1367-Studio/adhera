@@ -9,6 +9,9 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
 import { writeActivityLog } from "@/lib/activity-log"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { sendEmail } from "@/lib/mail"
+import { donPendingEmail } from "@/lib/email"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
 
 // Stripe refuses to charge below ~0,50 € on EUR cards. 1 € is a round number safely above
 // that floor for every payment method (SEPA debit, cards, etc.) — enforced both here and
@@ -32,7 +35,9 @@ const schema = z.object({
   gender:      z.string().trim().max(30).optional(),
   message:     z.string().trim().max(500).optional(),
   anonymous:   z.boolean().optional().default(false),
-  answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
+  // A plain string for every field type except CHECKBOX_MULTI, which answers with a string
+  // array — same convention as the event registration route/Participation.answers.
+  answers:     z.record(z.string(), z.union([z.string().max(500), z.array(z.string().max(500)).max(50)])).optional().default({}),
   conditionsAgreed: z.boolean().optional().default(false),
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention
   // que l'inscription publique aux événements.
@@ -65,7 +70,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -144,13 +149,20 @@ export async function POST(
   const knownFieldIds = new Set(form.customFields.map(f => f.id))
   for (const field of form.customFields) {
     const value = parsed.data.answers[field.id]
-    if (field.required && (value == null || value.trim() === ""))
+    const isEmpty = Array.isArray(value) ? value.length === 0 : (value == null || value.trim() === "")
+    if (field.required && isEmpty)
       return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
+    if (isEmpty) continue
     // Même contrôle que le formulaire d'inscription des événements — évite qu'une réponse
     // fabriquée à la main atterrisse hors de la liste de choix configurée.
-    if (field.type === "SELECT" && value != null && value !== "") {
+    if (field.type === "SELECT" || field.type === "RADIO") {
       const options = Array.isArray(field.options) ? field.options as string[] : []
-      if (!options.includes(value))
+      if (typeof value !== "string" || !options.includes(value))
+        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
+    }
+    if (field.type === "CHECKBOX_MULTI") {
+      const options = Array.isArray(field.options) ? field.options as string[] : []
+      if (!Array.isArray(value) || !value.every(v => options.includes(v)))
         return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
     }
   }
@@ -159,7 +171,7 @@ export async function POST(
   // sa propre colonne) et aux DonationFormField, keyed par id — même convention que
   // Participation.answers pour les champs custom, avec des clés fixes pour les champs
   // standards puisqu'ils n'ont pas de ligne DonationFormField.
-  const answers: Record<string, string> = {
+  const answers: Record<string, string | string[]> = {
     ...(birthDate ? { birthDate } : {}),
     ...(phone     ? { phone }     : {}),
     ...(mobile    ? { mobile }    : {}),
@@ -174,6 +186,22 @@ export async function POST(
   const cancelUrl    = `${APP_URL}/${slug}/dons/${formSlug}?payment=cancelled`
 
   if (isOffline) {
+    // A fast double-click/double-submit races ahead of the client's own loading-state
+    // guard (see donation-form-public-form.tsx's submittingRef) often enough to matter here:
+    // unlike the online branch, nothing downstream (no Stripe session, no payment gateway)
+    // would ever catch a duplicate — it would sail straight through to a second Don row and
+    // a second donPendingEmail landing in the donor's inbox seconds apart. A short window is
+    // enough to absorb a double-click without risking a genuine second gift a donor makes
+    // moments later reading as one submission.
+    const recentDuplicate = await prisma.don.findFirst({
+      where: {
+        associationId: assoc.id, donationFormId: form.id, tierId: tier.id,
+        email, amount, paymentMethod,
+        createdAt: { gte: new Date(Date.now() - 15_000) },
+      },
+    })
+    if (recentDuplicate) return NextResponse.json({ offline: true })
+
     // No Stripe object at all here — paidAt stays null until an admin confirms the
     // cheque/transfer actually arrived (see /api/dons/[id]/encaisser). The donor sees
     // the form's offlineInstructions immediately instead of a Stripe redirect.
@@ -204,6 +232,21 @@ export async function POST(
       associationId: assoc.id, action: "DON_CREATED", entity: "Don", entityId: don.id,
       label: `${firstName} ${lastName} — ${amount}€ (${form.title}, ${paymentMethod})`,
     })
+
+    // Fire-and-forget: the donor's confirmation must not block the response, and a
+    // delivery failure here isn't worth failing the whole submission over — the don is
+    // already recorded either way. donConfirmationEmail (with the fiscal receipt attached,
+    // if eligible) follows once an admin encaisses it or, for a Stripe don, from the
+    // webhook — never here, since nothing's actually been received yet.
+    sendEmail(
+      donPendingEmail({
+        firstName, email, associationName: assoc.name, amount,
+        paymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
+        offlineInstructions: form.offlineInstructions,
+        branding: resolveDocumentBranding(assoc),
+      }),
+      { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
+    ).catch(() => {})
 
     return NextResponse.json({ offline: true })
   }

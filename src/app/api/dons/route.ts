@@ -83,7 +83,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.don.findMany({
       where, orderBy, skip, take: limit,
       include: {
-        donationForm: { select: { id: true, title: true } },
+        // customFields lets the admin table show what the donor answered (see the info
+        // modal in dashboard/dons/page.tsx) — same convention as evenement.customFields
+        // for Participation.answers.
+        donationForm: { select: { id: true, title: true, customFields: { select: { id: true, type: true, label: true, options: true } } } },
         // Only set for a don embarqué on a MembershipForm signup (see Don.membershipAddonTierId)
         // — lets the pending-encaissement table point back at the member and the tier that
         // produced it, since that member also has an independent Cotisation pending its own

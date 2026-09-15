@@ -109,6 +109,7 @@ export default function DonationFormDetailPage() {
 
   const [title, setTitle]                 = useState("")
   const [deleteConfirm, setDeleteConfirm]  = useState(false)
+  const [publishConfirm, setPublishConfirm] = useState<"publish" | "unpublish" | null>(null)
   const [linkCopied, setLinkCopied]        = useState(false)
 
   // Step 1 — Informations générales
@@ -370,12 +371,12 @@ export default function DonationFormDetailPage() {
         action={
           <div className="flex gap-2">
             {form.status !== "PUBLISHED" ? (
-              <Button size="sm" variant="secondary" onClick={() => publishMutation.mutate("publish")} loading={publishMutation.isPending}>
+              <Button size="sm" variant="secondary" onClick={() => setPublishConfirm("publish")} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
               </Button>
             ) : (
-              <Button size="sm" variant="secondary" onClick={() => publishMutation.mutate("unpublish")} loading={publishMutation.isPending}>
+              <Button size="sm" variant="secondary" onClick={() => setPublishConfirm("unpublish")} loading={publishMutation.isPending}>
                 <CloudArrowDownIcon className="mr-1.5 size-4" />
                 {t("detail.unpublishButton")}
               </Button>
@@ -677,6 +678,20 @@ export default function DonationFormDetailPage() {
         confirmLabel={tCommon("delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate()}
+      />
+
+      <ConfirmDialog
+        open={!!publishConfirm}
+        onOpenChange={(o) => { if (!o) setPublishConfirm(null) }}
+        title={publishConfirm === "publish" ? t("formsView.publishConfirm.title") : t("formsView.unpublishConfirm.title")}
+        description={publishConfirm === "publish" ? t("formsView.publishConfirm.description") : t("formsView.unpublishConfirm.description")}
+        confirmLabel={publishConfirm === "publish" ? t("formsView.publishConfirm.confirmLabel") : t("formsView.unpublishConfirm.confirmLabel")}
+        confirmVariant="default"
+        loading={publishMutation.isPending}
+        onConfirm={() => {
+          if (publishConfirm) publishMutation.mutate(publishConfirm)
+          setPublishConfirm(null)
+        }}
       />
     </div>
   )

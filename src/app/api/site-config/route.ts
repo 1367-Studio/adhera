@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { writeActivityLog } from "@/lib/activity-log"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
+import { SITE_FONT_KEYS } from "@/lib/site-fonts"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -24,6 +25,8 @@ const sectionSchema = z.object({
 const schema = z.object({
   published:          z.boolean().optional(),
   primaryColor:       z.string().optional(),
+  secondaryColor:     z.string().optional(),
+  fontFamily:         z.enum(SITE_FONT_KEYS as [string, ...string[]]).optional(),
   logoUrl:            z.string().optional(),
   headerBgColor:       z.string().optional(),
   headerShowMembres:   z.boolean().optional(),

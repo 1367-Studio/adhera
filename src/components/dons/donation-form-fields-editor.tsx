@@ -10,11 +10,11 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 
-type DonationFieldType = "TEXT" | "NUMBER" | "SELECT"
+type DonationFieldType = "TEXT" | "NUMBER" | "SELECT" | "RADIO" | "CHECKBOX_MULTI"
 type DonationFormFieldDraft = { id?: string; type: DonationFieldType; label: string; required: boolean; options: string[] | null }
 type DonationFormField      = DonationFormFieldDraft & { id: string }
 
-const CHOICE_TYPES: DonationFieldType[] = ["SELECT"]
+const CHOICE_TYPES: DonationFieldType[] = ["SELECT", "RADIO", "CHECKBOX_MULTI"]
 
 let nextTempId = 0
 
@@ -110,9 +110,11 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
   }
 
   const typeOptions = [
-    { value: "TEXT",   label: t("typeText") },
-    { value: "NUMBER", label: t("typeNumber") },
-    { value: "SELECT", label: t("typeSelect") },
+    { value: "TEXT",           label: t("typeText") },
+    { value: "NUMBER",         label: t("typeNumber") },
+    { value: "SELECT",         label: t("typeSelect") },
+    { value: "RADIO",          label: t("typeRadio") },
+    { value: "CHECKBOX_MULTI", label: t("typeCheckboxMulti") },
   ]
 
   if (isLoading) return <p className="text-sm text-muted-foreground">{tCommon("loading")}</p>
@@ -139,7 +141,7 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
                 onChange={e => updateField(field.key, { label: e.target.value })}
               />
               <div className="flex items-end gap-3">
-                <div className="w-40">
+                <div className="w-44">
                   <SelectField
                     label={t("fieldType")}
                     options={typeOptions}

@@ -1,4 +1,5 @@
 import type { HeroSection } from "@/types/site-config"
+import { isColorDark } from "@/lib/color"
 
 type Props = { section: HeroSection; color: string }
 
@@ -7,10 +8,19 @@ export function SiteHeroSection({ section, color }: Props) {
     ? "min-h-[50vh]"
     : "min-h-[calc(100vh-3.5rem)]"
 
+  // A custom bgColor is an arbitrary hex an admin picked for this section alone, unrelated to
+  // the site's primary color, so its contrast has to be computed on its own value rather than
+  // reused from --site-primary-foreground (which only matches when bgColor is unset).
+  const textColor = section.image
+    ? "#ffffff"
+    : section.bgColor
+      ? (isColorDark(section.bgColor) ? "#ffffff" : "#111827")
+      : "var(--site-primary-foreground)"
+
   return (
     <section
-      className={`relative flex items-center justify-center ${heightClass} px-4 text-white text-center overflow-hidden`}
-      style={section.image ? undefined : { background: section.bgColor ?? color }}
+      className={`relative flex items-center justify-center ${heightClass} px-4 text-center overflow-hidden`}
+      style={section.image ? { color: textColor } : { background: section.bgColor || color, color: textColor }}
     >
       {section.image && (
         <>

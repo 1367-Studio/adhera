@@ -2585,7 +2585,8 @@
         "message": "Messaġġ",
         "date": "Data",
         "amount": "Ammont",
-        "method": "Medju"
+        "method": "Medju",
+        "infoTooltip": "Ara t-tweġibiet"
       },
       "noDonations": "L-ebda donazzjoni rreġistrata",
       "noDonationsFiltered": "L-ebda donazzjoni ma taqbel ma' dawn il-filtri.",
@@ -2716,6 +2717,8 @@
           "typeText": "Test",
           "typeNumber": "Numru",
           "typeSelect": "Lista drop-down",
+          "typeRadio": "Għażla unika",
+          "typeCheckboxMulti": "Għażla multipla",
           "labelRequiredError": "Kull qasam irid ikollu tikketta",
           "saved": "Fields salvati",
           "saveFields": "Issejvja l-oqsma",

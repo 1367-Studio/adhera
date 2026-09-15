@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BASE_PATH } from "@/lib/env"
+import { cn } from "@/lib/utils"
 
 type Don = {
   id:              string
@@ -24,6 +25,16 @@ type Don = {
   receiptNumber:   string | null
   receiptIssuedAt: string | null
   association:     { canIssueTaxReceipts: boolean }
+}
+
+type DonationCampaign = {
+  id:          string
+  slug:        string
+  title:       string
+  description: string | null
+  imageUrl:    string | null
+  notOpenYet:  boolean
+  closed:      boolean
 }
 
 export default function DonsPortalPage() {
@@ -49,6 +60,13 @@ function DonsPortalPageInner() {
     queryFn:  () => portalFetch("/api/portal/dons") as Promise<Don[]>,
     staleTime: 0,
     refetchInterval: polling ? 2000 : false,
+  })
+
+  // Seules les campagnes effectivement publiées par le responsable en Gestion apparaissent
+  // ici — jamais de formulaire générique par défaut (voir /api/portal/dons/forms).
+  const { data: campaigns = [], isLoading: loadingCampaigns, isError: campaignsError } = useQuery<DonationCampaign[]>({
+    queryKey: ["portal-dons-forms"],
+    queryFn:  () => portalFetch("/api/portal/dons/forms") as Promise<DonationCampaign[]>,
   })
 
   useEffect(() => {
@@ -82,20 +100,53 @@ function DonsPortalPageInner() {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
-        </div>
-        <Button
-          size="sm"
-          onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
-          className="gap-1.5 shrink-0"
-        >
-          <HandshakeIcon className="size-3.5" />
-          {t("makeDonation")}
-        </Button>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+        <p className="text-muted-foreground text-sm mt-1">{t("subtitle")}</p>
       </div>
+
+      {/* Une campagne = un DonationForm publié en Gestion. Rien ici tant qu'aucune n'a été
+          publiée — pas de repli sur un formulaire générique. Une campagne pas encore ouverte
+          ou tout juste terminée reste listée (avec son propre badge) plutôt que de disparaître
+          sans laisser de trace. */}
+      {campaignsError ? (
+        <p className="text-sm text-muted-foreground">{t("loadCampaignsError")}</p>
+      ) : !loadingCampaigns && campaigns.length > 0 && (
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium text-muted-foreground">{t("campaignsHeading")}</h2>
+          <div className={cn("grid grid-cols-1 gap-4", campaigns.length > 1 && "sm:grid-cols-2")}>
+            {campaigns.map(c => (
+              <Card key={c.id} className="overflow-hidden">
+                {c.imageUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.imageUrl} alt="" className="aspect-[3/1] w-full object-cover" />
+                )}
+                <CardContent className="p-4 space-y-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">{c.title}</p>
+                      {c.notOpenYet && <Badge variant="warning">{t("comingSoon")}</Badge>}
+                      {c.closed && <Badge variant="outline">{t("campaignClosed")}</Badge>}
+                    </div>
+                    {c.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{c.description}</p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    disabled={c.notOpenYet || c.closed}
+                    onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/${c.slug}`}
+                    className="gap-1.5"
+                  >
+                    <HandshakeIcon className="size-3.5" />
+                    {t("makeDonation")}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="space-y-3">
@@ -110,13 +161,6 @@ function DonsPortalPageInner() {
         <div className="rounded-lg border border-dashed p-10 text-center space-y-3">
           <HandshakeIcon className="size-8 text-muted-foreground mx-auto" />
           <p className="text-sm text-muted-foreground">{t("noneYet")}</p>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => window.location.href = `${BASE_PATH}/portal/${slug}/dons/nouveau`}
-          >
-            {t("makeFirstDonation")}
-          </Button>
         </div>
       ) : (
         <div className="space-y-3">

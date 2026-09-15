@@ -867,6 +867,60 @@ export function meetingInviteEmail(p: {
   }
 }
 
+const OFFLINE_PAYMENT_METHOD_LABEL: Record<"ESPECES" | "CHEQUE" | "VIREMENT", string> = {
+  ESPECES: "espèces", CHEQUE: "chèque", VIREMENT: "virement",
+}
+
+// Sent right after an offline (espèces/chèque/virement) don is submitted on the public
+// form — before any admin has confirmed receipt, so unlike donConfirmationEmail this never
+// claims the don is received yet, and never attaches a fiscal receipt (see checkout/
+// route.ts's offline branch). donConfirmationEmail follows once an admin encaisses it
+// (/api/dons/[id]/encaisser) or, for a Stripe don, as soon as the webhook confirms payment.
+export function donPendingEmail(p: {
+  firstName:            string
+  email:                string
+  associationName:      string
+  amount:               number
+  paymentMethod:        "ESPECES" | "CHEQUE" | "VIREMENT"
+  offlineInstructions?: string | null
+  branding?:            EmailBranding
+}) {
+  const amountStr   = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const methodLabel = OFFLINE_PAYMENT_METHOD_LABEL[p.paymentMethod]
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>nous vous remercions chaleureusement pour votre don de
+      <strong>${amountStr}</strong> à <strong>${p.associationName}</strong>. Votre soutien est
+      précieux et contribue aux actions et aux projets de notre association.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:20px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Moyen de paiement choisi</span>
+        <span style="font-size:14px;">Vous avez choisi de régler votre don par ${methodLabel}.</span>
+      </td></tr>
+    </table>
+    ${p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+      Voici les instructions communiquées par l'association :<br>${escapeHtml(p.offlineInstructions)}
+    </p>` : ""}
+    <p style="margin:0 0 20px;font-size:13px;color:#71717a;">
+      Votre don sera considéré comme définitivement reçu une fois le paiement réceptionné et
+      validé par l'association.
+    </p>
+    <p style="margin:16px 0 0;font-size:12px;color:#71717a;">Encore merci pour votre générosité et votre soutien.</p>`
+
+  return {
+    to:      p.email,
+    subject: `Merci pour votre don à ${p.associationName}`,
+    html:    layout(p.associationName, content, p.branding),
+  }
+}
+
 export function donConfirmationEmail(p: {
   firstName:           string
   email:               string
@@ -886,19 +940,14 @@ export function donConfirmationEmail(p: {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const dateStr   = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
 
-  const isCompany   = p.donorType === "COMPANY"
   const isPartial   = p.deductibleAmount != null && p.deductibleAmount < p.amount
   const deductibleStr = isPartial ? p.deductibleAmount!.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : amountStr
 
   const receiptBlock = p.canIssueTaxReceipts
     ? `<p style="margin:16px 0 0;font-size:13px;color:#3f3f46;">
-        Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `(n° ${p.receiptNumber}) ` : ""}est joint à cet email.
-        ${isPartial ? `Seule une partie de votre don, <strong>${deductibleStr}</strong>, ouvre droit à réduction d'impôt — le solde correspond à une contrepartie reçue en échange de votre don. ` : ""}
-        Conservez-le pour votre déclaration ${isCompany ? "fiscale" : "de revenus"} — il vous permet de bénéficier
-        d'une réduction d'impôt ${isCompany
-          ? "de <strong>60 %</strong>, dans la limite de 0,5 % de votre chiffre d'affaires HT (ou 20 000 € si ce montant est plus élevé) — Art. 238 bis du CGI."
-          : "de <strong>75 % jusqu'à 1 000 €</strong>, puis 66 % (Art. 200 CGI)."}
-        ${isPartial ? `sur les <strong>${deductibleStr}</strong> déductibles.` : ""}
+        Votre <strong>reçu fiscal</strong> ${p.receiptNumber ? `n° ${p.receiptNumber} ` : ""}est joint à cet email.<br>
+        Sur le montant total de votre don, <strong>${deductibleStr}</strong> ouvrent droit à une réduction d'impôt, selon les conditions et règles fiscales en vigueur.<br>
+        Nous vous invitons à conserver ce reçu fiscal comme justificatif de votre don.
       </p>`
     : ""
 

@@ -1,25 +1,38 @@
 "use client"
 
-import { HandshakeIcon, MapPinIcon, ShoppingBagIcon } from "@phosphor-icons/react/dist/ssr";
 import type { SiteConfig, SiteSection } from "@/types/site-config"
-import { isColorDark } from "@/lib/color"
-import { RichTextView } from "@/components/ui/rich-text-view"
-import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+import { getSiteColorVars } from "@/lib/site-theme"
+import { SITE_FONTS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
+import { cn } from "@/lib/utils"
+import { SiteNavbar }            from "@/components/site/site-navbar"
+import { SiteFooter }            from "@/components/site/site-footer"
+import { SiteHeroSection }       from "@/components/site/sections/site-hero-section"
+import { SiteAboutSection }      from "@/components/site/sections/site-about-section"
+import { SiteEventsSection }     from "@/components/site/sections/site-events-section"
+import { SiteActualitesSection } from "@/components/site/sections/site-actualites-section"
+import { SiteMembershipSection } from "@/components/site/sections/site-membership-section"
+import { SiteDonsSection }       from "@/components/site/sections/site-dons-section"
+import { SiteBoutiqueSection }   from "@/components/site/sections/site-boutique-section"
+import { SiteContactSection }    from "@/components/site/sections/site-contact-section"
 
 type PublicEvent = {
-  id: string; title: string; date: string; endDate: string | null
-  location: string | null; description: string | null; price: string | null; capacity: number | null
+  id: string; slug: string | null; title: string; date: string; endDate: string | null
+  location: string | null; description: string | null; imageUrl: string | null
+  price: string | null; capacity: number | null
   ticketTypes: { id: string; label: string; price: string; remaining: number | null; full: boolean }[]
 }
 
 type PublicActualite = {
-  id:          string
-  title:       string
-  content:     string
-  imageUrl:    string | null
-  pinned:      boolean
-  publishedAt: string
+  id: string; title: string; content: string; imageUrl: string | null
+  pinned: boolean; publishedAt: string
 }
+
+type PublicBoutiqueProduit = {
+  id: string; name: string; imageUrl: string | null
+  variantes: { price: number }[]
+}
+
+type FormBinding = { slug: string; title: string }
 
 type Props = {
   config:      SiteConfig | null
@@ -29,217 +42,97 @@ type Props = {
   country:     string
   events:      PublicEvent[]
   actualites?: PublicActualite[]
+  boutiqueProduits?: PublicBoutiqueProduit[]
+  membershipFormBySection?: Record<string, FormBinding>
+  donationFormBySection?:   Record<string, FormBinding>
+  membershipCta?: { href: string } | null
+  canIssueTaxReceipts?: boolean
   donsEnabled: boolean
   boutiqueEnabled: boolean
 }
 
+// A placeholder shown only in the editor, never saved and never sent to the public site — lets
+// SiteMembershipSection render its real CTA markup (title, body, button styling) even before an
+// admin has published/linked a MembershipForm, with a "preview only" badge layered on top.
+const PREVIEW_MEMBERSHIP_FORM: FormBinding = { slug: "#", title: "Voir la page d'adhésion" }
 
-export function SitePreviewPanel({ config, name, slug, city, country, events, actualites = [], donsEnabled, boutiqueEnabled }: Props) {
-  const sections    = config?.sections ?? []
-  const color       = config?.primaryColor ?? "#6366f1"
-  const logoUrl     = config?.logoUrl
-  const headerBg    = config?.headerBgColor || "#ffffff"
-  const headerDark  = isColorDark(headerBg)
-  const showMembres  = config?.headerShowMembres ?? true
-  const showRegister = config?.headerShowRegister ?? true
-  const footerBg    = config?.footerBgColor || "#ffffff"
-  const footerDark  = isColorDark(footerBg)
-  const footerLinks = (config?.footerLinks ?? []).filter(l => l.label && l.url)
+export function SitePreviewPanel({
+  config, name, slug, city, country, events,
+  actualites = [], boutiqueProduits = [],
+  membershipFormBySection = {}, donationFormBySection = {}, membershipCta = null,
+  canIssueTaxReceipts = false, donsEnabled, boutiqueEnabled,
+}: Props) {
+  const sections = config?.sections ?? []
+  const color    = "var(--site-primary)"
+  const fontKey  = isSiteFontKey(config?.fontFamily) ? config!.fontFamily! : SITE_DEFAULT_FONT
+  const font     = SITE_FONTS[fontKey]
+
+  // Every section component below is the exact one the public site renders — clicking one of
+  // its <Link>s here would navigate the dashboard itself away to the public route, which
+  // makes no sense inside a preview pane. Swallow all link clicks at the wrapper instead of
+  // stripping interactivity from the components themselves.
+  function suppressNavigation(e: React.MouseEvent) {
+    if ((e.target as HTMLElement).closest("a")) e.preventDefault()
+  }
 
   return (
-    <div className="min-h-full bg-white text-gray-900" style={{ colorScheme: "light" }}>
-      {/* Navbar */}
-      <nav className="sticky top-0 z-20 backdrop-blur border-b border-black/5" style={{ background: headerBg }}>
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 font-semibold" style={{ color: headerDark ? "#fff" : "#111827" }}>
-            {logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={logoUrl} alt={name} width={40} height={40} className="rounded size-10 object-contain" />
-            ) : (
-              <span
-                className="size-10 rounded flex items-center justify-center text-white text-sm font-bold shrink-0"
-                style={{ background: color }}
-              >
-                {name[0]?.toUpperCase()}
-              </span>
-            )}
-            <span className="text-sm">{name || "Mon association"}</span>
-          </div>
-          {(showMembres || showRegister) && (
-            <div className="flex items-center gap-1.5">
-              {showRegister && (
-                <span className="text-xs font-medium px-2 py-1 rounded border" style={{ color, borderColor: color }}>
-                  Adhérer
-                </span>
-              )}
-              {showMembres && (
-                <span className="text-xs font-medium px-2 py-1 rounded text-white" style={{ background: color }}>
-                  Se connecter
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-      </nav>
+    <div
+      className={cn("min-h-full bg-white text-gray-900", font.variable)}
+      style={{ colorScheme: "light", fontFamily: font.cssVar, ...getSiteColorVars(config) }}
+      onClickCapture={suppressNavigation}
+    >
+      <SiteNavbar
+        name={name || "Mon association"}
+        logoUrl={config?.logoUrl}
+        color={color}
+        secondaryColor="var(--site-secondary)"
+        portalSlug={slug}
+        headerBgColor={config?.headerBgColor}
+        headerShowMembres={config?.headerShowMembres}
+        headerShowRegister={config?.headerShowRegister}
+        membershipCta={membershipCta}
+      />
 
-      {/* Sections */}
       <main>
         {sections.length === 0 && (
           <div className="py-24 text-center text-sm text-gray-400">
             Aucune section — ajoutez-en une depuis le panneau de gauche.
           </div>
         )}
+
         {sections.map((section: SiteSection) => {
           switch (section.type) {
-            case "hero": {
-              const heightClass = section.heroHeight === "half"
-                ? "min-h-[50vh]"
-                : "min-h-[calc(100vh-3rem)]"
-              return (
-                <section
-                  key={section.id}
-                  className={`relative flex items-center justify-center ${heightClass} px-4 text-white text-center overflow-hidden`}
-                  style={section.image ? undefined : { background: section.bgColor ?? color }}
-                >
-                  {section.image && (
-                    <>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={section.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/50" />
-                    </>
-                  )}
-                  <div className="relative z-10 max-w-2xl mx-auto space-y-3">
-                    <h1 className="text-3xl font-bold leading-tight">{section.title || "Titre principal"}</h1>
-                    {section.subtitle && <p className="text-base opacity-90">{section.subtitle}</p>}
-                  </div>
-                </section>
-              )
-            }
-
+            case "hero":
+              return <SiteHeroSection key={section.id} section={section} color={color} />
             case "about":
-              return (
-                <section key={section.id} className="py-12 px-4">
-                  <div className="max-w-2xl mx-auto">
-                    {section.title && <h2 className="text-xl font-bold mb-4 text-gray-900">{section.title}</h2>}
-                    {"content" in section && section.content
-                      ? <RichTextView content={section.content} className="text-gray-600 text-sm leading-relaxed" />
-                      : <p className="text-gray-300 italic text-sm">Contenu à renseigner…</p>
-                    }
-                  </div>
-                </section>
-              )
+              return <SiteAboutSection key={section.id} section={section} />
+            case "events":
+              return <SiteEventsSection key={section.id} section={section} events={events} color={color} slug={slug} />
+            case "actualites":
+              return <SiteActualitesSection key={section.id} section={section} actualites={actualites} color={color} slug={slug} />
 
-            case "events": {
-              const limit     = "limit" in section ? section.limit ?? 6 : 6
-              const displayed = events.slice(0, limit)
+            case "membership": {
+              const bound = membershipFormBySection[section.id]
               return (
-                <section key={section.id} className="py-12 px-4 bg-gray-50">
-                  <div className="max-w-4xl mx-auto">
-                    <h2 className="text-xl font-bold mb-6 text-gray-900">{section.title || "Prochains événements"}</h2>
-                    {displayed.length === 0 ? (
-                      <p className="text-gray-400 text-sm italic">Aucun événement à venir pour le moment.</p>
-                    ) : (
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {displayed.map(event => (
-                          <div key={event.id} className="bg-white rounded-lg border border-gray-100 p-4 space-y-2">
-                            <div className="text-xs font-semibold px-2 py-0.5 rounded-full inline-block text-white" style={{ background: color }}>
-                              {new Date(event.date).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
-                            </div>
-                            <p className="text-sm font-semibold text-gray-900 leading-snug">{event.title}</p>
-                            {event.location && (
-                              <div className="flex items-center gap-1 text-xs text-gray-500">
-                                <MapPinIcon className="size-3 shrink-0" />
-                                <span className="truncate">{event.location}</span>
-                              </div>
-                            )}
-                            {event.ticketTypes.length > 1 ? (
-                              <p className="text-xs font-medium" style={{ color }}>
-                                À partir de {cheapestAvailableTicketTypePrice(event.ticketTypes).toFixed(2)} €
-                              </p>
-                            ) : event.ticketTypes.length === 1 ? (
-                              <p className="text-xs font-medium" style={{ color }}>{Number(event.ticketTypes[0].price).toFixed(2)} €</p>
-                            ) : event.price && Number(event.price) > 0 && (
-                              <p className="text-xs font-medium" style={{ color }}>{Number(event.price).toFixed(2)} €</p>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </section>
+                <div key={section.id} className="relative">
+                  {!bound && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white text-center mx-4">
+                        Aperçu — nécessite un formulaire d&apos;adhésion publié et lié à cette section
+                      </span>
+                    </div>
+                  )}
+                  <SiteMembershipSection
+                    section={section} slug={slug} color={color}
+                    membershipForm={bound ?? PREVIEW_MEMBERSHIP_FORM}
+                  />
+                </div>
               )
             }
 
-            case "actualites": {
-              const limit     = "limit" in section ? section.limit ?? 6 : 6
-              const displayed = actualites.slice(0, limit)
-              return (
-                <section key={section.id} className="py-12 px-4">
-                  <div className="max-w-4xl mx-auto">
-                    <h2 className="text-xl font-bold mb-6 text-gray-900">{section.title || "Actualités"}</h2>
-                    {displayed.length === 0 ? (
-                      <p className="text-gray-400 text-sm italic">Aucune actualité publiée pour le moment.</p>
-                    ) : (
-                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {displayed.map(actu => (
-                          <article key={actu.id} className="rounded-lg border border-gray-100 overflow-hidden">
-                            {actu.imageUrl && (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={actu.imageUrl} alt={actu.title} className="w-full h-32 object-cover" />
-                            )}
-                            <div className="p-3 space-y-1.5">
-                              <div className="flex items-center gap-1.5">
-                                {actu.pinned && (
-                                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full text-white" style={{ background: color }}>
-                                    À la une
-                                  </span>
-                                )}
-                                <time className="text-xs text-gray-400">
-                                  {new Date(actu.publishedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
-                                </time>
-                              </div>
-                              <p className="text-xs font-semibold text-gray-900 leading-snug line-clamp-2">{actu.title}</p>
-                            </div>
-                          </article>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </section>
-              )
-            }
-
-            case "membership":
-              // Mirrors what SiteMembershipFormCta actually renders on the live site — a
-              // title/body and one CTA button linking to whichever MembershipForm is bound
-              // to this section (Formulaires → Adhésions → étape Publication). Without one
-              // bound, this section renders nothing at all on the real site.
-              return (
-                <section key={section.id} className="py-12 px-4 relative">
-                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white text-center">
-                      Aperçu — nécessite un formulaire d&apos;adhésion publié et lié à cette section
-                    </span>
-                  </div>
-                  <div className="max-w-sm mx-auto pointer-events-none select-none text-center">
-                    <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Rejoindre l'association"}</h2>
-                    {"body" in section && section.body && (
-                      <p className="text-gray-500 text-sm mb-6">{section.body}</p>
-                    )}
-                    <div className="h-10 rounded-lg" style={{ background: color }} />
-                  </div>
-                </section>
-              )
-
-            // Pas de calque "non interactif" comme pour membership : la vraie section est
-            // un simple bouton vers /portal/[slug]/don, pas un formulaire — la rendre
-            // telle quelle (sans le lien) suffit et reste fidèle au rendu public. Le
-            // calque d'avertissement n'apparaît que si le module Dons est désactivé : la
-            // section reste alors dans siteConfig mais [slug]/page.tsx ne la rend jamais
-            // publiquement, et rien d'autre dans l'éditeur ne le signale.
             case "dons":
               return (
-                <section key={section.id} className="py-12 px-4 relative">
+                <div key={section.id} className="relative">
                   {!donsEnabled && (
                     <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-600 text-white">
@@ -247,24 +140,17 @@ export function SitePreviewPanel({ config, name, slug, city, country, events, ac
                       </span>
                     </div>
                   )}
-                  <div className="max-w-sm mx-auto text-center pointer-events-none select-none">
-                    <HandshakeIcon className="size-8 mx-auto mb-3" style={{ color }} />
-                    <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Faire un don"}</h2>
-                    {"body" in section && section.body && (
-                      <p className="text-gray-500 text-sm mb-6">{section.body}</p>
-                    )}
-                    <div className="h-10 rounded-lg flex items-center justify-center text-sm font-medium text-white" style={{ background: color }}>
-                      {("buttonLabel" in section && section.buttonLabel?.trim()) || "Faire un don"}
-                    </div>
-                  </div>
-                </section>
+                  <SiteDonsSection
+                    section={section} slug={slug} color={color}
+                    canIssueTaxReceipts={canIssueTaxReceipts}
+                    donationForm={donationFormBySection[section.id] ?? null}
+                  />
+                </div>
               )
 
-            // Pas de données produits en direct dans l'éditeur (contrairement à actualites) —
-            // un aperçu non interactif suffit, même raisonnement que "dons" ci-dessus.
             case "boutique":
               return (
-                <section key={section.id} className="py-12 px-4 relative">
+                <div key={section.id} className="relative">
                   {!boutiqueEnabled && (
                     <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-600 text-white">
@@ -272,54 +158,23 @@ export function SitePreviewPanel({ config, name, slug, city, country, events, ac
                       </span>
                     </div>
                   )}
-                  <div className="max-w-sm mx-auto text-center pointer-events-none select-none">
-                    <ShoppingBagIcon className="size-8 mx-auto mb-3" style={{ color }} />
-                    <h2 className="text-xl font-bold mb-2 text-gray-900">{section.title || "Boutique"}</h2>
-                    <div className="grid grid-cols-3 gap-2 mt-4">
-                      {[0, 1, 2].map(i => <div key={i} className="aspect-square rounded-lg bg-gray-100" />)}
-                    </div>
-                  </div>
-                </section>
+                  <SiteBoutiqueSection section={section} produits={boutiqueProduits} color={color} slug={slug} />
+                </div>
               )
 
             case "contact":
-              return (
-                <section key={section.id} className="py-12 px-4 bg-gray-50">
-                  <div className="max-w-2xl mx-auto">
-                    <h2 className="text-xl font-bold mb-4 text-gray-900">{section.title || "Contact"}</h2>
-                    {city ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPinIcon className="size-4 shrink-0 text-gray-400" />
-                        <span>{city}, {country}</span>
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-400 italic">Ville non renseignée dans les Paramètres.</p>
-                    )}
-                  </div>
-                </section>
-              )
+              return <SiteContactSection key={section.id} section={section} city={city} country={country} />
           }
         })}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-black/5 py-6 mt-8" style={{ background: footerBg }}>
-        <div className="max-w-5xl mx-auto px-4 space-y-3">
-          {footerLinks.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5">
-              {footerLinks.map((link, idx) => (
-                <span key={idx} className="text-xs hover:underline cursor-pointer" style={{ color: footerDark ? "#d1d5db" : "#374151" }}>
-                  {link.label}
-                </span>
-              ))}
-            </div>
-          )}
-          <div className="flex items-center justify-between gap-3 text-xs" style={{ color: footerDark ? "#e5e7eb" : "#6b7280" }}>
-            <span className="font-medium" style={{ color }}>{name}</span>
-            <span>{config?.footerText || `© ${new Date().getFullYear()} ${name}`}</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter
+        name={name || "Mon association"}
+        footerText={config?.footerText}
+        footerBgColor={config?.footerBgColor}
+        footerLinks={config?.footerLinks}
+        color={color}
+      />
     </div>
   )
 }

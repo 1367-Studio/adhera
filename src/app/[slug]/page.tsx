@@ -13,6 +13,7 @@ import { SiteNavbar }             from "@/components/site/site-navbar"
 import { SiteFooter }             from "@/components/site/site-footer"
 import { prisma }                 from "@/lib/prisma/client"
 import { parseModules }           from "@/lib/modules"
+import { getSiteColorVars }       from "@/lib/site-theme"
 
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
@@ -173,14 +174,18 @@ export default async function PublicSitePage(
 
   const config   = data.config
   const sections = config?.sections ?? []
-  const color    = config?.primaryColor ?? "#6366f1"
+  const color    = "var(--site-primary)"
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900" style={{ colorScheme: "light" }}>
+    <div
+      className="min-h-screen flex flex-col bg-white text-gray-900"
+      style={{ colorScheme: "light", ...getSiteColorVars(config) }}
+    >
       <SiteNavbar
         name={data.name}
         logoUrl={config?.logoUrl}
         color={color}
+        secondaryColor="var(--site-secondary)"
         portalSlug={slug}
         headerBgColor={config?.headerBgColor}
         headerShowMembres={config?.headerShowMembres}
