@@ -2605,6 +2605,16 @@
         "deleteError": "Erreur lors de la suppression",
         "statusUpdated": "Statut mis à jour",
         "statusError": "Erreur lors du changement de statut"
+      },
+      "publishConfirm": {
+        "title": "Publier ce formulaire de don ?",
+        "description": "Une fois publié, ce formulaire sera immédiatement visible pour les membres dans Mon espace → Mes dons.",
+        "confirmLabel": "Publier"
+      },
+      "unpublishConfirm": {
+        "title": "Dépublier ce formulaire de don ?",
+        "description": "Il disparaîtra immédiatement de Mon espace pour les membres.",
+        "confirmLabel": "Dépublier"
       }
     },
     "donationsView": {
@@ -4924,7 +4934,13 @@
       "toasts": {
         "thanked": "Merci pour votre don ! Un e-mail de confirmation vous a été envoyé.",
         "cancelled": "Don annulé."
-      }
+      },
+      "campaignsHeading": "Campagnes en cours",
+      "backToDons": "Retour à Mes dons",
+      "donatingAs": "Vous donnez en tant que {name} ({email}).",
+      "comingSoon": "Bientôt disponible",
+      "campaignClosed": "Campagne terminée",
+      "loadCampaignsError": "Impossible de charger les campagnes de don. Réessayez plus tard."
     },
     "reunions": {
       "title": "Réunions",

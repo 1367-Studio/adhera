@@ -173,6 +173,7 @@ function DonsPageInner() {
   const [newFormOpen, setNewFormOpen]   = useState(false)
   const [newFormTitle, setNewFormTitle] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<DonationForm | null>(null)
+  const [publishTarget, setPublishTarget] = useState<{ form: DonationForm; action: "publish" | "unpublish" } | null>(null)
 
   const { data: forms = [], isLoading: loadingForms } = useQuery<DonationForm[]>({
     queryKey:  ["donation-forms"],
@@ -653,8 +654,8 @@ function DonsPageInner() {
                           ? [{ label: t("detail.copyLinkButton"), icon: <LinkIcon className="size-3.5" />, onClick: () => handleCopyFormLink(f) }]
                           : []),
                         ...(f.status !== "PUBLISHED"
-                          ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "publish" }) }]
-                          : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "unpublish" }) }]),
+                          ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "publish" }) }]
+                          : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "unpublish" }) }]),
                         ...(f.status !== "ARCHIVED"
                           ? [{ label: t("formsView.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "archive" }) }]
                           : []),
@@ -891,6 +892,20 @@ function DonsPageInner() {
         onConfirm={() => {
           if (deleteTarget) deleteFormMutation.mutate(deleteTarget.id)
           setDeleteTarget(null)
+        }}
+      />
+
+      <ConfirmDialog
+        open={!!publishTarget}
+        onOpenChange={(o) => { if (!o) setPublishTarget(null) }}
+        title={publishTarget?.action === "publish" ? t("formsView.publishConfirm.title") : t("formsView.unpublishConfirm.title")}
+        description={publishTarget?.action === "publish" ? t("formsView.publishConfirm.description") : t("formsView.unpublishConfirm.description")}
+        confirmLabel={publishTarget?.action === "publish" ? t("formsView.publishConfirm.confirmLabel") : t("formsView.unpublishConfirm.confirmLabel")}
+        confirmVariant="default"
+        loading={publishMutation.isPending}
+        onConfirm={() => {
+          if (publishTarget) publishMutation.mutate({ id: publishTarget.form.id, action: publishTarget.action })
+          setPublishTarget(null)
         }}
       />
     </div>
