@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
+import { ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr"
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
 } from "@/components/ui/sheet"
@@ -12,21 +13,29 @@ import { Textarea } from "@/components/ui/textarea"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SiteAiFieldButton } from "./site-ai-field-button"
-import type { SiteSection, SectionType } from "@/types/site-config"
+import type { SiteSection, SectionType, DonsSection, DonationFormPick } from "@/types/site-config"
 import { toHtml } from "@/lib/site-content"
+import { BASE_PATH } from "@/lib/env"
+import { useDonationForms } from "@/hooks/use-donation-forms"
+import { resolveDonationFormBySection, usesDonationForms } from "@/lib/dons/site-section-picks"
 
 type Props = {
   section:        SiteSection
+  // The builder's current sections (drafts included) — the dons form picker needs them to
+  // know which form each other "dons" section shows.
+  sections:       SiteSection[]
   open:           boolean
   aiEnabled:      boolean
+  donsModuleEnabled: boolean
   onOpenChange:   (open: boolean) => void
   onSave:         (section: SiteSection) => void
   onDraftChange?: (section: SiteSection) => void
   onFilePending?: (blobUrl: string, file: File, prefix: string) => void
 }
 
-export function SiteSectionSheet({ section, open, aiEnabled, onOpenChange, onSave, onDraftChange, onFilePending }: Props) {
+export function SiteSectionSheet({ section, sections, open, aiEnabled, donsModuleEnabled, onOpenChange, onSave, onDraftChange, onFilePending }: Props) {
   const t         = useTranslations("site.sectionSheet")
   const tSections = useTranslations("site.sectionLabels")
   const sectionLabels: Record<SectionType, string> = {
@@ -251,6 +260,13 @@ export function SiteSectionSheet({ section, open, aiEnabled, onOpenChange, onSav
             {/* Dons */}
             {draft.type === "dons" && (
               <div className="space-y-4">
+                <DonsFormField
+                  section={draft}
+                  sections={sections}
+                  donsModuleEnabled={donsModuleEnabled}
+                  sectionLabel={sectionLabels.dons}
+                  onPick={formId => set("donationFormPick", { formId, pickedAt: Date.now() } satisfies DonationFormPick)}
+                />
                 <RichTextEditor
                   label={t("donsIntro")}
                   value={toHtml("body" in draft ? draft.body : "")}
@@ -267,9 +283,6 @@ export function SiteSectionSheet({ section, open, aiEnabled, onOpenChange, onSav
                     placeholder={t("donsButtonLabelPlaceholder")}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t("donsHint")}
-                </p>
               </div>
             )}
 
@@ -312,5 +325,118 @@ export function SiteSectionSheet({ section, open, aiEnabled, onOpenChange, onSav
         onConfirm={forceClose}
       />
     </>
+  )
+}
+
+// Select value standing for "Aucun formulaire" — Base UI's Select needs a string value, and a
+// cuid form id can never collide with it.
+const NO_DONATION_FORM_VALUE = "none"
+
+// Picks which published DonationForm this "dons" block links to. Only drafts the choice
+// (onPick → donationFormPick on the section): the site's own save applies it to the forms.
+function DonsFormField({ section, sections, donsModuleEnabled, sectionLabel, onPick }: {
+  section:           DonsSection
+  sections:          SiteSection[]
+  donsModuleEnabled: boolean
+  sectionLabel:      string
+  onPick:            (formId: string | null) => void
+}) {
+  const t         = useTranslations("site.sectionSheet")
+  const tControls = useTranslations("site.controls")
+  const tCommon   = useTranslations("common")
+  const { data: donationForms } = useDonationForms({ enabled: donsModuleEnabled })
+
+  function field(control: React.ReactNode) {
+    return (
+      <div className="space-y-1.5">
+        <Label className="text-xs">{t("donsForm")}</Label>
+        {control}
+      </div>
+    )
+  }
+
+  if (!donsModuleEnabled)
+    return field(<p className="text-xs text-amber-600 dark:text-amber-400">{tControls("donsModuleDisabled")}</p>)
+
+  if (!donationForms) {
+    return field(
+      <Select disabled>
+        <SelectTrigger className="w-full">
+          <SelectValue>{tCommon("loading")}</SelectValue>
+        </SelectTrigger>
+      </Select>,
+    )
+  }
+
+  const manageLink = (
+    <Button
+      variant="link"
+      size="sm"
+      className="h-auto p-0"
+      nativeButton={false}
+      render={<a href={`${BASE_PATH}/dashboard/dons?tab=formulaires`} target="_blank" rel="noopener noreferrer" />}
+    >
+      {t("donsFormManageLink")}
+      <ArrowSquareOutIcon className="size-3.5" />
+    </Button>
+  )
+
+  // Already newest first (the list API orders by createdAt desc). PRIVATE forms are offered
+  // too — picking one is an explicit choice to put it on the site.
+  const publishedForms = donationForms.filter(form => form.status === "PUBLISHED")
+  if (publishedForms.length === 0) {
+    return field(
+      <>
+        <p className="text-xs text-muted-foreground">
+          {usesDonationForms(donationForms) ? t("donsFormEmptyNoPublished") : t("donsFormEmptyLegacy")}
+        </p>
+        {manageLink}
+      </>,
+    )
+  }
+
+  // The parent's copy of this section only catches up after onDraftChange's effect runs, so
+  // resolve against this sheet's own draft.
+  const currentSections = sections.some(existingSection => existingSection.id === section.id)
+    ? sections.map(existingSection => existingSection.id === section.id ? section : existingSection)
+    : [...sections, section]
+  const selectedForm = resolveDonationFormBySection(currentSections, donationForms)[section.id] ?? null
+
+  // The section the selected form gets taken from: where it would show without this pick.
+  const withoutThisPick = resolveDonationFormBySection(
+    currentSections.map(existingSection => existingSection.id === section.id ? { ...section, donationFormPick: undefined } : existingSection),
+    donationForms,
+  )
+  const previousSection = selectedForm && section.donationFormPick
+    ? currentSections.find(existingSection =>
+        existingSection.id !== section.id && withoutThisPick[existingSection.id]?.id === selectedForm.id)
+    : undefined
+
+  return field(
+    <>
+      <Select
+        value={selectedForm?.id ?? NO_DONATION_FORM_VALUE}
+        onValueChange={value => { if (value !== null) onPick(value === NO_DONATION_FORM_VALUE ? null : value) }}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue>{selectedForm?.title ?? t("donsFormNone")}</SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={NO_DONATION_FORM_VALUE}>{t("donsFormNone")}</SelectItem>
+          <SelectSeparator />
+          {publishedForms.map(form => (
+            <SelectItem key={form.id} value={form.id}>{form.title}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <p className="text-xs text-muted-foreground">
+        {selectedForm ? t("donsFormSelectedHint") : t("donsFormNoneHint")}
+      </p>
+      {previousSection && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          {t("donsFormMovedWarning", { section: previousSection.title || sectionLabel })}
+        </p>
+      )}
+    </>,
   )
 }

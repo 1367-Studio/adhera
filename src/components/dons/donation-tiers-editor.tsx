@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useImperativeHandle, useState, type Ref } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -27,7 +27,37 @@ type DonationTier = DonationTierDraft & { id: string; order: number }
 
 let nextTempId = 0
 
-export function DonationTiersEditor({ formId }: { formId: string }) {
+// Exactly the fields handleSave() persists, in list order (the order itself is saved as
+// `order`) — see the same helper in membership-tiers-editor.tsx.
+function tiersSignature(rows: DonationTierDraft[]): string {
+  return JSON.stringify(rows.map(tier => [
+    tier.kind, tier.interval, tier.freeAmount, tier.amount, tier.label, tier.receiptMode, tier.ineligibleAmount,
+  ]))
+}
+
+// amount/ineligibleAmount come back from the API as strings — Prisma's Decimal serializes
+// to JSON as a string, not a number — so the PUT below would 422 ("expected number,
+// received string") the moment a tier is saved again without its CurrencyField ever being
+// touched (the only place that turns the value back into a real number — see onChange).
+function normalizeTier(tier: DonationTier) {
+  return {
+    ...tier,
+    amount:           tier.amount != null ? Number(tier.amount) : null,
+    ineligibleAmount: tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null,
+  }
+}
+
+// Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
+// when validation or the request failed — the toast has already been shown by then.
+export type DonationTiersEditorHandle = { save: () => Promise<boolean> }
+
+export function DonationTiersEditor({ formId, onDirtyChange, ref }: {
+  formId: string
+  // Reported up so the page can warn before navigating away — see the guard in
+  // src/app/dashboard/dons/[id]/page.tsx.
+  onDirtyChange?: (dirty: boolean) => void
+  ref?: Ref<DonationTiersEditorHandle>
+}) {
   const t       = useTranslations("donationForms.detail.steps.tiers")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -61,15 +91,18 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
 
   const [tiers, setTiers] = useState<(DonationTierDraft & { key: string })[]>([])
 
-  // amount/ineligibleAmount come back from the API as strings — Prisma's Decimal serializes
-  // to JSON as a string, not a number — so the PUT below would 422 ("expected number,
-  // received string") the moment a tier is saved again without its CurrencyField ever being
-  // touched (the only place that turns the value back into a real number — see onChange).
-  useEffect(() => { if (data) setTiers(data.map(t => ({
-    ...t, key: t.id,
-    amount:           t.amount != null ? Number(t.amount) : null,
-    ineligibleAmount: t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
-  }))) }, [data])
+  useEffect(() => {
+    if (data) setTiers(data.map(tier => ({ ...normalizeTier(tier), key: tier.id })))
+  }, [data])
+
+  // Same normalization the hydration effect above applies, so an untouched list compares
+  // equal (amount/ineligibleAmount arrive as Decimal strings but are edited as numbers).
+  const isDirty = tiersSignature(tiers) !== tiersSignature((data ?? []).map(normalizeTier))
+  useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
+  // Unmounting means the local edits are gone anyway — leaving the flag set would block
+  // navigation over work that no longer exists.
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
+  useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addTier() {
     setTiers(prev => [...prev, { key: `new-${nextTempId++}`, kind: "ONE_OFF", interval: null, freeAmount: false, amount: null, label: "", receiptMode: "FULL", ineligibleAmount: null }])
@@ -81,26 +114,26 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
     setTiers(prev => prev.filter(t => t.key !== key))
   }
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     if (tiers.some(t => !t.label.trim())) {
       toast.error(t("labelRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => !t.freeAmount && !t.amount)) {
       toast.error(t("amountRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => t.kind === "RECURRING" && !t.interval)) {
       toast.error(t("intervalRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => t.receiptMode === "PARTIAL" && !t.ineligibleAmount)) {
       toast.error(t("ineligibleAmountRequiredError"))
-      return
+      return false
     }
     if (tiers.some(t => t.receiptMode === "PARTIAL" && t.amount != null && t.ineligibleAmount != null && t.ineligibleAmount > t.amount)) {
       toast.error(t("ineligibleAmountExceedsError"))
-      return
+      return false
     }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
@@ -111,8 +144,10 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
         ineligibleAmount: t.receiptMode === "PARTIAL" ? t.ineligibleAmount : null,
       })))
       toast.success(t("saved"))
+      return true
     } catch (err) {
       toast.error(err instanceof Error ? err.message : tCommon("error"))
+      return false
     }
   }
 
@@ -236,7 +271,7 @@ export function DonationTiersEditor({ formId }: { formId: string }) {
           <PlusIcon className="mr-1.5 size-4" />
           {t("addTier")}
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} loading={saveMutation.isPending}>
+        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
           {t("saveTiers")}
         </Button>
       </div>

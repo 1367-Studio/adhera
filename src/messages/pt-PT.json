@@ -2575,6 +2575,31 @@
         "deleteError": "Erro ao eliminar",
         "statusUpdated": "Estado atualizado",
         "statusError": "Erro ao atualizar o estado"
+      },
+      "publishConfirm": {
+        "title": "Publicar este formulário de donativo?",
+        "descriptionSite": "Ficará visível no site, na secção “{section}”, e para os membros em O meu espaço → As minhas doações.",
+        "descriptionSiteReplace": "Irá substituir “{title}” na secção “{section}” do site e ficará visível para os membros em O meu espaço → As minhas doações.",
+        "descriptionLink": "Ficará acessível através do respetivo link e para os membros em O meu espaço → As minhas doações. Não aparecerá no site.",
+        "descriptionPrivate": "Ficará visível apenas para os membros, em O meu espaço → As minhas doações.",
+        "blockHiddenNote": "O bloco “{section}” do site ficará oculto enquanto nenhum formulário for aí apresentado.",
+        "confirmLabel": "Publicar"
+      },
+      "unpublishConfirm": {
+        "title": "Despublicar este formulário de donativo?",
+        "description": "Desaparecerá imediatamente do site e de O meu espaço, e o respetivo link deixará de funcionar.",
+        "confirmLabel": "Despublicar"
+      },
+      "archiveConfirm": {
+        "title": "Arquivar este formulário de donativo?",
+        "description": "“{title}” desaparecerá do site e de O meu espaço, e o respetivo link deixará de funcionar.",
+        "recurringNote": "Arquivar não interrompe os donativos recorrentes em curso: continuarão a ser cobrados.",
+        "confirmLabel": "Arquivar"
+      },
+      "deleteBlocked": {
+        "title": "Este formulário não pode ser eliminado",
+        "description": "“{title}” já recebeu donativos, cujo histórico tem de ser conservado. Arquive-o para o retirar do site e de O meu espaço.",
+        "descriptionArchived": "“{title}” já recebeu donativos, cujo histórico tem de ser conservado. Já está arquivado."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Voltar aos donativos",
+      "leaveWarning": {
+        "title": "Alterações não guardadas",
+        "description": "Algumas secções foram alteradas sem serem guardadas. Pode guardá-las antes de sair ou descartá-las.",
+        "discard": "Descartar",
+        "saveAndLeave": "Guardar e sair"
+      },
+      "partialSaveWarning": "Parte das alterações já foi guardada antes do erro — verifique que passos ficaram gravados.",
       "notFound": "Formulário não encontrado",
       "titleLabel": "Título do formulário",
+      "titleRequired": "O título é obrigatório",
       "duplicateButton": "Duplicar",
       "deleteButton": "Eliminar",
       "publishButton": "Publicar",
@@ -2641,6 +2674,12 @@
         "saveError": "Erro ao guardar",
         "linkCopied": "Link copiado",
         "linkCopyError": "Não foi possível copiar — selecione o link manualmente."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Guarde as seguintes secções antes de publicar: {steps}",
+        "noTiersToast": "Adicione pelo menos um nível antes de publicar este formulário.",
+        "unsavedTag": "Não guardado",
+        "noTiersTag": "Nenhum nível"
       },
       "steps": {
         "info": {
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Criar nova secção",
           "siteSectionCreateError": "Erro ao criar a secção do site.",
           "siteSectionRequiredError": "Escolha em que secção do site este formulário será publicado.",
+          "siteSectionReplaceWarningPublished": "Esta secção mostra atualmente “{title}”. Ao guardar, este formulário irá substituí-lo; “{title}” continuará acessível através do respetivo link.",
+          "siteSectionReplaceWarningDraft": "Esta secção mostra atualmente “{title}”. Este formulário irá substituí-lo assim que for publicado; “{title}” continuará acessível através do respetivo link.",
+          "siteSectionRemovedWarning": "Ao guardar, a secção “{section}” ficará oculta no site.",
           "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "O seu donativo ajuda-nos a financiar as nossas ações ao longo do ano…",
       "donsButtonLabel": "Texto do botão",
       "donsButtonLabelPlaceholder": "Doar",
-      "donsHint": "O botão remete para a página de donativos pública, acessível sem conta. O recibo fiscal é enviado automaticamente se a associação estiver habilitada a emiti-lo.",
+      "donsForm": "Formulário de donativo",
+      "donsFormNone": "Nenhum formulário",
+      "donsFormSelectedHint": "O botão abre a página deste formulário, acessível sem conta.",
+      "donsFormNoneHint": "Este bloco está oculto no site.",
+      "donsFormMovedWarning": "Este formulário está atualmente apresentado na secção «{section}». Será retirado dela.",
+      "donsFormEmptyLegacy": "O botão remete para a página de donativos genérica da associação. Publique um formulário de donativo para escolher o que aparece aqui.",
+      "donsFormEmptyNoPublished": "Nenhum formulário de donativo publicado: este bloco está oculto no site.",
+      "donsFormManageLink": "Ver os formulários de donativo",
       "contactHint": "Esta secção mostra automaticamente a cidade e o país configurados nas definições da associação.",
       "cancel": "Cancelar",
       "apply": "Aplicar",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Descartar",
       "boutiqueLimit": "Número de produtos a apresentar",
       "boutiqueLimitHint": "Apenas os primeiros N produtos ativos serão apresentados no site."
+    },
+    "preview": {
+      "donsNoForm": "Nenhum formulário de donativo escolhido — oculto no site público"
     },
     "editor": {
       "viewSite": "Ver o site",

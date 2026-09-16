@@ -2575,6 +2575,31 @@
         "deleteError": "Brisanje napake",
         "statusUpdated": "Posodobljeno stanje",
         "statusError": "Napaka pri spremembi statusa"
+      },
+      "publishConfirm": {
+        "title": "Želite objaviti ta obrazec za donacije?",
+        "descriptionSite": "Viden bo na spletni strani, v razdelku „{section}“, in članom v Moj prostor → Moje donacije.",
+        "descriptionSiteReplace": "Zamenjal bo „{title}“ v razdelku „{section}“ spletne strani in bo viden članom v Moj prostor → Moje donacije.",
+        "descriptionLink": "Dostopen bo prek svoje povezave in članom v Moj prostor → Moje donacije. Na spletni strani ne bo prikazan.",
+        "descriptionPrivate": "Viden bo samo članom, v Moj prostor → Moje donacije.",
+        "blockHiddenNote": "Blok „{section}“ na spletni strani bo skrit, dokler v njem ne bo prikazan noben obrazec.",
+        "confirmLabel": "Objavi"
+      },
+      "unpublishConfirm": {
+        "title": "Želite umakniti objavo tega obrazca za donacije?",
+        "description": "Takoj bo izginil s spletne strani in iz Moj prostor, njegova povezava pa ne bo več delovala.",
+        "confirmLabel": "Umakni objavo"
+      },
+      "archiveConfirm": {
+        "title": "Želite arhivirati ta obrazec za donacije?",
+        "description": "„{title}“ bo izginil s spletne strani in iz Moj prostor, njegova povezava pa ne bo več delovala.",
+        "recurringNote": "Arhiviranje ne ustavi tekočih ponavljajočih se donacij: še naprej se bodo bremenile.",
+        "confirmLabel": "Arhiviraj"
+      },
+      "deleteBlocked": {
+        "title": "Tega obrazca ni mogoče izbrisati",
+        "description": "„{title}“ je že prejel donacije, katerih zgodovino je treba ohraniti. Arhivirajte ga, da ga odstranite s spletne strani in iz Moj prostor.",
+        "descriptionArchived": "„{title}“ je že prejel donacije, katerih zgodovino je treba ohraniti. Je že arhiviran."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Nazaj na donacije",
+      "leaveWarning": {
+        "title": "Neshranjene spremembe",
+        "description": "Nekateri razdelki so bili urejeni, vendar niso bili shranjeni. Pred odhodom jih lahko shranite ali zavržete.",
+        "discard": "Zavrzi",
+        "saveAndLeave": "Shrani in zapusti"
+      },
+      "partialSaveWarning": "Nekatere spremembe so bile shranjene pred napako — preverite korake, ki so bili že shranjeni.",
       "notFound": "Oblika ni najdena",
       "titleLabel": "Naziv letnika",
+      "titleRequired": "Naslov je obvezen",
       "duplicateButton": "Duplikat",
       "deleteButton": "Izbriši",
       "publishButton": "Objavi",
@@ -2641,6 +2674,12 @@
         "saveError": "Snemanje napake",
         "linkCopied": "Povezava kopirana",
         "linkCopyError": "Ni mogoče kopirati — povezavo izberite ročno."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Pred objavo shranite naslednje razdelke: {steps}",
+        "noTiersToast": "Pred objavo tega obrazca dodajte vsaj eno stopnjo.",
+        "unsavedTag": "Ni shranjeno",
+        "noTiersTag": "Brez stopnje"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontaktni telefon"
         },
         "tiers": {
-          "title": "Ležaji",
+          "title": "Stopnje",
           "hint": "Zneski, predlagani darovalcu za ta obrazec.",
           "noTiers": "Brez nivoja",
           "addTier": "Dodaj stopnjo",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Ustvari nov razdelek",
           "siteSectionCreateError": "Napaka pri ustvarjanju spletnega odseka.",
           "siteSectionRequiredError": "Izberite razdelek strani, kamor boste objavili ta obrazec.",
+          "siteSectionReplaceWarningPublished": "Ta razdelek trenutno prikazuje „{title}“. Ob shranjevanju ga bo ta obrazec zamenjal; „{title}“ bo še naprej dostopen prek svoje povezave.",
+          "siteSectionReplaceWarningDraft": "Ta razdelek trenutno prikazuje „{title}“. Ta obrazec ga bo zamenjal takoj po objavi; „{title}“ bo še naprej dostopen prek svoje povezave.",
+          "siteSectionRemovedWarning": "Ob shranjevanju bo razdelek „{section}“ na spletni strani skrit.",
           "datesOrderError": "Datum zaključka mora biti kasnejši od datuma odprtja."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Vaša donacija nam pomaga financirati naše dejavnosti skozi vse leto...",
       "donsButtonLabel": "Besedilo gumba",
       "donsButtonLabelPlaceholder": "Doniraj",
-      "donsHint": "Gumb vodi do javne strani za donacije, do katere je mogoče dostopati brez računa. Potrdilo o davku se pošlje samodejno, če je združenje pooblaščeno za izdajo takšnega.",
+      "donsForm": "Obrazec za donacijo",
+      "donsFormNone": "Brez obrazca",
+      "donsFormSelectedHint": "Gumb odpre stran tega obrazca, dostopno brez računa.",
+      "donsFormNoneHint": "Ta blok je na strani skrit.",
+      "donsFormMovedWarning": "Ta obrazec je trenutno prikazan v razdelku »{section}«. Od tam bo odstranjen.",
+      "donsFormEmptyLegacy": "Gumb vodi na splošno stran za donacije združenja. Objavite obrazec za donacijo, da izberete, kaj se prikaže tukaj.",
+      "donsFormEmptyNoPublished": "Ni objavljenega obrazca za donacijo: ta blok je na strani skrit.",
+      "donsFormManageLink": "Oglejte si obrazce za donacije",
       "contactHint": "Ta razdelek samodejno prikazuje mesto in državo, konfigurirano v nastavitvah združenja.",
       "cancel": "Prekliči",
       "apply": "Prijavite se",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoriraj",
       "boutiqueLimit": "Število prikazanih izdelkov",
       "boutiqueLimitHint": "Na spletnem mestu bo prikazanih le prvih N aktivnih izdelkov."
+    },
+    "preview": {
+      "donsNoForm": "Obrazec za donacijo ni izbran — neviden na javni strani"
     },
     "editor": {
       "viewSite": "Oglejte si spletno stran",

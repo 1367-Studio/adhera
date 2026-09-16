@@ -2575,6 +2575,31 @@
         "deleteError": "Fejlsletning",
         "statusUpdated": "Opdateret status",
         "statusError": "Fejl ved statusændring"
+      },
+      "publishConfirm": {
+        "title": "Udgiv denne donationsformular?",
+        "descriptionSite": "Den bliver synlig på hjemmesiden i sektionen “{section}” og for medlemmer under Mit rum → Mine donationer.",
+        "descriptionSiteReplace": "Den erstatter “{title}” i sektionen “{section}” på hjemmesiden og bliver synlig for medlemmer under Mit rum → Mine donationer.",
+        "descriptionLink": "Den er tilgængelig via sit link og for medlemmer under Mit rum → Mine donationer. Den vises ikke på hjemmesiden.",
+        "descriptionPrivate": "Den er kun synlig for medlemmer, under Mit rum → Mine donationer.",
+        "blockHiddenNote": "Blokken “{section}” på hjemmesiden skjules, så længe der ikke vises nogen formular i den.",
+        "confirmLabel": "Udgiv"
+      },
+      "unpublishConfirm": {
+        "title": "Fjern udgivelsen af denne donationsformular?",
+        "description": "Den forsvinder straks fra hjemmesiden og fra Mit rum, og dens link virker ikke længere.",
+        "confirmLabel": "Fjern udgivelse"
+      },
+      "archiveConfirm": {
+        "title": "Arkivér denne donationsformular?",
+        "description": "“{title}” forsvinder fra hjemmesiden og fra Mit rum, og dens link virker ikke længere.",
+        "recurringNote": "Arkivering stopper ikke igangværende tilbagevendende donationer: de bliver fortsat trukket.",
+        "confirmLabel": "Arkivér"
+      },
+      "deleteBlocked": {
+        "title": "Denne formular kan ikke slettes",
+        "description": "“{title}” har allerede modtaget donationer, hvis historik skal bevares. Arkivér den for at fjerne den fra hjemmesiden og fra Mit rum.",
+        "descriptionArchived": "“{title}” har allerede modtaget donationer, hvis historik skal bevares. Den er allerede arkiveret."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Tilbage til donationer",
+      "leaveWarning": {
+        "title": "Ikke-gemte ændringer",
+        "description": "Nogle sektioner er blevet redigeret uden at blive gemt. Du kan gemme dem, før du forlader siden, eller kassere dem.",
+        "discard": "Kassér",
+        "saveAndLeave": "Gem og forlad"
+      },
+      "partialSaveWarning": "Nogle af ændringerne blev gemt før fejlen — tjek de trin, der allerede er gemt.",
       "notFound": "Form ikke fundet",
       "titleLabel": "Formulartitel",
+      "titleRequired": "Titlen er påkrævet",
       "duplicateButton": "Duplikat",
       "deleteButton": "Slet",
       "publishButton": "Udgiv",
@@ -2641,6 +2674,12 @@
         "saveError": "Fejlregistrering",
         "linkCopied": "Link kopieret",
         "linkCopyError": "Kan ikke kopiere — vælg linket manuelt."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Gem følgende sektioner før udgivelse: {steps}",
+        "noTiersToast": "Tilføj mindst ét niveau, før du udgiver denne formular.",
+        "unsavedTag": "Ikke gemt",
+        "noTiersTag": "Intet niveau"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontakt Telefon"
         },
         "tiers": {
-          "title": "Lejer",
+          "title": "Niveauer",
           "hint": "Beløb foreslået til donoren for denne formular.",
           "noTiers": "Intet niveau",
           "addTier": "Tilføj et niveau",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Opret en ny sektion",
           "siteSectionCreateError": "Fejl ved oprettelse af siden-sektionen.",
           "siteSectionRequiredError": "Vælg den sektion på siden, hvor du vil indsende denne formular.",
+          "siteSectionReplaceWarningPublished": "Denne sektion viser i øjeblikket “{title}”. Når du gemmer, erstatter denne formular den; “{title}” forbliver tilgængelig via sit link.",
+          "siteSectionReplaceWarningDraft": "Denne sektion viser i øjeblikket “{title}”. Denne formular erstatter den, så snart den er udgivet; “{title}” forbliver tilgængelig via sit link.",
+          "siteSectionRemovedWarning": "Når du gemmer, bliver sektionen “{section}” skjult på hjemmesiden.",
           "datesOrderError": "Afslutningsdatoen skal være senere end åbningsdatoen."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Din donation hjælper os med at finansiere vores aktiviteter gennem året...",
       "donsButtonLabel": "Knaptekst",
       "donsButtonLabelPlaceholder": "Donér",
-      "donsHint": "Knappen linker til den offentlige donationsside, som kan tilgås uden konto. Skattekvitteringen sendes automatisk, hvis foreningen er autoriseret til at udstede en.",
+      "donsForm": "Donationsformular",
+      "donsFormNone": "Ingen formular",
+      "donsFormSelectedHint": "Knappen åbner denne formulars side, som kan tilgås uden konto.",
+      "donsFormNoneHint": "Denne blok er skjult på sitet.",
+      "donsFormMovedWarning": "Denne formular vises i øjeblikket i sektionen “{section}”. Den bliver fjernet derfra.",
+      "donsFormEmptyLegacy": "Knappen linker til foreningens generelle donationsside. Udgiv en donationsformular for at vælge, hvad der vises her.",
+      "donsFormEmptyNoPublished": "Ingen udgivet donationsformular: denne blok er skjult på sitet.",
+      "donsFormManageLink": "Se donationsformularer",
       "contactHint": "Denne sektion viser automatisk byen og landet konfigureret i associationsindstillingerne.",
       "cancel": "Annuller",
       "apply": "Ansøg",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignorer",
       "boutiqueLimit": "Antal produkter, der skal vises",
       "boutiqueLimitHint": "Kun de første N aktive produkter vises på siden."
+    },
+    "preview": {
+      "donsNoForm": "Ingen donationsformular valgt — usynlig på det offentlige site"
     },
     "editor": {
       "viewSite": "Se hjemmesiden",

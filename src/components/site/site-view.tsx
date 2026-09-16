@@ -6,10 +6,17 @@ import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
+import { useDonationForms } from "@/hooks/use-donation-forms"
 import { SiteControlsPanel } from "@/components/site/site-controls-panel"
 import { SitePreviewPanel } from "@/components/site/site-preview-panel"
 import type { SiteConfig } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG } from "@/types/site-config"
+import {
+  changedDonationFormAssignments,
+  resolveDonationFormBySection,
+  stripDonationFormPicks,
+  usesDonationForms,
+} from "@/lib/dons/site-section-picks"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -34,6 +41,7 @@ type SitePreviewData = {
   boutiqueProduits: PublicBoutiqueProduit[]
   membershipFormBySection: Record<string, FormBinding>
   donationFormBySection: Record<string, FormBinding>
+  usesDonationForms: boolean
   membershipCta: { href: string } | null
   canIssueTaxReceipts: boolean
 }
@@ -66,6 +74,10 @@ export function SiteView() {
     queryKey: ["site-preview-data"],
     queryFn:  () => fetch("/api/site-preview-data").then(r => r.json()),
   })
+
+  // Only site editors can pick a form (the list is FINANCE-gated, and both editor roles are
+  // in FINANCE); everyone else previews the saved bindings from site-preview-data.
+  const { data: donationForms } = useDonationForms({ enabled: canEdit && modules.dons })
 
   const [config, setConfig]     = useState<SiteConfig | null>(null)
   const [published, setPublished] = useState(false)
@@ -136,8 +148,15 @@ export function SiteView() {
         }
       }
 
-      await saveMutation.mutateAsync(finalConfig)
-      setConfig(finalConfig)
+      // Form picks from the section sheet go out as assignments applied to the forms, never
+      // inside siteConfig itself.
+      const donsFormAssignments = donationForms ? changedDonationFormAssignments(finalConfig.sections, donationForms) : {}
+      const persistedConfig     = stripDonationFormPicks(finalConfig)
+      await saveMutation.mutateAsync({
+        ...persistedConfig,
+        ...(Object.keys(donsFormAssignments).length > 0 ? { donsFormAssignments } : {}),
+      })
+      setConfig(persistedConfig)
       setIsDirty(false)
       toast.success(t("toasts.saved"))
     } catch {
@@ -158,6 +177,15 @@ export function SiteView() {
       toast.error(t("toasts.error"))
     }
   }
+
+  // Draft-aware once the form list is in: a form picked in the section sheet shows in the
+  // preview right away, before anything is saved.
+  const draftDonationFormBySection: Record<string, FormBinding> = donationForms && config
+    ? Object.fromEntries(
+        Object.entries(resolveDonationFormBySection(config.sections, donationForms))
+          .flatMap(([sectionId, donationForm]) => donationForm ? [[sectionId, { slug: donationForm.slug, title: donationForm.title }]] : []),
+      )
+    : previewData?.donationFormBySection ?? {}
 
   if (isLoading) {
     return (
@@ -202,7 +230,8 @@ export function SiteView() {
           actualites={previewData?.actualites ?? []}
           boutiqueProduits={previewData?.boutiqueProduits ?? []}
           membershipFormBySection={previewData?.membershipFormBySection ?? {}}
-          donationFormBySection={previewData?.donationFormBySection ?? {}}
+          donationFormBySection={draftDonationFormBySection}
+          usesDonationForms={donationForms ? usesDonationForms(donationForms) : previewData?.usesDonationForms ?? false}
           membershipCta={previewData?.membershipCta ?? null}
           canIssueTaxReceipts={previewData?.canIssueTaxReceipts ?? false}
           donsEnabled={modules.dons}

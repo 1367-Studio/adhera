@@ -39,17 +39,28 @@ export type MembershipSection = {
 }
 
 // Renvoie vers le DonationForm explicitement lié à cette section (DonationForm.siteSectionId,
-// choisi dans l'étape Publication du formulaire — voir dashboard/dons/[id]/page.tsx), ou vers
-// /portal/[slug]/don, l'ancienne page de don standalone (accessible sans compte — voir
-// src/proxy.ts) quand aucun formulaire n'est lié. Volontairement un simple appel à l'action et
-// non un formulaire inline ici : le rendu réel (paliers, visuel, reçu fiscal) vit dans la page
-// du DonationForm ou dans l'ancienne page standalone, jamais dupliqué dans ce composant.
+// choisi dans l'étape Publication du formulaire ou dans l'éditeur du site). Sans formulaire
+// lié, la section est masquée dès que l'association utilise les formulaires de don ; sinon
+// (associations historiques) elle renvoie vers /portal/[slug]/don, l'ancienne page de don
+// standalone (accessible sans compte — voir src/proxy.ts). Volontairement un simple appel à
+// l'action et non un formulaire inline ici : le rendu réel (paliers, visuel, reçu fiscal) vit
+// dans la page du DonationForm ou dans l'ancienne page standalone.
 export type DonsSection = {
   id:          string
   type:        "dons"
   title:       string
   body:        string
   buttonLabel?: string
+  // Builder-only draft of the form picked in the section sheet — never persisted. SiteView
+  // strips it before saving and sends it as donsFormAssignments instead, because the
+  // DonationForm's own siteSectionId stays the single source of truth. pickedAt breaks ties
+  // when two sections pick the same form: the latest pick wins, like it will on save.
+  donationFormPick?: DonationFormPick
+}
+
+export type DonationFormPick = {
+  formId:   string | null
+  pickedAt: number
 }
 
 export type BoutiqueSection = {

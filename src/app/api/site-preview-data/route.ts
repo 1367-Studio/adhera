@@ -19,7 +19,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   const now = new Date()
-  const [actualites, boutiqueProduits, membershipForms, donationForms] = await Promise.all([
+  const [actualites, boutiqueProduits, membershipForms, donationForms, liveDonationFormCount] = await Promise.all([
     prisma.actualite.findMany({
       where:   { associationId, publishedAt: { not: null, lte: now }, recipientMode: "ALL" },
       orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
@@ -37,15 +37,23 @@ export const GET = withAdminAuth(async (req, ctx) => {
       select: { slug: true, title: true, siteSectionId: true },
     }),
     prisma.donationForm.findMany({
-      where:  { associationId, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
-      select: { slug: true, title: true, siteSectionId: true },
+      where:   { associationId, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
+      // Same deterministic pick as the public site for legacy duplicates on one section.
+      orderBy: { updatedAt: "desc" },
+      select:  { slug: true, title: true, siteSectionId: true },
+    }),
+    prisma.donationForm.count({
+      where: { associationId, status: { in: ["PUBLISHED", "ARCHIVED"] } },
     }),
   ])
 
   const membershipFormBySection: Record<string, { slug: string; title: string }> =
     Object.fromEntries(membershipForms.map(f => [f.siteSectionId as string, { slug: f.slug, title: f.title }]))
-  const donationFormBySection: Record<string, { slug: string; title: string }> =
-    Object.fromEntries(donationForms.map(f => [f.siteSectionId as string, { slug: f.slug, title: f.title }]))
+  const donationFormBySection: Record<string, { slug: string; title: string }> = {}
+  for (const donationForm of donationForms) {
+    const sectionId = donationForm.siteSectionId as string
+    if (!donationFormBySection[sectionId]) donationFormBySection[sectionId] = { slug: donationForm.slug, title: donationForm.title }
+  }
 
   const siteSections = (assoc.siteConfig as SiteConfig | null)?.sections ?? []
   const firstBoundMembershipForm = siteSections
@@ -58,7 +66,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     boutiqueProduits,
     membershipFormBySection,
     donationFormBySection,
-    membershipCta: firstBoundMembershipForm ? { href: "#" } : null,
+    // Decides whether an unbound "dons" section is hidden (true) or keeps the legacy generic
+    // donation link (false) — see SiteDonsSection.
+    usesDonationForms: liveDonationFormCount > 0,
+    membershipCta:firstBoundMembershipForm ? { href: "#" } : null,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
   })
 })

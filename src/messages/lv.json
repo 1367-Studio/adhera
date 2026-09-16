@@ -2575,6 +2575,31 @@
         "deleteError": "Kļūdu dzēšana",
         "statusUpdated": "Atjaunināts statuss",
         "statusError": "Kļūda statusa maiņā"
+      },
+      "publishConfirm": {
+        "title": "Vai publicēt šo ziedošanas veidlapu?",
+        "descriptionSite": "Tā būs redzama mājaslapā sadaļā „{section}“ un dalībniekiem sadaļā Mana telpa → Mani ziedojumi.",
+        "descriptionSiteReplace": "Tā aizstās „{title}“ mājaslapas sadaļā „{section}“ un būs redzama dalībniekiem sadaļā Mana telpa → Mani ziedojumi.",
+        "descriptionLink": "Tā būs pieejama, izmantojot savu saiti, un dalībniekiem sadaļā Mana telpa → Mani ziedojumi. Mājaslapā tā netiks rādīta.",
+        "descriptionPrivate": "Tā būs redzama tikai dalībniekiem, sadaļā Mana telpa → Mani ziedojumi.",
+        "blockHiddenNote": "Mājaslapas bloks „{section}“ būs paslēpts, kamēr tajā netiks rādīta neviena veidlapa.",
+        "confirmLabel": "Publicēt"
+      },
+      "unpublishConfirm": {
+        "title": "Vai atcelt šīs ziedošanas veidlapas publicēšanu?",
+        "description": "Tā nekavējoties pazudīs no mājaslapas un sadaļas Mana telpa, un tās saite vairs nedarbosies.",
+        "confirmLabel": "Atcelt publicēšanu"
+      },
+      "archiveConfirm": {
+        "title": "Vai arhivēt šo ziedošanas veidlapu?",
+        "description": "„{title}“ pazudīs no mājaslapas un sadaļas Mana telpa, un tās saite vairs nedarbosies.",
+        "recurringNote": "Arhivēšana neaptur notiekošos regulāros ziedojumus: tie joprojām tiks iekasēti.",
+        "confirmLabel": "Arhivēt"
+      },
+      "deleteBlocked": {
+        "title": "Šo veidlapu nevar dzēst",
+        "description": "„{title}“ jau ir saņēmusi ziedojumus, kuru vēsture ir jāsaglabā. Arhivējiet to, lai to noņemtu no mājaslapas un sadaļas Mana telpa.",
+        "descriptionArchived": "„{title}“ jau ir saņēmusi ziedojumus, kuru vēsture ir jāsaglabā. Tā jau ir arhivēta."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Atpakaļ pie ziedojumiem",
+      "leaveWarning": {
+        "title": "Nesaglabātas izmaiņas",
+        "description": "Dažas sadaļas ir rediģētas, bet nav saglabātas. Varat tās saglabāt pirms iziešanas vai atmest.",
+        "discard": "Atmest",
+        "saveAndLeave": "Saglabāt un iziet"
+      },
+      "partialSaveWarning": "Dažas izmaiņas tika saglabātas pirms kļūdas — pārbaudiet jau saglabātos soļus.",
       "notFound": "Forma nav atrasta",
       "titleLabel": "Formas nosaukums",
+      "titleRequired": "Nosaukums ir obligāts",
       "duplicateButton": "Dublikāts",
       "deleteButton": "Dzēst",
       "publishButton": "Publicēt",
@@ -2641,6 +2674,12 @@
         "saveError": "Kļūdu reģistrēšana",
         "linkCopied": "Saite nokopēta",
         "linkCopyError": "Nevar kopēt — izvēlieties saiti manuāli."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Pirms publicēšanas saglabājiet šīs sadaļas: {steps}",
+        "noTiersToast": "Pirms šīs veidlapas publicēšanas pievienojiet vismaz vienu līmeni.",
+        "unsavedTag": "Nav saglabāts",
+        "noTiersTag": "Nav līmeņa"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontakttālrunis"
         },
         "tiers": {
-          "title": "Gultņi",
+          "title": "Līmeņi",
           "hint": "Summas, kas tiek piedāvātas ziedotājam šai veidlapai.",
           "noTiers": "Nav līmeņa",
           "addTier": "Pievienot līmeni",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Izveidot jaunu sadaļu",
           "siteSectionCreateError": "Kļūda, izveidojot vietnes sadaļu.",
           "siteSectionRequiredError": "Izvēlieties vietnes sadaļu, kurā ievietot šo formu.",
+          "siteSectionReplaceWarningPublished": "Šajā sadaļā pašlaik tiek rādīta veidlapa „{title}“. Saglabājot šī veidlapa to aizstās; „{title}“ joprojām būs pieejama, izmantojot savu saiti.",
+          "siteSectionReplaceWarningDraft": "Šajā sadaļā pašlaik tiek rādīta veidlapa „{title}“. Šī veidlapa to aizstās, tiklīdz tiks publicēta; „{title}“ joprojām būs pieejama, izmantojot savu saiti.",
+          "siteSectionRemovedWarning": "Saglabājot sadaļa „{section}“ mājaslapā tiks paslēpta.",
           "datesOrderError": "Slēgšanas datumam jābūt vēlākam par atvēršanas datumu."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Jūsu ziedojums palīdz mums finansēt mūsu darbības visa gada garumā...",
       "donsButtonLabel": "Pogas teksts",
       "donsButtonLabelPlaceholder": "Ziedot",
-      "donsHint": "Poga ved uz publisko ziedojumu lapu, kurai var piekļūt bez konta. Nodokļu kvīts tiek nosūtīta automātiski, ja asociācijai ir atļauts to izsniegt.",
+      "donsForm": "Ziedojumu veidlapa",
+      "donsFormNone": "Nav veidlapas",
+      "donsFormSelectedHint": "Poga atver šīs veidlapas lapu, kas pieejama bez konta.",
+      "donsFormNoneHint": "Šis bloks vietnē ir paslēpts.",
+      "donsFormMovedWarning": "Šī veidlapa pašlaik tiek rādīta sadaļā “{section}”. No turienes tā tiks noņemta.",
+      "donsFormEmptyLegacy": "Poga ved uz biedrības vispārējo ziedojumu lapu. Publicējiet ziedojumu veidlapu, lai izvēlētos, kas šeit tiek rādīts.",
+      "donsFormEmptyNoPublished": "Nav publicētas ziedojumu veidlapas: šis bloks vietnē ir paslēpts.",
+      "donsFormManageLink": "Skatīt ziedojumu veidlapas",
       "contactHint": "Šī sadaļa automātiski parāda pilsētu un valsti, kas konfigurēta asociācijas iestatījumos.",
       "cancel": "Atcelt",
       "apply": "Piesakies",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignorēt",
       "boutiqueLimit": "Rādāmo produktu skaits",
       "boutiqueLimitHint": "Vietnē tiks rādīti tikai pirmie N aktīvie produkti."
+    },
+    "preview": {
+      "donsNoForm": "Nav izvēlēta ziedojumu veidlapa — neredzams publiskajā vietnē"
     },
     "editor": {
       "viewSite": "Skatīt mājaslapu",

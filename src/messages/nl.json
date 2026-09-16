@@ -2575,6 +2575,31 @@
         "deleteError": "Fout verwijderen",
         "statusUpdated": "Bijgewerkte status",
         "statusError": "Fout bij statuswijziging"
+      },
+      "publishConfirm": {
+        "title": "Dit donatieformulier publiceren?",
+        "descriptionSite": "Het wordt zichtbaar op de website, in de sectie “{section}”, en voor leden in Mijn Ruimte → Mijn Donaties.",
+        "descriptionSiteReplace": "Het vervangt “{title}” in de sectie “{section}” van de website en wordt zichtbaar voor leden in Mijn Ruimte → Mijn Donaties.",
+        "descriptionLink": "Het is bereikbaar via de eigen link en voor leden in Mijn Ruimte → Mijn Donaties. Het verschijnt niet op de website.",
+        "descriptionPrivate": "Het is alleen zichtbaar voor leden, in Mijn Ruimte → Mijn Donaties.",
+        "blockHiddenNote": "Het blok “{section}” op de website wordt verborgen zolang er geen formulier in wordt getoond.",
+        "confirmLabel": "Publiceren"
+      },
+      "unpublishConfirm": {
+        "title": "Publicatie van dit donatieformulier intrekken?",
+        "description": "Het verdwijnt direct van de website en uit Mijn Ruimte, en de link werkt niet meer.",
+        "confirmLabel": "Publicatie intrekken"
+      },
+      "archiveConfirm": {
+        "title": "Dit donatieformulier archiveren?",
+        "description": "“{title}” verdwijnt van de website en uit Mijn Ruimte, en de link werkt niet meer.",
+        "recurringNote": "Archiveren stopt lopende terugkerende donaties niet: ze worden gewoon verder geïnd.",
+        "confirmLabel": "Archiveren"
+      },
+      "deleteBlocked": {
+        "title": "Dit formulier kan niet worden verwijderd",
+        "description": "“{title}” heeft al donaties ontvangen, waarvan de geschiedenis bewaard moet blijven. Archiveer het om het van de website en uit Mijn Ruimte te verwijderen.",
+        "descriptionArchived": "“{title}” heeft al donaties ontvangen, waarvan de geschiedenis bewaard moet blijven. Het is al gearchiveerd."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Terug naar donaties",
+      "leaveWarning": {
+        "title": "Niet-opgeslagen wijzigingen",
+        "description": "Sommige secties zijn bewerkt maar niet opgeslagen. Je kunt ze opslaan voordat je vertrekt, of ze verwerpen.",
+        "discard": "Verwerpen",
+        "saveAndLeave": "Opslaan en verlaten"
+      },
+      "partialSaveWarning": "Sommige wijzigingen waren al opgeslagen vóór de fout — controleer de stappen die al zijn opgeslagen.",
       "notFound": "Niet gevonden vorm",
       "titleLabel": "Formuliertitel",
+      "titleRequired": "De titel is verplicht",
       "duplicateButton": "Duplicate",
       "deleteButton": "Verwijderen",
       "publishButton": "Publiceren",
@@ -2641,6 +2674,12 @@
         "saveError": "Foutregistratie",
         "linkCopied": "Link gekopieerd",
         "linkCopyError": "Kan niet kopiëren — selecteer de link handmatig."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Sla de volgende secties op voordat je publiceert: {steps}",
+        "noTiersToast": "Voeg minstens één niveau toe voordat je dit formulier publiceert.",
+        "unsavedTag": "Niet opgeslagen",
+        "noTiersTag": "Geen niveau"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Contact telefoon"
         },
         "tiers": {
-          "title": "Lagers",
+          "title": "Niveaus",
           "hint": "Bedragen die aan de schenker worden voorgesteld voor dit formulier.",
           "noTiers": "Geen niveau",
           "addTier": "Voeg een laag toe",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Maak een nieuwe sectie aan",
           "siteSectionCreateError": "Fout bij het aanmaken van de sitesectie.",
           "siteSectionRequiredError": "Kies het gedeelte van de site waar je dit formulier wilt plaatsen.",
+          "siteSectionReplaceWarningPublished": "Deze sectie toont momenteel “{title}”. Bij het opslaan vervangt dit formulier het; “{title}” blijft bereikbaar via de eigen link.",
+          "siteSectionReplaceWarningDraft": "Deze sectie toont momenteel “{title}”. Dit formulier vervangt het zodra het is gepubliceerd; “{title}” blijft bereikbaar via de eigen link.",
+          "siteSectionRemovedWarning": "Bij het opslaan wordt de sectie “{section}” op de website verborgen.",
           "datesOrderError": "De sluitingsdatum moet later zijn dan de openingsdatum."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Uw donatie helpt ons om onze activiteiten het hele jaar door te financieren...",
       "donsButtonLabel": "Knoptekst",
       "donsButtonLabelPlaceholder": "Doneren",
-      "donsHint": "De knop verwijst naar de openbare donatiepagina, die zonder account toegankelijk is. De belastingbon wordt automatisch verzonden als de vereniging toestemming heeft om er een uit te geven.",
+      "donsForm": "Donatieformulier",
+      "donsFormNone": "Geen formulier",
+      "donsFormSelectedHint": "De knop opent de pagina van dit formulier, toegankelijk zonder account.",
+      "donsFormNoneHint": "Dit blok is verborgen op de site.",
+      "donsFormMovedWarning": "Dit formulier wordt momenteel getoond in de sectie ‘{section}’. Het wordt daar verwijderd.",
+      "donsFormEmptyLegacy": "De knop verwijst naar de algemene donatiepagina van de vereniging. Publiceer een donatieformulier om te kiezen wat hier wordt getoond.",
+      "donsFormEmptyNoPublished": "Geen gepubliceerd donatieformulier: dit blok is verborgen op de site.",
+      "donsFormManageLink": "Donatieformulieren bekijken",
       "contactHint": "Deze sectie toont automatisch de stad en het land dat in de associatie-instellingen is geconfigureerd.",
       "cancel": "Annuleren",
       "apply": "Solliciteer",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Negeer",
       "boutiqueLimit": "Aantal weer te geven producten",
       "boutiqueLimitHint": "Alleen de eerste N actieve producten worden op de site getoond."
+    },
+    "preview": {
+      "donsNoForm": "Geen donatieformulier gekozen — onzichtbaar op de openbare site"
     },
     "editor": {
       "viewSite": "Zie de website",

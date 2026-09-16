@@ -2575,6 +2575,31 @@
         "deleteError": "Tneħħija ta' żball",
         "statusUpdated": "Status Aġġornat",
         "statusError": "Żball dwar il-bidla fl-istatus"
+      },
+      "publishConfirm": {
+        "title": "Tippubblika din il-formola ta' donazzjoni?",
+        "descriptionSite": "Se tkun viżibbli fuq is-sit elettroniku, fis-sezzjoni “{section}”, u għall-membri f'L-Ispazju Tiegħi → Id-Donazzjonijiet tiegħi.",
+        "descriptionSiteReplace": "Se tieħu post “{title}” fis-sezzjoni “{section}” tas-sit elettroniku u se tkun viżibbli għall-membri f'L-Ispazju Tiegħi → Id-Donazzjonijiet tiegħi.",
+        "descriptionLink": "Se tkun aċċessibbli permezz tal-link tagħha u għall-membri f'L-Ispazju Tiegħi → Id-Donazzjonijiet tiegħi. Mhix se tidher fuq is-sit elettroniku.",
+        "descriptionPrivate": "Se tkun viżibbli biss għall-membri, f'L-Ispazju Tiegħi → Id-Donazzjonijiet tiegħi.",
+        "blockHiddenNote": "Il-blokk “{section}” tas-sit elettroniku se jibqa' moħbi sakemm ma tintwera l-ebda formola fih.",
+        "confirmLabel": "Ippubblika"
+      },
+      "unpublishConfirm": {
+        "title": "Tneħħi l-pubblikazzjoni ta' din il-formola ta' donazzjoni?",
+        "description": "Se tisparixxi minnufih mis-sit elettroniku u minn L-Ispazju Tiegħi, u l-link tagħha ma jibqax jaħdem.",
+        "confirmLabel": "Neħħi l-pubblikazzjoni"
+      },
+      "archiveConfirm": {
+        "title": "Tarkivja din il-formola ta' donazzjoni?",
+        "description": "“{title}” se tisparixxi mis-sit elettroniku u minn L-Ispazju Tiegħi, u l-link tagħha ma jibqax jaħdem.",
+        "recurringNote": "L-arkivjar ma jwaqqafx id-donazzjonijiet rikorrenti li għaddejjin: se jibqgħu jiġu ddebitati.",
+        "confirmLabel": "Arkivja"
+      },
+      "deleteBlocked": {
+        "title": "Din il-formola ma tistax titħassar",
+        "description": "“{title}” diġà rċeviet donazzjonijiet, u l-istorja tagħhom trid tinżamm. Arkivjaha biex tneħħiha mis-sit elettroniku u minn L-Ispazju Tiegħi.",
+        "descriptionArchived": "“{title}” diġà rċeviet donazzjonijiet, u l-istorja tagħhom trid tinżamm. Diġà hija arkivjata."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Lura għad-donazzjonijiet",
+      "leaveWarning": {
+        "title": "Bidliet mhux salvati",
+        "description": "Xi sezzjonijiet ġew editjati mingħajr ma ġew salvati. Tista' ssalvahom qabel ma toħroġ, jew tarmihom.",
+        "discard": "Armi",
+        "saveAndLeave": "Salva u oħroġ"
+      },
+      "partialSaveWarning": "Xi wħud mill-bidliet ġew salvati qabel l-iżball — iċċekkja l-passi li diġà kienu ġew salvati.",
       "notFound": "Forma mhux misjuba",
       "titleLabel": "Titlu tal-Formola",
+      "titleRequired": "It-titlu huwa obbligatorju",
       "duplicateButton": "Duplikat",
       "deleteButton": "Ħassar",
       "publishButton": "Ippubblika",
@@ -2641,6 +2674,12 @@
         "saveError": "Reġistrazzjoni ta' żbalji",
         "linkCopied": "Link kopjat",
         "linkCopyError": "Ma tistax tikkopja — agħżel il-link manwalment."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Salva s-sezzjonijiet li ġejjin qabel ma tippubblika: {steps}",
+        "noTiersToast": "Żid mill-inqas livell wieħed qabel ma tippubblika din il-formola.",
+        "unsavedTag": "Mhux salvat",
+        "noTiersTag": "L-ebda livell"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kuntatt Telefon"
         },
         "tiers": {
-          "title": "Bearings",
+          "title": "Livelli",
           "hint": "Ammonti proposti lid-donatur għal din il-formola.",
           "noTiers": "L-ebda livell",
           "addTier": "Żid livell",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Oħloq sezzjoni ġdida",
           "siteSectionCreateError": "Żball fil-ħolqien tas-sezzjoni tas-sit.",
           "siteSectionRequiredError": "Agħżel is-sezzjoni tas-sit biex tippubblika din il-formola.",
+          "siteSectionReplaceWarningPublished": "Din is-sezzjoni bħalissa turi “{title}”. Meta ssalva, din il-formola se tieħu postha; “{title}” se tibqa' aċċessibbli permezz tal-link tagħha.",
+          "siteSectionReplaceWarningDraft": "Din is-sezzjoni bħalissa turi “{title}”. Din il-formola se tieħu postha hekk kif tiġi ppubblikata; “{title}” se tibqa' aċċessibbli permezz tal-link tagħha.",
+          "siteSectionRemovedWarning": "Meta ssalva, is-sezzjoni “{section}” se tinħeba fuq is-sit elettroniku.",
           "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Id-donazzjoni tiegħek tgħinna finanzjaw l-azzjonijiet tagħna matul is-sena...",
       "donsButtonLabel": "Test tal-buttuna",
       "donsButtonLabelPlaceholder": "Agħti",
-      "donsHint": "Il-buttuna tgħaqqad mal-paġna tad-donazzjonijiet pubbliċi, li tista' tiġi aċċessata mingħajr kont. Ir-riċevuta tat-taxxa tintbagħat awtomatikament jekk l-assoċjazzjoni tkun awtorizzata toħroġ waħda.",
+      "donsForm": "Formola ta' donazzjoni",
+      "donsFormNone": "L-ebda formola",
+      "donsFormSelectedHint": "Il-buttuna tiftaħ il-paġna ta' din il-formola, aċċessibbli mingħajr kont.",
+      "donsFormNoneHint": "Dan il-blokk huwa moħbi fuq is-sit.",
+      "donsFormMovedWarning": "Din il-formola bħalissa qed tintwera fit-taqsima “{section}”. Se titneħħa minn hemm.",
+      "donsFormEmptyLegacy": "Il-buttuna twassal għall-paġna ġenerali tad-donazzjonijiet tal-assoċjazzjoni. Ippubblika formola ta' donazzjoni biex tagħżel x'jintwera hawn.",
+      "donsFormEmptyNoPublished": "L-ebda formola ta' donazzjoni ppubblikata: dan il-blokk huwa moħbi fuq is-sit.",
+      "donsFormManageLink": "Ara l-formoli ta' donazzjoni",
       "contactHint": "Din is-sezzjoni turi awtomatikament il-belt u l-pajjiż kkonfigurati fis-settings tal-assoċjazzjoni.",
       "cancel": "Ikkanċella",
       "apply": "Applika",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignora",
       "boutiqueLimit": "Numru ta' prodotti li għandhom jintwerew",
       "boutiqueLimitHint": "Fuq is-sit se jidhru biss l-ewwel N prodotti attivi."
+    },
+    "preview": {
+      "donsNoForm": "L-ebda formola ta' donazzjoni magħżula — inviżibbli fuq is-sit pubbliku"
     },
     "editor": {
       "viewSite": "Ara s-sit elettroniku",

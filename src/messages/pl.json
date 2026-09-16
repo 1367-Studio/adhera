@@ -2575,6 +2575,31 @@
         "deleteError": "Usuwanie błędów",
         "statusUpdated": "Zaktualizowany status",
         "statusError": "Błąd przy zmianie statusu"
+      },
+      "publishConfirm": {
+        "title": "Opublikować ten formularz darowizny?",
+        "descriptionSite": "Będzie widoczny na stronie internetowej, w sekcji „{section}”, oraz dla członków w Moja przestrzeń → Moje darowizny.",
+        "descriptionSiteReplace": "Zastąpi „{title}” w sekcji „{section}” strony internetowej i będzie widoczny dla członków w Moja przestrzeń → Moje darowizny.",
+        "descriptionLink": "Będzie dostępny przez swój link oraz dla członków w Moja przestrzeń → Moje darowizny. Nie pojawi się na stronie internetowej.",
+        "descriptionPrivate": "Będzie widoczny tylko dla członków, w Moja przestrzeń → Moje darowizny.",
+        "blockHiddenNote": "Blok „{section}” na stronie internetowej będzie ukryty, dopóki nie zostanie w nim wyświetlony żaden formularz.",
+        "confirmLabel": "Opublikuj"
+      },
+      "unpublishConfirm": {
+        "title": "Wycofać publikację tego formularza darowizny?",
+        "description": "Natychmiast zniknie ze strony internetowej i z Mojej przestrzeni, a jego link przestanie działać.",
+        "confirmLabel": "Wycofaj publikację"
+      },
+      "archiveConfirm": {
+        "title": "Zarchiwizować ten formularz darowizny?",
+        "description": "„{title}” zniknie ze strony internetowej i z Mojej przestrzeni, a jego link przestanie działać.",
+        "recurringNote": "Archiwizacja nie zatrzymuje trwających darowizn cyklicznych: nadal będą pobierane.",
+        "confirmLabel": "Zarchiwizuj"
+      },
+      "deleteBlocked": {
+        "title": "Tego formularza nie można usunąć",
+        "description": "„{title}” otrzymał już darowizny, których historia musi zostać zachowana. Zarchiwizuj go, aby usunąć go ze strony internetowej i z Mojej przestrzeni.",
+        "descriptionArchived": "„{title}” otrzymał już darowizny, których historia musi zostać zachowana. Jest już zarchiwizowany."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Powrót do darowizn",
+      "leaveWarning": {
+        "title": "Niezapisane zmiany",
+        "description": "Niektóre sekcje zostały zmienione, ale nie zapisane. Możesz je zapisać przed wyjściem lub odrzucić.",
+        "discard": "Odrzuć",
+        "saveAndLeave": "Zapisz i wyjdź"
+      },
+      "partialSaveWarning": "Niektóre zmiany zostały zapisane przed pojawieniem się błędu — sprawdź kroki, które już zostały zapisane.",
       "notFound": "Formularz nie znaleziony",
       "titleLabel": "Tytuł klasy",
+      "titleRequired": "Tytuł jest wymagany",
       "duplicateButton": "Duplikat",
       "deleteButton": "Usuń",
       "publishButton": "Publikuj",
@@ -2641,6 +2674,12 @@
         "saveError": "Zapis błędu",
         "linkCopied": "Link skopiowany",
         "linkCopyError": "Nie można skopiować — wybierz link ręcznie."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Przed publikacją zapisz następujące sekcje: {steps}",
+        "noTiersToast": "Przed opublikowaniem tego formularza dodaj co najmniej jeden poziom.",
+        "unsavedTag": "Niezapisane",
+        "noTiersTag": "Brak poziomu"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Telefon kontaktowy"
         },
         "tiers": {
-          "title": "Łożyska",
+          "title": "Poziomy",
           "hint": "Kwoty proponowane dawcy dla tego formularza.",
           "noTiers": "Brak poziomu",
           "addTier": "Dodaj poziom",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Stwórz nową sekcję",
           "siteSectionCreateError": "Błąd przy tworzeniu sekcji strony.",
           "siteSectionRequiredError": "Wybierz sekcję strony, do której chcesz opublikować ten formularz.",
+          "siteSectionReplaceWarningPublished": "Ta sekcja wyświetla obecnie „{title}”. Po zapisaniu ten formularz go zastąpi; „{title}” pozostanie dostępny przez swój link.",
+          "siteSectionReplaceWarningDraft": "Ta sekcja wyświetla obecnie „{title}”. Ten formularz go zastąpi, gdy tylko zostanie opublikowany; „{title}” pozostanie dostępny przez swój link.",
+          "siteSectionRemovedWarning": "Po zapisaniu sekcja „{section}” zostanie ukryta na stronie internetowej.",
           "datesOrderError": "Data zamknięcia musi być późniejsza niż data otwarcia."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Twoja darowizna pomaga nam finansować nasze działania przez cały rok...",
       "donsButtonLabel": "Tekst przycisku",
       "donsButtonLabelPlaceholder": "Wpłać",
-      "donsHint": "Przycisk prowadzi do publicznej strony darowizn, do której można uzyskać dostęp bez posiadania konta. Potwierdzenie podatkowe jest wysyłane automatycznie, jeśli stowarzyszenie uzyska upoważnienie do jego wydania.",
+      "donsForm": "Formularz darowizny",
+      "donsFormNone": "Brak formularza",
+      "donsFormSelectedHint": "Przycisk otwiera stronę tego formularza, dostępną bez konta.",
+      "donsFormNoneHint": "Ten blok jest ukryty na stronie.",
+      "donsFormMovedWarning": "Ten formularz jest obecnie wyświetlany w sekcji „{section}”. Zostanie z niej usunięty.",
+      "donsFormEmptyLegacy": "Przycisk prowadzi do ogólnej strony darowizn stowarzyszenia. Opublikuj formularz darowizny, aby wybrać, co będzie tu wyświetlane.",
+      "donsFormEmptyNoPublished": "Brak opublikowanego formularza darowizny: ten blok jest ukryty na stronie.",
+      "donsFormManageLink": "Zobacz formularze darowizn",
       "contactHint": "Ta sekcja automatycznie wyświetla miasto i kraj skonfigurowane w ustawieniach stowarzyszenia.",
       "cancel": "Anuluj",
       "apply": "Aplikuj",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoruj",
       "boutiqueLimit": "Liczba wyświetlanych produktów",
       "boutiqueLimitHint": "Na stronie wyświetlonych zostanie tylko pierwszych N aktywnych produktów."
+    },
+    "preview": {
+      "donsNoForm": "Nie wybrano formularza darowizny — niewidoczny na publicznej stronie"
     },
     "editor": {
       "viewSite": "Zobacz stronę internetową",

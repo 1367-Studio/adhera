@@ -2575,6 +2575,31 @@
         "deleteError": "Chybné mazanie",
         "statusUpdated": "Aktualizovaný stav",
         "statusError": "Chyba pri zmene stavu"
+      },
+      "publishConfirm": {
+        "title": "Zverejniť tento formulár na darovanie?",
+        "descriptionSite": "Bude viditeľný na webovej stránke v sekcii „{section}“ a pre členov v Môj priestor → Moje dary.",
+        "descriptionSiteReplace": "Nahradí „{title}“ v sekcii „{section}“ webovej stránky a bude viditeľný pre členov v Môj priestor → Moje dary.",
+        "descriptionLink": "Bude dostupný cez svoj odkaz a pre členov v Môj priestor → Moje dary. Na webovej stránke sa nezobrazí.",
+        "descriptionPrivate": "Bude viditeľný iba pre členov, v Môj priestor → Moje dary.",
+        "blockHiddenNote": "Blok „{section}“ na webovej stránke bude skrytý, kým sa v ňom nezobrazí žiadny formulár.",
+        "confirmLabel": "Zverejniť"
+      },
+      "unpublishConfirm": {
+        "title": "Zrušiť zverejnenie tohto formulára na darovanie?",
+        "description": "Okamžite zmizne z webovej stránky aj z Môj priestor a jeho odkaz prestane fungovať.",
+        "confirmLabel": "Zrušiť zverejnenie"
+      },
+      "archiveConfirm": {
+        "title": "Archivovať tento formulár na darovanie?",
+        "description": "„{title}“ zmizne z webovej stránky aj z Môj priestor a jeho odkaz prestane fungovať.",
+        "recurringNote": "Archivácia nezastaví prebiehajúce opakované dary: budú sa naďalej strhávať.",
+        "confirmLabel": "Archivovať"
+      },
+      "deleteBlocked": {
+        "title": "Tento formulár nie je možné vymazať",
+        "description": "„{title}“ už prijal dary, ktorých história sa musí zachovať. Archivujte ho, aby ste ho odstránili z webovej stránky a z Môj priestor.",
+        "descriptionArchived": "„{title}“ už prijal dary, ktorých história sa musí zachovať. Už je archivovaný."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Späť na dary",
+      "leaveWarning": {
+        "title": "Neuložené zmeny",
+        "description": "Niektoré sekcie boli upravené, ale neboli uložené. Môžete ich pred odchodom uložiť, alebo ich zahodiť.",
+        "discard": "Zahodiť",
+        "saveAndLeave": "Uložiť a odísť"
+      },
+      "partialSaveWarning": "Niektoré zmeny boli uložené ešte pred chybou — skontrolujte kroky, ktoré už boli uložené.",
       "notFound": "Formulár nenájdený",
       "titleLabel": "Názov ročníka",
+      "titleRequired": "Názov je povinný",
       "duplicateButton": "Duplikát",
       "deleteButton": "Vymazať",
       "publishButton": "Publikovať",
@@ -2641,6 +2674,12 @@
         "saveError": "Nahrávanie chýb",
         "linkCopied": "Odkaz skopírovaný",
         "linkCopyError": "Nie je možné kopírovať — vyberte odkaz manuálne."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Pred zverejnením uložte nasledujúce sekcie: {steps}",
+        "noTiersToast": "Pred zverejnením tohto formulára pridajte aspoň jednu úroveň.",
+        "unsavedTag": "Neuložené",
+        "noTiersTag": "Žiadna úroveň"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontaktný telefón"
         },
         "tiers": {
-          "title": "Ložiská",
+          "title": "Úrovne",
           "hint": "Sumy navrhované darcovi pre tento formulár.",
           "noTiers": "Žiadna úroveň",
           "addTier": "Pridajte úroveň",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Vytvoriť novú sekciu",
           "siteSectionCreateError": "Chyba pri vytváraní sekcie stránky.",
           "siteSectionRequiredError": "Vyberte sekciu stránky, kam tento formulár zverejníte.",
+          "siteSectionReplaceWarningPublished": "Táto sekcia momentálne zobrazuje „{title}“. Po uložení ho tento formulár nahradí; „{title}“ zostane dostupný cez svoj odkaz.",
+          "siteSectionReplaceWarningDraft": "Táto sekcia momentálne zobrazuje „{title}“. Tento formulár ho nahradí hneď po zverejnení; „{title}“ zostane dostupný cez svoj odkaz.",
+          "siteSectionRemovedWarning": "Po uložení bude sekcia „{section}“ na webovej stránke skrytá.",
           "datesOrderError": "Dátum uzávierky musí byť neskôr, než je dátum otvorenia."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Váš dar nám pomáha financovať naše aktivity počas celého roka...",
       "donsButtonLabel": "Text tlačidla",
       "donsButtonLabelPlaceholder": "Darovať",
-      "donsHint": "Tlačidlo odkazuje na verejnú stránku s darmi, ku ktorej je možné pristupovať aj bez účtu. Potvrdenie o dani sa odosiela automaticky, ak je združenie oprávnené ho vydať.",
+      "donsForm": "Formulár na dar",
+      "donsFormNone": "Žiadny formulár",
+      "donsFormSelectedHint": "Tlačidlo otvorí stránku tohto formulára, dostupnú bez účtu.",
+      "donsFormNoneHint": "Tento blok je na webe skrytý.",
+      "donsFormMovedWarning": "Tento formulár sa momentálne zobrazuje v sekcii „{section}“. Bude z nej odstránený.",
+      "donsFormEmptyLegacy": "Tlačidlo odkazuje na všeobecnú stránku darov združenia. Zverejnite formulár na dar a vyberte, čo sa tu zobrazí.",
+      "donsFormEmptyNoPublished": "Žiadny zverejnený formulár na dar: tento blok je na webe skrytý.",
+      "donsFormManageLink": "Zobraziť formuláre na dary",
       "contactHint": "Táto sekcia automaticky zobrazuje mesto a krajinu nastavené v nastaveniach asociácie.",
       "cancel": "Zrušiť",
       "apply": "Prihláste sa",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoruj",
       "boutiqueLimit": "Počet zobrazených produktov",
       "boutiqueLimitHint": "Na webe sa zobrazí len prvých N aktívnych produktov."
+    },
+    "preview": {
+      "donsNoForm": "Nie je vybraný žiadny formulár na dar — neviditeľný na verejnej stránke"
     },
     "editor": {
       "viewSite": "Pozrite si webovú stránku",

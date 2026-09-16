@@ -12,13 +12,17 @@ type Props = {
   // (Paramètres → Identité). Le mentionner à tort serait un engagement fiscal faux.
   canIssueTaxReceipts: boolean
   // A DonationForm published with visibility SITE and bound to this section (see
-  // getSiteData in [slug]/page.tsx). Unlike membership, null here doesn't hide the
-  // section — it falls back to the legacy standalone /portal/[slug]/don page, which keeps
-  // working for associations that never created a configurable DonationForm.
+  // getSiteData in [slug]/page.tsx).
   donationForm: { slug: string; title: string } | null
+  // Whether the association has ever put a DonationForm live (published or archived). If so,
+  // a section with no form bound renders nothing, like SiteMembershipSection. If not (legacy
+  // associations), it falls back to the standalone /portal/[slug]/don page, which keeps
+  // working for associations that never created a configurable DonationForm.
+  usesDonationForms: boolean
 }
 
-export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts, donationForm }: Props) {
+export function SiteDonsSection({ section, slug, color, canIssueTaxReceipts, donationForm, usesDonationForms }: Props) {
+  if (!donationForm && usesDonationForms) return null
   const href = donationForm ? `/${slug}/dons/${donationForm.slug}` : `/portal/${slug}/don`
   return (
     <section className="py-16 px-4">

@@ -2575,6 +2575,31 @@
         "deleteError": "Felborttagning",
         "statusUpdated": "Uppdaterad status",
         "statusError": "Fel vid statusändring"
+      },
+      "publishConfirm": {
+        "title": "Publicera det här donationsformuläret?",
+        "descriptionSite": "Det blir synligt på webbplatsen, i sektionen ”{section}”, och för medlemmar under Mitt utrymme → Mina donationer.",
+        "descriptionSiteReplace": "Det ersätter ”{title}” i sektionen ”{section}” på webbplatsen och blir synligt för medlemmar under Mitt utrymme → Mina donationer.",
+        "descriptionLink": "Det blir tillgängligt via sin länk och för medlemmar under Mitt utrymme → Mina donationer. Det visas inte på webbplatsen.",
+        "descriptionPrivate": "Det blir bara synligt för medlemmar, under Mitt utrymme → Mina donationer.",
+        "blockHiddenNote": "Blocket ”{section}” på webbplatsen döljs så länge inget formulär visas där.",
+        "confirmLabel": "Publicera"
+      },
+      "unpublishConfirm": {
+        "title": "Avpublicera det här donationsformuläret?",
+        "description": "Det försvinner direkt från webbplatsen och från Mitt utrymme, och dess länk slutar fungera.",
+        "confirmLabel": "Avpublicera"
+      },
+      "archiveConfirm": {
+        "title": "Arkivera det här donationsformuläret?",
+        "description": "”{title}” försvinner från webbplatsen och från Mitt utrymme, och dess länk slutar fungera.",
+        "recurringNote": "Arkivering stoppar inte pågående återkommande donationer: de fortsätter att dras.",
+        "confirmLabel": "Arkivera"
+      },
+      "deleteBlocked": {
+        "title": "Det här formuläret kan inte raderas",
+        "description": "”{title}” har redan tagit emot donationer, vars historik måste bevaras. Arkivera det för att ta bort det från webbplatsen och från Mitt utrymme.",
+        "descriptionArchived": "”{title}” har redan tagit emot donationer, vars historik måste bevaras. Det är redan arkiverat."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Tillbaka till donationer",
+      "leaveWarning": {
+        "title": "Osparade ändringar",
+        "description": "Vissa avsnitt har redigerats utan att sparas. Du kan spara dem innan du lämnar sidan, eller förkasta dem.",
+        "discard": "Förkasta",
+        "saveAndLeave": "Spara och lämna"
+      },
+      "partialSaveWarning": "Vissa av ändringarna sparades före felet – kontrollera de steg som redan sparats.",
       "notFound": "Form ej hittad",
       "titleLabel": "Formulärtitel",
+      "titleRequired": "Titeln är obligatorisk",
       "duplicateButton": "Duplicat",
       "deleteButton": "Radera",
       "publishButton": "Publicera",
@@ -2641,6 +2674,12 @@
         "saveError": "Felinspelning",
         "linkCopied": "Länk kopierad",
         "linkCopyError": "Kan inte kopiera — välj länken manuellt."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Spara följande avsnitt före publicering: {steps}",
+        "noTiersToast": "Lägg till minst en nivå innan du publicerar detta formulär.",
+        "unsavedTag": "Ej sparad",
+        "noTiersTag": "Ingen nivå"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontakttelefon"
         },
         "tiers": {
-          "title": "Lager",
+          "title": "Nivåer",
           "hint": "Belopp som föreslås givaren för detta formulär.",
           "noTiers": "Ingen nivå",
           "addTier": "Lägg till en nivå",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Skapa en ny sektion",
           "siteSectionCreateError": "Fel som skapar sidan.",
           "siteSectionRequiredError": "Välj vilken sektion på sidan du vill posta detta formulär i.",
+          "siteSectionReplaceWarningPublished": "Den här sektionen visar just nu ”{title}”. När du sparar ersätter det här formuläret det; ”{title}” förblir tillgängligt via sin länk.",
+          "siteSectionReplaceWarningDraft": "Den här sektionen visar just nu ”{title}”. Det här formuläret ersätter det så snart det publiceras; ”{title}” förblir tillgängligt via sin länk.",
+          "siteSectionRemovedWarning": "När du sparar döljs sektionen ”{section}” på webbplatsen.",
           "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Din donation hjälper oss att finansiera våra aktiviteter under hela året...",
       "donsButtonLabel": "Knapptext",
       "donsButtonLabelPlaceholder": "Donera",
-      "donsHint": "Knappen länkar till den offentliga donationssidan, som kan nås utan konto. Skattekvittot skickas automatiskt om föreningen har befogenhet att utfärda ett.",
+      "donsForm": "Donationsformulär",
+      "donsFormNone": "Inget formulär",
+      "donsFormSelectedHint": "Knappen öppnar det här formulärets sida, som kan nås utan konto.",
+      "donsFormNoneHint": "Det här blocket är dolt på webbplatsen.",
+      "donsFormMovedWarning": "Det här formuläret visas just nu i avsnittet ”{section}”. Det tas bort därifrån.",
+      "donsFormEmptyLegacy": "Knappen länkar till föreningens allmänna donationssida. Publicera ett donationsformulär för att välja vad som visas här.",
+      "donsFormEmptyNoPublished": "Inget publicerat donationsformulär: det här blocket är dolt på webbplatsen.",
+      "donsFormManageLink": "Visa donationsformulär",
       "contactHint": "Denna sektion visar automatiskt staden och landet som konfigurerats i associationsinställningarna.",
       "cancel": "Avbryt",
       "apply": "Ansök",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignorera",
       "boutiqueLimit": "Antal produkter att visa",
       "boutiqueLimitHint": "Endast de första N aktiva produkterna visas på webbplatsen."
+    },
+    "preview": {
+      "donsNoForm": "Inget donationsformulär valt — osynligt på den offentliga sidan"
     },
     "editor": {
       "viewSite": "Se webbplatsen",

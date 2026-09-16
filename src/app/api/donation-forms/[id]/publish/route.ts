@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { toSlug } from "@/lib/slug"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
+import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -103,11 +105,29 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const status = action === "publish" ? "PUBLISHED" : action === "unpublish" ? "DRAFT" : "ARCHIVED"
 
-  const updated = await prisma.donationForm.update({
-    where: { id },
-    data:  { status },
-    include: { _count: { select: { dons: true, subscriptions: true } } },
+  // Archiving also takes the form off its site section, so republishing it later never
+  // silently reclaims a section another form now occupies. A PRIVATE form keeps PRIVATE —
+  // only a SITE form falls back to LINK.
+  const archiveData = action === "archive"
+    ? (form.visibility === "SITE" ? { visibility: "LINK" as const, siteSectionId: null } : { siteSectionId: null })
+    : {}
+
+  const updated = await prisma.$transaction(async (tx) => {
+    // Publishing a form bound to a section replaces whichever form was there (back to LINK,
+    // still published) — one published form per section, enforced by replacing, never
+    // blocking.
+    if (action === "publish" && form.visibility === "SITE" && form.siteSectionId)
+      await displaceDonationFormsFromSiteSection(tx, { associationId: ctx.associationId, siteSectionId: form.siteSectionId, keepFormId: id })
+    return tx.donationForm.update({
+      where:   { id },
+      data:    { status, ...archiveData },
+      include: { _count: { select: { dons: true, subscriptions: true } } },
+    })
   })
+
+  // The public site page is statically cached — publishing, unpublishing or archiving can all
+  // change what its "dons" blocks show.
+  await revalidatePublicSiteFor(ctx.associationId)
 
   await writeActivityLog({
     associationId: ctx.associationId,

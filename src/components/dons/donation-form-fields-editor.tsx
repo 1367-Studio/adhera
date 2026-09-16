@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useImperativeHandle, useState, type Ref } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -18,7 +18,27 @@ const CHOICE_TYPES: DonationFieldType[] = ["SELECT", "RADIO", "CHECKBOX_MULTI"]
 
 let nextTempId = 0
 
-export function DonationFormFieldsEditor({ formId }: { formId: string }) {
+// Mirrors the handleSave() payload — see the same helper in membership-tiers-editor.tsx.
+function fieldsSignature(rows: DonationFormFieldDraft[]): string {
+  return JSON.stringify(rows.map(field => [field.type, field.label, field.required, field.options ?? null]))
+}
+
+// Normalisé une seule fois ici, à la frontière avec le serveur — voir la même note dans
+// evenement-custom-fields-editor.tsx. Also applied to the saved list in the dirty check, so an
+// untouched list compares equal.
+function normalizeField(field: DonationFormField) {
+  return { ...field, options: Array.isArray(field.options) ? field.options : null }
+}
+
+// Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
+// when validation or the request failed — the toast has already been shown by then.
+export type DonationFormFieldsEditorHandle = { save: () => Promise<boolean> }
+
+export function DonationFormFieldsEditor({ formId, onDirtyChange, ref }: {
+  formId: string
+  onDirtyChange?: (dirty: boolean) => void
+  ref?: Ref<DonationFormFieldsEditorHandle>
+}) {
   const t       = useTranslations("donationForms.detail.steps.fields")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
@@ -44,10 +64,13 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
   const [fields, setFields] = useState<(DonationFormFieldDraft & { key: string })[]>([])
 
   useEffect(() => {
-    // Normalisé une seule fois ici, à la frontière avec le serveur — voir la même note dans
-    // evenement-custom-fields-editor.tsx.
-    if (data) setFields(data.map(f => ({ ...f, key: f.id, options: Array.isArray(f.options) ? f.options : null })))
+    if (data) setFields(data.map(field => ({ ...normalizeField(field), key: field.id })))
   }, [data])
+
+  const isDirty = fieldsSignature(fields) !== fieldsSignature((data ?? []).map(normalizeField))
+  useEffect(() => { onDirtyChange?.(isDirty) }, [isDirty, onDirtyChange])
+  useEffect(() => () => onDirtyChange?.(false), [onDirtyChange])
+  useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addField() {
     setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false, options: null }])
@@ -81,14 +104,14 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
     setFields(prev => prev.filter(f => f.key !== key))
   }
 
-  async function handleSave() {
+  async function handleSave(): Promise<boolean> {
     if (fields.some(f => !f.label.trim())) {
       toast.error(t("labelRequiredError"))
-      return
+      return false
     }
     if (fields.some(f => CHOICE_TYPES.includes(f.type) && (f.options ?? []).filter(o => o.trim()).length < 2)) {
       toast.error(t("optionsRequiredError"))
-      return
+      return false
     }
     if (fields.some(f => {
       if (!CHOICE_TYPES.includes(f.type)) return false
@@ -96,7 +119,7 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
       return new Set(opts).size !== opts.length
     })) {
       toast.error(t("duplicateOptionsError"))
-      return
+      return false
     }
     try {
       await saveMutation.mutateAsync(fields.map(f => ({
@@ -104,8 +127,10 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
         options: CHOICE_TYPES.includes(f.type) ? (f.options ?? []).map(o => o.trim()).filter(Boolean) : null,
       })))
       toast.success(t("saved"))
+      return true
     } catch (err) {
       toast.error(err instanceof Error ? err.message : tCommon("error"))
+      return false
     }
   }
 
@@ -201,7 +226,7 @@ export function DonationFormFieldsEditor({ formId }: { formId: string }) {
           <PlusIcon className="mr-1.5 size-4" />
           {t("addField")}
         </Button>
-        <Button type="button" size="sm" onClick={handleSave} loading={saveMutation.isPending}>
+        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
           {t("saveFields")}
         </Button>
       </div>

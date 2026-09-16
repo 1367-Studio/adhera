@@ -2575,6 +2575,31 @@
         "deleteError": "Eliminazione degli errori",
         "statusUpdated": "Stato aggiornato",
         "statusError": "Errore sulla modifica dello stato"
+      },
+      "publishConfirm": {
+        "title": "Pubblicare questo modulo di donazione?",
+        "descriptionSite": "Sarà visibile sul sito web, nella sezione «{section}», e ai membri in Il mio spazio → Le mie donazioni.",
+        "descriptionSiteReplace": "Sostituirà «{title}» nella sezione «{section}» del sito web e sarà visibile ai membri in Il mio spazio → Le mie donazioni.",
+        "descriptionLink": "Sarà accessibile tramite il suo link e ai membri in Il mio spazio → Le mie donazioni. Non apparirà sul sito web.",
+        "descriptionPrivate": "Sarà visibile solo ai membri, in Il mio spazio → Le mie donazioni.",
+        "blockHiddenNote": "Il blocco «{section}» del sito web resterà nascosto finché non vi sarà mostrato alcun modulo.",
+        "confirmLabel": "Pubblica"
+      },
+      "unpublishConfirm": {
+        "title": "Annullare la pubblicazione di questo modulo di donazione?",
+        "description": "Scomparirà immediatamente dal sito web e da Il mio spazio, e il suo link non funzionerà più.",
+        "confirmLabel": "Annulla pubblicazione"
+      },
+      "archiveConfirm": {
+        "title": "Archiviare questo modulo di donazione?",
+        "description": "«{title}» scomparirà dal sito web e da Il mio spazio, e il suo link non funzionerà più.",
+        "recurringNote": "L'archiviazione non interrompe le donazioni ricorrenti in corso: continueranno a essere addebitate.",
+        "confirmLabel": "Archivia"
+      },
+      "deleteBlocked": {
+        "title": "Questo modulo non può essere eliminato",
+        "description": "«{title}» ha già ricevuto donazioni, il cui storico deve essere conservato. Archivialo per rimuoverlo dal sito web e da Il mio spazio.",
+        "descriptionArchived": "«{title}» ha già ricevuto donazioni, il cui storico deve essere conservato. È già archiviato."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Torniamo alle donazioni",
+      "leaveWarning": {
+        "title": "Modifiche non salvate",
+        "description": "Alcune sezioni sono state modificate senza essere salvate. Puoi salvarle prima di uscire oppure scartarle.",
+        "discard": "Scarta",
+        "saveAndLeave": "Salva ed esci"
+      },
+      "partialSaveWarning": "Alcune modifiche sono state salvate prima dell'errore — controlla i passaggi già salvati.",
       "notFound": "Forma non trovata",
       "titleLabel": "Titolo del Modulo",
+      "titleRequired": "Il titolo è obbligatorio",
       "duplicateButton": "Duplicato",
       "deleteButton": "Elimina",
       "publishButton": "Pubblica",
@@ -2641,6 +2674,12 @@
         "saveError": "Registrazione degli errori",
         "linkCopied": "Link copiato",
         "linkCopyError": "Impossibile copiare — seleziona manualmente il link."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Salva le seguenti sezioni prima di pubblicare: {steps}",
+        "noTiersToast": "Aggiungi almeno un livello prima di pubblicare questo modulo.",
+        "unsavedTag": "Non salvato",
+        "noTiersTag": "Nessun livello"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Telefono di contatto"
         },
         "tiers": {
-          "title": "Cuscintetti",
+          "title": "Livelli",
           "hint": "Importi proposti al donatore per questo modulo.",
           "noTiers": "Nessun livello",
           "addTier": "Aggiungi un livello",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Crea una nuova sezione",
           "siteSectionCreateError": "Errore nella creazione della sezione del sito.",
           "siteSectionRequiredError": "Scegli la sezione del sito dove pubblicare questo modulo.",
+          "siteSectionReplaceWarningPublished": "Questa sezione mostra attualmente «{title}». Salvando, questo modulo lo sostituirà; «{title}» resterà accessibile tramite il suo link.",
+          "siteSectionReplaceWarningDraft": "Questa sezione mostra attualmente «{title}». Questo modulo lo sostituirà non appena sarà pubblicato; «{title}» resterà accessibile tramite il suo link.",
+          "siteSectionRemovedWarning": "Salvando, la sezione «{section}» verrà nascosta sul sito web.",
           "datesOrderError": "La data di chiusura deve essere successiva rispetto a quella di apertura."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "La tua donazione ci aiuta a finanziare le nostre azioni durante tutto l'anno...",
       "donsButtonLabel": "Testo del pulsante",
       "donsButtonLabelPlaceholder": "Dona",
-      "donsHint": "Il pulsante collega alla pagina delle donazioni pubbliche, accessibile senza un conto. La ricevuta fiscale viene inviata automaticamente se l'associazione è autorizzata a emetterla.",
+      "donsForm": "Modulo di donazione",
+      "donsFormNone": "Nessun modulo",
+      "donsFormSelectedHint": "Il pulsante apre la pagina di questo modulo, accessibile senza account.",
+      "donsFormNoneHint": "Questo blocco è nascosto sul sito.",
+      "donsFormMovedWarning": "Questo modulo è attualmente visualizzato nella sezione «{section}». Verrà rimosso da lì.",
+      "donsFormEmptyLegacy": "Il pulsante rimanda alla pagina di donazione generica dell'associazione. Pubblica un modulo di donazione per scegliere cosa mostrare qui.",
+      "donsFormEmptyNoPublished": "Nessun modulo di donazione pubblicato: questo blocco è nascosto sul sito.",
+      "donsFormManageLink": "Vedi i moduli di donazione",
       "contactHint": "Questa sezione mostra automaticamente la città e il paese configurati nelle impostazioni dell'associazione.",
       "cancel": "Annulla",
       "apply": "Candidati",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignora",
       "boutiqueLimit": "Numero di prodotti da visualizzare",
       "boutiqueLimitHint": "Sul sito verranno mostrati solo i primi N prodotti attivi."
+    },
+    "preview": {
+      "donsNoForm": "Nessun modulo di donazione scelto — invisibile sul sito pubblico"
     },
     "editor": {
       "viewSite": "Consulta il sito web",

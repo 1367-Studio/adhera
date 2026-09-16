@@ -2608,13 +2608,28 @@
       },
       "publishConfirm": {
         "title": "Publier ce formulaire de don ?",
-        "description": "Une fois publié, ce formulaire sera immédiatement visible pour les membres dans Mon espace → Mes dons.",
+        "descriptionSite": "Il sera visible sur le site internet, dans la section « {section} », et pour les membres dans Mon espace → Mes dons.",
+        "descriptionSiteReplace": "Il remplacera « {title} » dans la section « {section} » du site internet et sera visible pour les membres dans Mon espace → Mes dons.",
+        "descriptionLink": "Il sera accessible par son lien et pour les membres dans Mon espace → Mes dons. Il n'apparaîtra pas sur le site internet.",
+        "descriptionPrivate": "Il sera visible uniquement pour les membres, dans Mon espace → Mes dons.",
+        "blockHiddenNote": "Le bloc « {section} » du site sera masqué tant qu'aucun formulaire n'y est affiché.",
         "confirmLabel": "Publier"
       },
       "unpublishConfirm": {
         "title": "Dépublier ce formulaire de don ?",
-        "description": "Il disparaîtra immédiatement de Mon espace pour les membres.",
+        "description": "Il disparaîtra immédiatement du site internet et de Mon espace, et son lien ne fonctionnera plus.",
         "confirmLabel": "Dépublier"
+      },
+      "archiveConfirm": {
+        "title": "Archiver ce formulaire de don ?",
+        "description": "« {title} » disparaîtra du site internet et de Mon espace, et son lien ne fonctionnera plus.",
+        "recurringNote": "L'archivage n'arrête pas les dons récurrents en cours : ils continueront d'être prélevés.",
+        "confirmLabel": "Archiver"
+      },
+      "deleteBlocked": {
+        "title": "Ce formulaire ne peut pas être supprimé",
+        "description": "« {title} » a déjà reçu des dons, dont l'historique doit être conservé. Archivez-le pour le retirer du site internet et de Mon espace.",
+        "descriptionArchived": "« {title} » a déjà reçu des dons, dont l'historique doit être conservé. Il est déjà archivé."
       }
     },
     "donationsView": {
@@ -2667,8 +2682,16 @@
     },
     "detail": {
       "backToList": "Retour aux dons",
+      "leaveWarning": {
+        "title": "Modifications non enregistrées",
+        "description": "Certaines sections ont été modifiées sans être enregistrées. Vous pouvez les enregistrer avant de quitter, ou les abandonner.",
+        "discard": "Abandonner",
+        "saveAndLeave": "Enregistrer et quitter"
+      },
+      "partialSaveWarning": "Une partie des modifications a bien été enregistrée avant l'erreur — vérifiez les étapes déjà sauvegardées.",
       "notFound": "Formulaire introuvable",
       "titleLabel": "Titre du formulaire",
+      "titleRequired": "Le titre est obligatoire",
       "duplicateButton": "Dupliquer",
       "deleteButton": "Supprimer",
       "publishButton": "Publier",
@@ -2681,6 +2704,12 @@
         "saveError": "Erreur lors de l'enregistrement",
         "linkCopied": "Lien copié",
         "linkCopyError": "Copie impossible — sélectionnez le lien manuellement."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Enregistrez les sections suivantes avant de publier : {steps}",
+        "noTiersToast": "Ajoutez au moins un palier avant de publier ce formulaire.",
+        "unsavedTag": "Non enregistré",
+        "noTiersTag": "Aucun palier"
       },
       "steps": {
         "info": {
@@ -2790,6 +2819,9 @@
           "siteSectionCreateOption": "+ Créer une nouvelle section",
           "siteSectionCreateError": "Erreur lors de la création de la section du site.",
           "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire.",
+          "siteSectionReplaceWarningPublished": "Cette section affiche actuellement « {title} ». En enregistrant, ce formulaire le remplacera ; « {title} » restera accessible par son lien.",
+          "siteSectionReplaceWarningDraft": "Cette section affiche actuellement « {title} ». Ce formulaire le remplacera dès sa publication ; « {title} » restera accessible par son lien.",
+          "siteSectionRemovedWarning": "En enregistrant, la section « {section} » sera masquée sur le site.",
           "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
         }
       }
@@ -4780,13 +4812,23 @@
       "donsIntroPlaceholder": "Votre don nous aide à financer nos actions tout au long de l'année…",
       "donsButtonLabel": "Texte du bouton",
       "donsButtonLabelPlaceholder": "Faire un don",
-      "donsHint": "Le bouton renvoie vers la page de don publique, accessible sans compte. Le reçu fiscal est envoyé automatiquement si l'association est habilitée à en émettre.",
+      "donsForm": "Formulaire de don",
+      "donsFormNone": "Aucun formulaire",
+      "donsFormSelectedHint": "Le bouton ouvre la page de ce formulaire, accessible sans compte.",
+      "donsFormNoneHint": "Ce bloc est masqué sur le site.",
+      "donsFormMovedWarning": "Ce formulaire est actuellement affiché dans la section « {section} ». Il en sera retiré.",
+      "donsFormEmptyLegacy": "Le bouton renvoie vers la page de don générique de l'association. Publiez un formulaire de don pour choisir ce qui s'affiche ici.",
+      "donsFormEmptyNoPublished": "Aucun formulaire de don publié : ce bloc est masqué sur le site.",
+      "donsFormManageLink": "Voir les formulaires de don",
       "contactHint": "Cette section affiche automatiquement la ville et le pays configurés dans les paramètres de l'association.",
       "cancel": "Annuler",
       "apply": "Appliquer",
       "discardTitle": "Ignorer les modifications ?",
       "discardDescription": "Les modifications non appliquées seront perdues.",
       "discardConfirm": "Ignorer"
+    },
+    "preview": {
+      "donsNoForm": "Aucun formulaire de don choisi — invisible sur le site public"
     },
     "editor": {
       "viewSite": "Voir le site",
