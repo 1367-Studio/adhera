@@ -3,9 +3,12 @@ import { defineField, defineType } from "sanity"
 
 import { pickDefaultLanguageValue } from "../shared/localized-value"
 
+// Rendered by the formwise.fr site (form-wise-app repo, src/sanity/legalDocument.ts), which
+// matches on these `kind` values and reads `title`/`body` by `language` — renaming a kind or
+// reshaping those fields here silently sends its page back to the hardcoded text.
 export const LEGAL_DOCUMENT_KINDS = [
   { value: "cgu", title: "Conditions générales d'utilisation (CGU)" },
-  { value: "cgs", title: "Conditions générales de service (CGS)" },
+  { value: "cgv", title: "Conditions générales de vente (CGV)" },
   { value: "mentions-legales", title: "Mentions légales" },
   { value: "politique-confidentialite", title: "Politique de confidentialité" },
 ]
