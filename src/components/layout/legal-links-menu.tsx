@@ -1,11 +1,11 @@
 "use client"
 
-import { useTranslations } from "next-intl"
-import { ScalesIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { ArrowSquareOutIcon, ScalesIcon } from "@phosphor-icons/react/dist/ssr"
+import { useTranslations } from "next-intl"
 
 // Adhera runs embedded under formwise.fr/app — these legal pages live on the parent
 // formwise-app site itself (single platform-wide set, not per-association), so we link
