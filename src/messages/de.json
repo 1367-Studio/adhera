@@ -2575,6 +2575,31 @@
         "deleteError": "Fehler beim Löschen",
         "statusUpdated": "Aktualisierter Status",
         "statusError": "Fehler bei Statusänderung"
+      },
+      "publishConfirm": {
+        "title": "Dieses Spendenformular veröffentlichen?",
+        "descriptionSite": "Es wird auf der Website im Abschnitt „{section}“ und für Mitglieder unter Mein Raum → Meine Spenden sichtbar sein.",
+        "descriptionSiteReplace": "Es ersetzt „{title}“ im Abschnitt „{section}“ der Website und wird für Mitglieder unter Mein Raum → Meine Spenden sichtbar sein.",
+        "descriptionLink": "Es ist über seinen Link und für Mitglieder unter Mein Raum → Meine Spenden erreichbar. Auf der Website erscheint es nicht.",
+        "descriptionPrivate": "Es ist nur für Mitglieder sichtbar, unter Mein Raum → Meine Spenden.",
+        "blockHiddenNote": "Der Block „{section}“ auf der Website wird ausgeblendet, solange dort kein Formular angezeigt wird.",
+        "confirmLabel": "Veröffentlichen"
+      },
+      "unpublishConfirm": {
+        "title": "Veröffentlichung dieses Spendenformulars aufheben?",
+        "description": "Es verschwindet sofort von der Website und aus Mein Raum, und sein Link funktioniert nicht mehr.",
+        "confirmLabel": "Veröffentlichung aufheben"
+      },
+      "archiveConfirm": {
+        "title": "Dieses Spendenformular archivieren?",
+        "description": "„{title}“ verschwindet von der Website und aus Mein Raum, und sein Link funktioniert nicht mehr.",
+        "recurringNote": "Das Archivieren beendet laufende wiederkehrende Spenden nicht: Sie werden weiterhin abgebucht.",
+        "confirmLabel": "Archivieren"
+      },
+      "deleteBlocked": {
+        "title": "Dieses Formular kann nicht gelöscht werden",
+        "description": "„{title}“ hat bereits Spenden erhalten, deren Verlauf erhalten bleiben muss. Archivieren Sie es, um es von der Website und aus Mein Raum zu entfernen.",
+        "descriptionArchived": "„{title}“ hat bereits Spenden erhalten, deren Verlauf erhalten bleiben muss. Es ist bereits archiviert."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Zurück zu den Spenden",
+      "leaveWarning": {
+        "title": "Nicht gespeicherte Änderungen",
+        "description": "Einige Abschnitte wurden bearbeitet, aber nicht gespeichert. Sie können sie vor dem Verlassen speichern oder verwerfen.",
+        "discard": "Verwerfen",
+        "saveAndLeave": "Speichern und verlassen"
+      },
+      "partialSaveWarning": "Einige Änderungen wurden vor dem Fehler bereits gespeichert – prüfen Sie die bereits gespeicherten Schritte.",
       "notFound": "Formular nicht gefunden",
       "titleLabel": "Formulartitel",
+      "titleRequired": "Der Titel ist erforderlich",
       "duplicateButton": "Duplikat",
       "deleteButton": "Löschen",
       "publishButton": "Veröffentlichen",
@@ -2641,6 +2674,12 @@
         "saveError": "Fehleraufzeichnung",
         "linkCopied": "Link kopiert",
         "linkCopyError": "Kann nicht kopiert werden – wähle den Link manuell aus."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Speichern Sie die folgenden Abschnitte vor der Veröffentlichung: {steps}",
+        "noTiersToast": "Fügen Sie mindestens eine Stufe hinzu, bevor Sie dieses Formular veröffentlichen.",
+        "unsavedTag": "Nicht gespeichert",
+        "noTiersTag": "Keine Stufe"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontakttelefon"
         },
         "tiers": {
-          "title": "Lager",
+          "title": "Stufen",
           "hint": "Beträge, die dem Spender für dieses Formular vorgeschlagen werden.",
           "noTiers": "Kein Level",
           "addTier": "Füge eine Stufe hinzu",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Erstelle einen neuen Abschnitt",
           "siteSectionCreateError": "Fehler beim Erstellen des Seitenabschnitts.",
           "siteSectionRequiredError": "Wählen Sie den Bereich der Seite aus, in dem Sie dieses Formular posten möchten.",
+          "siteSectionReplaceWarningPublished": "Dieser Abschnitt zeigt derzeit „{title}“. Beim Speichern ersetzt dieses Formular es; „{title}“ bleibt über seinen Link erreichbar.",
+          "siteSectionReplaceWarningDraft": "Dieser Abschnitt zeigt derzeit „{title}“. Dieses Formular ersetzt es, sobald es veröffentlicht ist; „{title}“ bleibt über seinen Link erreichbar.",
+          "siteSectionRemovedWarning": "Beim Speichern wird der Abschnitt „{section}“ auf der Website ausgeblendet.",
           "datesOrderError": "Das Abschlussdatum muss später als das Eröffnungsdatum liegen."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Ihre Spende hilft uns, unsere Aktivitäten das ganze Jahr über zu finanzieren...",
       "donsButtonLabel": "Button-Text",
       "donsButtonLabelPlaceholder": "Spenden",
-      "donsHint": "Der Button verweist auf die öffentliche Spendenseite, die ohne Konto zugänglich ist. Die Steuerquittung wird automatisch gesendet, wenn der Verein dazu befugt ist.",
+      "donsForm": "Spendenformular",
+      "donsFormNone": "Kein Formular",
+      "donsFormSelectedHint": "Der Button öffnet die Seite dieses Formulars, die ohne Konto zugänglich ist.",
+      "donsFormNoneHint": "Dieser Block ist auf der Website ausgeblendet.",
+      "donsFormMovedWarning": "Dieses Formular wird derzeit im Abschnitt „{section}“ angezeigt. Es wird dort entfernt.",
+      "donsFormEmptyLegacy": "Der Button verweist auf die allgemeine Spendenseite des Vereins. Veröffentlichen Sie ein Spendenformular, um festzulegen, was hier angezeigt wird.",
+      "donsFormEmptyNoPublished": "Kein veröffentlichtes Spendenformular: Dieser Block ist auf der Website ausgeblendet.",
+      "donsFormManageLink": "Spendenformulare ansehen",
       "contactHint": "Dieser Abschnitt zeigt automatisch die Stadt und das Land an, das in den Association-Einstellungen konfiguriert war.",
       "cancel": "Abbrechen",
       "apply": "Bewerben Sie sich",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignorieren",
       "boutiqueLimit": "Anzahl anzuzeigender Produkte",
       "boutiqueLimitHint": "Es werden nur die ersten N aktiven Produkte auf der Website angezeigt."
+    },
+    "preview": {
+      "donsNoForm": "Kein Spendenformular ausgewählt – auf der öffentlichen Seite unsichtbar"
     },
     "editor": {
       "viewSite": "Siehe die Website",

@@ -2575,6 +2575,31 @@
         "deleteError": "Vea kustutamine",
         "statusUpdated": "Uuendatud staatus",
         "statusError": "Viga staatuse muutmisel"
+      },
+      "publishConfirm": {
+        "title": "Kas avaldada see annetusvorm?",
+        "descriptionSite": "See on nähtav veebilehel jaotises „{section}“ ning liikmetele vaates Minu ruum → Minu annetused.",
+        "descriptionSiteReplace": "See asendab vormi „{title}“ veebilehe jaotises „{section}“ ning on liikmetele nähtav vaates Minu ruum → Minu annetused.",
+        "descriptionLink": "See on kättesaadav oma lingi kaudu ning liikmetele vaates Minu ruum → Minu annetused. Veebilehel seda ei kuvata.",
+        "descriptionPrivate": "See on nähtav ainult liikmetele, vaates Minu ruum → Minu annetused.",
+        "blockHiddenNote": "Veebilehe plokk „{section}“ on peidetud seni, kuni selles ei kuvata ühtegi vormi.",
+        "confirmLabel": "Avalda"
+      },
+      "unpublishConfirm": {
+        "title": "Kas lõpetada selle annetusvormi avaldamine?",
+        "description": "See kaob kohe veebilehelt ja vaatest Minu ruum ning selle link lakkab töötamast.",
+        "confirmLabel": "Lõpeta avaldamine"
+      },
+      "archiveConfirm": {
+        "title": "Kas arhiveerida see annetusvorm?",
+        "description": "„{title}“ kaob veebilehelt ja vaatest Minu ruum ning selle link lakkab töötamast.",
+        "recurringNote": "Arhiveerimine ei peata käimasolevaid korduvannetusi: neid võetakse endiselt maksesse.",
+        "confirmLabel": "Arhiveeri"
+      },
+      "deleteBlocked": {
+        "title": "Seda vormi ei saa kustutada",
+        "description": "„{title}“ on juba annetusi saanud ja nende ajalugu tuleb säilitada. Arhiveeri see, et eemaldada see veebilehelt ja vaatest Minu ruum.",
+        "descriptionArchived": "„{title}“ on juba annetusi saanud ja nende ajalugu tuleb säilitada. See on juba arhiveeritud."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Tagasi annetuste juurde",
+      "leaveWarning": {
+        "title": "Salvestamata muudatused",
+        "description": "Mõnda jaotist on muudetud, kuid neid pole salvestatud. Võid need enne lahkumist salvestada või neist loobuda.",
+        "discard": "Loobu",
+        "saveAndLeave": "Salvesta ja lahku"
+      },
+      "partialSaveWarning": "Mõned muudatused salvestati juba enne viga — kontrolli juba salvestatud samme.",
       "notFound": "Vormi ei leitud",
       "titleLabel": "Vormi pealkiri",
+      "titleRequired": "Pealkiri on kohustuslik",
       "duplicateButton": "Duplikaat",
       "deleteButton": "Kustuta",
       "publishButton": "Avalda",
@@ -2641,6 +2674,12 @@
         "saveError": "Vea salvestamine",
         "linkCopied": "Link kopeeritud",
         "linkCopyError": "Kopeerimine ei õnnestu — vali link käsitsi."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Salvesta enne avaldamist järgmised jaotised: {steps}",
+        "noTiersToast": "Lisa enne selle vormi avaldamist vähemalt üks tase.",
+        "unsavedTag": "Salvestamata",
+        "noTiersTag": "Taset pole"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontakttelefon"
         },
         "tiers": {
-          "title": "Laagrid",
+          "title": "Tasemed",
           "hint": "Annetajale esitatud summad selle vormi eest.",
           "noTiers": "Taset pole",
           "addTier": "Lisa tase",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Loo uus sektsioon",
           "siteSectionCreateError": "Viga saidi sektsiooni loomisel.",
           "siteSectionRequiredError": "Vali saidi sektsioon, kuhu selle vormi postitada.",
+          "siteSectionReplaceWarningPublished": "Selles jaotises kuvatakse praegu vormi „{title}“. Salvestamisel asendab see vorm selle; „{title}“ jääb kättesaadavaks oma lingi kaudu.",
+          "siteSectionReplaceWarningDraft": "Selles jaotises kuvatakse praegu vormi „{title}“. See vorm asendab selle kohe pärast avaldamist; „{title}“ jääb kättesaadavaks oma lingi kaudu.",
+          "siteSectionRemovedWarning": "Salvestamisel peidetakse jaotis „{section}“ veebilehel.",
           "datesOrderError": "Sulgemiskuupäev peab olema hilisem kui avamiskuupäev."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Teie annetus aitab meil rahastada meie tegevust kogu aasta vältel...",
       "donsButtonLabel": "Nupu tekst",
       "donsButtonLabelPlaceholder": "Anneta",
-      "donsHint": "Nupp viitab avaliku annetuse lehele, kuhu pääseb ligi ilma kontota. Maksutšekk saadetakse automaatselt, kui ühingul on õigus seda väljastada.",
+      "donsForm": "Annetusvorm",
+      "donsFormNone": "Vorm puudub",
+      "donsFormSelectedHint": "Nupp avab selle vormi lehe, millele pääseb ligi ilma kontota.",
+      "donsFormNoneHint": "See plokk on saidil peidetud.",
+      "donsFormMovedWarning": "See vorm on praegu kuvatud jaotises „{section}“. See eemaldatakse sealt.",
+      "donsFormEmptyLegacy": "Nupp viib ühingu üldisele annetuslehele. Avaldage annetusvorm, et valida, mida siin kuvatakse.",
+      "donsFormEmptyNoPublished": "Avaldatud annetusvormi pole: see plokk on saidil peidetud.",
+      "donsFormManageLink": "Vaata annetusvorme",
       "contactHint": "See sektsioon kuvab automaatselt linna ja riigi, mis on assotsiatsiooni seadetes seadistatud.",
       "cancel": "Tühista",
       "apply": "Kandideeri",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoreeri",
       "boutiqueLimit": "Kuvatavate toodete arv",
       "boutiqueLimitHint": "Veebisaidil kuvatakse ainult esimesed N aktiivset toodet."
+    },
+    "preview": {
+      "donsNoForm": "Annetusvormi pole valitud — avalikul saidil nähtamatu"
     },
     "editor": {
       "viewSite": "Vaata veebilehte",

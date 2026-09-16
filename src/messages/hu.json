@@ -2575,6 +2575,31 @@
         "deleteError": "Hiba törlés",
         "statusUpdated": "Frissített állapot",
         "statusError": "Hiba státuszváltásnál"
+      },
+      "publishConfirm": {
+        "title": "Közzéteszed ezt az adományozási űrlapot?",
+        "descriptionSite": "Megjelenik a weboldalon, a(z) „{section}” szakaszban, valamint a tagok számára a Saját tér → Az adományaim menüpontban.",
+        "descriptionSiteReplace": "A(z) „{title}” helyére kerül a weboldal „{section}” szakaszában, és a tagok számára is látható lesz a Saját tér → Az adományaim menüpontban.",
+        "descriptionLink": "A saját linkjén, valamint a tagok számára a Saját tér → Az adományaim menüpontban lesz elérhető. A weboldalon nem jelenik meg.",
+        "descriptionPrivate": "Csak a tagok számára lesz látható, a Saját tér → Az adományaim menüpontban.",
+        "blockHiddenNote": "A weboldal „{section}” blokkja rejtve marad, amíg nem jelenik meg benne űrlap.",
+        "confirmLabel": "Közzététel"
+      },
+      "unpublishConfirm": {
+        "title": "Visszavonod ennek az adományozási űrlapnak a közzétételét?",
+        "description": "Azonnal eltűnik a weboldalról és a Saját térből, és a linkje többé nem működik.",
+        "confirmLabel": "Közzététel visszavonása"
+      },
+      "archiveConfirm": {
+        "title": "Archiválod ezt az adományozási űrlapot?",
+        "description": "A(z) „{title}” eltűnik a weboldalról és a Saját térből, és a linkje többé nem működik.",
+        "recurringNote": "Az archiválás nem állítja le a folyamatban lévő ismétlődő adományokat: ezeket továbbra is levonjuk.",
+        "confirmLabel": "Archiválás"
+      },
+      "deleteBlocked": {
+        "title": "Ez az űrlap nem törölhető",
+        "description": "A(z) „{title}” már kapott adományokat, amelyek előzményeit meg kell őrizni. Archiváld, hogy eltávolítsd a weboldalról és a Saját térből.",
+        "descriptionArchived": "A(z) „{title}” már kapott adományokat, amelyek előzményeit meg kell őrizni. Már archiválva van."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Vissza az adományokhoz",
+      "leaveWarning": {
+        "title": "Nem mentett módosítások",
+        "description": "Néhány szakaszt módosítottál, de nem mentetted el. Kilépés előtt mentheted vagy elvetheted őket.",
+        "discard": "Elvetés",
+        "saveAndLeave": "Mentés és kilépés"
+      },
+      "partialSaveWarning": "Néhány módosítás már a hiba előtt mentésre került — ellenőrizd a már elmentett lépéseket.",
       "notFound": "Űrlap nem talált",
       "titleLabel": "Űrlap címe",
+      "titleRequired": "A cím megadása kötelező",
       "duplicateButton": "Duplikátum",
       "deleteButton": "Törlés",
       "publishButton": "Közzététel",
@@ -2641,6 +2674,12 @@
         "saveError": "Hibafelvétel",
         "linkCopied": "Link másolva",
         "linkCopyError": "Nem lehet másolni — válaszd ki a linket manuálisan."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Közzététel előtt mentsd el a következő szakaszokat: {steps}",
+        "noTiersToast": "Közzététel előtt adj hozzá legalább egy szintet ehhez az űrlaphoz.",
+        "unsavedTag": "Nincs mentve",
+        "noTiersTag": "Nincs szint"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kapcsolatfelvétel Telefon"
         },
         "tiers": {
-          "title": "Csapágyak",
+          "title": "Szintek",
           "hint": "Az adományozónak javasolt összegek ehhez a formához.",
           "noTiers": "Nincs szint",
           "addTier": "Hozzáadj egy szintet",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Hozzon létre egy új szakaszt",
           "siteSectionCreateError": "Hiba a weboldal szekció létrehozása.",
           "siteSectionRequiredError": "Válaszd ki az oldal azon részét, ahol ezt az űrlapot közzéteszed.",
+          "siteSectionReplaceWarningPublished": "Ez a szakasz jelenleg a(z) „{title}” űrlapot jeleníti meg. Mentéskor ez az űrlap lép a helyére; a(z) „{title}” továbbra is elérhető marad a saját linkjén.",
+          "siteSectionReplaceWarningDraft": "Ez a szakasz jelenleg a(z) „{title}” űrlapot jeleníti meg. Ez az űrlap a közzétételekor lép a helyére; a(z) „{title}” továbbra is elérhető marad a saját linkjén.",
+          "siteSectionRemovedWarning": "Mentéskor a(z) „{section}” szakasz rejtve lesz a weboldalon.",
           "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Az Ön adománya segít abban, hogy egész évben finanszírozzuk tevékenységeinket...",
       "donsButtonLabel": "Gomb szövege",
       "donsButtonLabelPlaceholder": "Adományozás",
-      "donsHint": "A gomb a nyilvános adományozási oldalra vezet, amely fiók nélkül is elérhető. Az adóbevallás automatikusan elérkezik, ha az egyesület jogosult kibocsátani egyet.",
+      "donsForm": "Adományozási űrlap",
+      "donsFormNone": "Nincs űrlap",
+      "donsFormSelectedHint": "A gomb megnyitja az űrlap oldalát, amely fiók nélkül is elérhető.",
+      "donsFormNoneHint": "Ez a blokk rejtve van az oldalon.",
+      "donsFormMovedWarning": "Ez az űrlap jelenleg a(z) „{section}” szakaszban jelenik meg. Onnan el lesz távolítva.",
+      "donsFormEmptyLegacy": "A gomb az egyesület általános adományozási oldalára mutat. Tegyen közzé egy adományozási űrlapot, hogy kiválaszthassa, mi jelenjen meg itt.",
+      "donsFormEmptyNoPublished": "Nincs közzétett adományozási űrlap: ez a blokk rejtve van az oldalon.",
+      "donsFormManageLink": "Adományozási űrlapok megtekintése",
       "contactHint": "Ez a rész automatikusan megjeleníti a várost és országot, amelyet az assosiáció beállításaiban konfiguráltak.",
       "cancel": "Mégse",
       "apply": "Jelentkezz",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Figyelmen kívül hagyás",
       "boutiqueLimit": "Megjelenítendő termékek száma",
       "boutiqueLimitHint": "Csak az első N aktív termék jelenik meg az oldalon."
+    },
+    "preview": {
+      "donsNoForm": "Nincs kiválasztott adományozási űrlap — láthatatlan a nyilvános oldalon"
     },
     "editor": {
       "viewSite": "Tekintse meg a weboldalt",

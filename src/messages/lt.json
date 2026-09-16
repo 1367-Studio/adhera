@@ -2575,6 +2575,31 @@
         "deleteError": "Klaidų šalinimas",
         "statusUpdated": "Atnaujinta būsena",
         "statusError": "Klaida keičiant būseną"
+      },
+      "publishConfirm": {
+        "title": "Paskelbti šią aukojimo formą?",
+        "descriptionSite": "Ji bus matoma svetainėje, skiltyje „{section}“, ir nariams skiltyje Mano erdvė → Mano aukos.",
+        "descriptionSiteReplace": "Ji pakeis „{title}“ svetainės skiltyje „{section}“ ir bus matoma nariams skiltyje Mano erdvė → Mano aukos.",
+        "descriptionLink": "Ji bus pasiekiama per savo nuorodą ir nariams skiltyje Mano erdvė → Mano aukos. Svetainėje ji nebus rodoma.",
+        "descriptionPrivate": "Ji bus matoma tik nariams, skiltyje Mano erdvė → Mano aukos.",
+        "blockHiddenNote": "Svetainės blokas „{section}“ bus paslėptas, kol jame nebus rodoma jokia forma.",
+        "confirmLabel": "Paskelbti"
+      },
+      "unpublishConfirm": {
+        "title": "Atšaukti šios aukojimo formos paskelbimą?",
+        "description": "Ji iškart dings iš svetainės ir Mano erdvės, o jos nuoroda nebeveiks.",
+        "confirmLabel": "Atšaukti paskelbimą"
+      },
+      "archiveConfirm": {
+        "title": "Archyvuoti šią aukojimo formą?",
+        "description": "„{title}“ dings iš svetainės ir Mano erdvės, o jos nuoroda nebeveiks.",
+        "recurringNote": "Archyvavimas nesustabdo vykstančių periodinių aukų: jos ir toliau bus nuskaitomos.",
+        "confirmLabel": "Archyvuoti"
+      },
+      "deleteBlocked": {
+        "title": "Šios formos ištrinti negalima",
+        "description": "„{title}“ jau gavo aukų, kurių istorija turi būti išsaugota. Archyvuokite ją, kad pašalintumėte iš svetainės ir Mano erdvės.",
+        "descriptionArchived": "„{title}“ jau gavo aukų, kurių istorija turi būti išsaugota. Ji jau archyvuota."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Grįžtant prie aukų",
+      "leaveWarning": {
+        "title": "Neišsaugoti pakeitimai",
+        "description": "Kai kurios skiltys buvo redaguotos, bet neišsaugotos. Galite jas išsaugoti prieš išeidami arba atmesti.",
+        "discard": "Atmesti",
+        "saveAndLeave": "Išsaugoti ir išeiti"
+      },
+      "partialSaveWarning": "Kai kurie pakeitimai buvo išsaugoti dar prieš klaidą — patikrinkite jau išsaugotus žingsnius.",
       "notFound": "Forma nerasta",
       "titleLabel": "Formos pavadinimas",
+      "titleRequired": "Pavadinimas yra privalomas",
       "duplicateButton": "Dublikatas",
       "deleteButton": "Ištrinti",
       "publishButton": "Publikuoti",
@@ -2641,6 +2674,12 @@
         "saveError": "Klaidų įrašymas",
         "linkCopied": "Nuoroda nukopijuota",
         "linkCopyError": "Nepavyksta kopijuoti — pasirinkite nuorodą rankiniu būdu."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Prieš skelbdami išsaugokite šias skiltis: {steps}",
+        "noTiersToast": "Prieš skelbdami šią formą, pridėkite bent vieną lygį.",
+        "unsavedTag": "Neišsaugota",
+        "noTiersTag": "Nėra lygio"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Kontaktinis telefonas"
         },
         "tiers": {
-          "title": "Guoliai",
+          "title": "Lygiai",
           "hint": "Sumos, siūlomos donorui šiai formai.",
           "noTiers": "Nėra lygio",
           "addTier": "Pridėti lygį",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Sukurti naują skyrių",
           "siteSectionCreateError": "Klaida kuriant svetainės skyrių.",
           "siteSectionRequiredError": "Pasirinkite svetainės skiltį, į kurią skelbti šią formą.",
+          "siteSectionReplaceWarningPublished": "Šioje skiltyje šiuo metu rodoma „{title}“. Išsaugojus ši forma ją pakeis; „{title}“ išliks pasiekiama per savo nuorodą.",
+          "siteSectionReplaceWarningDraft": "Šioje skiltyje šiuo metu rodoma „{title}“. Ši forma ją pakeis, kai tik bus paskelbta; „{title}“ išliks pasiekiama per savo nuorodą.",
+          "siteSectionRemovedWarning": "Išsaugojus skiltis „{section}“ svetainėje bus paslėpta.",
           "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Jūsų auka padeda mums finansuoti mūsų veiklą visus metus...",
       "donsButtonLabel": "Mygtuko tekstas",
       "donsButtonLabelPlaceholder": "Aukoti",
-      "donsHint": "Mygtukas nukreipia į viešą aukojimo puslapį, prie kurio galima patekti be paskyros. Mokesčių kvitas siunčiamas automatiškai, jei asociacija turi teisę jį išduoti.",
+      "donsForm": "Aukojimo forma",
+      "donsFormNone": "Formos nėra",
+      "donsFormSelectedHint": "Mygtukas atveria šios formos puslapį, pasiekiamą be paskyros.",
+      "donsFormNoneHint": "Šis blokas svetainėje paslėptas.",
+      "donsFormMovedWarning": "Ši forma šiuo metu rodoma skiltyje „{section}“. Iš ten ji bus pašalinta.",
+      "donsFormEmptyLegacy": "Mygtukas nukreipia į bendrą asociacijos aukojimo puslapį. Paskelbkite aukojimo formą, kad pasirinktumėte, kas čia rodoma.",
+      "donsFormEmptyNoPublished": "Nėra paskelbtos aukojimo formos: šis blokas svetainėje paslėptas.",
+      "donsFormManageLink": "Peržiūrėti aukojimo formas",
       "contactHint": "Ši skiltis automatiškai rodo miestą ir šalį asociacijos nustatymuose.",
       "cancel": "Atšaukti",
       "apply": "Pateikite paraišką",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoruoti",
       "boutiqueLimit": "Rodomų produktų skaičius",
       "boutiqueLimitHint": "Svetainėje bus rodomi tik pirmieji N aktyvūs produktai."
+    },
+    "preview": {
+      "donsNoForm": "Aukojimo forma nepasirinkta — nematoma viešoje svetainėje"
     },
     "editor": {
       "viewSite": "Žiūrėkite svetainę",

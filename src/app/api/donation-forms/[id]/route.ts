@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
+import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -84,48 +87,51 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (finalVisibility === "SITE" && !finalSiteSectionId)
     return NextResponse.json({ error: "Choisissez une section du site sur laquelle publier ce formulaire." }, { status: 422 })
 
-  // Two PUBLISHED forms can't both occupy the same site section — mirrors
-  // MembershipForm.siteSectionId's own conflict check: an admin publishing a second form
-  // onto an already-taken "dons" section would otherwise silently orphan whichever one the
-  // site data loader doesn't pick.
-  if (form.status === "PUBLISHED" && finalVisibility === "SITE" && finalSiteSectionId) {
-    const conflict = await prisma.donationForm.findFirst({
-      where:  { associationId: ctx.associationId, id: { not: id }, status: "PUBLISHED", visibility: "SITE", siteSectionId: finalSiteSectionId },
-      select: { title: true },
-    })
-    if (conflict)
-      return NextResponse.json({ error: `Cette section est déjà utilisée par le formulaire publié « ${conflict.title} ». Choisissez une autre section ou dépubliez l'autre formulaire.` }, { status: 409 })
+  const updateData: Prisma.DonationFormUpdateInput = {
+    ...(data.title                !== undefined ? { title: data.title }                                 : {}),
+    ...(data.imageUrl             !== undefined ? { imageUrl: data.imageUrl }                            : {}),
+    ...(data.description          !== undefined ? { description: data.description }                     : {}),
+    ...(data.conditions           !== undefined ? { conditions: data.conditions }                        : {}),
+    ...(data.attachments          !== undefined ? { attachments: data.attachments ?? undefined }         : {}),
+    ...(data.requireCguvSignature !== undefined ? { requireCguvSignature: data.requireCguvSignature }    : {}),
+    ...(data.contactEmail         !== undefined ? { contactEmail: data.contactEmail }                    : {}),
+    ...(data.contactPhone         !== undefined ? { contactPhone: data.contactPhone }                    : {}),
+    ...(data.fieldAddress         !== undefined ? { fieldAddress: data.fieldAddress }                    : {}),
+    ...(data.fieldBirthDate       !== undefined ? { fieldBirthDate: data.fieldBirthDate }                : {}),
+    ...(data.fieldPhone           !== undefined ? { fieldPhone: data.fieldPhone }                        : {}),
+    ...(data.fieldMobile          !== undefined ? { fieldMobile: data.fieldMobile }                      : {}),
+    ...(data.fieldGender          !== undefined ? { fieldGender: data.fieldGender }                      : {}),
+    ...(data.allowOnline          !== undefined ? { allowOnline: data.allowOnline }                      : {}),
+    ...(data.allowCash            !== undefined ? { allowCash: data.allowCash }                          : {}),
+    ...(data.allowCheque          !== undefined ? { allowCheque: data.allowCheque }                      : {}),
+    ...(data.allowTransfer        !== undefined ? { allowTransfer: data.allowTransfer }                  : {}),
+    ...(data.offlineInstructions  !== undefined ? { offlineInstructions: data.offlineInstructions }      : {}),
+    ...(data.confirmationMessage  !== undefined ? { confirmationMessage: data.confirmationMessage }      : {}),
+    ...(data.visibility           !== undefined ? { visibility: data.visibility }                        : {}),
+    ...(data.siteSectionId        !== undefined ? { siteSectionId: data.siteSectionId }                  : {}),
+    ...(data.opensAt              !== undefined ? { opensAt: data.opensAt ? new Date(data.opensAt) : null }   : {}),
+    ...(data.closesAt             !== undefined ? { closesAt: data.closesAt ? new Date(data.closesAt) : null } : {}),
   }
 
-  const updated = await prisma.donationForm.update({
-    where: { id },
-    data: {
-      ...(data.title                !== undefined ? { title: data.title }                                 : {}),
-      ...(data.imageUrl             !== undefined ? { imageUrl: data.imageUrl }                            : {}),
-      ...(data.description          !== undefined ? { description: data.description }                     : {}),
-      ...(data.conditions           !== undefined ? { conditions: data.conditions }                        : {}),
-      ...(data.attachments          !== undefined ? { attachments: data.attachments ?? undefined }         : {}),
-      ...(data.requireCguvSignature !== undefined ? { requireCguvSignature: data.requireCguvSignature }    : {}),
-      ...(data.contactEmail         !== undefined ? { contactEmail: data.contactEmail }                    : {}),
-      ...(data.contactPhone         !== undefined ? { contactPhone: data.contactPhone }                    : {}),
-      ...(data.fieldAddress         !== undefined ? { fieldAddress: data.fieldAddress }                    : {}),
-      ...(data.fieldBirthDate       !== undefined ? { fieldBirthDate: data.fieldBirthDate }                : {}),
-      ...(data.fieldPhone           !== undefined ? { fieldPhone: data.fieldPhone }                        : {}),
-      ...(data.fieldMobile          !== undefined ? { fieldMobile: data.fieldMobile }                      : {}),
-      ...(data.fieldGender          !== undefined ? { fieldGender: data.fieldGender }                      : {}),
-      ...(data.allowOnline          !== undefined ? { allowOnline: data.allowOnline }                      : {}),
-      ...(data.allowCash            !== undefined ? { allowCash: data.allowCash }                          : {}),
-      ...(data.allowCheque          !== undefined ? { allowCheque: data.allowCheque }                      : {}),
-      ...(data.allowTransfer        !== undefined ? { allowTransfer: data.allowTransfer }                  : {}),
-      ...(data.offlineInstructions  !== undefined ? { offlineInstructions: data.offlineInstructions }      : {}),
-      ...(data.confirmationMessage  !== undefined ? { confirmationMessage: data.confirmationMessage }      : {}),
-      ...(data.visibility           !== undefined ? { visibility: data.visibility }                        : {}),
-      ...(data.siteSectionId        !== undefined ? { siteSectionId: data.siteSectionId }                  : {}),
-      ...(data.opensAt              !== undefined ? { opensAt: data.opensAt ? new Date(data.opensAt) : null }   : {}),
-      ...(data.closesAt             !== undefined ? { closesAt: data.closesAt ? new Date(data.closesAt) : null } : {}),
-    },
-    include: { _count: { select: { dons: true, subscriptions: true } } },
+  // One published form per site section, enforced by replacing instead of blocking: a
+  // PUBLISHED form landing on a section takes whichever form was there off the site (back to
+  // LINK, still published). A DRAFT/ARCHIVED form may store SITE + a section without
+  // displacing anyone — that happens when it gets published (see the publish route).
+  const takenSiteSectionId = form.status === "PUBLISHED" && finalVisibility === "SITE" ? finalSiteSectionId : null
+  const updated = await prisma.$transaction(async (tx) => {
+    if (takenSiteSectionId)
+      await displaceDonationFormsFromSiteSection(tx, { associationId: ctx.associationId, siteSectionId: takenSiteSectionId, keepFormId: id })
+    return tx.donationForm.update({
+      where:   { id },
+      data:    updateData,
+      include: { _count: { select: { dons: true, subscriptions: true } } },
+    })
   })
+
+  // The public site page is statically cached — refresh it whenever this form's place on it
+  // may have changed.
+  if (form.status === "PUBLISHED" && (data.visibility !== undefined || data.siteSectionId !== undefined))
+    await revalidatePublicSiteFor(ctx.associationId)
 
   return NextResponse.json(updated)
 }, { module: "dons" })

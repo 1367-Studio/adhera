@@ -599,8 +599,10 @@ export function SiteControlsPanel({
       {editingSection && (
         <SiteSectionSheet
           section={editingSection}
+          sections={sections}
           open={sheetOpen}
           aiEnabled={aiEnabled}
+          donsModuleEnabled={donsModuleEnabled}
           onOpenChange={onSheetOpenChange}
           onSave={onSaveSection}
           onDraftChange={onDraftChange}

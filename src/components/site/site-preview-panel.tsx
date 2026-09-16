@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { getSiteColorVars } from "@/lib/site-theme"
 import { SITE_FONTS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
@@ -44,7 +45,9 @@ type Props = {
   actualites?: PublicActualite[]
   boutiqueProduits?: PublicBoutiqueProduit[]
   membershipFormBySection?: Record<string, FormBinding>
+  // Draft-aware: reflects a form picked in the section sheet before the site is saved.
   donationFormBySection?:   Record<string, FormBinding>
+  usesDonationForms?:       boolean
   membershipCta?: { href: string } | null
   canIssueTaxReceipts?: boolean
   donsEnabled: boolean
@@ -55,13 +58,17 @@ type Props = {
 // SiteMembershipSection render its real CTA markup (title, body, button styling) even before an
 // admin has published/linked a MembershipForm, with a "preview only" badge layered on top.
 const PREVIEW_MEMBERSHIP_FORM: FormBinding = { slug: "#", title: "Voir la page d'adhésion" }
+// Same idea for a "dons" section with no form: SiteDonsSection would render nothing, so the
+// preview hands it a stand-in to keep the block visible under its "no form" overlay.
+const PREVIEW_DONATION_FORM: FormBinding = { slug: "#", title: "" }
 
 export function SitePreviewPanel({
   config, name, slug, city, country, events,
   actualites = [], boutiqueProduits = [],
-  membershipFormBySection = {}, donationFormBySection = {}, membershipCta = null,
+  membershipFormBySection = {}, donationFormBySection = {}, usesDonationForms = false, membershipCta = null,
   canIssueTaxReceipts = false, donsEnabled, boutiqueEnabled,
 }: Props) {
+  const t        = useTranslations("site.preview")
   const sections = config?.sections ?? []
   const color    = "var(--site-primary)"
   const fontKey  = isSiteFontKey(config?.fontFamily) ? config!.fontFamily! : SITE_DEFAULT_FONT
@@ -130,7 +137,11 @@ export function SitePreviewPanel({
               )
             }
 
-            case "dons":
+            case "dons": {
+              const boundDonationForm = donationFormBySection[section.id]
+              // Legacy associations (no form ever live) keep the generic donation link, so
+              // there's nothing to flag; the module-disabled overlay already covers the rest.
+              const hiddenForLackOfForm = donsEnabled && usesDonationForms && !boundDonationForm
               return (
                 <div key={section.id} className="relative">
                   {!donsEnabled && (
@@ -140,13 +151,22 @@ export function SitePreviewPanel({
                       </span>
                     </div>
                   )}
+                  {hiddenForLackOfForm && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
+                      <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-900 text-white text-center mx-4">
+                        {t("donsNoForm")}
+                      </span>
+                    </div>
+                  )}
                   <SiteDonsSection
                     section={section} slug={slug} color={color}
                     canIssueTaxReceipts={canIssueTaxReceipts}
-                    donationForm={donationFormBySection[section.id] ?? null}
+                    donationForm={boundDonationForm ?? (usesDonationForms ? PREVIEW_DONATION_FORM : null)}
+                    usesDonationForms={usesDonationForms}
                   />
                 </div>
               )
+            }
 
             case "boutique":
               return (

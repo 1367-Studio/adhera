@@ -2575,6 +2575,31 @@
         "deleteError": "Virheen poisto",
         "statusUpdated": "Päivitetty tila",
         "statusError": "Virhe tilanmuutoksessa"
+      },
+      "publishConfirm": {
+        "title": "Julkaistaanko tämä lahjoituslomake?",
+        "descriptionSite": "Se näkyy verkkosivustolla osiossa ”{section}” sekä jäsenille kohdassa Minun tilani → Lahjoitukseni.",
+        "descriptionSiteReplace": "Se korvaa lomakkeen ”{title}” verkkosivuston osiossa ”{section}” ja näkyy jäsenille kohdassa Minun tilani → Lahjoitukseni.",
+        "descriptionLink": "Se on käytettävissä oman linkkinsä kautta sekä jäsenille kohdassa Minun tilani → Lahjoitukseni. Se ei näy verkkosivustolla.",
+        "descriptionPrivate": "Se näkyy vain jäsenille, kohdassa Minun tilani → Lahjoitukseni.",
+        "blockHiddenNote": "Verkkosivuston lohko ”{section}” on piilotettuna, kunnes siinä näytetään lomake.",
+        "confirmLabel": "Julkaise"
+      },
+      "unpublishConfirm": {
+        "title": "Perutaanko tämän lahjoituslomakkeen julkaisu?",
+        "description": "Se katoaa heti verkkosivustolta ja Minun tilani -näkymästä, eikä sen linkki enää toimi.",
+        "confirmLabel": "Peru julkaisu"
+      },
+      "archiveConfirm": {
+        "title": "Arkistoidaanko tämä lahjoituslomake?",
+        "description": "”{title}” katoaa verkkosivustolta ja Minun tilani -näkymästä, eikä sen linkki enää toimi.",
+        "recurringNote": "Arkistointi ei lopeta käynnissä olevia toistuvia lahjoituksia: niitä veloitetaan edelleen.",
+        "confirmLabel": "Arkistoi"
+      },
+      "deleteBlocked": {
+        "title": "Tätä lomaketta ei voi poistaa",
+        "description": "”{title}” on jo vastaanottanut lahjoituksia, joiden historia on säilytettävä. Arkistoi se poistaaksesi sen verkkosivustolta ja Minun tilani -näkymästä.",
+        "descriptionArchived": "”{title}” on jo vastaanottanut lahjoituksia, joiden historia on säilytettävä. Se on jo arkistoitu."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Takaisin lahjoituksiin",
+      "leaveWarning": {
+        "title": "Tallentamattomat muutokset",
+        "description": "Joitakin osioita on muokattu tallentamatta. Voit tallentaa ne ennen poistumista tai hylätä ne.",
+        "discard": "Hylkää",
+        "saveAndLeave": "Tallenna ja poistu"
+      },
+      "partialSaveWarning": "Osa muutoksista tallentui ennen virhettä — tarkista jo tallennetut vaiheet.",
       "notFound": "Lomaketta ei löydy",
       "titleLabel": "Muodon nimi",
+      "titleRequired": "Otsikko on pakollinen",
       "duplicateButton": "Kaksoiskappale",
       "deleteButton": "Poista",
       "publishButton": "Julkaise",
@@ -2641,6 +2674,12 @@
         "saveError": "Virheen tallennus",
         "linkCopied": "Linkki kopioitu",
         "linkCopyError": "Kopioiminen ei onnistu — valitse linkki manuaalisesti."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Tallenna seuraavat osiot ennen julkaisua: {steps}",
+        "noTiersToast": "Lisää vähintään yksi taso ennen tämän lomakkeen julkaisemista.",
+        "unsavedTag": "Tallentamaton",
+        "noTiersTag": "Ei tasoa"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Yhteys Puhelin"
         },
         "tiers": {
-          "title": "Laakkerit",
+          "title": "Tasot",
           "hint": "Lahjoittajalle ehdotetut summat tästä lomakkeesta.",
           "noTiers": "Ei tasoa",
           "addTier": "Lisää taso",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Luo uusi osio",
           "siteSectionCreateError": "Virhe sivustoosion luomisessa.",
           "siteSectionRequiredError": "Valitse sivuston osio, johon voit laittaa tämän lomakkeen.",
+          "siteSectionReplaceWarningPublished": "Tässä osiossa näytetään tällä hetkellä ”{title}”. Kun tallennat, tämä lomake korvaa sen; ”{title}” on edelleen käytettävissä oman linkkinsä kautta.",
+          "siteSectionReplaceWarningDraft": "Tässä osiossa näytetään tällä hetkellä ”{title}”. Tämä lomake korvaa sen heti, kun se julkaistaan; ”{title}” on edelleen käytettävissä oman linkkinsä kautta.",
+          "siteSectionRemovedWarning": "Kun tallennat, osio ”{section}” piilotetaan verkkosivustolta.",
           "datesOrderError": "Sulkemispäivän on oltava myöhempi kuin avajaispäivä."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Lahjoituksesi auttaa meitä rahoittamaan toimintaamme vuoden aikana...",
       "donsButtonLabel": "Painikkeen teksti",
       "donsButtonLabelPlaceholder": "Lahjoita",
-      "donsHint": "Painike linkittää julkisen lahjoitussivun sivulle, johon pääsee käsiksi ilman tiliä. Verokuitti lähetetään automaattisesti, jos yhdistyksellä on oikeus myöntää sellainen kuitti.",
+      "donsForm": "Lahjoituslomake",
+      "donsFormNone": "Ei lomaketta",
+      "donsFormSelectedHint": "Painike avaa tämän lomakkeen sivun, jolle pääsee ilman tiliä.",
+      "donsFormNoneHint": "Tämä lohko on piilotettu sivustolla.",
+      "donsFormMovedWarning": "Tämä lomake näkyy tällä hetkellä osiossa ”{section}”. Se poistetaan sieltä.",
+      "donsFormEmptyLegacy": "Painike vie yhdistyksen yleiselle lahjoitussivulle. Julkaise lahjoituslomake valitaksesi, mitä tässä näytetään.",
+      "donsFormEmptyNoPublished": "Ei julkaistua lahjoituslomaketta: tämä lohko on piilotettu sivustolla.",
+      "donsFormManageLink": "Näytä lahjoituslomakkeet",
       "contactHint": "Tämä osio näyttää automaattisesti kaupungin ja maan, jotka on määritetty assosiaatioasetuksissa.",
       "cancel": "Peruuta",
       "apply": "Hae",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Jätä huomiotta",
       "boutiqueLimit": "Näytettävien tuotteiden määrä",
       "boutiqueLimitHint": "Sivustolla näytetään vain ensimmäiset N aktiivista tuotetta."
+    },
+    "preview": {
+      "donsNoForm": "Lahjoituslomaketta ei ole valittu — näkymätön julkisella sivustolla"
     },
     "editor": {
       "viewSite": "Katso verkkosivusto",

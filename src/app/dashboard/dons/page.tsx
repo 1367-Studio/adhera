@@ -13,7 +13,11 @@ import {
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
   CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useSiteConfig } from "@/hooks/use-site-config"
+import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
+import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
+import { SECTION_LABELS } from "@/types/site-config"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
@@ -30,13 +34,8 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
 
-type DonationForm = {
-  id:          string
-  title:       string
-  slug:        string
-  status:      "DRAFT" | "PUBLISHED" | "ARCHIVED"
+type DonationForm = DonationFormPlacement & {
   imageUrl:    string | null
-  createdAt:   string
   totalAmount: number
   _count:      { dons: number; subscriptions: number }
 }
@@ -112,6 +111,7 @@ function DonsPageInner() {
   const t            = useTranslations("donationForms")
   const tCommon      = useTranslations("common")
   const user         = useCurrentUser()
+  const modules      = useModules()
 
   // Same "read origin at click time" reasoning as the copy-link button on the form's own
   // detail page — no need for the SSR-safe useSyncExternalStore dance DonShareCard uses,
@@ -174,6 +174,9 @@ function DonsPageInner() {
   const [newFormTitle, setNewFormTitle] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<DonationForm | null>(null)
   const [publishTarget, setPublishTarget] = useState<{ form: DonationForm; action: "publish" | "unpublish" } | null>(null)
+  // "deleteBlocked": Supprimer on a form that has received donations, which can only be archived.
+  const [archiveTarget, setArchiveTarget] = useState<{ form: DonationForm; reason: "archive" | "deleteBlocked" } | null>(null)
+  const [deleteBlockedTarget, setDeleteBlockedTarget] = useState<DonationForm | null>(null)
 
   const { data: forms = [], isLoading: loadingForms } = useQuery<DonationForm[]>({
     queryKey:  ["donation-forms"],
@@ -181,6 +184,9 @@ function DonsPageInner() {
     enabled:   tab === "formulaires",
     staleTime: 0,
   })
+
+  // Section titles for the publish confirmation.
+  const { data: siteConfigData } = useSiteConfig()
 
   const createFormMutation = useMutation({
     mutationFn: async (title: string) => {
@@ -214,6 +220,11 @@ function DonsPageInner() {
     },
     onSuccess: (_form, variables) => {
       qc.invalidateQueries({ queryKey: ["donation-forms"] })
+      if (variables.action !== "duplicate") {
+        // Publishing or archiving can also move another form off its site section.
+        qc.invalidateQueries({ queryKey: ["donation-form", variables.id], exact: true })
+        qc.invalidateQueries({ queryKey: ["site-preview-data"] })
+      }
       toast.success(variables.action === "duplicate" ? t("formsView.toasts.duplicated") : t("formsView.toasts.statusUpdated"))
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.statusError")),
@@ -228,6 +239,21 @@ function DonsPageInner() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["donation-forms"] }); toast.success(t("formsView.toasts.deleted")) },
     onError:   (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.deleteError")),
   })
+
+  // Same rule as the DELETE route: a form that has received donations can only be archived.
+  function handleDeleteForm(form: DonationForm) {
+    const hasDonations = form._count.dons > 0 || form._count.subscriptions > 0
+    if (!hasDonations) setDeleteTarget(form)
+    else if (form.status === "ARCHIVED") setDeleteBlockedTarget(form)
+    else setArchiveTarget({ form, reason: "deleteBlocked" })
+  }
+
+  function archiveDescription(target: { form: DonationForm; reason: "archive" | "deleteBlocked" }) {
+    const description = target.reason === "deleteBlocked"
+      ? t("formsView.deleteBlocked.description", { title: target.form.title })
+      : t("formsView.archiveConfirm.description", { title: target.form.title })
+    return target.form._count.subscriptions > 0 ? `${description} ${t("formsView.archiveConfirm.recurringNote")}` : description
+  }
 
   const FORM_STATUS_LABEL  = { DRAFT: t("formStatus.draft"), PUBLISHED: t("formStatus.published"), ARCHIVED: t("formStatus.archived") }
   const FORM_STATUS_VARIANT: Record<DonationForm["status"], "secondary" | "default" | "outline"> = {
@@ -657,15 +683,14 @@ function DonsPageInner() {
                           ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "publish" }) }]
                           : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "unpublish" }) }]),
                         ...(f.status !== "ARCHIVED"
-                          ? [{ label: t("formsView.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "archive" }) }]
+                          ? [{ label: t("formsView.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => setArchiveTarget({ form: f, reason: "archive" }) }]
                           : []),
                         {
                           label:       t("formsView.actions.delete"),
                           icon:        <TrashIcon className="size-3.5" />,
-                          onClick:     () => setDeleteTarget(f),
+                          onClick:     () => handleDeleteForm(f),
                           destructive: true,
                           separator:   true,
-                          disabled:    f._count.dons > 0 || f._count.subscriptions > 0,
                         },
                       ]}
                     />
@@ -896,10 +921,46 @@ function DonsPageInner() {
       />
 
       <ConfirmDialog
+        open={!!archiveTarget}
+        onOpenChange={(open) => { if (!open) setArchiveTarget(null) }}
+        title={archiveTarget?.reason === "deleteBlocked" ? t("formsView.deleteBlocked.title") : t("formsView.archiveConfirm.title")}
+        description={archiveTarget ? archiveDescription(archiveTarget) : ""}
+        confirmLabel={t("formsView.archiveConfirm.confirmLabel")}
+        confirmVariant="default"
+        loading={publishMutation.isPending && publishMutation.variables?.action === "archive"}
+        onConfirm={() => {
+          if (archiveTarget)
+            publishMutation.mutate({ id: archiveTarget.form.id, action: "archive" }, { onSuccess: () => setArchiveTarget(null) })
+        }}
+      />
+
+      <Modal
+        open={!!deleteBlockedTarget}
+        onOpenChange={(open) => { if (!open) setDeleteBlockedTarget(null) }}
+        title={t("formsView.deleteBlocked.title")}
+        description={t("formsView.deleteBlocked.descriptionArchived", { title: deleteBlockedTarget?.title ?? "" })}
+        size="sm"
+        footer={
+          <Button variant="outline" onClick={() => setDeleteBlockedTarget(null)}>
+            {tCommon("close")}
+          </Button>
+        }
+      />
+
+      <ConfirmDialog
         open={!!publishTarget}
         onOpenChange={(o) => { if (!o) setPublishTarget(null) }}
         title={publishTarget?.action === "publish" ? t("formsView.publishConfirm.title") : t("formsView.unpublishConfirm.title")}
-        description={publishTarget?.action === "publish" ? t("formsView.publishConfirm.description") : t("formsView.unpublishConfirm.description")}
+        description={publishTarget?.action === "publish"
+          ? publishConfirmDescription({
+              form:                 publishTarget.form,
+              forms,
+              sections:             siteConfigData?.config?.sections ?? [],
+              donsModuleEnabled:    modules.dons,
+              fallbackSectionTitle: SECTION_LABELS.dons,
+              translate:            t,
+            })
+          : t("formsView.unpublishConfirm.description")}
         confirmLabel={publishTarget?.action === "publish" ? t("formsView.publishConfirm.confirmLabel") : t("formsView.unpublishConfirm.confirmLabel")}
         confirmVariant="default"
         loading={publishMutation.isPending}

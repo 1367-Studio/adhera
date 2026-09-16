@@ -2575,6 +2575,31 @@
         "deleteError": "Ștergerea erorilor",
         "statusUpdated": "Stare actualizată",
         "statusError": "Eroare privind schimbarea statutului"
+      },
+      "publishConfirm": {
+        "title": "Publici acest formular de donație?",
+        "descriptionSite": "Va fi vizibil pe site, în secțiunea „{section}”, și pentru membri în Spațiul meu → Donațiile mele.",
+        "descriptionSiteReplace": "Va înlocui „{title}” în secțiunea „{section}” a site-ului și va fi vizibil pentru membri în Spațiul meu → Donațiile mele.",
+        "descriptionLink": "Va fi accesibil prin propriul link și pentru membri în Spațiul meu → Donațiile mele. Nu va apărea pe site.",
+        "descriptionPrivate": "Va fi vizibil doar pentru membri, în Spațiul meu → Donațiile mele.",
+        "blockHiddenNote": "Blocul „{section}” de pe site va fi ascuns cât timp nu este afișat niciun formular în el.",
+        "confirmLabel": "Publică"
+      },
+      "unpublishConfirm": {
+        "title": "Anulezi publicarea acestui formular de donație?",
+        "description": "Va dispărea imediat de pe site și din Spațiul meu, iar linkul său nu va mai funcționa.",
+        "confirmLabel": "Anulează publicarea"
+      },
+      "archiveConfirm": {
+        "title": "Arhivezi acest formular de donație?",
+        "description": "„{title}” va dispărea de pe site și din Spațiul meu, iar linkul său nu va mai funcționa.",
+        "recurringNote": "Arhivarea nu oprește donațiile recurente în curs: acestea vor continua să fie încasate.",
+        "confirmLabel": "Arhivează"
+      },
+      "deleteBlocked": {
+        "title": "Acest formular nu poate fi șters",
+        "description": "„{title}” a primit deja donații, al căror istoric trebuie păstrat. Arhivează-l pentru a-l elimina de pe site și din Spațiul meu.",
+        "descriptionArchived": "„{title}” a primit deja donații, al căror istoric trebuie păstrat. Este deja arhivat."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Înapoi la donații",
+      "leaveWarning": {
+        "title": "Modificări nesalvate",
+        "description": "Unele secțiuni au fost modificate fără a fi salvate. Le poți salva înainte de a ieși sau poți renunța la ele.",
+        "discard": "Renunță",
+        "saveAndLeave": "Salvează și ieși"
+      },
+      "partialSaveWarning": "Unele dintre modificări au fost salvate înainte de eroare — verifică pașii care fuseseră deja salvați.",
       "notFound": "Formă negăsită",
       "titleLabel": "Titlul formularului",
+      "titleRequired": "Titlul este obligatoriu",
       "duplicateButton": "Duplicat",
       "deleteButton": "Șterge",
       "publishButton": "Publică",
@@ -2641,6 +2674,12 @@
         "saveError": "Înregistrarea erorilor",
         "linkCopied": "Link copiat",
         "linkCopyError": "Nu se poate copia — selectează manual linkul."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Salvează următoarele secțiuni înainte de publicare: {steps}",
+        "noTiersToast": "Adaugă cel puțin un nivel înainte de a publica acest formular.",
+        "unsavedTag": "Nesalvat",
+        "noTiersTag": "Fără nivel"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Telefon de contact"
         },
         "tiers": {
-          "title": "Rulmenți",
+          "title": "Niveluri",
           "hint": "Sume propuse donatorului pentru acest formular.",
           "noTiers": "Fără nivel",
           "addTier": "Adaugă un nivel",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Creează o secțiune nouă",
           "siteSectionCreateError": "Eroare la crearea secțiunii site-ului.",
           "siteSectionRequiredError": "Alege secțiunea site-ului unde să postezi acest formular.",
+          "siteSectionReplaceWarningPublished": "Această secțiune afișează în prezent „{title}”. La salvare, acest formular îl va înlocui; „{title}” va rămâne accesibil prin propriul link.",
+          "siteSectionReplaceWarningDraft": "Această secțiune afișează în prezent „{title}”. Acest formular îl va înlocui imediat ce va fi publicat; „{title}” va rămâne accesibil prin propriul link.",
+          "siteSectionRemovedWarning": "La salvare, secțiunea „{section}” va fi ascunsă pe site.",
           "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Donația dumneavoastră ne ajută să finanțăm acțiunile noastre pe tot parcursul anului...",
       "donsButtonLabel": "Textul butonului",
       "donsButtonLabelPlaceholder": "Donează",
-      "donsHint": "Butonul face legătura către pagina publică de donații, care poate fi accesată fără cont. Chitanța fiscală este trimisă automat dacă asociația este autorizată să emită unul.",
+      "donsForm": "Formular de donație",
+      "donsFormNone": "Niciun formular",
+      "donsFormSelectedHint": "Butonul deschide pagina acestui formular, accesibilă fără cont.",
+      "donsFormNoneHint": "Acest bloc este ascuns pe site.",
+      "donsFormMovedWarning": "Acest formular este afișat în prezent în secțiunea „{section}”. Va fi eliminat de acolo.",
+      "donsFormEmptyLegacy": "Butonul trimite către pagina generică de donații a asociației. Publicați un formular de donație pentru a alege ce se afișează aici.",
+      "donsFormEmptyNoPublished": "Niciun formular de donație publicat: acest bloc este ascuns pe site.",
+      "donsFormManageLink": "Vezi formularele de donație",
       "contactHint": "Această secțiune afișează automat orașul și țara configurate în setările asociației.",
       "cancel": "Anulează",
       "apply": "Aplică",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Ignoră",
       "boutiqueLimit": "Numărul de produse afișate",
       "boutiqueLimitHint": "Pe site vor fi afișate doar primele N produse active."
+    },
+    "preview": {
+      "donsNoForm": "Niciun formular de donație ales — invizibil pe site-ul public"
     },
     "editor": {
       "viewSite": "Vezi site-ul",

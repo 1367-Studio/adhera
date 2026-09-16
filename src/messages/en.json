@@ -2600,13 +2600,28 @@
       },
       "publishConfirm": {
         "title": "Publish this donation form?",
-        "description": "Once published, this form will be immediately visible to members in My space → My donations.",
+        "descriptionSite": "It will be visible on the website, in the \"{section}\" section, and to members in My space → My donations.",
+        "descriptionSiteReplace": "It will replace \"{title}\" in the \"{section}\" section of the website and will be visible to members in My space → My donations.",
+        "descriptionLink": "It will be available through its link and to members in My space → My donations. It will not appear on the website.",
+        "descriptionPrivate": "It will only be visible to members, in My space → My donations.",
+        "blockHiddenNote": "The \"{section}\" block on the website will be hidden until a form is displayed in it.",
         "confirmLabel": "Publish"
       },
       "unpublishConfirm": {
         "title": "Unpublish this donation form?",
-        "description": "It will immediately disappear from My space for members.",
+        "description": "It will immediately disappear from the website and My space, and its link will stop working.",
         "confirmLabel": "Unpublish"
+      },
+      "archiveConfirm": {
+        "title": "Archive this donation form?",
+        "description": "\"{title}\" will disappear from the website and My space, and its link will stop working.",
+        "recurringNote": "Archiving does not stop ongoing recurring donations: they will continue to be charged.",
+        "confirmLabel": "Archive"
+      },
+      "deleteBlocked": {
+        "title": "This form cannot be deleted",
+        "description": "\"{title}\" has already received donations, whose history must be kept. Archive it to remove it from the website and My space.",
+        "descriptionArchived": "\"{title}\" has already received donations, whose history must be kept. It is already archived."
       }
     },
     "donationsView": {
@@ -2659,8 +2674,16 @@
     },
     "detail": {
       "backToList": "Back to donations",
+      "leaveWarning": {
+        "title": "Unsaved changes",
+        "description": "Some sections were edited but not saved. You can save them before leaving, or discard them.",
+        "discard": "Discard",
+        "saveAndLeave": "Save and leave"
+      },
+      "partialSaveWarning": "Some changes were already saved before the error — check which steps went through.",
       "notFound": "Form not found",
       "titleLabel": "Form title",
+      "titleRequired": "The title is required",
       "duplicateButton": "Duplicate",
       "deleteButton": "Delete",
       "publishButton": "Publish",
@@ -2673,6 +2696,12 @@
         "saveError": "Error while saving",
         "linkCopied": "Link copied",
         "linkCopyError": "Couldn't copy — select the link manually."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Save the following sections before publishing: {steps}",
+        "noTiersToast": "Add at least one tier before publishing this form.",
+        "unsavedTag": "Unsaved",
+        "noTiersTag": "No tier"
       },
       "steps": {
         "info": {
@@ -2782,6 +2811,9 @@
           "siteSectionCreateOption": "+ Create new section",
           "siteSectionCreateError": "Error creating the site section.",
           "siteSectionRequiredError": "Choose which site section this form should be published on.",
+          "siteSectionReplaceWarningPublished": "This section currently shows \"{title}\". When you save, this form will replace it; \"{title}\" will remain available through its link.",
+          "siteSectionReplaceWarningDraft": "This section currently shows \"{title}\". This form will replace it as soon as it is published; \"{title}\" will remain available through its link.",
+          "siteSectionRemovedWarning": "When you save, the \"{section}\" section will be hidden on the website.",
           "datesOrderError": "The closing date must be after the opening date."
         }
       }
@@ -4770,7 +4802,14 @@
       "donsIntroPlaceholder": "Your donation helps us fund our work throughout the year…",
       "donsButtonLabel": "Button text",
       "donsButtonLabelPlaceholder": "Donate",
-      "donsHint": "The button links to the public donation page, which works without an account. The tax receipt is sent automatically if the association is authorised to issue one.",
+      "donsForm": "Donation form",
+      "donsFormNone": "No form",
+      "donsFormSelectedHint": "The button opens this form's page, which works without an account.",
+      "donsFormNoneHint": "This block is hidden on the site.",
+      "donsFormMovedWarning": "This form is currently shown in the “{section}” section. It will be removed from there.",
+      "donsFormEmptyLegacy": "The button links to the association's generic donation page. Publish a donation form to choose what appears here.",
+      "donsFormEmptyNoPublished": "No published donation form: this block is hidden on the site.",
+      "donsFormManageLink": "View donation forms",
       "contactHint": "This section automatically displays the city and country configured in the association's settings.",
       "cancel": "Cancel",
       "apply": "Apply",
@@ -4779,6 +4818,9 @@
       "discardConfirm": "Discard",
       "boutiqueLimit": "Number of products to display",
       "boutiqueLimitHint": "Only the first N active products will be shown on the site."
+    },
+    "preview": {
+      "donsNoForm": "No donation form selected — hidden on the public site"
     },
     "editor": {
       "viewSite": "View site",

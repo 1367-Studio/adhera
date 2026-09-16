@@ -112,17 +112,29 @@ async function getSiteData(slug: string) {
     .find(Boolean)
   const membershipCta = firstBoundMembershipForm ? { href: `/${slug}/adhesion/${firstBoundMembershipForm.slug}` } : null
 
-  // Same explicit form→section binding as membership (DonationForm.siteSectionId) — but
-  // unlike membership, a "dons" section with nothing bound isn't left empty: SiteDonsSection
-  // falls back to the legacy standalone /portal/[slug]/don page (see its own comment).
-  const donationForms = mods.dons
-    ? await prisma.donationForm.findMany({
-        where:  { association: { slug }, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
-        select: { slug: true, title: true, siteSectionId: true },
-      })
-    : []
-  const donationFormBySection: Record<string, { slug: string; title: string }> =
-    Object.fromEntries(donationForms.map(f => [f.siteSectionId as string, { slug: f.slug, title: f.title }]))
+  // Same explicit form→section binding as membership (DonationForm.siteSectionId). A "dons"
+  // section with nothing bound is hidden once the association uses donation forms (one has
+  // been published or archived); before that — legacy associations — SiteDonsSection falls
+  // back to the standalone /portal/[slug]/don page (see its own comment).
+  const [donationForms, liveDonationFormCount] = mods.dons
+    ? await Promise.all([
+        prisma.donationForm.findMany({
+          where:   { association: { slug }, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
+          // Only one published form per section is allowed now, but older data can still hold
+          // duplicates — most recently updated wins, deterministically.
+          orderBy: { updatedAt: "desc" },
+          select:  { slug: true, title: true, siteSectionId: true },
+        }),
+        prisma.donationForm.count({
+          where: { association: { slug }, status: { in: ["PUBLISHED", "ARCHIVED"] } },
+        }),
+      ])
+    : [[], 0]
+  const donationFormBySection: Record<string, { slug: string; title: string }> = {}
+  for (const donationForm of donationForms) {
+    const sectionId = donationForm.siteSectionId as string
+    if (!donationFormBySection[sectionId]) donationFormBySection[sectionId] = { slug: donationForm.slug, title: donationForm.title }
+  }
 
   return {
     name:        assoc.name,
@@ -135,6 +147,7 @@ async function getSiteData(slug: string) {
     membershipFormBySection,
     membershipCta,
     donationFormBySection,
+    usesDonationForms: liveDonationFormCount > 0,
     city:        assoc.city,
     country:     assoc.country,
     config:      assoc.siteConfig as SiteConfig | null,
@@ -218,6 +231,7 @@ export default async function PublicSitePage(
                     key={section.id} section={section} slug={slug} color={color}
                     canIssueTaxReceipts={data.canIssueTaxReceipts}
                     donationForm={data.donationFormBySection[section.id] ?? null}
+                    usesDonationForms={data.usesDonationForms}
                   />
                 )
                 : null

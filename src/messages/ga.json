@@ -2575,6 +2575,31 @@
         "deleteError": "Earráid agus é á scriosadh",
         "statusUpdated": "Stádas Nuashonraithe",
         "statusError": "Earráid maidir le hathrú stádais"
+      },
+      "publishConfirm": {
+        "title": "An bhfoilseofar an fhoirm síntiúis seo?",
+        "descriptionSite": "Beidh sí le feiceáil ar an suíomh gréasáin, sa rannán “{section}”, agus ag baill in Mo Spás → Mo Síntiúis.",
+        "descriptionSiteReplace": "Tiocfaidh sí in áit “{title}” sa rannán “{section}” den suíomh gréasáin agus beidh sí le feiceáil ag baill in Mo Spás → Mo Síntiúis.",
+        "descriptionLink": "Beidh sí ar fáil trína nasc féin agus ag baill in Mo Spás → Mo Síntiúis. Ní thaispeánfar í ar an suíomh gréasáin.",
+        "descriptionPrivate": "Ní bheidh sí le feiceáil ach ag baill, in Mo Spás → Mo Síntiúis.",
+        "blockHiddenNote": "Beidh an bloc “{section}” ar an suíomh gréasáin i bhfolach go dtí go dtaispeánfar foirm ann.",
+        "confirmLabel": "Foilsigh"
+      },
+      "unpublishConfirm": {
+        "title": "An ndífhoilseofar an fhoirm síntiúis seo?",
+        "description": "Imeoidh sí láithreach ón suíomh gréasáin agus ó Mo Spás, agus ní oibreoidh a nasc a thuilleadh.",
+        "confirmLabel": "Dífhoilsigh"
+      },
+      "archiveConfirm": {
+        "title": "An gcuirfear an fhoirm síntiúis seo sa chartlann?",
+        "description": "Imeoidh “{title}” ón suíomh gréasáin agus ó Mo Spás, agus ní oibreoidh a nasc a thuilleadh.",
+        "recurringNote": "Ní stopann an cartlannú na síntiúis athfhillteacha atá ar siúl: gearrfar iad i gcónaí.",
+        "confirmLabel": "Cuir sa chartlann"
+      },
+      "deleteBlocked": {
+        "title": "Ní féidir an fhoirm seo a scriosadh",
+        "description": "Tá síntiúis faighte cheana ag “{title}”, agus ní mór a stair a choinneáil. Cuir sa chartlann í chun í a bhaint den suíomh gréasáin agus de Mo Spás.",
+        "descriptionArchived": "Tá síntiúis faighte cheana ag “{title}”, agus ní mór a stair a choinneáil. Tá sí sa chartlann cheana féin."
       }
     },
     "donationsView": {
@@ -2627,8 +2652,16 @@
     },
     "detail": {
       "backToList": "Ar ais chuig síntiúis",
+      "leaveWarning": {
+        "title": "Athruithe nár sábháladh",
+        "description": "Cuireadh roinnt rannán in eagar gan iad a shábháil. Is féidir leat iad a shábháil sula bhfágann tú, nó iad a chaitheamh i leataobh.",
+        "discard": "Caith i leataobh",
+        "saveAndLeave": "Sábháil agus fág"
+      },
+      "partialSaveWarning": "Sábháladh cuid de na hathruithe roimh an earráid — seiceáil na céimeanna a sábháladh cheana féin.",
       "notFound": "Níor aimsíodh an fhoirm",
       "titleLabel": "Teideal na Foirme",
+      "titleRequired": "Tá an teideal riachtanach",
       "duplicateButton": "Dúblach",
       "deleteButton": "Scrios",
       "publishButton": "Foilsigh",
@@ -2641,6 +2674,12 @@
         "saveError": "Taifeadadh earráide",
         "linkCopied": "Nasc cóipeáilte",
         "linkCopyError": "Ní féidir é a chóipeáil — roghnaigh an nasc de láimh."
+      },
+      "publishBlocked": {
+        "unsavedToast": "Sábháil na rannáin seo a leanas sula bhfoilsíonn tú: {steps}",
+        "noTiersToast": "Cuir leibhéal amháin ar a laghad leis sula bhfoilsíonn tú an fhoirm seo.",
+        "unsavedTag": "Gan sábháil",
+        "noTiersTag": "Gan leibhéal"
       },
       "steps": {
         "info": {
@@ -2659,7 +2698,7 @@
           "contactPhoneLabel": "Fón Teagmhála"
         },
         "tiers": {
-          "title": "Imthacaí",
+          "title": "Leibhéil",
           "hint": "Méideanna a tairgeadh don deontóir don fhoirm seo.",
           "noTiers": "Gan leibhéal",
           "addTier": "Cuir Sraith leis",
@@ -2750,6 +2789,9 @@
           "siteSectionCreateOption": "+ Cruthaigh rannóg nua",
           "siteSectionCreateError": "Earráid agus rannóg an tsuímh á chruthú.",
           "siteSectionRequiredError": "Roghnaigh an chuid den láithreán chun an fhoirm seo a phostáil chuige.",
+          "siteSectionReplaceWarningPublished": "Tá “{title}” á taispeáint sa rannán seo faoi láthair. Nuair a shábhálann tú, tiocfaidh an fhoirm seo ina háit; beidh “{title}” fós ar fáil trína nasc féin.",
+          "siteSectionReplaceWarningDraft": "Tá “{title}” á taispeáint sa rannán seo faoi láthair. Tiocfaidh an fhoirm seo ina háit chomh luath agus a fhoilseofar í; beidh “{title}” fós ar fáil trína nasc féin.",
+          "siteSectionRemovedWarning": "Nuair a shábhálann tú, beidh an rannán “{section}” i bhfolach ar an suíomh gréasáin.",
           "datesOrderError": "Caithfidh an dáta deiridh a bheith níos déanaí ná an dáta oscailte."
         }
       }
@@ -4729,7 +4771,14 @@
       "donsIntroPlaceholder": "Cuidíonn do shíntiús linn ár ngníomhartha a mhaoiniú i rith na bliana...",
       "donsButtonLabel": "Téacs an chnaipe",
       "donsButtonLabelPlaceholder": "Deonaigh",
-      "donsHint": "Nascann an cnaipe leis an leathanach síntiúis phoiblí, ar féidir rochtain a fháil air gan cuntas. Seoltar an admháil chánach go huathoibríoch má tá údarú ag an gcumann ceann a eisiúint.",
+      "donsForm": "Foirm síntiúis",
+      "donsFormNone": "Gan foirm",
+      "donsFormSelectedHint": "Osclaíonn an cnaipe leathanach na foirme seo, atá ar fáil gan cuntas.",
+      "donsFormNoneHint": "Tá an bloc seo i bhfolach ar an suíomh.",
+      "donsFormMovedWarning": "Tá an fhoirm seo á taispeáint faoi láthair sa chuid “{section}”. Bainfear as sin í.",
+      "donsFormEmptyLegacy": "Nascann an cnaipe le leathanach síntiús ginearálta an chumainn. Foilsigh foirm síntiúis chun an méid a thaispeántar anseo a roghnú.",
+      "donsFormEmptyNoPublished": "Níl aon fhoirm síntiúis foilsithe: tá an bloc seo i bhfolach ar an suíomh.",
+      "donsFormManageLink": "Féach ar na foirmeacha síntiúis",
       "contactHint": "Taispeánann an chuid seo an chathair agus an tír atá cumraithe go huathoibríoch sna socruithe cumainn.",
       "cancel": "Cuir ar ceal",
       "apply": "Déan iarratas",
@@ -4738,6 +4787,9 @@
       "discardConfirm": "Déan neamhaird",
       "boutiqueLimit": "Líon na dtáirgí le taispeáint",
       "boutiqueLimitHint": "Ní thaispeánfar ar an suíomh ach an chéad N táirgí gníomhacha."
+    },
+    "preview": {
+      "donsNoForm": "Níor roghnaíodh foirm síntiúis — dofheicthe ar an suíomh poiblí"
     },
     "editor": {
       "viewSite": "Féach ar an suíomh gréasáin",
