@@ -408,6 +408,10 @@ model Association {
   address                        String?
   phone                          String?
   website                        String?
+  // Reply-To par défaut des e-mails envoyés au nom de l'association (le "From" technique
+  // reste une adresse Formwise) — voir src/lib/mail.ts. Les formulaires (dons/adhésion/
+  // évènement) qui ont leur propre contactEmail restent prioritaires sur celui-ci.
+  contactEmail                   String?
   // Adresse d'expédition utilisée comme point de départ ("from_address") lors des cotations
   // de frais de livraison Boutique (Sendcloud) — distincte de `address` ci-dessus, qui sert
   // à l'identité légale (reçus fiscaux), pas à la logistique.

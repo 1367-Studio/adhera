@@ -50,7 +50,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     bodyHtml,
     recipientEmail:  adminEmail,
     branding:        resolveDocumentBranding(rule.association),
-  }))
+  }), { associationId, source: "TEST", sourceId: id })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
 }, { roles: ALLOWED_ROLES, module: "messages" })
