@@ -3513,8 +3513,7 @@
         "general": "Allmänt",
         "paiements": "Betalningar",
         "abonnement": "Prenumeration",
-        "integrations": "Integrationer",
-        "legal": "Juridiska dokument"
+        "integrations": "Integrationer"
       },
       "associationInfo": "Föreningsinformation",
       "associationName": "Föreningens namn",
@@ -3532,15 +3531,6 @@
       "copied": "Kopierat!",
       "copy": "Kopiera",
       "open": "Öppet"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwises juridiska dokument",
-      "description": "Dessa dokument reglerar hur din förening och dina medlemmar använder plattformen Formwise.",
-      "mentionsLegales": "Juridisk notis",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Integritetspolicy",
-      "opensNewTab": "Öppnar en ny flik"
     },
     "cotisationDefaultsSettings": {
       "title": "Medlemsavgift",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Redigera profil",
       "changePassword": "Byt lösenord",
+      "legalDocuments": {
+        "title": "Juridiska dokument",
+        "mentionsLegales": "Juridisk notis",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Integritetspolicy",
+        "opensNewTab": "Öppnar en ny flik"
+      },
       "logout": "Logga ut"
     },
     "changePasswordModal": {

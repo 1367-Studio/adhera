@@ -3513,8 +3513,7 @@
         "general": "Algemeen",
         "paiements": "Betalingen",
         "abonnement": "Abonnement",
-        "integrations": "Integraties",
-        "legal": "Juridische documenten"
+        "integrations": "Integraties"
       },
       "associationInfo": "Vereniging Informatie",
       "associationName": "Naam van de vereniging",
@@ -3532,15 +3531,6 @@
       "copied": "Gekopieerd!",
       "copy": "Begrepen",
       "open": "Open"
-    },
-    "legalDocumentsSettings": {
-      "title": "Juridische documenten van Formwise",
-      "description": "Deze documenten regelen het gebruik van het Formwise-platform door je vereniging en je leden.",
-      "mentionsLegales": "Juridische kennisgeving",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privacybeleid",
-      "opensNewTab": "Opent een nieuw tabblad"
     },
     "cotisationDefaultsSettings": {
       "title": "Lidmaatschapsbijdrage",
@@ -5344,6 +5334,14 @@
       },
       "editProfile": "Profiel bewerken",
       "changePassword": "Wachtwoord wijzigen",
+      "legalDocuments": {
+        "title": "Juridische documenten",
+        "mentionsLegales": "Juridische kennisgeving",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Privacybeleid",
+        "opensNewTab": "Opent een nieuw tabblad"
+      },
       "logout": "Uitloggen"
     },
     "changePasswordModal": {

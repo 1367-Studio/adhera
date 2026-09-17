@@ -3513,8 +3513,7 @@
         "general": "Ġenerali",
         "paiements": "Ħlasijiet",
         "abonnement": "Abbonament",
-        "integrations": "Integrazzjonijiet",
-        "legal": "Dokumenti legali"
+        "integrations": "Integrazzjonijiet"
       },
       "associationInfo": "Informazzjoni dwar l-Assoċjazzjoni",
       "associationName": "Isem tal-assoċjazzjoni",
@@ -3532,15 +3531,6 @@
       "copied": "Kopija!",
       "copy": "Kopja",
       "open": "Miftuħ"
-    },
-    "legalDocumentsSettings": {
-      "title": "Dokumenti legali ta' Formwise",
-      "description": "Dawn id-dokumenti jirregolaw l-użu tal-pjattaforma Formwise mill-assoċjazzjoni u l-membri tiegħek.",
-      "mentionsLegales": "Avviż legali",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politika dwar il-Privatezza",
-      "opensNewTab": "Tiftaħ tab ġdid"
     },
     "cotisationDefaultsSettings": {
       "title": "Miżata tal-Membri",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Edit Profil",
       "changePassword": "Biddel il-Password",
+      "legalDocuments": {
+        "title": "Dokumenti legali",
+        "mentionsLegales": "Avviż legali",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Politika dwar il-Privatezza",
+        "opensNewTab": "Tiftaħ tab ġdid"
+      },
       "logout": "Logout"
     },
     "changePasswordModal": {

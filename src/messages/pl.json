@@ -3513,8 +3513,7 @@
         "general": "Ogólne",
         "paiements": "Płatności",
         "abonnement": "Subskrypcja",
-        "integrations": "Integracje",
-        "legal": "Dokumenty prawne"
+        "integrations": "Integracje"
       },
       "associationInfo": "Informacje o stowarzyszeniu",
       "associationName": "Nazwa stowarzyszenia",
@@ -3532,15 +3531,6 @@
       "copied": "Skopiowane!",
       "copy": "Kopiuję",
       "open": "Otwarte"
-    },
-    "legalDocumentsSettings": {
-      "title": "Dokumenty prawne Formwise",
-      "description": "Te dokumenty określają zasady korzystania z platformy Formwise przez Twoje stowarzyszenie i jego członków.",
-      "mentionsLegales": "Powiadomienie prawne",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Polityka prywatności",
-      "opensNewTab": "Otwiera nową kartę"
     },
     "cotisationDefaultsSettings": {
       "title": "Składka członkowska",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Edytuj profil",
       "changePassword": "Zmień hasło",
+      "legalDocuments": {
+        "title": "Dokumenty prawne",
+        "mentionsLegales": "Powiadomienie prawne",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Polityka prywatności",
+        "opensNewTab": "Otwiera nową kartę"
+      },
       "logout": "Wyloguj się"
     },
     "changePasswordModal": {

@@ -3513,8 +3513,7 @@
         "general": "Allgemeines",
         "paiements": "Zahlungen",
         "abonnement": "Abonnement",
-        "integrations": "Integrationen",
-        "legal": "Rechtsdokumente"
+        "integrations": "Integrationen"
       },
       "associationInfo": "Vereinsinformationen",
       "associationName": "Name des Verbandes",
@@ -3532,15 +3531,6 @@
       "copied": "Kopiert!",
       "copy": "Verstanden",
       "open": "Offen"
-    },
-    "legalDocumentsSettings": {
-      "title": "Rechtsdokumente von Formwise",
-      "description": "Diese Dokumente regeln die Nutzung der Plattform Formwise durch Ihren Verein und Ihre Mitglieder.",
-      "mentionsLegales": "Rechtliche Mitteilung",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Datenschutzerklärung",
-      "opensNewTab": "Öffnet einen neuen Tab"
     },
     "cotisationDefaultsSettings": {
       "title": "Mitgliedsbeitrag",
@@ -5344,6 +5334,14 @@
       },
       "editProfile": "Profil bearbeiten",
       "changePassword": "Passwort ändern",
+      "legalDocuments": {
+        "title": "Rechtsdokumente",
+        "mentionsLegales": "Rechtliche Mitteilung",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Datenschutzerklärung",
+        "opensNewTab": "Öffnet einen neuen Tab"
+      },
       "logout": "Ausloggen"
     },
     "changePasswordModal": {

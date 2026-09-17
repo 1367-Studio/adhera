@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useQueryClient } from "@tanstack/react-query"
-import { SignOutIcon, PencilSimpleIcon, KeyIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
+import { SignOutIcon, PencilSimpleIcon, KeyIcon, ShieldCheckIcon, ScalesIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -20,6 +23,17 @@ import { BASE_PATH } from "@/lib/env"
 import { ProfileEditModal }        from "./profile-edit-modal"
 import { ChangePasswordModal }     from "./change-password-modal"
 import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
+
+// Adhera runs embedded under formwise.fr/app — these legal pages live on the parent
+// formwise-app site itself (single platform-wide set, not per-association), so we link
+// out instead of duplicating the content here. They sit in this menu rather than in
+// Paramètres so every role reaches them: managers, portal members and super admins.
+const LEGAL_LINKS = [
+  { key: "mentionsLegales",             href: "https://www.formwise.fr/mentions-legales" },
+  { key: "cgu",                         href: "https://www.formwise.fr/cgu" },
+  { key: "cgs",                         href: "https://www.formwise.fr/cgs" },
+  { key: "politiqueConfidentialite",    href: "https://www.formwise.fr/politique-de-confidentialite" },
+] as const
 
 function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return {
@@ -103,6 +117,35 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
                 {t("security")}
               </DropdownMenuItem>
             )}
+          </DropdownMenuGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuGroup>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <ScalesIcon className="mr-2 size-4" />
+                {t("legalDocuments.title")}
+              </DropdownMenuSubTrigger>
+              {/* No side/align override: as a submenu, Base UI's positioner flips it to the
+                  left when the right edge is too close, then drops it below the trigger and
+                  shifts it back inside the viewport when neither side fits (phones). */}
+              <DropdownMenuSubContent>
+                {LEGAL_LINKS.map(legalLink => (
+                  // A real <a> (middle-click, copy link, status bar URL) rather than
+                  // window.open; Menu.Item still closes the menu on click, which
+                  // Menu.LinkItem wouldn't by default.
+                  <DropdownMenuItem
+                    key={legalLink.key}
+                    render={<a href={legalLink.href} target="_blank" rel="noopener noreferrer" />}
+                  >
+                    <span className="flex-1">{t(`legalDocuments.${legalLink.key}`)}</span>
+                    <ArrowSquareOutIcon className="size-3.5 text-muted-foreground" aria-hidden />
+                    <span className="sr-only">{t("legalDocuments.opensNewTab")}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

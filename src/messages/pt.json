@@ -3526,8 +3526,7 @@
         "general": "Geral",
         "paiements": "Pagamentos",
         "abonnement": "Assinatura",
-        "integrations": "Integrações",
-        "legal": "Documentos legais"
+        "integrations": "Integrações"
       },
       "associationInfo": "Informações da associação",
       "associationName": "Nome da associação",
@@ -3545,15 +3544,6 @@
       "copied": "Copiado!",
       "copy": "Copiar",
       "open": "Abrir"
-    },
-    "legalDocumentsSettings": {
-      "title": "Documentos legais da Formwise",
-      "description": "Estes documentos regem o uso da plataforma Formwise pela sua associação e pelos seus membros.",
-      "mentionsLegales": "Aviso legal",
-      "cgu": "Termos de uso",
-      "cgs": "Termos de serviço",
-      "politiqueConfidentialite": "Política de privacidade",
-      "opensNewTab": "Abre em uma nova aba"
     },
     "cotisationDefaultsSettings": {
       "title": "Mensalidade",
@@ -5364,6 +5354,14 @@
       "editProfile": "Editar perfil",
       "changePassword": "Alterar senha",
       "security": "Segurança",
+      "legalDocuments": {
+        "title": "Documentos legais",
+        "mentionsLegales": "Aviso legal",
+        "cgu": "Termos de uso",
+        "cgs": "Termos de serviço",
+        "politiqueConfidentialite": "Política de privacidade",
+        "opensNewTab": "Abre em uma nova aba"
+      },
       "logout": "Sair"
     },
     "twoFactorSettingsModal": {

@@ -3513,8 +3513,7 @@
         "general": "Γενικά",
         "paiements": "Πληρωμές",
         "abonnement": "Συνδρομή",
-        "integrations": "Ενσωματώσεις",
-        "legal": "Νομικά έγγραφα"
+        "integrations": "Ενσωματώσεις"
       },
       "associationInfo": "Πληροφορίες Συλλόγου",
       "associationName": "Επωνυμία του συλλόγου",
@@ -3532,15 +3531,6 @@
       "copied": "Αντιγράφηκε!",
       "copy": "Αντιγραφή",
       "open": "Ανοιξε"
-    },
-    "legalDocumentsSettings": {
-      "title": "Νομικά έγγραφα της Formwise",
-      "description": "Αυτά τα έγγραφα διέπουν τη χρήση της πλατφόρμας Formwise από τον σύλλογό σας και τα μέλη σας.",
-      "mentionsLegales": "Ανακοίνωση νομικού περιεχομένου",
-      "cgu": "UGC",
-      "cgs": "ΚΓΣ",
-      "politiqueConfidentialite": "Πολιτική Απορρήτου",
-      "opensNewTab": "Ανοίγει νέα καρτέλα"
     },
     "cotisationDefaultsSettings": {
       "title": "Συνδρομή μέλους",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Επεξεργασία προφίλ",
       "changePassword": "Αλλαγή κωδικού πρόσβασης",
+      "legalDocuments": {
+        "title": "Νομικά έγγραφα",
+        "mentionsLegales": "Ανακοίνωση νομικού περιεχομένου",
+        "cgu": "UGC",
+        "cgs": "ΚΓΣ",
+        "politiqueConfidentialite": "Πολιτική Απορρήτου",
+        "opensNewTab": "Ανοίγει νέα καρτέλα"
+      },
       "logout": "Αποσύνδεση"
     },
     "changePasswordModal": {

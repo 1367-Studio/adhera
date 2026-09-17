@@ -3513,8 +3513,7 @@
         "general": "Общо",
         "paiements": "Плащания",
         "abonnement": "Абонамент",
-        "integrations": "Интеграции",
-        "legal": "Правни документи"
+        "integrations": "Интеграции"
       },
       "associationInfo": "Информация за асоциацията",
       "associationName": "Име на асоциацията",
@@ -3532,15 +3531,6 @@
       "copied": "Копирах!",
       "copy": "Прието.",
       "open": "Отвори"
-    },
-    "legalDocumentsSettings": {
-      "title": "Правни документи на Formwise",
-      "description": "Тези документи уреждат използването на платформата Formwise от вашата асоциация и нейните членове.",
-      "mentionsLegales": "Правно уведомление",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Политика за поверителност",
-      "opensNewTab": "Отваря нов таб"
     },
     "cotisationDefaultsSettings": {
       "title": "Членски внос",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Редактиране на профила",
       "changePassword": "Промяна на паролата",
+      "legalDocuments": {
+        "title": "Правни документи",
+        "mentionsLegales": "Правно уведомление",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Политика за поверителност",
+        "opensNewTab": "Отваря нов таб"
+      },
       "logout": "Излез от излизането"
     },
     "changePasswordModal": {

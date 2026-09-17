@@ -3513,8 +3513,7 @@
         "general": "Üldine",
         "paiements": "Maksed",
         "abonnement": "Tellimus",
-        "integrations": "Integratsioonid",
-        "legal": "Õiguslikud dokumendid"
+        "integrations": "Integratsioonid"
       },
       "associationInfo": "Ühingu info",
       "associationName": "Ühingu nimi",
@@ -3532,15 +3531,6 @@
       "copied": "Kopeeritud!",
       "copy": "Kinnitan",
       "open": "Ava"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwise'i õiguslikud dokumendid",
-      "description": "Need dokumendid reguleerivad, kuidas sinu ühing ja selle liikmed Formwise'i platvormi kasutavad.",
-      "mentionsLegales": "Juriidiline teade",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privaatsuspoliitika",
-      "opensNewTab": "Avab uue vahekaardi"
     },
     "cotisationDefaultsSettings": {
       "title": "Liikmemaks",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Muuda profiili",
       "changePassword": "Muuda parool",
+      "legalDocuments": {
+        "title": "Õiguslikud dokumendid",
+        "mentionsLegales": "Juriidiline teade",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Privaatsuspoliitika",
+        "opensNewTab": "Avab uue vahekaardi"
+      },
       "logout": "Logi välja"
     },
     "changePasswordModal": {

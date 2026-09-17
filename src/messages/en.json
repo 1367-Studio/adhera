@@ -3535,8 +3535,7 @@
         "general": "General",
         "paiements": "Payments",
         "abonnement": "Subscription",
-        "integrations": "Integrations",
-        "legal": "Legal documents"
+        "integrations": "Integrations"
       },
       "associationInfo": "Association information",
       "associationName": "Association name",
@@ -3554,15 +3553,6 @@
       "copied": "Copied!",
       "copy": "Copy",
       "open": "Open"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwise legal documents",
-      "description": "These documents govern how your association and your members use the Formwise platform.",
-      "mentionsLegales": "Legal notice",
-      "cgu": "Terms of use",
-      "cgs": "Terms of service",
-      "politiqueConfidentialite": "Privacy policy",
-      "opensNewTab": "Opens in a new tab"
     },
     "cotisationDefaultsSettings": {
       "title": "Membership fee",
@@ -5405,6 +5395,14 @@
       "editProfile": "Edit profile",
       "changePassword": "Change password",
       "security": "Security",
+      "legalDocuments": {
+        "title": "Legal documents",
+        "mentionsLegales": "Legal notice",
+        "cgu": "Terms of use",
+        "cgs": "Terms of service",
+        "politiqueConfidentialite": "Privacy policy",
+        "opensNewTab": "Opens in a new tab"
+      },
       "logout": "Sign out"
     },
     "twoFactorSettingsModal": {
