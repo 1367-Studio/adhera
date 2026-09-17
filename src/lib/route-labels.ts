@@ -28,5 +28,6 @@ export function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<st
     reunions:     t("layout.appSidebar.reunions"),
     sondages:     t("layout.appSidebar.sondages"),
     suporte:      t("layout.appSidebar.suporte"),
+    "documents-association": t("layout.appSidebar.associationDocuments"),
   }
 }

@@ -11,6 +11,11 @@ interface RichTextViewProps {
 const ALLOWED_TAGS = ["p", "br", "strong", "em", "u", "s", "ul", "ol", "li", "a", "h1", "h2", "h3", "h4", "blockquote", "hr", "table", "thead", "tbody", "tr", "th", "td"]
 const ALLOWED_ATTR = ["href", "target", "rel"]
 
+// Long-form documents (association documents) let authors use H1–H3. At raw prose-sm sizes
+// an H1 would outgrow the page title, so the editor's "document" variant and the reader
+// share this scale to keep content headings below the page heading and identical in both.
+export const DOCUMENT_PROSE = "prose-h1:text-xl prose-h1:font-semibold prose-h2:text-lg prose-h2:font-semibold prose-h3:text-base prose-h3:font-semibold"
+
 // Dynamically imported inside the effect (client-only) rather than statically at the top —
 // `isomorphic-dompurify`'s eager server-side jsdom fallback crashes the whole route at
 // module-evaluation time on Vercel's build (ERR_REQUIRE_ESM, via a transitive dependency of

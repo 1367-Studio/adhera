@@ -537,6 +537,7 @@ model Association {
   devis                      Devis[]
   factures                   Facture[]
   facturesRecues             FactureRecue[]
+  associationDocuments       AssociationDocument[]
   emailMessages              EmailMessage[]
   smsMessages                SmsMessage[]
   supportTickets             SupportTicket[]
@@ -2791,6 +2792,25 @@ model FactureRecue {
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])
+}
+
+// Documents written by the association itself (CGU, règlement intérieur, …) — rich text
+// from the shared Tiptap editor, never an uploaded file. Managers edit them from the
+// dashboard; members only ever read the ones flagged visibleToMembers in the portal.
+model AssociationDocument {
+  id               String    @id @default(cuid())
+  associationId    String
+  title            String
+  content          String // HTML riche (Tiptap)
+  visibleToMembers Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId, deletedAt])
+  @@index([associationId, visibleToMembers])
 }
 
 // Azure Translator cache — keyed by content hash so identical text (even across

@@ -32,6 +32,7 @@ export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>
 
 export * from "./actualite"
 export * from "./association"
+export * from "./association-document"
 export * from "./billing"
 export * from "./cotisation"
 export * from "./devis"

@@ -12,7 +12,7 @@ import {
   SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
   EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
   ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
-  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon, UserPlusIcon,
+  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon, UserPlusIcon, BookOpenTextIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
@@ -30,7 +30,6 @@ import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
 import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
 import { BrandLogo } from "@/components/layout/brand-logo"
-import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 type CategoryKey = "adherents" | "communication" | "finances" | "outils"
@@ -54,10 +53,10 @@ const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
   { key: "outils",         icon: WrenchIcon },
 ]
 
-// "Tableau de bord" and "Historique" have no categoryKey — Paramètres and Documents
-// légaux stay exactly as they were (footer, not part of this restructure at all), which
-// only left "Historique" alone in what would've been a single-item "Administration"
-// category, so it stays ungrouped instead, alongside "Tableau de bord".
+// "Tableau de bord" and "Historique" have no categoryKey — Documents de l'association and
+// Paramètres live in the footer (not part of this restructure at all), which only left
+// "Historique" alone in what would've been a single-item "Administration" category, so it
+// stays ungrouped instead, alongside "Tableau de bord".
 const navigationItems: NavItem[] = [
   { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon,   roles: MANAGERS },
 
@@ -87,13 +86,14 @@ const navigationItems: NavItem[] = [
   { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
 ]
 
-// Paramètres lives in the footer, outside navigationItems, but its access rule belongs here
-// with every other route's.
+// Documents de l'association and Paramètres live in the footer, outside navigationItems, but
+// their access rules belong here with every other route's.
 
 // Single owner of "who may open which dashboard screen": the sidebar filter and the help
 // panel's in-panel links both read from here, so they can never disagree.
 export function canAccessDashboardRoute(role: string, href: string): boolean {
   if (href === "/dashboard/parametres") return (PARAMETRES_ROLES as readonly string[]).includes(role)
+  if (href === "/dashboard/documents-association") return (MANAGER_ROLES as readonly string[]).includes(role)
   const navigationItem = navigationItems.find((item) => item.href === href)
   return !!navigationItem && navigationItem.roles.includes(role as UserRole)
 }
@@ -412,9 +412,22 @@ export function AppSidebar() {
       </div>
 
       <SidebarFooter className="border-t border-sidebar-border pt-3">
-        <LegalLinksMenuItem />
-        {canAccessDashboardRoute(userRole, "/dashboard/parametres") && (
-          <SidebarMenu>
+        {/* One list, so the footer entries share the nav's item spacing. */}
+        <SidebarMenu>
+          {canAccessDashboardRoute(userRole, "/dashboard/documents-association") && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link href="/dashboard/documents-association" />}
+                isActive={isActive("/dashboard/documents-association", pathname)}
+                tooltip={t("associationDocuments")}
+                onClick={closeMobile}
+              >
+                <BookOpenTextIcon />
+                <span>{t("associationDocuments")}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+          {canAccessDashboardRoute(userRole, "/dashboard/parametres") && (
             <SidebarMenuItem data-tour="nav-parametres">
               <SidebarMenuButton
                 render={<Link href="/dashboard/parametres" />}
@@ -426,8 +439,8 @@ export function AppSidebar() {
                 <span>{t("parametres")}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          </SidebarMenu>
-        )}
+          )}
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   )

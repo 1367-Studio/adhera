@@ -120,6 +120,20 @@ function formatActualiteValue(field: string, value: string | null, t: Translator
   return value
 }
 
+function getAssociationDocumentFieldLabels(t: Translator): Record<string, string> {
+  return {
+    title:            t("membres.activiteView.actualiteFields.title"),
+    visibleToMembers: t("associationDocuments.visibleToMembers"),
+    content:          t("membres.activiteView.actualiteFields.content"),
+  }
+}
+
+function formatAssociationDocumentValue(field: string, value: string | null, t: Translator): string {
+  if (value === null) return "—"
+  if (field === "visibleToMembers") return value === "true" ? t("associationDocuments.visible") : t("associationDocuments.hidden")
+  return value
+}
+
 const DEL  = "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
 const BLUE = "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
 const BLUE_L = "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
@@ -292,6 +306,9 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     SMS_SETTINGS_UPDATED:     { label: t("membres.activiteView.actions.smsSettingsUpdated"),     color: ROSE   },
     AI_CONFIG_UPDATED:        { label: t("membres.activiteView.actions.aiConfigUpdated"),      color: ROSE   },
     LIVEKIT_CONFIG_UPDATED:   { label: t("membres.activiteView.actions.livekitConfigUpdated"),   color: ROSE   },
+    ASSOCIATION_DOCUMENT_CREATED: { label: t("membres.activiteView.actions.associationDocumentCreated"), color: ROSE },
+    ASSOCIATION_DOCUMENT_UPDATED: { label: t("membres.activiteView.actions.associationDocumentUpdated"), color: ROSE },
+    ASSOCIATION_DOCUMENT_DELETED: { label: t("membres.activiteView.actions.associationDocumentDeleted"), color: DEL  },
     // Tickets expirés
     TICKET_CHECKOUT_EXPIRED:  { label: t("membres.activiteView.actions.ticketCheckoutExpired"),      color: DEL    },
   }
@@ -323,6 +340,7 @@ function getEntityLabels(t: Translator): Record<string, string> {
     Expense:          t("membres.activiteView.entities.expense"),
     FinanceCategory:  t("membres.activiteView.entities.financeCategory"),
     Payment:          t("membres.activiteView.entities.payment"),
+    AssociationDocument: t("membres.activiteView.entities.associationDocument"),
   }
 }
 
@@ -366,6 +384,7 @@ function getEntityOptions(t: Translator): { value: string; label: string }[] {
     { value: "Income",           label: entities.Income           },
     { value: "Expense",          label: entities.Expense          },
     { value: "FinanceCategory",  label: entities.FinanceCategory  },
+    { value: "AssociationDocument", label: entities.AssociationDocument },
   ]
 }
 
@@ -413,33 +432,48 @@ function GenericDiff({ changes, fieldLabels, t }: {
   )
 }
 
+// Diff for records whose `content` is rich HTML: the log only stores a { old: null, new: null }
+// marker for it (the HTML itself is too large to keep), so it renders as "modifié" instead
+// of an old → new pair. Shared by ACTUALITE_UPDATED and ASSOCIATION_DOCUMENT_UPDATED.
+function RichContentDiff({ changes, fieldLabels, formatValue, t }: {
+  changes:     Record<string, FieldDiff>
+  fieldLabels: Record<string, string>
+  formatValue: (field: string, value: string | null, t: Translator) => string
+  t:           Translator
+}) {
+  const entries = Object.entries(changes)
+  if (entries.length === 0) return <span className="text-muted-foreground text-xs">—</span>
+  return (
+    <div className="space-y-0.5">
+      {entries.map(([field, diff]) => (
+        <p key={field} className="text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">{fieldLabels[field] ?? field}</span>
+          {" "}
+          {field === "content" ? (
+            <span className="italic">{t("membres.activiteView.actualiteValues.contentChanged")}</span>
+          ) : (
+            <>
+              <span className="line-through opacity-50">{formatValue(field, diff.old, t)}</span>
+              {" → "}
+              <span>{formatValue(field, diff.new, t)}</span>
+            </>
+          )}
+        </p>
+      ))}
+    </div>
+  )
+}
+
 function Details({ log, t }: { log: LogEntry; t: Translator }) {
   const m = log.metadata
   if (!m) return <span className="text-muted-foreground text-xs">—</span>
 
   if (log.action === "ACTUALITE_UPDATED" && m.changes) {
-    const entries = Object.entries(m.changes)
-    if (entries.length === 0) return <span className="text-muted-foreground text-xs">—</span>
-    const actualiteFieldLabels = getActualiteFieldLabels(t)
-    return (
-      <div className="space-y-0.5">
-        {entries.map(([field, diff]) => (
-          <p key={field} className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground/80">{actualiteFieldLabels[field] ?? field}</span>
-            {" "}
-            {field === "content" ? (
-              <span className="italic">{t("membres.activiteView.actualiteValues.contentChanged")}</span>
-            ) : (
-              <>
-                <span className="line-through opacity-50">{formatActualiteValue(field, diff.old, t)}</span>
-                {" → "}
-                <span>{formatActualiteValue(field, diff.new, t)}</span>
-              </>
-            )}
-          </p>
-        ))}
-      </div>
-    )
+    return <RichContentDiff changes={m.changes} fieldLabels={getActualiteFieldLabels(t)} formatValue={formatActualiteValue} t={t} />
+  }
+
+  if (log.action === "ASSOCIATION_DOCUMENT_UPDATED" && m.changes) {
+    return <RichContentDiff changes={m.changes} fieldLabels={getAssociationDocumentFieldLabels(t)} formatValue={formatAssociationDocumentValue} t={t} />
   }
 
   if (["MEMBRE_UPDATED", "PROFIL_UPDATED", "PROFILE_UPDATED", "MEMBRE_ROLE_CHANGED"].includes(log.action) && m.changes) {

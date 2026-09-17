@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon, BookOpenTextIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -13,7 +13,7 @@ import { useModules, useBranding } from "@/lib/user-context"
 import { PORTAL_NAV_ORDER } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
 import { BrandLogo } from "@/components/layout/brand-logo"
-import { LegalLinksMenuItem } from "@/components/layout/legal-links-menu"
+import { usePortalAssociationDocuments } from "@/hooks/use-association-documents"
 
 function isActive(href: string, pathname: string) {
   return pathname === href || pathname.startsWith(href + "/")
@@ -42,6 +42,12 @@ export function PortalSidebar({ slug }: { slug: string }) {
   const navItems = PORTAL_NAV_ORDER
     .filter(item => !item.moduleKey || modules[item.moduleKey])
     .map(item => ({ href: `/portal/${slug}/${item.path}`, ...navMeta[item.path] }))
+
+  // Association documents are not a module: the footer entry only appears once the query has
+  // succeeded with at least one document visible to members (hidden while loading or on error).
+  const associationDocumentsQuery = usePortalAssociationDocuments()
+  const associationDocumentsHref  = `/portal/${slug}/documents-association`
+  const showAssociationDocuments  = associationDocumentsQuery.isSuccess && associationDocumentsQuery.data.length > 0
 
   return (
     <Sidebar collapsible="icon" variant="inset">
@@ -85,9 +91,23 @@ export function PortalSidebar({ slug }: { slug: string }) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
-        <LegalLinksMenuItem />
-      </SidebarFooter>
+      {showAssociationDocuments && (
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<Link href={associationDocumentsHref} />}
+                isActive={isActive(associationDocumentsHref, pathname)}
+                tooltip={t("associationDocuments")}
+                onClick={() => { if (isMobile) setOpenMobile(false) }}
+              >
+                <BookOpenTextIcon />
+                <span>{t("associationDocuments")}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      )}
 
       <SidebarRail />
     </Sidebar>

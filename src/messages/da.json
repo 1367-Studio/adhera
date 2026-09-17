@@ -278,7 +278,8 @@
       "reunions": "Møder",
       "communications": "Mes kommunikationer",
       "profil": "Min profil",
-      "mySpace": "Mit rum"
+      "mySpace": "Mit rum",
+      "associationDocuments": "Foreningsdokumenter"
     },
     "rsvp": {
       "confirme": "Jeg kommer!",
@@ -3512,7 +3513,8 @@
         "general": "Generel",
         "paiements": "Betalinger",
         "abonnement": "Abonnement",
-        "integrations": "Integrationer"
+        "integrations": "Integrationer",
+        "legal": "Juridiske dokumenter"
       },
       "associationInfo": "Foreningsinformation",
       "associationName": "Foreningens navn",
@@ -3530,6 +3532,15 @@
       "copied": "Kopieret!",
       "copy": "Modtaget",
       "open": "Åben"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwises juridiske dokumenter",
+      "description": "Disse dokumenter regulerer din forenings og dine medlemmers brug af Formwise-platformen.",
+      "mentionsLegales": "Juridisk meddelelse",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Privatlivspolitik",
+      "opensNewTab": "Åbner en ny fane"
     },
     "cotisationDefaultsSettings": {
       "title": "Medlemskontingent",
@@ -4400,7 +4411,8 @@
         "income": "Indtægter",
         "expense": "Udgifter",
         "financeCategory": "Finanskategorier",
-        "payment": "Betalinger"
+        "payment": "Betalinger",
+        "associationDocument": "Foreningsdokumenter"
       },
       "messageTemplateFilterLabel": "MSG-skabeloner",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametre",
         "aiConfigUpdated": "AI — parametre",
         "livekitConfigUpdated": "Visio — indstillinger",
+        "associationDocumentCreated": "Dokument oprettet",
+        "associationDocumentUpdated": "Dokument ændret",
+        "associationDocumentDeleted": "Dokument slettet",
         "ticketCheckoutExpired": "Betalingen udløb"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Link",
     "urlLabel": "Linkadresse",
     "apply": "Ansøg",
-    "remove": "Fjern link"
+    "remove": "Fjern link",
+    "paragraphStyle": "Afsnitstypografi",
+    "normalText": "Normal tekst",
+    "heading1": "Overskrift 1",
+    "heading2": "Overskrift 2",
+    "heading3": "Overskrift 3"
+  },
+  "associationDocuments": {
+    "title": "Foreningsdokumenter",
+    "count": "{count, plural, =0 {Ingen dokumenter} one {# dokument} other {# dokumenter}}",
+    "visibleCount": "{visible, plural, one {# synligt} other {# synlige}} for medlemmer",
+    "empty": "Ingen dokumenter endnu. Skriv foreningens ordensregler, salgsbetingelser eller andre oplysninger, der skal deles.",
+    "columns": {
+      "title": "Titel",
+      "visibility": "Synlighed",
+      "updatedAt": "Opdateret"
+    },
+    "visible": "Synligt",
+    "hidden": "Skjult",
+    "visibleToMembers": "Synligt for medlemmer",
+    "visibleToMembersHint": "Viser dokumentet i medlemsområdet. Når det er slået fra, kan kun administratorer se det.",
+    "toasts": {
+      "madeVisible": "»{title}« er synligt for medlemmer",
+      "madeHidden": "»{title}« er skjult for medlemmer",
+      "created": "Dokument oprettet",
+      "saved": "Dokument gemt",
+      "deleted": "Dokument slettet"
+    },
+    "deleteConfirm": {
+      "title": "Slet »{title}«?",
+      "description": "Dokumentet slettes og vil ikke længere være tilgængeligt for medlemmer. Handlingen kan ikke fortrydes."
+    },
+    "form": {
+      "newTitle": "Nyt dokument",
+      "newDescription": "Skriv et dokument, som du vil dele med dine medlemmer.",
+      "updatedAt": "Opdateret {date}",
+      "titleLabel": "Titel",
+      "titlePlaceholder": "F.eks. Ordensregler",
+      "contentLabel": "Indhold",
+      "contentPlaceholder": "Skriv dokumentets indhold…",
+      "titleRequired": "Titlen er påkrævet.",
+      "contentRequired": "Indholdet er påkrævet."
+    },
+    "leaveWarning": {
+      "title": "Ikke-gemte ændringer",
+      "description": "Dine ændringer er ikke blevet gemt. Gem dem, før du forlader siden, eller kassér dem.",
+      "discard": "Kassér",
+      "saveAndLeave": "Gem og forlad"
+    },
+    "notFound": "Dokumentet blev ikke fundet.",
+    "backToList": "Tilbage til dokumenterne"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Foreningsdokumenter",
+      "subtitle": "Dokumenter, som din forening har gjort tilgængelige.",
+      "updatedAt": "Opdateret {date}",
+      "empty": "Der er ingen tilgængelige dokumenter i øjeblikket.",
+      "loadError": "Dokumenterne kunne ikke indlæses.",
+      "notFound": "Dokumentet blev ikke fundet eller er ikke længere tilgængeligt.",
+      "backToList": "Tilbage til dokumenterne"
+    },
     "sondages": {
       "title": "Undersøgelser",
       "subtitle": "Spørgeskemaer skal udfyldes af din forening.",
@@ -5167,6 +5241,7 @@
       "site": "Hjemmeside",
       "activite": "Historik",
       "suporte": "Støtte",
+      "associationDocuments": "Foreningsdokumenter",
       "categories": {
         "adherents": "Medlemmer",
         "communication": "Kommunikation",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Pristilbud",
       "support": "Støtte",
       "signOut": "Log ud"
-    },
-    "legalLinksMenu": {
-      "trigger": "Juridiske dokumenter",
-      "mentionsLegales": "Juridisk meddelelse",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privatlivspolitik",
-      "opensNewTab": "Åbner en ny fane"
     },
     "themeToggle": {
       "changeTheme": "Skift tema"

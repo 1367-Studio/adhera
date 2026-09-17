@@ -278,7 +278,8 @@
       "reunions": "Sestanki",
       "communications": "Mes komunikacije",
       "profil": "Moj profil",
-      "mySpace": "Moj prostor"
+      "mySpace": "Moj prostor",
+      "associationDocuments": "Dokumenti združenja"
     },
     "rsvp": {
       "confirme": "Bom tam!",
@@ -3512,7 +3513,8 @@
         "general": "Splošno",
         "paiements": "Plačila",
         "abonnement": "Naročnina",
-        "integrations": "Integracije"
+        "integrations": "Integracije",
+        "legal": "Pravni dokumenti"
       },
       "associationInfo": "Informacije o združenju",
       "associationName": "Ime združenja",
@@ -3530,6 +3532,15 @@
       "copied": "Prekopirano!",
       "copy": "Sprejeto",
       "open": "Odprto"
+    },
+    "legalDocumentsSettings": {
+      "title": "Pravni dokumenti Formwise",
+      "description": "Ti dokumenti urejajo, kako vaše združenje in njegovi člani uporabljajo platformo Formwise.",
+      "mentionsLegales": "Pravno obvestilo",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Politika zasebnosti",
+      "opensNewTab": "Odpre nov zavihek"
     },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
@@ -4400,7 +4411,8 @@
         "income": "Prihodki",
         "expense": "Stroški",
         "financeCategory": "Finančne kategorije",
-        "payment": "Plačila"
+        "payment": "Plačila",
+        "associationDocument": "Dokumenti združenja"
       },
       "messageTemplateFilterLabel": "Predloge MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametri",
         "aiConfigUpdated": "UI — parametri",
         "livekitConfigUpdated": "Visio — nastavitve",
+        "associationDocumentCreated": "Dokument ustvarjen",
+        "associationDocumentUpdated": "Dokument spremenjen",
+        "associationDocumentDeleted": "Dokument izbrisan",
         "ticketCheckoutExpired": "Plačilo je poteklo"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Povezava",
     "urlLabel": "Naslov povezave",
     "apply": "Prijavite se",
-    "remove": "Odstrani povezavo"
+    "remove": "Odstrani povezavo",
+    "paragraphStyle": "Slog odstavka",
+    "normalText": "Navadno besedilo",
+    "heading1": "Naslov 1",
+    "heading2": "Naslov 2",
+    "heading3": "Naslov 3"
+  },
+  "associationDocuments": {
+    "title": "Dokumenti združenja",
+    "count": "{count, plural, =0 {Ni dokumentov} one {# dokument} two {# dokumenta} few {# dokumenti} other {# dokumentov}}",
+    "visibleCount": "{visible, plural, one {# viden} two {# vidna} few {# vidni} other {# vidnih}} članom",
+    "empty": "Dokumentov še ni. Pripravite interni pravilnik, splošne prodajne pogoje ali druge informacije, ki jih želite deliti.",
+    "columns": {
+      "title": "Naslov",
+      "visibility": "Vidnost",
+      "updatedAt": "Posodobljeno"
+    },
+    "visible": "Viden",
+    "hidden": "Skrit",
+    "visibleToMembers": "Viden članom",
+    "visibleToMembersHint": "Prikaže ta dokument v območju za člane. Če je možnost izklopljena, ga vidijo samo upravitelji.",
+    "toasts": {
+      "madeVisible": "„{title}“ je viden članom",
+      "madeHidden": "„{title}“ je skrit pred člani",
+      "created": "Dokument ustvarjen",
+      "saved": "Dokument shranjen",
+      "deleted": "Dokument izbrisan"
+    },
+    "deleteConfirm": {
+      "title": "Želite izbrisati „{title}“?",
+      "description": "Dokument bo izbrisan in članom ne bo več dostopen. Tega dejanja ni mogoče razveljaviti."
+    },
+    "form": {
+      "newTitle": "Nov dokument",
+      "newDescription": "Pripravite dokument, ki ga želite deliti s člani.",
+      "updatedAt": "Posodobljeno {date}",
+      "titleLabel": "Naslov",
+      "titlePlaceholder": "Npr. Interni pravilnik",
+      "contentLabel": "Vsebina",
+      "contentPlaceholder": "Vnesite vsebino dokumenta…",
+      "titleRequired": "Naslov je obvezen.",
+      "contentRequired": "Vsebina je obvezna."
+    },
+    "leaveWarning": {
+      "title": "Neshranjene spremembe",
+      "description": "Vaše spremembe niso bile shranjene. Shranite jih pred odhodom ali jih zavrzite.",
+      "discard": "Zavrzi",
+      "saveAndLeave": "Shrani in zapusti"
+    },
+    "notFound": "Tega dokumenta ni bilo mogoče najti.",
+    "backToList": "Nazaj na dokumente"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Dokumenti združenja",
+      "subtitle": "Dokumenti, ki vam jih je dalo na voljo vaše združenje.",
+      "updatedAt": "Posodobljeno {date}",
+      "empty": "Trenutno ni na voljo nobenega dokumenta.",
+      "loadError": "Dokumentov ni bilo mogoče naložiti.",
+      "notFound": "Tega dokumenta ni bilo mogoče najti ali ni več na voljo.",
+      "backToList": "Nazaj na dokumente"
+    },
     "sondages": {
       "title": "Raziskave",
       "subtitle": "Vaše združenje mora izpolniti vprašalnike.",
@@ -5167,6 +5241,7 @@
       "site": "Spletna stran",
       "activite": "Zgodovina",
       "suporte": "Podpora",
+      "associationDocuments": "Dokumenti združenja",
       "categories": {
         "adherents": "Člani",
         "communication": "Komunikacija",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Ponudbe cen",
       "support": "Podpora",
       "signOut": "Odjavi se"
-    },
-    "legalLinksMenu": {
-      "trigger": "Pravni dokumenti",
-      "mentionsLegales": "Pravno obvestilo",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politika zasebnosti",
-      "opensNewTab": "Odpre nov zavihek"
     },
     "themeToggle": {
       "changeTheme": "Spremeni temo"

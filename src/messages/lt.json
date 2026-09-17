@@ -278,7 +278,8 @@
       "reunions": "Susitikimai",
       "communications": "Mes ryšiai",
       "profil": "Mano profilis",
-      "mySpace": "Mano erdvė"
+      "mySpace": "Mano erdvė",
+      "associationDocuments": "Asociacijos dokumentai"
     },
     "rsvp": {
       "confirme": "Aš būsiu ten!",
@@ -3512,7 +3513,8 @@
         "general": "Bendra",
         "paiements": "Mokėjimai",
         "abonnement": "Prenumerata",
-        "integrations": "Integracijos"
+        "integrations": "Integracijos",
+        "legal": "Teisiniai dokumentai"
       },
       "associationInfo": "Asociacijos informacija",
       "associationName": "Asociacijos pavadinimas",
@@ -3530,6 +3532,15 @@
       "copied": "Nukopijavau!",
       "copy": "Supratau",
       "open": "Atidaryk"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwise teisiniai dokumentai",
+      "description": "Šie dokumentai reglamentuoja, kaip jūsų asociacija ir jos nariai naudojasi Formwise platforma.",
+      "mentionsLegales": "Teisinis pranešimas",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Privatumo politika",
+      "opensNewTab": "Atidaro naują skirtuką"
     },
     "cotisationDefaultsSettings": {
       "title": "Narystės mokestis",
@@ -4400,7 +4411,8 @@
         "income": "Pajamos",
         "expense": "Išlaidos",
         "financeCategory": "Finansų kategorijos",
-        "payment": "Mokėjimai"
+        "payment": "Mokėjimai",
+        "associationDocument": "Asociacijos dokumentai"
       },
       "messageTemplateFilterLabel": "MSG šablonai",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametrai",
         "aiConfigUpdated": "DI — parametrai",
         "livekitConfigUpdated": "Visio — nustatymai",
+        "associationDocumentCreated": "Dokumentas sukurtas",
+        "associationDocumentUpdated": "Dokumentas pakeistas",
+        "associationDocumentDeleted": "Dokumentas ištrintas",
         "ticketCheckoutExpired": "Mokėjimas pasibaigė"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Nuoroda",
     "urlLabel": "Nuorodos adresas",
     "apply": "Pateikite paraišką",
-    "remove": "Pašalinti nuorodą"
+    "remove": "Pašalinti nuorodą",
+    "paragraphStyle": "Pastraipos stilius",
+    "normalText": "Įprastas tekstas",
+    "heading1": "Antraštė 1",
+    "heading2": "Antraštė 2",
+    "heading3": "Antraštė 3"
+  },
+  "associationDocuments": {
+    "title": "Asociacijos dokumentai",
+    "count": "{count, plural, =0 {Dokumentų nėra} one {# dokumentas} few {# dokumentai} many {# dokumento} other {# dokumentų}}",
+    "visibleCount": "{visible, plural, one {# matomas} few {# matomi} many {# matomo} other {# matomų}} nariams",
+    "empty": "Dokumentų dar nėra. Parenkite vidaus tvarkos taisykles, pardavimo sąlygas ar kitą informaciją, kuria norite pasidalyti.",
+    "columns": {
+      "title": "Pavadinimas",
+      "visibility": "Matomumas",
+      "updatedAt": "Atnaujinta"
+    },
+    "visible": "Matomas",
+    "hidden": "Paslėptas",
+    "visibleToMembers": "Matomas nariams",
+    "visibleToMembersHint": "Rodo šį dokumentą narių zonoje. Išjungus jį mato tik vadovai.",
+    "toasts": {
+      "madeVisible": "„{title}“ matomas nariams",
+      "madeHidden": "„{title}“ paslėptas nuo narių",
+      "created": "Dokumentas sukurtas",
+      "saved": "Dokumentas išsaugotas",
+      "deleted": "Dokumentas ištrintas"
+    },
+    "deleteConfirm": {
+      "title": "Ištrinti „{title}“?",
+      "description": "Dokumentas bus ištrintas ir nariai nebegalės jo pasiekti. Šio veiksmo anuliuoti negalima."
+    },
+    "form": {
+      "newTitle": "Naujas dokumentas",
+      "newDescription": "Parenkite dokumentą, kuriuo norite pasidalyti su nariais.",
+      "updatedAt": "Atnaujinta {date}",
+      "titleLabel": "Pavadinimas",
+      "titlePlaceholder": "Pvz., vidaus tvarkos taisyklės",
+      "contentLabel": "Turinys",
+      "contentPlaceholder": "Įveskite dokumento turinį…",
+      "titleRequired": "Pavadinimas yra privalomas.",
+      "contentRequired": "Turinys yra privalomas."
+    },
+    "leaveWarning": {
+      "title": "Neišsaugoti pakeitimai",
+      "description": "Jūsų pakeitimai neišsaugoti. Išsaugokite juos prieš išeidami arba atmeskite.",
+      "discard": "Atmesti",
+      "saveAndLeave": "Išsaugoti ir išeiti"
+    },
+    "notFound": "Šis dokumentas nerastas.",
+    "backToList": "Grįžti į dokumentus"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Asociacijos dokumentai",
+      "subtitle": "Jūsų asociacijos pateikti dokumentai.",
+      "updatedAt": "Atnaujinta {date}",
+      "empty": "Šiuo metu dokumentų nėra.",
+      "loadError": "Nepavyko įkelti dokumentų.",
+      "notFound": "Šis dokumentas nerastas arba nebepasiekiamas.",
+      "backToList": "Grįžti į dokumentus"
+    },
     "sondages": {
       "title": "Tyrimai",
       "subtitle": "Anketos turi būti užpildytos jūsų asociacijos.",
@@ -5167,6 +5241,7 @@
       "site": "Svetainė",
       "activite": "Istorija",
       "suporte": "Parama",
+      "associationDocuments": "Asociacijos dokumentai",
       "categories": {
         "adherents": "Nariai",
         "communication": "Ryšiai",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Kainos pasiūlymai",
       "support": "Parama",
       "signOut": "Atsijungti"
-    },
-    "legalLinksMenu": {
-      "trigger": "Teisiniai dokumentai",
-      "mentionsLegales": "Teisinis pranešimas",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privatumo politika",
-      "opensNewTab": "Atidaro naują skirtuką"
     },
     "themeToggle": {
       "changeTheme": "Pakeiskite temą"

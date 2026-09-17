@@ -278,7 +278,8 @@
       "reunions": "Συναντήσεις",
       "communications": "Mes επικοινωνίες",
       "profil": "Το προφίλ μου",
-      "mySpace": "Ο χώρος μου"
+      "mySpace": "Ο χώρος μου",
+      "associationDocuments": "Έγγραφα συλλόγου"
     },
     "rsvp": {
       "confirme": "Θα είμαι εκεί!",
@@ -3512,7 +3513,8 @@
         "general": "Γενικά",
         "paiements": "Πληρωμές",
         "abonnement": "Συνδρομή",
-        "integrations": "Ενσωματώσεις"
+        "integrations": "Ενσωματώσεις",
+        "legal": "Νομικά έγγραφα"
       },
       "associationInfo": "Πληροφορίες Συλλόγου",
       "associationName": "Επωνυμία του συλλόγου",
@@ -3530,6 +3532,15 @@
       "copied": "Αντιγράφηκε!",
       "copy": "Αντιγραφή",
       "open": "Ανοιξε"
+    },
+    "legalDocumentsSettings": {
+      "title": "Νομικά έγγραφα της Formwise",
+      "description": "Αυτά τα έγγραφα διέπουν τη χρήση της πλατφόρμας Formwise από τον σύλλογό σας και τα μέλη σας.",
+      "mentionsLegales": "Ανακοίνωση νομικού περιεχομένου",
+      "cgu": "UGC",
+      "cgs": "ΚΓΣ",
+      "politiqueConfidentialite": "Πολιτική Απορρήτου",
+      "opensNewTab": "Ανοίγει νέα καρτέλα"
     },
     "cotisationDefaultsSettings": {
       "title": "Συνδρομή μέλους",
@@ -4400,7 +4411,8 @@
         "income": "Έσοδα",
         "expense": "Εξοδα",
         "financeCategory": "Κατηγορίες Οικονομικών",
-        "payment": "Πληρωμές"
+        "payment": "Πληρωμές",
+        "associationDocument": "Έγγραφα συλλόγου"
       },
       "messageTemplateFilterLabel": "Πρότυπα MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — παράμετροι",
         "aiConfigUpdated": "AI — παράμετροι",
         "livekitConfigUpdated": "Visio — ρυθμίσεις",
+        "associationDocumentCreated": "Το έγγραφο δημιουργήθηκε",
+        "associationDocumentUpdated": "Το έγγραφο τροποποιήθηκε",
+        "associationDocumentDeleted": "Το έγγραφο διαγράφηκε",
         "ticketCheckoutExpired": "Η πληρωμή έληξε"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Σύνδεσμος",
     "urlLabel": "Διεύθυνση συνδέσμου",
     "apply": "Εφαρμογή",
-    "remove": "Κατάργηση συνδέσμου"
+    "remove": "Κατάργηση συνδέσμου",
+    "paragraphStyle": "Στυλ παραγράφου",
+    "normalText": "Κανονικό κείμενο",
+    "heading1": "Επικεφαλίδα 1",
+    "heading2": "Επικεφαλίδα 2",
+    "heading3": "Επικεφαλίδα 3"
+  },
+  "associationDocuments": {
+    "title": "Έγγραφα συλλόγου",
+    "count": "{count, plural, =0 {Κανένα έγγραφο} one {# έγγραφο} other {# έγγραφα}}",
+    "visibleCount": "{visible, plural, one {# ορατό} other {# ορατά}} στα μέλη",
+    "empty": "Δεν υπάρχουν ακόμη έγγραφα. Συντάξτε τον εσωτερικό κανονισμό, τους γενικούς όρους πώλησης ή οποιαδήποτε άλλη πληροφορία θέλετε να κοινοποιήσετε.",
+    "columns": {
+      "title": "Τίτλος",
+      "visibility": "Ορατότητα",
+      "updatedAt": "Ενημερώθηκε"
+    },
+    "visible": "Ορατό",
+    "hidden": "Κρυφό",
+    "visibleToMembers": "Ορατό στα μέλη",
+    "visibleToMembersHint": "Εμφανίζει αυτό το έγγραφο στην περιοχή μελών. Όταν είναι απενεργοποιημένο, μόνο οι διαχειριστές μπορούν να το δουν.",
+    "toasts": {
+      "madeVisible": "Το «{title}» είναι ορατό στα μέλη",
+      "madeHidden": "Το «{title}» είναι κρυφό από τα μέλη",
+      "created": "Το έγγραφο δημιουργήθηκε",
+      "saved": "Το έγγραφο αποθηκεύτηκε",
+      "deleted": "Το έγγραφο διαγράφηκε"
+    },
+    "deleteConfirm": {
+      "title": "Διαγραφή του «{title}»;",
+      "description": "Το έγγραφο θα διαγραφεί και δεν θα είναι πλέον προσβάσιμο στα μέλη. Αυτή η ενέργεια είναι μη αναστρέψιμη."
+    },
+    "form": {
+      "newTitle": "Νέο έγγραφο",
+      "newDescription": "Συντάξτε ένα έγγραφο για να το μοιραστείτε με τα μέλη σας.",
+      "updatedAt": "Ενημερώθηκε στις {date}",
+      "titleLabel": "Τίτλος",
+      "titlePlaceholder": "Π.χ. Εσωτερικός κανονισμός",
+      "contentLabel": "Περιεχόμενο",
+      "contentPlaceholder": "Γράψτε το περιεχόμενο του εγγράφου…",
+      "titleRequired": "Ο τίτλος είναι υποχρεωτικός.",
+      "contentRequired": "Το περιεχόμενο είναι υποχρεωτικό."
+    },
+    "leaveWarning": {
+      "title": "Μη αποθηκευμένες αλλαγές",
+      "description": "Οι αλλαγές σας δεν έχουν αποθηκευτεί. Αποθηκεύστε τις πριν αποχωρήσετε ή απορρίψτε τις.",
+      "discard": "Απόρριψη",
+      "saveAndLeave": "Αποθήκευση και έξοδος"
+    },
+    "notFound": "Αυτό το έγγραφο δεν βρέθηκε.",
+    "backToList": "Επιστροφή στα έγγραφα"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Έγγραφα συλλόγου",
+      "subtitle": "Τα έγγραφα που διαθέτει ο σύλλογός σας.",
+      "updatedAt": "Ενημερώθηκε στις {date}",
+      "empty": "Δεν υπάρχουν διαθέσιμα έγγραφα αυτή τη στιγμή.",
+      "loadError": "Δεν ήταν δυνατή η φόρτωση των εγγράφων.",
+      "notFound": "Αυτό το έγγραφο δεν βρέθηκε ή δεν είναι πλέον διαθέσιμο.",
+      "backToList": "Επιστροφή στα έγγραφα"
+    },
     "sondages": {
       "title": "Έρευνες",
       "subtitle": "Ερωτηματολόγια που πρέπει να συμπληρωθούν από τον σύλλογό σας.",
@@ -5167,6 +5241,7 @@
       "site": "Ιστοσελίδα",
       "activite": "Ιστορικό",
       "suporte": "Υποστήριξη",
+      "associationDocuments": "Έγγραφα συλλόγου",
       "categories": {
         "adherents": "Μέλη",
         "communication": "Επικοινωνία",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Προσφορές τιμολόγησης",
       "support": "Υποστήριξη",
       "signOut": "Αποσύνδεση"
-    },
-    "legalLinksMenu": {
-      "trigger": "Νομικά έγγραφα",
-      "mentionsLegales": "Ανακοίνωση νομικού περιεχομένου",
-      "cgu": "UGC",
-      "cgs": "ΚΓΣ",
-      "politiqueConfidentialite": "Πολιτική Απορρήτου",
-      "opensNewTab": "Ανοίγει νέα καρτέλα"
     },
     "themeToggle": {
       "changeTheme": "Αλλάξτε το θέμα"

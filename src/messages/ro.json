@@ -278,7 +278,8 @@
       "reunions": "Întâlniri",
       "communications": "Comunicații MES",
       "profil": "Profilul meu",
-      "mySpace": "Spațiul meu"
+      "mySpace": "Spațiul meu",
+      "associationDocuments": "Documentele asociației"
     },
     "rsvp": {
       "confirme": "O să fiu acolo!",
@@ -3512,7 +3513,8 @@
         "general": "General",
         "paiements": "Plăți",
         "abonnement": "Abonament",
-        "integrations": "Integrări"
+        "integrations": "Integrări",
+        "legal": "Documente legale"
       },
       "associationInfo": "Informații despre asociație",
       "associationName": "Denumirea asociației",
@@ -3530,6 +3532,15 @@
       "copied": "Copiat!",
       "copy": "Recepționat",
       "open": "Deschide"
+    },
+    "legalDocumentsSettings": {
+      "title": "Documente legale Formwise",
+      "description": "Aceste documente reglementează utilizarea platformei Formwise de către asociația ta și membrii săi.",
+      "mentionsLegales": "Notificare legală",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Politica de confidențialitate",
+      "opensNewTab": "Se deschide o filă nouă"
     },
     "cotisationDefaultsSettings": {
       "title": "Taxa de membru",
@@ -4400,7 +4411,8 @@
         "income": "Venituri",
         "expense": "Cheltuieli",
         "financeCategory": "Categorii financiare",
-        "payment": "Plăți"
+        "payment": "Plăți",
+        "associationDocument": "Documentele asociației"
       },
       "messageTemplateFilterLabel": "Șabloane MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametri",
         "aiConfigUpdated": "AI — parametri",
         "livekitConfigUpdated": "Visio — setări",
+        "associationDocumentCreated": "Document creat",
+        "associationDocumentUpdated": "Document modificat",
+        "associationDocumentDeleted": "Document șters",
         "ticketCheckoutExpired": "Plata a expirat"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Link",
     "urlLabel": "Adresa linkului",
     "apply": "Aplică",
-    "remove": "Elimină linkul"
+    "remove": "Elimină linkul",
+    "paragraphStyle": "Stil paragraf",
+    "normalText": "Text normal",
+    "heading1": "Titlu 1",
+    "heading2": "Titlu 2",
+    "heading3": "Titlu 3"
+  },
+  "associationDocuments": {
+    "title": "Documentele asociației",
+    "count": "{count, plural, =0 {Niciun document} one {# document} few {# documente} other {# de documente}}",
+    "visibleCount": "{visible, plural, one {# vizibil} few {# vizibile} other {# vizibile}} pentru membri",
+    "empty": "Niciun document deocamdată. Redactează regulamentul intern, termenii și condițiile de vânzare sau orice altă informație de partajat.",
+    "columns": {
+      "title": "Titlu",
+      "visibility": "Vizibilitate",
+      "updatedAt": "Actualizat la"
+    },
+    "visible": "Vizibil",
+    "hidden": "Ascuns",
+    "visibleToMembers": "Vizibil pentru membri",
+    "visibleToMembersHint": "Afișează acest document în zona membrilor. Dacă opțiunea este dezactivată, doar administratorii îl pot vedea.",
+    "toasts": {
+      "madeVisible": "„{title}” este vizibil pentru membri",
+      "madeHidden": "„{title}” este ascuns pentru membri",
+      "created": "Document creat",
+      "saved": "Document salvat",
+      "deleted": "Document șters"
+    },
+    "deleteConfirm": {
+      "title": "Ștergi „{title}”?",
+      "description": "Documentul va fi șters și nu va mai fi accesibil membrilor. Această acțiune este ireversibilă."
+    },
+    "form": {
+      "newTitle": "Document nou",
+      "newDescription": "Redactează un document pe care să-l partajezi cu membrii tăi.",
+      "updatedAt": "Actualizat la {date}",
+      "titleLabel": "Titlu",
+      "titlePlaceholder": "De ex. Regulament intern",
+      "contentLabel": "Conținut",
+      "contentPlaceholder": "Redactează conținutul documentului…",
+      "titleRequired": "Titlul este obligatoriu.",
+      "contentRequired": "Conținutul este obligatoriu."
+    },
+    "leaveWarning": {
+      "title": "Modificări nesalvate",
+      "description": "Modificările tale nu au fost salvate. Salvează-le înainte de a ieși sau renunță la ele.",
+      "discard": "Renunță",
+      "saveAndLeave": "Salvează și ieși"
+    },
+    "notFound": "Documentul nu a fost găsit.",
+    "backToList": "Înapoi la documente"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Documentele asociației",
+      "subtitle": "Documentele puse la dispoziție de asociația ta.",
+      "updatedAt": "Actualizat la {date}",
+      "empty": "Niciun document disponibil momentan.",
+      "loadError": "Documentele nu au putut fi încărcate.",
+      "notFound": "Documentul nu a fost găsit sau nu mai este disponibil.",
+      "backToList": "Înapoi la documente"
+    },
     "sondages": {
       "title": "Sondaje",
       "subtitle": "Chestionare care trebuie completate de asociația ta.",
@@ -5167,6 +5241,7 @@
       "site": "Site web",
       "activite": "Istoric",
       "suporte": "Sprijin",
+      "associationDocuments": "Documentele asociației",
       "categories": {
         "adherents": "Membri",
         "communication": "Comunicare",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Oferte de preț",
       "support": "Sprijin",
       "signOut": "Deconectează-te"
-    },
-    "legalLinksMenu": {
-      "trigger": "Documente legale",
-      "mentionsLegales": "Notificare legală",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politica de confidențialitate",
-      "opensNewTab": "Se deschide o filă nouă"
     },
     "themeToggle": {
       "changeTheme": "Schimbă tema"
