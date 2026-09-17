@@ -278,7 +278,8 @@
       "reunions": "Sanāksmes",
       "communications": "Mes Communications",
       "profil": "Mans profils",
-      "mySpace": "Mana telpa"
+      "mySpace": "Mana telpa",
+      "associationDocuments": "Asociācijas dokumenti"
     },
     "rsvp": {
       "confirme": "Es būšu tur!",
@@ -3512,7 +3513,8 @@
         "general": "Vispārīgi",
         "paiements": "Maksājumi",
         "abonnement": "Abonements",
-        "integrations": "Integrācijas"
+        "integrations": "Integrācijas",
+        "legal": "Juridiskie dokumenti"
       },
       "associationInfo": "Asociācijas informācija",
       "associationName": "Asociācijas nosaukums",
@@ -3530,6 +3532,15 @@
       "copied": "Kopēts!",
       "copy": "Sapratu",
       "open": "Atvērt"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwise juridiskie dokumenti",
+      "description": "Šie dokumenti nosaka, kā jūsu asociācija un tās biedri izmanto Formwise platformu.",
+      "mentionsLegales": "Juridiskais paziņojums",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Privātuma politika",
+      "opensNewTab": "Atver jaunu cilni"
     },
     "cotisationDefaultsSettings": {
       "title": "Dalības maksa",
@@ -4400,7 +4411,8 @@
         "income": "Ieņēmumi",
         "expense": "Izdevumi",
         "financeCategory": "Finanšu kategorijas",
-        "payment": "Maksājumi"
+        "payment": "Maksājumi",
+        "associationDocument": "Asociācijas dokumenti"
       },
       "messageTemplateFilterLabel": "MSG veidnes",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametri",
         "aiConfigUpdated": "AI — parametri",
         "livekitConfigUpdated": "Visio — iestatījumi",
+        "associationDocumentCreated": "Dokuments izveidots",
+        "associationDocumentUpdated": "Dokuments mainīts",
+        "associationDocumentDeleted": "Dokuments dzēsts",
         "ticketCheckoutExpired": "Maksājums beidzies"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Saite",
     "urlLabel": "Saites adrese",
     "apply": "Piesakies",
-    "remove": "Noņemt saiti"
+    "remove": "Noņemt saiti",
+    "paragraphStyle": "Rindkopas stils",
+    "normalText": "Parasts teksts",
+    "heading1": "Virsraksts 1",
+    "heading2": "Virsraksts 2",
+    "heading3": "Virsraksts 3"
+  },
+  "associationDocuments": {
+    "title": "Asociācijas dokumenti",
+    "count": "{count, plural, =0 {Nav dokumentu} zero {# dokumentu} one {# dokuments} other {# dokumenti}}",
+    "visibleCount": "{visible, plural, zero {# redzamu} one {# redzams} other {# redzami}} biedriem",
+    "empty": "Dokumentu vēl nav. Sagatavojiet iekšējās kārtības noteikumus, pārdošanas noteikumus vai citu informāciju, ar ko vēlaties dalīties.",
+    "columns": {
+      "title": "Nosaukums",
+      "visibility": "Redzamība",
+      "updatedAt": "Atjaunināts"
+    },
+    "visible": "Redzams",
+    "hidden": "Paslēpts",
+    "visibleToMembers": "Redzams biedriem",
+    "visibleToMembersHint": "Parāda šo dokumentu biedru zonā. Ja iestatījums ir izslēgts, to redz tikai vadītāji.",
+    "toasts": {
+      "madeVisible": "„{title}” ir redzams biedriem",
+      "madeHidden": "„{title}” ir paslēpts no biedriem",
+      "created": "Dokuments izveidots",
+      "saved": "Dokuments saglabāts",
+      "deleted": "Dokuments dzēsts"
+    },
+    "deleteConfirm": {
+      "title": "Dzēst „{title}”?",
+      "description": "Dokuments tiks dzēsts, un biedri tam vairs nevarēs piekļūt. Šo darbību nevar atsaukt."
+    },
+    "form": {
+      "newTitle": "Jauns dokuments",
+      "newDescription": "Sagatavojiet dokumentu, ar ko dalīties ar biedriem.",
+      "updatedAt": "Atjaunināts {date}",
+      "titleLabel": "Nosaukums",
+      "titlePlaceholder": "Piem., iekšējās kārtības noteikumi",
+      "contentLabel": "Saturs",
+      "contentPlaceholder": "Ievadiet dokumenta saturu…",
+      "titleRequired": "Nosaukums ir obligāts.",
+      "contentRequired": "Saturs ir obligāts."
+    },
+    "leaveWarning": {
+      "title": "Nesaglabātas izmaiņas",
+      "description": "Jūsu izmaiņas nav saglabātas. Saglabājiet tās pirms iziešanas vai atmetiet.",
+      "discard": "Atmest",
+      "saveAndLeave": "Saglabāt un iziet"
+    },
+    "notFound": "Šis dokuments netika atrasts.",
+    "backToList": "Atpakaļ uz dokumentiem"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Asociācijas dokumenti",
+      "subtitle": "Jūsu asociācijas kopīgotie dokumenti.",
+      "updatedAt": "Atjaunināts {date}",
+      "empty": "Pašlaik nav pieejamu dokumentu.",
+      "loadError": "Neizdevās ielādēt dokumentus.",
+      "notFound": "Šis dokuments netika atrasts vai vairs nav pieejams.",
+      "backToList": "Atpakaļ uz dokumentiem"
+    },
     "sondages": {
       "title": "Apsekojumi",
       "subtitle": "Jūsu asociācijai jāaizpilda anketas.",
@@ -5167,6 +5241,7 @@
       "site": "Mājaslapa",
       "activite": "Vēsture",
       "suporte": "Atbalsts",
+      "associationDocuments": "Asociācijas dokumenti",
       "categories": {
         "adherents": "Dalībnieki",
         "communication": "Sakari",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Cenu piedāvājumi",
       "support": "Atbalsts",
       "signOut": "Izrakstīšanās"
-    },
-    "legalLinksMenu": {
-      "trigger": "Juridiskie dokumenti",
-      "mentionsLegales": "Juridiskais paziņojums",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privātuma politika",
-      "opensNewTab": "Atver jaunu cilni"
     },
     "themeToggle": {
       "changeTheme": "Mainiet tēmu"

@@ -278,7 +278,8 @@
       "reunions": "Kokoukset",
       "communications": "MES-viestintä",
       "profil": "Profiilini",
-      "mySpace": "Minun tilani"
+      "mySpace": "Minun tilani",
+      "associationDocuments": "Yhdistyksen asiakirjat"
     },
     "rsvp": {
       "confirme": "Olen siellä!",
@@ -3512,7 +3513,8 @@
         "general": "Yleiset",
         "paiements": "Maksut",
         "abonnement": "Tilaus",
-        "integrations": "Integraatiot"
+        "integrations": "Integraatiot",
+        "legal": "Oikeudelliset asiakirjat"
       },
       "associationInfo": "Yhdistyksen tiedot",
       "associationName": "Yhdistyksen nimi",
@@ -3530,6 +3532,15 @@
       "copied": "Kopioitu!",
       "copy": "Kopioi",
       "open": "Avaa"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwisen oikeudelliset asiakirjat",
+      "description": "Nämä asiakirjat määrittävät, miten yhdistyksesi ja sen jäsenet käyttävät Formwise-alustaa.",
+      "mentionsLegales": "Oikeudellinen ilmoitus",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Tietosuojakäytäntö",
+      "opensNewTab": "Avaa uuden välilehden"
     },
     "cotisationDefaultsSettings": {
       "title": "Jäsenmaksu",
@@ -4400,7 +4411,8 @@
         "income": "Tulot",
         "expense": "Kulut",
         "financeCategory": "Rahoituskategoriat",
-        "payment": "Maksut"
+        "payment": "Maksut",
+        "associationDocument": "Yhdistyksen asiakirjat"
       },
       "messageTemplateFilterLabel": "MSG-mallipohjat",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametrit",
         "aiConfigUpdated": "Tekoäly — parametrit",
         "livekitConfigUpdated": "Visio — asetukset",
+        "associationDocumentCreated": "Asiakirja luotu",
+        "associationDocumentUpdated": "Asiakirjaa muokattu",
+        "associationDocumentDeleted": "Asiakirja poistettu",
         "ticketCheckoutExpired": "Maksu päättyi"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Linkki",
     "urlLabel": "Linkkiosoite",
     "apply": "Hae",
-    "remove": "Poista linkki"
+    "remove": "Poista linkki",
+    "paragraphStyle": "Kappaletyyli",
+    "normalText": "Normaali teksti",
+    "heading1": "Otsikko 1",
+    "heading2": "Otsikko 2",
+    "heading3": "Otsikko 3"
+  },
+  "associationDocuments": {
+    "title": "Yhdistyksen asiakirjat",
+    "count": "{count, plural, =0 {Ei asiakirjoja} one {# asiakirja} other {# asiakirjaa}}",
+    "visibleCount": "{visible, plural, one {# näkyy jäsenille} other {# näkyy jäsenille}}",
+    "empty": "Ei vielä asiakirjoja. Laadi yhdistyksen järjestyssäännöt, myyntiehdot tai muita jaettavia tietoja.",
+    "columns": {
+      "title": "Otsikko",
+      "visibility": "Näkyvyys",
+      "updatedAt": "Päivitetty"
+    },
+    "visible": "Näkyvissä",
+    "hidden": "Piilotettu",
+    "visibleToMembers": "Näkyy jäsenille",
+    "visibleToMembersHint": "Näyttää asiakirjan jäsenalueella. Kun asetus on pois päältä, vain ylläpitäjät näkevät sen.",
+    "toasts": {
+      "madeVisible": "”{title}” näkyy nyt jäsenille",
+      "madeHidden": "”{title}” on piilotettu jäseniltä",
+      "created": "Asiakirja luotu",
+      "saved": "Asiakirja tallennettu",
+      "deleted": "Asiakirja poistettu"
+    },
+    "deleteConfirm": {
+      "title": "Poistetaanko ”{title}”?",
+      "description": "Asiakirja poistetaan, eikä se ole enää jäsenten saatavilla. Toimintoa ei voi kumota."
+    },
+    "form": {
+      "newTitle": "Uusi asiakirja",
+      "newDescription": "Laadi asiakirja, jonka haluat jakaa jäsenillesi.",
+      "updatedAt": "Päivitetty {date}",
+      "titleLabel": "Otsikko",
+      "titlePlaceholder": "Esim. Järjestyssäännöt",
+      "contentLabel": "Sisältö",
+      "contentPlaceholder": "Kirjoita asiakirjan sisältö…",
+      "titleRequired": "Otsikko on pakollinen.",
+      "contentRequired": "Sisältö on pakollinen."
+    },
+    "leaveWarning": {
+      "title": "Tallentamattomat muutokset",
+      "description": "Muutoksiasi ei ole tallennettu. Tallenna ne ennen poistumista tai hylkää ne.",
+      "discard": "Hylkää",
+      "saveAndLeave": "Tallenna ja poistu"
+    },
+    "notFound": "Asiakirjaa ei löytynyt.",
+    "backToList": "Takaisin asiakirjoihin"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Yhdistyksen asiakirjat",
+      "subtitle": "Yhdistyksesi jakamat asiakirjat.",
+      "updatedAt": "Päivitetty {date}",
+      "empty": "Asiakirjoja ei ole tällä hetkellä saatavilla.",
+      "loadError": "Asiakirjoja ei voitu ladata.",
+      "notFound": "Asiakirjaa ei löytynyt tai se ei ole enää saatavilla.",
+      "backToList": "Takaisin asiakirjoihin"
+    },
     "sondages": {
       "title": "Kyselyt",
       "subtitle": "Kyselylomakkeet täytetään yhdistyksesi toimesta.",
@@ -5167,6 +5241,7 @@
       "site": "Verkkosivusto",
       "activite": "Historia",
       "suporte": "Tuki",
+      "associationDocuments": "Yhdistyksen asiakirjat",
       "categories": {
         "adherents": "Jäsenet",
         "communication": "Viestintä",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Hinnoittelutarjoukset",
       "support": "Tuki",
       "signOut": "Kirjaudu ulos"
-    },
-    "legalLinksMenu": {
-      "trigger": "Oikeudelliset asiakirjat",
-      "mentionsLegales": "Oikeudellinen ilmoitus",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Tietosuojakäytäntö",
-      "opensNewTab": "Avaa uuden välilehden"
     },
     "themeToggle": {
       "changeTheme": "Vaihda teemaa"

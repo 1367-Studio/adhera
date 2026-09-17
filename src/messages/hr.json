@@ -278,7 +278,8 @@
       "reunions": "Sastanci",
       "communications": "Mes komunikacije",
       "profil": "Moj profil",
-      "mySpace": "Moj prostor"
+      "mySpace": "Moj prostor",
+      "associationDocuments": "Dokumenti udruge"
     },
     "rsvp": {
       "confirme": "Bit ću tamo!",
@@ -3512,7 +3513,8 @@
         "general": "Općenito",
         "paiements": "Isplate",
         "abonnement": "Pretplata",
-        "integrations": "Integracije"
+        "integrations": "Integracije",
+        "legal": "Pravni dokumenti"
       },
       "associationInfo": "Informacije o udruzi",
       "associationName": "Naziv udruge",
@@ -3530,6 +3532,15 @@
       "copied": "Kopirano!",
       "copy": "Primljeno",
       "open": "Otvoreno"
+    },
+    "legalDocumentsSettings": {
+      "title": "Pravni dokumenti platforme Formwise",
+      "description": "Ovi dokumenti uređuju kako vaša udruga i njezini članovi koriste platformu Formwise.",
+      "mentionsLegales": "Pravna obavijest",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Politika privatnosti",
+      "opensNewTab": "Otvara novu karticu"
     },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
@@ -4400,7 +4411,8 @@
         "income": "Prihodi",
         "expense": "Troškovi",
         "financeCategory": "Financijske kategorije",
-        "payment": "Isplate"
+        "payment": "Isplate",
+        "associationDocument": "Dokumenti udruge"
       },
       "messageTemplateFilterLabel": "MSG predlošci",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametri",
         "aiConfigUpdated": "AI — parametri",
         "livekitConfigUpdated": "Visio — postavke",
+        "associationDocumentCreated": "Dokument stvoren",
+        "associationDocumentUpdated": "Dokument izmijenjen",
+        "associationDocumentDeleted": "Dokument izbrisan",
         "ticketCheckoutExpired": "Isplata je istekla"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Poveznica",
     "urlLabel": "Adresa poveznice",
     "apply": "Prijavite se",
-    "remove": "Ukloni poveznicu"
+    "remove": "Ukloni poveznicu",
+    "paragraphStyle": "Stil odlomka",
+    "normalText": "Normalni tekst",
+    "heading1": "Naslov 1",
+    "heading2": "Naslov 2",
+    "heading3": "Naslov 3"
+  },
+  "associationDocuments": {
+    "title": "Dokumenti udruge",
+    "count": "{count, plural, =0 {Nema dokumenata} one {# dokument} few {# dokumenta} other {# dokumenata}}",
+    "visibleCount": "{visible, plural, one {# vidljiv} few {# vidljiva} other {# vidljivih}} članovima",
+    "empty": "Još nema dokumenata. Sastavite interni pravilnik, opće uvjete prodaje ili druge informacije koje želite podijeliti.",
+    "columns": {
+      "title": "Naslov",
+      "visibility": "Vidljivost",
+      "updatedAt": "Ažurirano"
+    },
+    "visible": "Vidljiv",
+    "hidden": "Skriven",
+    "visibleToMembers": "Vidljiv članovima",
+    "visibleToMembersHint": "Prikazuje ovaj dokument u prostoru za članove. Kad je isključeno, vide ga samo upravitelji.",
+    "toasts": {
+      "madeVisible": "„{title}“ je vidljiv članovima",
+      "madeHidden": "„{title}“ je skriven od članova",
+      "created": "Dokument stvoren",
+      "saved": "Dokument spremljen",
+      "deleted": "Dokument izbrisan"
+    },
+    "deleteConfirm": {
+      "title": "Izbrisati „{title}“?",
+      "description": "Dokument će biti izbrisan i više neće biti dostupan članovima. Ova se radnja ne može poništiti."
+    },
+    "form": {
+      "newTitle": "Novi dokument",
+      "newDescription": "Sastavite dokument koji želite podijeliti sa svojim članovima.",
+      "updatedAt": "Ažurirano {date}",
+      "titleLabel": "Naslov",
+      "titlePlaceholder": "Npr. Interni pravilnik",
+      "contentLabel": "Sadržaj",
+      "contentPlaceholder": "Upišite sadržaj dokumenta…",
+      "titleRequired": "Naslov je obavezan.",
+      "contentRequired": "Sadržaj je obavezan."
+    },
+    "leaveWarning": {
+      "title": "Nespremljene promjene",
+      "description": "Vaše promjene nisu spremljene. Spremite ih prije izlaska ili ih odbacite.",
+      "discard": "Odbaci",
+      "saveAndLeave": "Spremi i izađi"
+    },
+    "notFound": "Ovaj dokument nije pronađen.",
+    "backToList": "Natrag na dokumente"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Dokumenti udruge",
+      "subtitle": "Dokumenti koje vam je stavila na raspolaganje vaša udruga.",
+      "updatedAt": "Ažurirano {date}",
+      "empty": "Trenutačno nema dostupnih dokumenata.",
+      "loadError": "Nije moguće učitati dokumente.",
+      "notFound": "Ovaj dokument nije pronađen ili više nije dostupan.",
+      "backToList": "Natrag na dokumente"
+    },
     "sondages": {
       "title": "Istraživanja",
       "subtitle": "Upitnike koje mora ispuniti vaša udruga.",
@@ -5167,6 +5241,7 @@
       "site": "Web stranica",
       "activite": "Povijest",
       "suporte": "Podrška",
+      "associationDocuments": "Dokumenti udruge",
       "categories": {
         "adherents": "Članovi",
         "communication": "Komunikacija",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Ponude za određivanje cijena",
       "support": "Podrška",
       "signOut": "Odjavi se"
-    },
-    "legalLinksMenu": {
-      "trigger": "Pravni dokumenti",
-      "mentionsLegales": "Pravna obavijest",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politika privatnosti",
-      "opensNewTab": "Otvara novu karticu"
     },
     "themeToggle": {
       "changeTheme": "Promijeni temu"

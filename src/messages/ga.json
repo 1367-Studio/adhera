@@ -278,7 +278,8 @@
       "reunions": "Cruinnithe",
       "communications": "Cumarsáid Mes",
       "profil": "Mo Phróifíl",
-      "mySpace": "Mo Spás"
+      "mySpace": "Mo Spás",
+      "associationDocuments": "Doiciméid an chumainn"
     },
     "rsvp": {
       "confirme": "Beidh mé ann!",
@@ -3512,7 +3513,8 @@
         "general": "Ginearálta",
         "paiements": "Íocaíochtaí",
         "abonnement": "Síntiús",
-        "integrations": "Comhtháthú"
+        "integrations": "Comhtháthú",
+        "legal": "Doiciméid dhlíthiúla"
       },
       "associationInfo": "Eolas faoin gComhlachas",
       "associationName": "Ainm an chumainn",
@@ -3530,6 +3532,15 @@
       "copied": "Cóipeáilte!",
       "copy": "Cóipeáil",
       "open": "Oscail"
+    },
+    "legalDocumentsSettings": {
+      "title": "Doiciméid dhlíthiúla Formwise",
+      "description": "Rialaíonn na doiciméid seo an chaoi a n-úsáideann do chumann agus a chomhaltaí ardán Formwise.",
+      "mentionsLegales": "Fógra dlíthiúil",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Polasaí Príobháideachais",
+      "opensNewTab": "Osclaíonn sé cluaisín nua"
     },
     "cotisationDefaultsSettings": {
       "title": "Táille ballraíochta",
@@ -4400,7 +4411,8 @@
         "income": "Ioncam",
         "expense": "Costais",
         "financeCategory": "Catagóirí Airgeadais",
-        "payment": "Íocaíochtaí"
+        "payment": "Íocaíochtaí",
+        "associationDocument": "Doiciméid an chumainn"
       },
       "messageTemplateFilterLabel": "Teimpléid MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — paraiméadair",
         "aiConfigUpdated": "AI — paraiméadair",
         "livekitConfigUpdated": "Visio — socruithe",
+        "associationDocumentCreated": "Doiciméad cruthaithe",
+        "associationDocumentUpdated": "Doiciméad athraithe",
+        "associationDocumentDeleted": "Doiciméad scriosta",
         "ticketCheckoutExpired": "Íocaíocht imithe in éag"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Nasc",
     "urlLabel": "Seoladh an nasc",
     "apply": "Déan iarratas",
-    "remove": "Bain an nasc"
+    "remove": "Bain an nasc",
+    "paragraphStyle": "Stíl ailt",
+    "normalText": "Gnáththéacs",
+    "heading1": "Ceannteideal 1",
+    "heading2": "Ceannteideal 2",
+    "heading3": "Ceannteideal 3"
+  },
+  "associationDocuments": {
+    "title": "Doiciméid an chumainn",
+    "count": "{count, plural, =0 {Níl aon doiciméad} one {# doiciméad} two {# dhoiciméad} few {# dhoiciméad} many {# ndoiciméad} other {# doiciméad}}",
+    "visibleCount": "{visible, plural, one {# infheicthe} two {# infheicthe} few {# infheicthe} many {# infheicthe} other {# infheicthe}} do chomhaltaí",
+    "empty": "Níl aon doiciméad fós. Scríobh rialacha inmheánacha, téarmaí díolacháin nó aon fhaisnéis eile atá le roinnt.",
+    "columns": {
+      "title": "Teideal",
+      "visibility": "Infheictheacht",
+      "updatedAt": "Nuashonraithe"
+    },
+    "visible": "Infheicthe",
+    "hidden": "I bhfolach",
+    "visibleToMembers": "Infheicthe do chomhaltaí",
+    "visibleToMembersHint": "Taispeántar an doiciméad seo i gCeantar na gComhaltaí. Nuair atá sé múchta, ní fheiceann ach na bainisteoirí é.",
+    "toasts": {
+      "madeVisible": "Tá “{title}” infheicthe do chomhaltaí",
+      "madeHidden": "Tá “{title}” i bhfolach ó chomhaltaí",
+      "created": "Doiciméad cruthaithe",
+      "saved": "Doiciméad sábháilte",
+      "deleted": "Doiciméad scriosta"
+    },
+    "deleteConfirm": {
+      "title": "Scrios “{title}”?",
+      "description": "Scriosfar an doiciméad agus ní bheidh fáil ag comhaltaí air a thuilleadh. Ní féidir an gníomh seo a chealú."
+    },
+    "form": {
+      "newTitle": "Doiciméad nua",
+      "newDescription": "Scríobh doiciméad le roinnt le do chomhaltaí.",
+      "updatedAt": "Nuashonraithe {date}",
+      "titleLabel": "Teideal",
+      "titlePlaceholder": "M.sh. Rialacha inmheánacha",
+      "contentLabel": "Ábhar",
+      "contentPlaceholder": "Scríobh ábhar an doiciméid…",
+      "titleRequired": "Tá an teideal riachtanach.",
+      "contentRequired": "Tá an t-ábhar riachtanach."
+    },
+    "leaveWarning": {
+      "title": "Athruithe nár sábháladh",
+      "description": "Níor sábháladh d'athruithe. Sábháil iad sula bhfágann tú, nó caith i leataobh iad.",
+      "discard": "Caith i leataobh",
+      "saveAndLeave": "Sábháil agus fág"
+    },
+    "notFound": "Níor aimsíodh an doiciméad seo.",
+    "backToList": "Ar ais chuig na doiciméid"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Doiciméid an chumainn",
+      "subtitle": "Na doiciméid atá curtha ar fáil ag do chumann.",
+      "updatedAt": "Nuashonraithe {date}",
+      "empty": "Níl aon doiciméad ar fáil faoi láthair.",
+      "loadError": "Ní féidir na doiciméid a luchtú.",
+      "notFound": "Níor aimsíodh an doiciméad seo nó níl sé ar fáil a thuilleadh.",
+      "backToList": "Ar ais chuig na doiciméid"
+    },
     "sondages": {
       "title": "Suirbhéanna",
       "subtitle": "Ceistneoirí atá le comhlánú ag do chumann.",
@@ -5167,6 +5241,7 @@
       "site": "Suíomh Gréasáin",
       "activite": "Stair",
       "suporte": "Tacaíocht",
+      "associationDocuments": "Doiciméid an chumainn",
       "categories": {
         "adherents": "Baill",
         "communication": "Cumarsáid",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Tairiscintí praghsála",
       "support": "Tacaíocht",
       "signOut": "Logáil Amach"
-    },
-    "legalLinksMenu": {
-      "trigger": "Doiciméid dhlíthiúla",
-      "mentionsLegales": "Fógra dlíthiúil",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Polasaí Príobháideachais",
-      "opensNewTab": "Osclaíonn sé cluaisín nua"
     },
     "themeToggle": {
       "changeTheme": "Athraigh an téama"

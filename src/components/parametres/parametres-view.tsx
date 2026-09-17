@@ -1,32 +1,33 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import { BuildingsIcon, CreditCardIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
-import { associationSchema, type AssociationInput } from "@/lib/schemas"
-import { PageHeader } from "@/components/ui/page-header"
-import { ViewToggle } from "@/components/ui/view-toggle"
-import { FormField } from "@/components/ui/form-field"
-import { Button } from "@/components/ui/button"
-import { apiErrorMessage } from "@/lib/api-error"
-import { useCurrentUser, useModules } from "@/lib/user-context"
-import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
-import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
-import { SmsSettings } from "@/components/sms/sms-settings"
-import { LiveKitSettings } from "@/components/reunions/livekit-settings"
-import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
-import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
-import { ShippingSettings } from "@/components/parametres/shipping-settings"
+import { BankSettings } from "@/components/parametres/bank-settings"
 import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
-import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
+import { IdentityDonsSettings } from "@/components/parametres/identity-dons-settings"
+import { LegalDocumentsSettings } from "@/components/parametres/legal-documents-settings"
+import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
+import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
+import { ShippingSettings } from "@/components/parametres/shipping-settings"
+import { StripeConnectSettings } from "@/components/parametres/stripe-connect-settings"
+import { LiveKitSettings } from "@/components/reunions/livekit-settings"
+import { SmsSettings } from "@/components/sms/sms-settings"
+import { Button } from "@/components/ui/button"
+import { FormField } from "@/components/ui/form-field"
+import { PageHeader } from "@/components/ui/page-header"
+import { ViewToggle } from "@/components/ui/view-toggle"
+import { apiErrorMessage } from "@/lib/api-error"
+import { associationSchema, type AssociationInput } from "@/lib/schemas"
+import { useCurrentUser, useModules } from "@/lib/user-context"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { BuildingsIcon, CreditCardIcon, LightningIcon, ReceiptIcon, ScalesIcon } from "@phosphor-icons/react/dist/ssr"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
+import { useSearchParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 type Association = {
   id:      string
   name:    string
@@ -43,7 +44,7 @@ type Association = {
   publicMembershipPaymentEnabled: boolean
 }
 
-type Tab = "general" | "paiements" | "abonnement" | "integrations"
+type Tab = "general" | "paiements" | "abonnement" | "integrations" | "legal"
 
 function getAllTabs(t: ReturnType<typeof useTranslations>) {
   return [
@@ -51,6 +52,7 @@ function getAllTabs(t: ReturnType<typeof useTranslations>) {
     { value: "paiements"    as Tab, label: t("parametres.view.tabs.paiements"),    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
     { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
     { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
+    { value: "legal"        as Tab, label: t("parametres.view.tabs.legal"),        icon: <ScalesIcon      className="size-3.5" />, modules: null            },
   ] as const
 }
 
@@ -258,6 +260,15 @@ function ParametresViewInner() {
               <LiveKitSettings canEdit={canEdit} />
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Documents légaux ──────────────────────────────────────────── */}
+      {tab === "legal" && (
+        <div className="space-y-6">
+          <div className="rounded-lg border bg-card p-6">
+            <LegalDocumentsSettings />
+          </div>
         </div>
       )}
     </div>

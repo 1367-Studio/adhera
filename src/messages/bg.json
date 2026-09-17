@@ -278,7 +278,8 @@
       "reunions": "Срещи",
       "communications": "Mes комуникации",
       "profil": "Моят профил",
-      "mySpace": "Моето пространство"
+      "mySpace": "Моето пространство",
+      "associationDocuments": "Документи на асоциацията"
     },
     "rsvp": {
       "confirme": "Ще бъда там!",
@@ -3512,7 +3513,8 @@
         "general": "Общо",
         "paiements": "Плащания",
         "abonnement": "Абонамент",
-        "integrations": "Интеграции"
+        "integrations": "Интеграции",
+        "legal": "Правни документи"
       },
       "associationInfo": "Информация за асоциацията",
       "associationName": "Име на асоциацията",
@@ -3530,6 +3532,15 @@
       "copied": "Копирах!",
       "copy": "Прието.",
       "open": "Отвори"
+    },
+    "legalDocumentsSettings": {
+      "title": "Правни документи на Formwise",
+      "description": "Тези документи уреждат използването на платформата Formwise от вашата асоциация и нейните членове.",
+      "mentionsLegales": "Правно уведомление",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Политика за поверителност",
+      "opensNewTab": "Отваря нов таб"
     },
     "cotisationDefaultsSettings": {
       "title": "Членски внос",
@@ -4400,7 +4411,8 @@
         "income": "Приходи",
         "expense": "Разходи",
         "financeCategory": "Финансови категории",
-        "payment": "Плащания"
+        "payment": "Плащания",
+        "associationDocument": "Документи на асоциацията"
       },
       "messageTemplateFilterLabel": "MSG шаблони",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — параметри",
         "aiConfigUpdated": "AI — параметри",
         "livekitConfigUpdated": "Visio — настройки",
+        "associationDocumentCreated": "Документът е създаден",
+        "associationDocumentUpdated": "Документът е променен",
+        "associationDocumentDeleted": "Документът е изтрит",
         "ticketCheckoutExpired": "Плащането изтече"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Връзка",
     "urlLabel": "Адрес на връзката",
     "apply": "Кандидатствайте",
-    "remove": "Премахнете връзката"
+    "remove": "Премахнете връзката",
+    "paragraphStyle": "Стил на абзаца",
+    "normalText": "Нормален текст",
+    "heading1": "Заглавие 1",
+    "heading2": "Заглавие 2",
+    "heading3": "Заглавие 3"
+  },
+  "associationDocuments": {
+    "title": "Документи на асоциацията",
+    "count": "{count, plural, =0 {Няма документи} one {# документ} other {# документа}}",
+    "visibleCount": "{visible, plural, one {# видим} other {# видими}} за членовете",
+    "empty": "Все още няма документи. Изгответе правилника за вътрешния ред, общите условия за продажба или друга информация, която искате да споделите.",
+    "columns": {
+      "title": "Заглавие",
+      "visibility": "Видимост",
+      "updatedAt": "Актуализиран на"
+    },
+    "visible": "Видим",
+    "hidden": "Скрит",
+    "visibleToMembers": "Видим за членовете",
+    "visibleToMembersHint": "Показва този документ в зоната за членове. Когато опцията е изключена, само мениджърите го виждат.",
+    "toasts": {
+      "madeVisible": "„{title}“ е видим за членовете",
+      "madeHidden": "„{title}“ е скрит от членовете",
+      "created": "Документът е създаден",
+      "saved": "Документът е запазен",
+      "deleted": "Документът е изтрит"
+    },
+    "deleteConfirm": {
+      "title": "Изтриване на „{title}“?",
+      "description": "Документът ще бъде изтрит и вече няма да е достъпен за членовете. Това действие е необратимо."
+    },
+    "form": {
+      "newTitle": "Нов документ",
+      "newDescription": "Изгответе документ, който да споделите с членовете си.",
+      "updatedAt": "Актуализиран на {date}",
+      "titleLabel": "Заглавие",
+      "titlePlaceholder": "Напр. Правилник за вътрешния ред",
+      "contentLabel": "Съдържание",
+      "contentPlaceholder": "Въведете съдържанието на документа…",
+      "titleRequired": "Заглавието е задължително.",
+      "contentRequired": "Съдържанието е задължително."
+    },
+    "leaveWarning": {
+      "title": "Незапазени промени",
+      "description": "Промените ви не са запазени. Запазете ги, преди да излезете, или ги отхвърлете.",
+      "discard": "Отхвърляне",
+      "saveAndLeave": "Запази и излез"
+    },
+    "notFound": "Този документ не е намерен.",
+    "backToList": "Обратно към документите"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Документи на асоциацията",
+      "subtitle": "Документите, предоставени от вашата асоциация.",
+      "updatedAt": "Актуализиран на {date}",
+      "empty": "В момента няма налични документи.",
+      "loadError": "Документите не могат да бъдат заредени.",
+      "notFound": "Този документ не е намерен или вече не е наличен.",
+      "backToList": "Обратно към документите"
+    },
     "sondages": {
       "title": "Проучвания",
       "subtitle": "Въпросници трябва да бъдат попълнени от вашата асоциация.",
@@ -5167,6 +5241,7 @@
       "site": "Уебсайт",
       "activite": "История",
       "suporte": "Поддръжка",
+      "associationDocuments": "Документи на асоциацията",
       "categories": {
         "adherents": "Членове",
         "communication": "Комуникация",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Оферти за цени",
       "support": "Поддръжка",
       "signOut": "Излез от излизането"
-    },
-    "legalLinksMenu": {
-      "trigger": "Правни документи",
-      "mentionsLegales": "Правно уведомление",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Политика за поверителност",
-      "opensNewTab": "Отваря нов таб"
     },
     "themeToggle": {
       "changeTheme": "Промени темата"

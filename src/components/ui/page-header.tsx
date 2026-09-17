@@ -13,7 +13,7 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
           <div className="text-sm text-muted-foreground">{description}</div>
         )}
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="max-w-full shrink-0">{action}</div>}
     </div>
   )
 }

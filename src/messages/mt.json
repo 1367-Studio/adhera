@@ -278,7 +278,8 @@
       "reunions": "Laqgħat",
       "communications": "Komunikazzjonijiet ta' Mes",
       "profil": "Il-Profil Tiegħi",
-      "mySpace": "L-Ispazju Tiegħi"
+      "mySpace": "L-Ispazju Tiegħi",
+      "associationDocuments": "Dokumenti tal-assoċjazzjoni"
     },
     "rsvp": {
       "confirme": "Se nkun hemm!",
@@ -3512,7 +3513,8 @@
         "general": "Ġenerali",
         "paiements": "Ħlasijiet",
         "abonnement": "Abbonament",
-        "integrations": "Integrazzjonijiet"
+        "integrations": "Integrazzjonijiet",
+        "legal": "Dokumenti legali"
       },
       "associationInfo": "Informazzjoni dwar l-Assoċjazzjoni",
       "associationName": "Isem tal-assoċjazzjoni",
@@ -3530,6 +3532,15 @@
       "copied": "Kopija!",
       "copy": "Kopja",
       "open": "Miftuħ"
+    },
+    "legalDocumentsSettings": {
+      "title": "Dokumenti legali ta' Formwise",
+      "description": "Dawn id-dokumenti jirregolaw l-użu tal-pjattaforma Formwise mill-assoċjazzjoni u l-membri tiegħek.",
+      "mentionsLegales": "Avviż legali",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Politika dwar il-Privatezza",
+      "opensNewTab": "Tiftaħ tab ġdid"
     },
     "cotisationDefaultsSettings": {
       "title": "Miżata tal-Membri",
@@ -4400,7 +4411,8 @@
         "income": "Dħul",
         "expense": "Spejjeż",
         "financeCategory": "Kategoriji tal-Finanzi",
-        "payment": "Ħlasijiet"
+        "payment": "Ħlasijiet",
+        "associationDocument": "Dokumenti tal-assoċjazzjoni"
       },
       "messageTemplateFilterLabel": "Mudelli MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametri",
         "aiConfigUpdated": "AI — parametri",
         "livekitConfigUpdated": "Visio — settings",
+        "associationDocumentCreated": "Dokument maħluq",
+        "associationDocumentUpdated": "Dokument modifikat",
+        "associationDocumentDeleted": "Dokument imħassar",
         "ticketCheckoutExpired": "Il-ħlas skada"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Link",
     "urlLabel": "Indirizz tal-link",
     "apply": "Applika",
-    "remove": "Neħħi l-link"
+    "remove": "Neħħi l-link",
+    "paragraphStyle": "Stil tal-paragrafu",
+    "normalText": "Test normali",
+    "heading1": "Intestatura 1",
+    "heading2": "Intestatura 2",
+    "heading3": "Intestatura 3"
+  },
+  "associationDocuments": {
+    "title": "Dokumenti tal-assoċjazzjoni",
+    "count": "{count, plural, =0 {L-ebda dokument} one {# dokument} two {# dokumenti} few {# dokumenti} many {# dokument} other {# dokument}}",
+    "visibleCount": "{visible, plural, one {# viżibbli} two {# viżibbli} few {# viżibbli} many {# viżibbli} other {# viżibbli}} għall-membri",
+    "empty": "Għad m'hemm l-ebda dokument. Ikteb ir-regolament intern, it-termini u l-kundizzjonijiet tal-bejgħ jew kwalunkwe informazzjoni oħra li trid taqsam.",
+    "columns": {
+      "title": "Titlu",
+      "visibility": "Viżibilità",
+      "updatedAt": "Aġġornat fi"
+    },
+    "visible": "Viżibbli",
+    "hidden": "Moħbi",
+    "visibleToMembers": "Viżibbli għall-membri",
+    "visibleToMembersHint": "Juri dan id-dokument fiż-żona tal-membri. Meta jkun mitfi, il-maniġers biss jistgħu jarawh.",
+    "toasts": {
+      "madeVisible": "“{title}” huwa viżibbli għall-membri",
+      "madeHidden": "“{title}” huwa moħbi mill-membri",
+      "created": "Dokument maħluq",
+      "saved": "Dokument salvat",
+      "deleted": "Dokument imħassar"
+    },
+    "deleteConfirm": {
+      "title": "Tħassar “{title}”?",
+      "description": "Id-dokument se jitħassar u l-membri ma jkunux jistgħu jaċċessawh aktar. Din l-azzjoni ma tistax titreġġa' lura."
+    },
+    "form": {
+      "newTitle": "Dokument ġdid",
+      "newDescription": "Ikteb dokument biex taqsmu mal-membri tiegħek.",
+      "updatedAt": "Aġġornat fi {date}",
+      "titleLabel": "Titlu",
+      "titlePlaceholder": "Eż. Regolament intern",
+      "contentLabel": "Kontenut",
+      "contentPlaceholder": "Ikteb il-kontenut tad-dokument…",
+      "titleRequired": "It-titlu huwa obbligatorju.",
+      "contentRequired": "Il-kontenut huwa obbligatorju."
+    },
+    "leaveWarning": {
+      "title": "Bidliet mhux salvati",
+      "description": "Il-bidliet tiegħek ma ġewx salvati. Salvahom qabel ma toħroġ, jew armihom.",
+      "discard": "Armi",
+      "saveAndLeave": "Salva u oħroġ"
+    },
+    "notFound": "Dan id-dokument ma nstabx.",
+    "backToList": "Lura għad-dokumenti"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Dokumenti tal-assoċjazzjoni",
+      "subtitle": "Id-dokumenti li l-assoċjazzjoni tiegħek għamlet disponibbli.",
+      "updatedAt": "Aġġornat fi {date}",
+      "empty": "Bħalissa m'hemm l-ebda dokument disponibbli.",
+      "loadError": "Ma setgħux jitgħabbew id-dokumenti.",
+      "notFound": "Dan id-dokument ma nstabx jew m'għadux disponibbli.",
+      "backToList": "Lura għad-dokumenti"
+    },
     "sondages": {
       "title": "Stħarriġ",
       "subtitle": "Il-kwestionarji għandhom jiġu mimlijin mill-assoċjazzjoni tiegħek.",
@@ -5167,6 +5241,7 @@
       "site": "Sit elettroniku",
       "activite": "Storja",
       "suporte": "Appoġġ",
+      "associationDocuments": "Dokumenti tal-assoċjazzjoni",
       "categories": {
         "adherents": "Membri",
         "communication": "Komunikazzjoni",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Offerti ta' prezzijiet",
       "support": "Appoġġ",
       "signOut": "Logout"
-    },
-    "legalLinksMenu": {
-      "trigger": "Dokumenti legali",
-      "mentionsLegales": "Avviż legali",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politika dwar il-Privatezza",
-      "opensNewTab": "Tiftaħ tab ġdid"
     },
     "themeToggle": {
       "changeTheme": "Biddel it-tema"

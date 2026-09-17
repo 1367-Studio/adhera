@@ -278,7 +278,8 @@
       "reunions": "Stretnutia",
       "communications": "Mes komunikácie",
       "profil": "Môj profil",
-      "mySpace": "Môj priestor"
+      "mySpace": "Môj priestor",
+      "associationDocuments": "Dokumenty združenia"
     },
     "rsvp": {
       "confirme": "Budem tam!",
@@ -3512,7 +3513,8 @@
         "general": "Všeobecné",
         "paiements": "Platby",
         "abonnement": "Predplatné",
-        "integrations": "Integrácie"
+        "integrations": "Integrácie",
+        "legal": "Právne dokumenty"
       },
       "associationInfo": "Informácie o asociácii",
       "associationName": "Názov združenia",
@@ -3530,6 +3532,15 @@
       "copied": "Skopírované!",
       "copy": "Rozumiem",
       "open": "Otvorené"
+    },
+    "legalDocumentsSettings": {
+      "title": "Právne dokumenty Formwise",
+      "description": "Tieto dokumenty upravujú používanie platformy Formwise vaším združením a jeho členmi.",
+      "mentionsLegales": "Právne oznámenie",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Zásady ochrany súkromia",
+      "opensNewTab": "Otvára novú kartu"
     },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatok",
@@ -4400,7 +4411,8 @@
         "income": "Príjmy",
         "expense": "Výdavky",
         "financeCategory": "Finančné kategórie",
-        "payment": "Platby"
+        "payment": "Platby",
+        "associationDocument": "Dokumenty združenia"
       },
       "messageTemplateFilterLabel": "Šablóny MSG",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parametre",
         "aiConfigUpdated": "AI — parametre",
         "livekitConfigUpdated": "Visio — nastavenia",
+        "associationDocumentCreated": "Dokument vytvorený",
+        "associationDocumentUpdated": "Dokument upravený",
+        "associationDocumentDeleted": "Dokument vymazaný",
         "ticketCheckoutExpired": "Platba vypršala"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Odkaz",
     "urlLabel": "Adresa odkazu",
     "apply": "Prihláste sa",
-    "remove": "Odstrániť odkaz"
+    "remove": "Odstrániť odkaz",
+    "paragraphStyle": "Štýl odseku",
+    "normalText": "Normálny text",
+    "heading1": "Nadpis 1",
+    "heading2": "Nadpis 2",
+    "heading3": "Nadpis 3"
+  },
+  "associationDocuments": {
+    "title": "Dokumenty združenia",
+    "count": "{count, plural, =0 {Žiadne dokumenty} one {# dokument} few {# dokumenty} many {# dokumentu} other {# dokumentov}}",
+    "visibleCount": "{visible, plural, one {# viditeľný} few {# viditeľné} many {# viditeľného} other {# viditeľných}} pre členov",
+    "empty": "Zatiaľ žiadne dokumenty. Spíšte vnútorný poriadok, obchodné podmienky alebo iné informácie, ktoré chcete zdieľať.",
+    "columns": {
+      "title": "Názov",
+      "visibility": "Viditeľnosť",
+      "updatedAt": "Aktualizované"
+    },
+    "visible": "Viditeľný",
+    "hidden": "Skrytý",
+    "visibleToMembers": "Viditeľný pre členov",
+    "visibleToMembersHint": "Zobrazí tento dokument v členskej zóne. Ak je voľba vypnutá, vidia ho iba správcovia.",
+    "toasts": {
+      "madeVisible": "„{title}“ je viditeľný pre členov",
+      "madeHidden": "„{title}“ je pred členmi skrytý",
+      "created": "Dokument vytvorený",
+      "saved": "Dokument uložený",
+      "deleted": "Dokument vymazaný"
+    },
+    "deleteConfirm": {
+      "title": "Vymazať „{title}“?",
+      "description": "Dokument bude vymazaný a členovia k nemu už nebudú mať prístup. Túto akciu nie je možné vrátiť späť."
+    },
+    "form": {
+      "newTitle": "Nový dokument",
+      "newDescription": "Spíšte dokument, ktorý chcete zdieľať so svojimi členmi.",
+      "updatedAt": "Aktualizované {date}",
+      "titleLabel": "Názov",
+      "titlePlaceholder": "Napr. Vnútorný poriadok",
+      "contentLabel": "Obsah",
+      "contentPlaceholder": "Napíšte obsah dokumentu…",
+      "titleRequired": "Názov je povinný.",
+      "contentRequired": "Obsah je povinný."
+    },
+    "leaveWarning": {
+      "title": "Neuložené zmeny",
+      "description": "Vaše zmeny neboli uložené. Uložte ich pred odchodom, alebo ich zahoďte.",
+      "discard": "Zahodiť",
+      "saveAndLeave": "Uložiť a odísť"
+    },
+    "notFound": "Tento dokument sa nenašiel.",
+    "backToList": "Späť na dokumenty"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Dokumenty združenia",
+      "subtitle": "Dokumenty, ktoré vám sprístupnilo vaše združenie.",
+      "updatedAt": "Aktualizované {date}",
+      "empty": "Momentálne nie sú k dispozícii žiadne dokumenty.",
+      "loadError": "Dokumenty sa nepodarilo načítať.",
+      "notFound": "Tento dokument sa nenašiel alebo už nie je k dispozícii.",
+      "backToList": "Späť na dokumenty"
+    },
     "sondages": {
       "title": "Prieskumy",
       "subtitle": "Dotazníky musí vyplniť vaše združenie.",
@@ -5167,6 +5241,7 @@
       "site": "Webová stránka",
       "activite": "História",
       "suporte": "Podpora",
+      "associationDocuments": "Dokumenty združenia",
       "categories": {
         "adherents": "Členovia",
         "communication": "Komunikácia",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Cenové ponuky",
       "support": "Podpora",
       "signOut": "Odhlásiť sa"
-    },
-    "legalLinksMenu": {
-      "trigger": "Právne dokumenty",
-      "mentionsLegales": "Právne oznámenie",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Zásady ochrany súkromia",
-      "opensNewTab": "Otvára novú kartu"
     },
     "themeToggle": {
       "changeTheme": "Zmeň tému"

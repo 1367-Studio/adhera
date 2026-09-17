@@ -16,6 +16,12 @@ interface ViewToggleProps<T extends string> {
 }
 
 // Compact list/grid switcher — just the shared SegmentedControl at its small size.
+// Kept at its natural width and scrolled sideways when the header is narrower than the
+// options (e.g. the five Paramètres tabs on a phone) instead of being clipped off-screen.
 export function ViewToggle<T extends string>(props: ViewToggleProps<T>) {
-  return <SegmentedControl size="sm" {...props} />
+  return (
+    <div className="no-scrollbar max-w-full overflow-x-auto">
+      <SegmentedControl size="sm" className="w-max" {...props} />
+    </div>
+  )
 }

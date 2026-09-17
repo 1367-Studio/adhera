@@ -291,7 +291,8 @@
       "reunions": "Meetings",
       "communications": "My communications",
       "profil": "My profile",
-      "mySpace": "My space"
+      "mySpace": "My space",
+      "associationDocuments": "Association documents"
     },
     "rsvp": {
       "confirme": "I'll be there!",
@@ -3534,7 +3535,8 @@
         "general": "General",
         "paiements": "Payments",
         "abonnement": "Subscription",
-        "integrations": "Integrations"
+        "integrations": "Integrations",
+        "legal": "Legal documents"
       },
       "associationInfo": "Association information",
       "associationName": "Association name",
@@ -3552,6 +3554,15 @@
       "copied": "Copied!",
       "copy": "Copy",
       "open": "Open"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwise legal documents",
+      "description": "These documents govern how your association and your members use the Formwise platform.",
+      "mentionsLegales": "Legal notice",
+      "cgu": "Terms of use",
+      "cgs": "Terms of service",
+      "politiqueConfidentialite": "Privacy policy",
+      "opensNewTab": "Opens in a new tab"
     },
     "cotisationDefaultsSettings": {
       "title": "Membership fee",
@@ -4422,7 +4433,8 @@
         "income": "Income",
         "expense": "Expenses",
         "financeCategory": "Finance categories",
-        "payment": "Payments"
+        "payment": "Payments",
+        "associationDocument": "Association documents"
       },
       "messageTemplateFilterLabel": "Msg templates",
       "actualiteFields": {
@@ -4602,6 +4614,9 @@
         "smsSettingsUpdated": "SMS — settings",
         "aiConfigUpdated": "AI — settings",
         "livekitConfigUpdated": "Video — settings",
+        "associationDocumentCreated": "Document created",
+        "associationDocumentUpdated": "Document updated",
+        "associationDocumentDeleted": "Document deleted",
         "ticketCheckoutExpired": "Payment expired"
       }
     },
@@ -4854,9 +4869,68 @@
     "link": "Link",
     "urlLabel": "Link URL",
     "apply": "Apply",
-    "remove": "Remove link"
+    "remove": "Remove link",
+    "paragraphStyle": "Paragraph style",
+    "normalText": "Normal text",
+    "heading1": "Heading 1",
+    "heading2": "Heading 2",
+    "heading3": "Heading 3"
+  },
+  "associationDocuments": {
+    "title": "Association documents",
+    "count": "{count, plural, =0 {No documents} one {# document} other {# documents}}",
+    "visibleCount": "{visible, plural, one {# visible} other {# visible}} to members",
+    "empty": "No documents yet. Write your internal rules, terms of sale or any other information to share.",
+    "columns": {
+      "title": "Title",
+      "visibility": "Visibility",
+      "updatedAt": "Updated"
+    },
+    "visible": "Visible",
+    "hidden": "Hidden",
+    "visibleToMembers": "Visible to members",
+    "visibleToMembersHint": "Shows this document in the member area. When turned off, only managers can see it.",
+    "toasts": {
+      "madeVisible": "“{title}” is visible to members",
+      "madeHidden": "“{title}” is hidden from members",
+      "created": "Document created",
+      "saved": "Document saved",
+      "deleted": "Document deleted"
+    },
+    "deleteConfirm": {
+      "title": "Delete “{title}”?",
+      "description": "The document will be deleted and will no longer be available to members. This action cannot be undone."
+    },
+    "form": {
+      "newTitle": "New document",
+      "newDescription": "Write a document to share with your members.",
+      "updatedAt": "Updated on {date}",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. Internal rules",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write the document content…",
+      "titleRequired": "Title is required.",
+      "contentRequired": "Content is required."
+    },
+    "leaveWarning": {
+      "title": "Unsaved changes",
+      "description": "Your changes have not been saved. Save them before leaving, or discard them.",
+      "discard": "Discard",
+      "saveAndLeave": "Save and leave"
+    },
+    "notFound": "This document could not be found.",
+    "backToList": "Back to documents"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Association documents",
+      "subtitle": "Documents shared by your association.",
+      "updatedAt": "Updated on {date}",
+      "empty": "No documents available yet.",
+      "loadError": "Unable to load documents.",
+      "notFound": "This document could not be found or is no longer available.",
+      "backToList": "Back to documents"
+    },
     "sondages": {
       "title": "Surveys",
       "subtitle": "Questionnaires to complete for your association.",
@@ -5295,6 +5369,7 @@
       "site": "Website",
       "activite": "History",
       "suporte": "Support",
+      "associationDocuments": "Association documents",
       "categories": {
         "adherents": "Membership",
         "communication": "Communication",
@@ -5309,14 +5384,6 @@
       "pricingOffers": "Pricing offers",
       "support": "Support",
       "signOut": "Sign out"
-    },
-    "legalLinksMenu": {
-      "trigger": "Legal documents",
-      "mentionsLegales": "Legal notice",
-      "cgu": "Terms of use",
-      "cgs": "Terms of service",
-      "politiqueConfidentialite": "Privacy policy",
-      "opensNewTab": "Opens in a new tab"
     },
     "themeToggle": {
       "changeTheme": "Change theme"

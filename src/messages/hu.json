@@ -278,7 +278,8 @@
       "reunions": "Találkozók",
       "communications": "Mes kommunikáció",
       "profil": "Profilom",
-      "mySpace": "Az én terem"
+      "mySpace": "Az én terem",
+      "associationDocuments": "Egyesületi dokumentumok"
     },
     "rsvp": {
       "confirme": "Ott leszek!",
@@ -3512,7 +3513,8 @@
         "general": "Általános",
         "paiements": "Kifizetések",
         "abonnement": "Előfizetés",
-        "integrations": "Integrációk"
+        "integrations": "Integrációk",
+        "legal": "Jogi dokumentumok"
       },
       "associationInfo": "Szövetségi információk",
       "associationName": "Az egyesület neve",
@@ -3530,6 +3532,15 @@
       "copied": "Másolva!",
       "copy": "Értettem",
       "open": "Nyisd ki"
+    },
+    "legalDocumentsSettings": {
+      "title": "A Formwise jogi dokumentumai",
+      "description": "Ezek a dokumentumok szabályozzák, hogyan használja az egyesületed és a tagjaid a Formwise platformot.",
+      "mentionsLegales": "Jogi közlemény",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Adatvédelmi szabályzat",
+      "opensNewTab": "Új oldal nyílik meg"
     },
     "cotisationDefaultsSettings": {
       "title": "Tagsági díj",
@@ -4400,7 +4411,8 @@
         "income": "Bevételek",
         "expense": "Költségek",
         "financeCategory": "Pénzügyi kategóriák",
-        "payment": "Kifizetések"
+        "payment": "Kifizetések",
+        "associationDocument": "Egyesületi dokumentumok"
       },
       "messageTemplateFilterLabel": "MSG sablonok",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — paraméterek",
         "aiConfigUpdated": "MI — paraméterek",
         "livekitConfigUpdated": "Visio — beállítások",
+        "associationDocumentCreated": "Dokumentum létrehozva",
+        "associationDocumentUpdated": "Dokumentum módosítva",
+        "associationDocumentDeleted": "Dokumentum törölve",
         "ticketCheckoutExpired": "A fizetés lejárt"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Link",
     "urlLabel": "Link cím",
     "apply": "Jelentkezz",
-    "remove": "Töröld a linket"
+    "remove": "Töröld a linket",
+    "paragraphStyle": "Bekezdésstílus",
+    "normalText": "Normál szöveg",
+    "heading1": "Címsor 1",
+    "heading2": "Címsor 2",
+    "heading3": "Címsor 3"
+  },
+  "associationDocuments": {
+    "title": "Egyesületi dokumentumok",
+    "count": "{count, plural, =0 {Nincs dokumentum} one {# dokumentum} other {# dokumentum}}",
+    "visibleCount": "{visible, plural, one {# látható a tagok számára} other {# látható a tagok számára}}",
+    "empty": "Még nincs dokumentum. Írd meg a házirendet, az ÁSZF-et vagy bármilyen más megosztandó információt.",
+    "columns": {
+      "title": "Cím",
+      "visibility": "Láthatóság",
+      "updatedAt": "Frissítve"
+    },
+    "visible": "Látható",
+    "hidden": "Rejtett",
+    "visibleToMembers": "Látható a tagok számára",
+    "visibleToMembersHint": "Megjeleníti a dokumentumot a tagterületen. Kikapcsolva csak a vezetők látják.",
+    "toasts": {
+      "madeVisible": "„{title}” látható a tagok számára",
+      "madeHidden": "„{title}” el van rejtve a tagok elől",
+      "created": "Dokumentum létrehozva",
+      "saved": "Dokumentum mentve",
+      "deleted": "Dokumentum törölve"
+    },
+    "deleteConfirm": {
+      "title": "„{title}” törlése?",
+      "description": "A dokumentum törlődik, és a tagok többé nem férnek hozzá. Ez a művelet nem vonható vissza."
+    },
+    "form": {
+      "newTitle": "Új dokumentum",
+      "newDescription": "Írj egy dokumentumot, amelyet megoszthatsz a tagokkal.",
+      "updatedAt": "Frissítve: {date}",
+      "titleLabel": "Cím",
+      "titlePlaceholder": "Pl. Házirend",
+      "contentLabel": "Tartalom",
+      "contentPlaceholder": "Írd be a dokumentum tartalmát…",
+      "titleRequired": "A cím megadása kötelező.",
+      "contentRequired": "A tartalom megadása kötelező."
+    },
+    "leaveWarning": {
+      "title": "Nem mentett módosítások",
+      "description": "A módosításaid nincsenek mentve. Mentsd el őket kilépés előtt, vagy vesd el őket.",
+      "discard": "Elvetés",
+      "saveAndLeave": "Mentés és kilépés"
+    },
+    "notFound": "Ez a dokumentum nem található.",
+    "backToList": "Vissza a dokumentumokhoz"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Egyesületi dokumentumok",
+      "subtitle": "Az egyesületed által elérhetővé tett dokumentumok.",
+      "updatedAt": "Frissítve: {date}",
+      "empty": "Jelenleg nincs elérhető dokumentum.",
+      "loadError": "Nem sikerült betölteni a dokumentumokat.",
+      "notFound": "Ez a dokumentum nem található, vagy már nem érhető el.",
+      "backToList": "Vissza a dokumentumokhoz"
+    },
     "sondages": {
       "title": "Felmérések",
       "subtitle": "Kérdőíveket a szervezeted kell kitölteni.",
@@ -5167,6 +5241,7 @@
       "site": "Weboldal",
       "activite": "Előzmények",
       "suporte": "Támogatás",
+      "associationDocuments": "Egyesületi dokumentumok",
       "categories": {
         "adherents": "Tagok",
         "communication": "Kommunikáció",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Árajánlatok",
       "support": "Támogatás",
       "signOut": "Kilépés"
-    },
-    "legalLinksMenu": {
-      "trigger": "Jogi dokumentumok",
-      "mentionsLegales": "Jogi közlemény",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Adatvédelmi szabályzat",
-      "opensNewTab": "Új oldal nyílik meg"
     },
     "themeToggle": {
       "changeTheme": "Változtasd meg a témát"

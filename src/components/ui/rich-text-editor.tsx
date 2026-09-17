@@ -9,15 +9,24 @@ import Placeholder from "@tiptap/extension-placeholder"
 import { useTranslations } from "next-intl"
 import {
   TextBIcon, TextItalicIcon, TextUnderlineIcon as UnderlineIcon, ListIcon, ListNumbersIcon,
-  TextHTwoIcon, TextHThreeIcon, SparkleIcon, LinkIcon, LinkBreakIcon,
+  TextHTwoIcon, TextHThreeIcon, SparkleIcon, LinkIcon, LinkBreakIcon, CaretDownIcon,
 } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { DOCUMENT_PROSE } from "@/components/ui/rich-text-view"
 import { AiWriter } from "@/components/ai/ai-writer"
 import { useModules } from "@/lib/user-context"
+
+// "default" is the compact editor used across forms and emails (H2/H3 toggles only).
+// "document" is for long-form pages: H1–H3 through a block-style menu, a toolbar that stays
+// visible while scrolling, and the same heading scale the reader renders with.
+export type RichTextEditorVariant = "default" | "document"
 
 const toolbarBtn = (active: boolean) =>
   cn(
@@ -105,14 +114,77 @@ function LinkButton({ editor, active, currentHref }: LinkButtonProps) {
   )
 }
 
+type BlockStyle = "paragraph" | "heading1" | "heading2" | "heading3"
+
+const BLOCK_STYLE_LABEL_KEYS: Record<BlockStyle, "normalText" | "heading1" | "heading2" | "heading3"> = {
+  paragraph: "normalText",
+  heading1:  "heading1",
+  heading2:  "heading2",
+  heading3:  "heading3",
+}
+
+const BLOCK_STYLES: BlockStyle[] = ["paragraph", "heading1", "heading2", "heading3"]
+
+interface BlockStyleMenuProps {
+  editor:       Editor
+  currentStyle: BlockStyle | null
+}
+
+function BlockStyleMenu({ editor, currentStyle }: BlockStyleMenuProps) {
+  const t = useTranslations("richTextEditor")
+
+  // Running the command with .focus() puts DOM focus back in the editor (ProseMirror keeps
+  // the selection in its state while blurred). Base UI then sees focus already outside the
+  // menu when it closes and does not return it to the trigger, so writing just continues.
+  // Wired to each item's onClick rather than the group's onValueChange, which does not fire
+  // when re-picking the current style — focus would then land on the trigger instead.
+  function applyStyle(style: BlockStyle) {
+    const chain = editor.chain().focus()
+    if (style === "paragraph") chain.setParagraph().run()
+    else if (style === "heading1") chain.setHeading({ level: 1 }).run()
+    else if (style === "heading2") chain.setHeading({ level: 2 }).run()
+    else chain.setHeading({ level: 3 }).run()
+  }
+
+  const currentLabel = t(BLOCK_STYLE_LABEL_KEYS[currentStyle ?? "paragraph"])
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={cn(
+          toolbarBtn(false),
+          "inline-flex h-6.5 w-28 items-center justify-between gap-1 px-2 text-xs font-medium",
+        )}
+        // Names the control and still announces the current style, which a bare
+        // "Style de paragraphe" label would hide from screen readers.
+        aria-label={`${t("paragraphStyle")} : ${currentLabel}`}
+        title={t("paragraphStyle")}
+      >
+        <span className="truncate">{currentLabel}</span>
+        <CaretDownIcon size={12} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuRadioGroup value={currentStyle}>
+          {BLOCK_STYLES.map(style => (
+            <DropdownMenuRadioItem key={style} value={style} closeOnClick onClick={() => applyStyle(style)}>
+              {t(BLOCK_STYLE_LABEL_KEYS[style])}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
 interface MenuBarProps {
   editor:       Editor | null
   aiOpen:       boolean
   onToggleAi:   () => void
   aiEnabled:    boolean
+  variant:      RichTextEditorVariant
 }
 
-function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
+function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled, variant }: MenuBarProps) {
   // Tiptap v3 stopped re-rendering on every transaction, so `editor.isActive(...)` read
   // directly in render only refreshes on the next unrelated React render. useEditorState
   // subscribes to the editor and re-renders the toolbar when any of these change.
@@ -122,6 +194,8 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
       bold:        e?.isActive("bold") ?? false,
       italic:      e?.isActive("italic") ?? false,
       underline:   e?.isActive("underline") ?? false,
+      paragraph:   e?.isActive("paragraph") ?? false,
+      h1:          e?.isActive("heading", { level: 1 }) ?? false,
       h2:          e?.isActive("heading", { level: 2 }) ?? false,
       h3:          e?.isActive("heading", { level: 3 }) ?? false,
       bulletList:  e?.isActive("bulletList") ?? false,
@@ -133,9 +207,25 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
 
   if (!editor || !state) return null
   const btn = toolbarBtn
+  const isDocument = variant === "document"
+
+  // A selection spanning several block types matches none of these — the menu then shows
+  // "Texte normal" as its label but checks no item.
+  const currentStyle: BlockStyle | null =
+    state.h1 ? "heading1"
+    : state.h2 ? "heading2"
+    : state.h3 ? "heading3"
+    : state.paragraph ? "paragraph"
+    : null
 
   return (
     <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b bg-muted/30">
+      {isDocument && (
+        <>
+          <BlockStyleMenu editor={editor} currentStyle={currentStyle} />
+          <div className="w-px h-4 bg-border mx-1" />
+        </>
+      )}
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={btn(state.bold)}>
         <TextBIcon size={14} />
       </button>
@@ -149,14 +239,18 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled }: MenuBarProps) {
 
       <div className="w-px h-4 bg-border mx-1" />
 
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(state.h2)}>
-        <TextHTwoIcon size={14} />
-      </button>
-      <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(state.h3)}>
-        <TextHThreeIcon size={14} />
-      </button>
+      {!isDocument && (
+        <>
+          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={btn(state.h2)}>
+            <TextHTwoIcon size={14} />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} className={btn(state.h3)}>
+            <TextHThreeIcon size={14} />
+          </button>
 
-      <div className="w-px h-4 bg-border mx-1" />
+          <div className="w-px h-4 bg-border mx-1" />
+        </>
+      )}
 
       <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={btn(state.bulletList)}>
         <ListIcon size={14} />
@@ -195,7 +289,10 @@ interface RichTextEditorProps {
   placeholder?: string
   minHeight?:  string
   error?:      string
+  variant?:    RichTextEditorVariant
 }
+
+const EDITOR_CONTENT_CLASS = "prose prose-sm dark:prose-invert max-w-none focus:outline-none px-3 py-2.5"
 
 export function RichTextEditor({
   label,
@@ -205,14 +302,18 @@ export function RichTextEditor({
   placeholder = "Rédigez votre contenu…",
   minHeight = "180px",
   error,
+  variant = "default",
 }: RichTextEditorProps) {
-  const modules   = useModules()
-  const aiEnabled = modules.ia
+  const modules    = useModules()
+  const aiEnabled  = modules.ia
+  const isDocument = variant === "document"
   const [aiOpen, setAiOpen] = useState(false)
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ link: false, underline: false }),
+      isDocument
+        ? StarterKit.configure({ heading: { levels: [1, 2, 3] }, link: false, underline: false })
+        : StarterKit.configure({ link: false, underline: false }),
       Underline,
       LinkExtension.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder }),
@@ -232,7 +333,7 @@ export function RichTextEditor({
         return true
       },
       attributes: {
-        class: "prose prose-sm dark:prose-invert max-w-none focus:outline-none px-3 py-2.5",
+        class: isDocument ? `${EDITOR_CONTENT_CLASS} ${DOCUMENT_PROSE}` : EDITOR_CONTENT_CLASS,
         style: `min-height: ${minHeight}`,
       },
     },
@@ -272,11 +373,24 @@ export function RichTextEditor({
       )}
       <div
         className={cn(
-          "rounded-md border bg-background overflow-hidden transition-colors focus-within:ring-1 focus-within:ring-ring",
+          "rounded-md border bg-background",
+          // overflow-hidden would make this wrapper the sticky toolbar's scroll container
+          // and pin it in place; overflow-clip still clips to the rounded border without that.
+          isDocument ? "overflow-clip" : "overflow-hidden",
+          "transition-colors focus-within:ring-1 focus-within:ring-ring",
           error && "border-destructive focus-within:ring-destructive/30",
         )}
       >
-        <MenuBar editor={editor} aiOpen={aiOpen} onToggleAi={() => setAiOpen(o => !o)} aiEnabled={aiEnabled} />
+        {isDocument ? (
+          // Stays visible while writing a long document. Below md the window scrolls under
+          // the sticky h-14 app header, so it sticks right beneath it; from md up the
+          // dashboard's <main> is the scroll container and the header sits outside it.
+          <div className="sticky top-14 z-10 bg-background md:top-0">
+            <MenuBar editor={editor} aiOpen={aiOpen} onToggleAi={() => setAiOpen(o => !o)} aiEnabled={aiEnabled} variant={variant} />
+          </div>
+        ) : (
+          <MenuBar editor={editor} aiOpen={aiOpen} onToggleAi={() => setAiOpen(o => !o)} aiEnabled={aiEnabled} variant={variant} />
+        )}
         {aiEnabled && aiOpen && (
           <AiWriter
             currentText={currentText}

@@ -291,7 +291,8 @@
       "reunions": "Réunions",
       "communications": "Mes communications",
       "profil": "Mon profil",
-      "mySpace": "Mon espace"
+      "mySpace": "Mon espace",
+      "associationDocuments": "Documents légaux"
     },
     "rsvp": {
       "confirme": "J'y serai !",
@@ -3542,7 +3543,8 @@
         "general": "Général",
         "paiements": "Paiements",
         "abonnement": "Abonnement",
-        "integrations": "Intégrations"
+        "integrations": "Intégrations",
+        "legal": "Documents légaux"
       },
       "associationInfo": "Informations de l'association",
       "associationName": "Nom de l'association",
@@ -3560,6 +3562,15 @@
       "copied": "Copié !",
       "copy": "Copier",
       "open": "Ouvrir"
+    },
+    "legalDocumentsSettings": {
+      "title": "Documents légaux de Formwise",
+      "description": "Ces documents encadrent l'utilisation de la plateforme Formwise par votre association et vos membres.",
+      "mentionsLegales": "Mentions légales",
+      "cgu": "CGU",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Politique de confidentialité",
+      "opensNewTab": "Ouvre un nouvel onglet"
     },
     "cotisationDefaultsSettings": {
       "title": "Cotisation",
@@ -4430,7 +4441,8 @@
         "income": "Recettes",
         "expense": "Dépenses",
         "financeCategory": "Catégories finances",
-        "payment": "Paiements"
+        "payment": "Paiements",
+        "associationDocument": "Documents légaux"
       },
       "messageTemplateFilterLabel": "Modèles msg",
       "actualiteFields": {
@@ -4610,6 +4622,9 @@
         "smsSettingsUpdated": "SMS — paramètres",
         "aiConfigUpdated": "IA — paramètres",
         "livekitConfigUpdated": "Visio — paramètres",
+        "associationDocumentCreated": "Document créé",
+        "associationDocumentUpdated": "Document modifié",
+        "associationDocumentDeleted": "Document supprimé",
         "ticketCheckoutExpired": "Paiement expiré"
       }
     },
@@ -4862,9 +4877,68 @@
     "link": "Lien",
     "urlLabel": "Adresse du lien",
     "apply": "Appliquer",
-    "remove": "Retirer le lien"
+    "remove": "Retirer le lien",
+    "paragraphStyle": "Style de paragraphe",
+    "normalText": "Texte normal",
+    "heading1": "Titre 1",
+    "heading2": "Titre 2",
+    "heading3": "Titre 3"
+  },
+  "associationDocuments": {
+    "title": "Documents légaux",
+    "count": "{count, plural, =0 {Aucun document} one {# document} other {# documents}}",
+    "visibleCount": "{visible, plural, one {# visible} other {# visibles}} par les membres",
+    "empty": "Aucun document pour le moment. Rédigez votre règlement intérieur, vos CGV ou toute autre information à partager.",
+    "columns": {
+      "title": "Titre",
+      "visibility": "Visibilité",
+      "updatedAt": "Mis à jour le"
+    },
+    "visible": "Visible",
+    "hidden": "Masqué",
+    "visibleToMembers": "Visible par les membres",
+    "visibleToMembersHint": "Affiche ce document dans l'espace membre. Désactivé, seuls les gestionnaires le voient.",
+    "toasts": {
+      "madeVisible": "« {title} » est visible par les membres",
+      "madeHidden": "« {title} » est masqué aux membres",
+      "created": "Document créé",
+      "saved": "Document enregistré",
+      "deleted": "Document supprimé"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer « {title} » ?",
+      "description": "Le document sera supprimé et ne sera plus accessible aux membres. Cette action est irréversible."
+    },
+    "form": {
+      "newTitle": "Nouveau document",
+      "newDescription": "Rédigez un document à partager avec vos membres.",
+      "updatedAt": "Mis à jour le {date}",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Ex. Règlement intérieur",
+      "contentLabel": "Contenu",
+      "contentPlaceholder": "Rédigez le contenu du document…",
+      "titleRequired": "Le titre est obligatoire.",
+      "contentRequired": "Le contenu est obligatoire."
+    },
+    "leaveWarning": {
+      "title": "Modifications non enregistrées",
+      "description": "Vos modifications n'ont pas été enregistrées. Enregistrez-les avant de quitter, ou abandonnez-les.",
+      "discard": "Abandonner",
+      "saveAndLeave": "Enregistrer et quitter"
+    },
+    "notFound": "Ce document est introuvable.",
+    "backToList": "Retour aux documents"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Documents légaux",
+      "subtitle": "Les documents mis à disposition par votre association.",
+      "updatedAt": "Mis à jour le {date}",
+      "empty": "Aucun document disponible pour le moment.",
+      "loadError": "Impossible de charger les documents.",
+      "notFound": "Ce document est introuvable ou n'est plus disponible.",
+      "backToList": "Retour aux documents"
+    },
     "sondages": {
       "title": "Sondages",
       "subtitle": "Questionnaires à compléter de votre association.",
@@ -5303,6 +5377,7 @@
       "site": "Site web",
       "activite": "Historique",
       "suporte": "Support",
+      "associationDocuments": "Documents légaux",
       "categories": {
         "adherents": "Adhérents",
         "communication": "Communication",
@@ -5317,14 +5392,6 @@
       "pricingOffers": "Offres tarifaires",
       "support": "Support",
       "signOut": "Se déconnecter"
-    },
-    "legalLinksMenu": {
-      "trigger": "Documents légaux",
-      "mentionsLegales": "Mentions légales",
-      "cgu": "CGU",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politique de confidentialité",
-      "opensNewTab": "Ouvre un nouvel onglet"
     },
     "themeToggle": {
       "changeTheme": "Changer le thème"

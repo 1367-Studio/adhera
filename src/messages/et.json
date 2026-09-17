@@ -278,7 +278,8 @@
       "reunions": "Koosolekud",
       "communications": "Mes kommunikatsioonid",
       "profil": "Minu profiil",
-      "mySpace": "Minu ruum"
+      "mySpace": "Minu ruum",
+      "associationDocuments": "Ühingu dokumendid"
     },
     "rsvp": {
       "confirme": "Ma tulen!",
@@ -3512,7 +3513,8 @@
         "general": "Üldine",
         "paiements": "Maksed",
         "abonnement": "Tellimus",
-        "integrations": "Integratsioonid"
+        "integrations": "Integratsioonid",
+        "legal": "Õiguslikud dokumendid"
       },
       "associationInfo": "Ühingu info",
       "associationName": "Ühingu nimi",
@@ -3530,6 +3532,15 @@
       "copied": "Kopeeritud!",
       "copy": "Kinnitan",
       "open": "Ava"
+    },
+    "legalDocumentsSettings": {
+      "title": "Formwise'i õiguslikud dokumendid",
+      "description": "Need dokumendid reguleerivad, kuidas sinu ühing ja selle liikmed Formwise'i platvormi kasutavad.",
+      "mentionsLegales": "Juriidiline teade",
+      "cgu": "UGC",
+      "cgs": "CGV",
+      "politiqueConfidentialite": "Privaatsuspoliitika",
+      "opensNewTab": "Avab uue vahekaardi"
     },
     "cotisationDefaultsSettings": {
       "title": "Liikmemaks",
@@ -4400,7 +4411,8 @@
         "income": "Tulud",
         "expense": "Kulud",
         "financeCategory": "Finantskategooriad",
-        "payment": "Maksed"
+        "payment": "Maksed",
+        "associationDocument": "Ühingu dokumendid"
       },
       "messageTemplateFilterLabel": "MSG mallid",
       "actualiteFields": {
@@ -4574,6 +4586,9 @@
         "smsSettingsUpdated": "SMS — parameetrid",
         "aiConfigUpdated": "AI — parameetrid",
         "livekitConfigUpdated": "Visio — seaded",
+        "associationDocumentCreated": "Dokument loodud",
+        "associationDocumentUpdated": "Dokument muudetud",
+        "associationDocumentDeleted": "Dokument kustutatud",
         "ticketCheckoutExpired": "Makse aegus"
       }
     },
@@ -4801,9 +4816,68 @@
     "link": "Link",
     "urlLabel": "Lingi aadress",
     "apply": "Kandideeri",
-    "remove": "Eemalda link"
+    "remove": "Eemalda link",
+    "paragraphStyle": "Lõigustiil",
+    "normalText": "Tavatekst",
+    "heading1": "Pealkiri 1",
+    "heading2": "Pealkiri 2",
+    "heading3": "Pealkiri 3"
+  },
+  "associationDocuments": {
+    "title": "Ühingu dokumendid",
+    "count": "{count, plural, =0 {Dokumente pole} one {# dokument} other {# dokumenti}}",
+    "visibleCount": "{visible, plural, one {# liikmetele nähtav} other {# liikmetele nähtavat}}",
+    "empty": "Dokumente veel pole. Koosta ühingu sisekorraeeskiri, müügitingimused või muu teave, mida soovid jagada.",
+    "columns": {
+      "title": "Pealkiri",
+      "visibility": "Nähtavus",
+      "updatedAt": "Uuendatud"
+    },
+    "visible": "Nähtav",
+    "hidden": "Peidetud",
+    "visibleToMembers": "Nähtav liikmetele",
+    "visibleToMembersHint": "Kuvab selle dokumendi liikmealas. Kui see on välja lülitatud, näevad seda ainult haldurid.",
+    "toasts": {
+      "madeVisible": "„{title}“ on liikmetele nähtav",
+      "madeHidden": "„{title}“ on liikmete eest peidetud",
+      "created": "Dokument loodud",
+      "saved": "Dokument salvestatud",
+      "deleted": "Dokument kustutatud"
+    },
+    "deleteConfirm": {
+      "title": "Kas kustutada „{title}“?",
+      "description": "Dokument kustutatakse ja see ei ole enam liikmetele kättesaadav. Seda toimingut ei saa tagasi võtta."
+    },
+    "form": {
+      "newTitle": "Uus dokument",
+      "newDescription": "Koosta dokument, mida liikmetega jagada.",
+      "updatedAt": "Uuendatud {date}",
+      "titleLabel": "Pealkiri",
+      "titlePlaceholder": "Nt sisekorraeeskiri",
+      "contentLabel": "Sisu",
+      "contentPlaceholder": "Kirjuta dokumendi sisu…",
+      "titleRequired": "Pealkiri on kohustuslik.",
+      "contentRequired": "Sisu on kohustuslik."
+    },
+    "leaveWarning": {
+      "title": "Salvestamata muudatused",
+      "description": "Sinu muudatusi pole salvestatud. Salvesta need enne lahkumist või loobu neist.",
+      "discard": "Loobu",
+      "saveAndLeave": "Salvesta ja lahku"
+    },
+    "notFound": "Seda dokumenti ei leitud.",
+    "backToList": "Tagasi dokumentide juurde"
   },
   "portalMembre": {
+    "associationDocuments": {
+      "title": "Ühingu dokumendid",
+      "subtitle": "Sinu ühingu jagatud dokumendid.",
+      "updatedAt": "Uuendatud {date}",
+      "empty": "Praegu pole ühtegi dokumenti saadaval.",
+      "loadError": "Dokumente ei õnnestunud laadida.",
+      "notFound": "Seda dokumenti ei leitud või see pole enam saadaval.",
+      "backToList": "Tagasi dokumentide juurde"
+    },
     "sondages": {
       "title": "Küsitlused",
       "subtitle": "Küsimustikud, mida sinu ühing peab täitma.",
@@ -5167,6 +5241,7 @@
       "site": "Veebileht",
       "activite": "Ajalugu",
       "suporte": "Toetus",
+      "associationDocuments": "Ühingu dokumendid",
       "categories": {
         "adherents": "Liikmed",
         "communication": "Kommunikatsioon",
@@ -5181,14 +5256,6 @@
       "pricingOffers": "Hinnapakkumised",
       "support": "Toetus",
       "signOut": "Logi välja"
-    },
-    "legalLinksMenu": {
-      "trigger": "Õiguslikud dokumendid",
-      "mentionsLegales": "Juriidiline teade",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privaatsuspoliitika",
-      "opensNewTab": "Avab uue vahekaardi"
     },
     "themeToggle": {
       "changeTheme": "Muuda teemat"
