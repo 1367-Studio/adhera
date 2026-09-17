@@ -148,9 +148,10 @@ export function welcomeEmail(p: {
       ? `<p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec l'adresse <strong>${p.email}</strong>.</p>`
       : ""}`
   return {
-    to:      p.email,
-    subject: `Bienvenue dans ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Bienvenue dans ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -208,9 +209,10 @@ export function invitationEmail(p: {
     <p style="margin:0;font-size:13px;color:#71717a;">Nous vous recommandons de changer votre mot de passe après votre première connexion. Vous pouvez également utiliser <a href="${p.loginUrl.replace(/\/login.*/, "/forgot-password")}" style="color:#18181b;">mot de passe oublié</a> à tout moment.</p>`
 
   return {
-    to:      p.email,
-    subject: `Invitation — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Invitation — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -254,9 +256,10 @@ export function rsvpConfirmationEmail(p: {
     ${btn("Voir l'événement", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler ma participation</a>.</p>` : ""}`
   return {
-    to:      p.email,
-    subject: `Confirmation — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Confirmation — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -301,9 +304,10 @@ export function waitlistConfirmationEmail(p: {
     ${btn("Voir l'événement", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:16px 0 0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Quitter la liste d'attente</a>.</p>` : ""}`
   return {
-    to:      p.email,
-    subject: `Liste d'attente — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Liste d'attente — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -336,9 +340,10 @@ export function sondageInvitationEmail(p: {
     </table>
     ${btn("Répondre au sondage", p.portalUrl)}`
   return {
-    to:      p.email,
-    subject: `Sondage — ${p.sondageTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Sondage — ${p.sondageTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -360,9 +365,10 @@ export function checkInReceiptEmail(p: {
       Merci de votre participation !
     </p>`
   return {
-    to:      p.email,
-    subject: `Présence confirmée — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Présence confirmée — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -400,9 +406,10 @@ export function paymentConfirmationEmail(p: {
     </table>
     <p style="margin:0;font-size:13px;color:#71717a;">Conservez cet email comme confirmation de paiement.</p>`
   return {
-    to:      p.email,
-    subject: `Confirmation de cotisation — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Confirmation de cotisation — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -446,9 +453,10 @@ export function eventReminderEmail(p: {
     </table>
     ${btn("Voir les détails", p.portalUrl)}`
   return {
-    to:      p.email,
-    subject: `Rappel — ${p.eventTitle} (${whenLabel})`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Rappel — ${p.eventTitle} (${whenLabel})`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -470,9 +478,10 @@ export function eventReviewRequestEmail(p: {
     </p>
     ${btn("Donner mon avis", p.reviewUrl)}`
   return {
-    to:      p.email,
-    subject: `Votre avis sur ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Votre avis sur ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -501,8 +510,8 @@ export function adminWelcomeEmail(p: {
     ${btn("Accéder à mon tableau de bord", p.loginUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Connectez-vous avec <strong>${p.email}</strong>.</p>`
   return {
-    to:      p.email,
-    subject: `Bienvenue sur ${APP_NAME} — ${p.associationName}`,
+    to:       p.email,
+    subject:  `Bienvenue sur ${APP_NAME} — ${p.associationName}`,
     html:    layout(APP_NAME, content),
   }
 }
@@ -656,9 +665,10 @@ export function portalWelcomeEmail(p: {
       Nous vous recommandons de modifier votre mot de passe après la première connexion.
     </p>`
   return {
-    to:      p.email,
-    subject: `Vos identifiants — Espace membre ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Vos identifiants — Espace membre ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -670,9 +680,10 @@ export function customEmail(p: {
   branding?:       EmailBranding
 }) {
   return {
-    to:      p.recipientEmail,
-    subject: p.subject,
-    html:    layout(p.associationName, p.bodyHtml, p.branding),
+    to:       p.recipientEmail,
+    subject:  p.subject,
+    fromName: p.associationName,
+    html:     layout(p.associationName, p.bodyHtml, p.branding),
   }
 }
 
@@ -690,8 +701,8 @@ export function supportEmail(p: {
 }) {
   const content = `<div style="font-size:15px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.bodyHtml)}</div>`
   return {
-    to:      p.recipientEmail,
-    subject: p.subject,
+    to:       p.recipientEmail,
+    subject:  p.subject,
     html:    layout("Support Formwise", content),
   }
 }
@@ -752,9 +763,10 @@ export function ticketPurchaseEmail(p: {
     ${btn("Voir mes événements", p.portalUrl)}
     ${p.cancelUrl ? `<p style="margin:0;font-size:12px;color:#71717a;">Un empêchement ? <a href="${p.cancelUrl}" style="color:#71717a;">Annuler et être remboursé</a>.</p>` : ""}`
   return {
-    to:      p.email,
-    subject: `Billet confirmé — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Billet confirmé — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -797,9 +809,10 @@ export function ticketQrDeliveryEmail(p: {
     ${ticketQrSection([p.ticketQr])}
     <p style="margin:0;font-size:13px;color:#71717a;">Conservez cet email — vous avez déjà reçu votre confirmation d'inscription, celui-ci contient uniquement votre QR code d'entrée.</p>`
   return {
-    to:      p.email,
-    subject: `Votre QR code d'entrée — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Votre QR code d'entrée — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -820,9 +833,10 @@ export function cancellationConfirmationEmail(p: {
     </p>
     ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
   return {
-    to:      p.email,
-    subject: `Annulation confirmée — ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Annulation confirmée — ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -861,9 +875,10 @@ export function meetingInviteEmail(p: {
     </table>
     ${btn("Rejoindre la réunion", p.portalUrl)}`
   return {
-    to:      p.email,
-    subject: `Invitation — ${p.meetingTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Invitation — ${p.meetingTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -915,9 +930,10 @@ export function donPendingEmail(p: {
     <p style="margin:16px 0 0;font-size:12px;color:#71717a;">Encore merci pour votre générosité et votre soutien.</p>`
 
   return {
-    to:      p.email,
-    subject: `Merci pour votre don à ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Merci pour votre don à ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -970,9 +986,10 @@ export function donConfirmationEmail(p: {
     <p style="margin:16px 0 0;font-size:12px;color:#71717a;">Conservez cet email comme confirmation de votre don.</p>`
 
   return {
-    to:      p.email,
-    subject: `Confirmation de don — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Confirmation de don — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1006,9 +1023,10 @@ export function donationSubscriptionStartedEmail(p: {
     </p>
     ${btn("Arrêter ce don récurrent", p.cancelUrl)}`
   return {
-    to:      p.email,
-    subject: `Don récurrent activé — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Don récurrent activé — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1036,9 +1054,10 @@ export function donationSubscriptionPaymentFailedEmail(p: {
     </p>
     ${btn("Arrêter ce don récurrent", p.cancelUrl)}`
   return {
-    to:      p.email,
-    subject: `Échec de prélèvement — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Échec de prélèvement — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1093,9 +1112,10 @@ export function membershipSubscriptionStartedEmail(p: {
     ${receiptSentence}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {
-    to:      p.email,
-    subject: `Bienvenue chez ${p.associationName} !`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Bienvenue chez ${p.associationName} !`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1197,9 +1217,10 @@ export function membershipWelcomeEmail(p: {
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {
-    to:      p.email,
-    subject: `Bienvenue chez ${p.associationName} !`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Bienvenue chez ${p.associationName} !`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1231,9 +1252,10 @@ export function membershipPendingValidationEmail(p: {
     </p>
     ${groupSentence}`
   return {
-    to:      p.email,
-    subject: `Votre demande d'adhésion à ${p.associationName} est en attente de validation`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Votre demande d'adhésion à ${p.associationName} est en attente de validation`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1270,9 +1292,10 @@ export function membershipPaymentLinkEmail(p: {
     ${btn("Régler ma cotisation", p.payUrl)}
     <p style="margin:0;font-size:13px;color:#71717a;">Une fois le paiement effectué, vous recevrez vos identifiants d'accès à l'espace membre par email.</p>`
   return {
-    to:      p.email,
-    subject: `Finalisez votre adhésion à ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Finalisez votre adhésion à ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1319,11 +1342,12 @@ export function membershipSignupAdminNotificationEmail(p: {
     </table>` : ""}
     ${btn(p.pendingValidation ? "Valider la demande" : "Voir les membres", p.dashboardUrl)}`
   return {
-    to:      p.email,
-    subject: p.pendingValidation
+    to:       p.email,
+    subject:  p.pendingValidation
       ? `Demande d'adhésion à valider · ${p.formTitle}`
       : (isGroup ? `Nouvelle inscription groupée · ${p.formTitle}` : `Nouvelle adhésion · ${p.formTitle}`),
-    html:    layout(p.associationName, content, p.branding),
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1365,9 +1389,10 @@ export function evenementRegistrationAdminNotificationEmail(p: {
     </table>` : ""}
     ${btn("Voir les inscrits", p.dashboardUrl)}`
   return {
-    to:      p.email,
-    subject: `${heading} · ${p.eventTitle}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `${heading} · ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1395,9 +1420,10 @@ export function cotisationSubscriptionPaymentFailedEmail(p: {
     </p>
     ${btn("Gérer mon adhésion", p.cancelUrl)}`
   return {
-    to:      p.email,
-    subject: `Échec de prélèvement — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Échec de prélèvement — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1421,8 +1447,8 @@ export function cotisationSubscriptionPaymentFailedAdminEmail(p: {
     </p>
     ${btn("Voir les membres", p.dashboardUrl)}`
   return {
-    to:      p.email,
-    subject: `Échec de prélèvement — ${p.memberName}`,
+    to:       p.email,
+    subject:  `Échec de prélèvement — ${p.memberName}`,
     html:    layout(APP_NAME, content),
   }
 }
@@ -1456,9 +1482,10 @@ export function membershipInstallmentPaymentFailedEmail(p: {
     </p>
     ${btn("Gérer mon paiement en plusieurs fois", p.cancelUrl)}`
   return {
-    to:      p.email,
-    subject: `Échec de prélèvement — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Échec de prélèvement — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1484,8 +1511,8 @@ export function membershipInstallmentPaymentFailedAdminEmail(p: {
     </p>
     ${btn("Voir les membres", p.dashboardUrl)}`
   return {
-    to:      p.email,
-    subject: `Échec de prélèvement — ${p.memberName}`,
+    to:       p.email,
+    subject:  `Échec de prélèvement — ${p.memberName}`,
     html:    layout(APP_NAME, content),
   }
 }
@@ -1537,9 +1564,10 @@ export function boutiqueConfirmationEmail(p: {
     ${btn("Voir mes commandes", p.portalUrl)}`
 
   return {
-    to:      p.email,
-    subject: `Confirmation de commande — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Confirmation de commande — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
@@ -1591,9 +1619,10 @@ export function boutiquePendingOrderEmail(p: {
     ${btn("Suivre ma commande", p.trackingUrl)}`
 
   return {
-    to:      p.email,
-    subject: `Commande enregistrée — ${p.associationName}`,
-    html:    layout(p.associationName, content, p.branding),
+    to:       p.email,
+    subject:  `Commande enregistrée — ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 

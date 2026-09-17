@@ -2,12 +2,12 @@
 
 import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
-import { useForm } from "react-hook-form"
+import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { BuildingsIcon, CreditCardIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -33,6 +33,7 @@ type Association = {
   slug:    string
   city:    string | null
   country: string
+  contactEmail: string | null
   website: string | null
   iban:    string | null
   bic:     string | null
@@ -96,13 +97,14 @@ function ParametresViewInner() {
     },
   })
 
-  const { register, handleSubmit, reset, formState: { errors, isDirty, isSubmitting } } = useForm<AssociationInput>({
+  const { register, handleSubmit, reset, control, formState: { errors, isDirty, isSubmitting } } = useForm<AssociationInput>({
     resolver:      zodResolver(associationSchema),
-    defaultValues: { name: "", city: "", country: "France" },
+    defaultValues: { name: "", city: "", country: "France", contactEmail: "" },
   })
+  const contactEmailValue = useWatch({ control, name: "contactEmail" })
 
   useEffect(() => {
-    if (assoc) reset({ name: assoc.name, city: assoc.city ?? "", country: assoc.country })
+    if (assoc) reset({ name: assoc.name, city: assoc.city ?? "", country: assoc.country, contactEmail: assoc.contactEmail ?? "" })
   }, [assoc, reset])
 
   const updateMutation = useMutation({
@@ -165,6 +167,21 @@ function ParametresViewInner() {
                     {...register("country")}
                   />
                 </div>
+                <FormField
+                  label={t("parametres.view.contactEmail")}
+                  placeholder={t("parametres.view.contactEmailPlaceholder")}
+                  hint={t("parametres.view.contactEmailHint")}
+                  type="email"
+                  disabled={!canEdit}
+                  error={errors.contactEmail?.message}
+                  {...register("contactEmail")}
+                />
+                {!contactEmailValue?.trim() && (
+                  <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                    <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
+                    <span>{t("parametres.view.contactEmailEmptyWarning")}</span>
+                  </div>
+                )}
                 {canEdit && (
                   <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
                     {t("common.save")}

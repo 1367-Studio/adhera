@@ -14,6 +14,7 @@ export const ASSOCIATION_SAFE_SELECT = {
   country: true,
   address: true,
   phone: true,
+  contactEmail: true,
   website: true,
   iban: true,
   bic: true,

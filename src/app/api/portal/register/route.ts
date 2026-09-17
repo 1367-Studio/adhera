@@ -144,7 +144,7 @@ export async function POST(req: Request) {
     loginUrl,
     branding: resolveDocumentBranding(association),
     cotisation: cotisation ? { amount: Number(cotisation.amount), year: cotisation.year } : undefined,
-  })).catch(() => {})
+  }), { associationId: association.id, membreId: membreId ?? undefined, source: "MEMBER_INVITE" }).catch(() => {})
 
   return NextResponse.json({ ok: true }, { status: 201 })
 }
