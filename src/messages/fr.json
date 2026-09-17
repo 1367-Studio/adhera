@@ -3550,6 +3550,10 @@
       "city": "Ville",
       "cityPlaceholder": "Paris",
       "country": "Pays",
+      "contactEmail": "E-mail de contact",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Utilisée comme nom et adresse de réponse (Reply-To) de tous les e-mails envoyés au nom de l'association (cotisations, événements, dons, messages...).",
+      "contactEmailEmptyWarning": "Non configuré — les réponses des membres à vos e-mails n'atteindront pas votre association.",
       "toasts": {
         "saved": "Paramètres enregistrés"
       }

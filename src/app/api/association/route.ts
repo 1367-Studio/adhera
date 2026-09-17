@@ -27,10 +27,10 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { city, ...rest } = parsed.data
+  const { city, contactEmail, ...rest } = parsed.data
   const association = await prisma.association.update({
     where: { id: associationId },
-    data:  { ...rest, city: city || null },
+    data:  { ...rest, city: city || null, contactEmail: contactEmail || null },
     select: ASSOCIATION_SAFE_SELECT,
   })
   await writeActivityLog({

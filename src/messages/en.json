@@ -3542,6 +3542,10 @@
       "city": "City",
       "cityPlaceholder": "New York",
       "country": "Country",
+      "contactEmail": "Contact email",
+      "contactEmailPlaceholder": "contact@myassociation.org",
+      "contactEmailHint": "Used as the sender name and Reply-To address for all emails sent on behalf of the association (dues, events, donations, messages...).",
+      "contactEmailEmptyWarning": "Not set — replies from members to your emails won't reach your association.",
       "toasts": {
         "saved": "Settings saved"
       }
