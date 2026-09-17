@@ -3513,8 +3513,7 @@
         "general": "Bendra",
         "paiements": "Mokėjimai",
         "abonnement": "Prenumerata",
-        "integrations": "Integracijos",
-        "legal": "Teisiniai dokumentai"
+        "integrations": "Integracijos"
       },
       "associationInfo": "Asociacijos informacija",
       "associationName": "Asociacijos pavadinimas",
@@ -3532,15 +3531,6 @@
       "copied": "Nukopijavau!",
       "copy": "Supratau",
       "open": "Atidaryk"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwise teisiniai dokumentai",
-      "description": "Šie dokumentai reglamentuoja, kaip jūsų asociacija ir jos nariai naudojasi Formwise platforma.",
-      "mentionsLegales": "Teisinis pranešimas",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privatumo politika",
-      "opensNewTab": "Atidaro naują skirtuką"
     },
     "cotisationDefaultsSettings": {
       "title": "Narystės mokestis",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Redaguoti profilį",
       "changePassword": "Pakeisti slaptažodį",
+      "legalDocuments": {
+        "title": "Teisiniai dokumentai",
+        "mentionsLegales": "Teisinis pranešimas",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Privatumo politika",
+        "opensNewTab": "Atidaro naują skirtuką"
+      },
       "logout": "Atsijungti"
     },
     "changePasswordModal": {

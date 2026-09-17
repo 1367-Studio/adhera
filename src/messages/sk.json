@@ -3513,8 +3513,7 @@
         "general": "Všeobecné",
         "paiements": "Platby",
         "abonnement": "Predplatné",
-        "integrations": "Integrácie",
-        "legal": "Právne dokumenty"
+        "integrations": "Integrácie"
       },
       "associationInfo": "Informácie o asociácii",
       "associationName": "Názov združenia",
@@ -3532,15 +3531,6 @@
       "copied": "Skopírované!",
       "copy": "Rozumiem",
       "open": "Otvorené"
-    },
-    "legalDocumentsSettings": {
-      "title": "Právne dokumenty Formwise",
-      "description": "Tieto dokumenty upravujú používanie platformy Formwise vaším združením a jeho členmi.",
-      "mentionsLegales": "Právne oznámenie",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Zásady ochrany súkromia",
-      "opensNewTab": "Otvára novú kartu"
     },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatok",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Upraviť profil",
       "changePassword": "Zmeniť heslo",
+      "legalDocuments": {
+        "title": "Právne dokumenty",
+        "mentionsLegales": "Právne oznámenie",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Zásady ochrany súkromia",
+        "opensNewTab": "Otvára novú kartu"
+      },
       "logout": "Odhlásiť sa"
     },
     "changePasswordModal": {

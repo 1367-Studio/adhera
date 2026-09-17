@@ -3513,8 +3513,7 @@
         "general": "Ginearálta",
         "paiements": "Íocaíochtaí",
         "abonnement": "Síntiús",
-        "integrations": "Comhtháthú",
-        "legal": "Doiciméid dhlíthiúla"
+        "integrations": "Comhtháthú"
       },
       "associationInfo": "Eolas faoin gComhlachas",
       "associationName": "Ainm an chumainn",
@@ -3532,15 +3531,6 @@
       "copied": "Cóipeáilte!",
       "copy": "Cóipeáil",
       "open": "Oscail"
-    },
-    "legalDocumentsSettings": {
-      "title": "Doiciméid dhlíthiúla Formwise",
-      "description": "Rialaíonn na doiciméid seo an chaoi a n-úsáideann do chumann agus a chomhaltaí ardán Formwise.",
-      "mentionsLegales": "Fógra dlíthiúil",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Polasaí Príobháideachais",
-      "opensNewTab": "Osclaíonn sé cluaisín nua"
     },
     "cotisationDefaultsSettings": {
       "title": "Táille ballraíochta",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Cuir Próifíl in Eagar",
       "changePassword": "Athraigh Pasfhocal",
+      "legalDocuments": {
+        "title": "Doiciméid dhlíthiúla",
+        "mentionsLegales": "Fógra dlíthiúil",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Polasaí Príobháideachais",
+        "opensNewTab": "Osclaíonn sé cluaisín nua"
+      },
       "logout": "Logáil Amach"
     },
     "changePasswordModal": {

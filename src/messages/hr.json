@@ -3513,8 +3513,7 @@
         "general": "Općenito",
         "paiements": "Isplate",
         "abonnement": "Pretplata",
-        "integrations": "Integracije",
-        "legal": "Pravni dokumenti"
+        "integrations": "Integracije"
       },
       "associationInfo": "Informacije o udruzi",
       "associationName": "Naziv udruge",
@@ -3532,15 +3531,6 @@
       "copied": "Kopirano!",
       "copy": "Primljeno",
       "open": "Otvoreno"
-    },
-    "legalDocumentsSettings": {
-      "title": "Pravni dokumenti platforme Formwise",
-      "description": "Ovi dokumenti uređuju kako vaša udruga i njezini članovi koriste platformu Formwise.",
-      "mentionsLegales": "Pravna obavijest",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politika privatnosti",
-      "opensNewTab": "Otvara novu karticu"
     },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Uredi profil",
       "changePassword": "Promijeni lozinku",
+      "legalDocuments": {
+        "title": "Pravni dokumenti",
+        "mentionsLegales": "Pravna obavijest",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Politika privatnosti",
+        "opensNewTab": "Otvara novu karticu"
+      },
       "logout": "Odjavi se"
     },
     "changePasswordModal": {

@@ -3513,8 +3513,7 @@
         "general": "Generel",
         "paiements": "Betalinger",
         "abonnement": "Abonnement",
-        "integrations": "Integrationer",
-        "legal": "Juridiske dokumenter"
+        "integrations": "Integrationer"
       },
       "associationInfo": "Foreningsinformation",
       "associationName": "Foreningens navn",
@@ -3532,15 +3531,6 @@
       "copied": "Kopieret!",
       "copy": "Modtaget",
       "open": "Åben"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwises juridiske dokumenter",
-      "description": "Disse dokumenter regulerer din forenings og dine medlemmers brug af Formwise-platformen.",
-      "mentionsLegales": "Juridisk meddelelse",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privatlivspolitik",
-      "opensNewTab": "Åbner en ny fane"
     },
     "cotisationDefaultsSettings": {
       "title": "Medlemskontingent",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Rediger profil",
       "changePassword": "Ændr adgangskode",
+      "legalDocuments": {
+        "title": "Juridiske dokumenter",
+        "mentionsLegales": "Juridisk meddelelse",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Privatlivspolitik",
+        "opensNewTab": "Åbner en ny fane"
+      },
       "logout": "Log ud"
     },
     "changePasswordModal": {

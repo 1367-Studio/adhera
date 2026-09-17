@@ -3513,8 +3513,7 @@
         "general": "Yleiset",
         "paiements": "Maksut",
         "abonnement": "Tilaus",
-        "integrations": "Integraatiot",
-        "legal": "Oikeudelliset asiakirjat"
+        "integrations": "Integraatiot"
       },
       "associationInfo": "Yhdistyksen tiedot",
       "associationName": "Yhdistyksen nimi",
@@ -3532,15 +3531,6 @@
       "copied": "Kopioitu!",
       "copy": "Kopioi",
       "open": "Avaa"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwisen oikeudelliset asiakirjat",
-      "description": "Nämä asiakirjat määrittävät, miten yhdistyksesi ja sen jäsenet käyttävät Formwise-alustaa.",
-      "mentionsLegales": "Oikeudellinen ilmoitus",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Tietosuojakäytäntö",
-      "opensNewTab": "Avaa uuden välilehden"
     },
     "cotisationDefaultsSettings": {
       "title": "Jäsenmaksu",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Muokkaa profiilia",
       "changePassword": "Vaihda salasana",
+      "legalDocuments": {
+        "title": "Oikeudelliset asiakirjat",
+        "mentionsLegales": "Oikeudellinen ilmoitus",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Tietosuojakäytäntö",
+        "opensNewTab": "Avaa uuden välilehden"
+      },
       "logout": "Kirjaudu ulos"
     },
     "changePasswordModal": {

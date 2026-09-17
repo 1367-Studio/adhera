@@ -3513,8 +3513,7 @@
         "general": "Vispārīgi",
         "paiements": "Maksājumi",
         "abonnement": "Abonements",
-        "integrations": "Integrācijas",
-        "legal": "Juridiskie dokumenti"
+        "integrations": "Integrācijas"
       },
       "associationInfo": "Asociācijas informācija",
       "associationName": "Asociācijas nosaukums",
@@ -3532,15 +3531,6 @@
       "copied": "Kopēts!",
       "copy": "Sapratu",
       "open": "Atvērt"
-    },
-    "legalDocumentsSettings": {
-      "title": "Formwise juridiskie dokumenti",
-      "description": "Šie dokumenti nosaka, kā jūsu asociācija un tās biedri izmanto Formwise platformu.",
-      "mentionsLegales": "Juridiskais paziņojums",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Privātuma politika",
-      "opensNewTab": "Atver jaunu cilni"
     },
     "cotisationDefaultsSettings": {
       "title": "Dalības maksa",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Rediģēt profilu",
       "changePassword": "Paroles maiņa",
+      "legalDocuments": {
+        "title": "Juridiskie dokumenti",
+        "mentionsLegales": "Juridiskais paziņojums",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Privātuma politika",
+        "opensNewTab": "Atver jaunu cilni"
+      },
       "logout": "Izrakstīšanās"
     },
     "changePasswordModal": {

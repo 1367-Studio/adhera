@@ -3513,8 +3513,7 @@
         "general": "Általános",
         "paiements": "Kifizetések",
         "abonnement": "Előfizetés",
-        "integrations": "Integrációk",
-        "legal": "Jogi dokumentumok"
+        "integrations": "Integrációk"
       },
       "associationInfo": "Szövetségi információk",
       "associationName": "Az egyesület neve",
@@ -3532,15 +3531,6 @@
       "copied": "Másolva!",
       "copy": "Értettem",
       "open": "Nyisd ki"
-    },
-    "legalDocumentsSettings": {
-      "title": "A Formwise jogi dokumentumai",
-      "description": "Ezek a dokumentumok szabályozzák, hogyan használja az egyesületed és a tagjaid a Formwise platformot.",
-      "mentionsLegales": "Jogi közlemény",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Adatvédelmi szabályzat",
-      "opensNewTab": "Új oldal nyílik meg"
     },
     "cotisationDefaultsSettings": {
       "title": "Tagsági díj",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Profil szerkesztése",
       "changePassword": "Jelszó módosítása",
+      "legalDocuments": {
+        "title": "Jogi dokumentumok",
+        "mentionsLegales": "Jogi közlemény",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Adatvédelmi szabályzat",
+        "opensNewTab": "Új oldal nyílik meg"
+      },
       "logout": "Kilépés"
     },
     "changePasswordModal": {

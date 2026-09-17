@@ -3513,8 +3513,7 @@
         "general": "General",
         "paiements": "Plăți",
         "abonnement": "Abonament",
-        "integrations": "Integrări",
-        "legal": "Documente legale"
+        "integrations": "Integrări"
       },
       "associationInfo": "Informații despre asociație",
       "associationName": "Denumirea asociației",
@@ -3532,15 +3531,6 @@
       "copied": "Copiat!",
       "copy": "Recepționat",
       "open": "Deschide"
-    },
-    "legalDocumentsSettings": {
-      "title": "Documente legale Formwise",
-      "description": "Aceste documente reglementează utilizarea platformei Formwise de către asociația ta și membrii săi.",
-      "mentionsLegales": "Notificare legală",
-      "cgu": "UGC",
-      "cgs": "CGV",
-      "politiqueConfidentialite": "Politica de confidențialitate",
-      "opensNewTab": "Se deschide o filă nouă"
     },
     "cotisationDefaultsSettings": {
       "title": "Taxa de membru",
@@ -5276,6 +5266,14 @@
       },
       "editProfile": "Editare Profil",
       "changePassword": "Schimbă parola",
+      "legalDocuments": {
+        "title": "Documente legale",
+        "mentionsLegales": "Notificare legală",
+        "cgu": "UGC",
+        "cgs": "CGV",
+        "politiqueConfidentialite": "Politica de confidențialitate",
+        "opensNewTab": "Se deschide o filă nouă"
+      },
       "logout": "Deconectează-te"
     },
     "changePasswordModal": {
