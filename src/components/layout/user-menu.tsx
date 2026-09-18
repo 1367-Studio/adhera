@@ -31,7 +31,7 @@ import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
 const LEGAL_LINKS = [
   { key: "mentionsLegales",             href: "https://www.formwise.fr/mentions-legales" },
   { key: "cgu",                         href: "https://www.formwise.fr/cgu" },
-  { key: "cgs",                         href: "https://www.formwise.fr/cgs" },
+  { key: "cgs",                         href: "https://www.formwise.fr/cgv" },
   { key: "politiqueConfidentialite",    href: "https://www.formwise.fr/politique-de-confidentialite" },
 ] as const
 

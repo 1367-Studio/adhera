@@ -5,7 +5,7 @@ import { requestIp } from "@/lib/rate-limit"
 // politique-de-confidentialite pages. CGS is the paid-service contract (for the /register
 // signup, where the signer is the paying customer); the member-facing flows below only
 // ever reference PRIVACY_URL — members aren't a party to that contract.
-export const TERMS_URL   = "https://www.formwise.fr/cgs"
+export const TERMS_URL   = "https://www.formwise.fr/cgv"
 export const PRIVACY_URL = "https://www.formwise.fr/politique-de-confidentialite"
 
 // Bump this (and update the linked documents on form-wise-app) whenever the terms
