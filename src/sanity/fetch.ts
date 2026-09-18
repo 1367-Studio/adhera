@@ -10,9 +10,15 @@ type SanityFetchOptions = {
   tags:    string[]
 }
 
+// The Sanity webhook that calls revalidateTag() (/api/revalidate) can only reach a deployed
+// URL, never localhost, so in development a tagged read would sit in `.next/dev/cache` for a
+// year and no Studio publish would ever dislodge it. Read live there instead.
+const isDevelopment = process.env.NODE_ENV !== "production"
+
 // Cached read: kept in Next's data cache indefinitely (`revalidate: false`) and only ever
 // refreshed by `revalidateTag()` from the Sanity webhook.
 export function sanityFetch<Result>({ query, params = {}, tags }: SanityFetchOptions): Promise<Result> {
+  if (isDevelopment) return sanityClient.fetch<Result>(query, params, { cache: "no-store" })
   return sanityClient.fetch<Result>(query, params, { next: { revalidate: false, tags } })
 }
 
