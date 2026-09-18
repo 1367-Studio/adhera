@@ -177,6 +177,7 @@ export async function POST(req: Request) {
                       associationId: commande.associationId,
                       exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
                       memberId:      commande.membreId ?? undefined,
+                      commandeId:    commande.id,
                       amount:        group.amount / 100,
                       categoryId:    categoryId ?? undefined,
                       description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,
@@ -198,6 +199,7 @@ export async function POST(req: Request) {
                       associationId: commande.associationId,
                       exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
                       memberId:      commande.membreId ?? undefined,
+                      commandeId:    commande.id,
                       amount:        commande.shippingCost / 100,
                       description:   buyerLabel
                         ? `Frais de livraison — ${buyerLabel}${commande.shippingCarrierLabel ? ` (${commande.shippingCarrierLabel})` : ""}`
@@ -733,6 +735,7 @@ export async function POST(req: Request) {
           data: {
             associationId: don.associationId,
             exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+            donId:         don.id,
             amount:        don.amount,
             // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
             // comptabilité interne — l'association doit toujours savoir qui a donné.
@@ -919,6 +922,21 @@ export async function POST(req: Request) {
             metadata: { amountRefunded: charge.amount_refunded, amount: charge.amount, stripeEventId: event.id },
           })
 
+          // A partial refund triggered by our own /api/boutique/commandes/[id]/refund route
+          // (unlike Don/Cotisation/Ticket, which have no equivalent in-app partial-refund
+          // action yet) already adjusted the linked Income rows and BoutiqueCommande.total
+          // Amount itself, synchronously, before ever calling Stripe — this webhook delivery
+          // is just that same refund's own echo arriving after the fact. Applying the
+          // proportional-split math below on top of it would double-subtract. That route
+          // tags the Stripe Refund it creates for exactly this check; an externally-issued
+          // partial refund (Stripe Dashboard) has no such tag and still needs the fallback
+          // below, which is the whole point of this branch.
+          let skipLedgerAdjustment = false
+          if (commandeId) {
+            const recentRefunds = await stripe.refunds.list({ payment_intent: paymentIntentId, limit: 1 }).catch(() => null)
+            skipLedgerAdjustment = recentRefunds?.data[0]?.metadata?.source === "boutique-refund-route"
+          }
+
           // Reflect the actual amount kept in the ledger instead of leaving it at the
           // pre-refund total — an activity-log entry alone doesn't correct the books.
           // When one PaymentIntent backs several Income rows (a multi-seat ticket order),
@@ -927,7 +945,7 @@ export async function POST(req: Request) {
           // even split only holds when every seat in the order was priced identically,
           // which ticket tiers no longer guarantee (a mixed free+paid order would otherwise
           // dock the free seat's already-zero income just as much as the paid one).
-          const incomes = await prisma.income.findMany({ where: { reference: paymentIntentId, status: "PAID" } })
+          const incomes = skipLedgerAdjustment ? [] : await prisma.income.findMany({ where: { reference: paymentIntentId, status: "PAID" } })
           if (incomes.length) {
             const refundedEuros = charge.amount_refunded / 100
             const totalOriginal = incomes.reduce((sum, i) => sum + Number(i.amount), 0)
@@ -942,6 +960,26 @@ export async function POST(req: Request) {
                 })
               })
             )
+          }
+
+          // The Income rows above are Finances' system of record, but a boutique
+          // commande's own totalAmount is read directly by other parts of the app (order
+          // detail, receipt PDF, the income statement's "Loja" bucket via Income.commandeId)
+          // and must not go stale relative to them. Same read-then-subtract shape as the
+          // Income update above (not a `decrement`, to floor at 0 the same way) — and the
+          // same caveat applies: charge.amount_refunded is Stripe's *cumulative* total on
+          // this charge, not this event's delta, so this inherits whatever correctness the
+          // Income math above already has across a second/later partial refund of the same
+          // charge. Not attempting to fix that here — out of scope for keeping this field in
+          // sync with Income, not introducing new behavior beyond matching it.
+          if (commandeId && !skipLedgerAdjustment) {
+            const commande = await prisma.boutiqueCommande.findUnique({ where: { id: commandeId }, select: { totalAmount: true } })
+            if (commande) {
+              await prisma.boutiqueCommande.update({
+                where: { id: commandeId },
+                data:  { totalAmount: Math.max(0, commande.totalAmount - charge.amount_refunded) },
+              })
+            }
           }
 
           // A partial Dashboard refund is easy to miss — it doesn't touch any status the

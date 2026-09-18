@@ -887,6 +887,46 @@
       "title": "Coming soon",
       "description": "This feature is currently in development."
     },
+    "compteResultat": {
+      "title": "Income statement",
+      "description": "Financial result for the fiscal year, compared to the previous year.",
+      "exerciceLabel": "Fiscal year",
+      "noPreviousExercice": "-",
+      "export": "Export",
+      "exportExcel": "Export Excel",
+      "exportPdf": "Export PDF",
+      "products": "Revenue",
+      "totalProducts": "Total revenue",
+      "expenses": "Expenses",
+      "totalExpenses": "Total expenses",
+      "result": "Result for the year",
+      "surplus": "Surplus for the year",
+      "deficit": "Deficit for the year",
+      "categories": {
+        "income": {
+          "cotisations": "Membership dues",
+          "dons": "Donations",
+          "subventions": "Grants",
+          "boutique": "Shop",
+          "evenements": "Events",
+          "autres": "Other revenue"
+        },
+        "expense": {
+          "assurance": "Insurance",
+          "communication": "Communication",
+          "materiel": "Supplies",
+          "transport": "Travel",
+          "fraisBancaires": "Bank fees",
+          "location": "Rent",
+          "equipement": "Equipment",
+          "autres": "Other expenses"
+        }
+      },
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to generate the income statement."
+      }
+    },
     "categoryForm": {
       "name": "Name",
       "namePlaceholder": "e.g. Membership fees",
@@ -2464,7 +2504,8 @@
         "markPaid": "Mark as paid",
         "cancelOrder": "Cancel",
         "downloadReceipt": "Download receipt",
-        "editPaymentMethod": "Edit payment method"
+        "editPaymentMethod": "Edit payment method",
+        "refundOrder": "Refund"
       },
       "noProduct": "No products",
       "noOrder": "No orders",
@@ -2489,7 +2530,8 @@
         "productDeleted": "Product deleted",
         "deleteError": "Error while deleting",
         "orderUpdated": "Order updated",
-        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it."
+        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it.",
+        "refundSuccess": "Order refunded"
       }
     },
     "payModal": {
@@ -2499,6 +2541,13 @@
       "orderedTotal": "Ordered total",
       "restockNoticePlural": "{count, plural, one {The stock for the item not collected will be restored.} other {The stock for the items not collected will be restored.}}",
       "restockNoticeStatic": "The stock for items not collected will be restored."
+    },
+    "refundModal": {
+      "title": "Refund order",
+      "confirmWithAmount": "Refund {amount}",
+      "stripeNotice": "The refund will be issued automatically to the customer's card.",
+      "manualNotice": "This action updates stock and accounting only — remember to actually return the money to the customer (cash, cheque, or bank transfer).",
+      "shippingIncludedNotice": "Shipping ({amount}) is included in this refund."
     },
     "stripeConfirm": {
       "title": "Mark as paid?",

@@ -43,6 +43,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     data: {
       associationId: don.associationId,
       exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+      donId:         don.id,
       amount:        don.amount,
       description:   `Don de ${don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`}`,
       paymentMethod: don.paymentMethod,

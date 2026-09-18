@@ -887,6 +887,46 @@
       "title": "Bientôt disponible",
       "description": "Cette fonctionnalité est en cours de développement."
     },
+    "compteResultat": {
+      "title": "Compte de résultat",
+      "description": "Résultat financier de l'exercice, comparé à l'exercice précédent.",
+      "exerciceLabel": "Exercice",
+      "noPreviousExercice": "-",
+      "export": "Exporter",
+      "exportExcel": "Exporter Excel",
+      "exportPdf": "Exporter PDF",
+      "products": "Produits / Recettes",
+      "totalProducts": "Total des produits",
+      "expenses": "Charges / Dépenses",
+      "totalExpenses": "Total des charges",
+      "result": "Résultat de l'exercice",
+      "surplus": "Excédent de l'exercice",
+      "deficit": "Déficit de l'exercice",
+      "categories": {
+        "income": {
+          "cotisations": "Cotisations / Adhésions",
+          "dons": "Dons",
+          "subventions": "Subventions",
+          "boutique": "Boutique",
+          "evenements": "Événements",
+          "autres": "Autres recettes"
+        },
+        "expense": {
+          "assurance": "Assurance",
+          "communication": "Communication",
+          "materiel": "Matériel",
+          "transport": "Déplacements",
+          "fraisBancaires": "Frais bancaires",
+          "location": "Location",
+          "equipement": "Équipement",
+          "autres": "Autres dépenses"
+        }
+      },
+      "emptyExercice": {
+        "title": "Aucun exercice fiscal",
+        "description": "Créez un exercice fiscal pour générer le compte de résultat."
+      }
+    },
     "categoryForm": {
       "name": "Nom",
       "namePlaceholder": "Ex: Cotisations",
@@ -2472,7 +2512,8 @@
         "markPaid": "Marquer payée",
         "cancelOrder": "Annuler",
         "downloadReceipt": "Télécharger le reçu",
-        "editPaymentMethod": "Modifier le moyen de paiement"
+        "editPaymentMethod": "Modifier le moyen de paiement",
+        "refundOrder": "Rembourser"
       },
       "noProduct": "Aucun produit",
       "noOrder": "Aucune commande",
@@ -2497,7 +2538,8 @@
         "productDeleted": "Produit supprimé",
         "deleteError": "Erreur lors de la suppression",
         "orderUpdated": "Commande mise à jour",
-        "orderNotInRecentList": "Cette commande n'est pas dans les 50 plus récentes. Utilisez les filtres pour la retrouver."
+        "orderNotInRecentList": "Cette commande n'est pas dans les 50 plus récentes. Utilisez les filtres pour la retrouver.",
+        "refundSuccess": "Commande remboursée"
       }
     },
     "payModal": {
@@ -2507,6 +2549,13 @@
       "orderedTotal": "Total commandé",
       "restockNoticePlural": "{count, plural, one {Le stock de l'article non retiré sera restauré.} other {Le stock des articles non retirés sera restauré.}}",
       "restockNoticeStatic": "Le stock des articles non retirés sera restauré."
+    },
+    "refundModal": {
+      "title": "Rembourser la commande",
+      "confirmWithAmount": "Rembourser {amount}",
+      "stripeNotice": "Le remboursement sera effectué automatiquement sur la carte du client.",
+      "manualNotice": "Cette action met à jour le stock et la comptabilité — pensez à rendre l'argent au client (espèces, chèque ou virement).",
+      "shippingIncludedNotice": "Les frais de livraison ({amount}) sont inclus dans ce remboursement."
     },
     "stripeConfirm": {
       "title": "Marquer comme payée ?",
