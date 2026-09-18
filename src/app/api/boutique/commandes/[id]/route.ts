@@ -218,6 +218,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
                   associationId: ctx.associationId,
                   exerciceId:    exercice?.id ?? null,
                   memberId:      commande.membreId ?? undefined,
+                  commandeId:    id,
                   amount:        group.amount / 100,
                   categoryId:    categoryId ?? undefined,
                   description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,

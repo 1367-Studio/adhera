@@ -1,189 +1,226 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import * as XLSX from "xlsx"
-import { DownloadSimpleIcon, TrendUpIcon, TrendDownIcon } from "@phosphor-icons/react/dist/ssr";
+import { DownloadSimpleIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { EmptyState } from "@/components/ui/empty-state"
+import { INCOME_BUCKETS, EXPENSE_BUCKETS, sanitizeForFilename, type IncomeStatementPeriod } from "@/lib/finance/income-statement-shared"
+import { exportIncomeStatementPdf, type IncomeStatementPdfRow } from "@/lib/pdf/income-statement-pdf-client"
 
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
+type ApiResponse = {
+  exercices: { id: string; label: string }[]
+  current:   IncomeStatementPeriod | null
+  previous:  IncomeStatementPeriod | null
+}
 
-type Row = { amount: string; category?: { name: string } | null; date: string; description?: string | null; vendor?: string | null; status?: string }
-
-async function fetchAll(url: string) {
-  const res = await fetch(url)
-  return res.json() as Promise<Row[] | { data: Row[] }>
+async function fetchReport(exerciceId: string): Promise<ApiResponse> {
+  const params = exerciceId ? `?exerciceId=${exerciceId}` : ""
+  const res = await fetch(`/api/finances/rapports/compte-resultat${params}`)
+  if (!res.ok) throw new Error("Erreur lors du chargement")
+  return res.json()
 }
 
 const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
-function CategoryTable({ data, colorClass }: { data: Record<string, number>; colorClass: string }) {
-  const entries = Object.entries(data).sort((a, b) => b[1] - a[1])
-  const total   = entries.reduce((s, [, n]) => s + n, 0)
-  return (
-    <table className="w-full text-sm">
-      <tbody>
-        {entries.map(([name, amount]) => (
-          <tr key={name} className="border-b last:border-0">
-            <td className="py-2 text-muted-foreground">{name}</td>
-            <td className={`py-2 text-right font-medium tabular-nums ${colorClass}`}>{fmt(amount)}</td>
-            <td className="py-2 text-right text-xs text-muted-foreground w-14">{total > 0 ? Math.round((amount / total) * 100) : 0}%</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
-
 export function ReportsView() {
-  const [year, setYear] = useState(currentYear)
+  const t = useTranslations()
+  const [exerciceId, setExerciceId] = useState("")
 
-  const dateFrom = `${year}-01-01`
-  const dateTo   = `${year}-12-31`
-
-  const { data: incomes = [], isLoading: loadingI } = useQuery({
-    queryKey: ["report-incomes", year],
-    queryFn:  () => fetchAll(`/api/finances/incomes?dateFrom=${dateFrom}&dateTo=${dateTo}`).then(d => Array.isArray(d) ? d : d.data),
-    staleTime: 60_000,
+  const { data, isLoading } = useQuery({
+    queryKey: ["compte-resultat", exerciceId],
+    queryFn:  () => fetchReport(exerciceId),
+    staleTime: 30_000,
+    // Keeps the previous exercice's table on screen while the next one loads instead of
+    // flashing back to the skeleton on every Select change.
+    placeholderData: keepPreviousData,
   })
 
-  const { data: expenses = [], isLoading: loadingE } = useQuery({
-    queryKey: ["report-expenses", year],
-    queryFn:  () => fetchAll(`/api/finances/expenses?dateFrom=${dateFrom}&dateTo=${dateTo}`).then(d => Array.isArray(d) ? d : d.data),
-    staleTime: 60_000,
-  })
+  const exercices = data?.exercices ?? []
+  const current   = data?.current  ?? null
+  const previous  = data?.previous ?? null
 
-  const loading = loadingI || loadingE
+  // The API defaults to the latest exercice when none is explicitly requested — this is
+  // only for what the Select displays, never fed back into state (that would just be
+  // setState-in-effect with extra steps).
+  const selectedExerciceId = exerciceId || current?.exercice?.id || ""
 
-  // Only PAID income / VALIDATED expense rows represent money that actually moved —
-  // PENDING, DRAFT, and CANCELLED rows are shown in the raw export (with their status
-  // labeled) but must not count toward totals or category breakdowns.
-  const paidIncomes      = incomes.filter(i => i.status === "PAID")
-  const validatedExpenses = expenses.filter(e => e.status === "VALIDATED")
+  const incomeLabels  = INCOME_BUCKETS.map(key  => ({ key, label: t(`finances.compteResultat.categories.income.${key}`) }))
+  const expenseLabels = EXPENSE_BUCKETS.map(key => ({ key, label: t(`finances.compteResultat.categories.expense.${key}`) }))
 
-  const totalIncomes  = paidIncomes.reduce((s, i) => s + Number(i.amount), 0)
-  const totalExpenses = validatedExpenses.reduce((s, e) => s + Number(e.amount), 0)
+  // Titles the result row after the *current* period only — the same row can't carry two
+  // different titles for two columns. The N-1 cell still gets its own sign-correct color
+  // below (previousIsDeficit), so a loss year never reads as ambiguous just because the
+  // row's label was decided by the other column.
+  const resultLabel = current && current.result >= 0 ? t("finances.compteResultat.surplus") : t("finances.compteResultat.deficit")
+  // previous.exercice is null both when there's genuinely no prior exercice AND when this
+  // whole period object is the zero-filled placeholder computeIncomeStatementPeriod returns
+  // for that case — checking `previous` alone is never false, since that placeholder object
+  // is still truthy. hasPrevious is the actual signal for "is there real N-1 data to show".
+  const hasPrevious   = Boolean(previous?.exercice)
+  const previousLabel = previous?.exercice?.label ?? t("finances.compteResultat.noPreviousExercice")
+  const previousIsDeficit = hasPrevious && previous!.result < 0
 
-  function groupByCategory(rows: Row[]): Record<string, number> {
-    return rows.reduce((acc, row) => {
-      const key = row.category?.name ?? "Non catégorisé"
-      acc[key] = (acc[key] ?? 0) + Number(row.amount)
-      return acc
-    }, {} as Record<string, number>)
+  function buildRows(): IncomeStatementPdfRow[] {
+    if (!current) return []
+    // null here means "blank cell" in the PDF renderer — used both for section-header rows
+    // (no amount in either column) and, via prevOrBlank, for a genuinely absent N-1 period
+    // (as opposed to an N-1 period that legitimately summed to zero).
+    const prevOrBlank = (value: number) => hasPrevious ? value : null
+    const rows: IncomeStatementPdfRow[] = []
+    rows.push({ label: t("finances.compteResultat.products"), current: null, previous: null, bold: true })
+    for (const { key, label } of incomeLabels) {
+      rows.push({ label, current: current.income[key], previous: prevOrBlank(previous?.income[key] ?? 0) })
+    }
+    rows.push({ label: t("finances.compteResultat.totalProducts"), current: current.totalIncome, previous: prevOrBlank(previous?.totalIncome ?? 0), bold: true })
+    rows.push({ label: t("finances.compteResultat.expenses"), current: null, previous: null, bold: true })
+    for (const { key, label } of expenseLabels) {
+      rows.push({ label, current: current.expense[key], previous: prevOrBlank(previous?.expense[key] ?? 0) })
+    }
+    rows.push({ label: t("finances.compteResultat.totalExpenses"), current: current.totalExpense, previous: prevOrBlank(previous?.totalExpense ?? 0), bold: true })
+    rows.push({ label: resultLabel, current: current.result, previous: prevOrBlank(previous?.result ?? 0), bold: true })
+    return rows
   }
-
-  const incomeByCategory  = groupByCategory(paidIncomes)
-  const expenseByCategory = groupByCategory(validatedExpenses)
-
-  const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
   function exportExcel() {
+    if (!current?.exercice) return
+    // "" here means a genuinely blank cell (no N-1 period to report), kept distinct from a
+    // real 0 — same reasoning as prevOrBlank in buildRows() above.
+    const prevOrBlank = (value: number): number | string => hasPrevious ? value : ""
+    const header = ["", current.exercice.label, previousLabel]
+    const aoa: (string | number)[][] = [header]
+    aoa.push([t("finances.compteResultat.products"), "", ""])
+    for (const { key, label } of incomeLabels) aoa.push([label, current.income[key], prevOrBlank(previous?.income[key] ?? 0)])
+    aoa.push([t("finances.compteResultat.totalProducts"), current.totalIncome, prevOrBlank(previous?.totalIncome ?? 0)])
+    aoa.push(["", "", ""])
+    aoa.push([t("finances.compteResultat.expenses"), "", ""])
+    for (const { key, label } of expenseLabels) aoa.push([label, current.expense[key], prevOrBlank(previous?.expense[key] ?? 0)])
+    aoa.push([t("finances.compteResultat.totalExpenses"), current.totalExpense, prevOrBlank(previous?.totalExpense ?? 0)])
+    aoa.push(["", "", ""])
+    aoa.push([resultLabel, current.result, prevOrBlank(previous?.result ?? 0)])
+
     const wb = XLSX.utils.book_new()
-
-    const incomeSheet = XLSX.utils.json_to_sheet(
-      incomes.map(i => ({
-        Date:        i.date.split("T")[0],
-        Description: i.description ?? "",
-        Catégorie:   i.category?.name ?? "",
-        Montant:     Number(i.amount),
-        Statut:      i.status ?? "",
-      }))
-    )
-    XLSX.utils.book_append_sheet(wb, incomeSheet, "Recettes")
-
-    const expenseSheet = XLSX.utils.json_to_sheet(
-      expenses.map(e => ({
-        Date:        e.date.split("T")[0],
-        Description: e.description ?? "",
-        Fournisseur: e.vendor ?? "",
-        Catégorie:   e.category?.name ?? "",
-        Montant:     Number(e.amount),
-        Statut:      e.status ?? "",
-      }))
-    )
-    XLSX.utils.book_append_sheet(wb, expenseSheet, "Dépenses")
-
-    const summaryData = [
-      { Catégorie: "RECETTES", Montant: "" },
-      ...Object.entries(incomeByCategory).map(([name, amount]) => ({ Catégorie: name, Montant: amount })),
-      { Catégorie: "TOTAL RECETTES", Montant: totalIncomes },
-      { Catégorie: "", Montant: "" },
-      { Catégorie: "DÉPENSES", Montant: "" },
-      ...Object.entries(expenseByCategory).map(([name, amount]) => ({ Catégorie: name, Montant: amount })),
-      { Catégorie: "TOTAL DÉPENSES", Montant: totalExpenses },
-      { Catégorie: "", Montant: "" },
-      { Catégorie: "RÉSULTAT", Montant: totalIncomes - totalExpenses },
-    ]
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(summaryData), "Résumé")
-
-    XLSX.writeFile(wb, `rapport-financier-${year}.xlsx`)
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), t("finances.compteResultat.title"))
+    XLSX.writeFile(wb, `compte-de-resultat-${sanitizeForFilename(current.exercice.label)}.xlsx`)
   }
+
+  function exportPdf() {
+    if (!current?.exercice) return
+    exportIncomeStatementPdf({
+      title:          t("finances.compteResultat.title"),
+      currentLabel:   current.exercice.label,
+      previousLabel,
+      rows:           buildRows(),
+      fileNameSuffix: sanitizeForFilename(current.exercice.label),
+    })
+  }
+
+  const noExercice = !isLoading && exercices.length === 0
 
   return (
     <div className="space-y-4">
       <PageHeader
-        title="Compte de résultat"
-        description="Synthèse financière par période."
+        title={t("finances.compteResultat.title")}
+        description={t("finances.compteResultat.description")}
         action={
-          <div className="flex items-center gap-2">
-            <Select value={String(year)} onValueChange={v => setYear(parseInt(v ?? String(year)))}>
-              <SelectTrigger className="w-36"><SelectValue>{`Exercice ${year}`}</SelectValue></SelectTrigger>
-              <SelectContent>
-                {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{`Exercice ${y}`}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            <Button size="sm" variant="outline" onClick={exportExcel} disabled={loading}>
-              <DownloadSimpleIcon className="mr-1.5 size-4" />
-              Exporter Excel
-            </Button>
-          </div>
+          !noExercice && (
+            <div className="flex items-center gap-2">
+              <Select value={selectedExerciceId} onValueChange={v => setExerciceId(v ?? selectedExerciceId)}>
+                <SelectTrigger className="w-44">
+                  <SelectValue>
+                    {exercices.find(e => e.id === selectedExerciceId)?.label ?? t("finances.compteResultat.exerciceLabel")}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {exercices.map(e => <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={!current?.exercice} />}>
+                  <DownloadSimpleIcon className="mr-1.5 size-4" />
+                  {t("finances.compteResultat.export")}
+                  <CaretDownIcon className="ml-1 size-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={exportExcel}>{t("finances.compteResultat.exportExcel")}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={exportPdf}>{t("finances.compteResultat.exportPdf")}</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )
         }
       />
 
-      {/* Summary — plain key figures, no card per statistic (CLAUDE.md §8) */}
-      <dl className="flex flex-wrap items-baseline gap-x-10 gap-y-3">
-        {[
-          { label: "Total recettes", value: totalIncomes,              color: "", prefix: "+" },
-          { label: "Total dépenses", value: -totalExpenses,            color: "text-destructive",                   prefix: "" },
-          { label: "Résultat",       value: totalIncomes - totalExpenses, color: totalIncomes - totalExpenses >= 0 ? "" : "text-destructive", prefix: totalIncomes - totalExpenses >= 0 ? "+" : "" },
-        ].map(({ label, value, color, prefix }) => (
-          <div key={label}>
-            <dt className="text-xs text-muted-foreground">{label} {year}</dt>
-            <dd className={`text-xl font-semibold tabular-nums mt-1 ${color}`}>{prefix}{fmt(value)}</dd>
-          </div>
-        ))}
-      </dl>
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[1, 2].map(i => <div key={i} className="h-48 animate-pulse rounded-lg border bg-muted/30 p-4" />)}
-        </div>
+      {noExercice ? (
+        <EmptyState
+          title={t("finances.compteResultat.emptyExercice.title")}
+          description={t("finances.compteResultat.emptyExercice.description")}
+        />
+      ) : isLoading || !current ? (
+        <div className="h-72 animate-pulse rounded-lg border bg-muted/30" />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg border bg-card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendUpIcon className="size-4 text-green-600" />
-              <h3 className="font-semibold text-sm">Recettes par catégorie</h3>
-            </div>
-            {Object.keys(incomeByCategory).length > 0
-              ? <CategoryTable data={incomeByCategory} colorClass="text-green-600 dark:text-green-400" />
-              : <p className="text-sm text-muted-foreground">Aucune recette</p>
-            }
-          </div>
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/40">
+                <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("finances.compteResultat.exerciceLabel")}</th>
+                <th className="py-2 px-3 text-right font-medium text-muted-foreground w-36">{current.exercice!.label}</th>
+                <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-36">{previousLabel}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td colSpan={3} className="pt-3 pb-1 pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("finances.compteResultat.products")}
+                </td>
+              </tr>
+              {incomeLabels.map(({ key, label }) => (
+                <tr key={key} className="border-b last:border-0">
+                  <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{label}</td>
+                  <td className="py-1.5 px-3 text-right tabular-nums">{fmt(current.income[key])}</td>
+                  <td className="py-1.5 pr-4 pl-3 text-right tabular-nums text-muted-foreground">{hasPrevious ? fmt(previous!.income[key]) : previousLabel}</td>
+                </tr>
+              ))}
+              <tr className="border-b-2 border-foreground/20">
+                <td className="py-2 pl-4 pr-3 font-semibold">{t("finances.compteResultat.totalProducts")}</td>
+                <td className="py-2 px-3 text-right font-semibold tabular-nums">{fmt(current.totalIncome)}</td>
+                <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">{hasPrevious ? fmt(previous!.totalIncome) : previousLabel}</td>
+              </tr>
 
-          <div className="rounded-lg border bg-card p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendDownIcon className="size-4 text-destructive" />
-              <h3 className="font-semibold text-sm">Dépenses par catégorie</h3>
-            </div>
-            {Object.keys(expenseByCategory).length > 0
-              ? <CategoryTable data={expenseByCategory} colorClass="text-destructive" />
-              : <p className="text-sm text-muted-foreground">Aucune dépense</p>
-            }
-          </div>
+              <tr className="border-b">
+                <td colSpan={3} className="pt-3 pb-1 pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {t("finances.compteResultat.expenses")}
+                </td>
+              </tr>
+              {expenseLabels.map(({ key, label }) => (
+                <tr key={key} className="border-b last:border-0">
+                  <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{label}</td>
+                  <td className="py-1.5 px-3 text-right tabular-nums">{fmt(current.expense[key])}</td>
+                  <td className="py-1.5 pr-4 pl-3 text-right tabular-nums text-muted-foreground">{hasPrevious ? fmt(previous!.expense[key]) : previousLabel}</td>
+                </tr>
+              ))}
+              <tr className="border-b-2 border-foreground/20">
+                <td className="py-2 pl-4 pr-3 font-semibold">{t("finances.compteResultat.totalExpenses")}</td>
+                <td className="py-2 px-3 text-right font-semibold tabular-nums">{fmt(current.totalExpense)}</td>
+                <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">{hasPrevious ? fmt(previous!.totalExpense) : previousLabel}</td>
+              </tr>
+
+              <tr>
+                <td className="py-3 pl-4 pr-3 font-semibold">{resultLabel}</td>
+                <td className={`py-3 px-3 text-right font-semibold tabular-nums ${current.result >= 0 ? "" : "text-destructive"}`}>
+                  {fmt(current.result)}
+                </td>
+                <td className={`py-3 pr-4 pl-3 text-right font-semibold tabular-nums ${previousIsDeficit ? "text-destructive" : "text-muted-foreground"}`}>
+                  {hasPrevious ? fmt(previous!.result) : previousLabel}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
     </div>

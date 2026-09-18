@@ -197,6 +197,7 @@ export async function handleDonationInvoicePaid(invoice: Stripe.Invoice) {
     data: {
       associationId: donationSub.associationId,
       exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+      donId:         don.id,
       amount,
       description:   `Don récurrent de ${donationSub.donorType === "COMPANY" ? (donationSub.companyName ?? donationSub.firstName) : `${donationSub.firstName} ${donationSub.lastName}`}`,
       paymentMethod: "STRIPE",
