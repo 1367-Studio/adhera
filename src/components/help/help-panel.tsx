@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   HELP_ERROR_CODES, HELP_SEARCH_MIN_LENGTH,
   useHelpArticle, useHelpArticles, useHelpChangelog, useHelpSearch,
-  type HelpSearchHit,
+  type FaqEntry, type HelpSearchHit,
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
@@ -207,8 +207,8 @@ function HelpGuideTab({
   const moduleLabel = useHelpModuleLabel()
 
   // FAQ entries have no detail endpoint — they are resolved through the module listing they
-  // came from (which also carries the "general" entries). Same key as the browse query
-  // whenever the FAQ hit belongs to the current module, so that costs no extra request.
+  // came from (which carries every FAQ entry). Same key as the browse query whenever the FAQ
+  // hit belongs to the current module, so that costs no extra request.
   const faqModule        = guideView.kind === "faq" ? guideView.module : module
   const moduleContent    = useHelpArticles(module)
   const faqModuleContent = useHelpArticles(faqModule)
@@ -287,6 +287,17 @@ function HelpGuideTab({
         )}
       </div>
     )
+  }
+
+  // The listing carries the whole FAQ: the current page's entries (plus the ones with no
+  // module or "general", which belong everywhere) come first, every other module's after.
+  // Each group keeps the query's order.
+  const currentFaqEntries: FaqEntry[] = []
+  const otherFaqEntries: FaqEntry[]   = []
+  for (const entry of moduleContent.data?.faq ?? []) {
+    const isCurrentPageEntry = !entry.module || entry.module === "general" || entry.module === module
+    if (isCurrentPageEntry) currentFaqEntries.push(entry)
+    else otherFaqEntries.push(entry)
   }
 
   return (
@@ -375,15 +386,40 @@ function HelpGuideTab({
             )}
           </div>
 
-          {moduleContent.data.faq.length > 0 && (
+          {currentFaqEntries.length > 0 && (
             <div>
               <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 {t("faqSection")}
               </p>
               <Accordion multiple variant="plain" className="mt-1">
-                {moduleContent.data.faq.map(entry => (
+                {currentFaqEntries.map(entry => (
                   <AccordionItem key={entry.id} value={entry.id}>
                     <AccordionTrigger>{entry.question}</AccordionTrigger>
+                    <AccordionPanel>
+                      <HelpArticleView value={entry.answer} />
+                    </AccordionPanel>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          )}
+
+          {otherFaqEntries.length > 0 && (
+            <div>
+              {/* "Autres questions" only reads right under a first FAQ group — on its own it
+                  would announce a section that isn't there, so it takes the plain FAQ label. */}
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {currentFaqEntries.length > 0 ? t("faqOtherSection") : t("faqSection")}
+              </p>
+              <Accordion multiple variant="plain" className="mt-1">
+                {otherFaqEntries.map(entry => (
+                  <AccordionItem key={entry.id} value={entry.id}>
+                    <AccordionTrigger>
+                      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span className="text-sm font-medium text-foreground">{entry.question}</span>
+                        <span className="text-xs font-normal text-muted-foreground">{moduleLabel(entry.module)}</span>
+                      </span>
+                    </AccordionTrigger>
                     <AccordionPanel>
                       <HelpArticleView value={entry.answer} />
                     </AccordionPanel>

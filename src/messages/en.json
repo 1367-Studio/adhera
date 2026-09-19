@@ -5692,6 +5692,7 @@
     "searchError": "Search is unavailable right now.",
     "articlesSection": "Articles",
     "faqSection": "Frequently asked questions",
+    "faqOtherSection": "Other questions",
     "noArticles": "No articles for this section yet.",
     "noContent": "No help content for this section yet.",
     "loadError": "Couldn't load the help.",
