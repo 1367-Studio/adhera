@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { format } from "date-fns"
-import { PlusIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr"
 import {
   useAssociationDocuments, useUpdateAssociationDocument, useDeleteAssociationDocument,
   type AssociationDocumentSummary,
@@ -17,6 +17,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { RowActions } from "@/components/ui/row-actions"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
+import { BASE_PATH } from "@/lib/env"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
 
@@ -84,8 +85,11 @@ export function AssociationDocumentsView() {
             disabled={pendingVisibilityIds.has(document.id)}
             onCheckedChange={checked => handleVisibilityChange(document, checked)}
           />
+          {/* The switch drives the portal visibility only; public publication is set in the
+              editor, so it shows here as plain text rather than a second control per row. */}
           <span className="text-xs text-muted-foreground">
             {document.visibleToMembers ? t("visible") : t("hidden")}
+            {document.visibleToPublic ? ` · ${t("publicShort")}` : ""}
           </span>
         </div>
       ),
@@ -108,6 +112,11 @@ export function AssociationDocumentsView() {
       cell:      document => (
         <RowActions actions={[
           { label: tCommon("edit"),   icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => router.push(`${ASSOCIATION_DOCUMENTS_PATH}/${document.id}`) },
+          // Only offered where there is something to export: a document nobody has to accept
+          // has no acceptances behind it.
+          ...(document.requiresAcceptance
+            ? [{ label: t("exportAcceptances"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => { window.location.href = `${BASE_PATH}/api/legal/acceptances?documentId=${document.id}` } }]
+            : []),
           { label: tCommon("delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(document) },
         ]} />
       ),

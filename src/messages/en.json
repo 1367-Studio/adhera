@@ -3842,6 +3842,7 @@
         "enAttente": "Pending",
         "payees": "Paid",
         "exonerees": "Exempt",
+        "aEncaisser": "To collect",
         "partiellementPayees": "Partially paid",
         "enRetard": "Overdue",
         "annulees": "Cancelled"
@@ -4174,6 +4175,7 @@
       "paidOn": "Paid on {date}",
       "validUntil": "Valid until {date}",
       "periodExpiredOn": "Expired on {date}",
+      "recordPayment": "Record a payment",
       "downloadRecuFiscal": "Download the tax receipt",
       "downloadRecuFiscalPartial": "Download the tax receipt (partial: {amount} deductible)",
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
@@ -4884,6 +4886,13 @@
     "hidden": "Hidden",
     "visibleToMembers": "Visible to members",
     "visibleToMembersHint": "Shows this document in the member area. When turned off, only managers can see it.",
+    "visibleToPublic": "Publicly accessible",
+    "visibleToPublicHint": "Makes this document readable by anyone with the link, with no account — required to link to it from your public forms.",
+    "visibleToPublicForcedHint": "Turned on automatically: a document people must accept has to be readable by the person accepting it.",
+    "requiresAcceptance": "Must be accepted",
+    "requiresAcceptanceHint": "A required checkbox will appear in membership, donation and event forms, in the shop and at account creation. Every acceptance is recorded with the document version.",
+    "exportAcceptances": "Export acceptances",
+    "publicShort": "Public",
     "toasts": {
       "madeVisible": "“{title}” is visible to members",
       "madeHidden": "“{title}” is hidden from members",
@@ -4914,6 +4923,27 @@
     },
     "notFound": "This document could not be found.",
     "backToList": "Back to documents"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {I accept the following document:} other {I accept the following documents:}}",
+    "required": "You must accept the association's documents to continue.",
+    "stale": "The association's documents have been updated, please read them again before continuing.",
+    "offlineAttestation": "I confirm I collected this person's agreement to these documents",
+    "gateTitle": "Documents to accept",
+    "gateSubtitle": "Your association has updated its documents. Please read and accept them to reach your account.",
+    "gateSubmit": "I accept and continue",
+    "gateSignOut": "Sign out",
+    "gateError": "Your acceptance could not be saved.",
+    "offlineAttestationHint": "Recorded as an acceptance collected offline, in your name."
+  },
+  "publicDocuments": {
+    "title": "Legal documents",
+    "subtitle": "Documents made available by the association.",
+    "empty": "No published documents yet.",
+    "updatedAt": "Updated {date}",
+    "backToList": "All documents",
+    "associationNotFound": "This association could not be found.",
+    "notFound": "This document is no longer available."
   },
   "portalMembre": {
     "associationDocuments": {

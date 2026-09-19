@@ -49,7 +49,9 @@ export const cotisationUpdateSchema = cotisationBase.omit({ membreId: true, year
 
 export const cotisationPaymentSchema = z.object({
   amount: z.number().positive("Montant invalide"),
-  method: z.enum(["CB", "CHQ", "ESP", "En ligne", "Autre"]),
+  // "VIR" (virement) ajouté après coup : sans lui un trésorier qui encaissait un virement
+  // devait choisir "Autre", ce qui rendait les virements introuvables dans les recettes.
+  method: z.enum(["CB", "CHQ", "ESP", "VIR", "En ligne", "Autre"]),
   paidAt: z.string().optional().or(z.literal("")),
   note:   z.string().trim().optional().or(z.literal("")),
 })

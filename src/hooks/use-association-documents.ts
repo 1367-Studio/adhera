@@ -9,11 +9,13 @@ const PORTAL_QK = ["portal", "association-documents"]
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 export type AssociationDocumentSummary = {
-  id:               string
-  title:            string
-  visibleToMembers: boolean
-  createdAt:        string
-  updatedAt:        string
+  id:                 string
+  title:              string
+  visibleToMembers:   boolean
+  visibleToPublic:    boolean
+  requiresAcceptance: boolean
+  createdAt:          string
+  updatedAt:          string
 }
 
 export type AssociationDocument = AssociationDocumentSummary & {

@@ -46,6 +46,9 @@ export type MembreDetail = {
     id:     string
     year:   number
     amount: string
+    // Déjà renvoyé par l'API (les cotisations y sont chargées en `include`) — déclaré ici pour
+    // que la fiche puisse calculer le reste dû et proposer l'encaissement.
+    amountPaid: string
     status: "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYE" | "EN_RETARD" | "EXONERE" | "ANNULEE"
     paidAt: string | null
     declarationNumber: string | null

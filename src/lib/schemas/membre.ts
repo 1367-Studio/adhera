@@ -43,6 +43,10 @@ export const membreCreateSchema = membreSchema.extend({
   // reçu fiscal, période) et le membre reçoit le lien de paiement public par email, comme
   // s'il s'était inscrit lui-même. Vide = comportement historique (montant par défaut).
   tierId: z.string().optional().or(z.literal("")),
+  // Le gestionnaire atteste avoir recueilli l'accord de la personne sur les documents que
+  // l'association impose d'accepter (papier, en personne…). Ce n'est pas l'accord de la
+  // personne elle-même : c'est l'affirmation du gestionnaire, enregistrée à son nom.
+  legalOfflineAttestation: z.boolean().optional(),
 })
 
 export const membreUpdateSchema = membreSchema.partial()

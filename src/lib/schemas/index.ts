@@ -25,6 +25,9 @@ export const portalRegisterSchema = z.object({
   email:         z.string().email("Email invalide"),
   typeId:        z.string().optional(),
   acceptedTerms: z.literal(true, { message: "Vous devez accepter la politique de confidentialité" }),
+  // Révisions des documents de l'association affichées au visiteur — distinctes de
+  // acceptedTerms ci-dessus, qui porte sur la politique de la plateforme.
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   locale:        z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
 })
 

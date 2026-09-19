@@ -6,9 +6,10 @@ export const GET = withPortalAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
   // Missing, deleted, hidden and another association's documents all answer the same 404 —
-  // a member must not be able to tell a hidden document exists by probing ids.
+  // a member must not be able to tell a hidden document exists by probing ids. A publicly
+  // published document is readable here too: a member must never see less than a stranger.
   const document = await prisma.associationDocument.findFirst({
-    where:  { id, associationId, deletedAt: null, visibleToMembers: true },
+    where:  { id, associationId, deletedAt: null, OR: [{ visibleToMembers: true }, { visibleToPublic: true }] },
     select: { id: true, title: true, content: true, updatedAt: true },
   })
 

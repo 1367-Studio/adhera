@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { randomBytes } from "crypto"
 import bcrypt from "bcryptjs"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { requiredDocuments, recordAcceptances } from "@/lib/legal/acceptance"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
@@ -126,7 +127,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, ...rest } = parsed.data
+  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -252,6 +253,21 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
     return { membre: created, cotisation }
   })
+
+  // Acceptation recueillie hors ligne : enregistrée uniquement parce que le gestionnaire l'a
+  // explicitement attestée, jamais déduite de la création du membre — sinon on fabriquerait une
+  // preuve que personne n'a donnée. collectedById garde la trace de qui s'est engagé.
+  if (legalOfflineAttestation) {
+    const requiredLegalDocuments = await requiredDocuments(associationId)
+    await recordAcceptances({
+      associationId,
+      revisionIds:   requiredLegalDocuments.map(document => document.revisionId),
+      identity:      { membreId: membre.id, userId: membre.userId },
+      context:       "DASHBOARD_OFFLINE",
+      contextId:     membre.id,
+      collectedById: userId,
+    })
+  }
 
   if (assoc) {
     const isStaff  = role !== "MEMBRE"

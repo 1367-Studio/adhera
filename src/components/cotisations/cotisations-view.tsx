@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
@@ -16,6 +17,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { SendReminderModal } from "@/components/cotisations/send-reminder-modal"
 import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
+import { PENDING_COTISATION_STATUSES } from "@/lib/cotisation-filters"
 import { CotisationPaymentsModal } from "@/components/cotisations/cotisation-payments-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -75,12 +77,15 @@ const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 const PAGE_SIZE = 25
 
 export function CotisationsView() {
+  const searchParams = useSearchParams()
   const t = useTranslations()
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
   const [yearFilter, setYearFilter]     = useState<number>(currentYear)
-  const [statusFilter, setStatusFilter] = useState<string>("")
+  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=… pour ouvrir directement
+  // sur les cotisations à encaisser plutôt que sur la liste entière.
+  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") ?? "")
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Cotisation | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Cotisation | null>(null)
@@ -276,6 +281,7 @@ export function CotisationsView() {
 
   const statusBadge = getStatusBadge(t)
   const statusFilterLabel: Record<string, string> = {
+    [PENDING_COTISATION_STATUSES]: t("cotisations.view.statusFilter.aEncaisser"),
     all:                 t("cotisations.view.all"),
     EN_ATTENTE:          t("cotisations.view.statusFilter.enAttente"),
     PARTIELLEMENT_PAYEE: t("cotisations.view.statusFilter.partiellementPayees"),
@@ -477,6 +483,7 @@ export function CotisationsView() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t("cotisations.view.all")}</SelectItem>
+            <SelectItem value={PENDING_COTISATION_STATUSES}>{t("cotisations.view.statusFilter.aEncaisser")}</SelectItem>
             <SelectItem value="EN_ATTENTE">{t("cotisations.view.statusFilter.enAttente")}</SelectItem>
             <SelectItem value="PARTIELLEMENT_PAYEE">{t("cotisations.view.statusFilter.partiellementPayees")}</SelectItem>
             <SelectItem value="PAYE">{t("cotisations.view.statusFilter.payees")}</SelectItem>
