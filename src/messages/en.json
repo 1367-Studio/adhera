@@ -887,6 +887,46 @@
       "title": "Coming soon",
       "description": "This feature is currently in development."
     },
+    "compteResultat": {
+      "title": "Income statement",
+      "description": "Financial result for the fiscal year, compared to the previous year.",
+      "exerciceLabel": "Fiscal year",
+      "noPreviousExercice": "-",
+      "export": "Export",
+      "exportExcel": "Export Excel",
+      "exportPdf": "Export PDF",
+      "products": "Revenue",
+      "totalProducts": "Total revenue",
+      "expenses": "Expenses",
+      "totalExpenses": "Total expenses",
+      "result": "Result for the year",
+      "surplus": "Surplus for the year",
+      "deficit": "Deficit for the year",
+      "categories": {
+        "income": {
+          "cotisations": "Membership dues",
+          "dons": "Donations",
+          "subventions": "Grants",
+          "boutique": "Shop",
+          "evenements": "Events",
+          "autres": "Other revenue"
+        },
+        "expense": {
+          "assurance": "Insurance",
+          "communication": "Communication",
+          "materiel": "Supplies",
+          "transport": "Travel",
+          "fraisBancaires": "Bank fees",
+          "location": "Rent",
+          "equipement": "Equipment",
+          "autres": "Other expenses"
+        }
+      },
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to generate the income statement."
+      }
+    },
     "categoryForm": {
       "name": "Name",
       "namePlaceholder": "e.g. Membership fees",
@@ -2464,7 +2504,8 @@
         "markPaid": "Mark as paid",
         "cancelOrder": "Cancel",
         "downloadReceipt": "Download receipt",
-        "editPaymentMethod": "Edit payment method"
+        "editPaymentMethod": "Edit payment method",
+        "refundOrder": "Refund"
       },
       "noProduct": "No products",
       "noOrder": "No orders",
@@ -2489,7 +2530,8 @@
         "productDeleted": "Product deleted",
         "deleteError": "Error while deleting",
         "orderUpdated": "Order updated",
-        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it."
+        "orderNotInRecentList": "This order isn't in the 50 most recent. Use the filters to find it.",
+        "refundSuccess": "Order refunded"
       }
     },
     "payModal": {
@@ -2499,6 +2541,13 @@
       "orderedTotal": "Ordered total",
       "restockNoticePlural": "{count, plural, one {The stock for the item not collected will be restored.} other {The stock for the items not collected will be restored.}}",
       "restockNoticeStatic": "The stock for items not collected will be restored."
+    },
+    "refundModal": {
+      "title": "Refund order",
+      "confirmWithAmount": "Refund {amount}",
+      "stripeNotice": "The refund will be issued automatically to the customer's card.",
+      "manualNotice": "This action updates stock and accounting only — remember to actually return the money to the customer (cash, cheque, or bank transfer).",
+      "shippingIncludedNotice": "Shipping ({amount}) is included in this refund."
     },
     "stripeConfirm": {
       "title": "Mark as paid?",
@@ -3842,6 +3891,7 @@
         "enAttente": "Pending",
         "payees": "Paid",
         "exonerees": "Exempt",
+        "aEncaisser": "To collect",
         "partiellementPayees": "Partially paid",
         "enRetard": "Overdue",
         "annulees": "Cancelled"
@@ -4174,6 +4224,7 @@
       "paidOn": "Paid on {date}",
       "validUntil": "Valid until {date}",
       "periodExpiredOn": "Expired on {date}",
+      "recordPayment": "Record a payment",
       "downloadRecuFiscal": "Download the tax receipt",
       "downloadRecuFiscalPartial": "Download the tax receipt (partial: {amount} deductible)",
       "showingRecentCotisations": "Showing the {count} most recent membership fees out of {total} total.",
@@ -4884,6 +4935,13 @@
     "hidden": "Hidden",
     "visibleToMembers": "Visible to members",
     "visibleToMembersHint": "Shows this document in the member area. When turned off, only managers can see it.",
+    "visibleToPublic": "Publicly accessible",
+    "visibleToPublicHint": "Makes this document readable by anyone with the link, with no account — required to link to it from your public forms.",
+    "visibleToPublicForcedHint": "Turned on automatically: a document people must accept has to be readable by the person accepting it.",
+    "requiresAcceptance": "Must be accepted",
+    "requiresAcceptanceHint": "A required checkbox will appear in membership, donation and event forms, in the shop and at account creation. Every acceptance is recorded with the document version.",
+    "exportAcceptances": "Export acceptances",
+    "publicShort": "Public",
     "toasts": {
       "madeVisible": "“{title}” is visible to members",
       "madeHidden": "“{title}” is hidden from members",
@@ -4914,6 +4972,27 @@
     },
     "notFound": "This document could not be found.",
     "backToList": "Back to documents"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {I accept the following document:} other {I accept the following documents:}}",
+    "required": "You must accept the association's documents to continue.",
+    "stale": "The association's documents have been updated, please read them again before continuing.",
+    "offlineAttestation": "I confirm I collected this person's agreement to these documents",
+    "gateTitle": "Documents to accept",
+    "gateSubtitle": "Your association has updated its documents. Please read and accept them to reach your account.",
+    "gateSubmit": "I accept and continue",
+    "gateSignOut": "Sign out",
+    "gateError": "Your acceptance could not be saved.",
+    "offlineAttestationHint": "Recorded as an acceptance collected offline, in your name."
+  },
+  "publicDocuments": {
+    "title": "Legal documents",
+    "subtitle": "Documents made available by the association.",
+    "empty": "No published documents yet.",
+    "updatedAt": "Updated {date}",
+    "backToList": "All documents",
+    "associationNotFound": "This association could not be found.",
+    "notFound": "This document is no longer available."
   },
   "portalMembre": {
     "associationDocuments": {

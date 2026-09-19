@@ -78,7 +78,7 @@ export async function createEvenementProductPurchase(params: {
 
         const exercice = await resolveExerciceForDate(params.associationId, paidAt)
 
-        await tx.boutiqueCommande.create({
+        const commande = await tx.boutiqueCommande.create({
           data: {
             associationId:         params.associationId,
             membreId:              params.membreId,
@@ -113,6 +113,7 @@ export async function createEvenementProductPurchase(params: {
               exerciceId:      exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:        params.membreId,
               participationId: params.participationId,
+              commandeId:      commande.id,
               amount:          amountCents / 100,
               categoryId:      categoryId ?? undefined,
               description:     `Vente boutique (événement) — ${itemsLabel}`,

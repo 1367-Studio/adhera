@@ -15,6 +15,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
+import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -70,7 +71,7 @@ type PaymentMethod = "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT"
 // on EUR cards, 1 € is a round number safely above that floor.
 const MIN_DONATION_AMOUNT = 1
 
-type Props = { slug: string; formSlug: string }
+type Props = { slug: string; formSlug: string; legalDocuments: RequiredLegalDocument[] }
 
 export function DonationFormPublicForm(props: Props) {
   return (
@@ -80,7 +81,7 @@ export function DonationFormPublicForm(props: Props) {
   )
 }
 
-function DonationFormPublicFormInner({ slug, formSlug }: Props) {
+function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) {
   const t   = useTranslations("donationForms.public")
   const loc = useLocale()
   const searchParams = useSearchParams()
@@ -111,6 +112,11 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
   const [message, setMessage]       = useState("")
   const [anonymous, setAnonymous]   = useState(false)
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  // Agreement to the association's own legal documents, separate from this form's free-text
+  // conditions above: those are per-form wording, these are the association-wide documents
+  // recorded against the revision the visitor was shown.
+  const [legalAccepted, setLegalAccepted] = useState(false)
+  const acceptedLegalRevisionIds = legalAccepted ? legalDocuments.map(document => document.revisionId) : []
   const [answers, setAnswers]       = useState<Record<string, AnswerValue>>({})
   const [website, setWebsite]       = useState("") // honeypot
 
@@ -210,6 +216,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || gender.trim()) &&
     (!form.requireCguvSignature || conditionsAgreed) &&
+    (legalDocuments.length === 0 || legalAccepted) &&
     form.customFields.every(f => {
       if (!f.required) return true
       const v = answers[f.id]
@@ -252,6 +259,7 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
           answers,
           website,
           conditionsAgreed,
+          acceptedLegalRevisionIds,
         }),
       })
       const data = await res.json()
@@ -566,6 +574,16 @@ function DonationFormPublicFormInner({ slug, formSlug }: Props) {
               {form.requireCguvSignature && (
                 <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
               )}
+
+              {/* Documents imposés par l'association — distincts des conditions propres au
+                  formulaire juste au-dessus, et affichés dès le premier rendu (la liste vient
+                  de la page serveur, voir page.tsx). */}
+              <LegalConsent
+                slug={slug}
+                documents={legalDocuments}
+                checked={legalAccepted}
+                onChange={setLegalAccepted}
+              />
 
               <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
                 {amount > 0

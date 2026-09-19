@@ -883,6 +883,46 @@
       "title": "Em breve",
       "description": "Esta funcionalidade está em desenvolvimento."
     },
+    "compteResultat": {
+      "title": "Demonstração de resultados",
+      "description": "Resultado financeiro do exercício, comparado ao exercício anterior.",
+      "exerciceLabel": "Exercício",
+      "noPreviousExercice": "-",
+      "export": "Exportar",
+      "exportExcel": "Exportar Excel",
+      "exportPdf": "Exportar PDF",
+      "products": "Produtos / Receitas",
+      "totalProducts": "Total dos produtos",
+      "expenses": "Despesas / Encargos",
+      "totalExpenses": "Total das despesas",
+      "result": "Resultado do exercício",
+      "surplus": "Excedente do exercício",
+      "deficit": "Déficit do exercício",
+      "categories": {
+        "income": {
+          "cotisations": "Contribuições / Adesões",
+          "dons": "Doações",
+          "subventions": "Subsídios",
+          "boutique": "Loja",
+          "evenements": "Eventos",
+          "autres": "Outras receitas"
+        },
+        "expense": {
+          "assurance": "Seguro",
+          "communication": "Comunicação",
+          "materiel": "Materiais",
+          "transport": "Deslocamentos",
+          "fraisBancaires": "Tarifas bancárias",
+          "location": "Aluguel",
+          "equipement": "Equipamentos",
+          "autres": "Outras despesas"
+        }
+      },
+      "emptyExercice": {
+        "title": "Nenhum exercício fiscal",
+        "description": "Crie um exercício fiscal para gerar a demonstração de resultados."
+      }
+    },
     "categoryForm": {
       "name": "Nome",
       "namePlaceholder": "Ex: Mensalidades",
@@ -2456,7 +2496,8 @@
         "markPaid": "Marcar como pago",
         "cancelOrder": "Cancelar",
         "downloadReceipt": "Baixar recibo",
-        "editPaymentMethod": "Editar forma de pagamento"
+        "editPaymentMethod": "Editar forma de pagamento",
+        "refundOrder": "Reembolsar"
       },
       "noProduct": "Nenhum produto",
       "noOrder": "Nenhum pedido",
@@ -2480,7 +2521,8 @@
       "toasts": {
         "productDeleted": "Produto excluído",
         "deleteError": "Erro ao excluir",
-        "orderUpdated": "Pedido atualizado"
+        "orderUpdated": "Pedido atualizado",
+        "refundSuccess": "Pedido reembolsado"
       }
     },
     "payModal": {
@@ -2490,6 +2532,13 @@
       "orderedTotal": "Total pedido",
       "restockNoticePlural": "{count, plural, one {O estoque do item não retirado será restaurado.} other {O estoque dos itens não retirados será restaurado.}}",
       "restockNoticeStatic": "O estoque dos itens não retirados será restaurado."
+    },
+    "refundModal": {
+      "title": "Reembolsar o pedido",
+      "confirmWithAmount": "Reembolsar {amount}",
+      "stripeNotice": "O reembolso será feito automaticamente no cartão do cliente.",
+      "manualNotice": "Esta ação atualiza apenas o estoque e a contabilidade — lembre-se de devolver o dinheiro ao cliente (dinheiro, cheque ou transferência).",
+      "shippingIncludedNotice": "O frete ({amount}) está incluído neste reembolso."
     },
     "stripeConfirm": {
       "title": "Marcar como pago?",
@@ -3229,7 +3278,7 @@
         "rules": "Automações",
         "historique": "Histórico"
       },
-      "reminderSchedule": "Régua de lembretes"
+      "reminderSchedule": "Cronograma de lembretes"
     },
     "templatesManager": {
       "title": "Modelos de mensagens",

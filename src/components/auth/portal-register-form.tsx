@@ -13,14 +13,17 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
+import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PRIVACY_URL } from "@/lib/consent"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 type MembreType = { id: string; name: string }
 
-export function PortalRegisterForm({ slug }: { slug: string }) {
+type Props = { slug: string; legalDocuments: RequiredLegalDocument[] }
+
+export function PortalRegisterForm({ slug, legalDocuments }: Props) {
   return (
     <Suspense fallback={null}>
-      <PortalRegisterFormInner slug={slug} />
+      <PortalRegisterFormInner slug={slug} legalDocuments={legalDocuments} />
     </Suspense>
   )
 }
@@ -28,12 +31,17 @@ export function PortalRegisterForm({ slug }: { slug: string }) {
 // useSearchParams() (for the Google prefill, arriving via /portal/[slug]/register?g_name=
 // &g_email= — see the signIn callback in src/lib/auth/config.ts) requires a Suspense
 // boundary above it, same reasoning as the dashboard's register-form.tsx.
-function PortalRegisterFormInner({ slug }: { slug: string }) {
+function PortalRegisterFormInner({ slug, legalDocuments }: Props) {
   const t = useTranslations("portal.register")
   const loc = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
   const [types, setTypes] = useState<MembreType[]>([])
+  // Agreement to the association's own documents, separate from acceptedTerms below (which is
+  // the platform's privacy policy). Held outside react-hook-form: what the server records is
+  // the revision ids, not a boolean, and the box is only shown when there is something to sign.
+  const [legalAccepted, setLegalAccepted] = useState(false)
+  const legalMissing = legalDocuments.length > 0 && !legalAccepted
 
   const gName  = searchParams.get("g_name")  ?? ""
   const gEmail = searchParams.get("g_email") ?? ""
@@ -66,7 +74,10 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
     const res = await fetch("/api/portal/register", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ slug, ...data, locale: loc }),
+      body:    JSON.stringify({
+        slug, ...data, locale: loc,
+        acceptedLegalRevisionIds: legalDocuments.map(document => document.revisionId),
+      }),
     })
 
     if (!res.ok) {
@@ -155,7 +166,14 @@ function PortalRegisterFormInner({ slug }: { slug: string }) {
         {...register("acceptedTerms")}
       />
 
-      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
+      <LegalConsent
+        slug={slug}
+        documents={legalDocuments}
+        checked={legalAccepted}
+        onChange={setLegalAccepted}
+      />
+
+      <Button type="submit" className="w-full mt-2" disabled={isSubmitting || legalMissing}>
         {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
         {t("submit")}
       </Button>

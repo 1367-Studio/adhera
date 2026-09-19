@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
-  DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon
+  DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
@@ -27,6 +27,7 @@ import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { MembreEmailLog } from "@/components/membres/membre-email-log"
 import { MembreSmsLog } from "@/components/membres/membre-sms-log"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
+import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -144,6 +145,10 @@ type FetchedCotisation = {
   installments: { amount: string; dueDate: string }[]
 }
 
+// Un encaissement n'a plus de sens sur ces statuts — l'API répond d'ailleurs 409 pour les
+// deux derniers (voir POST /api/cotisations/[id]/paiements).
+const TERMINAL_COTISATION_STATUSES = ["PAYE", "EXONERE", "ANNULEE"]
+
 export function MembreDetailView() {
   const { id } = useParams<{ id: string }>()
   const t = useTranslations()
@@ -162,6 +167,8 @@ export function MembreDetailView() {
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
   // opened here rather than sending the admin off to the main Cotisations list to find it.
   const [editCotisationTarget, setEditCotisationTarget] = useState<FetchedCotisation | null>(null)
+  // Ce que le modal d'encaissement a besoin de connaître — le reste de la ligne ne l'intéresse pas.
+  const [paymentTarget, setPaymentTarget] = useState<{ id: string; amount: string; amountPaid: string } | null>(null)
 
   const { data: membre, isLoading, isError } = useMembre(id)
 
@@ -343,6 +350,9 @@ export function MembreDetailView() {
   const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
+  // Mêmes rôles que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
+  // ceci évite seulement d'afficher une action qui répondrait 403.
+  const canRecordPayment      = ["ADMIN", "PRESIDENT", "TRESORIER"].includes(currentUser.role)
   const participations        = membre.participations ?? []
   const meetingsAsParticipant = membre.meetingsAsParticipant ?? []
   const materialLoans         = membre.materialLoans ?? []
@@ -625,7 +635,7 @@ export function MembreDetailView() {
           ) : (
             <div className="space-y-2">
               {cotisations.map((c: {
-                id: string; year: number; amount: string; status: string; paidAt: string | null
+                id: string; year: number; amount: string; amountPaid: string; status: string; paidAt: string | null
                 declarationNumber: string | null; periodEnd?: string | null; receiptMode?: "NONE" | "FULL" | "PARTIAL"
                 deductibleAmount?: string | null
                 installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
@@ -665,6 +675,21 @@ export function MembreDetailView() {
                           <TooltipContent>{s.tooltip}</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
+                      {/* Encaisser depuis la fiche : un virement ou un chèque n'est jamais détecté
+                          tout seul, et jusqu'ici l'action n'existait que sur la page Cotisations —
+                          personne ne la trouvait depuis la fiche de l'adhérent, où on la cherche. */}
+                      {canRecordPayment && !TERMINAL_COTISATION_STATUSES.includes(c.status) && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger render={
+                              <Button size="sm" variant="outline" onClick={() => setPaymentTarget(c)}>
+                                <CurrencyEurIcon className="size-3.5" />
+                              </Button>
+                            } />
+                            <TooltipContent>{t("membres.detail.recordPayment")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                       {c.declarationNumber && (
                         <Button
                           size="sm"
@@ -955,6 +980,15 @@ export function MembreDetailView() {
           loading={createCotisationMutation.isPending}
         />
       </Modal>
+
+      {paymentTarget && (
+        <CotisationPaymentModal
+          cotisationId={paymentTarget.id}
+          remaining={Number(paymentTarget.amount) - Number(paymentTarget.amountPaid)}
+          open={!!paymentTarget}
+          onOpenChange={(open) => !open && setPaymentTarget(null)}
+        />
+      )}
 
       <Modal
         open={!!editCotisationTarget}

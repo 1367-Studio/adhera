@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -123,6 +123,8 @@ function BoutiquePageInner() {
   const [stripePayTarget, setStripePayTarget] = useState<Commande | null>(null)
   const [correctTarget, setCorrectTarget] = useState<Commande | null>(null)
   const [correctedType, setCorrectedType] = useState("")
+  const [refundTarget, setRefundTarget]   = useState<Commande | null>(null)
+  const [refundItems, setRefundItems]     = useState<EditableItem[]>([])
 
   const { data: produits = [], isLoading: loadingProduits } = useQuery<Produit[]>({
     queryKey:  ["boutique-produits"],
@@ -186,6 +188,57 @@ function BoutiquePageInner() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success(t("view.toasts.orderUpdated")) },
     onError:   (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
+
+  // Unlike updateCommandeStatus (PENDING→PAID), this targets an already-PAID order — same
+  // "target quantity per item" contract as that route's items field, just interpreted as
+  // "how much is left" instead of "how much to collect". Handles STRIPE and MANUAL alike;
+  // the route itself branches on payment method.
+  const refundCommande = useMutation({
+    mutationFn: ({ id, items }: { id: string; items: { id: string; quantity: number }[] }) =>
+      fetch(`/api/boutique/commandes/${id}/refund`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ items }),
+      }).then(async r => {
+        if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
+        return r.json()
+      }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success(t("view.toasts.refundSuccess")) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
+  })
+
+  function openRefundModal(c: Commande) {
+    setRefundItems(c.items.map(i => ({
+      id:            i.id,
+      qty:           i.quantity,
+      originalQty:   i.quantity,
+      unitPrice:     i.unitPrice,
+      produitName:   i.produit.name,
+      varianteLabel: i.variante.label,
+    })))
+    setRefundTarget(c)
+  }
+
+  function adjustRefundQty(itemId: string, delta: number) {
+    setRefundItems(prev => prev.map(i =>
+      i.id === itemId
+        ? { ...i, qty: Math.min(i.originalQty, Math.max(0, i.qty + delta)) }
+        : i,
+    ))
+  }
+
+  async function handleRefund() {
+    if (!refundTarget) return
+    try {
+      await refundCommande.mutateAsync({
+        id:    refundTarget.id,
+        items: refundItems.map(i => ({ id: i.id, quantity: i.qty })),
+      })
+      setRefundTarget(null)
+    } catch {
+      // onError already shows toast; keep modal open so user can retry
+    }
+  }
 
   function openPayModal(c: Commande) {
     if (c.paymentMethod === "STRIPE") {
@@ -412,6 +465,7 @@ function BoutiquePageInner() {
             ...(c.paymentMethod === "MANUAL" ? [
               { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
+            { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
           ]}
         />
       ) : null,
@@ -587,6 +641,99 @@ function BoutiquePageInner() {
                       </p>
                     )}
                   </div>
+                )}
+              </div>
+            )}
+          </Modal>
+        )
+      })()}
+
+      {/* Refund/cancel modal — targets an already-PAID order, STRIPE or MANUAL alike */}
+      {(() => {
+        const refundCents  = refundItems.reduce((s, i) => s + i.unitPrice * (i.originalQty - i.qty), 0)
+        const allZero      = refundItems.length > 0 && refundItems.every(i => i.qty === 0)
+        const shippingCts  = allZero ? (refundTarget?.shippingCost ?? 0) : 0
+        const totalRefund  = refundCents + shippingCts
+        const hasChange    = refundItems.some(i => i.qty < i.originalQty)
+        const fmt = (cents: number) => (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+        return (
+          <Modal
+            open={!!refundTarget}
+            onOpenChange={o => { if (!o) setRefundTarget(null) }}
+            title={t("refundModal.title")}
+            size="sm"
+            footer={
+              <>
+                <Button variant="outline" onClick={() => setRefundTarget(null)}>{tCommon("cancel")}</Button>
+                <Button
+                  variant="destructive"
+                  loading={refundCommande.isPending}
+                  disabled={!hasChange}
+                  onClick={handleRefund}
+                >
+                  <ArrowCounterClockwiseIcon className="mr-1.5 size-4" />
+                  {t("refundModal.confirmWithAmount", { amount: fmt(totalRefund) })}
+                </Button>
+              </>
+            }
+          >
+            {refundTarget && (
+              <div className="space-y-4 py-1">
+                {(refundTarget.membre || refundTarget.guestName) && (
+                  <p className="text-sm text-muted-foreground">
+                    {t("payModal.orderOf")}{" "}
+                    <span className="font-medium text-foreground">
+                      {refundTarget.membre ? `${refundTarget.membre.firstName} ${refundTarget.membre.lastName}` : refundTarget.guestName}
+                    </span>
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {refundTarget.paymentMethod === "STRIPE" ? t("refundModal.stripeNotice") : t("refundModal.manualNotice")}
+                </p>
+                <div className="space-y-3">
+                  {refundItems.map(item => {
+                    const fullyRefunded = item.qty === 0
+                    return (
+                      <div key={item.id} className={cn("flex items-center gap-3", fullyRefunded && "opacity-50")}>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn("text-sm font-medium truncate", fullyRefunded && "line-through")}>{item.produitName}</p>
+                          <p className="text-xs text-muted-foreground">{item.varianteLabel}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => adjustRefundQty(item.id, -1)}
+                            disabled={item.qty <= 0}
+                            className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
+                          >
+                            −
+                          </button>
+                          <span className="w-6 text-center text-sm font-semibold tabular-nums">{item.qty}</span>
+                          <button
+                            type="button"
+                            onClick={() => adjustRefundQty(item.id, +1)}
+                            disabled={item.qty >= item.originalQty}
+                            className="size-7 rounded-md border flex items-center justify-center text-base font-medium hover:bg-muted transition-colors disabled:opacity-30"
+                          >
+                            +
+                          </button>
+                          <span className={cn("w-20 text-right text-sm tabular-nums", fullyRefunded ? "text-muted-foreground/50 line-through" : "text-muted-foreground")}>
+                            {fmt(item.unitPrice * (item.originalQty - item.qty))}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                {allZero && shippingCts > 0 && (
+                  <p className="text-xs text-muted-foreground border-t pt-3">
+                    {t("refundModal.shippingIncludedNotice", { amount: fmt(shippingCts) })}
+                  </p>
+                )}
+                {!allZero && refundItems.some(i => i.qty === 0) && (
+                  <p className="text-xs text-muted-foreground border-t pt-3">
+                    {t("payModal.restockNoticePlural", { count: refundItems.filter(i => i.qty === 0).length })}
+                  </p>
                 )}
               </div>
             )}

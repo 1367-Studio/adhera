@@ -3,6 +3,8 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { consentIp } from "@/lib/consent"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueNewOrderAdminEmail, boutiquePendingOrderEmail } from "@/lib/email"
@@ -27,6 +29,8 @@ const schema = z.object({
   phone:     z.string().trim().max(30).optional(),
   note:      z.string().trim().max(500).optional().nullable(),
   website:   z.string().optional().or(z.literal("")),
+  // Révisions des documents de l'association affichées puis acceptées dans le panier.
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   ...deliveryFieldsSchema,
 })
 
@@ -66,6 +70,24 @@ export async function POST(
 
   const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode, shippingOptionCostCents } = parsed.data
   const guestName = `${firstName} ${lastName}`.trim()
+
+  // Même exigence que la voie Stripe (checkout/route.ts) : sans ça, choisir « paiement à la
+  // remise » suffirait à contourner l'acceptation des documents de l'association. Validé avant
+  // le décrément du stock et la création de la commande — un consentement refusé ne doit laisser
+  // ni commande à moitié créée ni stock réservé. L'identité est l'email saisi : un acheteur de la
+  // boutique publique n'a ni compte ni fiche adhérent.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: parsed.data.acceptedLegalRevisionIds,
+      identity:             { guestEmail: email },
+      context:              "BOUTIQUE",
+      ip:                   consentIp(req),
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
 
   let shippingCost = 0
   let shippingCarrierLabel: string | null = null

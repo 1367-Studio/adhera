@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { consentIp } from "@/lib/consent"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
 import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
@@ -29,6 +31,8 @@ const schema = z.object({
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention
   // que les formulaires publics de dons/adhésion/inscription.
   website:   z.string().optional().or(z.literal("")),
+  // Révisions des documents de l'association affichées puis acceptées dans le panier.
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   ...deliveryFieldsSchema,
 })
 
@@ -67,6 +71,28 @@ export async function POST(
 
   const { items, firstName, lastName, email, phone, note, deliveryMethod, shippingAddress, shippingCity, shippingPostalCode, shippingCountry, shippingOptionCode, shippingOptionCostCents } = parsed.data
   const guestName = `${firstName} ${lastName}`.trim()
+
+  // Documents que l'association impose d'accepter. Le panier bloque déjà l'envoi ; on revalide
+  // ici pour ne jamais dépendre d'un contrôle contournable, et un texte réécrit depuis
+  // l'affichage du panier est refusé plutôt qu'accepté en silence.
+  //
+  // Avant le décrément du stock et la création de la commande : un consentement refusé ne doit
+  // laisser ni commande à moitié créée ni stock réservé. Enregistré avant le paiement aussi :
+  // la personne a bien accepté à cet instant, que sa carte passe ensuite ou non — Stripe héberge
+  // la page de paiement, il n'y a plus d'étape à nous après. L'identité est l'email saisi : un
+  // acheteur de la boutique publique n'a ni compte ni fiche adhérent.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: parsed.data.acceptedLegalRevisionIds,
+      identity:             { guestEmail: email },
+      context:              "BOUTIQUE",
+      ip:                   consentIp(req),
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
 
   let shippingCost = 0
   let shippingCarrierLabel: string | null = null

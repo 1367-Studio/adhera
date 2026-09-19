@@ -13,9 +13,11 @@ import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { SelectField } from "@/components/ui/select-field"
+import { CheckboxField } from "@/components/ui/checkbox-field"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { TermsModal } from "@/components/public/terms-modal"
+import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 
 const MAX_QUANTITY = 10
@@ -95,7 +97,7 @@ type Attendee = {
 
 const EMPTY_ATTENDEE: Attendee = { firstName: "", lastName: "", email: "", ticketTypeId: "", phone: "", address: "", birthDate: "", gender: "", mobile: "", answers: {} }
 
-type Props = { slug: string; id: string }
+type Props = { slug: string; id: string; legalDocuments: RequiredLegalDocument[] }
 
 export function EvenementRegisterForm(props: Props) {
   return (
@@ -464,7 +466,7 @@ function AttendeeFields({
   )
 }
 
-function EvenementRegisterFormInner({ slug, id }: Props) {
+function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   const searchParams = useSearchParams()
   const router   = useRouter()
   const pathname = usePathname()
@@ -510,6 +512,13 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
   const [productQuantities, setProductQuantities] = useState<Record<string, number>>({})
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [signedName, setSignedName]             = useState("")
+  // Accord sur les documents de l'association, distinct des conditions propres à l'événement
+  // juste au-dessus : celles-ci sont la formulation de l'organisateur pour cet événement, ceux-là
+  // sont les documents de l'association, enregistrés contre la révision affichée au visiteur.
+  // Reçus en prop (rendus côté serveur) et jamais chargés ici : la case doit exister dès le
+  // premier rendu, pour qu'une requête en échec ne puisse pas produire un formulaire sans elle.
+  const [legalAccepted, setLegalAccepted] = useState(false)
+  const acceptedLegalRevisionIds = legalAccepted ? legalDocuments.map(document => document.revisionId) : []
   // Un seul par commande, comme les dons/produits ci-dessus — voir le commentaire du champ
   // ticketTypeIds dans schema.prisma : ne s'applique jamais aux dons ni à la boutique.
   const [discountCodeInput, setDiscountCodeInput] = useState("")
@@ -752,7 +761,10 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
       }),
     ) &&
     selectedDonations.every(d => (donationAmounts[d.id] ?? Number(d.minAmount)) >= Number(d.minAmount)) &&
-    (!event.requireCguvSignature || (conditionsAgreed && signedName.trim() !== ""))
+    (!event.requireCguvSignature || (conditionsAgreed && signedName.trim() !== "")) &&
+    // Les documents de l'association sont obligatoires dès qu'elle en impose, indépendamment de
+    // requireCguvSignature qui ne porte que sur les conditions propres à l'événement.
+    (legalDocuments.length === 0 || legalAccepted)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -789,6 +801,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
             .map(([varianteId, quantity]) => ({ varianteId, quantity })),
           conditionsAgreed: event.requireCguvSignature ? conditionsAgreed : undefined,
           signedName:       event.requireCguvSignature ? signedName.trim() : undefined,
+          acceptedLegalRevisionIds,
           discountCode:     appliedDiscount && attendeeCount === 1 ? appliedDiscount.code : undefined,
         }),
       })
@@ -1229,10 +1242,7 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                     )}
                     {event.requireCguvSignature && (
                       <div className="space-y-2">
-                        <label className="flex items-center gap-1.5 text-sm">
-                          <input type="checkbox" checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-                          {t("conditionsAgreeLabel")}
-                        </label>
+                        <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
                         <div className="space-y-1.5">
                           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("signedNameLabel")}</label>
                           <input
@@ -1242,6 +1252,16 @@ function EvenementRegisterFormInner({ slug, id }: Props) {
                         </div>
                       </div>
                     )}
+
+                    {/* Documents de l'association — affichés quel que soit requireCguvSignature, qui
+                        ne concerne que les conditions propres à l'événement ci-dessus. Ne rend rien
+                        quand l'association n'impose aucun document (voir LegalConsent). */}
+                    <LegalConsent
+                      slug={slug}
+                      documents={legalDocuments}
+                      checked={legalAccepted}
+                      onChange={setLegalAccepted}
+                    />
 
                     <Button
                       type="submit"

@@ -542,6 +542,7 @@ model Association {
   factures                   Facture[]
   facturesRecues             FactureRecue[]
   associationDocuments       AssociationDocument[]
+  legalAcceptances           LegalAcceptance[]
   emailMessages              EmailMessage[]
   smsMessages                SmsMessage[]
   supportTickets             SupportTicket[]
@@ -1315,6 +1316,8 @@ model Don {
   // SetNull, même raisonnement que membershipAddonTier — le Don doit survivre à la
   // suppression de la tarif qui l'a produit.
   evenementTicketType EvenementTicketType?  @relation(fields: [evenementTicketTypeId], references: [id], onDelete: SetNull)
+  // The Income row this donation produced once paid — see Income.donId.
+  income              Income?
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
@@ -2342,6 +2345,8 @@ model BoutiqueCommande {
   cotisation    Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
   participation Participation?         @relation(fields: [participationId], references: [id], onDelete: SetNull)
   items         BoutiqueCommandeItem[]
+  // One row per accounting category plus one for shipping — see Income.commandeId.
+  incomes       Income[]
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, status])
@@ -2527,6 +2532,18 @@ model Income {
   participationId     String? // the exact seat this income came from — lets a partial ticket cancellation remove precisely this row instead of guessing among an order's income rows
   facturePaymentId    String?      @unique // set when this row was auto-created from a Facture payment — see FacturePayment.income
   cotisationPaymentId String?      @unique // set when this row was auto-created from a CotisationPayment — see CotisationPayment.income
+  // Set when this row was auto-created from a paid Don (one-off, offline "encaissement", or a
+  // recurring donation's charge) — see Don.income. Only present on rows created after this
+  // field shipped; older Don-sourced Income rows stay unlinked and are recognized by the
+  // income-statement report from their description text instead (see classifyIncome in
+  // src/lib/finance/income-statement.ts).
+  donId               String?      @unique
+  // Set when this row was auto-created from a paid BoutiqueCommande (Stripe or manual
+  // encaissement) — see BoutiqueCommande.incomes. Not @unique, unlike the FKs above: a single
+  // commande posts one Income row per accounting category plus one for shipping, so this is a
+  // one-to-many link, not one-to-one. Same legacy-fallback reasoning as donId for older rows —
+  // see LEGACY_BOUTIQUE_DESCRIPTION in src/lib/finance/income-statement.ts.
+  commandeId          String?
   amount              Decimal      @db.Decimal(10, 2)
   categoryId          String?
   paymentMethod       String?
@@ -2544,6 +2561,8 @@ model Income {
   participation     Participation?       @relation(fields: [participationId], references: [id], onDelete: SetNull)
   facturePayment    FacturePayment?      @relation(fields: [facturePaymentId], references: [id], onDelete: SetNull)
   cotisationPayment CotisationPayment?   @relation(fields: [cotisationPaymentId], references: [id], onDelete: SetNull)
+  don               Don?                 @relation(fields: [donId], references: [id], onDelete: SetNull)
+  commande          BoutiqueCommande?    @relation(fields: [commandeId], references: [id], onDelete: SetNull)
   category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   reconciliations   BankReconciliation[]
 
@@ -2800,21 +2819,109 @@ model FactureRecue {
 
 // Documents written by the association itself (CGU, règlement intérieur, …) — rich text
 // from the shared Tiptap editor, never an uploaded file. Managers edit them from the
-// dashboard; members only ever read the ones flagged visibleToMembers in the portal.
+// dashboard; members read the ones flagged visibleToMembers in the portal.
+//
+// The two visibility flags are independent and cumulative, not a scale:
+//   visibleToMembers → listed in the member portal (session required)
+//   visibleToPublic  → readable by anyone at /[slug]/documents, no session at all
+// Public matters because a consent checkbox on a public form has to link to the text being
+// accepted, and a stranger filling an adhesion form has no account yet.
+// requiresAcceptance turns a document into something people must actively agree to before
+// joining, donating, registering or ordering — see LegalAcceptance. It implies public
+// readability in practice (a stranger has to be able to read what they are accepting), which
+// the API enforces rather than the schema.
 model AssociationDocument {
-  id               String    @id @default(cuid())
-  associationId    String
-  title            String
-  content          String // HTML riche (Tiptap)
-  visibleToMembers Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime?
+  id                 String    @id @default(cuid())
+  associationId      String
+  title              String
+  content            String // HTML riche (Tiptap)
+  visibleToMembers   Boolean   @default(false)
+  visibleToPublic    Boolean   @default(false)
+  requiresAcceptance Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
 
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association                   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  revisions   AssociationDocumentRevision[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, visibleToMembers])
+  @@index([associationId, visibleToPublic])
+  @@index([associationId, requiresAcceptance])
+}
+
+// An immutable snapshot of one document's wording, written on every title/content change.
+//
+// This exists because AssociationDocument.content is overwritten in place. A consent record
+// pointing at the document alone would only ever prove "they ticked a box on that date" — the
+// text itself would already be gone. Acceptances therefore point at a revision, which is also
+// what makes "this document changed, members must agree again" answerable: compare the
+// revision someone accepted with the document's current one.
+model AssociationDocumentRevision {
+  id         String   @id @default(cuid())
+  documentId String
+  // 1, 2, 3… per document. The highest one is the wording in force.
+  version    Int
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+
+  document    AssociationDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  acceptances LegalAcceptance[]
+
+  @@unique([documentId, version])
+  @@index([documentId, createdAt])
+}
+
+// Where an acceptance was collected. DASHBOARD_OFFLINE is the manager-fill case: the person
+// agreed on paper or in person and a manager vouches for it — never inferred, always an
+// explicit assertion by that manager (see collectedById).
+enum LegalAcceptanceContext {
+  ADHESION
+  DON
+  EVENEMENT
+  BOUTIQUE
+  PORTAL_REGISTER
+  PORTAL_REACCEPTANCE
+  DASHBOARD_OFFLINE
+}
+
+// One person agreeing to one revision of one document, once. The row is the evidence, so it
+// is never updated and never deleted on the person's side: re-agreeing to a new revision
+// writes a new row, leaving the earlier agreement intact.
+model LegalAcceptance {
+  id            String @id @default(cuid())
+  associationId String
+  revisionId    String
+
+  // Who agreed. A visitor ordering from the boutique has no account and no Membre row, so the
+  // email they typed is the only identity there is — hence three optional columns rather than
+  // one required link, with the caller always setting at least one. Deliberately plain columns
+  // and not foreign keys: deleting a member must not shred the proof that they once agreed.
+  userId     String?
+  membreId   String?
+  guestEmail String?
+
+  context LegalAcceptanceContext
+  // The Cotisation / Don / Participation / BoutiqueCommande this was given for, when there is
+  // one. Not a foreign key either: it points into whichever table `context` names.
+  contextId String?
+
+  acceptedAt DateTime @default(now())
+  ip         String?
+
+  // DASHBOARD_OFFLINE only — the manager who asserted having collected the agreement.
+  collectedById String?
+
+  association Association                 @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  revision    AssociationDocumentRevision @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+
+  @@index([associationId, acceptedAt])
+  @@index([revisionId])
+  @@index([membreId])
+  @@index([userId])
+  @@index([guestEmail])
 }
 
 // Azure Translator cache — keyed by content hash so identical text (even across

@@ -887,6 +887,46 @@
       "title": "Bientôt disponible",
       "description": "Cette fonctionnalité est en cours de développement."
     },
+    "compteResultat": {
+      "title": "Compte de résultat",
+      "description": "Résultat financier de l'exercice, comparé à l'exercice précédent.",
+      "exerciceLabel": "Exercice",
+      "noPreviousExercice": "-",
+      "export": "Exporter",
+      "exportExcel": "Exporter Excel",
+      "exportPdf": "Exporter PDF",
+      "products": "Produits / Recettes",
+      "totalProducts": "Total des produits",
+      "expenses": "Charges / Dépenses",
+      "totalExpenses": "Total des charges",
+      "result": "Résultat de l'exercice",
+      "surplus": "Excédent de l'exercice",
+      "deficit": "Déficit de l'exercice",
+      "categories": {
+        "income": {
+          "cotisations": "Cotisations / Adhésions",
+          "dons": "Dons",
+          "subventions": "Subventions",
+          "boutique": "Boutique",
+          "evenements": "Événements",
+          "autres": "Autres recettes"
+        },
+        "expense": {
+          "assurance": "Assurance",
+          "communication": "Communication",
+          "materiel": "Matériel",
+          "transport": "Déplacements",
+          "fraisBancaires": "Frais bancaires",
+          "location": "Location",
+          "equipement": "Équipement",
+          "autres": "Autres dépenses"
+        }
+      },
+      "emptyExercice": {
+        "title": "Aucun exercice fiscal",
+        "description": "Créez un exercice fiscal pour générer le compte de résultat."
+      }
+    },
     "categoryForm": {
       "name": "Nom",
       "namePlaceholder": "Ex: Cotisations",
@@ -2472,7 +2512,8 @@
         "markPaid": "Marquer payée",
         "cancelOrder": "Annuler",
         "downloadReceipt": "Télécharger le reçu",
-        "editPaymentMethod": "Modifier le moyen de paiement"
+        "editPaymentMethod": "Modifier le moyen de paiement",
+        "refundOrder": "Rembourser"
       },
       "noProduct": "Aucun produit",
       "noOrder": "Aucune commande",
@@ -2497,7 +2538,8 @@
         "productDeleted": "Produit supprimé",
         "deleteError": "Erreur lors de la suppression",
         "orderUpdated": "Commande mise à jour",
-        "orderNotInRecentList": "Cette commande n'est pas dans les 50 plus récentes. Utilisez les filtres pour la retrouver."
+        "orderNotInRecentList": "Cette commande n'est pas dans les 50 plus récentes. Utilisez les filtres pour la retrouver.",
+        "refundSuccess": "Commande remboursée"
       }
     },
     "payModal": {
@@ -2507,6 +2549,13 @@
       "orderedTotal": "Total commandé",
       "restockNoticePlural": "{count, plural, one {Le stock de l'article non retiré sera restauré.} other {Le stock des articles non retirés sera restauré.}}",
       "restockNoticeStatic": "Le stock des articles non retirés sera restauré."
+    },
+    "refundModal": {
+      "title": "Rembourser la commande",
+      "confirmWithAmount": "Rembourser {amount}",
+      "stripeNotice": "Le remboursement sera effectué automatiquement sur la carte du client.",
+      "manualNotice": "Cette action met à jour le stock et la comptabilité — pensez à rendre l'argent au client (espèces, chèque ou virement).",
+      "shippingIncludedNotice": "Les frais de livraison ({amount}) sont inclus dans ce remboursement."
     },
     "stripeConfirm": {
       "title": "Marquer comme payée ?",
@@ -3246,7 +3295,7 @@
         "rules": "Automatisations",
         "historique": "Historique"
       },
-      "reminderSchedule": "Régua de rappels"
+      "reminderSchedule": "Calendrier des rappels"
     },
     "templatesManager": {
       "title": "Modèles de messages",
@@ -3850,6 +3899,7 @@
         "enAttente": "En attente",
         "payees": "Payées",
         "exonerees": "Exonérées",
+        "aEncaisser": "À encaisser",
         "partiellementPayees": "Partiellement payées",
         "enRetard": "En retard",
         "annulees": "Annulées"
@@ -4182,6 +4232,7 @@
       "paidOn": "Payée le {date}",
       "validUntil": "Valable jusqu'au {date}",
       "periodExpiredOn": "Expirée le {date}",
+      "recordPayment": "Enregistrer un paiement",
       "downloadRecuFiscal": "Télécharger le reçu fiscal",
       "downloadRecuFiscalPartial": "Télécharger le reçu fiscal (partiel : {amount} déductible)",
       "showingRecentCotisations": "Affichage des {count} cotisations les plus récentes sur {total} au total.",
@@ -4892,6 +4943,13 @@
     "hidden": "Masqué",
     "visibleToMembers": "Visible par les membres",
     "visibleToMembersHint": "Affiche ce document dans l'espace membre. Désactivé, seuls les gestionnaires le voient.",
+    "visibleToPublic": "Accessible publiquement",
+    "visibleToPublicHint": "Rend ce document consultable par toute personne disposant du lien, sans compte — nécessaire pour y renvoyer depuis vos formulaires publics.",
+    "visibleToPublicForcedHint": "Activé automatiquement : un document à faire accepter doit pouvoir être lu par la personne qui l'accepte.",
+    "requiresAcceptance": "À faire accepter",
+    "requiresAcceptanceHint": "Une case à cocher obligatoire apparaîtra dans les formulaires d'adhésion, de don, d'inscription aux événements, dans la boutique et à la création de compte. Chaque acceptation est enregistrée avec la version du document.",
+    "exportAcceptances": "Exporter les acceptations",
+    "publicShort": "Public",
     "toasts": {
       "madeVisible": "« {title} » est visible par les membres",
       "madeHidden": "« {title} » est masqué aux membres",
@@ -4922,6 +4980,27 @@
     },
     "notFound": "Ce document est introuvable.",
     "backToList": "Retour aux documents"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {J'accepte le document suivant :} other {J'accepte les documents suivants :}}",
+    "required": "Vous devez accepter les documents de l'association pour continuer.",
+    "stale": "Les documents de l'association ont été mis à jour, merci de les relire avant de continuer.",
+    "offlineAttestation": "J'atteste avoir recueilli l'accord de cette personne sur ces documents",
+    "gateTitle": "Documents à accepter",
+    "gateSubtitle": "Votre association a mis à jour ses documents. Merci de les lire et de les accepter pour accéder à votre espace.",
+    "gateSubmit": "J'accepte et je continue",
+    "gateSignOut": "Se déconnecter",
+    "gateError": "Impossible d'enregistrer votre acceptation.",
+    "offlineAttestationHint": "Enregistré comme acceptation recueillie hors ligne, à votre nom."
+  },
+  "publicDocuments": {
+    "title": "Documents légaux",
+    "subtitle": "Documents mis à disposition par l'association.",
+    "empty": "Aucun document publié pour le moment.",
+    "updatedAt": "Mis à jour le {date}",
+    "backToList": "Tous les documents",
+    "associationNotFound": "Cette association est introuvable.",
+    "notFound": "Ce document n'est plus disponible."
   },
   "portalMembre": {
     "associationDocuments": {

@@ -5,6 +5,8 @@ import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
 import { useResponsableOptions } from "@/hooks/use-membres"
@@ -121,6 +123,8 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     { value: "", label: t("membres.form.tailleTshirtNone") },
     ...TAILLE_TSHIRT_VALUES.map(value => ({ value, label: value })),
   ]
+
+  const { data: requiredLegalDocuments = [] } = useRequiredLegalDocuments()
 
   const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
     resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
@@ -480,6 +484,25 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         error={errors.address?.message}
         {...register("address")}
       />
+
+      {/* Création par un gestionnaire : la personne n'est pas là pour accepter elle-même. Le
+          gestionnaire atteste avoir recueilli son accord, et c'est cette affirmation qui est
+          enregistrée, à son nom — jamais déduite automatiquement. */}
+      {isCreate && requiredLegalDocuments.length > 0 && (
+        <Controller
+          name="legalOfflineAttestation"
+          control={control}
+          render={({ field }) => (
+            <CheckboxField
+              id="membre-legal-attestation"
+              checked={!!field.value}
+              onChange={event => field.onChange(event.target.checked)}
+              label={t("legalConsent.offlineAttestation")}
+              hint={`${t("legalConsent.offlineAttestationHint")} ${requiredLegalDocuments.map(document => document.title).join(", ")}`}
+            />
+          )}
+        />
+      )}
 
       <div className="flex justify-end gap-2 pt-3">
         <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
