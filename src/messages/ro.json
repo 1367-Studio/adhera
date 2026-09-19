@@ -30,9 +30,9 @@
       "replace": "Înlocuiește",
       "remove": "Îndepărtează",
       "dropOrClickToAdd": "Trage sau dă click pentru a adăuga o imagine",
-      "formatsHint": "JPG, PNG, WebP · max 5 MB",
-      "compactHint": "Trage/dă click pentru a adăuga o imagine (JPG, PNG, WebP, max 5 MB)",
-      "maxSizeError": "Imagine prea mare (maxim 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · max 4 MB",
+      "compactHint": "Trage/dă click pentru a adăuga o imagine (JPG, PNG, WebP, max 4 MB)",
+      "maxSizeError": "Imagine prea mare (maxim 4 MB)",
       "uploadError": "Încărcarea erorilor"
     },
     "free": "Gratuit",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Fișier prea mare (maxim 10 MB)",
+    "fileTooLarge": "Fișier prea mare (maxim 4 MB)",
     "uploadError": "Încărcarea erorilor",
     "networkError": "Încărcarea erorilor de rețea — încearcă din nou",
     "pdfDocument": "Document PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Vizualizați documentul",
     "remove": "Șterge",
     "uploading": "Încărcăm...",
-    "attach": "Atașează imaginea sau PDF-ul (maxim 10 MB)"
+    "attach": "Atașează imaginea sau PDF-ul (maxim 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Încărcăm...",
       "fileChosen": "Fișier atașat",
       "fileRemove": "Șterge fișierul",
-      "fileTooLarge": "Fișier prea mare (maxim 10 MB)",
+      "fileTooLarge": "Fișier prea mare (maxim 4 MB)",
       "fileUploadError": "Încărcarea erorilor",
       "fileNetworkError": "Încărcarea erorilor de rețea — încearcă din nou",
       "totalLabel": "Total:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "O întrebare? Contactează-ne:",
       "photoNoFile": "Nu sunt furnizate fișiere",
       "photoLabel": "Fotografie",
-      "photoTooLarge": "Fișier prea mare (maxim 5 MB)",
+      "photoTooLarge": "Fișier prea mare (maxim 4 MB)",
       "photoFormatUnsupported": "Formatul nu este suportat. Doar JPG, PNG, WebP sau GIF.",
       "photoUploadError": "Eroare trimiterea fotografiei. Încearcă din nou.",
       "photoTooManyAttempts": "Prea multe încercări, încearcă din nou mai târziu.",

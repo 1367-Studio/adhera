@@ -30,9 +30,9 @@
       "replace": "Aizvietot",
       "remove": "Noņemt",
       "dropOrClickToAdd": "Velciet vai klikšķiniet, lai pievienotu attēlu",
-      "formatsHint": "JPG, PNG, WebP · maks 5 MB",
-      "compactHint": "Vilk/klikšķini, lai pievienotu attēlu (JPG, PNG, WebP, maksimums 5 MB)",
-      "maxSizeError": "Attēls pārāk liels (maksimums 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maks 4 MB",
+      "compactHint": "Vilk/klikšķini, lai pievienotu attēlu (JPG, PNG, WebP, maksimums 4 MB)",
+      "maxSizeError": "Attēls pārāk liels (maksimums 4 MB)",
       "uploadError": "Kļūdu augšupielāde"
     },
     "free": "Bezmaksas",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Fails pārāk liels (maksimums 10 MB)",
+    "fileTooLarge": "Fails pārāk liels (maksimums 4 MB)",
     "uploadError": "Kļūdu augšupielāde",
     "networkError": "Tīkla kļūdu augšupielāde — mēģiniet vēlreiz",
     "pdfDocument": "Dokumenta PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Skatīt dokumentu",
     "remove": "Dzēst",
     "uploading": "Augšupielāde...",
-    "attach": "Pievienot attēlu vai PDF (maksimāli 10 MB)"
+    "attach": "Pievienot attēlu vai PDF (maksimāli 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Augšupielāde...",
       "fileChosen": "Pievienotais fails",
       "fileRemove": "Dzēst failu",
-      "fileTooLarge": "Fails pārāk liels (maksimums 10 MB)",
+      "fileTooLarge": "Fails pārāk liels (maksimums 4 MB)",
       "fileUploadError": "Kļūdu augšupielāde",
       "fileNetworkError": "Tīkla kļūdu augšupielāde — mēģiniet vēlreiz",
       "totalLabel": "Kopā :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Jautājums? Sazinieties ar mums:",
       "photoNoFile": "Faili nav pieejami",
       "photoLabel": "Foto",
-      "photoTooLarge": "Fails pārāk liels (maksimums 5 MB)",
+      "photoTooLarge": "Fails pārāk liels (maksimums 4 MB)",
       "photoFormatUnsupported": "Formāts nav atbalstīts. Tikai JPG, PNG, WebP vai GIF.",
       "photoUploadError": "Kļūda, sūtot foto. Mēģini vēlreiz.",
       "photoTooManyAttempts": "Pārāk daudz mēģinājumu, mēģini vēlāk.",

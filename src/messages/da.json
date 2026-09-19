@@ -30,9 +30,9 @@
       "replace": "Udskift",
       "remove": "Fjern",
       "dropOrClickToAdd": "Træk eller klik for at tilføje et billede",
-      "formatsHint": "JPG, PNG, WebP · Max 5 MB",
-      "compactHint": "Træk/klik for at tilføje et billede (JPG, PNG, WebP, maks 5 MB)",
-      "maxSizeError": "Billedet er for stort (maks 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · Max 4 MB",
+      "compactHint": "Træk/klik for at tilføje et billede (JPG, PNG, WebP, maks 4 MB)",
+      "maxSizeError": "Billedet er for stort (maks 4 MB)",
       "uploadError": "Fejl ved upload"
     },
     "free": "Gratis",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Filen er for stor (maks 10 MB)",
+    "fileTooLarge": "Filen er for stor (maks 4 MB)",
     "uploadError": "Fejl ved upload",
     "networkError": "Netværksfejl uploader — prøv igen",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Se dokumentet",
     "remove": "Slet",
     "uploading": "Uploader...",
-    "attach": "Vedhæft billede eller PDF (maks 10 MB)"
+    "attach": "Vedhæft billede eller PDF (maks 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Uploader...",
       "fileChosen": "Vedhæftet fil",
       "fileRemove": "Slet fil",
-      "fileTooLarge": "Filen er for stor (maks 10 MB)",
+      "fileTooLarge": "Filen er for stor (maks 4 MB)",
       "fileUploadError": "Fejl ved upload",
       "fileNetworkError": "Netværksfejl uploader — prøv igen",
       "totalLabel": "Total:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Et spørgsmål? Kontakt os:",
       "photoNoFile": "Ingen filer leveret",
       "photoLabel": "Foto",
-      "photoTooLarge": "Filen er for stor (maks 5 MB)",
+      "photoTooLarge": "Filen er for stor (maks 4 MB)",
       "photoFormatUnsupported": "Format understøttes ikke. Kun JPG, PNG, WebP eller GIF.",
       "photoUploadError": "Fejl ved at sende billedet. Prøv igen.",
       "photoTooManyAttempts": "For mange forsøg, prøv igen senere.",

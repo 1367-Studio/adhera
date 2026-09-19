@@ -30,9 +30,9 @@
       "replace": "Замяна",
       "remove": "Премахване",
       "dropOrClickToAdd": "Плъзнете или кликнете, за да добавите изображение",
-      "formatsHint": "JPG, PNG, WebP · максимум 5 MB",
-      "compactHint": "Плъзнете/кликнете, за да добавите изображение (JPG, PNG, WebP, максимум 5 MB)",
-      "maxSizeError": "Изображението е твърде голямо (максимум 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · максимум 4 MB",
+      "compactHint": "Плъзнете/кликнете, за да добавите изображение (JPG, PNG, WebP, максимум 4 MB)",
+      "maxSizeError": "Изображението е твърде голямо (максимум 4 MB)",
       "uploadError": "Грешка при качване"
     },
     "free": "Безплатно",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Пила е твърде голяма (максимум 10 MB)",
+    "fileTooLarge": "Пила е твърде голяма (максимум 4 MB)",
     "uploadError": "Грешка при качване",
     "networkError": "Качване на мрежова грешка — опитай отново",
     "pdfDocument": "Документ PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Вижте документа",
     "remove": "Изтрий",
     "uploading": "Качвам...",
-    "attach": "Прикачете изображение или PDF (максимум 10 MB)"
+    "attach": "Прикачете изображение или PDF (максимум 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Качвам...",
       "fileChosen": "Приложен файл",
       "fileRemove": "Изтрий файла",
-      "fileTooLarge": "Пила е твърде голяма (максимум 10 MB)",
+      "fileTooLarge": "Пила е твърде голяма (максимум 4 MB)",
       "fileUploadError": "Грешка при качване",
       "fileNetworkError": "Качване на мрежова грешка — опитай отново",
       "totalLabel": "Общо :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Въпрос? Свържете се с нас:",
       "photoNoFile": "Не са предоставени файлове",
       "photoLabel": "Снимка",
-      "photoTooLarge": "Пила е твърде голяма (максимум 5 MB)",
+      "photoTooLarge": "Пила е твърде голяма (максимум 4 MB)",
       "photoFormatUnsupported": "Форматът не се поддържа. Само JPG, PNG, WebP или GIF.",
       "photoUploadError": "Грешка при изпращане на снимката. Опитай пак.",
       "photoTooManyAttempts": "Твърде много опити, опитай пак по-късно.",

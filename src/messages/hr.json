@@ -30,9 +30,9 @@
       "replace": "Zamjena",
       "remove": "Uklonite",
       "dropOrClickToAdd": "Povucite ili kliknite za dodavanje slike",
-      "formatsHint": "JPG, PNG, WebP · maksimalno 5 MB",
-      "compactHint": "Povuci/klikni za dodavanje slike (JPG, PNG, WebP, maksimalno 5 MB)",
-      "maxSizeError": "Slika je prevelika (maksimalno 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maksimalno 4 MB",
+      "compactHint": "Povuci/klikni za dodavanje slike (JPG, PNG, WebP, maksimalno 4 MB)",
+      "maxSizeError": "Slika je prevelika (maksimalno 4 MB)",
       "uploadError": "Pogrešno učitavanje"
     },
     "free": "Besplatno",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Datoteka je prevelika (maksimalno 10 MB)",
+    "fileTooLarge": "Datoteka je prevelika (maksimalno 4 MB)",
     "uploadError": "Pogrešno učitavanje",
     "networkError": "Prijenos mrežne pogreške — pokušajte ponovno",
     "pdfDocument": "PDF dokumenta",
@@ -359,7 +359,7 @@
     "viewDocument": "Pogledajte dokument",
     "remove": "Obriši",
     "uploading": "Učitavanje...",
-    "attach": "Priložite sliku ili PDF (maksimalno 10 MB)"
+    "attach": "Priložite sliku ili PDF (maksimalno 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Učitavanje...",
       "fileChosen": "Priložena datoteka",
       "fileRemove": "Izbriši datoteku",
-      "fileTooLarge": "Datoteka je prevelika (maksimalno 10 MB)",
+      "fileTooLarge": "Datoteka je prevelika (maksimalno 4 MB)",
       "fileUploadError": "Pogrešno učitavanje",
       "fileNetworkError": "Prijenos mrežne pogreške — pokušajte ponovno",
       "totalLabel": "Ukupno:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Pitanje? Kontaktirajte nas:",
       "photoNoFile": "Nema dostavljenih datoteka",
       "photoLabel": "Fotografija",
-      "photoTooLarge": "Datoteka je prevelika (maksimalno 5 MB)",
+      "photoTooLarge": "Datoteka je prevelika (maksimalno 4 MB)",
       "photoFormatUnsupported": "Format nije podržan. Samo JPG, PNG, WebP ili GIF.",
       "photoUploadError": "Greška u slanju fotografije. Pokušaj ponovno.",
       "photoTooManyAttempts": "Previše pokušaja, pokušaj kasnije ponovno.",

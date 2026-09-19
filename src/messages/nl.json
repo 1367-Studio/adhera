@@ -30,9 +30,9 @@
       "replace": "Vervang",
       "remove": "Verwijder",
       "dropOrClickToAdd": "Sleep of klik om een afbeelding toe te voegen",
-      "formatsHint": "JPG, PNG, WebP · maximaal 5 MB",
-      "compactHint": "Sleep/klik om een afbeelding toe te voegen (JPG, PNG, WebP, maximaal 5 MB)",
-      "maxSizeError": "Afbeelding te groot (maximaal 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maximaal 4 MB",
+      "compactHint": "Sleep/klik om een afbeelding toe te voegen (JPG, PNG, WebP, maximaal 4 MB)",
+      "maxSizeError": "Afbeelding te groot (maximaal 4 MB)",
       "uploadError": "Fout uploaden"
     },
     "free": "Gratis",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Bestand te groot (maximaal 10 MB)",
+    "fileTooLarge": "Bestand te groot (maximaal 4 MB)",
     "uploadError": "Fout uploaden",
     "networkError": "Netwerkfout uploaden — probeer het opnieuw",
     "pdfDocument": "Document PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Bekijk het document",
     "remove": "Verwijderen",
     "uploading": "Uploaden...",
-    "attach": "Voeg afbeelding of PDF toe (maximaal 10 MB)"
+    "attach": "Voeg afbeelding of PDF toe (maximaal 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Uploaden...",
       "fileChosen": "Bijgevoegd bestand",
       "fileRemove": "Bestand verwijderen",
-      "fileTooLarge": "Bestand te groot (maximaal 10 MB)",
+      "fileTooLarge": "Bestand te groot (maximaal 4 MB)",
       "fileUploadError": "Fout uploaden",
       "fileNetworkError": "Netwerkfout uploaden — probeer het opnieuw",
       "totalLabel": "Totaal :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Een vraag? Neem contact met ons op:",
       "photoNoFile": "Geen bestanden verstrekt",
       "photoLabel": "Foto",
-      "photoTooLarge": "Bestand te groot (maximaal 5 MB)",
+      "photoTooLarge": "Bestand te groot (maximaal 4 MB)",
       "photoFormatUnsupported": "Formaat niet ondersteund. Alleen JPG, PNG, WebP of GIF.",
       "photoUploadError": "Fout bij het verzenden van de foto. Probeer het opnieuw.",
       "photoTooManyAttempts": "Te veel pogingen, probeer het later opnieuw.",

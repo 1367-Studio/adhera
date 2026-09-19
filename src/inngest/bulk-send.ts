@@ -1,14 +1,22 @@
 import { inngest } from "@/lib/inngest"
 import { pusherServer } from "@/lib/pusher-server"
-import { sendEmailBulk, sendEmailBatch } from "@/lib/mail"
+import { sendEmailBulk, sendEmailBatch, sendEmailsWithAttachments } from "@/lib/mail"
 import { sendSmsBatch } from "@/lib/sms"
 import { customEmail, sondageInvitationEmail, type EmailBranding } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
+import type { VerifiedEmailAttachment } from "@/lib/email-attachments"
 
 const EMAIL_CHUNK_SIZE = 100
+
+// Recipients per step when attachments force one Resend request per recipient (see
+// sendEmailsWithAttachments in src/lib/mail.ts): at ≥0.7 s apiece that's roughly 30–60 s per
+// step, retries included — comfortably inside a serverless function's timeout, where the
+// full 600-recipient maximum in a single step (7+ minutes) would not be. Also bounds how much
+// an Inngest retry of one failed step has to replay (idempotently) to 40 sends.
+const ATTACHMENT_SEND_CHUNK_SIZE = 40
 
 export function notifyBulkSendCompleted(associationId: string, payload: Record<string, unknown>) {
   return pusherServer.trigger(`private-association-${associationId}`, "bulk-send-completed", payload).catch(() => {})
@@ -60,42 +68,97 @@ async function notifyMembersOfMessage(associationId: string, memberIds: string[]
 // ── Bulk member email (src/app/api/membres/email/route.ts) ────────────────────
 
 type MembresEmailMember = { id: string; firstName: string; lastName: string; email: string }
+type MembresEmailRecipient = { member: MembresEmailMember; externalEmail?: never } | { externalEmail: string; member?: never }
+type MembresEmailSendOutcome = { sent: number; failed: number; failedNames: string[]; deliveredMemberIds: string[] }
 
 export const bulkSendMembresEmail = inngest.createFunction(
   { id: "bulk-send-membres-email", triggers: { event: "bulk/membres-email.requested" } },
   async ({ event, step }) => {
-    const { jobId, associationId, actorId, subject, bodyHtml, branding, associationName, slug, members, externalEmails, activityMeta } = event.data as {
+    const { jobId, associationId, actorId, subject, bodyHtml, branding, associationName, slug, members, externalEmails, attachments = [], activityMeta } = event.data as {
       jobId: string; associationId: string; actorId: string
       subject: string; bodyHtml: string; branding: EmailBranding; associationName: string; slug: string
       members: MembresEmailMember[]; externalEmails: string[]
-      activityMeta: { recipientMode: string; typeId?: string; recipientCount?: number; externalEmailCount?: number; externalEmails?: string[] }
+      // Set by src/app/api/membres/email/route.ts only once every file was verified in R2 —
+      // metadata only (Resend fetches each file from its URL), absent when there are none.
+      attachments?: VerifiedEmailAttachment[]
+      activityMeta: {
+        recipientMode: string; typeId?: string; recipientCount?: number; externalEmailCount?: number; externalEmails?: string[]
+        attachmentCount?: number; attachmentNames?: string[]
+      }
     }
 
-    const { sent, failed, failedNames, deliveredMemberIds } = await step.run("send", async () => {
-      const memberPayloads = members.map(m => {
-        const vars = buildVars({ prenom: m.firstName, nom: m.lastName, email: m.email, association: associationName, slug })
-        return {
-          ...customEmail({ associationName, subject: substituteVars(subject, vars), bodyHtml: substituteVars(bodyHtml, vars), recipientEmail: m.email, branding }),
-          context: { associationId, membreId: m.id, source: "BULK_MESSAGE" },
-        }
-      })
-      const externalPayloads = externalEmails.map(email => {
-        const vars = buildVars({ prenom: "", nom: "", email, association: associationName, slug })
-        return {
-          ...customEmail({ associationName, subject: substituteVars(subject, vars), bodyHtml: substituteVars(bodyHtml, vars), recipientEmail: email, branding }),
-          context: { associationId, source: "BULK_MESSAGE" },
-        }
-      })
+    // Only ever called inside a step: Inngest re-runs this function body once per step, so
+    // rendering every recipient's email up here would be repeated on each of those re-runs.
+    const buildMemberPayload = (member: MembresEmailMember) => {
+      const vars = buildVars({ prenom: member.firstName, nom: member.lastName, email: member.email, association: associationName, slug })
+      return {
+        ...customEmail({ associationName, subject: substituteVars(subject, vars), bodyHtml: substituteVars(bodyHtml, vars), recipientEmail: member.email, branding }),
+        context: { associationId, membreId: member.id, source: "BULK_MESSAGE" },
+      }
+    }
+    const buildExternalPayload = (email: string) => {
+      const vars = buildVars({ prenom: "", nom: "", email, association: associationName, slug })
+      return {
+        ...customEmail({ associationName, subject: substituteVars(subject, vars), bodyHtml: substituteVars(bodyHtml, vars), recipientEmail: email, branding }),
+        context: { associationId, source: "BULK_MESSAGE" },
+      }
+    }
 
-      const result = await sendEmailBulk([...memberPayloads, ...externalPayloads])
-      const failedEmails = new Set(result.failedRecipients)
-      const failedNames = [
-        ...members.filter(m => failedEmails.has(m.email)).map(m => `${m.firstName} ${m.lastName}`),
-        ...externalEmails.filter(email => failedEmails.has(email)),
+    let outcome: MembresEmailSendOutcome
+    if (!attachments.length) {
+      outcome = await step.run("send", async () => {
+        const result = await sendEmailBulk([...members.map(buildMemberPayload), ...externalEmails.map(buildExternalPayload)])
+        const failedEmails = new Set(result.failedRecipients)
+        const failedNames = [
+          ...members.filter(m => failedEmails.has(m.email)).map(m => `${m.firstName} ${m.lastName}`),
+          ...externalEmails.filter(email => failedEmails.has(email)),
+        ]
+        const deliveredMemberIds = members.filter(m => !failedEmails.has(m.email)).map(m => m.id)
+        return { sent: result.sent, failed: result.failed, failedNames, deliveredMemberIds }
+      })
+    } else {
+      // Members first, then external addresses — the same order (and so the same failedNames
+      // order) as the single-step path above. Chunks run one after another, never in
+      // parallel: sendEmailsWithAttachments paces its requests under Resend's rate limit, and
+      // concurrent chunks would multiply that rate.
+      const recipients: MembresEmailRecipient[] = [
+        ...members.map(member => ({ member })),
+        ...externalEmails.map(externalEmail => ({ externalEmail })),
       ]
-      const deliveredMemberIds = members.filter(m => !failedEmails.has(m.email)).map(m => m.id)
-      return { sent: result.sent, failed: result.failed, failedNames, deliveredMemberIds }
-    })
+      const chunkCount = Math.ceil(recipients.length / ATTACHMENT_SEND_CHUNK_SIZE)
+      const chunkOutcomes: MembresEmailSendOutcome[] = []
+
+      for (let chunkIndex = 0; chunkIndex < chunkCount; chunkIndex++) {
+        const chunkRecipients = recipients.slice(chunkIndex * ATTACHMENT_SEND_CHUNK_SIZE, (chunkIndex + 1) * ATTACHMENT_SEND_CHUNK_SIZE)
+        chunkOutcomes.push(await step.run(`send-attachments-${chunkIndex}`, async () => {
+          const payloads = chunkRecipients.map(recipient =>
+            recipient.member ? buildMemberPayload(recipient.member) : buildExternalPayload(recipient.externalEmail))
+          const results = await sendEmailsWithAttachments(payloads, attachments, { idempotencyKeyPrefix: jobId })
+
+          // Results come back in payload order, so each one maps straight to its recipient —
+          // no matching by address needed.
+          const chunkOutcome: MembresEmailSendOutcome = { sent: 0, failed: 0, failedNames: [], deliveredMemberIds: [] }
+          chunkRecipients.forEach((recipient, index) => {
+            if (results[index]?.ok) {
+              chunkOutcome.sent++
+              if (recipient.member) chunkOutcome.deliveredMemberIds.push(recipient.member.id)
+            } else {
+              chunkOutcome.failed++
+              chunkOutcome.failedNames.push(recipient.member ? `${recipient.member.firstName} ${recipient.member.lastName}` : recipient.externalEmail)
+            }
+          })
+          return chunkOutcome
+        }))
+      }
+
+      outcome = {
+        sent:               chunkOutcomes.reduce((total, chunkOutcome) => total + chunkOutcome.sent, 0),
+        failed:             chunkOutcomes.reduce((total, chunkOutcome) => total + chunkOutcome.failed, 0),
+        failedNames:        chunkOutcomes.flatMap(chunkOutcome => chunkOutcome.failedNames),
+        deliveredMemberIds: chunkOutcomes.flatMap(chunkOutcome => chunkOutcome.deliveredMemberIds),
+      }
+    }
+    const { sent, failed, failedNames, deliveredMemberIds } = outcome
 
     await step.run("log-activity", () => writeActivityLog({
       associationId,

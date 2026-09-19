@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { UploadSimpleIcon, FileIcon, XIcon, ArrowSquareOutIcon } from "@phosphor-icons/react/dist/ssr";
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 interface DocumentUploadProps {
   value: string
@@ -38,7 +39,7 @@ export function DocumentUpload({ value, onChange, prefix = "receipts", lazy = fa
   useEffect(() => () => { if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current) }, [])
 
   async function handleFile(file: File) {
-    if (file.size > 10 * 1024 * 1024) { toast.error(t("fileTooLarge")); return }
+    if (file.size > MAX_FUNCTION_UPLOAD_BYTES) { toast.error(t("fileTooLarge")); return }
 
     if (lazy) {
       if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)

@@ -30,9 +30,9 @@
       "replace": "Nahrazení",
       "remove": "Odstranit",
       "dropOrClickToAdd": "Táhněte nebo klikněte pro přidání obrázku",
-      "formatsHint": "JPG, PNG, WebP · Max 5 MB",
-      "compactHint": "Táhnutí/kliknutí pro přidání obrázku (JPG, PNG, WebP, maximálně 5 MB)",
-      "maxSizeError": "Obrázek je příliš velký (maximálně 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · Max 4 MB",
+      "compactHint": "Táhnutí/kliknutí pro přidání obrázku (JPG, PNG, WebP, maximálně 4 MB)",
+      "maxSizeError": "Obrázek je příliš velký (maximálně 4 MB)",
       "uploadError": "Chyba při nahrávání"
     },
     "free": "Zdarma",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Soubor je příliš velký (maximálně 10 MB)",
+    "fileTooLarge": "Soubor je příliš velký (maximálně 4 MB)",
     "uploadError": "Chyba při nahrávání",
     "networkError": "Nahrávání síťové chyby — zkuste to znovu",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Zobrazit dokument",
     "remove": "Smazat",
     "uploading": "Nahrávám...",
-    "attach": "Přiložte obrázek nebo PDF (maximálně 10 MB)"
+    "attach": "Přiložte obrázek nebo PDF (maximálně 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Nahrávám...",
       "fileChosen": "Přiložený soubor",
       "fileRemove": "Smazat soubor",
-      "fileTooLarge": "Soubor je příliš velký (maximálně 10 MB)",
+      "fileTooLarge": "Soubor je příliš velký (maximálně 4 MB)",
       "fileUploadError": "Chyba při nahrávání",
       "fileNetworkError": "Nahrávání síťové chyby — zkuste to znovu",
       "totalLabel": "Celkem :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Otázka? Kontaktujte nás:",
       "photoNoFile": "Soubory nejsou poskytnuty",
       "photoLabel": "Foto",
-      "photoTooLarge": "Soubor příliš velký (maximálně 5 MB)",
+      "photoTooLarge": "Soubor příliš velký (maximálně 4 MB)",
       "photoFormatUnsupported": "Formát není podporován. Pouze JPG, PNG, WebP nebo GIF.",
       "photoUploadError": "Chyba odesílá fotku. Zkuste to znovu.",
       "photoTooManyAttempts": "Příliš mnoho pokusů, zkuste to později znovu.",

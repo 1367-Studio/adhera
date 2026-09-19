@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { ExpenseForm } from "@/components/finances/expense-form"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 type Expense = {
   id:              string
@@ -64,7 +65,7 @@ function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOp
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(file: File) {
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > MAX_FUNCTION_UPLOAD_BYTES) {
       toast.error(t("documentUpload.fileTooLarge"))
       return
     }

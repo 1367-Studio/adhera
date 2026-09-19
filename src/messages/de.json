@@ -30,9 +30,9 @@
       "replace": "Ersetzen",
       "remove": "Entfernen",
       "dropOrClickToAdd": "Ziehen oder klicken, um ein Bild hinzuzufügen",
-      "formatsHint": "JPG, PNG, WebP · maximal 5 MB",
-      "compactHint": "Ziehen/klicken, um ein Bild hinzuzufügen (JPG, PNG, WebP, maximal 5 MB)",
-      "maxSizeError": "Bild zu groß (maximal 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maximal 4 MB",
+      "compactHint": "Ziehen/klicken, um ein Bild hinzuzufügen (JPG, PNG, WebP, maximal 4 MB)",
+      "maxSizeError": "Bild zu groß (maximal 4 MB)",
       "uploadError": "Fehler beim Hochladen"
     },
     "free": "Kostenlos",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Datei zu groß (maximal 10 MB)",
+    "fileTooLarge": "Datei zu groß (maximal 4 MB)",
     "uploadError": "Fehler beim Hochladen",
     "networkError": "Netzwerkfehler hochladen – erneutes Versuchen",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Sehen Sie das Dokument an",
     "remove": "Löschen",
     "uploading": "Lade hoch...",
-    "attach": "Bild oder PDF anhängen (maximal 10 MB)"
+    "attach": "Bild oder PDF anhängen (maximal 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Lade hoch...",
       "fileChosen": "Angehängte Datei",
       "fileRemove": "Datei löschen",
-      "fileTooLarge": "Datei zu groß (maximal 10 MB)",
+      "fileTooLarge": "Datei zu groß (maximal 4 MB)",
       "fileUploadError": "Fehler beim Hochladen",
       "fileNetworkError": "Netzwerkfehler hochladen – erneutes Versuchen",
       "totalLabel": "Gesamt:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Eine Frage? Kontaktieren Sie uns:",
       "photoNoFile": "Keine Dateien bereitgestellt",
       "photoLabel": "Foto",
-      "photoTooLarge": "Datei zu groß (maximal 5 MB)",
+      "photoTooLarge": "Datei zu groß (maximal 4 MB)",
       "photoFormatUnsupported": "Format nicht unterstützt. Nur JPG, PNG, WebP oder GIF.",
       "photoUploadError": "Fehler beim Senden des Fotos. Versuchen Sie es erneut.",
       "photoTooManyAttempts": "Zu viele Versuche, versuch es später nochmal.",

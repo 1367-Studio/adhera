@@ -30,9 +30,9 @@
       "replace": "Asenda",
       "remove": "Eemalda",
       "dropOrClickToAdd": "Lohista või klõpsa, et lisada pilt",
-      "formatsHint": "JPG, PNG, WebP · maksimaalselt 5 MB",
-      "compactHint": "Lohista/klõpsa, et lisada pilt (JPG, PNG, WebP, maksimaalselt 5 MB)",
-      "maxSizeError": "Pilt liiga suur (maksimaalselt 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maksimaalselt 4 MB",
+      "compactHint": "Lohista/klõpsa, et lisada pilt (JPG, PNG, WebP, maksimaalselt 4 MB)",
+      "maxSizeError": "Pilt liiga suur (maksimaalselt 4 MB)",
       "uploadError": "Vea üleslaadimisel"
     },
     "free": "Vaba",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Fail liiga suur (maksimaalselt 10 MB)",
+    "fileTooLarge": "Fail liiga suur (maksimaalselt 4 MB)",
     "uploadError": "Vea üleslaadimisel",
     "networkError": "Võrgu vea üleslaadimine — proovi uuesti",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Vaata dokumenti",
     "remove": "Kustuta",
     "uploading": "Laadin...",
-    "attach": "Lisa pilt või PDF (maksimaalselt 10 MB)"
+    "attach": "Lisa pilt või PDF (maksimaalselt 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Laadin...",
       "fileChosen": "Manustatud fail",
       "fileRemove": "Fail kustuta",
-      "fileTooLarge": "Fail liiga suur (maksimaalselt 10 MB)",
+      "fileTooLarge": "Fail liiga suur (maksimaalselt 4 MB)",
       "fileUploadError": "Vea üleslaadimisel",
       "fileNetworkError": "Võrgu vea üleslaadimine — proovi uuesti",
       "totalLabel": "Kokku :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Küsimus? Võtke meiega ühendust:",
       "photoNoFile": "Faile ei esitata",
       "photoLabel": "Foto",
-      "photoTooLarge": "Fail liiga suur (maksimaalselt 5 MB)",
+      "photoTooLarge": "Fail liiga suur (maksimaalselt 4 MB)",
       "photoFormatUnsupported": "Formaat ei ole toetatud. Ainult JPG, PNG, WebP või GIF.",
       "photoUploadError": "Viga foto saatmine. Proovi uuesti.",
       "photoTooManyAttempts": "Liiga palju katseid, proovi hiljem uuesti.",

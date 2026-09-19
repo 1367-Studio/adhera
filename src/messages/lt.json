@@ -30,9 +30,9 @@
       "replace": "Pakeisti",
       "remove": "Pašalinti",
       "dropOrClickToAdd": "Tempkite arba spustelėkite, kad pridėtumėte paveikslėlį",
-      "formatsHint": "JPG, PNG, WebP · Max 5 MB",
-      "compactHint": "Tempkite/spustelėkite, kad pridėtumėte paveikslėlį (JPG, PNG, WebP, maksimaliai 5 MB)",
-      "maxSizeError": "Vaizdas per didelis (maksimaliai 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · Max 4 MB",
+      "compactHint": "Tempkite/spustelėkite, kad pridėtumėte paveikslėlį (JPG, PNG, WebP, maksimaliai 4 MB)",
+      "maxSizeError": "Vaizdas per didelis (maksimaliai 4 MB)",
       "uploadError": "Klaidų įkėlimas"
     },
     "free": "Nemokamas",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Failas per didelis (maksimaliai 10 MB)",
+    "fileTooLarge": "Failas per didelis (maksimaliai 4 MB)",
     "uploadError": "Klaidų įkėlimas",
     "networkError": "Tinklo klaidų įkėlimas — bandykite dar kartą",
     "pdfDocument": "Dokumento PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Peržiūrėti dokumentą",
     "remove": "Ištrinti",
     "uploading": "Įkeliama...",
-    "attach": "Prisegti paveikslėlį arba PDF (maksimaliai 10 MB)"
+    "attach": "Prisegti paveikslėlį arba PDF (maksimaliai 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Įkeliama...",
       "fileChosen": "Prisegtas failas",
       "fileRemove": "Ištrinti failą",
-      "fileTooLarge": "Failas per didelis (maksimaliai 10 MB)",
+      "fileTooLarge": "Failas per didelis (maksimaliai 4 MB)",
       "fileUploadError": "Klaidų įkėlimas",
       "fileNetworkError": "Tinklo klaidų įkėlimas — bandykite dar kartą",
       "totalLabel": "Iš viso :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Klausimas? Susisiekite su mumis:",
       "photoNoFile": "Failų nėra",
       "photoLabel": "Nuotrauka",
-      "photoTooLarge": "Failas per didelis (maksimaliai 5 MB)",
+      "photoTooLarge": "Failas per didelis (maksimaliai 4 MB)",
       "photoFormatUnsupported": "Formatas nepalaikomas. Tik JPG, PNG, WebP arba GIF.",
       "photoUploadError": "Klaida siunčiant nuotrauką. Pabandyk dar kartą.",
       "photoTooManyAttempts": "Per daug bandymų, bandyk vėliau.",
