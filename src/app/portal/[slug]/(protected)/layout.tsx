@@ -8,6 +8,8 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { pendingLegalDocuments } from "@/lib/legal/acceptance"
+import { LegalReacceptanceGate } from "@/components/portal/legal-reacceptance-gate"
 
 export default async function PortalLayout({
   children,
@@ -46,6 +48,26 @@ export default async function PortalLayout({
     : null
   const enabledModules = parseModules(assocRow?.modules)
   const branding = assocRow ? { name: assocRow.name, ...resolveDocumentBranding(assocRow) } : null
+
+  // Documents the association requires agreement to and this member has not signed at the
+  // wording in force — a brand-new one, or one rewritten since they last agreed. Nothing else
+  // in the portal renders until they decide, which is the point of asking again.
+  //
+  // The Membre id is looked up alongside the user id because an agreement can be recorded
+  // against either: the portal registration records both, while an agreement a manager
+  // collected offline is attached to the Membre alone.
+  const membreRow = u.associationId
+    ? await prisma.membre.findFirst({
+        where:  { userId: u.id, associationId: u.associationId, deletedAt: null },
+        select: { id: true },
+      })
+    : null
+  const pendingLegal = u.associationId
+    ? await pendingLegalDocuments(u.associationId, { userId: u.id, membreId: membreRow?.id, email: u.email })
+    : []
+  if (pendingLegal.length > 0) {
+    return <LegalReacceptanceGate slug={slug} documents={pendingLegal} />
+  }
 
   return (
     <UserProvider user={sessionUser} modules={enabledModules} branding={branding}>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, useWatch, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
@@ -40,9 +40,11 @@ interface AssociationDocumentFormProps {
 
 function toFormValues(document?: AssociationDocument): AssociationDocumentFormValues {
   return {
-    title:            document?.title ?? "",
-    content:          document?.content ?? "",
-    visibleToMembers: document?.visibleToMembers ?? false,
+    title:              document?.title ?? "",
+    content:            document?.content ?? "",
+    visibleToMembers:   document?.visibleToMembers ?? false,
+    visibleToPublic:    document?.visibleToPublic ?? false,
+    requiresAcceptance: document?.requiresAcceptance ?? false,
   }
 }
 
@@ -75,6 +77,8 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
     })
 
   const hasUnsavedChanges = isDirty && !isCreated
+  // Drives the public switch below, which a document requiring acceptance forces on.
+  const requiresAcceptance = useWatch({ control, name: "requiresAcceptance" }) ?? false
 
   // Covers tab close / reload / external links, which client-side routing never sees. The
   // browser shows its own generic wording — returnValue only has to be set.
@@ -219,23 +223,72 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
           {...register("title")}
         />
 
-        <div className="flex items-start gap-3">
-          <Controller
-            name="visibleToMembers"
-            control={control}
-            render={({ field }) => (
-              <Switch
-                id="document-visible"
-                className="mt-0.5"
-                aria-describedby="document-visible-hint"
-                checked={field.value ?? false}
-                onCheckedChange={checked => field.onChange(checked)}
-              />
-            )}
-          />
-          <div className="space-y-0.5">
-            <Label htmlFor="document-visible">{t("visibleToMembers")}</Label>
-            <p id="document-visible-hint" className="text-xs text-muted-foreground">{t("visibleToMembersHint")}</p>
+        {/* The two switches are independent, not a scale: a document can be published publicly
+            without being listed in the portal, and vice versa. */}
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <Controller
+              name="visibleToMembers"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="document-visible"
+                  className="mt-0.5"
+                  aria-describedby="document-visible-hint"
+                  checked={field.value ?? false}
+                  onCheckedChange={checked => field.onChange(checked)}
+                />
+              )}
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="document-visible">{t("visibleToMembers")}</Label>
+              <p id="document-visible-hint" className="text-xs text-muted-foreground">{t("visibleToMembersHint")}</p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Controller
+              name="visibleToPublic"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="document-public"
+                  className="mt-0.5"
+                  aria-describedby="document-public-hint"
+                  // Forced on while the document must be accepted: the person agreeing has no
+                  // account yet and has to be able to open what they are agreeing to.
+                  checked={(field.value ?? false) || requiresAcceptance}
+                  disabled={requiresAcceptance}
+                  onCheckedChange={checked => field.onChange(checked)}
+                />
+              )}
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="document-public">{t("visibleToPublic")}</Label>
+              <p id="document-public-hint" className="text-xs text-muted-foreground">
+                {requiresAcceptance ? t("visibleToPublicForcedHint") : t("visibleToPublicHint")}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Controller
+              name="requiresAcceptance"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id="document-acceptance"
+                  className="mt-0.5"
+                  aria-describedby="document-acceptance-hint"
+                  checked={field.value ?? false}
+                  onCheckedChange={checked => field.onChange(checked)}
+                />
+              )}
+            />
+            <div className="space-y-0.5">
+              <Label htmlFor="document-acceptance">{t("requiresAcceptance")}</Label>
+              <p id="document-acceptance-hint" className="text-xs text-muted-foreground">{t("requiresAcceptanceHint")}</p>
+            </div>
           </div>
         </div>
 

@@ -8,6 +8,7 @@ import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveDocumentBranding } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { requiredDocuments, resolveAcceptedRevisions, recordAcceptances, LegalConsentError } from "@/lib/legal/acceptance"
 import { maybeCreateDefaultCotisation, findPendingCotisation } from "@/lib/cotisation-defaults"
 import { pusherServer } from "@/lib/pusher-server"
 
@@ -53,6 +54,18 @@ export async function POST(req: Request) {
   } catch (err) {
     if (err instanceof MemberLimitReachedError) return NextResponse.json({ error: MEMBER_LIMIT_VISITOR_MESSAGE }, { status: 422 })
     throw err
+  }
+
+  // Documents que l'association impose d'accepter. Vérifié AVANT toute création : un refus ne
+  // doit laisser derrière lui ni compte ni fiche adhérent. L'enregistrement, lui, se fait après
+  // la transaction, quand userId et membreId existent — une identité réelle plutôt qu'un email.
+  const requiredLegalDocuments = await requiredDocuments(association.id)
+  let acceptedLegalRevisionIds: string[]
+  try {
+    acceptedLegalRevisionIds = resolveAcceptedRevisions(requiredLegalDocuments, parsed.data.acceptedLegalRevisionIds)
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
   }
 
   const password     = generatePassword()
@@ -112,6 +125,14 @@ export async function POST(req: Request) {
     // Membre placeholder being linked to their new account here).
     const cotisation = await findPendingCotisation(tx, membreId)
     return { membreId, userId: user.id, cotisation }
+  })
+
+  await recordAcceptances({
+    associationId: association.id,
+    revisionIds:   acceptedLegalRevisionIds,
+    identity:      { userId, membreId },
+    context:       "PORTAL_REGISTER",
+    ip:            acceptedIp,
   })
 
   if (membreId) {

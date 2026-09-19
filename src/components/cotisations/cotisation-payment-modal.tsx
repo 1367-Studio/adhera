@@ -11,12 +11,13 @@ import { SelectField } from "@/components/ui/select-field"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 
-type Method = "CB" | "CHQ" | "ESP" | "En ligne" | "Autre"
+type Method = "CB" | "CHQ" | "ESP" | "VIR" | "En ligne" | "Autre"
 
 const methodOptions: { value: Method; label: string }[] = [
   { value: "CB",       label: "CB"       },
   { value: "CHQ",      label: "CHQ"      },
   { value: "ESP",      label: "ESP"      },
+  { value: "VIR",      label: "Virement" },
   { value: "En ligne", label: "En ligne" },
   { value: "Autre",    label: "Autre"    },
 ]

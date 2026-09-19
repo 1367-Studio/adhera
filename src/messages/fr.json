@@ -3295,7 +3295,7 @@
         "rules": "Automatisations",
         "historique": "Historique"
       },
-      "reminderSchedule": "Régua de rappels"
+      "reminderSchedule": "Calendrier des rappels"
     },
     "templatesManager": {
       "title": "Modèles de messages",
@@ -3899,6 +3899,7 @@
         "enAttente": "En attente",
         "payees": "Payées",
         "exonerees": "Exonérées",
+        "aEncaisser": "À encaisser",
         "partiellementPayees": "Partiellement payées",
         "enRetard": "En retard",
         "annulees": "Annulées"
@@ -4231,6 +4232,7 @@
       "paidOn": "Payée le {date}",
       "validUntil": "Valable jusqu'au {date}",
       "periodExpiredOn": "Expirée le {date}",
+      "recordPayment": "Enregistrer un paiement",
       "downloadRecuFiscal": "Télécharger le reçu fiscal",
       "downloadRecuFiscalPartial": "Télécharger le reçu fiscal (partiel : {amount} déductible)",
       "showingRecentCotisations": "Affichage des {count} cotisations les plus récentes sur {total} au total.",
@@ -4941,6 +4943,13 @@
     "hidden": "Masqué",
     "visibleToMembers": "Visible par les membres",
     "visibleToMembersHint": "Affiche ce document dans l'espace membre. Désactivé, seuls les gestionnaires le voient.",
+    "visibleToPublic": "Accessible publiquement",
+    "visibleToPublicHint": "Rend ce document consultable par toute personne disposant du lien, sans compte — nécessaire pour y renvoyer depuis vos formulaires publics.",
+    "visibleToPublicForcedHint": "Activé automatiquement : un document à faire accepter doit pouvoir être lu par la personne qui l'accepte.",
+    "requiresAcceptance": "À faire accepter",
+    "requiresAcceptanceHint": "Une case à cocher obligatoire apparaîtra dans les formulaires d'adhésion, de don, d'inscription aux événements, dans la boutique et à la création de compte. Chaque acceptation est enregistrée avec la version du document.",
+    "exportAcceptances": "Exporter les acceptations",
+    "publicShort": "Public",
     "toasts": {
       "madeVisible": "« {title} » est visible par les membres",
       "madeHidden": "« {title} » est masqué aux membres",
@@ -4971,6 +4980,27 @@
     },
     "notFound": "Ce document est introuvable.",
     "backToList": "Retour aux documents"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {J'accepte le document suivant :} other {J'accepte les documents suivants :}}",
+    "required": "Vous devez accepter les documents de l'association pour continuer.",
+    "stale": "Les documents de l'association ont été mis à jour, merci de les relire avant de continuer.",
+    "offlineAttestation": "J'atteste avoir recueilli l'accord de cette personne sur ces documents",
+    "gateTitle": "Documents à accepter",
+    "gateSubtitle": "Votre association a mis à jour ses documents. Merci de les lire et de les accepter pour accéder à votre espace.",
+    "gateSubmit": "J'accepte et je continue",
+    "gateSignOut": "Se déconnecter",
+    "gateError": "Impossible d'enregistrer votre acceptation.",
+    "offlineAttestationHint": "Enregistré comme acceptation recueillie hors ligne, à votre nom."
+  },
+  "publicDocuments": {
+    "title": "Documents légaux",
+    "subtitle": "Documents mis à disposition par l'association.",
+    "empty": "Aucun document publié pour le moment.",
+    "updatedAt": "Mis à jour le {date}",
+    "backToList": "Tous les documents",
+    "associationNotFound": "Cette association est introuvable.",
+    "notFound": "Ce document n'est plus disponible."
   },
   "portalMembre": {
     "associationDocuments": {

@@ -7,6 +7,8 @@ import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { consentIp } from "@/lib/consent"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail, waitlistConfirmationEmail } from "@/lib/email"
@@ -65,6 +67,11 @@ const baseSchema = z.object({
   // Nom complet saisi comme preuve informelle de signature, à côté de la case à cocher — voir
   // Participation.signedName dans schema.prisma.
   signedName: z.string().trim().max(200).optional().or(z.literal("")),
+  // Révisions des documents de l'association telles qu'affichées au visiteur — une seule
+  // acceptation par soumission (pas par participant), même convention que conditionsAgreed
+  // ci-dessus. Le serveur vérifie que ce sont bien celles en vigueur (voir
+  // resolveAcceptedRevisions), jamais fait confiance à un simple « oui ».
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   // Code promotionnel — même restriction one-per-order que donations/products ci-dessus (une
   // seule Participation à qui l'attribuer). Jamais fait confiance : revalidé ici du zéro contre
   // EvenementDiscountCode, jamais depuis ce que le client a résolu via /discount-code.
@@ -123,7 +130,7 @@ export async function POST(
   // adjust and try again.
   if (parsed.data.website) return NextResponse.json({ ok: true })
 
-  const { attendees, paymentMethod, donations, products, conditionsAgreed, signedName, discountCode } = parsed.data
+  const { attendees, paymentMethod, donations, products, conditionsAgreed, signedName, discountCode, acceptedLegalRevisionIds } = parsed.data
   const isOffline = paymentMethod !== "STRIPE"
 
   const assoc = await prisma.association.findUnique({
@@ -350,6 +357,30 @@ export async function POST(
     if (!allowed) return NextResponse.json({ error: "Ce moyen de paiement n'est pas disponible pour cet événement." }, { status: 400 })
   } else if (isPaid && (!assoc.stripeConnectId || !(await connectAccountChargesEnabled(assoc.stripeConnectId)))) {
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })
+  }
+
+  // Documents que l'association impose d'accepter — distincts des conditions propres à
+  // l'événement vérifiées plus haut. Le navigateur bloque déjà l'envoi ; on revalide ici pour ne
+  // jamais dépendre d'un contrôle contournable côté client, et un texte réécrit depuis
+  // l'affichage du formulaire est refusé plutôt qu'accepté en silence.
+  //
+  // Placé avant la séparation des deux rails (inscription individuelle juste en dessous,
+  // commande groupée plus bas) : un seul point de passage, donc aucun des deux ne peut l'oublier,
+  // et avant tout écrit en base ou toute session Stripe. Enregistré même si la carte échoue
+  // ensuite : la personne a bien accepté à cet instant. Une seule acceptation par soumission,
+  // au nom de l'inscrivant (resolvedAttendees[0], la personne qui remplit le formulaire) — ni
+  // compte ni fiche adhérent à ce stade, donc l'identité est son e-mail.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: acceptedLegalRevisionIds,
+      identity:             { guestEmail: resolvedAttendees[0].email },
+      context:              "EVENEMENT",
+      ip:                   consentIp(req),
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
   }
 
   // ---- Single-ticket order: same resume/reuse behavior as before tickets could be ----

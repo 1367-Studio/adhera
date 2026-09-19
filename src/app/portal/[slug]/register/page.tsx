@@ -1,4 +1,6 @@
 import { PortalRegisterForm } from "@/components/auth/portal-register-form";
+import { prisma } from "@/lib/prisma/client";
+import { requiredDocuments } from "@/lib/legal/acceptance";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { LogoMark } from "@/components/layout/logo-mark";
 import { APP_NAME } from "@/config/brand";
@@ -20,6 +22,11 @@ export default async function PortalRegisterPage({
   const { slug } = await params
   const t = await getTranslations("portal.register")
 
+  // Read here, not fetched by the form: the consent box is part of the first render, so a
+  // failed request can never produce a registration form without it.
+  const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
+  const legalDocuments = association ? await requiredDocuments(association.id) : []
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-8">
       <div className="w-full max-w-sm space-y-6">
@@ -39,7 +46,7 @@ export default async function PortalRegisterPage({
             </p>
           </div>
 
-          <PortalRegisterForm slug={slug} />
+          <PortalRegisterForm slug={slug} legalDocuments={legalDocuments} />
 
           <Link
             href={`/portal/${slug}/login`}

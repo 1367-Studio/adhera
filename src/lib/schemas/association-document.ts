@@ -16,15 +16,24 @@ export const associationDocumentSchema = z.object({
   title:            titleField,
   content:          contentField,
   visibleToMembers: z.boolean().default(false),
+  // Anyone, with no session — see AssociationDocument in schema.prisma. Both flags default to
+  // false so a document is private to the dashboard until it is deliberately shared.
+  visibleToPublic:  z.boolean().default(false),
+  // Must be agreed to before joining, donating, registering or ordering. The API forces
+  // visibleToPublic on alongside it: a checkbox has to link to something a stranger can read.
+  requiresAcceptance: z.boolean().default(false),
 })
 
 // Rebuilt as its own literal object instead of associationDocumentSchema.partial() — Zod's
 // .default() still fires on an omitted field even after .partial(), so a derived schema
-// would silently hide the document from members on every PATCH that doesn't resend it.
+// would silently hide the document from members (or un-publish it) on every PATCH that
+// doesn't resend the flag.
 export const associationDocumentUpdateSchema = z.object({
-  title:            titleField.optional(),
-  content:          contentField.optional(),
-  visibleToMembers: z.boolean().optional(),
+  title:              titleField.optional(),
+  content:            contentField.optional(),
+  visibleToMembers:   z.boolean().optional(),
+  visibleToPublic:    z.boolean().optional(),
+  requiresAcceptance: z.boolean().optional(),
 })
 
 export type AssociationDocumentInput       = z.infer<typeof associationDocumentSchema>

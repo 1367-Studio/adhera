@@ -82,3 +82,4 @@ export function deriveCotisationStatus(input: {
   if (input.amountPaid > EPSILON) return "PARTIELLEMENT_PAYEE"
   return "EN_ATTENTE"
 }
+

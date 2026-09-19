@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
+import { requiredDocuments } from "@/lib/legal/acceptance"
 import { DonationFormPublicForm } from "./donation-form-public-form"
 
 async function getFormMeta(slug: string, formSlug: string) {
@@ -37,5 +38,12 @@ export default async function PublicDonationFormPage(
   { params }: { params: Promise<{ slug: string; formSlug: string }> },
 ) {
   const { slug, formSlug } = await params
-  return <DonationFormPublicForm slug={slug} formSlug={formSlug} />
+
+  // Read here rather than fetched by the form: the consent box is then part of the very first
+  // render, so a failed request can never quietly produce a form without it. An unknown slug
+  // falls through to an empty list — the page underneath renders its own not-found state.
+  const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
+  const legalDocuments = association ? await requiredDocuments(association.id) : []
+
+  return <DonationFormPublicForm slug={slug} formSlug={formSlug} legalDocuments={legalDocuments} />
 }

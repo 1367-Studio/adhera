@@ -7,6 +7,8 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
+import { consentIp } from "@/lib/consent"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { sendEmail } from "@/lib/mail"
@@ -39,6 +41,9 @@ const schema = z.object({
   // array — same convention as the event registration route/Participation.answers.
   answers:     z.record(z.string(), z.union([z.string().max(500), z.array(z.string().max(500)).max(50)])).optional().default({}),
   conditionsAgreed: z.boolean().optional().default(false),
+  // Révisions des documents de l'association telles qu'affichées au visiteur — le serveur
+  // vérifie que ce sont bien celles en vigueur (voir resolveAcceptedRevisions).
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention
   // que l'inscription publique aux événements.
   website:     z.string().optional().or(z.literal("")),
@@ -184,6 +189,30 @@ export async function POST(
   const amountCents = Math.round(amount * 100)
   const successUrl   = `${APP_URL}/${slug}/dons/${formSlug}?payment=success`
   const cancelUrl    = `${APP_URL}/${slug}/dons/${formSlug}?payment=cancelled`
+  const acceptedIp   = consentIp(req)
+
+  // Documents que l'association impose d'accepter — distincts des conditions propres au
+  // formulaire vérifiées plus haut. Le navigateur bloque déjà l'envoi ; on revalide ici pour
+  // ne jamais dépendre d'un contrôle contournable, et un texte réécrit depuis l'affichage du
+  // formulaire est refusé plutôt qu'accepté en silence.
+  //
+  // Placé ici, en amont du branchement : les trois rails de paiement qui suivent (hors ligne,
+  // don récurrent, don unique) passent tous par ce point, donc aucun ne peut écrire en base
+  // ni ouvrir une session Stripe sans l'accord enregistré. L'identité est l'email saisi — ni
+  // compte ni fiche adhérent à ce stade — et l'enregistrement précède le paiement : la
+  // personne a bien accepté à cet instant, que sa carte passe ensuite ou non.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: parsed.data.acceptedLegalRevisionIds,
+      identity:             { guestEmail: email },
+      context:              "DON",
+      ip:                   acceptedIp,
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
 
   if (isOffline) {
     // A fast double-click/double-submit races ahead of the client's own loading-state

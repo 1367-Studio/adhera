@@ -17,6 +17,7 @@ import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
+import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -123,7 +124,7 @@ type RegistrantDraft = {
 
 let nextRegistrantId = 0
 
-type Props = { slug: string; formSlug: string }
+type Props = { slug: string; formSlug: string; legalDocuments: RequiredLegalDocument[] }
 
 export function MembershipFormPublicForm(props: Props) {
   return (
@@ -133,8 +134,9 @@ export function MembershipFormPublicForm(props: Props) {
   )
 }
 
-function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
+function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) {
   const t   = useTranslations("membershipForms.public")
+  const tLegal = useTranslations("legalConsent")
   const loc = useLocale()
   const searchParams = useSearchParams()
   const isPreview    = searchParams.get("preview") === "1"
@@ -180,6 +182,11 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
   const [spokenLanguage, setSpokenLanguage] = useState("")
   const languageOptions = spokenLanguageOptions()
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  // Agreement to the association's own legal documents, separate from this form's free-text
+  // conditions above: those are per-form wording, these are the association-wide documents
+  // recorded against the revision the visitor was shown.
+  const [legalAccepted, setLegalAccepted] = useState(false)
+  const acceptedLegalRevisionIds = legalAccepted ? legalDocuments.map(document => document.revisionId) : []
   const [answers, setAnswers]       = useState<Record<string, string>>({})
   const [website, setWebsite]       = useState("") // honeypot
   // Un champ ne vire au rouge qu'une fois quitté, ou après un clic sur le bouton d'envoi
@@ -527,6 +534,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     (form.fieldLanguage  !== "REQUIRED" || !!spokenLanguage) &&
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
     (!form.requireCguvSignature || isAdminFill || conditionsAgreed) &&
+    (legalDocuments.length === 0 || isAdminFill || legalAccepted) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
 
   // Same numbering the registrant cards themselves use (registrantLabel: idx + 2, since
@@ -552,6 +560,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
     : !emailValid(email) ? t("blockedInvalidEmail")
     : willBeImmediate && !isAdminFill && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
     : form.requireCguvSignature && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
+    : legalDocuments.length > 0 && !isAdminFill && !legalAccepted ? tLegal("required")
     : (form.fieldAddress   === "REQUIRED" && !address.trim())
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
       || (form.fieldPhone     === "REQUIRED" && !phone.trim())
@@ -624,6 +633,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             password: willBeImmediate ? password : undefined,
             website,
             conditionsAgreed,
+            acceptedLegalRevisionIds,
             locale:   loc,
             // Ni les options ni les produits ne sont rattachés à un registrant précis —
             // toujours attribués en entier au registrant 0 une fois consommés (voir
@@ -657,6 +667,7 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
             answers,
             website,
             conditionsAgreed,
+            acceptedLegalRevisionIds,
           }
 
       const res = await fetch(`/api/public/${slug}/adhesion/${formSlug}/checkout`, {
@@ -1246,6 +1257,18 @@ function MembershipFormPublicFormInner({ slug, formSlug }: Props) {
                 )}
                 {form.requireCguvSignature && !isAdminFill && (
                   <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
+                )}
+
+                {/* Association-wide documents. Hidden in admin mode: a manager filling the form
+                    for someone else cannot agree in their place — that case is recorded as an
+                    explicit offline attestation instead (see LegalAcceptanceContext). */}
+                {!isAdminFill && (
+                  <LegalConsent
+                    slug={slug}
+                    documents={legalDocuments}
+                    checked={legalAccepted}
+                    onChange={setLegalAccepted}
+                  />
                 )}
 
                 {canBuyProducts && offeredProducts.length > 0 && (

@@ -542,6 +542,7 @@ model Association {
   factures                   Facture[]
   facturesRecues             FactureRecue[]
   associationDocuments       AssociationDocument[]
+  legalAcceptances           LegalAcceptance[]
   emailMessages              EmailMessage[]
   smsMessages                SmsMessage[]
   supportTickets             SupportTicket[]
@@ -2818,21 +2819,109 @@ model FactureRecue {
 
 // Documents written by the association itself (CGU, règlement intérieur, …) — rich text
 // from the shared Tiptap editor, never an uploaded file. Managers edit them from the
-// dashboard; members only ever read the ones flagged visibleToMembers in the portal.
+// dashboard; members read the ones flagged visibleToMembers in the portal.
+//
+// The two visibility flags are independent and cumulative, not a scale:
+//   visibleToMembers → listed in the member portal (session required)
+//   visibleToPublic  → readable by anyone at /[slug]/documents, no session at all
+// Public matters because a consent checkbox on a public form has to link to the text being
+// accepted, and a stranger filling an adhesion form has no account yet.
+// requiresAcceptance turns a document into something people must actively agree to before
+// joining, donating, registering or ordering — see LegalAcceptance. It implies public
+// readability in practice (a stranger has to be able to read what they are accepting), which
+// the API enforces rather than the schema.
 model AssociationDocument {
-  id               String    @id @default(cuid())
-  associationId    String
-  title            String
-  content          String // HTML riche (Tiptap)
-  visibleToMembers Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  deletedAt        DateTime?
+  id                 String    @id @default(cuid())
+  associationId      String
+  title              String
+  content            String // HTML riche (Tiptap)
+  visibleToMembers   Boolean   @default(false)
+  visibleToPublic    Boolean   @default(false)
+  requiresAcceptance Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
 
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association                   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  revisions   AssociationDocumentRevision[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, visibleToMembers])
+  @@index([associationId, visibleToPublic])
+  @@index([associationId, requiresAcceptance])
+}
+
+// An immutable snapshot of one document's wording, written on every title/content change.
+//
+// This exists because AssociationDocument.content is overwritten in place. A consent record
+// pointing at the document alone would only ever prove "they ticked a box on that date" — the
+// text itself would already be gone. Acceptances therefore point at a revision, which is also
+// what makes "this document changed, members must agree again" answerable: compare the
+// revision someone accepted with the document's current one.
+model AssociationDocumentRevision {
+  id         String   @id @default(cuid())
+  documentId String
+  // 1, 2, 3… per document. The highest one is the wording in force.
+  version    Int
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+
+  document    AssociationDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  acceptances LegalAcceptance[]
+
+  @@unique([documentId, version])
+  @@index([documentId, createdAt])
+}
+
+// Where an acceptance was collected. DASHBOARD_OFFLINE is the manager-fill case: the person
+// agreed on paper or in person and a manager vouches for it — never inferred, always an
+// explicit assertion by that manager (see collectedById).
+enum LegalAcceptanceContext {
+  ADHESION
+  DON
+  EVENEMENT
+  BOUTIQUE
+  PORTAL_REGISTER
+  PORTAL_REACCEPTANCE
+  DASHBOARD_OFFLINE
+}
+
+// One person agreeing to one revision of one document, once. The row is the evidence, so it
+// is never updated and never deleted on the person's side: re-agreeing to a new revision
+// writes a new row, leaving the earlier agreement intact.
+model LegalAcceptance {
+  id            String @id @default(cuid())
+  associationId String
+  revisionId    String
+
+  // Who agreed. A visitor ordering from the boutique has no account and no Membre row, so the
+  // email they typed is the only identity there is — hence three optional columns rather than
+  // one required link, with the caller always setting at least one. Deliberately plain columns
+  // and not foreign keys: deleting a member must not shred the proof that they once agreed.
+  userId     String?
+  membreId   String?
+  guestEmail String?
+
+  context LegalAcceptanceContext
+  // The Cotisation / Don / Participation / BoutiqueCommande this was given for, when there is
+  // one. Not a foreign key either: it points into whichever table `context` names.
+  contextId String?
+
+  acceptedAt DateTime @default(now())
+  ip         String?
+
+  // DASHBOARD_OFFLINE only — the manager who asserted having collected the agreement.
+  collectedById String?
+
+  association Association                 @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  revision    AssociationDocumentRevision @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+
+  @@index([associationId, acceptedAt])
+  @@index([revisionId])
+  @@index([membreId])
+  @@index([userId])
+  @@index([guestEmail])
 }
 
 // Azure Translator cache — keyed by content hash so identical text (even across

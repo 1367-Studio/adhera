@@ -11,6 +11,7 @@ import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveDocumentBranding } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
@@ -115,6 +116,9 @@ const schema = z.object({
     quantity:   z.number().int().min(1).max(99),
   })).max(10).optional().default([]),
   conditionsAgreed: z.boolean().optional().default(false),
+  // Révisions des documents de l'association telles qu'affichées au visiteur — le serveur
+  // vérifie que ce sont bien celles en vigueur (voir resolveAcceptedRevisions).
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   // Honeypot — jamais rempli par un vrai visiteur (masqué hors écran), même convention que
   // les autres formulaires publics.
   website:     z.string().optional().or(z.literal("")),
@@ -156,6 +160,9 @@ const multiSchema = z.object({
   email:       z.string().email().max(200),
   password:    z.string().min(8).optional(), // requis seulement si l'adhésion sera immédiate
   conditionsAgreed: z.boolean().optional().default(false),
+  // Révisions des documents de l'association telles qu'affichées au visiteur — le serveur
+  // vérifie que ce sont bien celles en vigueur (voir resolveAcceptedRevisions).
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   website:     z.string().optional().or(z.literal("")),
   locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
   // Contrairement au reste de ce schéma, jamais rattaché à un registrant précis : le groupe
@@ -333,6 +340,26 @@ export async function POST(
 
   const { firstName, lastName, email, address: addressValue, photoUrl, locale } = parsed.data
   const acceptedIp = consentIp(req)
+
+  // Documents que l'association impose d'accepter — distincts des conditions propres au
+  // formulaire vérifiées plus haut. Le navigateur bloque déjà l'envoi ; on revalide ici pour
+  // ne jamais dépendre d'un contrôle contournable, et un texte réécrit depuis l'affichage du
+  // formulaire est refusé plutôt qu'accepté en silence.
+  //
+  // Enregistré avant le paiement : la personne a bien accepté à cet instant, que sa carte
+  // passe ensuite ou non. L'identité est l'email saisi — ni compte ni fiche adhérent à ce stade.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: parsed.data.acceptedLegalRevisionIds,
+      identity:             { guestEmail: email },
+      context:              "ADHESION",
+      ip:                   acceptedIp,
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
 
   const existing = await prisma.membre.findFirst({
     where: { associationId: assoc.id, email, deletedAt: null },
@@ -991,6 +1018,26 @@ async function handleMultiRegistrantCheckout(
     return NextResponse.json({ error: "Un mot de passe est requis." }, { status: 422 })
 
   const acceptedIp = consentIp(req)
+
+  // Documents que l'association impose d'accepter — distincts des conditions propres au
+  // formulaire vérifiées plus haut. Le navigateur bloque déjà l'envoi ; on revalide ici pour
+  // ne jamais dépendre d'un contrôle contournable, et un texte réécrit depuis l'affichage du
+  // formulaire est refusé plutôt qu'accepté en silence.
+  //
+  // Enregistré avant le paiement : la personne a bien accepté à cet instant, que sa carte
+  // passe ensuite ou non. L'identité est l'email saisi — ni compte ni fiche adhérent à ce stade.
+  try {
+    await acceptLegalDocuments({
+      associationId:        assoc.id,
+      submittedRevisionIds: data.acceptedLegalRevisionIds,
+      identity:             { guestEmail: data.email },
+      context:              "ADHESION",
+      ip:                   acceptedIp,
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
   const existing = await prisma.membre.findFirst({ where: { associationId: assoc.id, email: data.email, deletedAt: null } })
   if (existing) return NextResponse.json({ error: "Cette adresse email est déjà utilisée." }, { status: 409 })
 
