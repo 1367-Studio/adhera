@@ -8,30 +8,39 @@ function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10) // "YYYY-MM-DD", UTC — stable bucket key
 }
 
-// New Membre rows within the window that came from a public MembershipForm signup —
-// filtered on Membre.createdAt, not Cotisation.createdAt, because a recurring
-// CotisationSubscription's renewal-year Cotisation also carries membershipFormId (copied
-// at signup, see handleCotisationInvoicePaid) even though it isn't a new adhésion, just an
-// existing member's yearly charge. Membre.createdAt only moves once, at real signup time.
+// New Membre rows within the window, counted regardless of how they were added —
+// public adhésion forms (one-off, group, installments, recurring), a manager filling the
+// form for someone, "Ajouter un membre" in the dashboard (with or without a tarif),
+// self-registration on the portal, and a new association's own founding admin all create
+// a Membre row and land here. `paidOnly` narrows to members who have at least one PAYE
+// Cotisation — a manual add or portal self-registration is included in "tous" the same as
+// a paid public signup, so the totals here can be higher than the old membershipFormId-only
+// filter and are the reason a payer/non-payer split matters.
 export const GET = withSuperAdminAuth(async (req) => {
-  const daysParam = new URL(req.url).searchParams.get("days")
+  const url = new URL(req.url)
+  const daysParam = url.searchParams.get("days")
   const days = ALLOWED_DAYS.includes(Number(daysParam) as typeof ALLOWED_DAYS[number])
     ? Number(daysParam)
     : 30
+  const paidOnly = url.searchParams.get("paidOnly") === "1"
 
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  const where = {
+    createdAt: { gte: cutoff },
+    ...(paidOnly ? { cotisations: { some: { status: "PAYE" as const } } } : {}),
+  }
 
   const [grouped, recent] = await Promise.all([
     prisma.membre.groupBy({
       by:     ["associationId"],
-      where:  { createdAt: { gte: cutoff }, cotisations: { some: { membershipFormId: { not: null } } } },
+      where,
       _count: { _all: true },
     }),
     // Raw rows for the daily trend below — bucketed in JS rather than a SQL date_trunc:
     // at most a few hundred rows even at the 90-day window, and it keeps this route on
     // plain Prisma instead of a raw query for what's really just a group-by-day count.
     prisma.membre.findMany({
-      where:  { createdAt: { gte: cutoff }, cotisations: { some: { membershipFormId: { not: null } } } },
+      where,
       select: { createdAt: true },
     }),
   ])
@@ -51,7 +60,7 @@ export const GET = withSuperAdminAuth(async (req) => {
     .map(([date, count]) => ({ date, count }))
 
   if (grouped.length === 0) {
-    return NextResponse.json({ days, associations: [], daily })
+    return NextResponse.json({ days, paidOnly, associations: [], daily })
   }
 
   const assocs = await prisma.association.findMany({
@@ -64,5 +73,5 @@ export const GET = withSuperAdminAuth(async (req) => {
     .map(g => ({ id: g.associationId, name: nameById.get(g.associationId) ?? "?", count: g._count._all }))
     .sort((a, b) => b.count - a.count)
 
-  return NextResponse.json({ days, associations, daily })
+  return NextResponse.json({ days, paidOnly, associations, daily })
 })
