@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CurrencyEurIcon } from "@phosphor-icons/react/dist/ssr";
 import { APP_NAME } from "@/config/brand"
+import { RecentAdhesionsChart } from "@/components/backoffice/recent-adhesions-chart"
 export const metadata: Metadata = {
   title: `Vue d'ensemble — Backoffice ${APP_NAME}`,
 }
@@ -63,6 +64,8 @@ export default async function BackofficePage() {
         <h2 className="text-xl font-semibold tracking-tight">Vue d&apos;ensemble</h2>
         <p className="text-sm text-muted-foreground">Métriques SaaS de la plateforme</p>
       </div>
+
+      <RecentAdhesionsChart />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map(kpi => (
