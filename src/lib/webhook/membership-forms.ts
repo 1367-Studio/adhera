@@ -8,6 +8,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding, effectiveMemberLimit } from "@/lib/plan-limits"
 import { getPricingInfo, stripe } from "@/lib/stripe"
 import { currentCotisationYear } from "@/lib/membre-adherent"
+import { recordCotisationPayment } from "@/lib/cotisation-payments"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
@@ -63,6 +65,18 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       : Promise.resolve(null),
   ])
 
+  // Computed early: needed both inside the transaction (as the Income reference for the
+  // recordCotisationPayment call below) and afterward (to backfill it onto the PaymentIntent
+  // for refund reconciliation, see the comment further down).
+  const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id
+  // Single timestamp shared by the exercice lookup, the Cotisation's own paidAt, and the
+  // recorded payment's paidAt — three separate `new Date()` calls could theoretically land on
+  // different sides of a fiscal-year boundary and disagree with each other.
+  const paidAt = new Date()
+  // Best-effort exercice link — never blocks, same reasoning as every other Income-creating
+  // webhook path (see e.g. the Stripe boutique/cotisation-renewal branches in webhook/stripe/route.ts).
+  const exercice = isFreeTier ? null : await resolveExerciceForDate(meta.associationId, paidAt)
+
   let created
   try {
     created = await prisma.$transaction(async (tx) => {
@@ -99,15 +113,15 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
         },
       })
 
-      const cotisation = await tx.cotisation.create({
+      let cotisation = await tx.cotisation.create({
         data: {
           membreId:      membre.id,
           associationId: meta.associationId,
           year:          currentCotisationYear(),
           amount:        membershipAmount,
-          amountPaid:    isFreeTier ? 0 : membershipAmount,
-          status:        isFreeTier ? "EXONERE" : "PAYE",
-          paidAt:        new Date(),
+          amountPaid:    0,
+          status:        isFreeTier ? "EXONERE" : "EN_ATTENTE",
+          paidAt:        isFreeTier ? paidAt : null,
           membershipFormId: meta.membershipFormId || null,
           tierId:           meta.tierId || null,
           periodStart:      meta.periodStart ? new Date(meta.periodStart) : null,
@@ -116,6 +130,24 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           deductibleAmount: meta.deductibleAmount ? Number(meta.deductibleAmount) : null,
         },
       })
+
+      // Not free: the adhésion was actually paid via this Stripe session, so record a real
+      // CotisationPayment — this is what posts the matching Income row the Compte de Résultat
+      // report reads from. Without this, the Cotisation would land on PAYE (set directly above,
+      // pre-fix) with no CotisationPayment/Income behind it, and the payment would silently
+      // never show up as revenue.
+      if (!isFreeTier) {
+        cotisation = await recordCotisationPayment(tx, {
+          associationId: meta.associationId,
+          cotisationId:  cotisation.id,
+          amount:        membershipAmount,
+          method:        "En ligne",
+          paidAt,
+          source:        "STRIPE",
+          reference:     paymentIntentId ?? null,
+          exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+        })
+      }
 
       await createMembershipAddonPurchases(tx, {
         associationId: meta.associationId,
@@ -161,7 +193,6 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   // this payment is for doesn't exist until the transaction above just created it. Patching it
   // in now (Stripe merges metadata updates, it doesn't replace) is what lets a later refund
   // flip this Cotisation back off PAYE automatically instead of silently going stale.
-  const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id
   if (paymentIntentId) {
     await stripe.paymentIntents.update(paymentIntentId, { metadata: { cotisationId: created.cotisation.id } }).catch(err => {
       console.error(`[membership-oneoff] failed to backfill paymentIntent metadata for refund reconciliation (session ${session.id}):`, err)
