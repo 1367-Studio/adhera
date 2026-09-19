@@ -11,6 +11,7 @@ import { usePalette } from "@/lib/finance-palette"
 
 type RecentAdhesionsData = {
   days:          number
+  paidOnly:      boolean
   associations:  { id: string; name: string; count: number }[]
   daily:         { date: string; count: number }[]
 }
@@ -54,11 +55,12 @@ function TrendTip({ active, payload }: {
 export function RecentAdhesionsChart() {
   const pal = usePalette()
   const [days, setDays] = useState<typeof WINDOW_OPTIONS[number]>(30)
+  const [paidOnly, setPaidOnly] = useState(false)
 
   const { data, isLoading } = useQuery<RecentAdhesionsData>({
-    queryKey: ["backoffice", "adhesoes-recentes", days],
+    queryKey: ["backoffice", "adhesoes-recentes", days, paidOnly],
     queryFn:  async () => {
-      const res = await fetch(`/api/backoffice/adhesoes-recentes?days=${days}`)
+      const res = await fetch(`/api/backoffice/adhesoes-recentes?days=${days}&paidOnly=${paidOnly ? "1" : "0"}`)
       if (!res.ok) throw new Error("Erreur de chargement")
       return res.json()
     },
@@ -74,17 +76,27 @@ export function RecentAdhesionsChart() {
     <div className="rounded-lg border bg-card p-6 dark:border-white/10">
       <div className="mb-4 flex items-center justify-between">
         <p className="text-xs font-medium text-muted-foreground">Adhésions récentes</p>
-        <div className="flex gap-1">
-          {WINDOW_OPTIONS.map(option => (
-            <Button
-              key={option}
-              size="sm"
-              variant={days === option ? "default" : "outline"}
-              onClick={() => setDays(option)}
-            >
-              {option}j
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1">
+            <Button size="sm" variant={!paidOnly ? "default" : "outline"} onClick={() => setPaidOnly(false)}>
+              Tous
             </Button>
-          ))}
+            <Button size="sm" variant={paidOnly ? "default" : "outline"} onClick={() => setPaidOnly(true)}>
+              Payants
+            </Button>
+          </div>
+          <div className="flex gap-1">
+            {WINDOW_OPTIONS.map(option => (
+              <Button
+                key={option}
+                size="sm"
+                variant={days === option ? "default" : "outline"}
+                onClick={() => setDays(option)}
+              >
+                {option}j
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -92,7 +104,7 @@ export function RecentAdhesionsChart() {
 
       {!isLoading && !hasData && (
         <p className="py-6 text-center text-xs text-muted-foreground">
-          Aucune nouvelle adhésion sur les {days} derniers jours.
+          Aucune nouvelle adhésion{paidOnly ? " payante" : ""} sur les {days} derniers jours.
         </p>
       )}
 
