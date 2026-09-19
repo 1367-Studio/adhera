@@ -30,9 +30,9 @@
       "replace": "Replace",
       "remove": "Remove",
       "dropOrClickToAdd": "Drag or click to add an image",
-      "formatsHint": "JPG, PNG, WebP · max 5 MB",
-      "compactHint": "Drag or click to add an image (JPG, PNG, WebP, max 5 MB)",
-      "maxSizeError": "Image too large (max 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · max 4 MB",
+      "compactHint": "Drag or click to add an image (JPG, PNG, WebP, max 4 MB)",
+      "maxSizeError": "Image too large (max 4 MB)",
       "uploadError": "Error uploading the image"
     },
     "free": "Free",
@@ -364,7 +364,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "File too large (max 10 MB)",
+    "fileTooLarge": "File too large (max 4 MB)",
     "uploadError": "Error uploading the file",
     "networkError": "Network error while uploading — please try again",
     "pdfDocument": "PDF document",
@@ -372,7 +372,7 @@
     "viewDocument": "View document",
     "remove": "Remove",
     "uploading": "Uploading…",
-    "attach": "Attach an image or PDF (max 10 MB)"
+    "attach": "Attach an image or PDF (max 4 MB)"
   },
   "factures": {
     "form": {
@@ -1421,7 +1421,7 @@
       "fileUploading": "Uploading…",
       "fileChosen": "File attached",
       "fileRemove": "Remove file",
-      "fileTooLarge": "File too large (max 10 MB)",
+      "fileTooLarge": "File too large (max 4 MB)",
       "fileUploadError": "Error uploading the file",
       "fileNetworkError": "Network error while uploading — please try again",
       "totalLabel": "Total:",
@@ -3170,7 +3170,7 @@
       "contactHelp": "Any questions? Get in touch:",
       "photoNoFile": "No file provided",
       "photoLabel": "Photo",
-      "photoTooLarge": "File too large (max 5 MB)",
+      "photoTooLarge": "File too large (max 4 MB)",
       "photoFormatUnsupported": "Unsupported format. JPG, PNG, WebP, or GIF only.",
       "photoUploadError": "Couldn't upload the photo. Please try again.",
       "photoTooManyAttempts": "Too many attempts, please try again later.",
@@ -4353,6 +4353,8 @@
       "confirmSendTitle": "Send confirmation",
       "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
       "sendNow": "Send now",
+      "sending": "Sending…",
+      "sendFailedTitle": "The email couldn't be sent",
       "replaceContentTitle": "Replace content?",
       "replaceContentDescription": "Applying this template will replace the subject and body already written.",
       "replace": "Replace",
@@ -4365,6 +4367,28 @@
       "recipientsActive": "{count, plural, one {# active member} other {# active members}}",
       "externalOnlyCount": "{count, plural, one {# external email} other {# external emails}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# external email} other {# external emails}}",
+      "attachments": {
+        "label": "Attachments",
+        "add": "Attach files",
+        "hint": "JPG, PNG, WebP, GIF or PDF · {maxSize} total",
+        "usage": "{count, plural, one {# file} other {# files}} · {used} / {maxSize}",
+        "limitFilesReached": "Limit of {maxFiles} files reached",
+        "limitSizeReached": "{maxSize} limit reached",
+        "remove": "Remove {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {and # other} other {and # others}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} wasn't added — the file is empty.} other {# files weren't added: {names} — these files are empty.}}",
+          "unsupportedType": "{count, plural, one {{names} wasn't added} other {# files weren't added: {names}}} — accepted formats: images (JPG, PNG, WebP, GIF) and PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} wasn't added} other {# files weren't added: {names}}} — the {maxSize} total limit would be exceeded ({remaining} left).",
+          "tooManyFiles": "{count, plural, one {{names} wasn't added} other {# files weren't added: {names}}} — {maxFiles} files maximum per email."
+        },
+        "recapSummary": "{count, plural, one {# file} other {# files}} · {size}",
+        "uploading": "Uploading attachments…",
+        "uploadFailedTitle": "The attachments couldn't be uploaded",
+        "uploadFailedDescription": "No email was sent. Try again, or click “Edit” to remove or replace a file.",
+        "notSavedInTemplate": "Attachments aren't saved in the template."
+      },
       "toasts": {
         "selectType": "Select a member type",
         "selectMember": "Select at least one member or add an external email",

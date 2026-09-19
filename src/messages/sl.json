@@ -30,9 +30,9 @@
       "replace": "Zamenjava",
       "remove": "Odstranite",
       "dropOrClickToAdd": "Povlecite ali kliknite za dodajanje slike",
-      "formatsHint": "JPG, PNG, WebP · največ 5 MB",
-      "compactHint": "Povleci/klikni za dodajanje slike (JPG, PNG, WebP, največ 5 MB)",
-      "maxSizeError": "Slika je prevelika (največ 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · največ 4 MB",
+      "compactHint": "Povleci/klikni za dodajanje slike (JPG, PNG, WebP, največ 4 MB)",
+      "maxSizeError": "Slika je prevelika (največ 4 MB)",
       "uploadError": "Napaka pri nalaganju"
     },
     "free": "Brezplačno",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Datoteka je prevelika (največ 10 MB)",
+    "fileTooLarge": "Datoteka je prevelika (največ 4 MB)",
     "uploadError": "Napaka pri nalaganju",
     "networkError": "Nalaganje omrežne napake — poskusite znova",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Oglejte si dokument",
     "remove": "Izbriši",
     "uploading": "Nalaganje...",
-    "attach": "Priložite sliko ali PDF (največ 10 MB)"
+    "attach": "Priložite sliko ali PDF (največ 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Nalaganje...",
       "fileChosen": "Priložena datoteka",
       "fileRemove": "Izbriši datoteko",
-      "fileTooLarge": "Datoteka je prevelika (največ 10 MB)",
+      "fileTooLarge": "Datoteka je prevelika (največ 4 MB)",
       "fileUploadError": "Napaka pri nalaganju",
       "fileNetworkError": "Nalaganje omrežne napake — poskusite znova",
       "totalLabel": "Skupaj:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Vprašanje? Kontaktirajte nas:",
       "photoNoFile": "Datoteke niso bile zagotovljene",
       "photoLabel": "Fotografija",
-      "photoTooLarge": "Datoteka je prevelika (največ 5 MB)",
+      "photoTooLarge": "Datoteka je prevelika (največ 4 MB)",
       "photoFormatUnsupported": "Format ni podprt. Samo JPG, PNG, WebP ali GIF.",
       "photoUploadError": "Napaka pri pošiljanju fotografije. Poskusi znova.",
       "photoTooManyAttempts": "Preveč poskusov, poskusi znova kasneje.",

@@ -30,9 +30,9 @@
       "replace": "Remplacer",
       "remove": "Retirer",
       "dropOrClickToAdd": "Glisser ou cliquer pour ajouter une image",
-      "formatsHint": "JPG, PNG, WebP · max 5 Mo",
-      "compactHint": "Glisser/cliquer pour ajouter une image (JPG, PNG, WebP, max 5 Mo)",
-      "maxSizeError": "Image trop volumineuse (max 5 Mo)",
+      "formatsHint": "JPG, PNG, WebP · max 4 Mo",
+      "compactHint": "Glisser/cliquer pour ajouter une image (JPG, PNG, WebP, max 4 Mo)",
+      "maxSizeError": "Image trop volumineuse (max 4 Mo)",
       "uploadError": "Erreur lors de l'upload"
     },
     "free": "Gratuit",
@@ -364,7 +364,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Fichier trop volumineux (max 10 Mo)",
+    "fileTooLarge": "Fichier trop volumineux (max 4 Mo)",
     "uploadError": "Erreur lors de l'upload",
     "networkError": "Erreur réseau lors de l'upload — réessayez",
     "pdfDocument": "Document PDF",
@@ -372,7 +372,7 @@
     "viewDocument": "Voir le document",
     "remove": "Supprimer",
     "uploading": "Upload en cours…",
-    "attach": "Joindre image ou PDF (max 10 Mo)"
+    "attach": "Joindre image ou PDF (max 4 Mo)"
   },
   "factures": {
     "form": {
@@ -1421,7 +1421,7 @@
       "fileUploading": "Upload en cours…",
       "fileChosen": "Fichier joint",
       "fileRemove": "Supprimer le fichier",
-      "fileTooLarge": "Fichier trop volumineux (max 10 Mo)",
+      "fileTooLarge": "Fichier trop volumineux (max 4 Mo)",
       "fileUploadError": "Erreur lors de l'upload",
       "fileNetworkError": "Erreur réseau lors de l'upload — réessayez",
       "totalLabel": "Total :",
@@ -3178,7 +3178,7 @@
       "contactHelp": "Une question ? Contactez-nous :",
       "photoNoFile": "Aucun fichier fourni",
       "photoLabel": "Photo",
-      "photoTooLarge": "Fichier trop volumineux (max 5 Mo)",
+      "photoTooLarge": "Fichier trop volumineux (max 4 Mo)",
       "photoFormatUnsupported": "Format non supporté. JPG, PNG, WebP ou GIF uniquement.",
       "photoUploadError": "Erreur lors de l'envoi de la photo. Réessayez.",
       "photoTooManyAttempts": "Trop de tentatives, réessayez plus tard.",
@@ -4361,6 +4361,8 @@
       "confirmSendTitle": "Confirmation d'envoi",
       "confirmSendDescription": "Cet email sera envoyé à {recipients}. Cette action est irréversible.",
       "sendNow": "Envoyer maintenant",
+      "sending": "Envoi en cours…",
+      "sendFailedTitle": "L'email n'a pas pu être envoyé",
       "replaceContentTitle": "Remplacer le contenu ?",
       "replaceContentDescription": "Appliquer ce modèle remplacera l'objet et le corps du message déjà rédigés.",
       "replace": "Remplacer",
@@ -4373,6 +4375,28 @@
       "recipientsActive": "{count, plural, one {# membre actif} other {# membres actifs}}",
       "externalOnlyCount": "{count, plural, one {# email externe} other {# emails externes}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# email externe} other {# emails externes}}",
+      "attachments": {
+        "label": "Pièces jointes",
+        "add": "Joindre des fichiers",
+        "hint": "JPG, PNG, WebP, GIF ou PDF · {maxSize} au total",
+        "usage": "{count, plural, one {# fichier} other {# fichiers}} · {used} / {maxSize}",
+        "limitFilesReached": "Limite de {maxFiles} fichiers atteinte",
+        "limitSizeReached": "Limite de {maxSize} atteinte",
+        "remove": "Retirer {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {et # autre} other {et # autres}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} n'a pas été ajouté — le fichier est vide.} other {# fichiers n'ont pas été ajoutés : {names} — ces fichiers sont vides.}}",
+          "unsupportedType": "{count, plural, one {{names} n'a pas été ajouté} other {# fichiers n'ont pas été ajoutés : {names}}} — formats acceptés : images (JPG, PNG, WebP, GIF) et PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} n'a pas été ajouté} other {# fichiers n'ont pas été ajoutés : {names}}} — la limite de {maxSize} au total serait dépassée (espace restant : {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} n'a pas été ajouté} other {# fichiers n'ont pas été ajoutés : {names}}} — {maxFiles} fichiers maximum par email."
+        },
+        "recapSummary": "{count, plural, one {# fichier} other {# fichiers}} · {size}",
+        "uploading": "Envoi des pièces jointes…",
+        "uploadFailedTitle": "Les pièces jointes n'ont pas pu être envoyées",
+        "uploadFailedDescription": "Aucun email n'est parti. Réessayez, ou cliquez sur « Modifier » pour retirer ou remplacer un fichier.",
+        "notSavedInTemplate": "Les pièces jointes ne sont pas enregistrées dans le modèle."
+      },
       "toasts": {
         "selectType": "Sélectionnez un type de membre",
         "selectMember": "Sélectionnez au moins un membre ou ajoutez un email externe",

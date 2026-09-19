@@ -30,9 +30,9 @@
       "replace": "Cseréje",
       "remove": "Távolítsd el",
       "dropOrClickToAdd": "Húzd vagy kattints kép hozzáadásához",
-      "formatsHint": "JPG, PNG, WebP · max 5 MB",
-      "compactHint": "Húzd el/kattints kép hozzáadásához (JPG, PNG, WebP, maximum 5 MB)",
-      "maxSizeError": "Túl nagy kép (maximum 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · max 4 MB",
+      "compactHint": "Húzd el/kattints kép hozzáadásához (JPG, PNG, WebP, maximum 4 MB)",
+      "maxSizeError": "Túl nagy kép (maximum 4 MB)",
       "uploadError": "Hiba feltöltés"
     },
     "free": "Ingyenes",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Túl nagy fájl (maximum 10 MB)",
+    "fileTooLarge": "Túl nagy fájl (maximum 4 MB)",
     "uploadError": "Hiba feltöltés",
     "networkError": "Hálózati hiba feltöltése — próbáld újra",
     "pdfDocument": "Dokumentum PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Tekintse meg a dokumentumot",
     "remove": "Törlés",
     "uploading": "Feltöltöm...",
-    "attach": "Csatolj képet vagy PDF-et (maximum 10 MB)"
+    "attach": "Csatolj képet vagy PDF-et (maximum 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Feltöltöm...",
       "fileChosen": "Csatolt fájl",
       "fileRemove": "File törlése",
-      "fileTooLarge": "Túl nagy fájl (maximum 10 MB)",
+      "fileTooLarge": "Túl nagy fájl (maximum 4 MB)",
       "fileUploadError": "Hiba feltöltés",
       "fileNetworkError": "Hálózati hiba feltöltése — próbáld újra",
       "totalLabel": "Összesen:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Kérdés? Lépjen kapcsolatba velünk:",
       "photoNoFile": "Nincs fájl",
       "photoLabel": "Fotó",
-      "photoTooLarge": "Túl nagy fájl (maximum 5 MB)",
+      "photoTooLarge": "Túl nagy fájl (maximum 4 MB)",
       "photoFormatUnsupported": "Formátum nem támogatott. Csak JPG, PNG, WebP vagy GIF.",
       "photoUploadError": "Hiba küldése a képen. Próbáld újra.",
       "photoTooManyAttempts": "Túl sok próbálkozás, később próbáld újra.",

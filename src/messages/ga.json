@@ -30,9 +30,9 @@
       "replace": "Ionadaigh",
       "remove": "Bain",
       "dropOrClickToAdd": "Tarraing nó cliceáil chun íomhá a chur leis",
-      "formatsHint": "JPG, PNG, WebP · uasmhéid 5 MB",
-      "compactHint": "Tarraing / cliceáil chun íomhá a chur leis (JPG, PNG, WebP, uasmhéid 5 MB)",
-      "maxSizeError": "Íomhá ró-mhór (uasmhéid 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · uasmhéid 4 MB",
+      "compactHint": "Tarraing / cliceáil chun íomhá a chur leis (JPG, PNG, WebP, uasmhéid 4 MB)",
+      "maxSizeError": "Íomhá ró-mhór (uasmhéid 4 MB)",
       "uploadError": "Earráid agus uaslódáil"
     },
     "free": "Saor in Aisce",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Comhad ró-mhór (uasmhéid 10 MB)",
+    "fileTooLarge": "Comhad ró-mhór (uasmhéid 4 MB)",
     "uploadError": "Earráid agus uaslódáil",
     "networkError": "Uaslódáil earráide líonra — bain triail as arís",
     "pdfDocument": "Cáipéis PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Féach ar an gcáipéis",
     "remove": "Scrios",
     "uploading": "Á Uaslódáil...",
-    "attach": "Ceangail íomhá nó PDF (10 MBar a mhéad)"
+    "attach": "Ceangail íomhá nó PDF (4 MBar a mhéad)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Á Uaslódáil...",
       "fileChosen": "Comhad ceangailte",
       "fileRemove": "Scrios Comhad",
-      "fileTooLarge": "Comhad ró-mhór (uasmhéid 10 MB)",
+      "fileTooLarge": "Comhad ró-mhór (uasmhéid 4 MB)",
       "fileUploadError": "Earráid agus uaslódáil",
       "fileNetworkError": "Uaslódáil earráide líonra — bain triail as arís",
       "totalLabel": "Iomlán :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Ceist? Déan teagmháil linn:",
       "photoNoFile": "Níor cuireadh aon chomhad ar fáil",
       "photoLabel": "Grianghraf",
-      "photoTooLarge": "Comhad ró-mhór (uasmhéid 5 MB)",
+      "photoTooLarge": "Comhad ró-mhór (uasmhéid 4 MB)",
       "photoFormatUnsupported": "Ní thacaítear le formáid. JPG, PNG, WebP, nó GIF amháin.",
       "photoUploadError": "Earráid agus an grianghraf á sheoladh. Bain triail as arís.",
       "photoTooManyAttempts": "An iomarca iarrachtaí, bain triail as arís níos déanaí.",

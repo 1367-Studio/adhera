@@ -4,10 +4,11 @@ import { evenementRefWhere } from "@/lib/slug"
 import { parseModules } from "@/lib/modules"
 import { uploadToR2 } from "@/lib/r2"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 // Same limit as the admin's own DocumentUpload route (src/app/api/upload/route.ts) — this one
 // is more restricted in scope (see the FILE-field gate below), not in size.
-const MAX_SIZE = 10 * 1024 * 1024 // 10 MB
+const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
 // Duplicated rather than shared — same convention as src/app/api/upload/route.ts,
 // src/app/api/portal/upload/route.ts and the adhesion form's own photo route: sniffs the real
@@ -61,7 +62,7 @@ export async function POST(
 
   if (!file) return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 })
   if (file.size > MAX_SIZE)
-    return NextResponse.json({ error: "Fichier trop volumineux (max 10 Mo)" }, { status: 400 })
+    return NextResponse.json({ error: "Fichier trop volumineux (max 4 Mo)" }, { status: 400 })
 
   const buffer      = Buffer.from(await file.arrayBuffer())
   const contentType = sniffFileType(buffer)

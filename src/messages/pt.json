@@ -30,9 +30,9 @@
       "replace": "Substituir",
       "remove": "Remover",
       "dropOrClickToAdd": "Arraste ou clique para adicionar uma imagem",
-      "formatsHint": "JPG, PNG, WebP · máx. 5 MB",
-      "compactHint": "Arraste ou clique para adicionar uma imagem (JPG, PNG, WebP, máx. 5 MB)",
-      "maxSizeError": "Imagem muito grande (máx. 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · máx. 4 MB",
+      "compactHint": "Arraste ou clique para adicionar uma imagem (JPG, PNG, WebP, máx. 4 MB)",
+      "maxSizeError": "Imagem muito grande (máx. 4 MB)",
       "uploadError": "Erro ao enviar a imagem"
     },
     "free": "Grátis",
@@ -364,7 +364,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Arquivo muito grande (máx. 10 MB)",
+    "fileTooLarge": "Arquivo muito grande (máx. 4 MB)",
     "uploadError": "Erro ao enviar o arquivo",
     "networkError": "Erro de rede ao enviar — tente novamente",
     "pdfDocument": "Documento PDF",
@@ -372,7 +372,7 @@
     "viewDocument": "Ver documento",
     "remove": "Remover",
     "uploading": "Enviando…",
-    "attach": "Anexar imagem ou PDF (máx. 10 MB)"
+    "attach": "Anexar imagem ou PDF (máx. 4 MB)"
   },
   "factures": {
     "form": {
@@ -1417,7 +1417,7 @@
       "fileUploading": "Enviando…",
       "fileChosen": "Arquivo anexado",
       "fileRemove": "Remover arquivo",
-      "fileTooLarge": "Arquivo muito grande (máx. 10 MB)",
+      "fileTooLarge": "Arquivo muito grande (máx. 4 MB)",
       "fileUploadError": "Erro ao enviar o arquivo",
       "fileNetworkError": "Erro de rede ao enviar — tente novamente",
       "totalLabel": "Total:",
@@ -3161,7 +3161,7 @@
       "contactHelp": "Alguma questão? Contacte-nos:",
       "photoNoFile": "Nenhum arquivo enviado",
       "photoLabel": "Fotografia",
-      "photoTooLarge": "Arquivo muito grande (máx. 5 MB)",
+      "photoTooLarge": "Arquivo muito grande (máx. 4 MB)",
       "photoFormatUnsupported": "Formato não suportado. Use JPG, PNG, WebP ou GIF.",
       "photoUploadError": "Erro ao enviar a foto. Tente novamente.",
       "photoTooManyAttempts": "Muitas tentativas. Tente novamente mais tarde.",

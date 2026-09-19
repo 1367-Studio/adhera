@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl"
 import { ImageIcon, CircleNotchIcon, XIcon, UploadSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 interface ImageUploadProps {
   value?: string
@@ -63,7 +64,7 @@ export function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(file: File) {
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_FUNCTION_UPLOAD_BYTES) {
       toast.error(maxSizeErrorMessage ?? t("maxSizeError"))
       // Without this, re-picking the exact same filename (e.g. after compressing it
       // externally) never fires a fresh change event — the input's value already equals

@@ -30,9 +30,9 @@
       "replace": "Wymiana",
       "remove": "Usuń",
       "dropOrClickToAdd": "Przeciągnij lub kliknij, aby dodać obraz",
-      "formatsHint": "JPG, PNG, WebP · maksymalnie 5 MB",
-      "compactHint": "Przeciągnij/kliknij, aby dodać obraz (JPG, PNG, WebP, maksymalnie 5 MB)",
-      "maxSizeError": "Obraz za duży (maksymalnie 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maksymalnie 4 MB",
+      "compactHint": "Przeciągnij/kliknij, aby dodać obraz (JPG, PNG, WebP, maksymalnie 4 MB)",
+      "maxSizeError": "Obraz za duży (maksymalnie 4 MB)",
       "uploadError": "Błąd przesyłania"
     },
     "free": "Bezpłatne",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Plik za duży (maksymalnie 10 MB)",
+    "fileTooLarge": "Plik za duży (maksymalnie 4 MB)",
     "uploadError": "Błąd przesyłania",
     "networkError": "Przesyłanie błędów sieciowych — spróbuj ponownie",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Zobacz dokument",
     "remove": "Usuń",
     "uploading": "Przesyłam...",
-    "attach": "Załącz obraz lub PDF (maksymalnie 10 MB)"
+    "attach": "Załącz obraz lub PDF (maksymalnie 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Przesyłam...",
       "fileChosen": "Załączony plik",
       "fileRemove": "Usuń plik",
-      "fileTooLarge": "Plik za duży (maksymalnie 10 MB)",
+      "fileTooLarge": "Plik za duży (maksymalnie 4 MB)",
       "fileUploadError": "Błąd przesyłania",
       "fileNetworkError": "Przesyłanie błędów sieciowych — spróbuj ponownie",
       "totalLabel": "Łącznie:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Pytanie? Skontaktuj się z nami:",
       "photoNoFile": "Nie udostępniono żadnych plików",
       "photoLabel": "Zdjęcie",
-      "photoTooLarge": "Plik za duży (maksymalnie 5 MB)",
+      "photoTooLarge": "Plik za duży (maksymalnie 4 MB)",
       "photoFormatUnsupported": "Format nie jest obsługiwany. Tylko JPG, PNG, WebP lub GIF.",
       "photoUploadError": "Błąd wysyłania zdjęcia. Spróbuj ponownie.",
       "photoTooManyAttempts": "Za dużo prób, spróbuj później ponownie.",

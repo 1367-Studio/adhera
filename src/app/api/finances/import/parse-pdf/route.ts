@@ -6,13 +6,14 @@ import { completeText } from "@/lib/ai/complete"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 import { rateLimit } from "@/lib/rate-limit"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 // Real cap is Vercel's serverless request body limit (~4.5MB, not overridable via
 // vercel.json) — kept comfortably under it, not copied from transcribe's 25MB (audio
 // route, different platform constraint).
-const MAX_FILE_BYTES = 4 * 1024 * 1024
+const MAX_FILE_BYTES = MAX_FUNCTION_UPLOAD_BYTES
 const MAX_TEXT_CHARS = 60_000
 const MIN_TEXT_CHARS = 40
 

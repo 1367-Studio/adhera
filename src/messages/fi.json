@@ -30,9 +30,9 @@
       "replace": "Korvaa",
       "remove": "Poista",
       "dropOrClickToAdd": "Vedä tai klikkaa lisätäksesi kuvan",
-      "formatsHint": "JPG, PNG, WebP · Max 5 MB",
-      "compactHint": "Vedä/klikkaa lisätäksesi kuvan (JPG, PNG, WebP, maksimissaan 5 MB)",
-      "maxSizeError": "Kuva liian suuri (maksimissaan 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · Max 4 MB",
+      "compactHint": "Vedä/klikkaa lisätäksesi kuvan (JPG, PNG, WebP, maksimissaan 4 MB)",
+      "maxSizeError": "Kuva liian suuri (maksimissaan 4 MB)",
       "uploadError": "Virhe latauksessa"
     },
     "free": "Vapaa",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Liian suuri tiedosto (enintään 10 MB)",
+    "fileTooLarge": "Liian suuri tiedosto (enintään 4 MB)",
     "uploadError": "Virhe latauksessa",
     "networkError": "Verkkovirheen lataus — kokeile uudelleen",
     "pdfDocument": "Asiakirja PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Katso dokumentti",
     "remove": "Poista",
     "uploading": "Ladataan...",
-    "attach": "Liitä kuva tai PDF (enintään 10 MB)"
+    "attach": "Liitä kuva tai PDF (enintään 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Ladataan...",
       "fileChosen": "Liitteenä oleva tiedosto",
       "fileRemove": "Poista tiedosto",
-      "fileTooLarge": "Liian suuri tiedosto (enintään 10 MB)",
+      "fileTooLarge": "Liian suuri tiedosto (enintään 4 MB)",
       "fileUploadError": "Virhe latauksessa",
       "fileNetworkError": "Verkkovirheen lataus — kokeile uudelleen",
       "totalLabel": "Yhteensä:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Kysymys? Ota yhteyttä:",
       "photoNoFile": "Tiedostoja ei toimitettu",
       "photoLabel": "Kuva",
-      "photoTooLarge": "Liian suuri viila (maksimissaan 5 MB)",
+      "photoTooLarge": "Liian suuri viila (maksimissaan 4 MB)",
       "photoFormatUnsupported": "Muoto ei ole tuettu. Vain JPG, PNG, WebP tai GIF.",
       "photoUploadError": "Virhe kuvan lähettämisessä. Yritä uudestaan.",
       "photoTooManyAttempts": "Liian monta yritystä, yritä uudelleen myöhemmin.",
