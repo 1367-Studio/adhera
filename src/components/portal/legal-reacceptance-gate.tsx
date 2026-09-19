@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
+import { signOut } from "next-auth/react"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { Button } from "@/components/ui/button"
@@ -59,12 +60,13 @@ export function LegalReacceptanceGate(
         />
 
         <div className="flex items-center justify-between gap-4">
-          <a
-            href={`${BASE_PATH}/portal/${slug}/login`}
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: `${BASE_PATH}/portal/${slug}/login` })}
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             {t("gateSignOut")}
-          </a>
+          </button>
           <Button onClick={handleAccept} disabled={!accepted || submitting}>
             {submitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
             {t("gateSubmit")}
