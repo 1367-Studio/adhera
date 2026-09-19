@@ -14,6 +14,7 @@ import { useModules } from "@/lib/user-context"
 import { MODULE_LABELS } from "@/lib/modules"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 type Step = 1 | 2 | 3 | 4
 
 type ParsedRow = {
@@ -266,7 +267,7 @@ export function ImportWizard() {
     handleFileSelect(f)
   }
 
-  const MAX_PDF_BYTES = 4 * 1024 * 1024 // kept in sync with the server cap in parse-pdf/route.ts
+  const MAX_PDF_BYTES = MAX_FUNCTION_UPLOAD_BYTES // same constant as the server cap in parse-pdf/route.ts
 
   function isValidPdf(f: File): boolean {
     return f.name.toLowerCase().endsWith(".pdf") || f.type === "application/pdf"

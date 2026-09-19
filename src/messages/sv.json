@@ -30,9 +30,9 @@
       "replace": "Byt ut",
       "remove": "Ta bort",
       "dropOrClickToAdd": "Dra eller klicka för att lägga till en bild",
-      "formatsHint": "JPG, PNG, WebP · Max 5 MB",
-      "compactHint": "Dra/klicka för att lägga till en bild (JPG, PNG, WebP, max 5 MB)",
-      "maxSizeError": "Bilden är för stor (max 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · Max 4 MB",
+      "compactHint": "Dra/klicka för att lägga till en bild (JPG, PNG, WebP, max 4 MB)",
+      "maxSizeError": "Bilden är för stor (max 4 MB)",
       "uploadError": "Fel vid uppladdning"
     },
     "free": "Gratis",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Filen är för stor (max 10 MB)",
+    "fileTooLarge": "Filen är för stor (max 4 MB)",
     "uploadError": "Fel vid uppladdning",
     "networkError": "Nätverksfel laddas upp — försök igen",
     "pdfDocument": "Dokument-PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Visa dokumentet",
     "remove": "Radera",
     "uploading": "Laddar upp...",
-    "attach": "Bifoga bild eller PDF (max 10 MB)"
+    "attach": "Bifoga bild eller PDF (max 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Laddar upp...",
       "fileChosen": "Bifogad fil",
       "fileRemove": "Radera fil",
-      "fileTooLarge": "Filen är för stor (max 10 MB)",
+      "fileTooLarge": "Filen är för stor (max 4 MB)",
       "fileUploadError": "Fel vid uppladdning",
       "fileNetworkError": "Nätverksfel laddas upp — försök igen",
       "totalLabel": "Totalt:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "En fråga? Kontakta oss:",
       "photoNoFile": "Inga filer tillhandahållna",
       "photoLabel": "Foto",
-      "photoTooLarge": "Filen är för stor (max 5 MB)",
+      "photoTooLarge": "Filen är för stor (max 4 MB)",
       "photoFormatUnsupported": "Format stöds inte. Endast JPG, PNG, WebP eller GIF.",
       "photoUploadError": "Fel som skickar fotot. Försök igen.",
       "photoTooManyAttempts": "För många försök, försök igen senare.",

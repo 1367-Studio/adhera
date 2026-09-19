@@ -3,17 +3,22 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { useTranslations } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { z } from "zod"
-import { PaperPlaneTiltIcon, WarningIcon, WarningCircleIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon, PlusIcon, XIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
+import { PaperPlaneTiltIcon, WarningIcon, WarningCircleIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon, PlusIcon, XIcon, InfoIcon, PaperclipIcon, FilePdfIcon, FileImageIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { Label } from "@/components/ui/label"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
 import { useMessageTemplates, useCreateTemplate, type MessageTemplate } from "@/hooks/use-message-templates"
 import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
+import type { EmailAttachmentReference } from "@/lib/email-attachments"
+import { BASE_PATH } from "@/lib/env"
+import { formatFileSize } from "@/lib/format-file-size"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 import { cn } from "@/lib/utils"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -32,6 +37,25 @@ type MembrePick = {
 
 type RecipientMode = "all" | "type" | "manual"
 
+// "uploading" pushes the attachments to R2, "queuing" is the send request itself (which only
+// queues the background job) — a send without attachments goes straight to "queuing".
+type SendPhase = "idle" | "uploading" | "queuing"
+
+// A picked file that hasn't left the browser yet: nothing is uploaded before "Envoyer
+// maintenant", so cancelling the modal never leaves an orphaned upload behind.
+type PendingAttachment = {
+  id:          string
+  file:        File
+  contentType: AttachmentContentType
+}
+
+// Shown inline on the confirm step — a toast would render behind this modal, unseen.
+type SendFailure = { title: string; description: string }
+
+// Where focus goes once a removal has re-rendered the list: the neighbouring row's remove
+// button, or the "Joindre des fichiers" trigger when the list is now empty.
+type RemovalFocusTarget = { kind: "remove"; attachmentId: string } | { kind: "trigger" }
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function hasHtmlContent(html: string): boolean {
@@ -48,6 +72,95 @@ function hasContent(subject: string, body: string): boolean {
 // for every recipient, members included, with no indication of which address was the problem.
 const EXTERNAL_EMAIL_SCHEMA = z.string().email()
 const MAX_EXTERNAL_EMAILS = 100
+
+// The total size cap is shared through src/lib/upload-limits.ts (import-free, so safe here),
+// which is where MAX_EMAIL_ATTACHMENTS_TOTAL_BYTES comes from too. The count and content types
+// still mirror MAX_EMAIL_ATTACHMENTS_COUNT and EMAIL_ATTACHMENT_CONTENT_TYPES in
+// src/lib/email-attachments.ts — duplicated rather than imported because that module pulls in
+// node's crypto and the R2 client, which shouldn't end up in a client bundle. The server
+// re-checks all three against what actually got uploaded.
+const MAX_ATTACHMENTS             = 10
+const MAX_ATTACHMENTS_TOTAL_BYTES = MAX_FUNCTION_UPLOAD_BYTES
+const ACCEPTED_ATTACHMENT_TYPES   = ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"] as const
+// A few files in flight at once rather than all ten competing on a slow connection.
+const ATTACHMENT_UPLOAD_CONCURRENCY = 3
+// Rejected files listed by name in an error line before the rest collapse into "et N autres".
+const MAX_LISTED_REJECTED_NAMES = 3
+// The presign route refuses longer names. Only what's sent is capped — the UI keeps
+// showing the full name, and the server sanitizes the sent one further anyway.
+const MAX_ATTACHMENT_FILENAME_LENGTH = 255
+
+type AttachmentContentType = (typeof ACCEPTED_ATTACHMENT_TYPES)[number]
+
+// Fallback for when the browser reports no type at all, or a non-standard one ("image/jpg") —
+// both happen depending on the OS and whatever produced the file. A Map rather than an object
+// literal so a name like "x.constructor" can't resolve to an inherited property.
+const ATTACHMENT_TYPE_BY_EXTENSION = new Map<string, AttachmentContentType>([
+  ["jpg",  "image/jpeg"],
+  ["jpeg", "image/jpeg"],
+  ["png",  "image/png"],
+  ["webp", "image/webp"],
+  ["gif",  "image/gif"],
+  ["pdf",  "application/pdf"],
+])
+
+function isAcceptedAttachmentType(contentType: string): contentType is AttachmentContentType {
+  return (ACCEPTED_ATTACHMENT_TYPES as readonly string[]).includes(contentType)
+}
+
+// null = not an accepted format: the file is turned away at pick time and never reaches upload.
+function resolveAttachmentContentType(file: File): AttachmentContentType | null {
+  if (isAcceptedAttachmentType(file.type)) return file.type
+  const extensionStart = file.name.lastIndexOf(".")
+  if (extensionStart === -1) return null
+  return ATTACHMENT_TYPE_BY_EXTENSION.get(file.name.slice(extensionStart + 1).toLowerCase()) ?? null
+}
+
+// Array.from splits by code point, so an accented letter or emoji is never cut in half.
+function capAttachmentFilename(filename: string): string {
+  return Array.from(filename).slice(0, MAX_ATTACHMENT_FILENAME_LENGTH).join("")
+}
+
+// Carries the presign route's own reason for refusing a file (already user-facing, e.g. "Le
+// fichier est vide."), so the failure alert can show it instead of the generic description.
+class AttachmentPresignError extends Error {
+  constructor(serverMessage: string) {
+    super(serverMessage)
+    this.name = "AttachmentPresignError"
+  }
+}
+
+// Two steps per file: our API hands back a presigned R2 URL bound to this exact type and size,
+// then the bytes go straight to R2, never through one of our functions (whose request bodies
+// Vercel caps at 4.5 MB). A TypeError from the PUT almost always means R2's CORS rules don't
+// allow this origin — either way it surfaces to the user as a failed upload.
+async function uploadAttachmentFile(attachment: PendingAttachment): Promise<string> {
+  const presignResponse = await fetch(`${BASE_PATH}/api/membres/email/attachments`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({
+      filename:    capAttachmentFilename(attachment.file.name),
+      size:        attachment.file.size,
+      contentType: attachment.contentType,
+    }),
+  })
+  if (!presignResponse.ok) {
+    // An HTML error page (proxy, platform 5xx) has no JSON body — that falls back to the generic message.
+    const errorBody     = await presignResponse.json().catch(() => null) as { error?: unknown } | null
+    const serverMessage = typeof errorBody?.error === "string" ? errorBody.error.trim() : ""
+    if (serverMessage) throw new AttachmentPresignError(serverMessage)
+    throw new Error(`Attachment presign failed (HTTP ${presignResponse.status})`)
+  }
+  const { uploadUrl, key } = await presignResponse.json() as { uploadUrl: string; key: string }
+
+  const uploadResponse = await fetch(uploadUrl, {
+    method:  "PUT",
+    headers: { "Content-Type": attachment.contentType },
+    body:    attachment.file,
+  })
+  if (!uploadResponse.ok) throw new Error(`Attachment upload failed (HTTP ${uploadResponse.status})`)
+  return key
+}
 
 // {{prenom}}/{{nom}}/{{nom_complet}} only resolve for members — external emails have no
 // Membre record to pull them from. Cotisation/event variables never resolve here at all:
@@ -205,7 +318,8 @@ interface SendEmailModalProps {
 }
 
 export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
-  const t = useTranslations()
+  const t      = useTranslations()
+  const locale = useLocale()
   const [step,              setStep]              = useState<"compose" | "confirm">("compose")
   const [recipientMode,     setRecipientMode]     = useState<RecipientMode>("all")
   const [selectedTypeId,    setSelectedTypeId]    = useState<string>("")
@@ -222,9 +336,27 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const [saveTemplateName,    setSaveTemplateName]    = useState("")
   const [subject,           setSubject]           = useState("")
   const [bodyHtml,          setBodyHtml]          = useState("")
-  const [sending,           setSending]           = useState(false)
+  const [sendPhase,         setSendPhase]         = useState<SendPhase>("idle")
+  const [sendFailure,       setSendFailure]       = useState<SendFailure | null>(null)
   const [countLoading,      setCountLoading]      = useState(false)
   const [recipientCount,    setRecipientCount]    = useState<number | null>(null)
+  const [attachments,       setAttachments]       = useState<PendingAttachment[]>([])
+  const [attachmentErrors,  setAttachmentErrors]  = useState<string[]>([])
+  const attachmentInputRef   = useRef<HTMLInputElement>(null)
+  const attachmentTriggerRef = useRef<HTMLButtonElement>(null)
+  const removeButtonRefs     = useRef(new Map<string, HTMLButtonElement>())
+  // Applied in an effect once the removal has rendered — the trigger may still be disabled
+  // (the list was full) until then, and a disabled button can't take focus.
+  const pendingRemovalFocus  = useRef<RemovalFocusTarget | null>(null)
+  // Keys of files already uploaded by a send that then failed at the email step, so a retry
+  // reuses them instead of pushing the same bytes to R2 again. Keyed by File identity: a file
+  // picked again is a new File object and always uploads fresh.
+  const uploadedAttachmentKeys = useRef(new Map<File, string>())
+  const nextAttachmentId       = useRef(0)
+
+  const sending                 = sendPhase !== "idle"
+  const attachmentsTotalBytes   = attachments.reduce((total, attachment) => total + attachment.file.size, 0)
+  const maxAttachmentsSizeLabel = formatFileSize(MAX_ATTACHMENTS_TOTAL_BYTES, locale)
 
   // Reset when modal closes
   useEffect(() => {
@@ -247,8 +379,21 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       setBodyHtml("")
       setRecipientCount(null)
       setCountLoading(false)
+      setSendFailure(null)
+      setAttachments([])
+      setAttachmentErrors([])
+      pendingRemovalFocus.current = null
+      uploadedAttachmentKeys.current.clear()
     }
   }, [open])
+
+  useEffect(() => {
+    const focusTarget = pendingRemovalFocus.current
+    if (!focusTarget) return
+    pendingRemovalFocus.current = null
+    if (focusTarget.kind === "trigger") attachmentTriggerRef.current?.focus()
+    else removeButtonRefs.current.get(focusTarget.attachmentId)?.focus()
+  }, [attachments])
 
   // Reset recipient count when selection changes so stale count isn't shown
   useEffect(() => { setRecipientCount(null) }, [recipientMode, selectedTypeId])
@@ -392,6 +537,133 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
     setExternalEmails(prev => prev.filter(e => e !== email))
   }
 
+  function formatRejectedNames(names: string[]): string {
+    const listedNames   = names.slice(0, MAX_LISTED_REJECTED_NAMES).join(", ")
+    const unlistedCount = names.length - MAX_LISTED_REJECTED_NAMES
+    return unlistedCount > 0
+      ? `${listedNames} ${t("membres.email.attachments.andMore", { count: unlistedCount })}`
+      : listedNames
+  }
+
+  // Picked files go through empty → type → count → remaining-size checks in selection order, and every
+  // one that fits is added — a smaller file can still get in after a bigger one was turned away.
+  // Feedback is inline under the trigger, never a toast (same reason as addEmails above), and a
+  // new pick replaces whatever the previous one reported.
+  function handleAttachmentPick(event: React.ChangeEvent<HTMLInputElement>) {
+    const pickedFiles = Array.from(event.target.files ?? [])
+    // Cleared so picking the same file again (e.g. right after removing it) still fires onChange.
+    event.target.value = ""
+    if (pickedFiles.length === 0) return
+
+    const addedAttachments: PendingAttachment[] = []
+    const emptyFiles:       File[] = []
+    const unsupportedFiles: File[] = []
+    const overflowFiles:    File[] = []
+    const oversizedFiles:   File[] = []
+    let attachedCount = attachments.length
+    let attachedBytes = attachmentsTotalBytes
+
+    for (const file of pickedFiles) {
+      // Same name + same size is taken as the same file picked twice — skipped without a word.
+      const isDuplicate = [...attachments, ...addedAttachments].some(attachment =>
+        attachment.file.name === file.name && attachment.file.size === file.size
+      )
+      if (isDuplicate) continue
+      // The presign route refuses a 0-byte file, so it's turned away here instead of at send time.
+      if (file.size === 0) { emptyFiles.push(file); continue }
+
+      const contentType = resolveAttachmentContentType(file)
+      if (!contentType)                                            { unsupportedFiles.push(file); continue }
+      if (attachedCount >= MAX_ATTACHMENTS)                        { overflowFiles.push(file);    continue }
+      if (attachedBytes + file.size > MAX_ATTACHMENTS_TOTAL_BYTES) { oversizedFiles.push(file);   continue }
+
+      nextAttachmentId.current += 1
+      addedAttachments.push({ id: `attachment-${nextAttachmentId.current}`, file, contentType })
+      attachedCount += 1
+      attachedBytes += file.size
+    }
+
+    if (addedAttachments.length > 0) setAttachments(previous => [...previous, ...addedAttachments])
+
+    const errorLines: string[] = []
+    if (emptyFiles.length > 0) {
+      errorLines.push(t("membres.email.attachments.errors.emptyFile", {
+        count: emptyFiles.length,
+        names: formatRejectedNames(emptyFiles.map(file => file.name)),
+      }))
+    }
+    if (unsupportedFiles.length > 0) {
+      errorLines.push(t("membres.email.attachments.errors.unsupportedType", {
+        count: unsupportedFiles.length,
+        names: formatRejectedNames(unsupportedFiles.map(file => file.name)),
+      }))
+    }
+    if (oversizedFiles.length > 0) {
+      errorLines.push(t("membres.email.attachments.errors.totalSizeExceeded", {
+        count:     oversizedFiles.length,
+        names:     formatRejectedNames(oversizedFiles.map(file =>
+          t("membres.email.attachments.nameWithSize", { name: file.name, size: formatFileSize(file.size, locale) })
+        )),
+        maxSize:   maxAttachmentsSizeLabel,
+        // What's left once this pick's accepted files are counted, not before them.
+        remaining: formatFileSize(MAX_ATTACHMENTS_TOTAL_BYTES - attachedBytes, locale),
+      }))
+    }
+    if (overflowFiles.length > 0) {
+      errorLines.push(t("membres.email.attachments.errors.tooManyFiles", {
+        count:    overflowFiles.length,
+        names:    formatRejectedNames(overflowFiles.map(file => file.name)),
+        maxFiles: MAX_ATTACHMENTS,
+      }))
+    }
+    setAttachmentErrors(errorLines)
+  }
+
+  function removeAttachment(attachmentId: string) {
+    const removedIndex = attachments.findIndex(attachment => attachment.id === attachmentId)
+    if (removedIndex === -1) return
+
+    const neighbour = attachments[removedIndex + 1] ?? attachments[removedIndex - 1]
+    pendingRemovalFocus.current = neighbour
+      ? { kind: "remove", attachmentId: neighbour.id }
+      : { kind: "trigger" }
+    uploadedAttachmentKeys.current.delete(attachments[removedIndex].file)
+    setAttachments(previous => previous.filter(attachment => attachment.id !== attachmentId))
+    setAttachmentErrors([])
+  }
+
+  // At most ATTACHMENT_UPLOAD_CONCURRENCY files in flight. The first failure stops any new
+  // upload from starting and rejects the whole batch; uploads already in flight still finish
+  // and land in the key cache, so the retry skips them.
+  async function uploadPendingAttachments(pendingAttachments: PendingAttachment[]): Promise<EmailAttachmentReference[]> {
+    const uploadedKeys: string[] = []
+    let nextIndex = 0
+    let hasFailed = false
+
+    async function uploadNextAttachments() {
+      while (!hasFailed && nextIndex < pendingAttachments.length) {
+        const attachmentIndex = nextIndex
+        const attachment      = pendingAttachments[attachmentIndex]
+        nextIndex += 1
+        try {
+          const key = uploadedAttachmentKeys.current.get(attachment.file) ?? await uploadAttachmentFile(attachment)
+          uploadedAttachmentKeys.current.set(attachment.file, key)
+          uploadedKeys[attachmentIndex] = key
+        } catch (error: unknown) {
+          hasFailed = true
+          throw error
+        }
+      }
+    }
+
+    const workerCount = Math.min(ATTACHMENT_UPLOAD_CONCURRENCY, pendingAttachments.length)
+    await Promise.all(Array.from({ length: workerCount }, () => uploadNextAttachments()))
+    return pendingAttachments.map((attachment, attachmentIndex) => ({
+      key:      uploadedKeys[attachmentIndex],
+      filename: capAttachmentFilename(attachment.file.name),
+    }))
+  }
+
   async function handleContinue() {
     if (recipientMode === "type" && !selectedTypeId) {
       toast.error(t("membres.email.toasts.selectType"))
@@ -437,21 +709,68 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
     }
   }
 
+  // Failures land in the inline alert above the buttons rather than in toasts, which render
+  // behind this modal and would go unseen; the success toasts below stay, since they show
+  // once the modal has closed.
   async function handleSend() {
-    setSending(true)
+    setSendFailure(null)
+
+    // Attachments are uploaded only now, so an abandoned draft never leaves files in R2.
+    let attachmentReferences: EmailAttachmentReference[] = []
+    if (attachments.length > 0) {
+      setSendPhase("uploading")
+      try {
+        attachmentReferences = await uploadPendingAttachments(attachments)
+      } catch (error: unknown) {
+        console.error("[send-email-modal] attachment upload failed:", error)
+        setSendFailure({
+          title:       t("membres.email.attachments.uploadFailedTitle"),
+          // The server's own reason when it refused the file; the generic retry/edit advice
+          // for everything else (PUT failures, network errors, a refusal without a message).
+          description: error instanceof AttachmentPresignError
+            ? error.message
+            : t("membres.email.attachments.uploadFailedDescription"),
+        })
+        setSendPhase("idle")
+        return
+      }
+    }
+
+    setSendPhase("queuing")
     try {
       const body: Record<string, unknown> = { subject, bodyHtml }
       if (recipientMode === "manual")                 body.recipientIds = selectedMemberIds
       if (recipientMode === "type" && selectedTypeId) body.typeId       = selectedTypeId
       if (externalEmails.length > 0)                  body.externalEmails = externalEmails
+      if (attachmentReferences.length > 0)            body.attachments  = attachmentReferences
 
-      const res  = await fetch("/api/membres/email", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(body),
-      })
-      const data = await res.json()
-      if (!res.ok) { toast.error(data.error ?? t("common.error")); return }
+      let response: Response
+      try {
+        response = await fetch("/api/membres/email", {
+          method:  "POST",
+          headers: { "Content-Type": "application/json" },
+          body:    JSON.stringify(body),
+        })
+      } catch {
+        // Only fetch itself rejecting is a network failure; any response, even an error page,
+        // means the server was reached.
+        setSendFailure({ title: t("membres.email.sendFailedTitle"), description: t("common.networkError") })
+        return
+      }
+
+      // An HTML error page (proxy, platform 5xx) has no JSON body — that falls back to the
+      // generic message instead of being reported as a network error. An OK response without
+      // a readable body is treated as a failure too, never as a queued send.
+      const data = await response.json().catch(() => null) as {
+        jobId:                         string
+        totalRecipients:               number
+        skippedDuplicateExternalCount: number
+        error?:                        string
+      } | null
+      if (!response.ok || !data) {
+        setSendFailure({ title: t("membres.email.sendFailedTitle"), description: data?.error ?? t("common.error") })
+        return
+      }
 
       // The actual send now runs in the background (Inngest) — this response just confirms
       // it was queued. registerPendingBulkSend + useBulkSendListener (mounted in AppSidebar)
@@ -463,16 +782,14 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
         toast.info(t("membres.email.toasts.duplicateExternalSkipped", { count: data.skippedDuplicateExternalCount }))
       }
       onOpenChange(false)
-    } catch {
-      toast.error(t("common.networkError"))
     } finally {
-      setSending(false)
+      setSendPhase("idle")
     }
   }
 
   function handleClose() {
     if (sending) return
-    if (hasContent(subject, bodyHtml)) {
+    if (hasContent(subject, bodyHtml) || attachments.length > 0) {
       setCloseWarningOpen(true)
       return
     }
@@ -510,6 +827,26 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const externalMemberConflicts = externalEmails
     .map(email => memberByEmail.get(email))
     .filter((m): m is MembrePick => !!m)
+
+  const attachmentsFull =
+    attachments.length >= MAX_ATTACHMENTS || attachmentsTotalBytes >= MAX_ATTACHMENTS_TOTAL_BYTES
+  // Next to the trigger: the accepted formats while the list is empty, then nothing until a
+  // limit is reached. Muted either way — reaching a limit isn't an error.
+  const attachmentStatus =
+    attachments.length === 0
+      ? t("membres.email.attachments.hint", { maxSize: maxAttachmentsSizeLabel })
+      : attachments.length >= MAX_ATTACHMENTS
+        ? t("membres.email.attachments.limitFilesReached", { maxFiles: MAX_ATTACHMENTS })
+        : attachmentsTotalBytes >= MAX_ATTACHMENTS_TOTAL_BYTES
+          ? t("membres.email.attachments.limitSizeReached", { maxSize: maxAttachmentsSizeLabel })
+          : null
+
+  const sendButtonLabel =
+    sendPhase === "uploading"
+      ? t("membres.email.attachments.uploading")
+      : sendPhase === "queuing"
+        ? t("membres.email.sending")
+        : t("membres.email.sendNow")
 
   return (
     <>
@@ -776,6 +1113,91 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 placeholder={t("membres.email.bodyPlaceholder")}
                 minHeight="180px"
               />
+
+              {/* Attachments: kept in the browser while composing, uploaded on "Envoyer maintenant" */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label id="send-email-attachments-label">{t("membres.email.attachments.label")}</Label>
+                  {attachments.length > 0 && (
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {t("membres.email.attachments.usage", {
+                        count:   attachments.length,
+                        used:    formatFileSize(attachmentsTotalBytes, locale),
+                        maxSize: maxAttachmentsSizeLabel,
+                      })}
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  {attachments.length > 0 && (
+                    <ul aria-labelledby="send-email-attachments-label" className="divide-y rounded-md border">
+                      {attachments.map(attachment => {
+                        const removeLabel = t("membres.email.attachments.remove", { name: attachment.file.name })
+                        return (
+                          <li key={attachment.id} className="flex h-9 items-center gap-2 pl-3 pr-1.5 text-sm">
+                            {attachment.contentType === "application/pdf"
+                              ? <FilePdfIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                              : <FileImageIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                            }
+                            <span className="min-w-0 flex-1 truncate" title={attachment.file.name}>{attachment.file.name}</span>
+                            <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                              {formatFileSize(attachment.file.size, locale)}
+                            </span>
+                            <Button
+                              ref={(element: HTMLButtonElement | null) => {
+                                if (!element) return
+                                removeButtonRefs.current.set(attachment.id, element)
+                                return () => { removeButtonRefs.current.delete(attachment.id) }
+                              }}
+                              type="button"
+                              variant="ghost"
+                              size="icon-xs"
+                              className="text-muted-foreground"
+                              aria-label={removeLabel}
+                              title={removeLabel}
+                              onClick={() => removeAttachment(attachment.id)}
+                            >
+                              <XIcon className="size-3.5" aria-hidden />
+                            </Button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  )}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <input
+                      ref={attachmentInputRef}
+                      type="file"
+                      multiple
+                      accept={ACCEPTED_ATTACHMENT_TYPES.join(",")}
+                      className="hidden"
+                      onChange={handleAttachmentPick}
+                    />
+                    <Button
+                      ref={attachmentTriggerRef}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => attachmentInputRef.current?.click()}
+                      disabled={attachmentsFull}
+                      aria-describedby={attachmentStatus ? "send-email-attachments-status" : undefined}
+                    >
+                      <PaperclipIcon className="mr-1.5 size-3.5" aria-hidden />
+                      {t("membres.email.attachments.add")}
+                    </Button>
+                    {attachmentStatus && (
+                      <p id="send-email-attachments-status" className="text-xs text-muted-foreground">{attachmentStatus}</p>
+                    )}
+                  </div>
+                  {attachmentErrors.length > 0 && (
+                    <div role="alert" className="space-y-0.5">
+                      {attachmentErrors.map(errorLine => (
+                        <p key={errorLine} className="text-xs text-destructive break-words">{errorLine}</p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2 pt-1">
@@ -820,16 +1242,41 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   </p>
                 </div>
               )}
+              {attachments.length > 0 && (
+                <div className="space-y-0.5">
+                  <p className="text-xs text-muted-foreground">{t("membres.email.attachments.label")}</p>
+                  <p className="text-sm font-medium">
+                    {t("membres.email.attachments.recapSummary", {
+                      count: attachments.length,
+                      size:  formatFileSize(attachmentsTotalBytes, locale),
+                    })}
+                  </p>
+                  <p className="text-sm text-muted-foreground break-words">
+                    {attachments.map(attachment => attachment.file.name).join(", ")}
+                  </p>
+                </div>
+              )}
             </div>
 
+            {sendFailure && (
+              <div role="alert" className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-xs text-destructive dark:bg-destructive/20">
+                <WarningCircleIcon className="size-4 shrink-0 mt-0.5" aria-hidden />
+                <div className="space-y-0.5">
+                  <p className="font-medium">{sendFailure.title}</p>
+                  <p>{sendFailure.description}</p>
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setStep("compose")} disabled={sending}>
+              <Button variant="outline" onClick={() => { setSendFailure(null); setStep("compose") }} disabled={sending}>
                 <PencilSimpleIcon className="mr-1.5 size-3.5" />
                 {t("common.edit")}
               </Button>
-              <Button onClick={handleSend} loading={sending}>
-                <PaperPlaneTiltIcon className="mr-1.5 size-4" />
-                {t("membres.email.sendNow")}
+              <Button onClick={handleSend} loading={sending} loadingClassName="mr-1.5">
+                {/* While sending, the Button's own spinner takes the icon's place. */}
+                {sendPhase === "idle" && <PaperPlaneTiltIcon className="mr-1.5 size-4" />}
+                {sendButtonLabel}
               </Button>
             </div>
           </div>
@@ -865,6 +1312,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             label={t("membres.email.templateNameLabel")}
             required
             placeholder={t("membres.email.templateNamePlaceholder")}
+            hint={attachments.length > 0 ? t("membres.email.attachments.notSavedInTemplate") : undefined}
             value={saveTemplateName}
             onChange={e => setSaveTemplateName(e.target.value)}
             onKeyDown={e => { if (e.key === "Enter") handleSaveAsTemplate() }}

@@ -30,9 +30,9 @@
       "replace": "Αντικατάσταση",
       "remove": "Αφαίρεση",
       "dropOrClickToAdd": "Σύρετε ή κάντε κλικ για να προσθέσετε μια εικόνα",
-      "formatsHint": "JPG, PNG, WebP · μέγιστο 5 MB",
-      "compactHint": "Σύρετε/κάντε κλικ για να προσθέσετε μια εικόνα (JPG, PNG, WebP, έως 5 MB)",
-      "maxSizeError": "Η εικόνα είναι πολύ μεγάλη (μέγ. 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · μέγιστο 4 MB",
+      "compactHint": "Σύρετε/κάντε κλικ για να προσθέσετε μια εικόνα (JPG, PNG, WebP, έως 4 MB)",
+      "maxSizeError": "Η εικόνα είναι πολύ μεγάλη (μέγ. 4 MB)",
       "uploadError": "Σφάλμα κατά τη μεταφόρτωση"
     },
     "free": "Δωρεάν",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 10 MB)",
+    "fileTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 4 MB)",
     "uploadError": "Σφάλμα κατά τη μεταφόρτωση",
     "networkError": "Μεταφόρτωση σφαλμάτων δικτύου — δοκιμάστε ξανά",
     "pdfDocument": "Έγγραφο PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Προβολή του εγγράφου",
     "remove": "Διαγραφή",
     "uploading": "Ανέβασμα...",
-    "attach": "Επισύναψη εικόνας ή PDF (μέγιστο 10 MB)"
+    "attach": "Επισύναψη εικόνας ή PDF (μέγιστο 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Ανέβασμα...",
       "fileChosen": "Συνημμένο αρχείο",
       "fileRemove": "Διαγραφή αρχείου",
-      "fileTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 10 MB)",
+      "fileTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 4 MB)",
       "fileUploadError": "Σφάλμα κατά τη μεταφόρτωση",
       "fileNetworkError": "Μεταφόρτωση σφαλμάτων δικτύου — δοκιμάστε ξανά",
       "totalLabel": "Σύνολο :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Μια ερώτηση? Επικοινωνήστε μαζί μας:",
       "photoNoFile": "Δεν παρέχονται αρχεία",
       "photoLabel": "Φωτογραφία",
-      "photoTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 5 MB)",
+      "photoTooLarge": "Πολύ μεγάλο αρχείο (μέγιστο 4 MB)",
       "photoFormatUnsupported": "Η μορφή δεν υποστηρίζεται. Μόνο JPG, PNG, WebP ή GIF.",
       "photoUploadError": "Σφάλμα κατά την αποστολή της φωτογραφίας. Προσπαθήστε ξανά.",
       "photoTooManyAttempts": "Πάρα πολλές προσπάθειες, δοκιμάστε ξανά αργότερα.",

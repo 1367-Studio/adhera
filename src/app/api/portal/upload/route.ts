@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server"
 import { uploadToR2 } from "@/lib/r2"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
-const MAX_SIZE = 5 * 1024 * 1024 // 5 MB — portal fica mais restrito que o admin (10 MB)
+// Same cap as the admin route (src/app/api/upload/route.ts) — both share
+// MAX_FUNCTION_UPLOAD_BYTES, bounded by Vercel's request-body limit.
+const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
 function sniffFileType(buffer: Buffer): string | null {
   if (buffer.length >= 3 && buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) return "image/jpeg"
@@ -21,7 +24,7 @@ export const POST = withPortalAuth(async (req) => {
 
   if (!file) return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 })
   if (file.size > MAX_SIZE)
-    return NextResponse.json({ error: "Fichier trop volumineux (max 5 Mo)" }, { status: 400 })
+    return NextResponse.json({ error: "Fichier trop volumineux (max 4 Mo)" }, { status: 400 })
 
   const buffer      = Buffer.from(await file.arrayBuffer())
   const contentType = sniffFileType(buffer)

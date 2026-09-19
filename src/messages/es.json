@@ -30,9 +30,9 @@
       "replace": "Reemplazar",
       "remove": "Quitar",
       "dropOrClickToAdd": "Arrastra o haz clic para añadir una imagen",
-      "formatsHint": "JPG, PNG, WebP · máx. 5 MB",
-      "compactHint": "Arrastra o haz clic para añadir una imagen (JPG, PNG, WebP, máx. 5 MB)",
-      "maxSizeError": "Imagen demasiado grande (máx. 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · máx. 4 MB",
+      "compactHint": "Arrastra o haz clic para añadir una imagen (JPG, PNG, WebP, máx. 4 MB)",
+      "maxSizeError": "Imagen demasiado grande (máx. 4 MB)",
       "uploadError": "Error al subir la imagen"
     },
     "free": "Gratis",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Archivo demasiado grande (máx. 10 MB)",
+    "fileTooLarge": "Archivo demasiado grande (máx. 4 MB)",
     "uploadError": "Error al subir el archivo",
     "networkError": "Error de red al subir el archivo — inténtelo de nuevo",
     "pdfDocument": "Documento PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Ver el documento",
     "remove": "Eliminar",
     "uploading": "Subiendo…",
-    "attach": "Adjuntar imagen o PDF (máx. 10 MB)"
+    "attach": "Adjuntar imagen o PDF (máx. 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Subiendo…",
       "fileChosen": "Archivo adjunto",
       "fileRemove": "Eliminar archivo",
-      "fileTooLarge": "Archivo demasiado grande (máx. 10 MB)",
+      "fileTooLarge": "Archivo demasiado grande (máx. 4 MB)",
       "fileUploadError": "Error al subir el archivo",
       "fileNetworkError": "Error de red al subir el archivo — inténtelo de nuevo",
       "totalLabel": "Total:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "¿Alguna pregunta? Contáctenos:",
       "photoNoFile": "No se proporcionó ningún archivo",
       "photoLabel": "Foto",
-      "photoTooLarge": "Archivo demasiado grande (máx. 5 MB)",
+      "photoTooLarge": "Archivo demasiado grande (máx. 4 MB)",
       "photoFormatUnsupported": "Formato no compatible. Solo JPG, PNG, WebP o GIF.",
       "photoUploadError": "Error al subir la foto. Inténtalo de nuevo.",
       "photoTooManyAttempts": "Demasiados intentos. Inténtalo de nuevo más tarde.",

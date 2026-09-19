@@ -30,9 +30,9 @@
       "replace": "Nahradiť",
       "remove": "Odstrániť",
       "dropOrClickToAdd": "Potiahnite alebo kliknite na pridanie obrázka",
-      "formatsHint": "JPG, PNG, WebP · maximálne 5 MB",
-      "compactHint": "Ťahaním/kliknutím na pridanie obrázka (JPG, PNG, WebP, maximálne 5 MB)",
-      "maxSizeError": "Obrázok príliš veľký (maximálne 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · maximálne 4 MB",
+      "compactHint": "Ťahaním/kliknutím na pridanie obrázka (JPG, PNG, WebP, maximálne 4 MB)",
+      "maxSizeError": "Obrázok príliš veľký (maximálne 4 MB)",
       "uploadError": "Chyba pri nahrávaní"
     },
     "free": "Bezplatné",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Súbor je príliš veľký (maximálne 10 MB)",
+    "fileTooLarge": "Súbor je príliš veľký (maximálne 4 MB)",
     "uploadError": "Chyba pri nahrávaní",
     "networkError": "Nahrávanie chyby v sieti — skúste to znova",
     "pdfDocument": "Dokument PDF",
@@ -359,7 +359,7 @@
     "viewDocument": "Zobraziť dokument",
     "remove": "Vymazať",
     "uploading": "Nahrávam...",
-    "attach": "Priložiť obrázok alebo PDF (maximálne 10 MB)"
+    "attach": "Priložiť obrázok alebo PDF (maximálne 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Nahrávam...",
       "fileChosen": "Priložený súbor",
       "fileRemove": "Vymazať súbor",
-      "fileTooLarge": "Súbor je príliš veľký (maximálne 10 MB)",
+      "fileTooLarge": "Súbor je príliš veľký (maximálne 4 MB)",
       "fileUploadError": "Chyba pri nahrávaní",
       "fileNetworkError": "Nahrávanie chyby v sieti — skúste to znova",
       "totalLabel": "Celkovo:",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Otázka? Kontaktujte nás:",
       "photoNoFile": "Žiadne súbory neboli poskytnuté",
       "photoLabel": "Foto",
-      "photoTooLarge": "Súbor je príliš veľký (maximálne 5 MB)",
+      "photoTooLarge": "Súbor je príliš veľký (maximálne 4 MB)",
       "photoFormatUnsupported": "Formát nie je podporovaný. Iba JPG, PNG, WebP alebo GIF.",
       "photoUploadError": "Chyba pri odoslaní fotky. Skús to znova.",
       "photoTooManyAttempts": "Príliš veľa pokusov, skús znova neskôr.",

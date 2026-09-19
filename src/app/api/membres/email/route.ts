@@ -5,6 +5,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { EMAIL_ATTACHMENT_ERRORS, MAX_EMAIL_ATTACHMENTS_COUNT, verifyEmailAttachments } from "@/lib/email-attachments"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -14,6 +15,11 @@ const schema = z.object({
   recipientIds:   z.array(z.string()).optional(),
   typeId:         z.string().optional(),
   externalEmails: z.array(z.string().email()).max(100).optional(),
+  // Keys handed out by ./attachments/route.ts after the browser uploaded each file to R2.
+  attachments:    z.array(z.object({
+    key:      z.string(),
+    filename: z.string().min(1).max(255),
+  })).max(MAX_EMAIL_ATTACHMENTS_COUNT, EMAIL_ATTACHMENT_ERRORS.tooMany).optional(),
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {
@@ -22,10 +28,19 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   const body   = await req.json().catch(() => null)
-  const parsed = schema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
+  // Only the attachment count carries its own message; every other failure keeps the
+  // generic one (rather than zod's English defaults).
+  const parsed = schema.safeParse(body, { error: () => "Données invalides" })
+  if (!parsed.success)
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 400 })
 
-  const { subject, bodyHtml, recipientIds, typeId, externalEmails = [] } = parsed.data
+  const { subject, bodyHtml, recipientIds, typeId, externalEmails = [], attachments = [] } = parsed.data
+
+  // Checked before anything is queued: a missing, oversized or disguised file must fail the
+  // request the admin is looking at, not surface later as a background job failure.
+  const attachmentCheck = await verifyEmailAttachments(ctx.associationId, attachments)
+  if (!attachmentCheck.ok) return NextResponse.json({ error: attachmentCheck.error }, { status: attachmentCheck.status })
+  const verifiedAttachments = attachmentCheck.attachments
 
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -64,27 +79,37 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const recipientMode = recipientIds !== undefined ? "manual" : typeId ? "type" : "all"
   const jobId = randomUUID()
 
-  await inngest.send({
-    name: "bulk/membres-email.requested",
-    data: {
-      jobId,
-      associationId: ctx.associationId,
-      actorId:       ctx.userId,
-      subject,
-      bodyHtml,
-      branding,
-      associationName: assoc.name,
-      slug:             assoc.slug,
-      members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, lastName: m.lastName, email: m.email! })),
-      externalEmails:   uniqueExternalEmails,
-      activityMeta: {
-        recipientMode,
-        ...(typeId                      ? { typeId }                                                                       : {}),
-        ...(recipientIds                ? { recipientCount: recipientIds.length }                                          : {}),
-        ...(uniqueExternalEmails.length ? { externalEmailCount: uniqueExternalEmails.length, externalEmails: uniqueExternalEmails } : {}),
+  // Queuing depends on Inngest: INNGEST_EVENT_KEY in production, INNGEST_DEV=1 plus the Inngest
+  // dev server locally (see .env.example). When it's unavailable the admin should get a real
+  // message, not Next's HTML 500 (which the modal can't parse).
+  try {
+    await inngest.send({
+      name: "bulk/membres-email.requested",
+      data: {
+        jobId,
+        associationId: ctx.associationId,
+        actorId:       ctx.userId,
+        subject,
+        bodyHtml,
+        branding,
+        associationName: assoc.name,
+        slug:             assoc.slug,
+        members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, lastName: m.lastName, email: m.email! })),
+        externalEmails:   uniqueExternalEmails,
+        ...(verifiedAttachments.length ? { attachments: verifiedAttachments } : {}),
+        activityMeta: {
+          recipientMode,
+          ...(typeId                      ? { typeId }                                                                       : {}),
+          ...(recipientIds                ? { recipientCount: recipientIds.length }                                          : {}),
+          ...(uniqueExternalEmails.length ? { externalEmailCount: uniqueExternalEmails.length, externalEmails: uniqueExternalEmails } : {}),
+          ...(verifiedAttachments.length  ? { attachmentCount: verifiedAttachments.length, attachmentNames: verifiedAttachments.map(attachment => attachment.filename) } : {}),
+        },
       },
-    },
-  })
+    })
+  } catch (error: unknown) {
+    console.error("[membres/email] failed to queue bulk send:", error)
+    return NextResponse.json({ error: "Impossible de lancer l'envoi pour le moment. Veuillez réessayer." }, { status: 503 })
+  }
 
   return NextResponse.json({
     jobId,

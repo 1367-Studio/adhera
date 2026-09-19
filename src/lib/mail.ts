@@ -1,4 +1,5 @@
-import { Resend } from "resend"
+import { createHash } from "crypto"
+import { Resend, type CreateEmailOptions, type ErrorResponse } from "resend"
 import { APP_NAME } from "@/config/brand"
 import { prisma } from "@/lib/prisma/client"
 
@@ -240,30 +241,37 @@ export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchIte
 
   const results: BatchItemResult[] = payloads.map((p, i) => ({ to: p.to, ok: !!items[i]?.id }))
 
-  const rowsToLog = payloads
-    .map((p, i) => ({ p, item: items[i] as SendItem | undefined }))
-    .filter(({ p }) => p.context)
-
-  if (rowsToLog.length) {
-    await prisma.emailMessage.createMany({
-      data: rowsToLog.map(({ p, item }) => ({
-        associationId: p.context!.associationId,
-        membreId:      p.context!.membreId,
-        userId:        p.context!.userId,
-        source:        p.context!.source,
-        sourceId:      p.context!.sourceId,
-        to:            p.to,
-        subject:       p.subject,
-        html:          p.html,
-        resendId:      item?.id,
-        status:        item?.id ? "SENT" : "FAILED",
-        errorMessage:  item?.id ? undefined : (item?.error?.message ?? "Envoi échoué"),
-        sentAt:        new Date(),
-      })),
-    }).catch((err: unknown) => console.error("[mail] failed to log EmailMessage batch:", err))
-  }
+  await logEmailMessageBatch(payloads, items, { hasAttachments: false })
 
   return results
+}
+
+// One EmailMessage row per payload that carries a context, `items` matching `payloads` by
+// index — shared by the batch path above and the per-recipient attachment path below, so a
+// send shows up identically in the membre/portal/manager email histories either way.
+async function logEmailMessageBatch(payloads: BatchPayload[], items: (SendItem | undefined)[], options: { hasAttachments: boolean }) {
+  const rowsToLog = payloads
+    .map((payload, index) => ({ payload, item: items[index] }))
+    .filter(({ payload }) => payload.context)
+  if (!rowsToLog.length) return
+
+  await prisma.emailMessage.createMany({
+    data: rowsToLog.map(({ payload, item }) => ({
+      associationId:  payload.context!.associationId,
+      membreId:       payload.context!.membreId,
+      userId:         payload.context!.userId,
+      source:         payload.context!.source,
+      sourceId:       payload.context!.sourceId,
+      to:             payload.to,
+      subject:        payload.subject,
+      html:           payload.html,
+      hasAttachments: options.hasAttachments,
+      resendId:       item?.id,
+      status:         item?.id ? "SENT" : "FAILED",
+      errorMessage:   item?.id ? undefined : (item?.error?.message ?? "Envoi échoué"),
+      sentAt:         new Date(),
+    })),
+  }).catch((err: unknown) => console.error("[mail] failed to log EmailMessage batch:", err))
 }
 
 // Splits into chunks of BATCH_SIZE and sends sequentially, tallying per-recipient outcomes
@@ -288,4 +296,147 @@ export async function sendEmailBulk(payloads: BatchPayload[]): Promise<BulkResul
   }
 
   return { sent, failed, failedRecipients }
+}
+
+// ── Per-recipient sends with attachments ──────────────────────────────────────
+
+// A bulk email's attachments, referenced by public URL rather than carried as bytes: Resend
+// fetches each `path` itself, so a 4 MB attachment never passes through our function, nor
+// through the Inngest event/step state these travel in.
+export type EmailUrlAttachment = { url: string; filename: string; contentType: string }
+
+// Resend's batch endpoint doesn't accept attachments at all, so these go out as one
+// emails.send per recipient — each counting against Resend's per-team rate limit (2 requests/
+// second by default), which every other email the app sends at that moment shares. Starting
+// requests ~700 ms apart (~1.4/s) leaves that concurrent traffic some headroom instead of
+// relying on 429 retries to absorb it.
+const ATTACHMENT_SEND_INTERVAL_MS = 700
+// A 429 is retried after 1 s, 2 s, then 4 s (or Resend's own Retry-After, when longer) — a
+// limit still hit after that points to sustained contention, and every retry delays the rest
+// of the recipients queued behind this one.
+const RATE_LIMIT_MAX_ATTEMPTS    = 4
+const RATE_LIMIT_BASE_BACKOFF_MS = 1_000
+const RATE_LIMIT_MAX_BACKOFF_MS  = 10_000
+// Twice INDIVIDUAL_RETRY_TIMEOUT_MS: Resend may fetch every attachment (up to 4 MB in total)
+// while handling the request, so a legitimately slow send takes longer than a plain one.
+const ATTACHMENT_SEND_TIMEOUT_MS = 30_000
+
+function sleep(durationMs: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, durationMs))
+}
+
+// Spaces request *starts* at least `intervalMs` apart — retries included, so a 429 retry
+// followed straight away by the next recipient's first attempt can't burst past the pacing.
+function createRequestPacer(intervalMs: number): () => Promise<void> {
+  let lastRequestStartedAt = 0
+  return async function waitForTurn() {
+    const waitMs = lastRequestStartedAt + intervalMs - Date.now()
+    if (waitMs > 0) await sleep(waitMs)
+    lastRequestStartedAt = Date.now()
+  }
+}
+
+// Resend answers 429 both for its per-second rate limit (worth retrying shortly) and for an
+// exhausted daily/monthly quota (not worth retrying at all) — only the former is retried.
+function isRateLimitError(error: ErrorResponse): boolean {
+  if (error.name === "daily_quota_exceeded" || error.name === "monthly_quota_exceeded") return false
+  return error.name === "rate_limit_exceeded" || error.statusCode === 429
+}
+
+function parseRetryAfterMs(headers: Record<string, string> | null): number | undefined {
+  const retryAfterSeconds = Number(headers?.["retry-after"])
+  return Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0 ? retryAfterSeconds * 1_000 : undefined
+}
+
+// Scoped to the send job and the recipient: an Inngest retry of a step then re-sends nothing
+// that already went out (Resend replays the original response for a known key), while two
+// members sharing one address (e.g. a family email) still each get their own personalized
+// copy instead of the second being rejected as a conflicting replay of the first. Hashed
+// because Resend caps keys at 256 characters and an address alone can come close to that.
+function buildIdempotencyKey(prefix: string, payload: BatchPayload): string {
+  const recipientIdentity = `${payload.context?.membreId ?? ""}|${payload.to.toLowerCase()}`
+  return `${prefix}:${createHash("sha256").update(recipientIdentity).digest("hex").slice(0, 32)}`
+}
+
+type AttachmentSendAttempt = { item: SendItem; rateLimited: boolean; retryAfterMs?: number }
+
+async function attemptSendWithTimeout(resendPayload: CreateEmailOptions, idempotencyKey: string): Promise<AttachmentSendAttempt> {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined
+  const timeout = new Promise<AttachmentSendAttempt>(resolve => {
+    timeoutHandle = setTimeout(
+      () => resolve({ item: { error: { message: "Délai d'envoi dépassé" } }, rateLimited: false }),
+      ATTACHMENT_SEND_TIMEOUT_MS,
+    )
+  })
+  const request = resend.emails.send(resendPayload, { idempotencyKey })
+    .then((response): AttachmentSendAttempt => {
+      if (!response.error) return { item: { id: response.data.id, error: null }, rateLimited: false }
+      return {
+        item:         { error: { message: response.error.message } },
+        rateLimited:  isRateLimitError(response.error),
+        retryAfterMs: parseRetryAfterMs(response.headers),
+      }
+    })
+    .catch((error: unknown): AttachmentSendAttempt => ({
+      item:        { error: { message: error instanceof Error ? error.message : "Erreur d'envoi" } },
+      rateLimited: false,
+    }))
+
+  try {
+    return await Promise.race([request, timeout])
+  } finally {
+    clearTimeout(timeoutHandle)
+  }
+}
+
+// Retries only a rate-limit rejection — any other error (invalid address, bad attachment,
+// quota) would fail the same way again, so that recipient is simply reported as failed.
+async function sendWithRateLimitRetry(
+  resendPayload:  CreateEmailOptions,
+  idempotencyKey: string,
+  waitForTurn:    () => Promise<void>,
+): Promise<SendItem> {
+  for (let attempt = 1; ; attempt++) {
+    await waitForTurn()
+    const outcome = await attemptSendWithTimeout(resendPayload, idempotencyKey)
+    if (!outcome.rateLimited || attempt >= RATE_LIMIT_MAX_ATTEMPTS) return outcome.item
+
+    const exponentialBackoffMs = RATE_LIMIT_BASE_BACKOFF_MS * 2 ** (attempt - 1)
+    await sleep(Math.min(Math.max(exponentialBackoffMs, outcome.retryAfterMs ?? 0), RATE_LIMIT_MAX_BACKOFF_MS))
+  }
+}
+
+// Same contract as sendEmailBatch (one result per payload, same order, same EmailMessage
+// logging), for sends carrying attachments — which the batch endpoint can't take. Sequential
+// on purpose, unlike sendIndividually's small worker pool: pacing under Resend's rate limit is
+// the whole point here. `idempotencyKeyPrefix` must be stable across retries of the same send
+// (e.g. the bulk job's id), which is what makes re-running a partially sent chunk safe.
+export async function sendEmailsWithAttachments(
+  payloads:    BatchPayload[],
+  attachments: EmailUrlAttachment[],
+  options:     { idempotencyKeyPrefix: string },
+): Promise<BatchItemResult[]> {
+  const isDev       = process.env.NODE_ENV !== "production"
+  const replyToMap  = await buildReplyToMap(payloads)
+  const waitForTurn = createRequestPacer(ATTACHMENT_SEND_INTERVAL_MS)
+  const resendAttachments = attachments.map(attachment => ({
+    filename:    attachment.filename,
+    path:        attachment.url,
+    contentType: attachment.contentType,
+  }))
+
+  const items: SendItem[] = []
+  for (const payload of payloads) {
+    const item = await sendWithRateLimitRetry(
+      { ...toResendPayload(payload, isDev, replyToMap), attachments: resendAttachments },
+      buildIdempotencyKey(options.idempotencyKeyPrefix, payload),
+      waitForTurn,
+    )
+    if (!item.id) console.error("[mail] Resend error (send with attachments):", item.error?.message)
+    items.push(item)
+  }
+
+  await logEmailMessageBatch(payloads, items, { hasAttachments: true })
+
+  return payloads.map((payload, index) => ({ to: payload.to, ok: !!items[index].id }))
 }

@@ -4,10 +4,12 @@ import { prisma } from "@/lib/prisma/client"
 import { uploadToR2 } from "@/lib/r2"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { canPreviewForm } from "@/lib/form-preview"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
-// Most restrictive of the app's 3 upload routes (admin 10 MB, portal 5 MB) — this one is the
-// only one reachable without any authentication at all.
-const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
+// Same cap as the admin and portal upload routes (MAX_FUNCTION_UPLOAD_BYTES) even though this
+// one is reachable without any authentication at all — Vercel's request-body limit already
+// keeps every function-body upload small.
+const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
 function sniffFileType(buffer: Buffer): string | null {
   if (buffer.length >= 3 && buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) return "image/jpeg"

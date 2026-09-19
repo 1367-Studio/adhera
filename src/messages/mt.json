@@ -30,9 +30,9 @@
       "replace": "Sostituzzjoni",
       "remove": "Neħħi",
       "dropOrClickToAdd": "Iċċaqlaq jew ikklikkja biex iżżid immaġni",
-      "formatsHint": "JPG, PNG, WebP · max 5 MB",
-      "compactHint": "Iċċaqlaq/ikklikkja biex iżżid immaġni (JPG, PNG, WebP, massimu 5 MB)",
-      "maxSizeError": "Immaġni wisq kbira (massimu 5 MB)",
+      "formatsHint": "JPG, PNG, WebP · max 4 MB",
+      "compactHint": "Iċċaqlaq/ikklikkja biex iżżid immaġni (JPG, PNG, WebP, massimu 4 MB)",
+      "maxSizeError": "Immaġni wisq kbira (massimu 4 MB)",
       "uploadError": "Tħaddim ta' żbalji"
     },
     "free": "B'xejn",
@@ -351,7 +351,7 @@
     }
   },
   "documentUpload": {
-    "fileTooLarge": "Fajl wisq kbir (massimu 10 MB)",
+    "fileTooLarge": "Fajl wisq kbir (massimu 4 MB)",
     "uploadError": "Tħaddim ta' żbalji",
     "networkError": "Tniżżil ta' żball tan-netwerk — ipprova mill-ġdid",
     "pdfDocument": "PDF tad-Dokument",
@@ -359,7 +359,7 @@
     "viewDocument": "Ara d-dokument",
     "remove": "Ħassar",
     "uploading": "Qed tuploadja...",
-    "attach": "Attakk immaġni jew PDF (massimu ta' 10 MB)"
+    "attach": "Attakk immaġni jew PDF (massimu ta' 4 MB)"
   },
   "factures": {
     "form": {
@@ -1364,7 +1364,7 @@
       "fileUploading": "Qed tuploadja...",
       "fileChosen": "Fajl mehmuż",
       "fileRemove": "Ħassar Fajl",
-      "fileTooLarge": "Fajl wisq kbir (massimu 10 MB)",
+      "fileTooLarge": "Fajl wisq kbir (massimu 4 MB)",
       "fileUploadError": "Tħaddim ta' żbalji",
       "fileNetworkError": "Tniżżil ta' żball tan-netwerk — ipprova mill-ġdid",
       "totalLabel": "Total :",
@@ -3099,7 +3099,7 @@
       "contactHelp": "Mistoqsija? Ikkuntattjana:",
       "photoNoFile": "L-ebda fajls ma ġew ipprovduti",
       "photoLabel": "Ritratt",
-      "photoTooLarge": "Fajl kbir wisq (massimu 5 MB)",
+      "photoTooLarge": "Fajl kbir wisq (massimu 4 MB)",
       "photoFormatUnsupported": "Format mhux appoġġjat. JPG, PNG, WebP, jew GIF biss.",
       "photoUploadError": "Żball li tibgħat ir-ritratt. Erġa' pprova.",
       "photoTooManyAttempts": "Wisq tentattivi, ipprova mill-ġdid aktar tard.",

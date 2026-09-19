@@ -19,6 +19,7 @@ import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { TermsModal } from "@/components/public/terms-modal"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
 const MAX_QUANTITY = 10
 
@@ -128,7 +129,7 @@ function EvenementFileField({
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(file: File) {
-    if (file.size > 10 * 1024 * 1024) {
+    if (file.size > MAX_FUNCTION_UPLOAD_BYTES) {
       toast.error(t("fileTooLarge"))
       if (inputRef.current) inputRef.current.value = ""
       return
