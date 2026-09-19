@@ -15,6 +15,8 @@ import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { recordCotisationPayment } from "@/lib/cotisation-payments"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -75,6 +77,11 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     where:  { id: draft.associationId },
     select: { canIssueTaxReceipts: true },
   }))?.canIssueTaxReceipts ?? false
+
+  // Best-effort exercice link — never blocks, same reasoning as every other Income-creating
+  // webhook path. Resolved once for the whole draft: every registrant's payment landed in the
+  // same Stripe session, so they share one paid date.
+  const exercice = await resolveExerciceForDate(draft.associationId, now)
 
   let membreIds: string[]
   let firstCotisationId: string
@@ -155,15 +162,32 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
         }
         ids.push(membreId)
 
-        const cotisation = await tx.cotisation.create({
+        let cotisation = await tx.cotisation.create({
           data: {
             membreId, associationId: draft.associationId, year: currentCotisationYear(now),
-            amount, amountPaid: amount, status: amount > 0 ? "PAYE" : "EXONERE", paidAt: now,
+            amount, amountPaid: 0, status: amount > 0 ? "EN_ATTENTE" : "EXONERE", paidAt: amount > 0 ? null : now,
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
             deductibleAmount: eligibleReceiptAmount(amount, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
+
+        // Not free: this registrant's share was actually paid via this Stripe session (the
+        // synchronous all-free path above never reaches here with amount > 0 — see
+        // consumeMembershipCheckoutDraft's own docstring). Recording a real CotisationPayment
+        // is what posts the matching Income row the Compte de Résultat report reads from.
+        if (amount > 0) {
+          cotisation = await recordCotisationPayment(tx, {
+            associationId: draft.associationId,
+            cotisationId:  cotisation.id,
+            amount,
+            method:        "En ligne",
+            paidAt:        now,
+            source:        "STRIPE",
+            reference:     paymentIntentId,
+            exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+          })
+        }
         if (i === 0) firstCotisationId = cotisation.id
       }
 
