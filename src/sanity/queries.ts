@@ -14,8 +14,9 @@ const LOCALIZED_ANSWER   = `coalesce(answer[language == $locale][0].value, answe
 const LOCALIZED_HEADING   = `select(_type == "helpArticle" => ${LOCALIZED_TITLE}, ${LOCALIZED_QUESTION})`
 const LOCALIZED_RICH_TEXT = `coalesce(${LOCALIZED_BODY}, ${LOCALIZED_ANSWER})`
 
-// Articles of one module + the FAQ entries shown on it (module-specific, plus the ones with
-// no module or "general", which are shown everywhere). $module, $locale.
+// Articles of one module + the whole FAQ. Articles stay per module; the FAQ is every entry,
+// and the help panel groups it client-side (the current page's entries, plus the ones with
+// no module or "general", first; every other module's after). $module, $locale.
 export const HELP_MODULE_CONTENT_QUERY = defineQuery(`{
   "articles": *[_type == "helpArticle" && module == $module]
     | order(coalesce(order, 100) asc, _createdAt asc) {
@@ -26,7 +27,7 @@ export const HELP_MODULE_CONTENT_QUERY = defineQuery(`{
       module,
       "order": coalesce(order, 100)
     },
-  "faq": *[_type == "faqEntry" && (module == $module || !defined(module) || module == "general")]
+  "faq": *[_type == "faqEntry"]
     | order(coalesce(order, 100) asc, _createdAt asc) {
       "id": _id,
       "question": ${LOCALIZED_QUESTION},

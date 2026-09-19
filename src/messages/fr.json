@@ -5700,6 +5700,7 @@
     "searchError": "La recherche est indisponible pour le moment.",
     "articlesSection": "Articles",
     "faqSection": "Questions fréquentes",
+    "faqOtherSection": "Autres questions",
     "noArticles": "Aucun article pour cette section pour l'instant.",
     "noContent": "Aucun contenu d'aide pour cette section pour l'instant.",
     "loadError": "Impossible de charger l'aide.",

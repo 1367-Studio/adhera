@@ -49,8 +49,10 @@ export async function POST(req: Request) {
 
   // No settle delay: src/sanity/client.ts reads the live API, not the eventually-consistent
   // CDN, so the next fetch after this invalidation sees the published document.
-  // Next 16: the second argument is required; "max" is the on-demand invalidation profile.
-  for (const tag of tags) revalidateTag(tag, "max")
+  // Expire immediately: "max" is stale-while-revalidate, so the first request after a publish
+  // would still serve the pre-publish content. The Next docs recommend { expire: 0 } for
+  // external webhooks that need data to expire at once.
+  for (const tag of tags) revalidateTag(tag, { expire: 0 })
 
   return NextResponse.json({ revalidated: true, tags, now: Date.now() })
 }
