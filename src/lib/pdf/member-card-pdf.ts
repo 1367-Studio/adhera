@@ -26,6 +26,8 @@ import { sniffFileType } from "@/lib/file-sniff"
 import { getContrastingTextColor, resolveMemberCardColor } from "@/lib/member-card/color"
 import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
+  CARD_CONTACT_GAP_MM,
+  CARD_CONTACT_MAX_WIDTH_MM,
   CARD_CORNER_RADIUS_MM,
   CARD_FONT_ASSOCIATION_NAME_MM,
   CARD_FONT_BODY_MM,
@@ -392,8 +394,14 @@ function measureTextWidth(font: PDFFont, text: string, sizePt: number, character
   return font.widthOfTextAtSize(text, sizePt) + spacingWidth
 }
 
-/** CSS `truncate`: the longest prefix that fits, with an ellipsis (WinAnsi 0x85) if cut. */
-function truncateToWidth(font: PDFFont, text: string, sizePt: number, maxWidthPt: number, characterSpacingPt = 0): string {
+/**
+ * CSS `truncate`: the longest prefix that fits, with an ellipsis (WinAnsi 0x85) if cut.
+ *
+ * Exported for the tests, like the other pure helpers in this module: it is what caps the
+ * association's contact line at CARD_CONTACT_MAX_WIDTH_MM, and "how many characters fit" is a
+ * measured answer that no character count could stand in for.
+ */
+export function truncateToWidth(font: PDFFont, text: string, sizePt: number, maxWidthPt: number, characterSpacingPt = 0): string {
   if (measureTextWidth(font, text, sizePt, characterSpacingPt) <= maxWidthPt) return text
 
   let kept = ""
@@ -713,19 +721,41 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
     })
   }
 
-  // ── Bottom row: validity · "généré via Formwise" ────────────────────────────────────────
+  // ── Bottom block: association contact · validity · "généré via Formwise" ────────────────
   // Bottom-aligned on the card's baseline, like `items-end` on screen, so it stays put
   // whatever the identity row above it contains. No status line — see the module note.
   const contentBottomMm = CARD_HEIGHT_MM - CARD_MARGIN_MM
+  const validityTopMm   = contentBottomMm - LINE_HEIGHT_FACTOR * CARD_FONT_BODY_MM
 
   drawTextLine({
     text:            sanitizeForWinAnsi(labels.validity),
     font:            regularFont,
     sizeMillimetres: CARD_FONT_BODY_MM,
     leftMillimetres: CARD_MARGIN_MM,
-    topMillimetres:  contentBottomMm - LINE_HEIGHT_FACTOR * CARD_FONT_BODY_MM,
+    topMillimetres:  validityTopMm,
     color:           NEUTRAL_600,
   })
+
+  // The association's phone / e-mail, one gap above the validity line — the same place, the
+  // same tone and the same cap as on the screen card, measured rather than counted in
+  // characters: truncateToWidth cuts the joined string at CARD_CONTACT_MAX_WIDTH_MM and adds
+  // the ellipsis, so a long e-mail stops one gutter short of the QR instead of reaching it.
+  // The middle dot joining the two halves is WinAnsi 0xB7 and survives sanitizeForWinAnsi.
+  if (card.contactLine) {
+    drawTextLine({
+      text: truncateToWidth(
+        regularFont,
+        sanitizeForWinAnsi(card.contactLine),
+        millimetresToPoints(CARD_FONT_FOOTER_MM),
+        millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM),
+      ),
+      font:            regularFont,
+      sizeMillimetres: CARD_FONT_FOOTER_MM,
+      leftMillimetres: CARD_MARGIN_MM,
+      topMillimetres:  validityTopMm - CARD_CONTACT_GAP_MM - LINE_HEIGHT_FACTOR * CARD_FONT_FOOTER_MM,
+      color:           NEUTRAL_500,
+    })
+  }
 
   const generatedByText    = sanitizeForWinAnsi(labels.generatedBy)
   const generatedByWidthMm = pointsToMillimetres(

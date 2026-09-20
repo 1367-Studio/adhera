@@ -1,15 +1,19 @@
-import { afterEach, describe, expect, it, vi } from "vitest"
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
+import { PDFDocument, StandardFonts, type PDFFont } from "pdf-lib"
+import { CARD_CONTACT_MAX_WIDTH_MM, CARD_FONT_FOOTER_MM } from "@/lib/member-card/layout"
 import {
   isMemberCardImageUrlAllowed,
   memberCardPdfFilename,
   millimetresToPoints,
   sanitizeForWinAnsi,
+  truncateToWidth,
 } from "@/lib/pdf/member-card-pdf"
 
-// The three pure pieces of the card PDF. Everything else in that module needs a PDF document,
+// The four pure pieces of the card PDF. Everything else in that module needs a PDF document,
 // a network fetch or a native image decoder; these decide whether a card is the right physical
-// size, whether a member's name survives being printed, and whether the server is allowed to
-// fetch a URL at all — so they are the parts worth pinning down.
+// size, whether a member's name survives being printed, whether a line is cut at the width it
+// must not exceed, and whether the server is allowed to fetch a URL at all — so they are the
+// parts worth pinning down.
 
 describe("millimetresToPoints", () => {
   it("converts at 72 points per inch", () => {
@@ -51,6 +55,47 @@ describe("sanitizeForWinAnsi", () => {
     // Visibly wrong beats an exception: a member with a Cyrillic name still gets a card.
     expect(sanitizeForWinAnsi("Иванов")).toBe("??????")
     expect(sanitizeForWinAnsi("")).toBe("")
+  })
+
+  // The separator formatMemberCardContact joins with. U+00B7 is WinAnsi 0xB7, so the printed
+  // card reads "01 23 45 67 89 · contact@…" and not "01 23 45 67 89 ? contact@…".
+  it("keeps the middle dot the contact line is joined with", () => {
+    expect(sanitizeForWinAnsi("01 23 45 67 89 · contact@amis-du-parc.fr"))
+      .toBe("01 23 45 67 89 · contact@amis-du-parc.fr")
+  })
+})
+
+describe("truncateToWidth", () => {
+  const CONTACT_SIZE_PT      = millimetresToPoints(CARD_FONT_FOOTER_MM)
+  const CONTACT_MAX_WIDTH_PT = millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM)
+
+  // The same standard font the renderer draws with, so the widths measured here are the widths
+  // that end up on paper.
+  let helvetica: PDFFont
+  beforeAll(async () => {
+    helvetica = await (await PDFDocument.create()).embedFont(StandardFonts.Helvetica)
+  })
+
+  it("leaves a line that fits exactly as it is", () => {
+    const contactLine = "01 23 45 67 89 · contact@amis-du-parc.fr"
+    expect(truncateToWidth(helvetica, contactLine, CONTACT_SIZE_PT, CONTACT_MAX_WIDTH_PT)).toBe(contactLine)
+  })
+
+  // The cap is a measured width, not a character count: a long address is cut wherever 54,6 mm
+  // of Helvetica runs out, which is what keeps the line clear of the QR column.
+  it("cuts a line that would reach the QR, and marks the cut", () => {
+    const tooLongContactLine = "01 23 45 67 89 · association-des-amis-du-parc-de-la-ville@exemple-tres-long.fr"
+    const truncated = truncateToWidth(helvetica, tooLongContactLine, CONTACT_SIZE_PT, CONTACT_MAX_WIDTH_PT)
+
+    expect(truncated).not.toBe(tooLongContactLine)
+    expect(truncated.endsWith("…")).toBe(true)
+    expect(tooLongContactLine.startsWith(truncated.slice(0, -1))).toBe(true)
+    // Ellipsis included — the whole point is that nothing crosses the cap.
+    expect(helvetica.widthOfTextAtSize(truncated, CONTACT_SIZE_PT)).toBeLessThanOrEqual(CONTACT_MAX_WIDTH_PT)
+  })
+
+  it("returns nothing at all when not even one character and its ellipsis fit", () => {
+    expect(truncateToWidth(helvetica, "contact@amis-du-parc.fr", CONTACT_SIZE_PT, 1)).toBe("")
   })
 })
 

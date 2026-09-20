@@ -4864,10 +4864,14 @@
       "showPhoto": "Photo du membre",
       "showPhotoHint": "Les initiales s'affichent si aucune photo n'est enregistrée.",
       "showCategory": "Catégorie",
+      "showPhone": "Téléphone de l'association",
+      "showEmail": "E-mail de l'association",
       "preview": "Aperçu",
       "sampleName": "Camille Martin",
       "sampleCategory": "Adhérent bénévole actif",
       "noLogo": "Ajoutez un logo dans Personnalisation pour l'afficher sur la carte.",
+      "noPhone": "Ajoutez un téléphone dans Identité légale & Dons pour l'afficher sur la carte.",
+      "noEmail": "Ajoutez un e-mail de contact dans Informations de l'association pour l'afficher sur la carte.",
       "saved": "Carte de membre enregistrée"
     },
     "print": {

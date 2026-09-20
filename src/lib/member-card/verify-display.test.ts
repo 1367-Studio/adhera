@@ -24,7 +24,14 @@ function buildCard(eligibility: MemberCardEligibility): MemberCardData {
       photoUrl:  "https://example.test/photo.jpg",
       type:      { name: "Adhérent bénévole", color: "#023D9D" },
     },
-    association: { name: "Les Amis du Parc", logoUrl: "https://example.test/logo.png" },
+    association: {
+      name:         "Les Amis du Parc",
+      logoUrl:      "https://example.test/logo.png",
+      // Off by default, so the loader hands back neither — the verify screen shows the
+      // association's name, never a way to contact it.
+      phone:        null,
+      contactEmail: null,
+    },
   }
 }
 

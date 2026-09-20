@@ -8,6 +8,8 @@ import { APP_TIME_ZONE } from "@/lib/date-format"
 import { getContrastingTextColor, resolveMemberCardColor } from "@/lib/member-card/color"
 import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
+  CARD_CONTACT_GAP_MM,
+  CARD_CONTACT_MAX_WIDTH_MM,
   CARD_CORNER_RADIUS_MM,
   CARD_FONT_ASSOCIATION_NAME_MM,
   CARD_FONT_BODY_MM,
@@ -225,6 +227,27 @@ export function MemberCard({ card, className }: MemberCardProps) {
               />
             </div>
           </div>
+
+          {/* The association's own phone / e-mail, one gap above the validity line and toned
+              like the "généré via Formwise" mention: it is a way to reach the association, not
+              something about this member. A row of its own rather than a line inside the block
+              below, so it gets the same width the PDF gives it — sharing the row would let the
+              "généré via" column squeeze it and the two renderers would cut it in different
+              places. Capped one gutter short of the QR column (CARD_CONTACT_MAX_WIDTH_MM) and
+              truncated, never wrapped: a second line would push the validity off the card's
+              baseline. Absent entirely when there is nothing to show, so nothing moves. */}
+          {card.contactLine && (
+            <p
+              className="shrink-0 truncate leading-tight text-neutral-500"
+              style={{
+                fontSize:     millimetres(CARD_FONT_FOOTER_MM),
+                maxWidth:     millimetres(CARD_CONTACT_MAX_WIDTH_MM),
+                marginBottom: millimetres(CARD_CONTACT_GAP_MM),
+              }}
+            >
+              {card.contactLine}
+            </p>
+          )}
 
           {/* Validity and status — bottom-aligned for the same reason the identity is
               top-aligned: this block sits on the card's baseline whatever is shown above. */}

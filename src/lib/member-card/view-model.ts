@@ -37,6 +37,13 @@ export type MemberCardViewModel = {
   /** Shown in place of a missing photo — built by buildMemberCardInitials below. */
   initials:        string
   /**
+   * The association's contact details as one finished line ("01 23 45 67 89 · contact@…"), or
+   * null when there is nothing to show — the settings are off, or the association never filled
+   * the fields in. Already joined by formatMemberCardContact so the screen card and the PDF
+   * cannot drift on the separator or on the order.
+   */
+  contactLine:     string | null
+  /**
    * Absolute URL the QR encodes. Passed in rather than derived: the public verification URL
    * depends on the member's rotatable card token and on the deployment's base path, neither of
    * which a presentational component should know about.
@@ -54,6 +61,25 @@ export function buildMemberCardInitials(firstName: string, lastName: string): st
   const firstInitial = firstName.trim().charAt(0)
   const lastInitial  = lastName.trim().charAt(0)
   return `${firstInitial}${lastInitial}`.toUpperCase()
+}
+
+/**
+ * The association's phone and contact e-mail as the single line a card prints, phone first.
+ *
+ * The separator is a middle dot rather than a slash or a pipe: it reads as a pause instead of
+ * as a boundary, and it survives the PDF's sanitizeForWinAnsi untouched (U+00B7 is WinAnsi
+ * 0xB7). Either half may be absent — the settings are per-field and an association may have
+ * filled in only one — and the result then carries no dangling separator; both absent returns
+ * null, which is what tells each renderer to draw nothing at all rather than an empty line.
+ *
+ * Shared on purpose: the screen card and the PDF both render this string as-is, so neither can
+ * invent its own order or its own separator.
+ */
+export function formatMemberCardContact(phone: string | null, email: string | null): string | null {
+  const contactParts = [phone, email]
+    .map(contactValue => contactValue?.trim() ?? "")
+    .filter(contactValue => contactValue.length > 0)
+  return contactParts.length > 0 ? contactParts.join(" · ") : null
 }
 
 /**
@@ -96,6 +122,9 @@ export function buildMemberCardViewModel(
     state:           eligibility.state,
     photoUrl:        membre.photoUrl,
     initials:        buildMemberCardInitials(membre.firstName, membre.lastName),
+    // Both halves already arrive null when the association turned the setting off or left the
+    // field blank (the loader does that), so this only joins.
+    contactLine:     formatMemberCardContact(association.phone, association.contactEmail),
     verificationUrl,
     settings,
   }

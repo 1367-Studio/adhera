@@ -8,8 +8,25 @@ describe("parseMemberCardSettings", () => {
   })
 
   it("keeps valid stored values", () => {
-    const stored = { enabled: true, template: "modern", color: "#1A2b3C", showPhoto: false, showCategory: false }
+    const stored = {
+      enabled: true, template: "modern", color: "#1A2b3C",
+      showPhoto: false, showCategory: false, showPhone: true, showEmail: true,
+    }
     expect(parseMemberCardSettings(stored)).toEqual(stored)
+  })
+
+  // The contact details are the one pair that must never appear by accident: an association
+  // stores a phone number for its invoices long before it decides to print it on every card.
+  it("keeps the association's contact details off unless they were stored as on", () => {
+    expect(DEFAULT_MEMBER_CARD_SETTINGS.showPhone).toBe(false)
+    expect(DEFAULT_MEMBER_CARD_SETTINGS.showEmail).toBe(false)
+
+    // A row written before these settings existed: the two keys are simply absent.
+    const storedBeforeTheFeature = { enabled: true, template: "modern", color: null, showPhoto: true, showCategory: true }
+    expect(parseMemberCardSettings(storedBeforeTheFeature)).toMatchObject({ showPhone: false, showEmail: false })
+
+    expect(parseMemberCardSettings({ ...storedBeforeTheFeature, showPhone: "oui", showEmail: 1 }))
+      .toMatchObject({ showPhone: false, showEmail: false })
   })
 
   it("falls back field by field, never touching the valid ones", () => {

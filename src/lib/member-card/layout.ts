@@ -48,6 +48,16 @@ export const CARD_TOP_STRIP_HEIGHT_MM = 1.5
 export const CARD_IDENTITY_TOP_GAP_MM = 2.5
 /** Gap between the member's name and their category. */
 export const CARD_IDENTITY_ROW_GAP_MM = 0.8
+
+/** Gap between the association's contact line and the validity line right below it. */
+export const CARD_CONTACT_GAP_MM = 1.2
+/**
+ * Width the association's contact line may occupy before it is truncated. It stops one gutter
+ * short of the QR column so nothing ever sits under the code and the QR's quiet zone stays
+ * intact — the line lives in the bottom-left block, but a long "téléphone · e-mail" pair would
+ * otherwise run straight across the card. 54,6 mm at today's constants.
+ */
+export const CARD_CONTACT_MAX_WIDTH_MM = CARD_WIDTH_MM - 2 * CARD_MARGIN_MM - CARD_GUTTER_MM - CARD_QR_SIZE_MM
 /** Letter-spacing of the uppercased association name — uppercase needs air to stay readable. */
 export const CARD_ASSOCIATION_NAME_TRACKING_MM = 0.06
 

@@ -20,7 +20,11 @@ import {
   type MemberCardTemplate,
 } from "@/lib/member-card/settings"
 import { memberCardVerificationUrl } from "@/lib/member-card/url"
-import { buildMemberCardInitials, type MemberCardViewModel } from "@/lib/member-card/view-model"
+import {
+  buildMemberCardInitials,
+  formatMemberCardContact,
+  type MemberCardViewModel,
+} from "@/lib/member-card/view-model"
 
 interface MemberCardSettingsProps {
   canEdit: boolean
@@ -28,9 +32,22 @@ interface MemberCardSettingsProps {
   associationName: string
   /** Already resolved through the plan's branding — null means "no logo on the card". */
   logoUrl: string | null
+  /**
+   * The association's real contact details, so the preview shows what the card would actually
+   * print — including the truncation of a long e-mail, and the empty result of switching a
+   * setting on for a field that was never filled in. null means "not filled in".
+   */
+  associationPhone:        string | null
+  associationContactEmail: string | null
 }
 
-export function MemberCardSettings({ canEdit, associationName, logoUrl }: MemberCardSettingsProps) {
+export function MemberCardSettings({
+  canEdit,
+  associationName,
+  logoUrl,
+  associationPhone,
+  associationContactEmail,
+}: MemberCardSettingsProps) {
   const t       = useTranslations("memberCard.settings")
   const tCommon = useTranslations("common")
 
@@ -100,6 +117,13 @@ export function MemberCardSettings({ canEdit, associationName, logoUrl }: Member
     // since most of their members have none either.
     photoUrl:    null,
     initials:    buildMemberCardInitials(sampleFirstName, sampleLastName),
+    // Gated exactly like the loader gates it, on the *draft* settings: the preview has to show
+    // the real numbers, otherwise an admin only discovers a truncated e-mail — or an empty
+    // line where an unfilled field was — once the card has been printed.
+    contactLine: formatMemberCardContact(
+      draftSettings.showPhone ? associationPhone        : null,
+      draftSettings.showEmail ? associationContactEmail : null,
+    ),
     // The real verification URL with a stand-in token: built through the same helper the
     // printed cards use, so the preview's QR has the density of a real one rather than that
     // of a much shorter made-up string. Never scanned in earnest — "apercu" resolves to no
@@ -185,6 +209,24 @@ export function MemberCardSettings({ canEdit, associationName, logoUrl }: Member
               checked={draftSettings.showCategory}
               disabled={!canEdit}
               onChange={event => updateDraft({ showCategory: event.target.checked })}
+            />
+            {/* The hint only appears when the field is empty, like noLogo above: with the
+                number filled in, the preview beside it already says what will be printed. */}
+            <CheckboxField
+              id="member-card-show-phone"
+              label={t("showPhone")}
+              hint={associationPhone ? undefined : t("noPhone")}
+              checked={draftSettings.showPhone}
+              disabled={!canEdit}
+              onChange={event => updateDraft({ showPhone: event.target.checked })}
+            />
+            <CheckboxField
+              id="member-card-show-email"
+              label={t("showEmail")}
+              hint={associationContactEmail ? undefined : t("noEmail")}
+              checked={draftSettings.showEmail}
+              disabled={!canEdit}
+              onChange={event => updateDraft({ showEmail: event.target.checked })}
             />
           </div>
         </div>

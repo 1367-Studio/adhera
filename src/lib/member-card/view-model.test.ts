@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest"
 import type { MemberCardEligibility } from "@/lib/member-card/eligibility"
 import type { MemberCardData } from "@/lib/member-card/loader"
 import { DEFAULT_MEMBER_CARD_SETTINGS } from "@/lib/member-card/settings"
-import { buildMemberCardInitials, buildMemberCardViewModel } from "@/lib/member-card/view-model"
+import {
+  buildMemberCardInitials,
+  buildMemberCardViewModel,
+  formatMemberCardContact,
+} from "@/lib/member-card/view-model"
 
 // 31 Dec 23:59:59.999 Paris (CET, UTC+1) — what endOfCotisationYear() returns for each year.
 const END_OF_2026_PARIS = new Date("2026-12-31T22:59:59.999Z")
@@ -23,7 +27,15 @@ function buildLoadedCard(eligibility: MemberCardEligibility): MemberCardData {
       photoUrl:  "https://example.test/photo.jpg",
       type:      { name: "Adhérent bénévole", color: "#023D9D" },
     },
-    association: { name: "Les Amis du Parc", logoUrl: "https://example.test/logo.png" },
+    association: {
+      name:    "Les Amis du Parc",
+      logoUrl: "https://example.test/logo.png",
+      // Same arrangement as the photo above: the loader already returns null when the setting
+      // is off or the field was never filled in, so the tests switch the contact line off the
+      // way the loader would rather than by flipping a setting this module never reads.
+      phone:        "01 23 45 67 89",
+      contactEmail: "contact@amis-du-parc.fr",
+    },
   }
 }
 
@@ -45,6 +57,7 @@ describe("buildMemberCardViewModel", () => {
       state:           "valid",
       photoUrl:        "https://example.test/photo.jpg",
       initials:        "CM",
+      contactLine:     "01 23 45 67 89 · contact@amis-du-parc.fr",
       verificationUrl: VERIFICATION_URL,
       settings:        { ...DEFAULT_MEMBER_CARD_SETTINGS, enabled: true },
     })
@@ -113,9 +126,65 @@ describe("buildMemberCardViewModel", () => {
     expect(buildMemberCardViewModel(loadedCard, VERIFICATION_URL)).toMatchObject({ logoUrl: null })
   })
 
+  // The contact line is per-field: the loader nulls the half whose setting is off, and the
+  // view model has to carry the other one alone rather than a line with a dangling separator.
+  it("carries only the contact details the loader kept", () => {
+    const phoneOnly = buildLoadedCard(VALID_ELIGIBILITY)
+    phoneOnly.association.contactEmail = null
+    expect(buildMemberCardViewModel(phoneOnly, VERIFICATION_URL))
+      .toMatchObject({ contactLine: "01 23 45 67 89" })
+
+    const emailOnly = buildLoadedCard(VALID_ELIGIBILITY)
+    emailOnly.association.phone = null
+    expect(buildMemberCardViewModel(emailOnly, VERIFICATION_URL))
+      .toMatchObject({ contactLine: "contact@amis-du-parc.fr" })
+  })
+
+  // Both settings off — the common case, since both default to false — must leave nothing for
+  // the renderers to draw, not an empty line holding space above the validity.
+  it("carries no contact line when the association kept both details off", () => {
+    const withoutContact = buildLoadedCard(VALID_ELIGIBILITY)
+    withoutContact.association.phone        = null
+    withoutContact.association.contactEmail = null
+    withoutContact.settings = { ...withoutContact.settings, showPhone: false, showEmail: false }
+    expect(buildMemberCardViewModel(withoutContact, VERIFICATION_URL))
+      .toMatchObject({ contactLine: null })
+  })
+
   it("passes the verification URL through untouched, since the QR must match it exactly", () => {
     const viewModel = buildMemberCardViewModel(buildLoadedCard(VALID_ELIGIBILITY), VERIFICATION_URL)
     expect(viewModel?.verificationUrl).toBe(VERIFICATION_URL)
+  })
+})
+
+describe("formatMemberCardContact", () => {
+  it("puts the phone first and joins with a middle dot", () => {
+    expect(formatMemberCardContact("01 23 45 67 89", "contact@amis-du-parc.fr"))
+      .toBe("01 23 45 67 89 · contact@amis-du-parc.fr")
+  })
+
+  // One setting on and the other off is an ordinary configuration, and so is an association
+  // that only ever filled in one of the two fields: neither may leave a separator hanging.
+  it("returns the one detail it has, with no separator", () => {
+    expect(formatMemberCardContact("01 23 45 67 89", null)).toBe("01 23 45 67 89")
+    expect(formatMemberCardContact(null, "contact@amis-du-parc.fr")).toBe("contact@amis-du-parc.fr")
+  })
+
+  // null, not "": that is what tells both renderers to draw nothing at all, rather than an
+  // empty line taking up the space above the validity.
+  it("returns null when there is nothing to show", () => {
+    expect(formatMemberCardContact(null, null)).toBeNull()
+  })
+
+  it("treats a blank field as no field, whitespace included", () => {
+    expect(formatMemberCardContact("", "")).toBeNull()
+    expect(formatMemberCardContact("   ", "\t")).toBeNull()
+    expect(formatMemberCardContact("  ", "contact@amis-du-parc.fr")).toBe("contact@amis-du-parc.fr")
+  })
+
+  it("trims the values rather than printing the spaces around them", () => {
+    expect(formatMemberCardContact("  01 23 45 67 89 ", " contact@amis-du-parc.fr "))
+      .toBe("01 23 45 67 89 · contact@amis-du-parc.fr")
   })
 })
 

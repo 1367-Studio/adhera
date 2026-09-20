@@ -4856,10 +4856,14 @@
       "showPhoto": "Member photo",
       "showPhotoHint": "Initials are shown when there is no photo.",
       "showCategory": "Category",
+      "showPhone": "Association phone",
+      "showEmail": "Association email",
       "preview": "Preview",
       "sampleName": "Camille Martin",
       "sampleCategory": "Active volunteer member",
       "noLogo": "Add a logo under Branding to show it on the card.",
+      "noPhone": "Add a phone number under Legal identity & Donations to show it on the card.",
+      "noEmail": "Add a contact email under Association information to show it on the card.",
       "saved": "Membership card saved"
     },
     "print": {

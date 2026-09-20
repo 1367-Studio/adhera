@@ -34,6 +34,7 @@ type Association = {
   slug:    string
   city:    string | null
   country: string
+  phone:   string | null
   contactEmail: string | null
   website: string | null
   iban:    string | null
@@ -214,6 +215,8 @@ function ParametresViewInner() {
                 canEdit={canEdit}
                 associationName={assoc.name}
                 logoUrl={(assoc.customBrandingEnabled ?? assoc.plan === "PRO") ? assoc.logoUrl : null}
+                associationPhone={assoc.phone}
+                associationContactEmail={assoc.contactEmail}
               />
             </div>
           )}
