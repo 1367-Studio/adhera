@@ -3,6 +3,7 @@
 import { MembreActivityLog } from "@/components/membres/membre-activity-log"
 import { DateField } from "@/components/ui/date-field"
 import { MembreForm } from "@/components/membres/membre-form"
+import { MemberCardModal } from "@/components/member-card/member-card-modal"
 import { MembresStatsModal, type MembresStats } from "@/components/membres/membres-stats-modal"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { SendSmsModal } from "@/components/membres/send-sms-modal"
@@ -28,9 +29,9 @@ import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import type { MembreCreateInput, MembreInput } from "@/lib/schemas"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useCurrentUser, useMemberCardEnabled, useModules } from "@/lib/user-context"
 import { useMembershipFillForms } from "@/hooks/use-membership-tier-options"
-import { ArrowsDownUpIcon, CaretDownIcon, FunnelSimpleIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowsDownUpIcon, CaretDownIcon, FunnelSimpleIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, IdentificationCardIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -173,6 +174,7 @@ export function MembresView() {
   const router                          = useRouter()
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
+  const memberCardEnabled               = useMemberCardEnabled()
   const { data: fillForms = [] }        = useMembershipFillForms(modules.cotisations)
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
@@ -196,6 +198,7 @@ export function MembresView() {
   const [statsOpen, setStatsOpen]         = useState(false)
   const [historyTarget, setHistoryTarget] = useState<Membre | null>(null)
   const [roleTarget, setRoleTarget]       = useState<Membre | null>(null)
+  const [memberCardTarget, setMemberCardTarget] = useState<Membre | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
@@ -394,6 +397,12 @@ export function MembresView() {
         return (
           <RowActions actions={[
             { label: t("membres.view.actions.view"), icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/membres/${m.id}`) },
+            // The cotisations module makes a card possible; the association's own switch makes
+            // it exist (see the dashboard layout) — without both, the row action could only
+            // ever open a modal saying the card is unavailable.
+            ...(modules.cotisations && memberCardEnabled ? [
+              { label: t("memberCard.manager.rowAction"), icon: <IdentificationCardIcon className="size-3.5" />, onClick: () => setMemberCardTarget(m) },
+            ] : []),
             { label: t("membres.view.actions.edit"),   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
             { label: t("membres.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
             ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
@@ -779,6 +788,15 @@ export function MembresView() {
         <ChangeRoleModal
           membre={roleTarget}
           onClose={() => setRoleTarget(null)}
+        />
+      )}
+
+      {memberCardTarget && (
+        <MemberCardModal
+          membreId={memberCardTarget.id}
+          memberName={`${memberCardTarget.firstName} ${memberCardTarget.lastName}`}
+          open={!!memberCardTarget}
+          onOpenChange={(open) => !open && setMemberCardTarget(null)}
         />
       )}
     </div>

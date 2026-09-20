@@ -13,7 +13,7 @@ import {
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
-import { recordCotisationPayment, sendCotisationPaymentConfirmation } from "@/lib/cotisation-payments"
+import { recordCotisationPayment, sendCotisationPaymentConfirmation, isReferenceAlreadyRecorded } from "@/lib/cotisation-payments"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
@@ -44,6 +44,62 @@ function toCotisationSubscriptionStatus(status: Stripe.Subscription.Status): Cot
 function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
   const sub = invoice.parent?.subscription_details?.subscription
   return typeof sub === "string" ? sub : sub?.id ?? null
+}
+
+// ─── invoice.paid arriving before checkout.session.completed ─────────────────────
+//
+// Stripe doesn't order webhook deliveries: a subscription's first invoice.paid can land before
+// the checkout.session.completed that creates our row for it (CotisationSubscription here,
+// CotisationInstallmentPlan in membership-installments.ts). Acknowledging it with a 200 then
+// dropped that first payment for good — nothing ever redelivers it. The invoice itself says
+// whether it belongs to one of ours: invoice.parent.subscription_details.metadata is Stripe's
+// snapshot of the Subscription's metadata, where checkout put `kind` (unlike invoice.metadata,
+// which Stripe never fills from the Subscription — see invoice.payment_failed in route.ts). Only
+// those invoices are sent back for a retry; anything else (platform billing, donations, an
+// invoice with no snapshot) keeps being acknowledged exactly as before, so an unrelated or
+// genuinely unknown subscription can never start a retry loop.
+// Bounded by the payment's age, matching Stripe's own ~3-day automatic retry horizon: a checkout
+// whose handler gave up for good (its catch block already paged an admin — e.g. a duplicate
+// email) will never produce the row, and a later manual "resend" from the Stripe Dashboard
+// shouldn't keep failing forever over it.
+const CHECKOUT_PROCESSING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
+
+export function shouldRetryUntilCheckoutProcessed(invoice: Stripe.Invoice, expectedKind: "cotisation" | "membership-installment", now: Date = new Date()): boolean {
+  if (invoice.parent?.subscription_details?.metadata?.kind !== expectedKind) return false
+
+  const paidAtSeconds = invoice.status_transitions?.paid_at ?? invoice.created
+  if (now.getTime() - paidAtSeconds * 1000 <= CHECKOUT_PROCESSING_WINDOW_MS) return true
+
+  console.error(`[subscription-invoice] invoice ${invoice.id} (${expectedKind}) still has no matching row ${CHECKOUT_PROCESSING_WINDOW_MS / 3_600_000}h after payment — no longer asking Stripe to retry it; needs manual reconciliation.`)
+  return false
+}
+
+// The Stripe billing period this invoice paid for. A plain yearly RECURRING tier (no
+// durationMonths) bills every 12 months from whenever the member subscribed (interval_count 12,
+// see checkout/route.ts), not on January 1st — so filing its cotisation under the calendar
+// `year` alone (periodEnd null) left the member uncovered from Dec 31st until their anniversary
+// renewal every single year. Read off the invoice's own subscription line: the invoice-level
+// period_start/period_end describe when its invoice items accrued, not the service period, and
+// the first invoice also carries one-off add-on lines (see checkout/route.ts) whose period is a
+// single instant. Proration lines are skipped for the same reason. Falls back to the
+// Subscription's current period when the payload's line list doesn't include the subscription
+// line (Stripe embeds only the first page of lines) — a Stripe API error there is left to
+// propagate, so the webhook answers 500 and Stripe retries rather than a cotisation silently
+// going back to calendar-year coverage.
+async function invoiceBillingPeriod(invoice: Stripe.Invoice, subscriptionId: string): Promise<{ start: Date; end: Date } | null> {
+  const subscriptionLines = invoice.lines.data.filter(line =>
+    line.parent?.type === "subscription_item_details" && !line.parent.subscription_item_details?.proration,
+  )
+  if (subscriptionLines.length > 0) {
+    const periodStartSeconds = Math.min(...subscriptionLines.map(line => line.period.start))
+    const periodEndSeconds   = Math.max(...subscriptionLines.map(line => line.period.end))
+    return { start: new Date(periodStartSeconds * 1000), end: new Date(periodEndSeconds * 1000) }
+  }
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+  const subscriptionItem = subscription.items.data[0]
+  if (!subscriptionItem?.current_period_start || !subscriptionItem.current_period_end) return null
+  return { start: new Date(subscriptionItem.current_period_start * 1000), end: new Date(subscriptionItem.current_period_end * 1000) }
 }
 
 // ─── checkout.session.completed (mode: "subscription") ─────────────────────────
@@ -261,7 +317,9 @@ export async function handleCotisationSubscriptionDeleted(sub: Stripe.Subscripti
 // recordCotisationPayment (src/lib/cotisation-payments.ts) — the exact same
 // Income-creation/status-derivation/overpayment-guard path every other cotisation payment
 // (manual, portal one-off, Stripe one-off) already shares.
-export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
+// Returns "awaiting-checkout" when this invoice must be retried later (see
+// shouldRetryUntilCheckoutProcessed) — route.ts turns that into a non-2xx response.
+export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice): Promise<"awaiting-checkout" | void> {
   const subscriptionId = invoiceSubscriptionId(invoice)
   if (!subscriptionId) return
 
@@ -269,15 +327,31 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
     where:  { stripeSubscriptionId: subscriptionId },
     select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, receiptMode: true, deductibleAmount: true },
   })
-  if (!cotisationSub) return // Not a cotisation subscription — nothing here concerns this invoice.
+  // Not a cotisation subscription — or one whose checkout.session.completed hasn't created the
+  // row yet, in which case this first payment must come back later rather than be lost.
+  if (!cotisationSub) return shouldRetryUntilCheckoutProcessed(invoice, "cotisation") ? "awaiting-checkout" : undefined
 
   const amount = invoice.amount_paid / 100
   if (amount <= 0) return // A $0 invoice (e.g. a fully-credited period) has nothing to record.
 
+  // Redelivered event — Stripe's own at-least-once delivery, or the retry of an attempt that
+  // recorded this invoice and then failed on a later step (email, activity log). Checked before
+  // the upsert below so a redelivery rewrites nothing at all; re-checked under a row lock inside
+  // the recording transaction for two deliveries racing each other (see isReferenceAlreadyRecorded).
+  const alreadyRecorded = await prisma.income.findFirst({
+    where:  { associationId: cotisationSub.associationId, reference: invoice.id },
+    select: { id: true },
+  })
+  if (alreadyRecorded) return
+
   const paidAt = invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : new Date()
   const year   = currentCotisationYear(paidAt)
-  const periodStart = cotisationSub.durationMonths ? paidAt : null
-  const periodEnd    = cotisationSub.durationMonths ? addMonths(paidAt, cotisationSub.durationMonths) : null
+  // A custom duration keeps counting from the payment, as before. Without one, the period is the
+  // one Stripe actually billed (see invoiceBillingPeriod) instead of null — null meant "calendar
+  // year", which never matched an anniversary-billed subscription.
+  const billingPeriod = cotisationSub.durationMonths ? null : await invoiceBillingPeriod(invoice, subscriptionId)
+  const periodStart = cotisationSub.durationMonths ? paidAt : billingPeriod?.start ?? null
+  const periodEnd    = cotisationSub.durationMonths ? addMonths(paidAt, cotisationSub.durationMonths) : billingPeriod?.end ?? null
 
   if (cotisationSub.durationMonths) {
     // A custom-duration subscription (< 12 months) can renew more than once inside the same
@@ -357,16 +431,20 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice) {
 
   const exercice = await resolveExerciceForDate(cotisationSub.associationId, paidAt)
 
-  const updated = await prisma.$transaction((tx) => recordCotisationPayment(tx, {
-    associationId: cotisationSub.associationId,
-    cotisationId:  cotisation.id,
-    amount,
-    method:        "Prélèvement automatique",
-    paidAt,
-    source:        "STRIPE",
-    reference:     invoice.id,
-    exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
-  }))
+  const updated = await prisma.$transaction(async (tx) => {
+    if (await isReferenceAlreadyRecorded(tx, { associationId: cotisationSub.associationId, cotisationId: cotisation.id, reference: invoice.id })) return null
+    return recordCotisationPayment(tx, {
+      associationId: cotisationSub.associationId,
+      cotisationId:  cotisation.id,
+      amount,
+      method:        "Prélèvement automatique",
+      paidAt,
+      source:        "STRIPE",
+      reference:     invoice.id,
+      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+    })
+  })
+  if (!updated) return // A concurrent delivery of this same invoice recorded it first.
 
   await sendCotisationPaymentConfirmation(updated, amount)
 

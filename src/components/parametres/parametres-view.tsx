@@ -25,6 +25,7 @@ import { IdentityDonsSettings } from "@/components/parametres/identity-dons-sett
 import { ShippingSettings } from "@/components/parametres/shipping-settings"
 import { BillingSettings } from "@/components/parametres/billing-settings"
 import { BrandingSettings } from "@/components/parametres/branding-settings"
+import { MemberCardSettings } from "@/components/parametres/member-card-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
 type Association = {
@@ -197,6 +198,22 @@ function ParametresViewInner() {
                 canEdit={canEdit}
                 canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
                 data={{ logoUrl: assoc.logoUrl }}
+              />
+            </div>
+          )}
+
+          {/* The card itself is not Pro-gated — only its logo is, exactly like the PDFs
+              (resolveDocumentBranding): without custom branding the card simply shows none.
+              Rendered only for the roles that may edit it, unlike the blocks around it: its
+              GET is ADMIN/PRESIDENT-only (see api/association/member-card), so a Trésorier or
+              a Secrétaire would be shown the *defaults* — card off, Classique, bleu — as if
+              they were the association's real settings. */}
+          {assoc && modules.cotisations && canEdit && (
+            <div className="rounded-lg border bg-card p-6">
+              <MemberCardSettings
+                canEdit={canEdit}
+                associationName={assoc.name}
+                logoUrl={(assoc.customBrandingEnabled ?? assoc.plan === "PRO") ? assoc.logoUrl : null}
               />
             </div>
           )}

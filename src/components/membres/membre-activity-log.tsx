@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useTranslations } from "next-intl"
-import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -76,6 +76,7 @@ function getActionConfig(t: Translator): Record<string, { label: string; icon: R
     MEMBRE_ROLE_CHANGED:      { label: t("membres.activityLog.actions.membreRoleChanged"),           icon: <ShieldIcon   className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"                },
     PASSWORD_CHANGED:         { label: t("membres.activityLog.actions.passwordChanged"),   icon: <LockIcon     className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
     PASSWORD_RESET:           { label: t("membres.activityLog.actions.passwordReset"), icon: <LockIcon  className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"                   },
+    MEMBRE_CARD_TOKEN_ROTATED: { label: t("membres.activityLog.actions.membreCardTokenRotated"), icon: <IdentificationCardIcon className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"   },
     MEMBRE_DELETED:           { label: t("membres.activityLog.actions.membreDeleted"),         icon: <TrashIcon   className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"               },
     MEMBRE_PORTAL_REGISTERED: { label: t("membres.activityLog.actions.membrePortalRegistered"),    icon: <GlobeIcon    className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300"   },
     MEMBRE_INSCRIPTION_REQUESTED: { label: t("membres.activityLog.actions.membreInscriptionRequested"), icon: <GlobeIcon className="size-3.5" />, color: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" },

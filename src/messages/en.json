@@ -4435,6 +4435,7 @@
         "membreRoleChanged": "Role changed",
         "passwordChanged": "Password changed",
         "passwordReset": "Password reset",
+        "membreCardTokenRotated": "Card QR code regenerated",
         "membreDeleted": "Member archived",
         "membrePortalRegistered": "Portal registration",
         "membreInscriptionRequested": "Membership request (website)",
@@ -4566,6 +4567,7 @@
         "membreInscriptionRequested": "Membership request (website)",
         "membreRoleChanged": "Role changed",
         "membreAccessCreated": "Access created",
+        "membreCardTokenRotated": "Card QR code regenerated",
         "profilUpdated": "Profile updated",
         "profileUpdated": "Profile updated",
         "passwordChanged": "Password changed",
@@ -4788,6 +4790,92 @@
         "genericError": "Error"
       },
       "importedNote": "Imported from AssoConnect — {collecte}"
+    }
+  },
+  "memberCard": {
+    "card": {
+      "validUntil": "Valid until {date}",
+      "expiredOn": "Membership expired on {date}",
+      "status": {
+        "valid": "Valid membership",
+        "expired": "Membership expired"
+      },
+      "generatedBy": "Card generated with {appName}",
+      "qrAlt": "Card verification QR code",
+      "ariaLabel": "{name}'s membership card"
+    },
+    "portal": {
+      "sidebar": "My card",
+      "title": "My membership card",
+      "titleMultiple": "My membership cards",
+      "subtitle": "Show it at the association's activities. Its QR code lets anyone check that it is valid.",
+      "switcherLabel": "Choose which card to show",
+      "downloadPdf": "Download PDF",
+      "print": "Print"
+    },
+    "unavailable": {
+      "title": "Membership card not available yet",
+      "pending": "The card will be available as soon as the membership payment has been recorded.",
+      "partial": "The membership fee is partly paid. The card will be available once the balance has been recorded.",
+      "late": "The membership payment has not been recorded yet. The card will be available once it is.",
+      "noneTitle": "No active membership card",
+      "none": "There is no membership for the current period. The card is created automatically once the membership is taken out.",
+      "cancelled": "This membership was cancelled. Contact the association to find out more.",
+      "disabled": "Your association does not offer the membership card.",
+      "expired": "The membership expired on {date}. Renew it to get a new card.",
+      "viewCotisation": "View my membership fee"
+    },
+    "manager": {
+      "button": "Membership card",
+      "rowAction": "View membership card",
+      "modalTitle": "Membership card",
+      "unavailableTitle": "Card not available",
+      "noPayment": "No membership payment is recorded for this member. The card will be generated once a payment is recorded.",
+      "recordPayment": "Record a payment",
+      "settingsHint": "Template and colour can be changed in Settings › Membership card.",
+      "regenerate": "Regenerate QR code",
+      "regenerateHint": "The old QR code stops working immediately. Use this if a card was lost or shared.",
+      "regenerateConfirm": "Regenerate this card's QR code?",
+      "regenerated": "QR code regenerated"
+    },
+    "settings": {
+      "title": "Membership card",
+      "subtitle": "Appearance of the card shown in the member portal.",
+      "enabled": "Enable the membership card",
+      "enabledHint": "Members whose fee is paid will see their card in their portal.",
+      "template": "Template",
+      "templates": {
+        "classic": "Classic",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Colour",
+      "colorTooLight": "Very light colour: it will barely stand out from the card background.",
+      "minimalNoColor": "The Minimal template uses no colour.",
+      "showOnCard": "Show on the card",
+      "showPhoto": "Member photo",
+      "showPhotoHint": "Initials are shown when there is no photo.",
+      "showCategory": "Category",
+      "preview": "Preview",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Active volunteer member",
+      "noLogo": "Add a logo under Branding to show it on the card.",
+      "saved": "Membership card saved"
+    },
+    "print": {
+      "guide": "Cut along the line — credit-card size 85.6 × 54 mm. Print at 100%, without fit-to-page.",
+      "documentTitle": "Membership card — {name}",
+      "popupBlocked": "Allow pop-ups to print, or download the PDF instead."
+    },
+    "verify": {
+      "valid": "Valid card",
+      "validUntil": "Membership valid until {date}",
+      "expired": "Membership expired",
+      "expiredSince": "Expired on {date}",
+      "invalid": "Invalid card",
+      "invalidText": "This card is not recognised or has been deactivated. Please contact the association.",
+      "checkedAt": "Checked on {date} at {time}",
+      "poweredBy": "Verified by {appName}"
     }
   },
   "site": {

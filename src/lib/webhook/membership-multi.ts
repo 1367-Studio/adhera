@@ -17,6 +17,7 @@ import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membe
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { isMemberCardAvailable } from "@/lib/member-card/availability"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -308,12 +309,20 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
       ? (primaryTier.free ? 0 : (primaryTier.freeAmount ? (primary.amount ?? 0) : Number(primaryTier.amount ?? 0)))
       : 0
 
+    // Éligibilité du seul registrant 0, pas du groupe : c'est lui qui reçoit cet email, lui
+    // seul a un compte, et la page carte de l'espace membre montre la carte de la personne
+    // connectée. Les autres inscrits n'ont ni email ni login (ils sont rattachés via
+    // responsableId) — leur carte se consulte depuis l'espace du responsable, elle n'a donc
+    // pas à décider du bouton ici. Une seule requête pour tout le groupe, pas N.
+    const memberCardAvailable = await isMemberCardAvailable(draft.associationId, membreIds[0])
+
     sendEmail(membershipWelcomeEmail({
       firstName:       primary.firstName,
       email:           draft.email,
       associationName: assoc.name,
       amount:          Number(draft.totalAmount),
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
+      memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${assoc.slug}/carte` : undefined,
       branding:        resolveDocumentBranding(assoc),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         primaryTier?.receiptMode,

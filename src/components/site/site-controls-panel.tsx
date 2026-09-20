@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { ColorField } from "@/components/ui/color-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -16,7 +17,7 @@ import { SiteAiFieldButton } from "./site-ai-field-button"
 import type { SiteConfig, SiteSection, SectionType, FooterLink } from "@/types/site-config"
 import { DEFAULT_SITE_CONFIG } from "@/types/site-config"
 import { SITE_FONTS, SITE_FONT_KEYS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
-import { SITE_DEFAULT_SECONDARY_COLOR } from "@/lib/site-theme"
+import { SITE_DEFAULT_PRIMARY_COLOR, SITE_DEFAULT_SECONDARY_COLOR } from "@/lib/site-theme"
 import { newSectionId } from "@/lib/site-content"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
@@ -288,40 +289,20 @@ export function SiteControlsPanel({
             <SiteAiFieldButton scope="appearance" onApply={r => update(r)} />
           )}
         >
-          <div className="space-y-1.5">
-            <Label className="text-xs">{t("primaryColor")}</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={cfg.primaryColor ?? "#6366f1"}
-                onChange={e => update({ primaryColor: e.target.value })}
-                className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
-              />
-              <Input
-                value={cfg.primaryColor ?? "#6366f1"}
-                onChange={e => update({ primaryColor: e.target.value })}
-                className="font-mono text-xs h-8"
-                placeholder="#6366f1"
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">{t("secondaryColor")}</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={cfg.secondaryColor ?? SITE_DEFAULT_SECONDARY_COLOR}
-                onChange={e => update({ secondaryColor: e.target.value })}
-                className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
-              />
-              <Input
-                value={cfg.secondaryColor ?? SITE_DEFAULT_SECONDARY_COLOR}
-                onChange={e => update({ secondaryColor: e.target.value })}
-                className="font-mono text-xs h-8"
-                placeholder={SITE_DEFAULT_SECONDARY_COLOR}
-              />
-            </div>
-          </div>
+          <ColorField
+            label={t("primaryColor")}
+            size="sm"
+            value={cfg.primaryColor ?? SITE_DEFAULT_PRIMARY_COLOR}
+            onChange={color => update({ primaryColor: color })}
+            placeholder={SITE_DEFAULT_PRIMARY_COLOR}
+          />
+          <ColorField
+            label={t("secondaryColor")}
+            size="sm"
+            value={cfg.secondaryColor ?? SITE_DEFAULT_SECONDARY_COLOR}
+            onChange={color => update({ secondaryColor: color })}
+            placeholder={SITE_DEFAULT_SECONDARY_COLOR}
+          />
           <div className="space-y-1.5">
             <Label className="text-xs">{t("fontFamily")}</Label>
             <Select
@@ -366,23 +347,14 @@ export function SiteControlsPanel({
             <SiteAiFieldButton scope="header" onApply={r => update(r)} />
           )}
         >
-          <div className="space-y-1.5">
-            <Label className="text-xs">{t("headerBgColor")}</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={cfg.headerBgColor ?? "#ffffff"}
-                onChange={e => update({ headerBgColor: e.target.value })}
-                className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
-              />
-              <Input
-                value={cfg.headerBgColor ?? ""}
-                onChange={e => update({ headerBgColor: e.target.value })}
-                className="font-mono text-xs h-8"
-                placeholder={t("headerBgPlaceholder")}
-              />
-            </div>
-          </div>
+          <ColorField
+            label={t("headerBgColor")}
+            size="sm"
+            value={cfg.headerBgColor ?? ""}
+            onChange={color => update({ headerBgColor: color })}
+            fallbackColor="#ffffff"
+            placeholder={t("headerBgPlaceholder")}
+          />
           {(["headerShowMembres", "headerShowRegister"] as const).map((key, i) => {
             const label  = i === 0 ? t("loginButton") : t("registerButton")
             const active = key === "headerShowMembres" ? (cfg.headerShowMembres ?? true) : (cfg.headerShowRegister ?? true)
@@ -417,23 +389,14 @@ export function SiteControlsPanel({
               className="text-xs h-8"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs">{t("footerBgColor")}</Label>
-            <div className="flex items-center gap-2">
-              <input
-                type="color"
-                value={cfg.footerBgColor ?? "#ffffff"}
-                onChange={e => update({ footerBgColor: e.target.value })}
-                className="h-8 w-10 rounded border cursor-pointer p-0.5 shrink-0"
-              />
-              <Input
-                value={cfg.footerBgColor ?? ""}
-                onChange={e => update({ footerBgColor: e.target.value })}
-                className="font-mono text-xs h-8"
-                placeholder={t("headerBgPlaceholder")}
-              />
-            </div>
-          </div>
+          <ColorField
+            label={t("footerBgColor")}
+            size="sm"
+            value={cfg.footerBgColor ?? ""}
+            onChange={color => update({ footerBgColor: color })}
+            fallbackColor="#ffffff"
+            placeholder={t("headerBgPlaceholder")}
+          />
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label className="text-xs">{t("links")}</Label>

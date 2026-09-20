@@ -18,16 +18,21 @@ interface SegmentedControlProps<T extends string> {
   size?:      "sm" | "default"
   disabled?:  boolean
   className?: string
+  /**
+   * Names the group for a screen reader. Needed whenever no visible <Label> sits next to the
+   * control and the options alone don't say what is being chosen (first names, for instance).
+   */
+  ariaLabel?: string
 }
 
 // Single-choice segmented toggle (status, recipients, list/grid…). Same visual language
 // as the shared Tabs (primary fill on the active segment and on hover) so every
 // "pick one of N" control in the app reads the same way.
 export function SegmentedControl<T extends string>({
-  options, value, onChange, size = "default", disabled, className,
+  options, value, onChange, size = "default", disabled, className, ariaLabel,
 }: SegmentedControlProps<T>) {
   return (
-    <div role="group" className={cn("inline-flex items-center rounded-lg border bg-muted/30 p-0.5 gap-0.5", className)}>
+    <div role="group" aria-label={ariaLabel} className={cn("inline-flex items-center rounded-lg border bg-muted/30 p-0.5 gap-0.5", className)}>
       {options.map((opt) => (
         <button
           key={opt.value}

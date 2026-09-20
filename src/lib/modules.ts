@@ -67,6 +67,12 @@ export const PORTAL_NAV_ORDER: Array<{ path: string; moduleKey?: keyof AssocModu
   { path: "actualites",     moduleKey: "actualites"  },
   { path: "evenements",     moduleKey: "evenements"  },
   { path: "cotisation",     moduleKey: "cotisations" },
+  // The one entry that isn't decided by its module alone: the cotisations module makes the
+  // card possible, the association's own memberCardSettings.enabled makes it visible, and
+  // PortalSidebar applies that second condition. Listed right after the cotisation it proves,
+  // and harmless for firstEnabledPortalPath below — "cotisation" shares its module and comes
+  // first, so a member can never land on the card page as their default screen.
+  { path: "carte",          moduleKey: "cotisations" },
   { path: "communications" },
   { path: "reunions",       moduleKey: "reunions"    },
   { path: "sondages",       moduleKey: "sondages"    },

@@ -380,11 +380,19 @@ export function paymentConfirmationEmail(p: {
   period:          string | null
   paidAt:          Date
   branding?:       EmailBranding
+  // Lien vers la carte de membre dans l'espace membre (/portal/[slug]/carte) — uniquement
+  // renseigné quand la carte existe vraiment à l'envoi (voir isMemberCardAvailable) : un
+  // paiement encaissé ne suffit pas, l'association peut ne pas avoir activé la carte et un
+  // membre suspendu n'en a pas non plus.
+  memberCardUrl?:  string
 }) {
   const amountStr = p.amount != null
     ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
     : "—"
   const dateStr = p.paidAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
+  // Le saut de ligne est porté par le fragment lui-même, pas par le gabarit : sans carte,
+  // l'email doit rester exactement celui d'avant, à l'octet près.
+  const memberCardButton = p.memberCardUrl ? `\n    ${btn("Voir ma carte de membre", p.memberCardUrl)}` : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Paiement reçu</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -403,7 +411,7 @@ export function paymentConfirmationEmail(p: {
         <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Date de paiement</span>
         <span style="font-size:14px;">${dateStr}</span>
       </td></tr>
-    </table>
+    </table>${memberCardButton}
     <p style="margin:0;font-size:13px;color:#71717a;">Conservez cet email comme confirmation de paiement.</p>`
   return {
     to:       p.email,
@@ -1160,6 +1168,11 @@ export function membershipWelcomeEmail(p: {
   // don devient son propre Don, avec son propre reçu fiscal le jour de son encaissement — ce
   // montant-ci n'en est qu'un aperçu, jamais une confirmation en soi.
   addons?: { label: string; amount: number }[]
+  // Lien vers la carte de membre dans l'espace membre (/portal/[slug]/carte) — renseigné
+  // uniquement par les parcours où la carte est réellement disponible à l'envoi (voir
+  // isMemberCardAvailable) : une adhésion gratuite ou déjà payée en ligne, jamais une
+  // adhésion hors ligne en attente d'encaissement ni le premier mois d'un échéancier.
+  memberCardUrl?: string
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   // "le montant ci-dessous", not "votre cotisation" — that total can also carry an addon/don
@@ -1197,6 +1210,10 @@ export function membershipWelcomeEmail(p: {
         ${p.offlinePending ? "Chaque élément fera l'objet d'une confirmation et, le cas échéant, d'un reçu séparés." : ""}
       </p>`
     : ""
+  // Après le bouton d'accès à l'espace membre, jamais à sa place : se connecter reste l'action
+  // principale de cet email (la page carte redirige elle-même vers le login). Le saut de ligne
+  // est porté par le fragment, pour que l'email sans carte reste identique à l'octet près.
+  const memberCardButton = p.memberCardUrl ? `\n    ${btn("Voir ma carte de membre", p.memberCardUrl)}` : ""
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
@@ -1215,7 +1232,7 @@ export function membershipWelcomeEmail(p: {
     ${addonsSentence}
     ${receiptSentence}
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
-    ${btn("Accéder à mon espace membre", p.loginUrl)}`
+    ${btn("Accéder à mon espace membre", p.loginUrl)}${memberCardButton}`
   return {
     to:       p.email,
     subject:  `Bienvenue chez ${p.associationName} !`,

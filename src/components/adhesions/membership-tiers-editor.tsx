@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useImperativeHandle, useState, type ReactNode, type Ref } from "react"
-import { DateField } from "@/components/ui/date-field"
+import { addDays } from "date-fns"
+import { DateField, toValue } from "@/components/ui/date-field"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
@@ -146,8 +147,13 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
 
   const [tiers, setTiers] = useState<(MembershipTierDraft & { key: string })[]>([])
 
-  // fixedPeriodEnd comes back from the API as a full ISO datetime — sliced to YYYY-MM-DD for
+  // fixedPeriodEnd comes back from the API as a full ISO datetime — reduced to YYYY-MM-DD for
   // the <input type="date"> below, re-expanded to end-of-day ISO on save (see handleSave).
+  // Read through toValue (local calendar parts), not through the UTC date part of the ISO
+  // string: handleSave stores the admin's *local* end-of-day, so slicing the UTC part gave
+  // D+1 back to any admin west of UTC (Antilles, Guyane, Polynésie), whose next save then
+  // stored D+2 — a date drifting a day forward on every round trip, enough to push an already
+  // expired date back into the future. Local out must be read back as local in.
   // amount/ineligibleAmount come back as strings too — Prisma's Decimal serializes to JSON
   // as a string, not a number, so the PUT below would 422 ("expected number, received
   // string") the moment a tier is saved again without its CurrencyField ever being touched
@@ -157,7 +163,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       ...t,
       amount:           t.amount != null ? Number(t.amount) : null,
       ineligibleAmount: t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
-      fixedPeriodEnd:   t.fixedPeriodEnd ? t.fixedPeriodEnd.slice(0, 10) : null,
+      fixedPeriodEnd:   t.fixedPeriodEnd ? toValue(new Date(t.fixedPeriodEnd)) : null,
     }
   }
 
@@ -408,6 +414,9 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                           id={`tier-fixed-period-end-${tier.key}`}
                           label={t("fixedPeriodEndField")}
                           allowFuture
+                          // Mirrors the server rule in [id]/tiers/route.ts: a fixed end date must
+                          // fall after today, or the membership would be expired once paid.
+                          min={toValue(addDays(new Date(), 1))}
                           value={tier.fixedPeriodEnd ?? ""}
                           onChange={v => updateTier(tier.key, {
                             fixedPeriodEnd: v || null,

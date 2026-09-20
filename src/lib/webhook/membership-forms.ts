@@ -16,6 +16,7 @@ import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { isMemberCardAvailable } from "@/lib/member-card/availability"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
 //
@@ -256,12 +257,19 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   }
 
   if (assoc?.slug) {
+    // La cotisation est déjà créée et encaissée (EXONERE pour un tarif gratuit, PAYE via
+    // recordCotisationPayment sinon) au moment où cet email part : la carte est donc
+    // disponible tout de suite, sauf si l'association ne l'a pas activée — d'où l'appel au
+    // loader plutôt qu'un raisonnement local sur le statut de la cotisation.
+    const memberCardAvailable = await isMemberCardAvailable(meta.associationId, created.membre.id)
+
     sendEmail(membershipWelcomeEmail({
       firstName:       created.membre.firstName,
       email:           meta.email,
       associationName: assoc.name,
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
+      memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${assoc.slug}/carte` : undefined,
       branding:        resolveDocumentBranding(assoc),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
