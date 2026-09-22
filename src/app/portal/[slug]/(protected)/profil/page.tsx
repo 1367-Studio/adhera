@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { portalFetch } from "@/lib/portal-fetch"
 import { AddressFields } from "@/components/ui/address-fields"
-import { addressFormValues, type AddressFormValues } from "@/lib/address"
+import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
@@ -348,6 +348,7 @@ export default function ProfilPage() {
                   setValue(fieldName, fieldValue, { shouldDirty: true })
                 }
               }}
+              legacyHint={addressWasMigratedFromLegacy(membre)}
               errors={{
                 addressStreet:     errors.addressStreet?.message,
                 addressComplement: errors.addressComplement?.message,

@@ -57,7 +57,8 @@
     "complementPlaceholder": "Bygning, etage, postkasse…",
     "postalCode": "Postnummer",
     "city": "By",
-    "country": "Land"
+    "country": "Land",
+    "legacyMigratedHint": "Kopieret fra det gamle adressefelt — tjek at det ikke allerede indeholder postnummer og by nedenfor."
   },
   "auth": {
     "layout": {

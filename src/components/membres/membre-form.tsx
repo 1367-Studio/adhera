@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { AddressFields } from "@/components/ui/address-fields"
-import { addressFormValues, type AddressFormValues } from "@/lib/address"
+import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
@@ -499,6 +499,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
             setValue(fieldName, fieldValue, { shouldDirty: true })
           }
         }}
+        legacyHint={addressWasMigratedFromLegacy(defaultValues)}
         errors={{
           addressStreet:     errors.addressStreet?.message,
           addressComplement: errors.addressComplement?.message,

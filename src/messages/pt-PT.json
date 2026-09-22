@@ -57,7 +57,8 @@
     "complementPlaceholder": "Edifício, andar, caixa de correio…",
     "postalCode": "Código postal",
     "city": "Cidade",
-    "country": "País"
+    "country": "País",
+    "legacyMigratedHint": "Copiado do campo de morada antigo — verifique se já não inclui o código postal e a localidade abaixo."
   },
   "auth": {
     "layout": {

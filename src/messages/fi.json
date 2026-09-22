@@ -57,7 +57,8 @@
     "complementPlaceholder": "Rakennus, kerros, postilaatikko…",
     "postalCode": "Postinumero",
     "city": "Kaupunki",
-    "country": "Maa"
+    "country": "Maa",
+    "legacyMigratedHint": "Kopioitu vanhasta osoitekentästä — tarkista, ettei se jo sisällä alla olevaa postinumeroa ja kaupunkia."
   },
   "auth": {
     "layout": {

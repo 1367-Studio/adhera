@@ -3,7 +3,7 @@ import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
-import { addressColumns, addressColumnsPatch, type AddressInput } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressColumnsPatch, addressIsFilled, type AddressInput } from "@/lib/address"
 import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
@@ -31,11 +31,11 @@ const attendeeSchema = z.object({
   // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
   // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
   address:           z.string().trim().max(300).optional().or(z.literal("")),
-  addressStreet:     z.string().trim().max(300).optional().or(z.literal("")),
-  addressComplement: z.string().trim().max(300).optional().or(z.literal("")),
-  postalCode:        z.string().trim().max(30).optional().or(z.literal("")),
-  city:              z.string().trim().max(120).optional().or(z.literal("")),
-  country:           z.string().trim().max(120).optional().or(z.literal("")),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional().or(z.literal("")),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional().or(z.literal("")),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional().or(z.literal("")),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional().or(z.literal("")),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional().or(z.literal("")),
   // birthDate/gender get their own Participation columns (mirrors Membre.birthDate/sexe) —
   // mobile has no dedicated column, same as Membre.answers's "mobile" convention, so it
   // rides in `answers` alongside the custom-field replies below.
@@ -89,20 +89,10 @@ const baseSchema = z.object({
 
 // L'adresse d'un participant arrive sous deux formes dans le corps de la requête : les cinq
 // colonnes structurées envoyées par le formulaire actuel, et le texte libre hérité `address`
-// qu'un vieil onglet encore ouvert est seul à poster. Les deux fonctions ci-dessous sont les
-// seules à connaître ce détail ; au-delà, c'est src/lib/address.ts qui décide, à un seul
-// endroit, de ce qui est écrit dans les six colonnes.
-//
-// Le champ « Adresse » de la matrice de champs standards est donc satisfait de deux façons :
-// par une adresse structurée complète (voie + code postal + ville, exactement ce que le
-// formulaire public rend obligatoire), ou par la seule adresse héritée. Le complément et le
-// pays ne comptent jamais : ils restent facultatifs des deux côtés.
-function attendeeAddressIsFilled(attendee: { address?: string; addressStreet?: string; postalCode?: string; city?: string }): boolean {
-  const hasStructuredAddress =
-    !!attendee.addressStreet?.trim() && !!attendee.postalCode?.trim() && !!attendee.city?.trim()
-  return hasStructuredAddress || !!attendee.address?.trim()
-}
-
+// qu'un vieil onglet encore ouvert est seul à poster. Le contrôle « champ requis » passe par
+// addressIsFilled (src/lib/address.ts, même règle que le checkout d'adhésion et de don) ;
+// au-delà, c'est src/lib/address.ts qui décide, à un seul endroit, de ce qui est écrit dans
+// les six colonnes.
 function attendeeAddressInput(attendee: {
   address?:           string
   addressStreet?:     string
@@ -229,9 +219,8 @@ export async function POST(
         return NextResponse.json({ error: `Le champ « ${label} » est requis.` }, { status: 422 })
     }
     // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme
-    // héritée en texte libre reste acceptée — même règle que le checkout d'adhésion (voir
-    // addressIsFilled dans src/app/api/public/[slug]/adhesion/[formSlug]/checkout/route.ts).
-    if (evenement.fieldAddress === "REQUIRED" && !attendeeAddressIsFilled(a))
+    // héritée en texte libre reste acceptée (voir addressIsFilled dans src/lib/address.ts).
+    if (evenement.fieldAddress === "REQUIRED" && !addressIsFilled(a))
       return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   }
 

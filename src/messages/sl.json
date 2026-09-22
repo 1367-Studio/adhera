@@ -57,7 +57,8 @@
     "complementPlaceholder": "Stavba, nadstropje, poštni nabiralnik…",
     "postalCode": "Poštna številka",
     "city": "Kraj",
-    "country": "Država"
+    "country": "Država",
+    "legacyMigratedHint": "Kopirano iz starega polja za naslov — preverite, da že ne vsebuje spodnje poštne številke in kraja."
   },
   "auth": {
     "layout": {

@@ -57,7 +57,8 @@
     "complementPlaceholder": "Zgrada, kat, poštanski sandučić…",
     "postalCode": "Poštanski broj",
     "city": "Grad",
-    "country": "Država"
+    "country": "Država",
+    "legacyMigratedHint": "Kopirano iz starog polja adrese — provjerite da već ne sadrži poštanski broj i grad u nastavku."
   },
   "auth": {
     "layout": {

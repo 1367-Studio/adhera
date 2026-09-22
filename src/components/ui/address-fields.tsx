@@ -18,11 +18,26 @@ type Props = {
   // tous les blocs partageraient les mêmes id, si bien que cliquer un libellé mettrait le
   // focus sur le champ d'une autre personne.
   idPrefix?: string
+  // Voir addressWasMigratedFromLegacy (src/lib/address.ts) : affiche un avertissement sous
+  // la Rue quand elle vient d'y être déposée telle quelle depuis l'ancienne adresse en texte
+  // libre, pour éviter que Code postal/Ville saisis à côté ne dupliquent ce qu'elle contient
+  // déjà.
+  legacyHint?: boolean
 }
 
-export function AddressFields({ value, onChange, required, disabled, errors, idPrefix }: Props) {
+// Une quinzaine de pays courants pour les associations qui utilisent Formwise — suggestions
+// via <datalist>, jamais imposées : le champ reste du texte libre (voir le commentaire sur
+// `required` ci-dessus), juste moins sujet aux variantes ("France" / "FR" / "france") sur un
+// champ qui alimente aussi les documents officiels.
+const COUNTRY_SUGGESTIONS = [
+  "France", "Belgique", "Suisse", "Luxembourg", "Allemagne", "Espagne", "Italie",
+  "Portugal", "Pays-Bas", "Royaume-Uni", "Irlande", "Canada", "Maroc", "Algérie", "Tunisie",
+]
+
+export function AddressFields({ value, onChange, required, disabled, errors, idPrefix, legacyHint }: Props) {
   const t = useTranslations("address")
   const fieldId = (name: keyof AddressFormValues) => (idPrefix ? `${idPrefix}-${name}` : name)
+  const countryListId = fieldId("country") + "-suggestions"
 
   return (
     <div className="grid grid-cols-6 gap-x-4 gap-y-5">
@@ -32,6 +47,8 @@ export function AddressFields({ value, onChange, required, disabled, errors, idP
           label={t("street")}
           required={required}
           disabled={disabled}
+          autoComplete="address-line1"
+          hint={legacyHint ? t("legacyMigratedHint") : undefined}
           error={errors?.addressStreet}
           value={value.addressStreet}
           onChange={event => onChange({ addressStreet: event.target.value })}
@@ -44,19 +61,19 @@ export function AddressFields({ value, onChange, required, disabled, errors, idP
           label={t("complement")}
           placeholder={t("complementPlaceholder")}
           disabled={disabled}
+          autoComplete="address-line2"
           error={errors?.addressComplement}
           value={value.addressComplement}
           onChange={event => onChange({ addressComplement: event.target.value })}
         />
       </div>
 
-      <div className="col-span-2">
+      <div className="col-span-6 sm:col-span-2">
         <FormField
           id={fieldId("postalCode")}
           label={t("postalCode")}
           required={required}
           disabled={disabled}
-          inputMode="numeric"
           autoComplete="postal-code"
           error={errors?.postalCode}
           value={value.postalCode}
@@ -64,7 +81,7 @@ export function AddressFields({ value, onChange, required, disabled, errors, idP
         />
       </div>
 
-      <div className="col-span-4">
+      <div className="col-span-6 sm:col-span-4">
         <FormField
           id={fieldId("city")}
           label={t("city")}
@@ -83,10 +100,14 @@ export function AddressFields({ value, onChange, required, disabled, errors, idP
           label={t("country")}
           disabled={disabled}
           autoComplete="country-name"
+          list={countryListId}
           error={errors?.country}
           value={value.country}
           onChange={event => onChange({ country: event.target.value })}
         />
+        <datalist id={countryListId}>
+          {COUNTRY_SUGGESTIONS.map(country => <option key={country} value={country} />)}
+        </datalist>
       </div>
     </div>
   )

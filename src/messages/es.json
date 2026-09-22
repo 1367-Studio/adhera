@@ -57,7 +57,8 @@
     "complementPlaceholder": "Edificio, piso, buzón…",
     "postalCode": "Código postal",
     "city": "Ciudad",
-    "country": "País"
+    "country": "País",
+    "legacyMigratedHint": "Copiado del campo de dirección antiguo: compruebe que no incluya ya el código postal y la ciudad de abajo."
   },
   "auth": {
     "layout": {

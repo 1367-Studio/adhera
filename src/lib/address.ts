@@ -22,6 +22,18 @@ export type AddressInput = {
   legacy?:     string | null
 }
 
+// Longueur maximale partagée par tous les schémas zod qui acceptent une adresse — les
+// colonnes en base sont des TEXT sans contrainte, donc ces valeurs sont la seule barrière
+// réelle. Un même champ logique doit accepter la même longueur partout, sinon la même
+// colonne physique se retrouve tronquée différemment selon la route qui l'a écrite.
+export const ADDRESS_MAX_LENGTHS = {
+  street:     300,
+  complement: 300,
+  postalCode: 20,
+  city:       120,
+  country:    100,
+} as const
+
 function cleanedValue(value?: string | null): string | null {
   const trimmedValue = value?.trim()
   return trimmedValue ? trimmedValue : null
@@ -159,6 +171,49 @@ export type AddressPayload = {
 }
 
 const ADDRESS_PAYLOAD_KEYS = ["address", "addressStreet", "addressComplement", "postalCode", "city", "country"] as const
+
+// Le champ « Adresse » d'une matrice de champs standards (adhésion, don, événement) est
+// satisfait de deux façons : par une adresse structurée complète (voie + code postal +
+// ville — exactement ce que le formulaire public rend obligatoire), ou par la seule
+// adresse héritée en texte libre — un onglet resté ouvert sur l'ancien formulaire ne poste
+// que celle-là et ne doit pas se voir refuser. Le complément et le pays ne comptent jamais :
+// ils restent facultatifs des deux côtés. Un seul endroit pour cette règle plutôt qu'une
+// copie par route : les routes qui la réimplémentaient localement avaient fini par diverger
+// (voir l'historique de ce fichier).
+export type SubmittedAddress = {
+  address?:       string
+  addressStreet?: string
+  postalCode?:    string
+  city?:          string
+}
+
+export function addressIsFilled(submitted: SubmittedAddress): boolean {
+  const hasStructuredAddress =
+    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() && !!submitted.city?.trim()
+  return hasStructuredAddress || !!submitted.address?.trim()
+}
+
+// Vrai quand `addressFormValues` ci-dessus va déposer l'adresse héritée en texte libre dans
+// le champ Rue faute de mieux (« migration opportuniste »). Ce texte peut déjà contenir le
+// code postal et la ville — c'était un champ ouvert unique — donc quelqu'un qui complète
+// juste les nouveaux champs Code postal/Ville sans relire la Rue risque de les dupliquer
+// dans l'adresse enregistrée. Sert uniquement à afficher un avertissement ; ne modifie rien.
+export function addressWasMigratedFromLegacy(source: {
+  addressStreet?:     string | null
+  addressComplement?: string | null
+  postalCode?:        string | null
+  city?:              string | null
+  address?:           string | null
+} | null | undefined): boolean {
+  if (!source) return false
+  const { street, complement, locality } = structuredParts({
+    street:     source.addressStreet,
+    complement: source.addressComplement,
+    postalCode: source.postalCode,
+    city:       source.city,
+  })
+  return !(street || complement || locality) && !!cleanedValue(source.address)
+}
 
 export function addressColumnsPatch(payload: AddressPayload, existing: AddressPayload): Partial<AddressColumns> {
   const touchesAddress = ADDRESS_PAYLOAD_KEYS.some(key => payload[key] !== undefined)

@@ -57,7 +57,8 @@
     "complementPlaceholder": "Hoone, korrus, postkast…",
     "postalCode": "Postiindeks",
     "city": "Linn",
-    "country": "Riik"
+    "country": "Riik",
+    "legacyMigratedHint": "Kopeeritud vanast aadressiväljast — kontrollige, et see ei sisalda juba allpool olevat sihtnumbrit ja linna."
   },
   "auth": {
     "layout": {

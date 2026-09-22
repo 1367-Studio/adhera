@@ -57,7 +57,8 @@
     "complementPlaceholder": "Clădire, etaj, cutie poștală…",
     "postalCode": "Cod poștal",
     "city": "Oraș",
-    "country": "Țară"
+    "country": "Țară",
+    "legacyMigratedHint": "Copiat din vechiul câmp de adresă — verificați dacă nu conține deja codul poștal și orașul de mai jos."
   },
   "auth": {
     "layout": {

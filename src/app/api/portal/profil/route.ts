@@ -4,7 +4,7 @@ import { z } from "zod"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { computeMemberDiff, writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
-import { addressColumnsPatch } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumnsPatch } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const phoneRegex = /^[+\d][\d\s.\-()]{5,19}$/
@@ -16,12 +16,12 @@ const updateSchema = z.object({
   ),
   // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
   // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
-  address:   z.string().trim().optional().or(z.literal("")),
-  addressStreet:     z.string().trim().optional().or(z.literal("")),
-  addressComplement: z.string().trim().optional().or(z.literal("")),
-  postalCode:        z.string().trim().optional().or(z.literal("")),
-  city:              z.string().trim().optional().or(z.literal("")),
-  country:           z.string().trim().optional().or(z.literal("")),
+  address:   z.string().trim().max(300).optional().or(z.literal("")),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional().or(z.literal("")),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional().or(z.literal("")),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional().or(z.literal("")),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional().or(z.literal("")),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional().or(z.literal("")),
   birthDate: z.string().optional().or(z.literal("")).refine(
     v => !v || new Date(v) < new Date(),
     "La date de naissance doit être dans le passé",

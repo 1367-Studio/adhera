@@ -57,7 +57,8 @@
     "complementPlaceholder": "Building, floor, mailbox…",
     "postalCode": "Postal code",
     "city": "City",
-    "country": "Country"
+    "country": "Country",
+    "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
   },
   "auth": {
     "layout": {

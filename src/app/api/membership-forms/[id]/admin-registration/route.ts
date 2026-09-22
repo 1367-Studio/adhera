@@ -13,7 +13,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
-import { addressColumns } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 // Same role set as POST /api/membres — whoever can create a member can register one
@@ -38,11 +38,11 @@ const schema = z.object({
   // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
   // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(300).optional(),
-  addressComplement: z.string().trim().max(300).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(120).optional(),
-  country:           z.string().trim().max(80).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
@@ -95,10 +95,9 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // the same fields stay required.
   const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl } = parsed.data
   // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
-  // en texte libre reste acceptée — même règle que le checkout public (voir addressIsFilled).
-  const hasStructuredAddress =
-    !!parsed.data.addressStreet?.trim() && !!parsed.data.postalCode?.trim() && !!parsed.data.city?.trim()
-  if (form.fieldAddress === "REQUIRED" && !hasStructuredAddress && !parsed.data.address?.trim())
+  // en texte libre reste acceptée — même règle que le checkout public (voir addressIsFilled
+  // dans src/lib/address.ts).
+  if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
     return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],

@@ -6,7 +6,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
-import { addressColumns } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
 
 export async function GET(
@@ -58,11 +58,11 @@ const schema = z.object({
   // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
   // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(200).optional(),
-  addressComplement: z.string().trim().max(200).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(100).optional(),
-  country:           z.string().trim().max(100).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   amount:      z.number().positive().max(100000),
   message:     z.string().trim().max(500).optional(),
   anonymous:   z.boolean().optional().default(false),

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { ADDRESS_MAX_LENGTHS } from "@/lib/address"
 
 // One row = one AssoConnect "adhésion" transaction, already normalized client-side (dates,
 // address concatenation, sexe/civilité mapping — see membre-import-wizard.tsx's parseRows).
@@ -15,12 +16,12 @@ export const importMembreRowSchema = z.object({
   // colonnes séparées : elles sont désormais transmises telles quelles au lieu d'être
   // concaténées côté client. `address` reste accepté pour les lignes qui n'ont qu'un texte
   // libre (et pour un onglet resté ouvert sur l'ancienne version).
-  address:    z.string().trim().optional(),
-  addressStreet:     z.string().trim().optional(),
-  addressComplement: z.string().trim().optional(),
-  postalCode:        z.string().trim().optional(),
-  city:              z.string().trim().optional(),
-  country:           z.string().trim().optional(),
+  address:    z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   sexe:       z.enum(["HOMME", "FEMME"]).optional(),
   civilite:   z.enum(["MME", "MLLE", "M"]).optional(),
   birthDate:  z.string().optional(), // ISO yyyy-mm-dd

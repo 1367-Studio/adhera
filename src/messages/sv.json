@@ -57,7 +57,8 @@
     "complementPlaceholder": "Byggnad, våning, brevlåda…",
     "postalCode": "Postnummer",
     "city": "Ort",
-    "country": "Land"
+    "country": "Land",
+    "legacyMigratedHint": "Kopierat från det gamla adressfältet — kontrollera att det inte redan innehåller postnumret och orten nedan."
   },
   "auth": {
     "layout": {

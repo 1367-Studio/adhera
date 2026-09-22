@@ -23,7 +23,7 @@ import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
-import { addressColumns } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
@@ -33,24 +33,6 @@ const MIN_ITEM_AMOUNT = 1
 // Bounds both Stripe's line_items array and how many rows a single submission can create —
 // see handleMultiRegistrantCheckout below.
 const MAX_REGISTRANTS = 10
-
-// Le champ « Adresse » de la matrice de champs standards est satisfait de deux façons : par
-// une adresse structurée complète (voie + code postal + ville, exactement ce que le formulaire
-// public rend obligatoire), ou par la seule adresse héritée en texte libre — un onglet resté
-// ouvert sur l'ancien formulaire ne poste que celle-là et ne doit pas se voir refuser. Le
-// complément et le pays ne comptent jamais : ils restent facultatifs des deux côtés.
-type SubmittedAddress = {
-  address?:       string
-  addressStreet?: string
-  postalCode?:    string
-  city?:          string
-}
-
-function addressIsFilled(submitted: SubmittedAddress): boolean {
-  const hasStructuredAddress =
-    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() && !!submitted.city?.trim()
-  return hasStructuredAddress || !!submitted.address?.trim()
-}
 
 type ResolvedAddon = {
   tierId:   string
@@ -112,11 +94,11 @@ const schema = z.object({
   // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
   // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(300).optional(),
-  addressComplement: z.string().trim().max(300).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(120).optional(),
-  country:           z.string().trim().max(80).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
@@ -168,11 +150,11 @@ const registrantSchema = z.object({
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   // Même couple hérité/structuré que le parcours à un seul adhérent ci-dessus.
   address:   z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(300).optional(),
-  addressComplement: z.string().trim().max(300).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(120).optional(),
-  country:           z.string().trim().max(80).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
 })
@@ -729,8 +711,14 @@ export async function POST(
     passwordHash,
     // Les six colonnes d'adresse traversent Stripe telles qu'elles seront écrites en base —
     // les cinq structurées plus la version composée lisible dans `address`, comme partout
-    // ailleurs (voir addressColumns). Les webhooks qui créent le Membre les relisent en bloc.
-    address:           membreAddressColumns.address           || "",
+    // ailleurs (voir addressColumns). Les webhooks qui créent le Membre les relisent en bloc,
+    // mais recomposent toujours `address` eux-mêmes depuis les cinq colonnes structurées
+    // (voir addressColumns) dès qu'elles sont renseignées — cette valeur ne sert alors que de
+    // repli pour le cas "texte libre hérité seul", déjà plafonné à 300 caractères par le
+    // schéma ci-dessus. Tronquée à 500 : Stripe rejette toute valeur de metadata plus longue,
+    // et une voie+complément+ville+pays chacun proches de leur maximum peut largement dépasser
+    // ce seuil une fois composés (jusqu'à ~800 caractères).
+    address:           (membreAddressColumns.address || "").slice(0, 500),
     addressStreet:     membreAddressColumns.addressStreet     || "",
     addressComplement: membreAddressColumns.addressComplement || "",
     postalCode:        membreAddressColumns.postalCode        || "",

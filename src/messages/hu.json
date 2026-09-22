@@ -57,7 +57,8 @@
     "complementPlaceholder": "Épület, emelet, postaláda…",
     "postalCode": "Irányítószám",
     "city": "Város",
-    "country": "Ország"
+    "country": "Ország",
+    "legacyMigratedHint": "A régi cím mezőből másolva – ellenőrizze, hogy nem tartalmazza-e már az alábbi irányítószámot és várost."
   },
   "auth": {
     "layout": {

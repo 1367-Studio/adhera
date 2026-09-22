@@ -57,7 +57,8 @@
     "complementPlaceholder": "Ēka, stāvs, pastkastīte…",
     "postalCode": "Pasta indekss",
     "city": "Pilsēta",
-    "country": "Valsts"
+    "country": "Valsts",
+    "legacyMigratedHint": "Kopēts no vecā adreses lauka — pārbaudiet, vai tajā jau nav iekļauts zemāk norādītais pasta indekss un pilsēta."
   },
   "auth": {
     "layout": {

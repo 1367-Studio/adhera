@@ -57,7 +57,8 @@
     "complementPlaceholder": "Budynek, piętro, skrzynka…",
     "postalCode": "Kod pocztowy",
     "city": "Miasto",
-    "country": "Kraj"
+    "country": "Kraj",
+    "legacyMigratedHint": "Skopiowano ze starego pola adresu — sprawdź, czy nie zawiera już kodu pocztowego i miasta podanych poniżej."
   },
   "auth": {
     "layout": {

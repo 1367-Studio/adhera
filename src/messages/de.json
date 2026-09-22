@@ -57,7 +57,8 @@
     "complementPlaceholder": "Gebäude, Etage, Briefkasten…",
     "postalCode": "Postleitzahl",
     "city": "Stadt",
-    "country": "Land"
+    "country": "Land",
+    "legacyMigratedHint": "Aus dem alten Adressfeld übernommen – prüfen Sie, ob Postleitzahl und Ort unten nicht bereits enthalten sind."
   },
   "auth": {
     "layout": {

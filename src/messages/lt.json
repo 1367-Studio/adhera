@@ -57,7 +57,8 @@
     "complementPlaceholder": "Pastatas, aukštas, pašto dėžutė…",
     "postalCode": "Pašto kodas",
     "city": "Miestas",
-    "country": "Šalis"
+    "country": "Šalis",
+    "legacyMigratedHint": "Nukopijuota iš senojo adreso lauko — patikrinkite, ar jame jau nėra žemiau nurodyto pašto kodo ir miesto."
   },
   "auth": {
     "layout": {

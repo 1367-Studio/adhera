@@ -17,7 +17,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
-import { EMPTY_ADDRESS_FORM_VALUES, addressFormValues, formatAddress, type AddressFormValues } from "@/lib/address"
+import { EMPTY_ADDRESS_FORM_VALUES, addressFormValues, addressWasMigratedFromLegacy, formatAddress, type AddressFormValues } from "@/lib/address"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -454,6 +454,7 @@ function PortalDonationFormInner() {
               value={addressValues}
               onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
               required={form.fieldAddress === "REQUIRED"}
+              legacyHint={addressWasMigratedFromLegacy(form.member)}
             />
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

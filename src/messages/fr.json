@@ -57,7 +57,8 @@
     "complementPlaceholder": "Bâtiment, étage, boîte aux lettres…",
     "postalCode": "Code postal",
     "city": "Ville",
-    "country": "Pays"
+    "country": "Pays",
+    "legacyMigratedHint": "Copié depuis l'ancien champ adresse : vérifiez qu'il ne contient pas déjà le code postal et la ville ci-dessous."
   },
   "auth": {
     "layout": {

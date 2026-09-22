@@ -6,7 +6,7 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
-import { addressColumns } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const schema = z.object({
@@ -20,11 +20,11 @@ const schema = z.object({
   // d'adresse — mais ce qui en enverrait une, ancien onglet comme nouveau, est désormais
   // enregistré au lieu d'être silencieusement ignoré.
   address:           z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(300).optional(),
-  addressComplement: z.string().trim().max(300).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(120).optional(),
-  country:           z.string().trim().max(80).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   typeId:        z.string().optional(),
   acceptedTerms: z.literal(true),
   locale:        z.enum(SUPPORTED_LOCALES).optional(),

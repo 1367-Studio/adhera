@@ -7,7 +7,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
-import { addressColumns, formatAddress } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { consentIp } from "@/lib/consent"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -34,11 +34,11 @@ const schema = z.object({
   // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
   // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
-  addressStreet:     z.string().trim().max(200).optional(),
-  addressComplement: z.string().trim().max(200).optional(),
-  postalCode:        z.string().trim().max(20).optional(),
-  city:              z.string().trim().max(100).optional(),
-  country:           z.string().trim().max(100).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
@@ -151,9 +151,12 @@ export async function POST(
   // ouvert sur l'ancien formulaire) : les deux formes sont décrites d'un bloc ici, et c'est
   // ce même bloc qui sert au contrôle « champ requis » comme à l'écriture en base.
   const donorAddress = { street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }
-  const composedAddress = formatAddress(donorAddress)
+  // Adresse structurée complète (voie + code postal + ville) OU seule adresse héritée en
+  // texte libre — jamais un seul sous-champ isolé (voir addressIsFilled dans
+  // src/lib/address.ts, même règle que le checkout d'adhésion et l'inscription événement).
+  if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
-    [form.fieldAddress,   composedAddress ?? undefined, "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],

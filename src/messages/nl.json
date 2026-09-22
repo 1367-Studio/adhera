@@ -57,7 +57,8 @@
     "complementPlaceholder": "Gebouw, verdieping, brievenbus…",
     "postalCode": "Postcode",
     "city": "Plaats",
-    "country": "Land"
+    "country": "Land",
+    "legacyMigratedHint": "Gekopieerd uit het oude adresveld — controleer of de postcode en plaats hieronder niet al zijn opgenomen."
   },
   "auth": {
     "layout": {

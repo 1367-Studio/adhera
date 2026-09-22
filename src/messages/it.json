@@ -57,7 +57,8 @@
     "complementPlaceholder": "Edificio, piano, casella postale…",
     "postalCode": "CAP",
     "city": "Città",
-    "country": "Paese"
+    "country": "Paese",
+    "legacyMigratedHint": "Copiato dal vecchio campo indirizzo: verificare che non includa già il CAP e la città sottostanti."
   },
   "auth": {
     "layout": {

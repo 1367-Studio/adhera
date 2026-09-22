@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { EMPTY_ADDRESS_FORM_VALUES, addressColumns, addressColumnsPatch, addressFormValues, formatAddress, formatAddressLines } from "@/lib/address"
+import { EMPTY_ADDRESS_FORM_VALUES, addressColumns, addressColumnsPatch, addressFormValues, addressIsFilled, addressWasMigratedFromLegacy, formatAddress, formatAddressLines } from "@/lib/address"
 
 describe("formatAddress", () => {
   // Le cas qui compte le plus : tous les membres/dons créés avant le découpage du champ
@@ -175,5 +175,42 @@ describe("addressColumnsPatch", () => {
       addressStreet: "12 rue de la Paix", addressComplement: null, postalCode: "75002",
       city: "Paris", country: null, address: "12 rue de la Paix, 75002 Paris",
     })
+  })
+})
+
+describe("addressIsFilled", () => {
+  it("requires street, postal code and city together, not any single one of them", () => {
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix" })).toBe(false)
+    expect(addressIsFilled({ postalCode: "75002" })).toBe(false)
+    expect(addressIsFilled({ city: "Paris" })).toBe(false)
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002" })).toBe(false)
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris" })).toBe(true)
+  })
+
+  it("also accepts the legacy free-text address alone, for a tab left open on the old form", () => {
+    expect(addressIsFilled({ address: "12 rue de la Paix, 75002 Paris" })).toBe(true)
+  })
+
+  it("rejects blank/whitespace-only values the same as absent ones", () => {
+    expect(addressIsFilled({ address: "   " })).toBe(false)
+    expect(addressIsFilled({ addressStreet: " ", postalCode: " ", city: " " })).toBe(false)
+  })
+})
+
+describe("addressWasMigratedFromLegacy", () => {
+  it("is true for a record that only has the legacy free-text address", () => {
+    expect(addressWasMigratedFromLegacy({ address: "12 rue de la Paix, 75002 Paris" })).toBe(true)
+  })
+
+  it("is false once any structured field exists, even alongside the legacy text", () => {
+    expect(addressWasMigratedFromLegacy({
+      addressStreet: "12 rue de la Paix", address: "12 rue de la Paix, 75002 Paris",
+    })).toBe(false)
+  })
+
+  it("is false for no record, an empty record, or a legacy-only blank string", () => {
+    expect(addressWasMigratedFromLegacy(null)).toBe(false)
+    expect(addressWasMigratedFromLegacy({})).toBe(false)
+    expect(addressWasMigratedFromLegacy({ address: "   " })).toBe(false)
   })
 })

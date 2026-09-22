@@ -57,7 +57,8 @@
     "complementPlaceholder": "Budova, patro, schránka…",
     "postalCode": "PSČ",
     "city": "Město",
-    "country": "Země"
+    "country": "Země",
+    "legacyMigratedHint": "Zkopírováno ze starého pole adresy – zkontrolujte, zda již neobsahuje PSČ a město uvedené níže."
   },
   "auth": {
     "layout": {

@@ -57,7 +57,8 @@
     "complementPlaceholder": "Budova, poschodie, schránka…",
     "postalCode": "PSČ",
     "city": "Mesto",
-    "country": "Krajina"
+    "country": "Krajina",
+    "legacyMigratedHint": "Skopírované zo starého poľa adresy – skontrolujte, či už neobsahuje nižšie uvedené PSČ a mesto."
   },
   "auth": {
     "layout": {

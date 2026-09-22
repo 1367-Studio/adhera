@@ -57,7 +57,8 @@
     "complementPlaceholder": "Bini, sular, kaxxa postali…",
     "postalCode": "Kodiċi postali",
     "city": "Belt",
-    "country": "Pajjiż"
+    "country": "Pajjiż",
+    "legacyMigratedHint": "Ikkupjat mill-qasam tal-indirizz l-qadim — iċċekkja li ma jkunx diġà jinkludi l-kodiċi postali u l-belt hawn taħt."
   },
   "auth": {
     "layout": {

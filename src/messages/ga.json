@@ -57,7 +57,8 @@
     "complementPlaceholder": "Foirgneamh, urlár, bosca poist…",
     "postalCode": "Cód poist",
     "city": "Cathair",
-    "country": "Tír"
+    "country": "Tír",
+    "legacyMigratedHint": "Cóipeáilte ón seanréimse seoltaí — deimhnigh nach bhfuil an cód poist agus an baile thíos ann cheana féin."
   },
   "auth": {
     "layout": {
