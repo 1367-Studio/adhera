@@ -4683,6 +4683,96 @@
       "importedNote": "Importované z AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Platná od {from} do {to}",
+      "expiredOn": "Členstvo vypršalo dňa {date}",
+      "status": {
+        "valid": "Členstvo platné",
+        "expired": "Členstvo vypršané"
+      },
+      "generatedBy": "Karta vygenerovaná pomocou {appName}",
+      "qrAlt": "QR kód na overenie karty",
+      "ariaLabel": "Členská karta: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja karta",
+      "title": "Moja členská karta",
+      "titleMultiple": "Moje členské karty",
+      "subtitle": "Predložte ju pri aktivitách združenia. Jej QR kód umožňuje overiť jej platnosť.",
+      "switcherLabel": "Vybrať kartu na zobrazenie",
+      "downloadPdf": "Stiahnuť PDF",
+      "print": "Tlačiť"
+    },
+    "unavailable": {
+      "title": "Členská karta nie je k dispozícii",
+      "pending": "Karta bude k dispozícii hneď po zaznamenaní platby členského príspevku.",
+      "partial": "Členský príspevok bol uhradený čiastočne. Karta bude k dispozícii hneď po zaznamenaní zostatku.",
+      "late": "Platba členského príspevku ešte nebola zaznamenaná. Karta bude k dispozícii po jej zaznamenaní.",
+      "noneTitle": "Žiadna aktívna členská karta",
+      "none": "Pre toto obdobie neexistuje žiadne prebiehajúce členstvo. Karta sa vytvorí automaticky po prihlásení.",
+      "cancelled": "Toto členstvo bolo zrušené. Ďalšie informácie vám poskytne združenie.",
+      "disabled": "Vaše združenie neponúka členskú kartu.",
+      "expired": "Členstvo vypršalo dňa {date}. Obnovte ho a získajte novú kartu.",
+      "viewCotisation": "Zobraziť môj príspevok"
+    },
+    "manager": {
+      "button": "Členská karta",
+      "rowAction": "Zobraziť členskú kartu",
+      "modalTitle": "Členská karta",
+      "unavailableTitle": "Karta nie je k dispozícii",
+      "noPayment": "Pre tohto člena nie je zaznamenaná žiadna platba príspevku. Karta bude vygenerovaná hneď po zaznamenaní platby.",
+      "recordPayment": "Zaznamenať platbu",
+      "settingsHint": "Šablónu a farbu je možné upraviť v Nastaveniach › Členská karta.",
+      "regenerate": "Znova vygenerovať QR kód",
+      "regenerateHint": "Starý QR kód okamžite prestane fungovať. Použite, ak bola karta stratená alebo zdieľaná.",
+      "regenerateConfirm": "Znova vygenerovať QR kód tejto karty?",
+      "regenerated": "QR kód znova vygenerovaný"
+    },
+    "settings": {
+      "title": "Členská karta",
+      "subtitle": "Vzhľad karty zobrazovanej v členskej sekcii.",
+      "enabled": "Aktivovať členskú kartu",
+      "enabledHint": "Členovia s uhradeným príspevkom uvidia svoju kartu vo svojej sekcii.",
+      "template": "Šablóna",
+      "templates": {
+        "classic": "Klasická",
+        "modern": "Moderná",
+        "minimal": "Minimálna"
+      },
+      "color": "Farba",
+      "colorTooLight": "Veľmi svetlá farba: od pozadia karty sa bude odlišovať len málo.",
+      "minimalNoColor": "Šablóna Minimálna nepoužíva farbu.",
+      "showOnCard": "Zobraziť na karte",
+      "showPhoto": "Fotografia člena",
+      "showPhotoHint": "Ak nie je uložená žiadna fotografia, zobrazia sa iniciály.",
+      "showCategory": "Kategória",
+      "showPhone": "Telefón združenia",
+      "showEmail": "E-mail združenia",
+      "preview": "Náhľad",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktívny dobrovoľný člen",
+      "noLogo": "Pridajte logo v sekcii Branding, aby sa zobrazilo na karte.",
+      "noPhone": "Pridajte telefón v sekcii Právna identita a dary, aby sa zobrazil na karte.",
+      "noEmail": "Pridajte kontaktný e-mail v sekcii Informácie o združení, aby sa zobrazil na karte.",
+      "saved": "Členská karta uložená"
+    },
+    "print": {
+      "guide": "Odstrihnite podľa čiary — formát bankovej karty, 85,6 × 54 mm. Tlačte na 100 %, bez prispôsobenia stránke.",
+      "documentTitle": "Členská karta — {name}",
+      "popupBlocked": "Povoľte vyskakovacie okná na tlač, alebo si stiahnite PDF."
+    },
+    "verify": {
+      "valid": "Karta platná",
+      "validUntil": "Členstvo platné do {date}",
+      "expired": "Členstvo vypršané",
+      "expiredSince": "Vypršané dňa {date}",
+      "invalid": "Karta neplatná",
+      "invalidText": "Táto karta nie je rozpoznaná alebo bola deaktivovaná. Obráťte sa na združenie.",
+      "checkedAt": "Overené dňa {date} o {time}",
+      "poweredBy": "Overenie zaisťuje {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hlavná vlajka",

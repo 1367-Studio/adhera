@@ -4683,6 +4683,96 @@
       "importedNote": "Importeret fra AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Gyldig fra {from} til {to}",
+      "expiredOn": "Medlemskab udløbet den {date}",
+      "status": {
+        "valid": "Medlemskab gyldigt",
+        "expired": "Medlemskab udløbet"
+      },
+      "generatedBy": "Kort genereret via {appName}",
+      "qrAlt": "QR-kode til bekræftelse af kortet",
+      "ariaLabel": "Medlemskort for {name}"
+    },
+    "portal": {
+      "sidebar": "Mit kort",
+      "title": "Mit medlemskort",
+      "titleMultiple": "Mine medlemskort",
+      "subtitle": "Vis det ved foreningens aktiviteter. QR-koden gør det muligt at bekræfte gyldigheden.",
+      "switcherLabel": "Vælg det kort, der skal vises",
+      "downloadPdf": "Download PDF",
+      "print": "Udskriv"
+    },
+    "unavailable": {
+      "title": "Medlemskort ikke tilgængeligt",
+      "pending": "Kortet bliver tilgængeligt, så snart betalingen af kontingentet er registreret.",
+      "partial": "Kontingentet er delvist betalt. Kortet bliver tilgængeligt, så snart restbeløbet er registreret.",
+      "late": "Betalingen af kontingentet er endnu ikke registreret. Kortet bliver tilgængeligt, når det er registreret.",
+      "noneTitle": "Intet aktivt medlemskort",
+      "none": "Der er ikke noget aktivt medlemskab for denne periode. Kortet oprettes automatisk efter tilmelding.",
+      "cancelled": "Dette medlemskab er blevet annulleret. Kontakt foreningen for at vide mere.",
+      "disabled": "Medlemskortet tilbydes ikke af din forening.",
+      "expired": "Medlemskabet udløb den {date}. Forny det for at få et nyt kort.",
+      "viewCotisation": "Se mit kontingent"
+    },
+    "manager": {
+      "button": "Medlemskort",
+      "rowAction": "Se medlemskort",
+      "modalTitle": "Medlemskort",
+      "unavailableTitle": "Kort ikke tilgængeligt",
+      "noPayment": "Der er ikke registreret nogen kontingentbetaling for dette medlem. Kortet genereres, så snart betalingen er registreret.",
+      "recordPayment": "Registrer en betaling",
+      "settingsHint": "Skabelon og farve kan ændres under Indstillinger › Medlemskort.",
+      "regenerate": "Generer QR-kode igen",
+      "regenerateHint": "Den gamle QR-kode holder straks op med at virke. Brug denne funktion, hvis et kort er mistet eller delt.",
+      "regenerateConfirm": "Vil du generere QR-koden til dette kort igen?",
+      "regenerated": "QR-kode genereret igen"
+    },
+    "settings": {
+      "title": "Medlemskort",
+      "subtitle": "Udseende af det kort, der vises i medlemsområdet.",
+      "enabled": "Aktivér medlemskort",
+      "enabledHint": "Medlemmer, der er ajour med kontingentet, ser deres kort i deres område.",
+      "template": "Skabelon",
+      "templates": {
+        "classic": "Klassisk",
+        "modern": "Moderne",
+        "minimal": "Minimal"
+      },
+      "color": "Farve",
+      "colorTooLight": "Meget lys farve: den vil skille sig lidt ud fra kortets baggrund.",
+      "minimalNoColor": "Skabelonen Minimal bruger ikke farve.",
+      "showOnCard": "Vis på kortet",
+      "showPhoto": "Medlemmets foto",
+      "showPhotoHint": "Initialer vises, hvis der ikke er registreret noget foto.",
+      "showCategory": "Kategori",
+      "showPhone": "Foreningens telefonnummer",
+      "showEmail": "Foreningens e-mail",
+      "preview": "Forhåndsvisning",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktivt frivilligt medlem",
+      "noLogo": "Tilføj et logo under Branding for at vise det på kortet.",
+      "noPhone": "Tilføj et telefonnummer under Juridisk identitet & Donationer for at vise det på kortet.",
+      "noEmail": "Tilføj en kontakt-e-mail under Foreningsoplysninger for at vise den på kortet.",
+      "saved": "Medlemskort gemt"
+    },
+    "print": {
+      "guide": "Klip langs linjen — bankkortformat, 85,6 × 54 mm. Udskriv i 100 %, uden at tilpasse til siden.",
+      "documentTitle": "Medlemskort — {name}",
+      "popupBlocked": "Tillad pop op-vinduer for at udskrive, eller download PDF'en."
+    },
+    "verify": {
+      "valid": "Kort gyldigt",
+      "validUntil": "Medlemskab gyldigt til {date}",
+      "expired": "Medlemskab udløbet",
+      "expiredSince": "Udløbet siden {date}",
+      "invalid": "Kort ugyldigt",
+      "invalidText": "Dette kort genkendes ikke eller er blevet deaktiveret. Kontakt foreningen.",
+      "checkedAt": "Kontrolleret den {date} kl. {time}",
+      "poweredBy": "Bekræftelse leveret af {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hovedbanner",

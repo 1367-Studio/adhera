@@ -4683,6 +4683,96 @@
       "importedNote": "Imporditud AssoConnectist — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Kehtib {from}–{to}",
+      "expiredOn": "Liikmesus aegus {date}",
+      "status": {
+        "valid": "Liikmesus kehtiv",
+        "expired": "Liikmesus aegunud"
+      },
+      "generatedBy": "Kaart loodud teenusega {appName}",
+      "qrAlt": "Kaardi kinnitamise QR-kood",
+      "ariaLabel": "Liikmekaart: {name}"
+    },
+    "portal": {
+      "sidebar": "Minu kaart",
+      "title": "Minu liikmekaart",
+      "titleMultiple": "Minu liikmekaardid",
+      "subtitle": "Esitage seda ühingu tegevustel. QR-koodi abil saab kontrollida selle kehtivust.",
+      "switcherLabel": "Valige kuvatav kaart",
+      "downloadPdf": "Laadi alla PDF",
+      "print": "Prindi"
+    },
+    "unavailable": {
+      "title": "Liikmekaart pole saadaval",
+      "pending": "Kaart on saadaval kohe, kui liikmemaksu tasumine on registreeritud.",
+      "partial": "Liikmemaks on osaliselt tasutud. Kaart on saadaval kohe, kui ülejäänud summa on registreeritud.",
+      "late": "Liikmemaksu tasumist ei ole veel registreeritud. Kaart on saadaval pärast registreerimist.",
+      "noneTitle": "Aktiivne liikmekaart puudub",
+      "none": "Sellel perioodil ei ole kehtivat liikmesust. Kaart luuakse automaatselt pärast liitumist.",
+      "cancelled": "See liikmesus on tühistatud. Lisateabe saamiseks võtke ühendust ühinguga.",
+      "disabled": "Teie ühing ei paku liikmekaarti.",
+      "expired": "Liikmesus aegus {date}. Uuendage seda uue kaardi saamiseks.",
+      "viewCotisation": "Vaata minu liikmemaksu"
+    },
+    "manager": {
+      "button": "Liikmekaart",
+      "rowAction": "Vaata liikmekaarti",
+      "modalTitle": "Liikmekaart",
+      "unavailableTitle": "Kaart pole saadaval",
+      "noPayment": "Selle liikme kohta ei ole registreeritud ühtegi liikmemaksu makset. Kaart luuakse kohe, kui makse on registreeritud.",
+      "recordPayment": "Registreeri makse",
+      "settingsHint": "Malli ja värvi saab muuta jaotises Seaded › Liikmekaart.",
+      "regenerate": "Loo QR-kood uuesti",
+      "regenerateHint": "Vana QR-kood lakkab kohe töötamast. Kasutage, kui kaart on kadunud või jagatud.",
+      "regenerateConfirm": "Kas luua selle kaardi QR-kood uuesti?",
+      "regenerated": "QR-kood loodud uuesti"
+    },
+    "settings": {
+      "title": "Liikmekaart",
+      "subtitle": "Liikmealal kuvatava kaardi välimus.",
+      "enabled": "Luba liikmekaart",
+      "enabledHint": "Liikmed, kelle liikmemaks on tasutud, näevad oma kaarti oma alal.",
+      "template": "Mall",
+      "templates": {
+        "classic": "Klassikaline",
+        "modern": "Moodne",
+        "minimal": "Minimalistlik"
+      },
+      "color": "Värv",
+      "colorTooLight": "Väga hele värv: eristub kaardi taustast halvasti.",
+      "minimalNoColor": "Minimalistlik mall ei kasuta värvi.",
+      "showOnCard": "Kuva kaardil",
+      "showPhoto": "Liikme foto",
+      "showPhotoHint": "Kui fotot ei ole salvestatud, kuvatakse initsiaalid.",
+      "showCategory": "Kategooria",
+      "showPhone": "Ühingu telefon",
+      "showEmail": "Ühingu e-post",
+      "preview": "Eelvaade",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktiivne vabatahtlik liige",
+      "noLogo": "Lisage logo jaotises Bränding, et see kaardil kuvataks.",
+      "noPhone": "Lisage telefon jaotises Juriidiline identiteet ja annetused, et see kaardil kuvataks.",
+      "noEmail": "Lisage kontakti e-post jaotises Ühingu teave, et see kaardil kuvataks.",
+      "saved": "Liikmekaart salvestatud"
+    },
+    "print": {
+      "guide": "Lõigake mööda joont — pangakaardi formaat, 85,6 × 54 mm. Printige 100%, ilma leheküljele kohandamata.",
+      "documentTitle": "Liikmekaart — {name}",
+      "popupBlocked": "Lubage printimiseks hüpikaknad või laadige alla PDF."
+    },
+    "verify": {
+      "valid": "Kaart kehtiv",
+      "validUntil": "Liikmesus kehtib kuni {date}",
+      "expired": "Liikmesus aegunud",
+      "expiredSince": "Aegunud alates {date}",
+      "invalid": "Kaart ei kehti",
+      "invalidText": "Seda kaarti ei tuntud ära või see on deaktiveeritud. Võtke ühendust ühinguga.",
+      "checkedAt": "Kontrollitud {date} kell {time}",
+      "poweredBy": "Kontrolli pakub {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Peabanner",

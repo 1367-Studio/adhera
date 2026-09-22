@@ -4683,6 +4683,96 @@
       "importedNote": "Importado do AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Válido de {from} a {to}",
+      "expiredOn": "Associação expirada em {date}",
+      "status": {
+        "valid": "Associação válida",
+        "expired": "Associação expirada"
+      },
+      "generatedBy": "Cartão gerado através de {appName}",
+      "qrAlt": "Código QR de verificação do cartão",
+      "ariaLabel": "Cartão de sócio de {name}"
+    },
+    "portal": {
+      "sidebar": "O meu cartão",
+      "title": "O meu cartão de sócio",
+      "titleMultiple": "Os meus cartões de sócio",
+      "subtitle": "Apresente-o nas atividades da associação. O código QR permite verificar a sua validade.",
+      "switcherLabel": "Escolher o cartão a mostrar",
+      "downloadPdf": "Descarregar PDF",
+      "print": "Imprimir"
+    },
+    "unavailable": {
+      "title": "Cartão de sócio indisponível",
+      "pending": "O cartão ficará disponível assim que o pagamento da quota for registado.",
+      "partial": "A quota foi paga parcialmente. O cartão ficará disponível assim que o saldo for registado.",
+      "late": "O pagamento da quota ainda não foi registado. O cartão ficará disponível assim que for registado.",
+      "noneTitle": "Nenhum cartão de sócio ativo",
+      "none": "Não há associação em curso para este período. O cartão é criado automaticamente após a adesão.",
+      "cancelled": "Esta adesão foi cancelada. Contacte a associação para saber mais.",
+      "disabled": "O cartão de sócio não é disponibilizado pela sua associação.",
+      "expired": "A associação expirou em {date}. Renove-a para obter um novo cartão.",
+      "viewCotisation": "Ver a minha quota"
+    },
+    "manager": {
+      "button": "Cartão de sócio",
+      "rowAction": "Ver cartão de sócio",
+      "modalTitle": "Cartão de sócio",
+      "unavailableTitle": "Cartão indisponível",
+      "noPayment": "Não há nenhum pagamento de quota registado para este membro. O cartão será gerado assim que o pagamento for registado.",
+      "recordPayment": "Registar um pagamento",
+      "settingsHint": "Modelo e cor editáveis em Definições › Cartão de sócio.",
+      "regenerate": "Regenerar código QR",
+      "regenerateHint": "O código QR antigo deixará de funcionar de imediato. Utilize se um cartão foi perdido ou partilhado.",
+      "regenerateConfirm": "Regenerar o código QR deste cartão?",
+      "regenerated": "Código QR regenerado"
+    },
+    "settings": {
+      "title": "Cartão de sócio",
+      "subtitle": "Aparência do cartão apresentado na área de sócio.",
+      "enabled": "Ativar o cartão de sócio",
+      "enabledHint": "Os sócios em dia com a quota verão o seu cartão na sua área.",
+      "template": "Modelo",
+      "templates": {
+        "classic": "Clássico",
+        "modern": "Moderno",
+        "minimal": "Minimalista"
+      },
+      "color": "Cor",
+      "colorTooLight": "Cor muito clara: destacar-se-á pouco do fundo do cartão.",
+      "minimalNoColor": "O modelo Minimalista não utiliza cor.",
+      "showOnCard": "Mostrar no cartão",
+      "showPhoto": "Fotografia do sócio",
+      "showPhotoHint": "As iniciais são apresentadas quando não há fotografia registada.",
+      "showCategory": "Categoria",
+      "showPhone": "Telefone da associação",
+      "showEmail": "E-mail da associação",
+      "preview": "Pré-visualização",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Sócio voluntário ativo",
+      "noLogo": "Adicione um logótipo em Personalização para o mostrar no cartão.",
+      "noPhone": "Adicione um telefone em Identidade legal e Donativos para o mostrar no cartão.",
+      "noEmail": "Adicione um e-mail de contacto em Informações da associação para o mostrar no cartão.",
+      "saved": "Cartão de sócio guardado"
+    },
+    "print": {
+      "guide": "Corte seguindo a linha — formato de cartão bancário, 85,6 × 54 mm. Imprima a 100%, sem ajustar à página.",
+      "documentTitle": "Cartão de sócio — {name}",
+      "popupBlocked": "Autorize as janelas pop-up para imprimir, ou descarregue o PDF."
+    },
+    "verify": {
+      "valid": "Cartão válido",
+      "validUntil": "Associação válida até {date}",
+      "expired": "Associação expirada",
+      "expiredSince": "Expirada desde {date}",
+      "invalid": "Cartão inválido",
+      "invalidText": "Este cartão não é reconhecido ou foi desativado. Contacte a associação.",
+      "checkedAt": "Verificado em {date} às {time}",
+      "poweredBy": "Verificação assegurada por {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Banner principal",

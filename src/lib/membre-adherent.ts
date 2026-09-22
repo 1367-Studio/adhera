@@ -57,6 +57,15 @@ export function endOfCotisationYear(year: number): Date {
   return new Date(nextYearUtcMidnight - parisOffsetMilliseconds - 1)
 }
 
+// The first instant of cotisation year `year` — 1 Jan 00:00:00 Paris time — the mirror image
+// of endOfCotisationYear above, for a calendar-year cotisation (periodStart null) that needs a
+// concrete start date (e.g. the member card's "carte valable du 01/01/2026 au 31/12/2026").
+export function startOfCotisationYear(year: number): Date {
+  const yearUtcMidnight = Date.UTC(year, 0, 1)
+  const parisOffsetMilliseconds = parisWallClockAsUtc(new Date(yearUtcMidnight)) - yearUtcMidnight
+  return new Date(yearUtcMidnight - parisOffsetMilliseconds)
+}
+
 // The Paris wall-clock reading of `instant`, re-expressed as if it were a UTC timestamp —
 // subtracting the real instant from it gives Paris' UTC offset at that moment.
 function parisWallClockAsUtc(instant: Date): number {

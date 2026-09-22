@@ -4683,6 +4683,96 @@
       "importedNote": "Tuotu AssoConnectista — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Voimassa {from}–{to}",
+      "expiredOn": "Jäsenyys päättynyt {date}",
+      "status": {
+        "valid": "Jäsenyys voimassa",
+        "expired": "Jäsenyys päättynyt"
+      },
+      "generatedBy": "Kortti luotu palvelulla {appName}",
+      "qrAlt": "Kortin vahvistuksen QR-koodi",
+      "ariaLabel": "Jäsenkortti: {name}"
+    },
+    "portal": {
+      "sidebar": "Oma korttini",
+      "title": "Oma jäsenkorttini",
+      "titleMultiple": "Jäsenkorttini",
+      "subtitle": "Esitä se yhdistyksen toiminnassa. QR-koodilla voi tarkistaa sen voimassaolon.",
+      "switcherLabel": "Valitse näytettävä kortti",
+      "downloadPdf": "Lataa PDF",
+      "print": "Tulosta"
+    },
+    "unavailable": {
+      "title": "Jäsenkortti ei ole käytettävissä",
+      "pending": "Kortti tulee saataville heti, kun jäsenmaksun maksu on kirjattu.",
+      "partial": "Jäsenmaksu on maksettu osittain. Kortti tulee saataville heti, kun loppusumma on kirjattu.",
+      "late": "Jäsenmaksun maksua ei ole vielä kirjattu. Kortti tulee saataville, kun se on kirjattu.",
+      "noneTitle": "Ei aktiivista jäsenkorttia",
+      "none": "Tälle jaksolle ei ole voimassa olevaa jäsenyyttä. Kortti luodaan automaattisesti liittymisen jälkeen.",
+      "cancelled": "Tämä jäsenyys on peruutettu. Ota yhteyttä yhdistykseen saadaksesi lisätietoja.",
+      "disabled": "Yhdistyksesi ei tarjoa jäsenkorttia.",
+      "expired": "Jäsenyys päättyi {date}. Uusi se saadaksesi uuden kortin.",
+      "viewCotisation": "Näytä jäsenmaksuni"
+    },
+    "manager": {
+      "button": "Jäsenkortti",
+      "rowAction": "Näytä jäsenkortti",
+      "modalTitle": "Jäsenkortti",
+      "unavailableTitle": "Kortti ei ole käytettävissä",
+      "noPayment": "Tälle jäsenelle ei ole kirjattu jäsenmaksun maksua. Kortti luodaan heti, kun maksu on kirjattu.",
+      "recordPayment": "Kirjaa maksu",
+      "settingsHint": "Malli ja väri muokattavissa kohdassa Asetukset › Jäsenkortti.",
+      "regenerate": "Luo QR-koodi uudelleen",
+      "regenerateHint": "Vanha QR-koodi lakkaa toimimasta välittömästi. Käytä, jos kortti on kadonnut tai jaettu.",
+      "regenerateConfirm": "Luodaanko tämän kortin QR-koodi uudelleen?",
+      "regenerated": "QR-koodi luotu uudelleen"
+    },
+    "settings": {
+      "title": "Jäsenkortti",
+      "subtitle": "Jäsenalueella näytettävän kortin ulkoasu.",
+      "enabled": "Ota jäsenkortti käyttöön",
+      "enabledHint": "Jäsenmaksunsa maksaneet jäsenet näkevät korttinsa omalla alueellaan.",
+      "template": "Malli",
+      "templates": {
+        "classic": "Klassinen",
+        "modern": "Moderni",
+        "minimal": "Minimalistinen"
+      },
+      "color": "Väri",
+      "colorTooLight": "Erittäin vaalea väri: se erottuu heikosti kortin taustasta.",
+      "minimalNoColor": "Minimalistinen malli ei käytä väriä.",
+      "showOnCard": "Näytä kortissa",
+      "showPhoto": "Jäsenen kuva",
+      "showPhotoHint": "Nimikirjaimet näytetään, jos kuvaa ei ole tallennettu.",
+      "showCategory": "Kategoria",
+      "showPhone": "Yhdistyksen puhelinnumero",
+      "showEmail": "Yhdistyksen sähköposti",
+      "preview": "Esikatselu",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktiivinen vapaaehtoisjäsen",
+      "noLogo": "Lisää logo kohdassa Brändi näyttääksesi sen kortissa.",
+      "noPhone": "Lisää puhelinnumero kohdassa Oikeudellinen identiteetti ja lahjoitukset näyttääksesi sen kortissa.",
+      "noEmail": "Lisää yhteyssähköposti kohdassa Yhdistyksen tiedot näyttääksesi sen kortissa.",
+      "saved": "Jäsenkortti tallennettu"
+    },
+    "print": {
+      "guide": "Leikkaa viivaa pitkin — pankkikortin koko, 85,6 × 54 mm. Tulosta 100 %:n koossa, sovittamatta sivulle.",
+      "documentTitle": "Jäsenkortti — {name}",
+      "popupBlocked": "Salli ponnahdusikkunat tulostaaksesi tai lataa PDF."
+    },
+    "verify": {
+      "valid": "Kortti voimassa",
+      "validUntil": "Jäsenyys voimassa {date} asti",
+      "expired": "Jäsenyys päättynyt",
+      "expiredSince": "Päättynyt {date}",
+      "invalid": "Kortti ei kelpaa",
+      "invalidText": "Tätä korttia ei tunnisteta tai se on poistettu käytöstä. Ota yhteyttä yhdistykseen.",
+      "checkedAt": "Tarkistettu {date} klo {time}",
+      "poweredBy": "Vahvistuksen tarjoaa {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Main Banner",

@@ -16,17 +16,18 @@ import type { MemberCardViewModel } from "@/lib/member-card/view-model"
  * between a card and an explanation.
  */
 export type SerializedMemberCardEligibility =
-  | { state: "valid";       validUntil: string; cotisationId: string }
+  | { state: "valid";       validFrom: string; validUntil: string; cotisationId: string }
   | { state: "unavailable"; reason: MemberCardUnavailableReason; cotisationId: string }
   | { state: "expired";     expiredOn:  string }
   | { state: "none";        reason: MemberCardNoneReason }
 
 /** MemberCardViewModel as it survives JSON — see reviveMemberCard below. */
-export type SerializedMemberCardViewModel = Omit<MemberCardViewModel, "validUntil"> & { validUntil: string }
+export type SerializedMemberCardViewModel =
+  Omit<MemberCardViewModel, "validFrom" | "validUntil"> & { validFrom: string | null; validUntil: string }
 
 // <MemberCard /> formats a real Date (with an explicit time zone, so the expiry it prints
 // matches the server-rendered PDF and scan page). Reviving once, here, keeps that out of the
 // pages and out of the renderer, which must not have to care where its view model came from.
 export function reviveMemberCard(card: SerializedMemberCardViewModel | null): MemberCardViewModel | null {
-  return card ? { ...card, validUntil: new Date(card.validUntil) } : null
+  return card ? { ...card, validFrom: card.validFrom ? new Date(card.validFrom) : null, validUntil: new Date(card.validUntil) } : null
 }

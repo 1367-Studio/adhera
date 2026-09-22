@@ -4802,7 +4802,7 @@
   },
   "memberCard": {
     "card": {
-      "validUntil": "Valable jusqu'au {date}",
+      "validPeriod": "Valable du {from} au {to}",
       "expiredOn": "Adhésion expirée le {date}",
       "status": {
         "valid": "Adhésion valide",

@@ -4683,6 +4683,96 @@
       "importedNote": "Importati minn AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Valida mit-{from} sat-{to}",
+      "expiredOn": "Is-sħubija skadiet fit-{date}",
+      "status": {
+        "valid": "Sħubija valida",
+        "expired": "Sħubija skadita"
+      },
+      "generatedBy": "Karta ġġenerata permezz ta' {appName}",
+      "qrAlt": "Kodiċi QR għall-verifika tal-karta",
+      "ariaLabel": "Karta ta' sħubija ta' {name}"
+    },
+    "portal": {
+      "sidebar": "Il-karta tiegħi",
+      "title": "Il-karta tiegħi ta' sħubija",
+      "titleMultiple": "Il-kards tiegħi ta' sħubija",
+      "subtitle": "Uriha waqt l-attivitajiet tal-assoċjazzjoni. Il-kodiċi QR tagħha jippermetti li tiġi vverifikata l-validità tagħha.",
+      "switcherLabel": "Agħżel il-karta li għandha tintwera",
+      "downloadPdf": "Niżżel il-PDF",
+      "print": "Ipprintja"
+    },
+    "unavailable": {
+      "title": "Il-karta ta' sħubija mhix disponibbli",
+      "pending": "Il-karta se tkun disponibbli hekk kif jiġi rreġistrat il-ħlas tas-sħubija.",
+      "partial": "Il-miżata tas-sħubija tħallset parzjalment. Il-karta se tkun disponibbli hekk kif jiġi rreġistrat il-bilanċ.",
+      "late": "Il-ħlas tas-sħubija għadu ma ġiex irreġistrat. Il-karta se tkun disponibbli ladarba jiġi rreġistrat.",
+      "noneTitle": "L-ebda karta ta' sħubija attiva",
+      "none": "M'hemm l-ebda sħubija attiva għal dan il-perjodu. Il-karta tinħoloq awtomatikament wara r-reġistrazzjoni.",
+      "cancelled": "Din is-sħubija ġiet ikkanċellata. Ikkuntattja lill-assoċjazzjoni biex issir taf aktar.",
+      "disabled": "L-assoċjazzjoni tiegħek ma toffrix karta ta' sħubija.",
+      "expired": "Is-sħubija skadiet fit-{date}. Ġeddidha biex tikseb karta ġdida.",
+      "viewCotisation": "Ara l-miżata tiegħi"
+    },
+    "manager": {
+      "button": "Karta ta' sħubija",
+      "rowAction": "Ara l-karta ta' sħubija",
+      "modalTitle": "Karta ta' sħubija",
+      "unavailableTitle": "Karta mhix disponibbli",
+      "noPayment": "L-ebda ħlas ta' miżata mhu rreġistrat għal dan il-membru. Il-karta se tiġi ġġenerata hekk kif il-ħlas jiġi rreġistrat.",
+      "recordPayment": "Irreġistra ħlas",
+      "settingsHint": "It-template u l-kulur jistgħu jinbidlu f'Settings › Karta ta' sħubija.",
+      "regenerate": "Iġġenera mill-ġdid il-kodiċi QR",
+      "regenerateHint": "Il-kodiċi QR l-qadim se jieqaf jaħdem minnufih. Uża jekk karta ntilfet jew ġiet ikkondiviża.",
+      "regenerateConfirm": "Tiġġenera mill-ġdid il-kodiċi QR ta' din il-karta?",
+      "regenerated": "Kodiċi QR iġġenerat mill-ġdid"
+    },
+    "settings": {
+      "title": "Karta ta' sħubija",
+      "subtitle": "Dehra tal-karta murija fiż-żona tal-membri.",
+      "enabled": "Attiva l-karta ta' sħubija",
+      "enabledHint": "Il-membri li huma aġġornati bil-miżata se jaraw il-karta tagħhom fiż-żona tagħhom.",
+      "template": "Mudell",
+      "templates": {
+        "classic": "Klassiku",
+        "modern": "Modern",
+        "minimal": "Minimali"
+      },
+      "color": "Kulur",
+      "colorTooLight": "Kulur ċar ħafna: se jidher ftit differenti mill-isfond tal-karta.",
+      "minimalNoColor": "Il-mudell Minimali ma jużax kulur.",
+      "showOnCard": "Uri fuq il-karta",
+      "showPhoto": "Ritratt tal-membru",
+      "showPhotoHint": "L-inizjali jintwerew meta ma jkun hemm l-ebda ritratt irreġistrat.",
+      "showCategory": "Kategorija",
+      "showPhone": "Telefon tal-assoċjazzjoni",
+      "showEmail": "Email tal-assoċjazzjoni",
+      "preview": "Antiprima",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Membru volontarju attiv",
+      "noLogo": "Żid logo taħt Branding biex tintwera fuq il-karta.",
+      "noPhone": "Żid numru tat-telefon taħt Identità legali u Donazzjonijiet biex jintwera fuq il-karta.",
+      "noEmail": "Żid email ta' kuntatt taħt Informazzjoni dwar l-assoċjazzjoni biex tintwera fuq il-karta.",
+      "saved": "Il-karta ta' sħubija ġiet salvata"
+    },
+    "print": {
+      "guide": "Aqta' skont il-linja — format ta' karta bankarja, 85,6 × 54 mm. Ipprintja b'100%, mingħajr aġġustament għall-paġna.",
+      "documentTitle": "Karta ta' sħubija — {name}",
+      "popupBlocked": "Ippermetti twieqi pop-up biex tipprintja, jew niżżel il-PDF."
+    },
+    "verify": {
+      "valid": "Karta valida",
+      "validUntil": "Sħubija valida sat-{date}",
+      "expired": "Sħubija skadita",
+      "expiredSince": "Skadiet mid-{date}",
+      "invalid": "Karta mhix valida",
+      "invalidText": "Din il-karta mhix rikonoxxuta jew ġiet diżattivata. Ikkuntattja lill-assoċjazzjoni.",
+      "checkedAt": "Ivverifikata fit-{date} fil-{time}",
+      "poweredBy": "Il-verifika hija pprovduta minn {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Banner Prinċipali",

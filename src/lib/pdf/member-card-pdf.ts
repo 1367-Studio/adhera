@@ -28,6 +28,7 @@ import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
   CARD_CONTACT_GAP_MM,
   CARD_CONTACT_MAX_WIDTH_MM,
+  CARD_CONTACT_SEPARATOR_GAP_MM,
   CARD_CORNER_RADIUS_MM,
   CARD_FONT_ASSOCIATION_NAME_MM,
   CARD_FONT_BODY_MM,
@@ -131,7 +132,7 @@ export type MemberCardPdfLabels = {
   /** `memberCard.print.documentTitle`, interpolated — shown by the browser's print dialog. */
   documentTitle: string
   /**
-   * The card's one date line, already interpolated: `memberCard.card.validUntil` for a valid
+   * The card's one date line, already interpolated: `memberCard.card.validPeriod` for a valid
    * card, `memberCard.card.expiredOn` for an expired one — which state it is belongs to the
    * caller, since the sheet prints no status line of its own (see point 1 above).
    */
@@ -727,8 +728,24 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
   const contentBottomMm = CARD_HEIGHT_MM - CARD_MARGIN_MM
   const validityTopMm   = contentBottomMm - LINE_HEIGHT_FACTOR * CARD_FONT_BODY_MM
 
+  // Measured, not assumed to fit: pdf-response.ts already drops the year from a same-season
+  // "from" date to keep this line short, but a multi-year custom-duration tier (or a locale
+  // whose wording simply runs long) can still be wider than the row has room for once
+  // "généré via {appName}" claims its own share on the right — truncateToWidth is the same
+  // safety net the contact line below already relies on, so the two texts can never overlap.
+  const generatedByText    = sanitizeForWinAnsi(labels.generatedBy)
+  const generatedByWidthMm = pointsToMillimetres(
+    regularFont.widthOfTextAtSize(generatedByText, millimetresToPoints(CARD_FONT_FOOTER_MM)),
+  )
+  const validityMaxWidthMm = CARD_WIDTH_MM - 2 * CARD_MARGIN_MM - CARD_GUTTER_MM - generatedByWidthMm
+
   drawTextLine({
-    text:            sanitizeForWinAnsi(labels.validity),
+    text: truncateToWidth(
+      regularFont,
+      sanitizeForWinAnsi(labels.validity),
+      millimetresToPoints(CARD_FONT_BODY_MM),
+      millimetresToPoints(Math.max(0, validityMaxWidthMm)),
+    ),
     font:            regularFont,
     sizeMillimetres: CARD_FONT_BODY_MM,
     leftMillimetres: CARD_MARGIN_MM,
@@ -736,31 +753,55 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
     color:           NEUTRAL_600,
   })
 
-  // The association's phone / e-mail, one gap above the validity line — the same place, the
-  // same tone and the same cap as on the screen card, measured rather than counted in
-  // characters: truncateToWidth cuts the joined string at CARD_CONTACT_MAX_WIDTH_MM and adds
-  // the ellipsis, so a long e-mail stops one gutter short of the QR instead of reaching it.
-  // The middle dot joining the two halves is WinAnsi 0xB7 and survives sanitizeForWinAnsi.
-  if (card.contactLine) {
-    drawTextLine({
-      text: truncateToWidth(
+  // The association's phone / e-mail, one gap above the validity line — the same place and
+  // the same tone as on the screen card. Drawn as up to three separate runs (phone, a middle
+  // dot with extra breathing room on each side, e-mail) rather than one joined string, so the
+  // two values read as distinct fields instead of a single run-on line — the print mirror of
+  // the phone icon the screen card adds (see member-card.tsx). Positions are measured, not
+  // counted in characters: the phone is capped at the full CARD_CONTACT_MAX_WIDTH_MM (it is
+  // always short in practice — the settings form caps it at 30 characters — but a renderer
+  // must not depend on a limit enforced two layers away), and the e-mail eats whatever the
+  // phone and separator left of that budget, with truncateToWidth ellipsising it there so it
+  // stops one gutter short of the QR instead of reaching it. The middle dot is WinAnsi 0xB7
+  // and survives sanitizeForWinAnsi.
+  if (card.contactPhone || card.contactEmail) {
+    const contactTopMm  = validityTopMm - CARD_CONTACT_GAP_MM - LINE_HEIGHT_FACTOR * CARD_FONT_FOOTER_MM
+    const footerSizePt  = millimetresToPoints(CARD_FONT_FOOTER_MM)
+    let cursorMm        = CARD_MARGIN_MM
+
+    if (card.contactPhone) {
+      const phoneText = truncateToWidth(
         regularFont,
-        sanitizeForWinAnsi(card.contactLine),
-        millimetresToPoints(CARD_FONT_FOOTER_MM),
+        sanitizeForWinAnsi(card.contactPhone),
+        footerSizePt,
         millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM),
-      ),
-      font:            regularFont,
-      sizeMillimetres: CARD_FONT_FOOTER_MM,
-      leftMillimetres: CARD_MARGIN_MM,
-      topMillimetres:  validityTopMm - CARD_CONTACT_GAP_MM - LINE_HEIGHT_FACTOR * CARD_FONT_FOOTER_MM,
-      color:           NEUTRAL_500,
-    })
+      )
+      drawTextLine({
+        text: phoneText, font: regularFont, sizeMillimetres: CARD_FONT_FOOTER_MM,
+        leftMillimetres: cursorMm, topMillimetres: contactTopMm, color: NEUTRAL_500,
+      })
+      cursorMm += pointsToMillimetres(regularFont.widthOfTextAtSize(phoneText, footerSizePt))
+    }
+
+    if (card.contactPhone && card.contactEmail) {
+      cursorMm += CARD_CONTACT_SEPARATOR_GAP_MM
+      drawTextLine({
+        text: "·", font: regularFont, sizeMillimetres: CARD_FONT_FOOTER_MM,
+        leftMillimetres: cursorMm, topMillimetres: contactTopMm, color: NEUTRAL_500,
+      })
+      cursorMm += pointsToMillimetres(regularFont.widthOfTextAtSize("·", footerSizePt)) + CARD_CONTACT_SEPARATOR_GAP_MM
+    }
+
+    if (card.contactEmail) {
+      const remainingWidthPt = Math.max(0, millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM - (cursorMm - CARD_MARGIN_MM)))
+      drawTextLine({
+        text: truncateToWidth(regularFont, sanitizeForWinAnsi(card.contactEmail), footerSizePt, remainingWidthPt),
+        font: regularFont, sizeMillimetres: CARD_FONT_FOOTER_MM,
+        leftMillimetres: cursorMm, topMillimetres: contactTopMm, color: NEUTRAL_500,
+      })
+    }
   }
 
-  const generatedByText    = sanitizeForWinAnsi(labels.generatedBy)
-  const generatedByWidthMm = pointsToMillimetres(
-    regularFont.widthOfTextAtSize(generatedByText, millimetresToPoints(CARD_FONT_FOOTER_MM)),
-  )
   drawTextLine({
     text:            generatedByText,
     font:            regularFont,
