@@ -3536,6 +3536,25 @@
       "copy": "Sapratu",
       "open": "Atvērt"
     },
+    "customDomainSettings": {
+      "title": "Pielāgots domēns",
+      "subtitle": "Izmantojiet savu domēnu biedrības publiskajai vietnei, papildus formwise.fr.",
+      "domainLabel": "Domēns",
+      "domainPlaceholder": "www.manabiedriba.org",
+      "domainHint": "Apakšdomēnam, piemēram, www.manabiedriba.org, nepieciešams tikai viens DNS ieraksts.",
+      "invalidDomain": "Nederīgs domēns",
+      "saved": "Domēns pievienots",
+      "statusVerified": "Aktīvs",
+      "statusFailed": "Pārbaude neizdevās",
+      "statusPending": "Gaida DNS",
+      "dnsInstruction": "Pievienojiet šo DNS ierakstu pie sava domēna nodrošinātāja (OVH, Gandi, GoDaddy u.c.):",
+      "waitingHint": "Pārbaude notiek automātiski ik pēc dažām minūtēm, kad DNS ir izplatījies.",
+      "verifyNow": "Pārbaudīt tagad",
+      "remove": "Noņemt domēnu",
+      "removed": "Domēns noņemts",
+      "removeConfirmTitle": "Noņemt šo pielāgoto domēnu?",
+      "removeConfirmDescription": "Vietne joprojām būs pieejama formwise.fr, bet šis domēns vairs nenorādīs uz biedrību."
+    },
     "cotisationDefaultsSettings": {
       "title": "Dalības maksa",
       "subtitle": "Kad tiek ievadīta summa, automātiski tiek izveidota gaidoša dalības maksa par pašreizējo gadu katram jaunajam dalībniekam — viņi to var samaksāt paši portālā, negaidot, kad administrators to izveidos. Atstājiet tukšu, lai nekas netiktu radīts automātiski.",

@@ -3536,6 +3536,25 @@
       "copy": "Recepționat",
       "open": "Deschide"
     },
+    "customDomainSettings": {
+      "title": "Domeniu personalizat",
+      "subtitle": "Folosiți propriul domeniu pentru site-ul public al asociației, pe lângă formwise.fr.",
+      "domainLabel": "Domeniu",
+      "domainPlaceholder": "www.asociatiamea.org",
+      "domainHint": "Un subdomeniu precum www.asociatiamea.org are nevoie de o singură înregistrare DNS.",
+      "invalidDomain": "Domeniu invalid",
+      "saved": "Domeniu adăugat",
+      "statusVerified": "Activ",
+      "statusFailed": "Verificare eșuată",
+      "statusPending": "Se așteaptă DNS",
+      "dnsInstruction": "Adăugați această înregistrare DNS la furnizorul dvs. de domeniu (OVH, Gandi, GoDaddy etc.):",
+      "waitingHint": "Verificarea are loc automat la fiecare câteva minute după propagarea DNS-ului.",
+      "verifyNow": "Verifică acum",
+      "remove": "Elimină domeniul",
+      "removed": "Domeniu eliminat",
+      "removeConfirmTitle": "Eliminați acest domeniu personalizat?",
+      "removeConfirmDescription": "Site-ul va rămâne accesibil la formwise.fr, dar acest domeniu nu va mai indica spre asociație."
+    },
     "cotisationDefaultsSettings": {
       "title": "Taxa de membru",
       "subtitle": "Când se introduce o sumă, o taxă de membru restantă pentru anul curent este creată automat pentru fiecare membru nou — acesta o poate plăti singur prin portal, fără să aștepte ca un administrator să o creeze. Lasă gol astfel încât să nu se creeze nimic automat.",

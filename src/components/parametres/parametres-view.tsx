@@ -17,6 +17,7 @@ import { apiErrorMessage } from "@/lib/api-error"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
+import { CustomDomainSettings } from "@/components/parametres/custom-domain-settings"
 import { AiSettings } from "@/components/ai/ai-settings"
 import { SmsSettings } from "@/components/sms/sms-settings"
 import { LiveKitSettings } from "@/components/reunions/livekit-settings"
@@ -253,6 +254,10 @@ function ParametresViewInner() {
               <PortalLinkSettings slug={assoc.slug} />
             </div>
           )}
+
+          <div className="rounded-lg border bg-card p-6">
+            <CustomDomainSettings canEdit={canEdit} />
+          </div>
         </div>
       )}
 

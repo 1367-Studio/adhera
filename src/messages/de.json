@@ -3536,6 +3536,25 @@
       "copy": "Verstanden",
       "open": "Offen"
     },
+    "customDomainSettings": {
+      "title": "Eigene Domain",
+      "subtitle": "Verwenden Sie Ihre eigene Domain für die öffentliche Website des Vereins, zusätzlich zu formwise.fr.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.meinverein.org",
+      "domainHint": "Eine Subdomain wie www.meinverein.org benötigt nur einen einzigen DNS-Eintrag.",
+      "invalidDomain": "Ungültige Domain",
+      "saved": "Domain hinzugefügt",
+      "statusVerified": "Aktiv",
+      "statusFailed": "Überprüfung fehlgeschlagen",
+      "statusPending": "Warten auf DNS",
+      "dnsInstruction": "Fügen Sie diesen DNS-Eintrag bei Ihrem Domain-Anbieter hinzu (OVH, Gandi, GoDaddy usw.):",
+      "waitingHint": "Die Überprüfung erfolgt automatisch alle paar Minuten, sobald das DNS verbreitet wurde.",
+      "verifyNow": "Jetzt überprüfen",
+      "remove": "Domain entfernen",
+      "removed": "Domain entfernt",
+      "removeConfirmTitle": "Diese eigene Domain entfernen?",
+      "removeConfirmDescription": "Die Website bleibt weiterhin unter formwise.fr erreichbar, aber diese Domain zeigt nicht mehr auf den Verein."
+    },
     "cotisationDefaultsSettings": {
       "title": "Mitgliedsbeitrag",
       "subtitle": "Wenn ein Betrag eingegeben wird, wird für jedes neue Mitglied automatisch eine ausstehende Mitgliedsgebühr für das aktuelle Jahr erstellt – sie können sie dann selbst über das Portal bezahlen, ohne auf die Erstellung durch einen Administrator zu warten. Lassen Sie die Gebühr leer, damit nichts automatisch erstellt wird.",

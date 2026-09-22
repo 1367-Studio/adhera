@@ -3611,6 +3611,25 @@
       "copy": "Copy",
       "open": "Open"
     },
+    "customDomainSettings": {
+      "title": "Custom domain",
+      "subtitle": "Use your own domain for the association's public site, alongside formwise.fr.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.myassociation.org",
+      "domainHint": "A subdomain like www.myassociation.org only needs a single DNS record.",
+      "invalidDomain": "Invalid domain",
+      "saved": "Domain added",
+      "statusVerified": "Active",
+      "statusFailed": "Verification failed",
+      "statusPending": "Waiting for DNS",
+      "dnsInstruction": "Add this DNS record with your domain provider (OVH, Gandi, GoDaddy, etc.):",
+      "waitingHint": "Verification happens automatically every few minutes once the DNS has propagated.",
+      "verifyNow": "Verify now",
+      "remove": "Remove domain",
+      "removed": "Domain removed",
+      "removeConfirmTitle": "Remove this custom domain?",
+      "removeConfirmDescription": "The site will stay reachable at formwise.fr, but this domain will no longer point to the association."
+    },
     "cotisationDefaultsSettings": {
       "title": "Membership fee",
       "subtitle": "When an amount is set, a pending membership fee for the current year is automatically created for every new member — they can then pay it themselves from the portal, without waiting for an admin to create it. Leave empty to not create anything automatically.",

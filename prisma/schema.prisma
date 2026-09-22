@@ -53,6 +53,12 @@ enum SubscriptionStatus {
   SUSPENDED
 }
 
+enum CustomDomainStatus {
+  PENDING
+  VERIFIED
+  FAILED
+}
+
 // Drives the member limit and which modules default on (see src/lib/plan-limits.ts,
 // src/lib/modules.ts) — independent from which Stripe Price actually bills the
 // association. Associations created before the Essentiel/Pro split keep billing on the
@@ -400,14 +406,26 @@ enum MembershipValidationMode {
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 model Association {
-  id                             String             @id @default(cuid())
+  id                             String              @id @default(cuid())
   name                           String
-  slug                           String             @unique
+  slug                           String              @unique
   city                           String?
-  country                        String             @default("France")
+  country                        String              @default("France")
   address                        String?
   phone                          String?
   website                        String?
+  // Domaine personnalisé du site public (ex: www.monassociation.fr) en plus de
+  // formwise.fr/app/{slug} — ajouté au projet Vercel via src/lib/vercel-domains.ts et
+  // résolu par src/proxy.ts (voir src/lib/custom-domain-lookup.ts). PENDING tant que le
+  // DNS n'a pas propagé, VERIFIED une fois le domaine actif, FAILED si la Vercel Domains
+  // API renvoie une erreur bloquante — le message d'erreur réel vit dans customDomainDnsRecords.
+  customDomain                   String?             @unique
+  customDomainStatus             CustomDomainStatus?
+  customDomainVerifiedAt         DateTime?
+  // Cache de la réponse de la Vercel Domains API (instructions DNS affichées à l'admin,
+  // et message d'erreur si FAILED) — évite de rappeler la Vercel API à chaque chargement
+  // de l'écran Paramètres.
+  customDomainDnsRecords         Json?
   // Reply-To par défaut des e-mails envoyés au nom de l'association (le "From" technique
   // reste une adresse Formwise) — voir src/lib/mail.ts. Les formulaires (dons/adhésion/
   // évènement) qui ont leur propre contactEmail restent prioritaires sur celui-ci.
@@ -420,11 +438,11 @@ model Association {
   shippingCity                   String?
   // Code pays ISO 3166-1 alpha-2 (ex: "FR") — contrairement à `country` ci-dessus qui stocke
   // un nom complet pour un autre usage, celui-ci alimente directement l'API de cotation.
-  shippingCountry                String?            @default("FR")
+  shippingCountry                String?             @default("FR")
   // Marge ajoutée par-dessus le tarif Sendcloud coté au client (ex: 10 = +10%), pour couvrir
   // l'écart possible entre le prix coté et le prix réel payé par l'association au moment de
   // l'affranchissement (aucune étiquette n'est achetée à la commande, voir shipping-rate.ts).
-  shippingMarkupPercent          Int                @default(0)
+  shippingMarkupPercent          Int                 @default(0)
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
@@ -432,20 +450,20 @@ model Association {
   bic                            String?
   siren                          String?
   rna                            String?
-  canIssueTaxReceipts            Boolean            @default(false)
+  canIssueTaxReceipts            Boolean             @default(false)
   // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
   // (EN_ATTENTE, current year) is created automatically for every new Membre — see
   // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
   // away instead of waiting on an admin to create one.
-  cotisationDefaultAmount        Decimal?           @db.Decimal(10, 2)
+  cotisationDefaultAmount        Decimal?            @db.Decimal(10, 2)
   // Off by default so turning it on is a deliberate choice, separate from
   // cotisationDefaultAmount's original purpose above — when true, the public site's
   // membership form (SiteMembershipSection) requires immediate payment via a recurring
   // Stripe subscription instead of creating a PENDING request for manual approval. See
   // CotisationSubscription and /api/public/[slug]/inscription/checkout.
-  publicMembershipPaymentEnabled Boolean            @default(false)
+  publicMembershipPaymentEnabled Boolean             @default(false)
   objet                          String?
-  organismeCategory              OrganismeCategory  @default(ASSOCIATION_LOI_1901)
+  organismeCategory              OrganismeCategory   @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail        String?
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
@@ -467,7 +485,7 @@ model Association {
   // stripeSubscriptionId as always, regardless of whether a Schedule manages it.
   stripeSubscriptionScheduleId   String?
   stripeConnectId                String?
-  plan                           AssociationPlan    @default(ESSENTIAL)
+  plan                           AssociationPlan     @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
   // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
@@ -489,7 +507,7 @@ model Association {
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
   // the plan default, true force-enables it for an Essentiel association.
   customBrandingEnabled          Boolean?
-  subscriptionStatus             SubscriptionStatus @default(TRIAL)
+  subscriptionStatus             SubscriptionStatus  @default(TRIAL)
   trialEndsAt                    DateTime?
   // Stamped by the Stripe webhook when a card-free trial (see /api/register) reached its
   // end with still no payment method on file and Stripe cancelled the subscription — as
@@ -498,9 +516,9 @@ model Association {
   // the association is back on a live subscription.
   trialExpiredAt                 DateTime?
   suspendedAt                    DateTime?
-  cancelAtPeriodEnd              Boolean            @default(false)
+  cancelAtPeriodEnd              Boolean             @default(false)
   currentPeriodEndsAt            DateTime?
-  sitePublished                  Boolean            @default(false)
+  sitePublished                  Boolean             @default(false)
   siteConfig                     Json?
   modules                        Json?
   // Carte de membre numérique settings (enabled, template, color, showPhoto, showCategory) —
@@ -509,8 +527,8 @@ model Association {
   // for any key a future version adds, so no backfill migration is ever needed.
   memberCardSettings             Json?
   internalNotes                  String?
-  createdAt                      DateTime           @default(now())
-  updatedAt                      DateTime           @updatedAt
+  createdAt                      DateTime            @default(now())
+  updatedAt                      DateTime            @updatedAt
   deletedAt                      DateTime?
 
   users                      User[]
@@ -552,6 +570,8 @@ model Association {
   smsMessages                SmsMessage[]
   supportTickets             SupportTicket[]
   pricingOffer               PricingOffer?
+
+  @@index([customDomainStatus])
 }
 
 // A staff-generated, single-use custom-pricing signup link (see /register?offer=<token>)

@@ -3536,6 +3536,25 @@
       "copy": "Kopja",
       "open": "Miftuħ"
     },
+    "customDomainSettings": {
+      "title": "Dominju personalizzat",
+      "subtitle": "Uża d-dominju tiegħek stess għas-sit pubbliku tal-assoċjazzjoni, minbarra formwise.fr.",
+      "domainLabel": "Dominju",
+      "domainPlaceholder": "www.lassocjazzjonitieghi.org",
+      "domainHint": "Sottodominju bħal www.lassocjazzjonitieghi.org jeħtieġ rekord DNS wieħed biss.",
+      "invalidDomain": "Dominju invalidu",
+      "saved": "Dominju miżjud",
+      "statusVerified": "Attiv",
+      "statusFailed": "Il-verifika falliet",
+      "statusPending": "Qed jistenna d-DNS",
+      "dnsInstruction": "Żid dan ir-rekord DNS mal-fornitur tad-dominju tiegħek (OVH, Gandi, GoDaddy, eċċ.):",
+      "waitingHint": "Il-verifika ssir awtomatikament kull ftit minuti hekk kif id-DNS jinxtered.",
+      "verifyNow": "Ivverifika issa",
+      "remove": "Neħħi d-dominju",
+      "removed": "Dominju mneħħi",
+      "removeConfirmTitle": "Neħħi dan id-dominju personalizzat?",
+      "removeConfirmDescription": "Is-sit jibqa' aċċessibbli fuq formwise.fr, iżda dan id-dominju ma jibqax jindika lejn l-assoċjazzjoni."
+    },
     "cotisationDefaultsSettings": {
       "title": "Miżata tal-Membri",
       "subtitle": "Meta jidħol ammont wieħed, ħlas ta' sħubija pendenti għas-sena kurrenti jinħoloq awtomatikament għal kull membru ġdid — imbagħad jistgħu jħallsuha huma stess mill-portal, mingħajr ma jistennew li amministratur joħloqha. Ħalli vojta sabiex ma jinħoloq xejn awtomatikament.",

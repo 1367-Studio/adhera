@@ -3536,6 +3536,25 @@
       "copy": "Cóipeáil",
       "open": "Oscail"
     },
+    "customDomainSettings": {
+      "title": "Fearann saincheaptha",
+      "subtitle": "Bain úsáid as d'fhearann féin do shuíomh poiblí an chumainn, i dteannta formwise.fr.",
+      "domainLabel": "Fearann",
+      "domainPlaceholder": "www.mochumann.org",
+      "domainHint": "Ní theastaíonn ach taifead DNS amháin ó bhfofhearann mar www.mochumann.org.",
+      "invalidDomain": "Fearann neamhbhailí",
+      "saved": "Fearann curtha leis",
+      "statusVerified": "Gníomhach",
+      "statusFailed": "Theip ar an bhfíorú",
+      "statusPending": "Ag fanacht le DNS",
+      "dnsInstruction": "Cuir an taifead DNS seo leis ag soláthraí d'fhearainn (OVH, Gandi, GoDaddy, srl.):",
+      "waitingHint": "Déantar an fíorú go huathoibríoch gach cúpla nóiméad tar éis don DNS scaipeadh.",
+      "verifyNow": "Fíoraigh anois",
+      "remove": "Bain an fearann",
+      "removed": "Fearann bainte",
+      "removeConfirmTitle": "An bhfuil fonn ort an fearann saincheaptha seo a bhaint?",
+      "removeConfirmDescription": "Fanfaidh an suíomh inrochtana ag formwise.fr, ach ní bheidh an fearann seo ag díriú a thuilleadh ar an gcumann."
+    },
     "cotisationDefaultsSettings": {
       "title": "Táille ballraíochta",
       "subtitle": "Nuair a chuirtear méid isteach, cruthaítear táille ballraíochta atá ar feitheamh don bhliain reatha go huathoibríoch do gach ball nua - is féidir leo é a íoc iad féin ón tairseach, gan fanacht le riarthóir é a chruthú. Fág bán ionas nach gcruthófar aon rud go huathoibríoch.",
