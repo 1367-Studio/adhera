@@ -22,11 +22,18 @@ export async function proxy(request: NextRequest) {
     const { pathname, search } = request.nextUrl
     if (!STATIC_ASSET_PATH.test(pathname)) {
       const slug = await resolveAssociationSlugByHost(host)
-      // Internal links on the public site (nav buttons, "voir plus", ...) are built as
-      // `/${slug}/evenements` etc., so once basePath adds "/app" the browser navigates to
-      // an ALREADY slug-prefixed URL — rewriting that again would double it up into
-      // `/app/{slug}/{slug}/evenements`, a real 404 caught by clicking around the live site.
-      const alreadyPrefixed = slug && (pathname === `/${slug}` || pathname.startsWith(`/${slug}/`))
+      // Internal links on the public site (nav buttons, "voir plus", the "Connecter" member
+      // login, the dons-without-a-bound-form fallback, ...) are built as `/${slug}/evenements`
+      // or `/portal/${slug}/login` — two SEPARATE route trees ([slug] and /portal/[slug]) that
+      // both already embed the slug. Once basePath adds "/app" the browser navigates to an
+      // ALREADY-resolved URL on either tree; rewriting it again would double the slug into a
+      // 404 (`/app/{slug}/{slug}/...` or `/app/{slug}/portal/{slug}/...`) — caught by clicking
+      // "Connecter" and the dons button on the live site after the first version of this fix
+      // only accounted for the [slug] tree.
+      const alreadyPrefixed = slug && (
+        pathname === `/${slug}` || pathname.startsWith(`/${slug}/`) ||
+        pathname === `/portal/${slug}` || pathname.startsWith(`/portal/${slug}/`)
+      )
       if (slug && !alreadyPrefixed) {
         const targetPath = pathname === "/" ? "" : pathname
         return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
