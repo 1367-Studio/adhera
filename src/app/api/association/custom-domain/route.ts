@@ -4,7 +4,7 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { addProjectDomain, removeProjectDomain } from "@/lib/vercel-domains"
+import { addProjectDomain, removeProjectDomain, standardDnsRecord, type DnsRecord } from "@/lib/vercel-domains"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -43,13 +43,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: data.error?.message ?? "Impossible d'ajouter ce domaine" }, { status: 422 })
   }
 
+  const records: DnsRecord[] = [standardDnsRecord(domain), ...(data.verification ?? [])]
+
   await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
       customDomain:           domain,
       customDomainStatus:     "PENDING",
       customDomainVerifiedAt: null,
-      customDomainDnsRecords: data.verification ? (data.verification as object) : Prisma.JsonNull,
+      customDomainDnsRecords: records,
     },
   })
 
@@ -61,7 +63,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     label:         `Domaine personnalisé ajouté : ${domain}`,
   })
 
-  return NextResponse.json({ ok: true, domain, dnsRecords: data.verification ?? [] })
+  return NextResponse.json({ ok: true, domain, dnsRecords: records })
 }, { roles: ADMINS })
 
 export const DELETE = withAdminAuth(async (req, ctx) => {

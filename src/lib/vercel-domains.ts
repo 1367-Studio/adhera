@@ -12,6 +12,24 @@ function withTeam(path: string) {
   return teamId ? `${path}${path.includes("?") ? "&" : "?"}teamId=${teamId}` : path
 }
 
+export type DnsRecord = { type: string; domain: string; value: string }
+
+// The DNS instruction the admin needs to see is NOT the same thing as Vercel's own
+// `verification` field on a domain (that's only populated for the rare ownership-conflict
+// case — a TXT record proving you own a domain someone else already claimed). The routine
+// "point this at Vercel" record is a fixed, well-known value that never changes per domain,
+// so it's computed here rather than fetched — a bare apex domain (2 labels) needs an A
+// record, anything else (a subdomain like www.assoc.fr) needs a CNAME. This doesn't handle
+// multi-part public suffixes (assoc.co.uk would misdetect as a 3-label subdomain) — a
+// tradeoff accepted for now since the audience is French associations, almost all on plain
+// .fr/.org/.com domains.
+export function standardDnsRecord(domain: string): DnsRecord {
+  const labels = domain.split(".")
+  return labels.length <= 2
+    ? { type: "A", domain: "@", value: "76.76.21.21" }
+    : { type: "CNAME", domain: labels[0], value: "cname.vercel-dns.com" }
+}
+
 async function vercelRequest<T>(path: string, init?: RequestInit): Promise<{ ok: boolean; status: number; data: T }> {
   const res  = await fetch(`${VERCEL_API_BASE}${withTeam(path)}`, { ...init, headers: vercelHeaders() })
   const data = (await res.json().catch(() => ({}))) as T
@@ -73,12 +91,13 @@ export async function checkAndUpdateCustomDomainStatus(associationId: string) {
   }
 
   const isVerified = projectDomain.verified && !config.misconfigured
+  const records: DnsRecord[] = [standardDnsRecord(association.customDomain), ...(projectDomain.verification ?? [])]
   await prisma.association.update({
     where: { id: associationId },
     data: {
       customDomainStatus:     isVerified ? "VERIFIED" : "PENDING",
       customDomainVerifiedAt: isVerified ? new Date() : null,
-      customDomainDnsRecords: projectDomain.verification ? (projectDomain.verification as object) : Prisma.JsonNull,
+      customDomainDnsRecords: records,
     },
   })
   return isVerified ? ("VERIFIED" as const) : ("PENDING" as const)
