@@ -9,6 +9,7 @@ import { invitationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { membreCreateSchema } from "@/lib/schemas"
 import { addressColumns } from "@/lib/address"
+import { answersWithMobile, readMobileAnswer } from "@/lib/membre-answers"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
@@ -113,7 +114,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   if (!searchParams.has("page")) {
     const data = await prisma.membre.findMany({ where, orderBy, include, take: 500 })
-    return NextResponse.json(data.map(m => ({ ...m, isAdherent: isMembreAdherent(m) })))
+    // `mobile` est résolu ici comme sur la fiche (GET /api/membres/[id]) : la modale d'édition
+    // de la liste repose dessus, et sans lui elle posterait un mobile vide qui effacerait le
+    // numéro saisi sur le formulaire public.
+    return NextResponse.json(data.map(m => ({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) })))
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
@@ -126,7 +130,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // when they'd want to still see there is something to review.
     prisma.membre.count({ where: { associationId, deletedAt: null, status: "PENDING" } }),
   ])
-  return NextResponse.json({ data: data.map(m => ({ ...m, isAdherent: isMembreAdherent(m) })), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
+  return NextResponse.json({ data: data.map(m => ({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) })), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
 }, { roles: MANAGERS })
 
 export const POST = withAdminAuth(async (req, ctx) => {
@@ -141,7 +145,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
+  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -176,6 +180,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
     associationId,
     email:         email         || null,
     phone:         phone         || null,
+    // Le mobile n'a pas de colonne : il part dans answers (voir src/lib/membre-answers.ts).
+    ...(mobile !== undefined ? { answers: answersWithMobile(null, mobile) } : {}),
     // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
     // addressColumns dans src/lib/address.ts.
     ...addressColumns({ street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }),

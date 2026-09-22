@@ -13,6 +13,13 @@ export const membreSchema = z.object({
     v => !v || phoneRegex.test(v),
     "Numéro de téléphone invalide",
   ),
+  // Pas de colonne dédiée sur Membre : il est rangé dans Membre.answers sous la clé "mobile"
+  // (voir src/lib/membre-answers.ts). Même validation que le fixe ci-dessus, pour que les deux
+  // numéros ne puissent pas être acceptés selon des règles différentes.
+  mobile:    z.string().trim().optional().or(z.literal("")).refine(
+    v => !v || phoneRegex.test(v),
+    "Numéro de mobile invalide",
+  ),
   birthDate: z.string().optional().or(z.literal("")).refine(
     v => !v || new Date(v) < new Date(),
     "La date de naissance doit être dans le passé",

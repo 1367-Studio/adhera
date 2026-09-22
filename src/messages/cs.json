@@ -3944,6 +3944,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Role",
         "birthDate": "Datum narození",
         "status": "Stav",

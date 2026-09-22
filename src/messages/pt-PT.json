@@ -3944,6 +3944,8 @@
         "emailPlaceholder": "geral@exemplo.com",
         "phone": "Telefone",
         "phonePlaceholder": "+351 912 345 678",
+        "mobile": "Telemóvel",
+        "mobilePlaceholder": "+351 912 345 678",
         "role": "Função",
         "birthDate": "Data de nascimento",
         "status": "Estado",

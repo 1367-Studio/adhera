@@ -231,6 +231,16 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           error={errors.phone?.message}
           {...register("phone")}
         />
+        {/* Enregistré dans Membre.answers sous la clé "mobile", pas dans une colonne — voir
+            src/lib/membre-answers.ts. Sans ce champ, un numéro saisi par l'adhérent sur le
+            formulaire public n'était plus modifiable nulle part. */}
+        <FormField
+          label={t("membres.form.fields.mobile")}
+          type="tel"
+          placeholder={t("membres.form.fields.mobilePlaceholder")}
+          error={errors.mobile?.message}
+          {...register("mobile")}
+        />
       </div>
 
       {isCreate && (

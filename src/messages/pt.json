@@ -4006,6 +4006,8 @@
         "emailPlaceholder": "contato@exemplo.com",
         "phone": "Telefone",
         "phonePlaceholder": "+55 11 91234-5678",
+        "mobile": "Celular",
+        "mobilePlaceholder": "+55 11 91234-5678",
         "role": "Função",
         "birthDate": "Data de nascimento",
         "status": "Status",

@@ -3944,6 +3944,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefown",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mowbajl",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rwol",
         "birthDate": "Id-data tat-twelid",
         "status": "Status",

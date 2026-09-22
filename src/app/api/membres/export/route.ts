@@ -5,6 +5,7 @@ import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { membreAdherentWhereClause } from "@/lib/membre-adherent"
 import { formatAddress } from "@/lib/address"
+import { readMobileAnswer } from "@/lib/membre-answers"
 
 // Same reasoning as evenements/[id]/export — Nom/Prénom/Email can come from public,
 // unauthenticated self-registration (site-membership-section.tsx), so a value starting
@@ -109,6 +110,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     Prénom:            sanitizeCell(m.firstName),
     Email:             sanitizeCell(m.email ?? ""),
     Téléphone:         sanitizeCell(m.phone ?? ""),
+    // Le mobile n'a pas de colonne en base : il vit dans Membre.answers (voir
+    // src/lib/membre-answers.ts). Il manquait purement et simplement à l'export, alors que le
+    // formulaire d'adhésion peut le rendre obligatoire.
+    Mobile:            sanitizeCell(readMobileAnswer(m.answers) ?? ""),
     // Colonne historique : elle garde l'adresse complète sur une ligne, pour ne pas casser
     // les tableurs des clients qui la lisent déjà. Les colonnes détaillées s'ajoutent après.
     Adresse:           sanitizeCell(formatAddress({ street: m.addressStreet, complement: m.addressComplement, postalCode: m.postalCode, city: m.city, country: m.country, legacy: m.address }) ?? ""),

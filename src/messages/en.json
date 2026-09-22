@@ -4020,6 +4020,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Phone",
         "phonePlaceholder": "+1 555 123 4567",
+        "mobile": "Mobile",
+        "mobilePlaceholder": "+1 555 123 4567",
         "role": "Role",
         "birthDate": "Date of birth",
         "status": "Status",

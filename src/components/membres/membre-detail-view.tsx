@@ -9,7 +9,7 @@ import { fr } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
-  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
+  EnvelopeSimpleIcon, PhoneIcon, DeviceMobileIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon,
   IdentificationCardIcon
 } from "@phosphor-icons/react/dist/ssr";
@@ -516,10 +516,17 @@ export function MembreDetailView() {
           {membre.phone && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{membre.phone}</p>
           )}
+          {/* Le mobile s'affichait sous « Informations personnelles », entre le groupe sanguin
+              et les allergies : personne ne va chercher un numéro de téléphone là. Il est ici,
+              avec les autres moyens de joindre la personne. Libellé conservé pour le
+              distinguer du fixe juste au-dessus, que rien n'annonce comme tel. */}
+          {membre.mobile && (
+            <p className="flex items-center gap-1.5 text-muted-foreground"><DeviceMobileIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
+          )}
           {membreAddress && (
             <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membreAddress}</span></p>
           )}
-          {!membre.email && !membre.phone && !membreAddress && (
+          {!membre.email && !membre.phone && !membre.mobile && !membreAddress && (
             <p className="text-muted-foreground">{t("membres.detail.noContactInfo")}</p>
           )}
         </div>
@@ -574,15 +581,12 @@ export function MembreDetailView() {
               </button>
             </p>
           )}
-          {membre.mobile && (
-            <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
-          )}
           {membre.customFieldAnswers.map((a, i) => (
             <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
           ))}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
             && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
-            && !membre.mobile && membre.customFieldAnswers.length === 0 && (
+            && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
         </div>
@@ -937,6 +941,9 @@ export function MembreDetailView() {
             responsableId: membre.responsableId ?? "",
             // Sans ces six clés, le formulaire d'édition repartait d'une adresse vide et
             // l'enregistrement effaçait celle de la fiche.
+            // Sans cette clé, ouvrir « Modifier » puis enregistrer postait mobile: "" et
+            // effaçait le numéro saisi par l'adhérent sur le formulaire public.
+            mobile:            membre.mobile            ?? "",
             address:           membre.address           ?? "",
             addressStreet:     membre.addressStreet     ?? "",
             addressComplement: membre.addressComplement ?? "",

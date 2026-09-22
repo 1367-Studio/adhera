@@ -6,6 +6,7 @@ import { membreUpdateSchema } from "@/lib/schemas"
 import { addressColumnsPatch } from "@/lib/address"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
 import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear } from "@/lib/membre-adherent"
+import { answersWithMobile, readMobileAnswer } from "@/lib/membre-answers"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
 
@@ -93,7 +94,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   return NextResponse.json({
     ...membre,
-    mobile: rawAnswers?.mobile ?? null,
+    mobile: readMobileAnswer(rawAnswers),
     customFieldAnswers,
     isAdherent: isMembreAdherent(membre),
   })
@@ -111,7 +112,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
 
   if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
@@ -184,6 +185,9 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...rest,
         ...(email         !== undefined ? { email:         email         || null } : {}),
         ...(phone         !== undefined ? { phone:         phone         || null } : {}),
+        // Le mobile vit dans answers, aux côtés des réponses aux champs personnalisés du
+        // formulaire d'adhésion : on patche la clé, on ne remplace jamais l'objet.
+        ...(mobile        !== undefined ? { answers: answersWithMobile(existing.answers, mobile) } : {}),
         // L'adresse se met à jour d'un bloc : les six colonnes sont recalculées ensemble à
         // partir de ce qui est envoyé complété par ce qui est déjà en base, sinon la colonne
         // héritée et les colonnes structurées finiraient par se contredire.

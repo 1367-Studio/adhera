@@ -3944,6 +3944,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefons",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobilais",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Loma",
         "birthDate": "Dzimšanas datums",
         "status": "Statuss",
