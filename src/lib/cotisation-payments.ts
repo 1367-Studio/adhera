@@ -4,6 +4,8 @@ import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
+import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { APP_URL } from "@/lib/env"
 
 type TxClient = Prisma.TransactionClient
 
@@ -149,9 +151,16 @@ export async function sendCotisationPaymentConfirmation(
 
   const association = await prisma.association.findUnique({
     where:  { id: cotisation.associationId },
-    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return
+
+  // Ce paiement vient peut-être de débloquer la carte de membre — mais "cotisation payée"
+  // n'est pas la règle (carte désactivée par l'association, membre suspendu, cotisation
+  // réglée d'avance pour une période future), donc on interroge la source unique de vérité
+  // plutôt que de la redériver ici. Le lien pointe vers l'espace membre, pas vers la page
+  // publique scannée : pas de token à générer.
+  const memberCardAvailable = await isMemberCardAvailable(cotisation.associationId, cotisation.membre.id)
 
   sendEmail(paymentConfirmationEmail({
     firstName:       cotisation.membre.firstName,
@@ -161,6 +170,7 @@ export async function sendCotisationPaymentConfirmation(
     period:          String(cotisation.year),
     paidAt:          cotisation.paidAt ?? new Date(),
     branding:        resolveDocumentBranding(association),
+    memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${association.slug}/carte` : undefined,
   }), { associationId: cotisation.associationId, membreId: cotisation.membre.id, source: "TRANSACTION", sourceId: cotisation.id }).catch(() => {})
 }
 
@@ -172,9 +182,133 @@ export async function removeCotisationPayment(tx: TxClient, cotisationId: string
   await releaseLinkedIncomes(tx, [paymentId])
   await tx.cotisationPayment.delete({ where: { id: paymentId } })
 
+  return rederiveAfterPaymentRemoval(tx, cotisationId, payment.amount)
+}
+
+// The full-refund counterpart of removeCotisationPayment, for the Stripe webhook's
+// charge.refunded safety net. Same amountPaid/status outcome (same shared tail below), but the
+// linked Income is soft-cancelled (status CANCELLED, row kept) instead of deleted — the
+// treatment that webhook already gives every other refunded Income, so the ledger keeps a trace
+// of money that came in and went back out. Deleting the CotisationPayment then detaches that
+// row on its own (Income.cotisationPaymentId is onDelete: SetNull), which is also what makes a
+// redelivered refund event find nothing left to reverse.
+// Returns null when there's nothing to remove — a redelivered event, or a concurrent delivery
+// of the same one that got there first. deleteMany's count decides, not the read above it: two
+// deliveries racing on the same payment both see it, but only one delete can match the row, so
+// its amount can never be given back twice.
+export async function removeRefundedCotisationPayment(tx: TxClient, paymentId: string) {
+  const payment = await tx.cotisationPayment.findUnique({ where: { id: paymentId }, select: { cotisationId: true, amount: true } })
+  if (!payment) return null
+
+  await tx.income.updateMany({ where: { cotisationPaymentId: paymentId, status: "PAID" }, data: { status: "CANCELLED" } })
+  const { count: deletedCount } = await tx.cotisationPayment.deleteMany({ where: { id: paymentId } })
+  if (deletedCount === 0) return null
+
+  return rederiveAfterPaymentRemoval(tx, payment.cotisationId, payment.amount)
+}
+
+// Reverses every cotisation payment a fully-refunded Stripe charge had paid for, found through
+// the Income each one posted with that charge's reference (a PaymentIntent id for a checkout, an
+// invoice id for a subscription/installment charge — see the recordCotisationPayment callers)
+// rather than through Stripe metadata: a group checkout pays N cotisations with no id of theirs
+// in metadata at all, and a public one-off adhésion only gets its cotisationId backfilled onto
+// the PaymentIntent best-effort (see membership-forms.ts). One transaction for the whole charge
+// — a group refund reverses every registrant's cotisation or none. Returns the cotisations
+// actually reversed (empty on a redelivery, see removeRefundedCotisationPayment).
+// `auditMetadata` is stored on each COTISATION_REFUNDED activity log written below — the caller
+// passes whatever identifies the charge on Stripe's side (PaymentIntent id, invoice id, event id).
+// `associationId` only narrows the lookup onto the (associationId, reference) index — a Stripe
+// reference is unique platform-wide, so it changes no result. It is optional because the webhook
+// reads it from PaymentIntent metadata, which a PaymentIntent created before that metadata
+// existed simply doesn't carry; undefined is ignored by Prisma and the query stays as it was.
+export async function removeRefundedCotisationPaymentsByReference(
+  reference: string,
+  auditMetadata: Prisma.InputJsonObject,
+  associationId?: string,
+) {
+  const linkedIncomes = await prisma.income.findMany({
+    where:   { associationId, reference, cotisationPaymentId: { not: null } },
+    select:  { cotisationPaymentId: true },
+    // Deterministic lock order, so two concurrent deliveries of the same group refund can't
+    // deadlock on each other's rows.
+    orderBy: { cotisationPaymentId: "asc" },
+  })
+  const paymentIds = linkedIncomes.map(income => income.cotisationPaymentId).filter((paymentId): paymentId is string => paymentId !== null)
+  if (paymentIds.length === 0) return []
+
+  return prisma.$transaction(async (tx) => {
+    const reversedCotisations = []
+    for (const paymentId of paymentIds) {
+      const reversedCotisation = await removeRefundedCotisationPayment(tx, paymentId)
+      if (reversedCotisation) reversedCotisations.push(reversedCotisation)
+    }
+
+    // The audit trail is written here, inside the reversal's own transaction, rather than by
+    // the caller once this returns. The reversal is idempotent by design — a retry finds the
+    // payments already gone and reverses nothing — so a crash between the commit and a
+    // caller-side log would leave a reversal with no trace at all, and no Stripe redelivery
+    // could ever put it back. Written straight on `tx` instead of through writeActivityLog:
+    // that helper runs on the global client (its own connection, hence its own transaction)
+    // and swallows its errors, neither of which gives the atomicity wanted here. If this
+    // insert fails, nothing commits and Stripe's retry runs the whole reversal again — the
+    // refund reversal is delayed, never silently left untraced.
+    if (reversedCotisations.length > 0) {
+      await tx.activityLog.createMany({
+        data: reversedCotisations.map(reversedCotisation => ({
+          associationId: reversedCotisation.associationId,
+          action:        "COTISATION_REFUNDED",
+          entity:        "Cotisation",
+          entityId:      reversedCotisation.id,
+          label:         `${reversedCotisation.membre.firstName} ${reversedCotisation.membre.lastName} — ${reversedCotisation.year}`,
+          metadata:      auditMetadata,
+        })),
+      })
+    }
+
+    return reversedCotisations
+  }, {
+    // A group checkout reverses every registrant in this one interactive transaction, at
+    // roughly eight queries each (payment lookup, income soft-cancel, payment delete, the two
+    // cotisation updates in rederiveAfterPaymentRemoval and their includes) — a dozen
+    // registrants is already well past Prisma's 5 s default, and a timeout would abort the
+    // exact same way on every Stripe redelivery instead of eventually going through. Still
+    // bounded, so a genuinely stuck transaction doesn't hold its rows indefinitely.
+    timeout: 60_000,
+  })
+}
+
+// Idempotency guard for a payment keyed on a Stripe object (an invoice id — see the invoice.paid
+// handlers in src/lib/webhook/). Stripe delivers at least once, and the webhook deliberately
+// answers non-2xx to an invoice.paid that beats its own checkout (see
+// shouldRetryUntilCheckoutProcessed), so a retry of an already-recorded invoice is routine, not
+// exotic. The Income that recordCotisationPayment posts with that reference is the durable proof
+// — kept even after a refund, only soft-cancelled (see removeRefundedCotisationPayment), so a
+// refunded invoice can't be re-recorded either. Must run inside the transaction that records the
+// payment: it first takes a row lock on the cotisation (same FOR UPDATE pattern as the event
+// capacity checks), so a concurrent delivery of the same event waits here until this one
+// commits and then sees its Income, instead of both finding nothing and both recording. There's
+// no unique constraint on Income.reference to lean on instead — one PaymentIntent legitimately
+// backs several Income rows (boutique categories, group checkouts).
+export async function isReferenceAlreadyRecorded(tx: TxClient, params: {
+  associationId: string
+  cotisationId:  string
+  reference:     string
+}): Promise<boolean> {
+  await tx.$queryRaw`SELECT id FROM "Cotisation" WHERE id = ${params.cotisationId} FOR UPDATE`
+  const existingIncome = await tx.income.findFirst({
+    where:  { associationId: params.associationId, reference: params.reference },
+    select: { id: true },
+  })
+  return existingIncome !== null
+}
+
+// Shared tail of removeCotisationPayment/removeRefundedCotisationPayment: gives the removed
+// amount back and re-derives the status from the resulting balance, so both removal paths land
+// on exactly the same amountPaid/status for the same payment.
+async function rederiveAfterPaymentRemoval(tx: TxClient, cotisationId: string, removedAmount: Prisma.Decimal) {
   const updated = await tx.cotisation.update({
     where:  { id: cotisationId },
-    data:   { amountPaid: { decrement: payment.amount } },
+    data:   { amountPaid: { decrement: removedAmount } },
     include: { installments: { select: { amount: true, dueDate: true, order: true } } },
   })
 

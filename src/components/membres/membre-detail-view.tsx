@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
-  DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon
+  DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon,
+  IdentificationCardIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
@@ -28,6 +29,7 @@ import { MembreEmailLog } from "@/components/membres/membre-email-log"
 import { MembreSmsLog } from "@/components/membres/membre-sms-log"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
+import { MemberCardModal } from "@/components/member-card/member-card-modal"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
@@ -35,7 +37,7 @@ import { ChangeRoleModal } from "@/components/membres/membres-view"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useCurrentUser, useMemberCardEnabled, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
 import { isMembreAdherentViaResponsable } from "@/lib/membre-adherent"
 
@@ -155,6 +157,7 @@ export function MembreDetailView() {
   const router = useRouter()
   const modules = useModules()
   const currentUser = useCurrentUser()
+  const memberCardEnabled = useMemberCardEnabled()
 
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
@@ -162,6 +165,7 @@ export function MembreDetailView() {
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
   const [createCotisationOpen, setCreateCotisationOpen] = useState(false)
+  const [memberCardOpen, setMemberCardOpen]     = useState(false)
   const [rejectOpen, setRejectOpen]             = useState(false)
   // Set when the create attempt hits a cancelled cotisation already occupying that year (see
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
@@ -419,10 +423,23 @@ export function MembreDetailView() {
 
           <div className="flex flex-wrap items-center gap-2">
             {modules.cotisations && (
-              <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
-                <PlusIcon className="mr-1.5 size-4" />
-                {t("membres.detail.cotisationButton")}
-              </Button>
+              <>
+                <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
+                  <PlusIcon className="mr-1.5 size-4" />
+                  {t("membres.detail.cotisationButton")}
+                </Button>
+                {/* The card only exists for a member with a cotisation, so it hangs off the
+                    same module gate as the button that creates one — plus the association's
+                    own switch, which is what actually makes a card exist (parseMemberCardSettings
+                    .enabled, resolved by the dashboard layout). Offering it while the card is
+                    off would open a modal whose only possible answer is "non disponible". */}
+                {memberCardEnabled && (
+                  <Button size="sm" variant="outline" onClick={() => setMemberCardOpen(true)}>
+                    <IdentificationCardIcon className="mr-1.5 size-4" />
+                    {t("memberCard.manager.button")}
+                  </Button>
+                )}
+              </>
             )}
             {!membre.userId && membre.email && (
               <Button size="sm" variant="outline" onClick={handleCreateAccess} loading={createAccessMutation.isPending}>
@@ -980,6 +997,13 @@ export function MembreDetailView() {
           loading={createCotisationMutation.isPending}
         />
       </Modal>
+
+      <MemberCardModal
+        membreId={id}
+        memberName={`${membre.firstName} ${membre.lastName}`}
+        open={memberCardOpen}
+        onOpenChange={setMemberCardOpen}
+      />
 
       {paymentTarget && (
         <CotisationPaymentModal

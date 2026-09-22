@@ -10,12 +10,14 @@ import { membershipWelcomeEmail, membershipInstallmentPaymentFailedEmail, member
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
-import { recordCotisationPayment, sendCotisationPaymentConfirmation } from "@/lib/cotisation-payments"
+import { recordCotisationPayment, sendCotisationPaymentConfirmation, isReferenceAlreadyRecorded } from "@/lib/cotisation-payments"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { shouldRetryUntilCheckoutProcessed } from "@/lib/webhook/cotisation-subscriptions"
+import { isMemberCardAvailable } from "@/lib/member-card/availability"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -204,12 +206,20 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
   })
 
   if (assoc?.slug) {
+    // Attendu ici : pas de carte. La cotisation vient d'être créée EN_ATTENTE et ne passera
+    // PAYE qu'à la dernière mensualité (des mois plus tard) — c'est l'email de confirmation
+    // de ce dernier paiement qui portera le bouton, voir sendCotisationPaymentConfirmation.
+    // On interroge quand même la source unique de vérité au lieu de coder "jamais" en dur :
+    // si un jour un échéancier est soldé avant cet envoi, le bouton suivra tout seul.
+    const memberCardAvailable = await isMemberCardAvailable(meta.associationId, created.membre.id)
+
     sendEmail(membershipWelcomeEmail({
       firstName:       created.membre.firstName,
       email:           meta.email,
       associationName: assoc.name,
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
+      memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${assoc.slug}/carte` : undefined,
       branding:        resolveDocumentBranding(assoc),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
@@ -245,7 +255,9 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
 // Fires once per installment charge, including the very first one. Every charge applies to
 // the SAME Cotisation created in handleMembershipInstallmentCheckout above — unlike
 // handleCotisationInvoicePaid, there is no per-year upsert here.
-export async function handleInstallmentInvoicePaid(invoice: Stripe.Invoice) {
+// Returns "awaiting-checkout" when this invoice must be retried later (see
+// shouldRetryUntilCheckoutProcessed) — route.ts turns that into a non-2xx response.
+export async function handleInstallmentInvoicePaid(invoice: Stripe.Invoice): Promise<"awaiting-checkout" | void> {
   const subscriptionId = invoiceSubscriptionId(invoice)
   if (!subscriptionId) return
 
@@ -253,11 +265,23 @@ export async function handleInstallmentInvoicePaid(invoice: Stripe.Invoice) {
     where:  { stripeSubscriptionId: subscriptionId },
     select: { id: true, associationId: true, cotisationId: true, installmentsCount: true, installmentsPaid: true, status: true },
   })
-  if (!plan) return // Not an installment plan — nothing here concerns this invoice.
+  // Not an installment plan — or one whose checkout.session.completed hasn't created the plan
+  // (and its Cotisation) yet, in which case this first installment must come back later rather
+  // than be lost.
+  if (!plan) return shouldRetryUntilCheckoutProcessed(invoice, "membership-installment") ? "awaiting-checkout" : undefined
   if (plan.status === "COMPLETED") return // Redelivered event for a plan already fully paid.
 
   const amount = invoice.amount_paid / 100
   if (amount <= 0) return
+
+  // Redelivered event — see handleCotisationInvoicePaid's identical guard. Needed here even more:
+  // the cotisation stays PARTIELLEMENT_PAYEE between installments, so the PAYE guard below never
+  // caught a redelivery of an intermediate installment, which then got recorded a second time.
+  const alreadyRecorded = await prisma.income.findFirst({
+    where:  { associationId: plan.associationId, reference: invoice.id },
+    select: { id: true },
+  })
+  if (alreadyRecorded) return
 
   const paidAt = invoice.status_transitions?.paid_at ? new Date(invoice.status_transitions.paid_at * 1000) : new Date()
 
@@ -270,25 +294,38 @@ export async function handleInstallmentInvoicePaid(invoice: Stripe.Invoice) {
 
   const exercice = await resolveExerciceForDate(plan.associationId, paidAt)
 
-  const updated = await prisma.$transaction((tx) => recordCotisationPayment(tx, {
-    associationId: plan.associationId,
-    cotisationId:  plan.cotisationId,
-    amount,
-    method:        "Prélèvement automatique (échéance)",
-    paidAt,
-    source:        "STRIPE",
-    reference:     invoice.id,
-    exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
-  }))
+  const recorded = await prisma.$transaction(async (tx) => {
+    if (await isReferenceAlreadyRecorded(tx, { associationId: plan.associationId, cotisationId: plan.cotisationId, reference: invoice.id })) return null
 
-  const installmentsPaid = plan.installmentsPaid + 1
-  await prisma.cotisationInstallmentPlan.update({
-    where: { id: plan.id },
-    data:  {
-      installmentsPaid,
-      status: installmentsPaid >= plan.installmentsCount ? "COMPLETED" : plan.status,
-    },
+    const updatedCotisation = await recordCotisationPayment(tx, {
+      associationId: plan.associationId,
+      cotisationId:  plan.cotisationId,
+      amount,
+      method:        "Prélèvement automatique (échéance)",
+      paidAt,
+      source:        "STRIPE",
+      reference:     invoice.id,
+      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+    })
+
+    // Counted in the same transaction as the payment (it used to be a separate write right
+    // after), and as an increment rather than a value computed from the read above — the
+    // counter can no longer drift from the payments actually recorded, whether a step fails in
+    // between or two deliveries race.
+    const updatedPlan = await tx.cotisationInstallmentPlan.update({
+      where:  { id: plan.id },
+      data:   { installmentsPaid: { increment: 1 } },
+      select: { installmentsPaid: true },
+    })
+    if (updatedPlan.installmentsPaid >= plan.installmentsCount) {
+      await tx.cotisationInstallmentPlan.update({ where: { id: plan.id }, data: { status: "COMPLETED" } })
+    }
+
+    return { updatedCotisation, installmentsPaid: updatedPlan.installmentsPaid }
   })
+  if (!recorded) return // A concurrent delivery of this same invoice recorded it first.
+
+  const { updatedCotisation: updated, installmentsPaid } = recorded
 
   await sendCotisationPaymentConfirmation(updated, amount)
 

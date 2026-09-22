@@ -13,6 +13,8 @@ interface ViewToggleProps<T extends string> {
   options: ViewToggleOption<T>[]
   value:   T
   onChange: (value: T) => void
+  /** Passed straight to SegmentedControl — see the note on its own ariaLabel. */
+  ariaLabel?: string
 }
 
 // Compact list/grid switcher — just the shared SegmentedControl at its small size.

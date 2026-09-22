@@ -14,7 +14,7 @@ export function toSlug(str: string): string {
 // resolves the static segment first, making the tenant's site/portal permanently
 // unreachable with no error shown at signup. A few common conventions are blocked too.
 const RESERVED_SLUGS = new Set([
-  "api", "backoffice", "billet", "check-in", "dashboard", "login", "register",
+  "api", "backoffice", "billet", "carte", "check-in", "dashboard", "login", "register",
   "forgot-password", "reset-password", "portal", "admin", "www", "app",
   // /dons/annulation/[token] is a static top-level route (self-service cancellation
   // for recurring donations) — an association slugged "dons" would make it unreachable.

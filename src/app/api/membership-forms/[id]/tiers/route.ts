@@ -2,8 +2,24 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { APP_TIME_ZONE } from "@/lib/date-format"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+
+// Jour calendaire (YYYY-MM-DD, comparable en chaîne) d'un instant à Paris — pas en UTC, sinon
+// « aujourd'hui » basculerait 1 à 2 h trop tard chaque soir (même raisonnement que
+// currentCotisationYear dans src/lib/membre-adherent.ts).
+function parisCalendarDay(date: Date): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: APP_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(date)
+}
+
+// L'éditeur envoie la date choisie comme « fin de journée » dans le fuseau du navigateur de
+// l'admin, et la relit via ses composantes locales (voir normalizeTier/handleSave dans
+// membership-tiers-editor.tsx) : pour un même admin, l'aller-retour est exact et l'écart est
+// nul. Il ne reste que le cas où un autre admin, dans un autre fuseau, réenregistre un tarif
+// sans toucher à sa date : le même jour calendaire y correspond à un instant décalé de moins
+// d'un jour. Sous cet écart, une date déjà passée renvoyée telle quelle n'est pas un changement.
+const FIXED_PERIOD_END_ROUND_TRIP_TOLERANCE_MS = 24 * 60 * 60 * 1000
 
 const tierSchema = z.object({
   id:           z.string().optional(), // absent = nouveau tier
@@ -121,10 +137,31 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // d'achat. Les deux cas sont bloqués ici, avant toute écriture.
   const existingTiersForTypeCheck = await prisma.membershipTier.findMany({
     where:  { formId: id },
-    select: { id: true, itemType: true, label: true },
+    select: { id: true, itemType: true, label: true, fixedPeriodEnd: true },
   })
   const existingTierById = new Map(existingTiersForTypeCheck.map(t => [t.id, t]))
   const incomingIdsForCheck = new Set(parsed.data.filter(t => t.id).map(t => t.id))
+
+  // Une date de fin fixe qui n'est pas postérieure à aujourd'hui (heure de Paris) vendrait une
+  // adhésion déjà expirée au moment même où elle est payée — refusée à la création comme à la
+  // modification. Seulement quand la date est posée ou changée : un tarif existant dont la date
+  // est passée depuis doit rester modifiable sur ses autres champs (libellé, montant…) sans
+  // forcer l'admin à retoucher cette date.
+  const todayInParis = parisCalendarDay(new Date())
+  for (const incomingTier of parsed.data) {
+    // Même normalisation que l'écriture plus bas : seul un tarif MEMBERSHIP garde sa date.
+    if (incomingTier.itemType !== "MEMBERSHIP" || !incomingTier.fixedPeriodEnd) continue
+    const incomingPeriodEnd = new Date(incomingTier.fixedPeriodEnd)
+    if (parisCalendarDay(incomingPeriodEnd) > todayInParis) continue
+
+    const previousPeriodEnd = incomingTier.id ? existingTierById.get(incomingTier.id)?.fixedPeriodEnd ?? null : null
+    const previousAlreadyPassed = previousPeriodEnd !== null && parisCalendarDay(previousPeriodEnd) <= todayInParis
+    if (previousAlreadyPassed && Math.abs(incomingPeriodEnd.getTime() - previousPeriodEnd.getTime()) < FIXED_PERIOD_END_ROUND_TRIP_TOLERANCE_MS) continue
+
+    return NextResponse.json({
+      error: `La date de fin fixe du tarif « ${incomingTier.label} » doit être postérieure à aujourd'hui.`,
+    }, { status: 422 })
+  }
 
   async function tierUsageCount(tierId: string): Promise<number> {
     // Don.tierId pointe vers DonationTier (un modèle sans rapport) — une donation embarquée

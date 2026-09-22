@@ -503,6 +503,11 @@ model Association {
   sitePublished                  Boolean            @default(false)
   siteConfig                     Json?
   modules                        Json?
+  // Carte de membre numérique settings (enabled, template, color, showPhoto, showCategory) —
+  // null until the admin first saves them. Always read through parseMemberCardSettings() in
+  // src/lib/member-card/settings.ts, which fills safe defaults (card disabled) for null or
+  // for any key a future version adds, so no backfill migration is ever needed.
+  memberCardSettings             Json?
   internalNotes                  String?
   createdAt                      DateTime           @default(now())
   updatedAt                      DateTime           @updatedAt
@@ -719,6 +724,19 @@ model Membre {
   // flux /inscription, etc.) — celles-là gardent leur comportement actuel, sans cotisation
   // auto-créée à l'approbation.
   pendingTierId String?
+
+  // Carte de membre numérique — the public token encoded in the card's QR code, so whoever
+  // scans it (a partner shop, a door volunteer) can check the card without an account. Same
+  // no-login convention as Participation.cancelToken, but minted lazily on the first view
+  // (see ensureMemberCardToken in src/lib/member-card/token.ts) rather than at creation, so
+  // existing members need no backfill and associations that never enable the card never
+  // hand out a live public link. It is only an identifier: whether the card is currently VALID is always recomputed live
+  // from the cotisations (src/lib/member-card/eligibility.ts), never stored here.
+  cardToken          String?   @unique
+  // Stamped when a manager revokes/regenerates the card (rotateMemberCardToken) — the old
+  // token is replaced, so an already-printed or screenshotted QR stops resolving. Null means
+  // the current token is still the first one ever issued.
+  cardTokenRotatedAt DateTime?
 
   association              Association               @relation(fields: [associationId], references: [id])
   user                     User?                     @relation(fields: [userId], references: [id])
@@ -2568,6 +2586,10 @@ model Income {
 
   @@index([associationId, status])
   @@index([associationId, date])
+  // Les webhooks Stripe interrogent Income.reference à chaque facture payée (garde
+  // d'idempotence, voir isReferenceAlreadyRecorded) et à chaque remboursement — sans index,
+  // chaque appel scannait toute la table Income de la plateforme.
+  @@index([associationId, reference])
 }
 
 model Expense {

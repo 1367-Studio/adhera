@@ -49,7 +49,16 @@ export async function rateLimit(key: string, limit: number, windowMs: number): P
 }
 
 export function requestIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for")
+  return ipFromHeaders(req.headers)
+}
+
+// Same rule as requestIp, reading the headers on their own — a server component only gets
+// next/headers' headers(), never the Request object, so this is how a page (e.g. the public
+// member-card verification page) keys a bucket by caller instead of duplicating the
+// x-forwarded-for parsing. `Pick<Headers, "get">` because headers() returns a read-only
+// view, not a Headers instance.
+export function ipFromHeaders(headers: Pick<Headers, "get">): string {
+  const forwarded = headers.get("x-forwarded-for")
   return forwarded?.split(",")[0]?.trim() || "unknown"
 }
 

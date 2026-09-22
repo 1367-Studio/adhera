@@ -22,6 +22,7 @@ import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { isMemberCardAvailable } from "@/lib/member-card/availability"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -472,9 +473,14 @@ export async function POST(
     }
 
     const branding = resolveDocumentBranding(assoc)
+    // Tarif gratuit validé immédiatement : la cotisation EXONERE créée juste au-dessus couvre
+    // déjà la période, donc la carte existe dès maintenant — sauf si l'association ne l'a pas
+    // activée, ce que seule la source unique de vérité sait (voir isMemberCardAvailable).
+    const memberCardAvailable = await isMemberCardAvailable(assoc.id, membre.id)
     sendEmail(membershipWelcomeEmail({
       firstName, email, associationName: assoc.name, amount: 0,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      memberCardUrl: memberCardAvailable ? `${APP_URL}/portal/${slug}/carte` : undefined,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
@@ -625,10 +631,16 @@ export async function POST(
     }
 
     const branding = resolveDocumentBranding(assoc)
+    // Attendu ici : pas de carte. La cotisation reste EN_ATTENTE tant qu'un admin n'a pas
+    // enregistré l'encaissement — c'est l'email de confirmation de ce paiement qui portera le
+    // bouton (voir sendCotisationPaymentConfirmation). On pose quand même la question à la
+    // source unique de vérité plutôt que de coder "jamais" en dur, comme partout ailleurs.
+    const memberCardAvailable = await isMemberCardAvailable(assoc.id, membre.id)
     sendEmail(membershipWelcomeEmail({
       firstName, email, associationName: assoc.name, amount,
       offlinePending: true, offlineInstructions: form.offlineInstructions,
       loginUrl: `${APP_URL}/portal/${slug}/login`, branding,
+      memberCardUrl: memberCardAvailable ? `${APP_URL}/portal/${slug}/carte` : undefined,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
       addons: resolvedAddons.length ? resolvedAddons.map(a => ({ label: a.label, amount: a.amount })) : undefined,

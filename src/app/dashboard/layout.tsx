@@ -8,6 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { TopLoader } from "@/components/top-loader"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules, deriveModulesForPlan } from "@/lib/modules"
+import { parseMemberCardSettings } from "@/lib/member-card/settings"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 
@@ -36,13 +37,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
         where:  { id: u.associationId },
         select: {
           modules: true, subscriptionStatus: true, plan: true, name: true,
-          customBrandingEnabled: true, logoUrl: true,
+          customBrandingEnabled: true, logoUrl: true, memberCardSettings: true,
         },
       })
     : null
 
   const modules  = assocRow ? deriveModulesForPlan(assocRow.plan, parseModules(assocRow.modules)) : parseModules(null)
   const branding = assocRow ? { name: assocRow.name, ...resolveDocumentBranding(assocRow) } : null
+  // Read here for the same reason as in the portal layout: the card is not a module, so it
+  // can't ride the modules context, and this row is already being fetched. Only the flag
+  // travels — the template and colours are the card's own business, server-side.
+  const memberCardEnabled = parseMemberCardSettings(assocRow?.memberCardSettings).enabled
 
   // Suspended/cancelled accounts only ever render the dedicated standby screen (and,
   // for cancelled ones, the reactivation checkout page reached from it) — enforced by
@@ -51,7 +56,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // look like a bug that bounces you straight back to where you started.
   if (assocRow?.subscriptionStatus === "SUSPENDED" || assocRow?.subscriptionStatus === "CANCELLED") {
     return (
-      <UserProvider user={sessionUser} modules={modules} branding={branding}>
+      <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled}>
         <TopLoader />
         {children}
       </UserProvider>
@@ -80,7 +85,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0 && !popupSeenThisLogin
 
   return (
-    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding}>
+    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding} memberCardEnabled={memberCardEnabled}>
       <TopLoader />
       <SidebarProvider className="dashboard-canvas">
         <AppSidebar />

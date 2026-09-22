@@ -7,6 +7,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter,
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
+import { ColorField } from "@/components/ui/color-field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, Sele
 import { SiteAiFieldButton } from "./site-ai-field-button"
 import type { SiteSection, SectionType, DonsSection, DonationFormPick } from "@/types/site-config"
 import { toHtml } from "@/lib/site-content"
+import { SITE_DEFAULT_PRIMARY_COLOR } from "@/lib/site-theme"
 import { BASE_PATH } from "@/lib/env"
 import { useDonationForms } from "@/hooks/use-donation-forms"
 import { resolveDonationFormBySection, usesDonationForms } from "@/lib/dons/site-section-picks"
@@ -179,24 +181,14 @@ export function SiteSectionSheet({ section, sections, open, aiEnabled, donsModul
                   />
                   <p className="text-xs text-muted-foreground">{t("bgImageHint")}</p>
                 </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs">{t("bgColor")}</Label>
-                  <p className="text-xs text-muted-foreground mb-1.5">{t("bgColorHint")}</p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      value={draft.bgColor ?? "#6366f1"}
-                      onChange={e => set("bgColor", e.target.value as never)}
-                      className="h-9 w-14 rounded border cursor-pointer p-0.5"
-                    />
-                    <Input
-                      value={draft.bgColor ?? ""}
-                      onChange={e => set("bgColor", e.target.value as never)}
-                      placeholder={t("bgColorPlaceholder")}
-                      className="font-mono text-sm"
-                    />
-                  </div>
-                </div>
+                <ColorField
+                  label={t("bgColor")}
+                  description={t("bgColorHint")}
+                  value={draft.bgColor ?? ""}
+                  onChange={color => set("bgColor", color as never)}
+                  fallbackColor={SITE_DEFAULT_PRIMARY_COLOR}
+                  placeholder={t("bgColorPlaceholder")}
+                />
               </>
             )}
 

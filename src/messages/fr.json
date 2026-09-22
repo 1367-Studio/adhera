@@ -4443,6 +4443,7 @@
         "membreRoleChanged": "Rôle modifié",
         "passwordChanged": "Mot de passe modifié",
         "passwordReset": "Mot de passe réinitialisé",
+        "membreCardTokenRotated": "QR code de la carte régénéré",
         "membreDeleted": "Membre archivé",
         "membrePortalRegistered": "Inscription portail",
         "membreInscriptionRequested": "Demande d'adhésion (site)",
@@ -4574,6 +4575,7 @@
         "membreInscriptionRequested": "Demande d'adhésion (site)",
         "membreRoleChanged": "Rôle modifié",
         "membreAccessCreated": "Accès créé",
+        "membreCardTokenRotated": "QR code de la carte régénéré",
         "profilUpdated": "Profil modifié",
         "profileUpdated": "Profil modifié",
         "passwordChanged": "Mot de passe modifié",
@@ -4796,6 +4798,96 @@
         "genericError": "Erreur"
       },
       "importedNote": "Importé d'AssoConnect — {collecte}"
+    }
+  },
+  "memberCard": {
+    "card": {
+      "validUntil": "Valable jusqu'au {date}",
+      "expiredOn": "Adhésion expirée le {date}",
+      "status": {
+        "valid": "Adhésion valide",
+        "expired": "Adhésion expirée"
+      },
+      "generatedBy": "Carte générée via {appName}",
+      "qrAlt": "QR code de vérification de la carte",
+      "ariaLabel": "Carte de membre de {name}"
+    },
+    "portal": {
+      "sidebar": "Ma carte",
+      "title": "Ma carte de membre",
+      "titleMultiple": "Mes cartes de membre",
+      "subtitle": "Présentez-la lors des activités de l'association. Son QR code permet d'en vérifier la validité.",
+      "switcherLabel": "Choisir la carte à afficher",
+      "downloadPdf": "Télécharger PDF",
+      "print": "Imprimer"
+    },
+    "unavailable": {
+      "title": "Carte de membre non disponible",
+      "pending": "La carte sera disponible dès que le paiement de la cotisation aura été enregistré.",
+      "partial": "La cotisation est partiellement réglée. La carte sera disponible dès que le solde aura été enregistré.",
+      "late": "Le paiement de la cotisation n'a pas encore été enregistré. La carte sera disponible dès son enregistrement.",
+      "noneTitle": "Aucune carte de membre active",
+      "none": "Aucune adhésion n'est en cours pour cette période. La carte est créée automatiquement après l'adhésion.",
+      "cancelled": "Cette adhésion a été annulée. Contactez l'association pour en savoir plus.",
+      "disabled": "La carte de membre n'est pas proposée par votre association.",
+      "expired": "L'adhésion a expiré le {date}. Renouvelez-la pour obtenir une nouvelle carte.",
+      "viewCotisation": "Voir ma cotisation"
+    },
+    "manager": {
+      "button": "Carte de membre",
+      "rowAction": "Voir la carte de membre",
+      "modalTitle": "Carte de membre",
+      "unavailableTitle": "Carte non disponible",
+      "noPayment": "Aucun paiement de cotisation n'est enregistré pour ce membre. La carte sera générée dès l'enregistrement du paiement.",
+      "recordPayment": "Enregistrer un paiement",
+      "settingsHint": "Modèle et couleur modifiables dans Paramètres › Carte de membre.",
+      "regenerate": "Régénérer le QR code",
+      "regenerateHint": "L'ancien QR code cessera immédiatement de fonctionner. À utiliser si une carte a été perdue ou partagée.",
+      "regenerateConfirm": "Régénérer le QR code de cette carte ?",
+      "regenerated": "QR code régénéré"
+    },
+    "settings": {
+      "title": "Carte de membre",
+      "subtitle": "Apparence de la carte affichée dans l'espace membre.",
+      "enabled": "Activer la carte de membre",
+      "enabledHint": "Les membres à jour de cotisation verront leur carte dans leur espace.",
+      "template": "Modèle",
+      "templates": {
+        "classic": "Classique",
+        "modern": "Moderne",
+        "minimal": "Minimal"
+      },
+      "color": "Couleur",
+      "colorTooLight": "Couleur très claire : elle se distinguera peu du fond de la carte.",
+      "minimalNoColor": "Le modèle Minimal n'utilise pas de couleur.",
+      "showOnCard": "Afficher sur la carte",
+      "showPhoto": "Photo du membre",
+      "showPhotoHint": "Les initiales s'affichent si aucune photo n'est enregistrée.",
+      "showCategory": "Catégorie",
+      "showPhone": "Téléphone de l'association",
+      "showEmail": "E-mail de l'association",
+      "preview": "Aperçu",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Adhérent bénévole actif",
+      "noLogo": "Ajoutez un logo dans Personnalisation pour l'afficher sur la carte.",
+      "noPhone": "Ajoutez un téléphone dans Identité légale & Dons pour l'afficher sur la carte.",
+      "noEmail": "Ajoutez un e-mail de contact dans Informations de l'association pour l'afficher sur la carte.",
+      "saved": "Carte de membre enregistrée"
+    },
+    "print": {
+      "guide": "Découpez en suivant le trait — format carte bancaire 85,6 × 54 mm. Imprimez à 100 %, sans ajustement à la page.",
+      "documentTitle": "Carte de membre — {name}",
+      "popupBlocked": "Autorisez les fenêtres pop-up pour imprimer, ou téléchargez le PDF."
+    },
+    "verify": {
+      "valid": "Carte valide",
+      "validUntil": "Adhésion valable jusqu'au {date}",
+      "expired": "Adhésion expirée",
+      "expiredSince": "Expirée depuis le {date}",
+      "invalid": "Carte non valide",
+      "invalidText": "Cette carte n'est pas reconnue ou a été désactivée. Adressez-vous à l'association.",
+      "checkedAt": "Vérifiée le {date} à {time}",
+      "poweredBy": "Vérification assurée par {appName}"
     }
   },
   "site": {

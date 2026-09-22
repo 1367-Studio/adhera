@@ -11,9 +11,11 @@ import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
-import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError } from "@/lib/cotisation-payments"
+import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError, removeRefundedCotisationPaymentsByReference } from "@/lib/cotisation-payments"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
-import type Stripe from "stripe"
+// Imported as a value, not `import type`: the charge.refunded branch below needs
+// Stripe.errors to tell a genuinely missing resource from a transient API failure.
+import Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { APP_URL } from "@/lib/env"
@@ -883,8 +885,21 @@ export async function POST(req: Request) {
       const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id
       if (!paymentIntentId) break
 
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId).catch(() => null)
-      if (!paymentIntent) break
+      // Only the metadata-keyed branches further down need this object — the Income/cotisation
+      // reversal itself keys on charge.payment_intent, which the charge already carries. So a
+      // PaymentIntent Stripe genuinely no longer has (wiped test data, an id belonging to
+      // another platform account after a key rotation) has no metadata to route on and nothing
+      // left to reverse: a clean 200. Anything else (network blip, rate limit, Stripe outage)
+      // is transient and must propagate — swallowing it, as `.catch(() => null)` used to, ends
+      // the delivery with a 200, so Stripe never retries and a refunded cotisation stays PAYE
+      // for good. Same deliberate choice as the invoice lookup at the bottom of this case.
+      let paymentIntent: Stripe.PaymentIntent
+      try {
+        paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+      } catch (err) {
+        if (err instanceof Stripe.errors.StripeInvalidRequestError && err.code === "resource_missing") break
+        throw err
+      }
 
       const { cotisationId, orderId, donId, commandeId, associationId, draftId } = paymentIntent.metadata
 
@@ -1019,6 +1034,19 @@ export async function POST(req: Request) {
         data:  { status: "CANCELLED" },
       })
 
+      // Every cotisation payment this charge paid for — a one-off cotisation (cotisationId), each
+      // registrant of a group checkout (draftId), or a public one-off adhésion whose cotisationId
+      // metadata backfill failed — removed through the shared helper so the CotisationPayment
+      // rows, amountPaid and status stay in agreement (setting amountPaid to 0 directly, as this
+      // branch used to, left the payment rows behind, and removing one of them later pushed
+      // amountPaid negative). Their Income rows were soft-cancelled just above and stay that way.
+      // Idempotent: a redelivery finds the payments already gone and reverses nothing — which is
+      // also why the COTISATION_REFUNDED activity logs are written inside that helper's own
+      // transaction rather than here, from what it returns (see the helper for the reasoning).
+      const refundedCotisations = await removeRefundedCotisationPaymentsByReference(paymentIntentId, {
+        paymentIntentId, stripeEventId: event.id,
+      }, associationId)
+
       if (donId) {
         const { count } = await prisma.don.updateMany({
           where: { id: donId, refundedAt: null },
@@ -1028,15 +1056,23 @@ export async function POST(req: Request) {
           await writeActivityLog({ associationId, action: "DON_REFUNDED", entity: "Don", entityId: donId })
         }
       } else if (cotisationId) {
-        // The Income row itself was already soft-cancelled by the generic reference-matched
-        // update above (kept for the audit trail, like the don/order paths) — this just
-        // brings amountPaid/status back in line with that, rather than deleting anything.
+        // Normally already reversed just above. What's left here is a cotisation paid before
+        // every Stripe path went through recordCotisationPayment (the public adhésion checkout
+        // until 2026-09-19, any cotisation paid before partial payments existed): PAYE with
+        // amountPaid set directly and no CotisationPayment row for the reference lookup to find.
+        // Only when it has no payment row at all does the old direct reset still apply — with
+        // nothing recorded, amountPaid 0 can't contradict a payment row. A cotisation that does
+        // have payments, none of them from this charge, is deliberately left alone: that's the
+        // CotisationOverpaymentError path, where this charge was booked as a standalone Income
+        // and the cotisation was settled by a manual payment that still stands.
         // Status isn't simply reset to EN_ATTENTE: if the due date has since passed, the
         // refunded cotisation should land on EN_RETARD, not silently look on-time again.
-        const cotisationForRefund = await prisma.cotisation.findFirst({
-          where:  { id: cotisationId, status: "PAYE" },
-          select: { amount: true, dueDate: true, installments: { select: { amount: true, dueDate: true, order: true } } },
-        })
+        const cotisationForRefund = refundedCotisations.some(refundedCotisation => refundedCotisation.id === cotisationId)
+          ? null
+          : await prisma.cotisation.findFirst({
+              where:  { id: cotisationId, status: "PAYE", payments: { none: {} } },
+              select: { amount: true, dueDate: true, installments: { select: { amount: true, dueDate: true, order: true } } },
+            })
         if (cotisationForRefund) {
           const refundedStatus = deriveCotisationStatus({
             currentStatus: "EN_ATTENTE",
@@ -1045,11 +1081,13 @@ export async function POST(req: Request) {
             dueDate:       cotisationForRefund.dueDate,
             installments:  cotisationForRefund.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
           })
-          await prisma.cotisation.update({
-            where: { id: cotisationId },
+          // Same conditions as the read above, re-checked atomically — a concurrent delivery
+          // of this event (or a payment recorded in between) makes this match nothing.
+          const { count: legacyResetCount } = await prisma.cotisation.updateMany({
+            where: { id: cotisationId, status: "PAYE", payments: { none: {} } },
             data:  { status: refundedStatus, paidAt: null, amountPaid: 0 },
           })
-          if (associationId) {
+          if (legacyResetCount > 0 && associationId) {
             await writeActivityLog({ associationId, action: "COTISATION_REFUNDED", entity: "Cotisation", entityId: cotisationId })
           }
         }
@@ -1083,31 +1121,85 @@ export async function POST(req: Request) {
         }
       } else if (draftId && associationId) {
         // A fully-refunded multi-registrant MembershipForm payment (see checkout/route.ts's
-        // "Ajouter un autre adhérent" and src/lib/webhook/membership-multi.ts) — unlike the
-        // branches above, there's no single Cotisation/Don id to flip back: the draft already
-        // fanned out into N Membre/Cotisation rows by the time a refund could happen. Auto-
-        // reversing all of them safely (without also undoing a since-independent status
-        // change on one of them) is out of scope here — this is the same "make sure a human
-        // finds out" fallback the partial-refund branch above already uses, just for the case
-        // where nothing above applies.
-        await writeActivityLog({ associationId, action: "MEMBERSHIP_GROUP_REFUNDED", entity: "MembershipCheckoutDraft", entityId: draftId })
+        // "Ajouter un autre adhérent" and src/lib/webhook/membership-multi.ts). Each paying
+        // registrant's cotisation was already reversed above — consumeMembershipCheckoutDraft
+        // records one CotisationPayment per registrant with this PaymentIntent as its Income
+        // reference, which is what identifies them (the draft itself keeps no link to the rows it
+        // created). The accounts themselves are left alone (deactivating people is a judgment
+        // call), and free-tier registrants stay EXONERE since this charge never paid for them —
+        // so a human still gets told. Groups consumed before that recording existed (2026-09-19)
+        // have no such payment rows: nothing was reversed, and the message says so instead —
+        // worded so it also stays true in the one other way to reach it with nothing reversed (a
+        // retry after the reversal committed but this log didn't get written).
+        // Guarded on its own activity log so a redelivered event doesn't page the admins again —
+        // a charge can only be fully refunded once, so one log per draft means already handled.
+        const alreadyNotified = await prisma.activityLog.findFirst({
+          where:  { associationId, action: "MEMBERSHIP_GROUP_REFUNDED", entityId: draftId },
+          select: { id: true },
+        })
+        if (alreadyNotified) break
+
+        // Notify first, write the marker last. The other way round, a failing notification
+        // insert 500s the handler, Stripe redelivers, the guard above matches the marker that
+        // did get written — and nobody is ever told a group adhésion was refunded. This order
+        // makes the worst case a duplicate notification instead of a lost one, which is the
+        // right trade-off here: the check above can't be atomic with the write below anyway, so
+        // two concurrent deliveries can already both get through. writeActivityLog swallows its
+        // own errors too, so the marker can't be relied on to fail loudly if it doesn't land.
         const admins = await prisma.user.findMany({
           where:  { associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
           select: { id: true },
         })
         if (admins.length) {
           const amountLabel = (charge.amount_refunded / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+          const cotisationsOutcome = refundedCotisations.length > 0
+            ? `Les ${refundedCotisations.length} cotisation(s) payée(s) par ce paiement ne sont plus marquées comme réglées. Les comptes créés restent actifs — désactivez-les manuellement si besoin.`
+            : "Aucune cotisation payée par ce paiement n'a pu être annulée automatiquement — vérifiez l'état des cotisations de ce groupe et des comptes créés, et corrigez-les manuellement si besoin."
           await prisma.notification.createMany({
             data: admins.map(a => ({
               userId: a.id,
               title:  "Adhésion groupée remboursée",
-              body:   `Un remboursement total de ${amountLabel} a été reçu pour une inscription groupée. Les comptes créés n'ont pas été annulés automatiquement — vérifiez et corrigez manuellement si besoin.`,
+              body:   `Un remboursement total de ${amountLabel} a été reçu pour une inscription groupée. ${cotisationsOutcome}`,
               link:   "/dashboard/membres",
               scope:  "GESTION",
             })),
             skipDuplicates: true,
           })
           await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+        }
+
+        await writeActivityLog({
+          associationId,
+          action:   "MEMBERSHIP_GROUP_REFUNDED",
+          entity:   "MembershipCheckoutDraft",
+          entityId: draftId,
+          metadata: { refundedCotisationIds: refundedCotisations.map(refundedCotisation => refundedCotisation.id), stripeEventId: event.id },
+        })
+      } else {
+        // A recurring cotisation's renewal or an installment plan's monthly charge: Stripe mints
+        // that PaymentIntent itself when the invoice is finalized, so it carries none of the
+        // metadata the branches above key on, and the Income its invoice.paid handler posted
+        // references the invoice id, not the PaymentIntent (see handleCotisationInvoicePaid and
+        // handleInstallmentInvoicePaid) — the lookup above found nothing. This API version no
+        // longer exposes charge.invoice, so the invoice is reached through its InvoicePayment.
+        // Reversing that payment re-derives the status: a refunded renewal is no longer PAYE, a
+        // refunded installment drops the cotisation back to PARTIELLEMENT_PAYEE/EN_RETARD. Its
+        // Income is soft-cancelled like every other refunded Income here. Any other invoice
+        // (platform billing, a recurring donation) simply has no cotisation payment to find.
+        // A Stripe API error propagates on purpose: the webhook answers 500 and Stripe retries,
+        // rather than a refunded membership staying PAYE for good.
+        const invoicePayments = await stripe.invoicePayments.list({
+          payment: { type: "payment_intent", payment_intent: paymentIntentId },
+          limit:   1,
+        })
+        const refundedInvoice   = invoicePayments.data[0]?.invoice
+        const refundedInvoiceId = typeof refundedInvoice === "string" ? refundedInvoice : refundedInvoice?.id
+        if (refundedInvoiceId) {
+          // COTISATION_REFUNDED logs are written inside the helper's transaction, alongside the
+          // reversal they describe — same reasoning as the call earlier in this branch.
+          await removeRefundedCotisationPaymentsByReference(refundedInvoiceId, {
+            paymentIntentId, invoiceId: refundedInvoiceId, stripeEventId: event.id,
+          }, associationId)
         }
       }
       break
@@ -1306,8 +1398,18 @@ export async function POST(req: Request) {
     case "invoice.paid": {
       const invoice = event.data.object as Stripe.Invoice
       await handleDonationInvoicePaid(invoice)
-      await handleCotisationInvoicePaid(invoice)
-      await handleInstallmentInvoicePaid(invoice)
+      const cotisationResult  = await handleCotisationInvoicePaid(invoice)
+      const installmentResult = await handleInstallmentInvoicePaid(invoice)
+      // One of our own membership subscriptions whose checkout.session.completed hasn't created
+      // its row yet (see shouldRetryUntilCheckoutProcessed) — anything non-2xx makes Stripe
+      // redeliver this same event later with backoff, by which point the row exists. An explicit
+      // response rather than a throw: this is an expected ordering race, not a failure worth an
+      // unhandled-error stack trace. Safe to replay: the donation handler dedupes on the invoice
+      // id (Don.stripeSessionId), and both membership handlers on the Income it posts (see
+      // isReferenceAlreadyRecorded), so a redelivery can't record the same payment twice.
+      if (cotisationResult === "awaiting-checkout" || installmentResult === "awaiting-checkout") {
+        return NextResponse.json({ error: "Adhésion pas encore enregistrée — paiement à retraiter plus tard" }, { status: 503 })
+      }
       break
     }
 
