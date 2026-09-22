@@ -41,7 +41,7 @@ Before adding:
 - an icon container
 - a hover effect
 
-first ask whether the same hierarchy can be achieved with:
+first ask whether the same hierarchy can be achieved with::
 
 - typography
 - spacing
