@@ -24,8 +24,12 @@ type ChartPoint = {
 
 const MONTH_LABELS = ["Janv.", "Févr.", "Mars", "Avr.", "Mai", "Juin", "Juil.", "Août", "Sept.", "Oct.", "Nov.", "Déc."]
 
+function formatEuroAmount(amount: number): string {
+  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount)
+}
+
 function formatEuros(cents: number): string {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(cents / 100)
+  return formatEuroAmount(cents / 100)
 }
 
 function RevenueTip({ active, payload }: {
@@ -34,10 +38,12 @@ function RevenueTip({ active, payload }: {
 }) {
   if (!active || !payload?.length || payload[0].value == null) return null
   const { value, payload: point } = payload[0]
+  // `value` here is chartData's `total`, already converted to euros — formatEuros expects
+  // cents and would divide by 100 a second time (a real bug: 728,80€ rendered as "7,29 €").
   return (
     <div className="rounded-lg border bg-background px-3 py-2 text-xs shadow-lg">
       <p className="font-medium">{point.label}{point.isCurrent ? " (partiel)" : ""}</p>
-      <p className="font-semibold">{formatEuros(value)}</p>
+      <p className="font-semibold">{formatEuroAmount(value)}</p>
     </div>
   )
 }
