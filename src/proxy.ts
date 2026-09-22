@@ -9,14 +9,23 @@ import { resolveAssociationSlugByHost } from "@/lib/custom-domain-lookup"
 // customDomain lookup. Anything else might be an association's own verified domain.
 const KNOWN_HOSTS = new Set(["formwise.fr", "www.formwise.fr", "localhost", "127.0.0.1"])
 
+// Shared static files referenced by every page's <head> (manifest.webmanifest, favicon.ico,
+// icon0.svg, ...) live at the app root, not nested under [slug] — a custom-domain visitor's
+// browser still requests them by that same shared path, so they must never get folded into
+// the slug rewrite below or they 404 (a real bug found via production logs: /app/manifest.
+// webmanifest was rewriting to /app/{slug}/manifest.webmanifest, which doesn't exist).
+const STATIC_ASSET_PATH = /\.[a-zA-Z0-9]+$/
+
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0] ?? ""
   if (host && !KNOWN_HOSTS.has(host) && !host.endsWith(".vercel.app")) {
-    const slug = await resolveAssociationSlugByHost(host)
-    if (slug) {
-      const { pathname, search } = request.nextUrl
-      const targetPath = pathname === "/" ? "" : pathname
-      return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
+    const { pathname, search } = request.nextUrl
+    if (!STATIC_ASSET_PATH.test(pathname)) {
+      const slug = await resolveAssociationSlugByHost(host)
+      if (slug) {
+        const targetPath = pathname === "/" ? "" : pathname
+        return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
+      }
     }
   }
 

@@ -9,6 +9,10 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/",
+      "destination": "/app/"
+    },
+    {
       "source": "/:path*",
       "destination": "/app/:path*"
     }
