@@ -1,8 +1,16 @@
 {
   "rewrites": [
     {
-      "source": "/:path((?!(app|api)(/|$)).*)",
-      "destination": "/app/:path"
+      "source": "/app/:path*",
+      "destination": "/app/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/app/:path*"
     }
   ],
   "crons": [
