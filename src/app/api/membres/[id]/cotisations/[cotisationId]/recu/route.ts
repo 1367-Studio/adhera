@@ -20,7 +20,7 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
 
   const membre = await prisma.membre.findUnique({
     where:  { id },
-    select: { firstName: true, lastName: true, address: true },
+    select: { firstName: true, lastName: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 

@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paríž...",
     "viewOnGoogleMaps": "Pozrite si na Google Maps"
   },
+  "address": {
+    "street": "Adresa",
+    "complement": "Doplnok adresy",
+    "complementPlaceholder": "Budova, poschodie, schránka…",
+    "postalCode": "PSČ",
+    "city": "Mesto",
+    "country": "Krajina"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prihlásiť sa",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Názov *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefón",
-      "addressLabel": "Adresa",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (voliteľné)",
       "fileAttach": "Priložte súbor",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Krstné meno",
       "lastNameLabel": "Názov",
       "emailLabel": "Email",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Dátum narodenia",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilné zariadenia",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paríž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paríž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Aby ste sa dostali do svojej členskej zóny.",
       "passwordRequirementsTitle": "Vaše heslo musí obsahovať:",
       "passwordRuleMinLength": "Aspoň {count} Postavy",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Dátum narodenia",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilné zariadenia",
@@ -3953,8 +3956,6 @@
         "allergies": "Známe alergie",
         "allergiesPlaceholder": "Arachidy, peľ...",
         "type": "Typ člena",
-        "address": "Adresa",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paríž",
         "preferredLocale": "Preferovaný jazyk",
         "spokenLanguage": "Hovorený jazyk",
         "cotisationTier": "Členský poplatok"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Neplatné telefónne číslo",
         "birthDate": "Dátum narodenia",
         "birthDateInPast": "Dátum narodenia musí byť v minulom čase",
-        "address": "Adresa",
-        "addressPlaceholder": "123 rue de la Paix, Paríž",
         "civilite": "Názov",
         "groupeSanguin": "Krvná skupina",
         "possedeTshirt": "Má tričko",

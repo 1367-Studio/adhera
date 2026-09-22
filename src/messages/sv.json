@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Se på Google Maps"
   },
+  "address": {
+    "street": "Adress",
+    "complement": "Adressrad 2",
+    "complementPlaceholder": "Byggnad, våning, brevlåda…",
+    "postalCode": "Postnummer",
+    "city": "Ort",
+    "country": "Land"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Logga in",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Namn *",
       "emailLabel": "E-post *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adress",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (valfritt)",
       "fileAttach": "Bifoga en fil",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Förnamn",
       "lastNameLabel": "Namn",
       "emailLabel": "E-post",
-      "addressLabel": "Adress",
       "birthDateLabel": "Födelsedatum",
       "phoneLabel": "Fast telefon",
       "mobileLabel": "Mobil",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "För att komma åt ditt medlemsområde.",
       "passwordRequirementsTitle": "Ditt lösenord måste innehålla:",
       "passwordRuleMinLength": "Åtminstone {count} Karaktärer",
-      "addressLabel": "Adress",
       "birthDateLabel": "Födelsedatum",
       "phoneLabel": "Fast telefon",
       "mobileLabel": "Mobil",
@@ -3953,8 +3956,6 @@
         "allergies": "Kända allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstyp",
-        "address": "Adress",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Föredraget språk",
         "spokenLanguage": "Talat språk",
         "cotisationTier": "Medlemsavgift"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Ogiltigt telefonnummer",
         "birthDate": "Födelsedatum",
         "birthDateInPast": "Födelsedatumet måste vara i dåtid",
-        "address": "Adress",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Titel",
         "groupeSanguin": "Blodgrupp",
         "possedeTshirt": "Har en T-shirt",

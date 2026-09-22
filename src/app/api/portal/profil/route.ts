@@ -4,6 +4,8 @@ import { z } from "zod"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { computeMemberDiff, writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { addressColumnsPatch } from "@/lib/address"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const phoneRegex = /^[+\d][\d\s.\-()]{5,19}$/
 
@@ -12,7 +14,14 @@ const updateSchema = z.object({
     v => !v || phoneRegex.test(v),
     "Numéro de téléphone invalide",
   ),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:   z.string().trim().optional().or(z.literal("")),
+  addressStreet:     z.string().trim().optional().or(z.literal("")),
+  addressComplement: z.string().trim().optional().or(z.literal("")),
+  postalCode:        z.string().trim().optional().or(z.literal("")),
+  city:              z.string().trim().optional().or(z.literal("")),
+  country:           z.string().trim().optional().or(z.literal("")),
   birthDate: z.string().optional().or(z.literal("")).refine(
     v => !v || new Date(v) < new Date(),
     "La date de naissance doit être dans le passé",
@@ -26,7 +35,7 @@ const updateSchema = z.object({
   ]).optional().or(z.literal("")),
   allergies: z.string().trim().optional().or(z.literal("")),
   photoUrl:  z.string().trim().optional().or(z.literal("")),
-  preferredLocale: z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional().or(z.literal("")),
+  preferredLocale: z.enum(SUPPORTED_LOCALES).optional().or(z.literal("")),
   spokenLanguage:  z.enum(SPOKEN_LANGUAGE_CODES).optional().or(z.literal("")),
   possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
   tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
@@ -48,7 +57,7 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { phone, address, birthDate, civilite, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, ...rest } = parsed.data
+  const { phone, address, addressStreet, addressComplement, postalCode, city, country, birthDate, civilite, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, ...rest } = parsed.data
 
   // Server-side backstop for the client's reactive clear (profil/page.tsx): never persist
   // "does not have a t-shirt" alongside a size, regardless of what the request body says.
@@ -60,7 +69,9 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
     data: {
       ...rest,
       ...(phone     !== undefined ? { phone:     phone     || null } : {}),
-      ...(address   !== undefined ? { address:   address   || null } : {}),
+      // Les six colonnes d'adresse sont recalculées ensemble à partir de ce qui est envoyé
+      // complété par la fiche existante — voir addressColumnsPatch (src/lib/address.ts).
+      ...addressColumnsPatch({ address, addressStreet, addressComplement, postalCode, city, country }, membre),
       ...(birthDate !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
       ...(civilite      !== undefined ? { civilite:      civilite      || null } : {}),
       ...(groupeSanguin !== undefined ? { groupeSanguin: groupeSanguin || null } : {}),

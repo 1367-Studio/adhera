@@ -5,6 +5,7 @@ import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, PLATFORM
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { isValidSiret } from "@/lib/siret"
+import { addressColumns, formatAddress } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -22,7 +23,14 @@ const schema = z.object({
   donorType:     z.enum(["INDIVIDUAL", "COMPANY"]).optional().default("INDIVIDUAL"),
   companyName:   z.string().trim().min(1).max(200).optional(),
   siret:         z.string().trim().regex(/^\d{14}$/, "SIRET invalide (14 chiffres)").optional(),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:       z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(200).optional(),
+  addressComplement: z.string().trim().max(200).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(100).optional(),
+  country:           z.string().trim().max(100).optional(),
   birthDate:     z.string().trim().max(20).optional(),
   phone:         z.string().trim().max(30).optional(),
   mobile:        z.string().trim().max(30).optional(),
@@ -103,9 +111,14 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
   if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && amount < Number(tier.ineligibleAmount))
     return NextResponse.json({ error: "Le montant du don ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce palier." }, { status: 422 })
 
-  const { address, birthDate, phone, mobile, gender } = parsed.data
+  const { address, addressStreet, addressComplement, postalCode, city, country, birthDate, phone, mobile, gender } = parsed.data
+  // Même raisonnement que la route publique : l'adresse arrive structurée (formulaire
+  // actuel) ou en texte libre (onglet resté ouvert sur l'ancien formulaire), et ce bloc
+  // sert autant au contrôle « champ requis » qu'à l'écriture en base.
+  const donorAddress = { street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }
+  const composedAddress = formatAddress(donorAddress)
   const standardChecks: [string, string | undefined, string][] = [
-    [form.fieldAddress,   address,   "Adresse"],
+    [form.fieldAddress,   composedAddress ?? undefined, "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
@@ -174,7 +187,9 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         companyName: donorType === "COMPANY" ? companyName : null,
         siret:       donorType === "COMPANY" ? siret : null,
         email:       email!,
-        address:   address || null,
+        // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+        // addressColumns (src/lib/address.ts).
+        ...addressColumns(donorAddress),
         amount,
         message:   message || null,
         anonymous,
@@ -218,7 +233,14 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
       companyName: donorType === "COMPANY" ? (companyName ?? "") : "",
       siret:       donorType === "COMPANY" ? (siret ?? "") : "",
       email:       email!,
-      address: address ?? "",
+      // L'adresse voyage dans les métadonnées Stripe champ par champ : la souscription
+      // n'existe en base qu'au retour du webhook, qui la réécrira via addressColumns.
+      address:           address           ?? "",
+      addressStreet:     addressStreet     ?? "",
+      addressComplement: addressComplement ?? "",
+      postalCode:        postalCode        ?? "",
+      city:              city              ?? "",
+      country:           country           ?? "",
       message: message ?? "",
       anonymous: String(anonymous),
       answers:   JSON.stringify(answers),
@@ -276,7 +298,8 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
       companyName: donorType === "COMPANY" ? companyName : null,
       siret:       donorType === "COMPANY" ? siret : null,
       email:       email!,
-      address:   address || null,
+      // Idem que la branche hors ligne ci-dessus : les six colonnes écrites ensemble.
+      ...addressColumns(donorAddress),
       amount,
       message:   message || null,
       anonymous,

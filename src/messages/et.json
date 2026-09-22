@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariis...",
     "viewOnGoogleMaps": "Vaata Google Mapsis"
   },
+  "address": {
+    "street": "Aadress",
+    "complement": "Aadressi lisarida",
+    "complementPlaceholder": "Hoone, korrus, postkast…",
+    "postalCode": "Postiindeks",
+    "city": "Linn",
+    "country": "Riik"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Logi sisse",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Nimi *",
       "emailLabel": "Meil*",
       "phoneLabel": "Telefon",
-      "addressLabel": "Aadress",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (valikuline)",
       "fileAttach": "Lisa fail",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Eesnimi",
       "lastNameLabel": "Nimi",
       "emailLabel": "Meil",
-      "addressLabel": "Aadress",
       "birthDateLabel": "Sünnikuupäev",
       "phoneLabel": "Lauatelefon",
       "mobileLabel": "Mobiilne",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariis",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariis",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Et pääseda ligi oma liikmealale.",
       "passwordRequirementsTitle": "Sinu parool peab sisaldama:",
       "passwordRuleMinLength": "Vähemalt {count} Tegelased",
-      "addressLabel": "Aadress",
       "birthDateLabel": "Sünnikuupäev",
       "phoneLabel": "Lauatelefon",
       "mobileLabel": "Mobiilne",
@@ -3953,8 +3956,6 @@
         "allergies": "Tuntud allergiad",
         "allergiesPlaceholder": "Arahhiidid, õietolm...",
         "type": "Liikmetüüp",
-        "address": "Aadress",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariis",
         "preferredLocale": "Eelistatud keel",
         "spokenLanguage": "Räägitav keel",
         "cotisationTier": "Liikmemaks"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Kehtetu telefoninumber",
         "birthDate": "Sünnikuupäev",
         "birthDateInPast": "Sünniaeg peab olema minevikuvormis",
-        "address": "Aadress",
-        "addressPlaceholder": "123 rue de la Paix, Pariis",
         "civilite": "Pealkiri",
         "groupeSanguin": "Veregrupp",
         "possedeTshirt": "Tal on T-särk",

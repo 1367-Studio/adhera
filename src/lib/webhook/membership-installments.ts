@@ -18,6 +18,7 @@ import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { shouldRetryUntilCheckoutProcessed } from "@/lib/webhook/cotisation-subscriptions"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { addressColumns } from "@/lib/address"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -98,7 +99,17 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
           lastName:      meta.lastName ?? "",
           email:         meta.email,
           phone:         meta.phone || null,
-          address:       meta.address || null,
+          // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+          // addressColumns dans src/lib/address.ts. Une session créée avant le découpage en
+          // colonnes structurées ne porte que `address`, et reste donc écrite telle quelle.
+          ...addressColumns({
+            street:     meta.addressStreet,
+            complement: meta.addressComplement,
+            postalCode: meta.postalCode,
+            city:       meta.city,
+            country:    meta.country,
+            legacy:     meta.address,
+          }),
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,

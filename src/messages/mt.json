@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariġi...",
     "viewOnGoogleMaps": "Ara fuq Google Maps"
   },
+  "address": {
+    "street": "Indirizz",
+    "complement": "Linja tal-indirizz 2",
+    "complementPlaceholder": "Bini, sular, kaxxa postali…",
+    "postalCode": "Kodiċi postali",
+    "city": "Belt",
+    "country": "Pajjiż"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Illogja",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Isem *",
       "emailLabel": "Email*",
       "phoneLabel": "Telefown",
-      "addressLabel": "Indirizz",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (fakultattiv)",
       "fileAttach": "Għaqqad fajl",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Isem l-Ewwel",
       "lastNameLabel": "Isem",
       "emailLabel": "Email",
-      "addressLabel": "Indirizz",
       "birthDateLabel": "Id-data tat-twelid",
       "phoneLabel": "Telefon bil-linja fissa",
       "mobileLabel": "Mobile",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariġi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariġi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Biex taċċessa l-ispazju tal-membri tiegħek.",
       "passwordRequirementsTitle": "Il-password tiegħek trid tinkludi:",
       "passwordRuleMinLength": "Mill-inqas {count} Karattri",
-      "addressLabel": "Indirizz",
       "birthDateLabel": "Id-data tat-twelid",
       "phoneLabel": "Telefon bil-linja fissa",
       "mobileLabel": "Mobile",
@@ -3953,8 +3956,6 @@
         "allergies": "Allerġiji magħrufa",
         "allergiesPlaceholder": "Arachides, pollini...",
         "type": "Tip ta' Membru",
-        "address": "Indirizz",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariġi",
         "preferredLocale": "Lingwa preferuta",
         "spokenLanguage": "Lingwa mitkellma",
         "cotisationTier": "Miżata tal-Membri"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Numru tat-telefon invalidu",
         "birthDate": "Id-data tat-twelid",
         "birthDateInPast": "Id-data tat-twelid trid tkun fil-passat",
-        "address": "Indirizz",
-        "addressPlaceholder": "123 rue de la Paix, Pariġi",
         "civilite": "Titlu",
         "groupeSanguin": "Tip ta' demm",
         "possedeTshirt": "Għandu T-shirt",

@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Vezi pe Google Maps"
   },
+  "address": {
+    "street": "Adresă",
+    "complement": "Complement adresă",
+    "complementPlaceholder": "Clădire, etaj, cutie poștală…",
+    "postalCode": "Cod poștal",
+    "city": "Oraș",
+    "country": "Țară"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Conectează-te",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Nume *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresă",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opțional)",
       "fileAttach": "Atașează un fișier",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Prenume",
       "lastNameLabel": "Nume",
       "emailLabel": "Email",
-      "addressLabel": "Adresă",
       "birthDateLabel": "Data nașterii",
       "phoneLabel": "Telefon fix",
       "mobileLabel": "Mobil",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Pentru a accesa zona ta de membri.",
       "passwordRequirementsTitle": "Parola ta trebuie să conțină:",
       "passwordRuleMinLength": "Cel puțin {count} Personaje",
-      "addressLabel": "Adresă",
       "birthDateLabel": "Data nașterii",
       "phoneLabel": "Telefon fix",
       "mobileLabel": "Mobil",
@@ -3953,8 +3956,6 @@
         "allergies": "Alergii cunoscute",
         "allergiesPlaceholder": "Arahide, polen...",
         "type": "Tip de membru",
-        "address": "Adresă",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Limba preferată",
         "spokenLanguage": "Limba vorbită",
         "cotisationTier": "Taxa de membru"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Număr de telefon invalid",
         "birthDate": "Data nașterii",
         "birthDateInPast": "Data nașterii trebuie să fie la timpul trecut",
-        "address": "Adresă",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Titlu",
         "groupeSanguin": "Grupa sanguină",
         "possedeTshirt": "Are un tricou",

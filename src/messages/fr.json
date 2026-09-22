@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris…",
     "viewOnGoogleMaps": "Voir sur Google Maps"
   },
+  "address": {
+    "street": "Adresse",
+    "complement": "Complément d'adresse",
+    "complementPlaceholder": "Bâtiment, étage, boîte aux lettres…",
+    "postalCode": "Code postal",
+    "city": "Ville",
+    "country": "Pays"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Connexion",
@@ -1414,7 +1422,6 @@
       "lastNameLabel": "Nom *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Téléphone",
-      "addressLabel": "Adresse",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optionnel)",
       "fileAttach": "Joindre un fichier",
@@ -2899,7 +2906,6 @@
       "firstNameLabel": "Prénom",
       "lastNameLabel": "Nom",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Date de naissance",
       "phoneLabel": "Téléphone fixe",
       "mobileLabel": "Mobile",
@@ -2917,7 +2923,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3201,7 +3206,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3231,7 +3235,6 @@
       "passwordHint": "Pour accéder à votre espace membre.",
       "passwordRequirementsTitle": "Votre mot de passe doit contenir :",
       "passwordRuleMinLength": "Au moins {count} caractères",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Date de naissance",
       "phoneLabel": "Téléphone fixe",
       "mobileLabel": "Mobile",
@@ -4037,8 +4040,6 @@
         "allergies": "Allergies connues",
         "allergiesPlaceholder": "Arachides, pollen…",
         "type": "Type de membre",
-        "address": "Adresse",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Langue préférée",
         "spokenLanguage": "Langue parlée",
         "cotisationTier": "Cotisation — tarif d'adhésion"
@@ -5381,8 +5382,6 @@
         "phoneInvalid": "Numéro de téléphone invalide",
         "birthDate": "Date de naissance",
         "birthDateInPast": "La date de naissance doit être dans le passé",
-        "address": "Adresse",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Civilité",
         "groupeSanguin": "Groupe sanguin",
         "possedeTshirt": "Possède un tee-shirt",

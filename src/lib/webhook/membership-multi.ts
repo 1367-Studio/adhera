@@ -18,6 +18,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { addressColumns } from "@/lib/address"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -31,7 +32,15 @@ export interface MembershipMultiRegistrant {
   spokenLanguage?: string
   phone?:     string
   mobile?:    string
+  // `address` est l'adresse héritée en texte libre : les brouillons créés avant le découpage
+  // en colonnes structurées n'ont que celle-là, et doivent continuer d'être consommés tels
+  // quels (voir addressColumns dans src/lib/address.ts).
   address?:   string
+  addressStreet?:     string
+  addressComplement?: string
+  postalCode?:        string
+  city?:              string
+  country?:           string
   photoUrl?:  string
   locale?:    string
   answers:    Record<string, string>
@@ -111,6 +120,16 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
         const birthDateValue = r.birthDate ? new Date(r.birthDate) : null
         const sexeValue       = r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null
         const spokenLanguageValue = isSpokenLanguage(r.spokenLanguage) ? r.spokenLanguage : null
+        // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+        // addressColumns dans src/lib/address.ts.
+        const membreAddressColumns = addressColumns({
+          street:     r.addressStreet,
+          complement: r.addressComplement,
+          postalCode: r.postalCode,
+          city:       r.city,
+          country:    r.country,
+          legacy:     r.address,
+        })
 
         let membreId: string
         if (i === 0) {
@@ -126,7 +145,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
             data: {
               firstName: r.firstName, lastName: r.lastName, email: draft.email,
               phone:         r.phone || null,
-              address:       r.address || null,
+              ...membreAddressColumns,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
               spokenLanguage: spokenLanguageValue,
@@ -146,7 +165,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
             data: {
               firstName: r.firstName, lastName: r.lastName, email: null,
               phone:         r.phone || null,
-              address:       r.address || null,
+              ...membreAddressColumns,
               birthDate:     birthDateValue,
               sexe:          sexeValue,
               spokenLanguage: spokenLanguageValue,

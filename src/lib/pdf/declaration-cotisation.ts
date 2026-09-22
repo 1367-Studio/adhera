@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { nextCotisationDeclarationNumber } from "@/lib/document-numbering"
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib"
 import { APP_TIME_ZONE } from "@/lib/date-format"
+import { formatAddress } from "@/lib/address"
 
 type CotisationForDeclaration = {
   id:                  string
@@ -17,6 +18,11 @@ type MembreForDeclaration = {
   firstName: string
   lastName:  string
   address:   string | null
+  addressStreet:     string | null
+  addressComplement: string | null
+  postalCode:        string | null
+  city:              string | null
+  country:           string | null
 }
 
 type AssociationForDeclaration = {
@@ -115,17 +121,26 @@ y -= 22
 text(`N° ${declarationNumber}`, 20, 10)
 y -= 22
 
-  if (association.address || association.city) {
-    text([association.address, association.city].filter(Boolean).join(", "), 20, 10)
+  const associationAddress = formatAddress({ street: association.address, city: association.city })
+  if (associationAddress) {
+    text(associationAddress, 20, 10)
     y -= 20
   }
 
   text("Membre :", 20, 10)
   text(`${membre.firstName} ${membre.lastName}`, 90, 10)
   y -= 14
-  if (membre.address) {
+  const membreAddress = formatAddress({
+    street:     membre.addressStreet,
+    complement: membre.addressComplement,
+    postalCode: membre.postalCode,
+    city:       membre.city,
+    country:    membre.country,
+    legacy:     membre.address,
+  })
+  if (membreAddress) {
     text("Adresse :", 20, 10)
-    text(membre.address, 90, 10)
+    text(membreAddress, 90, 10)
     y -= 14
   }
 

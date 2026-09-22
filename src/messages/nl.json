@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parijs...",
     "viewOnGoogleMaps": "Zie op Google Maps"
   },
+  "address": {
+    "street": "Adres",
+    "complement": "Adresregel 2",
+    "complementPlaceholder": "Gebouw, verdieping, brievenbus…",
+    "postalCode": "Postcode",
+    "city": "Plaats",
+    "country": "Land"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Log in",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Naam *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefoon",
-      "addressLabel": "Adres",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optioneel)",
       "fileAttach": "Voeg een bestand toe",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Voornaam",
       "lastNameLabel": "Naam",
       "emailLabel": "E-mail",
-      "addressLabel": "Adres",
       "birthDateLabel": "Geboortedatum",
       "phoneLabel": "Vaste telefoon",
       "mobileLabel": "Mobiel",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parijs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parijs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Om toegang te krijgen tot je ledengebied.",
       "passwordRequirementsTitle": "Je wachtwoord moet het volgende bevatten:",
       "passwordRuleMinLength": "Tenminste {count} Personages",
-      "addressLabel": "Adres",
       "birthDateLabel": "Geboortedatum",
       "phoneLabel": "Vaste telefoon",
       "mobileLabel": "Mobiel",
@@ -3953,8 +3956,6 @@
         "allergies": "Bekende allergieën",
         "allergiesPlaceholder": "Arachides, stuifmeel...",
         "type": "Lidtype",
-        "address": "Adres",
-        "addressPlaceholder": "12 rue de la Paix, Parijs 75001",
         "preferredLocale": "Voorkeurstaal",
         "spokenLanguage": "Gesproken taal",
         "cotisationTier": "Lidmaatschapsbijdrage"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Ongeldig telefoonnummer",
         "birthDate": "Geboortedatum",
         "birthDateInPast": "De geboortedatum moet in de verleden tijd zijn",
-        "address": "Adres",
-        "addressPlaceholder": "123 rue de la Paix, Parijs",
         "civilite": "Titel",
         "groupeSanguin": "Bloedgroep",
         "possedeTshirt": "Heeft een T-shirt",

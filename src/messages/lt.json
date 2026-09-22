@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryžius...",
     "viewOnGoogleMaps": "Žr. Google žemėlapiuose"
   },
+  "address": {
+    "street": "Adresas",
+    "complement": "Papildoma adreso eilutė",
+    "complementPlaceholder": "Pastatas, aukštas, pašto dėžutė…",
+    "postalCode": "Pašto kodas",
+    "city": "Miestas",
+    "country": "Šalis"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prisijungti, prisijunk",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Vardas, pavadinimas*",
       "emailLabel": "El paštas*",
       "phoneLabel": "Telefonas",
-      "addressLabel": "Adresas",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (pasirinktinai)",
       "fileAttach": "Prisegti failą",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Vardas",
       "lastNameLabel": "Vardas, pavadinimas",
       "emailLabel": "El paštas",
-      "addressLabel": "Adresas",
       "birthDateLabel": "Gimimo data",
       "phoneLabel": "Fiksuoto ryšio telefonas",
       "mobileLabel": "Mobilusis",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryžius",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryžius",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Norėdami pasiekti savo narių zoną.",
       "passwordRequirementsTitle": "Jūsų slaptažodis turi būti:",
       "passwordRuleMinLength": "Bent jau {count} Veikėjai",
-      "addressLabel": "Adresas",
       "birthDateLabel": "Gimimo data",
       "phoneLabel": "Fiksuoto ryšio telefonas",
       "mobileLabel": "Mobilusis",
@@ -3953,8 +3956,6 @@
         "allergies": "Žinomos alergijos",
         "allergiesPlaceholder": "Arachidai, žiedadulkės...",
         "type": "Narių tipas",
-        "address": "Adresas",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paryžius",
         "preferredLocale": "Pageidaujama kalba",
         "spokenLanguage": "Vartojama kalba",
         "cotisationTier": "Narystės mokestis"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Neteisingas telefono numeris",
         "birthDate": "Gimimo data",
         "birthDateInPast": "Gimimo data turi būti būtuoju laiku",
-        "address": "Adresas",
-        "addressPlaceholder": "123 rue de la Paix, Paryžius",
         "civilite": "Pavadinimas",
         "groupeSanguin": "Kraujo grupė",
         "possedeTshirt": "Turi marškinėlius",

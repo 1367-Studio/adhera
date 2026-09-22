@@ -6,15 +6,28 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
+import { addressColumns } from "@/lib/address"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const schema = z.object({
   firstName:     z.string().min(1).max(80),
   lastName:      z.string().min(1).max(80),
   email:         z.string().email().optional().or(z.literal("")),
   phone:         z.string().max(30).optional().or(z.literal("")),
+  // `address` est le champ hérité en texte libre, les cinq suivants ceux du formulaire actuel
+  // (voir AddressFields et src/lib/address.ts). Tous facultatifs : cette route est le rail
+  // d'inscription historique du site public, et rien de ce qui la poste aujourd'hui n'envoie
+  // d'adresse — mais ce qui en enverrait une, ancien onglet comme nouveau, est désormais
+  // enregistré au lieu d'être silencieusement ignoré.
+  address:           z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(300).optional(),
+  addressComplement: z.string().trim().max(300).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(120).optional(),
+  country:           z.string().trim().max(80).optional(),
   typeId:        z.string().optional(),
   acceptedTerms: z.literal(true),
-  locale:        z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:        z.enum(SUPPORTED_LOCALES).optional(),
 })
 
 export async function POST(
@@ -86,6 +99,16 @@ export async function POST(
       lastName,
       email:           email || null,
       phone:           phone || null,
+      // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+      // addressColumns dans src/lib/address.ts.
+      ...addressColumns({
+        street:     parsed.data.addressStreet,
+        complement: parsed.data.addressComplement,
+        postalCode: parsed.data.postalCode,
+        city:       parsed.data.city,
+        country:    parsed.data.country,
+        legacy:     parsed.data.address,
+      }),
       preferredLocale: locale || null,
       status:          "PENDING",
       associationId:   assoc.id,

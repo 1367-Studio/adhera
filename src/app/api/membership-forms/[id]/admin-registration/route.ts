@@ -13,6 +13,8 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
+import { addressColumns } from "@/lib/address"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 // Same role set as POST /api/membres — whoever can create a member can register one
 // through a form on their behalf.
@@ -32,14 +34,22 @@ const schema = z.object({
   firstName:   z.string().trim().min(1).max(100),
   lastName:    z.string().trim().min(1).max(100),
   email:       z.string().email().max(200),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
+  // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(300).optional(),
+  addressComplement: z.string().trim().max(300).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(120).optional(),
+  country:           z.string().trim().max(80).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
   sexe:        z.enum(["HOMME", "FEMME"]).optional(),
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   photoUrl:    z.string().url().max(500).optional(),
-  locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:      z.enum(SUPPORTED_LOCALES).optional(),
   answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
 })
 
@@ -83,9 +93,14 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   // Same field-matrix validation as the public checkout — the manager fills the same form,
   // the same fields stay required.
-  const { address, birthDate, phone, mobile, sexe, spokenLanguage, photoUrl } = parsed.data
+  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl } = parsed.data
+  // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
+  // en texte libre reste acceptée — même règle que le checkout public (voir addressIsFilled).
+  const hasStructuredAddress =
+    !!parsed.data.addressStreet?.trim() && !!parsed.data.postalCode?.trim() && !!parsed.data.city?.trim()
+  if (form.fieldAddress === "REQUIRED" && !hasStructuredAddress && !parsed.data.address?.trim())
+    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
-    [form.fieldAddress,   address,   "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
@@ -143,7 +158,16 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         data: {
           firstName, lastName, email,
           phone:          phone || null,
-          address:        address || null,
+          // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+          // addressColumns dans src/lib/address.ts.
+          ...addressColumns({
+            street:     parsed.data.addressStreet,
+            complement: parsed.data.addressComplement,
+            postalCode: parsed.data.postalCode,
+            city:       parsed.data.city,
+            country:    parsed.data.country,
+            legacy:     parsed.data.address,
+          }),
           birthDate:      birthDate ? new Date(birthDate) : null,
           sexe:           sexe || null,
           spokenLanguage: spokenLanguage || null,

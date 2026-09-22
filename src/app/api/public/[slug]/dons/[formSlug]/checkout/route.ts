@@ -7,6 +7,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
+import { addressColumns, formatAddress } from "@/lib/address"
 import { consentIp } from "@/lib/consent"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -30,7 +31,14 @@ const schema = z.object({
   companyName: z.string().trim().min(1).max(200).optional(),
   siret:       z.string().trim().regex(/^\d{14}$/, "SIRET invalide (14 chiffres)").optional(),
   email:       z.string().email().max(200),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(200).optional(),
+  addressComplement: z.string().trim().max(200).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(100).optional(),
+  country:           z.string().trim().max(100).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
@@ -138,9 +146,14 @@ export async function POST(
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les EvenementCustomField.
-  const { address, birthDate, phone, mobile, gender } = parsed.data
+  const { address, addressStreet, addressComplement, postalCode, city, country, birthDate, phone, mobile, gender } = parsed.data
+  // L'adresse peut arriver structurée (formulaire actuel) ou en texte libre (onglet resté
+  // ouvert sur l'ancien formulaire) : les deux formes sont décrites d'un bloc ici, et c'est
+  // ce même bloc qui sert au contrôle « champ requis » comme à l'écriture en base.
+  const donorAddress = { street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }
+  const composedAddress = formatAddress(donorAddress)
   const standardChecks: [string, string | undefined, string][] = [
-    [form.fieldAddress,   address,   "Adresse"],
+    [form.fieldAddress,   composedAddress ?? undefined, "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
@@ -246,7 +259,9 @@ export async function POST(
         companyName: donorType === "COMPANY" ? companyName : null,
         siret:       donorType === "COMPANY" ? siret : null,
         email,
-        address:   address || null,
+        // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+        // addressColumns (src/lib/address.ts).
+        ...addressColumns(donorAddress),
         amount,
         message:   message || null,
         anonymous,
@@ -298,7 +313,14 @@ export async function POST(
       companyName: donorType === "COMPANY" ? (companyName ?? "") : "",
       siret:       donorType === "COMPANY" ? (siret ?? "") : "",
       email,
-      address: address ?? "",
+      // L'adresse voyage dans les métadonnées Stripe champ par champ : la souscription
+      // n'existe en base qu'au retour du webhook, qui la réécrira via addressColumns.
+      address:           address           ?? "",
+      addressStreet:     addressStreet     ?? "",
+      addressComplement: addressComplement ?? "",
+      postalCode:        postalCode        ?? "",
+      city:              city              ?? "",
+      country:           country           ?? "",
       message: message ?? "",
       anonymous: String(anonymous),
       answers:   JSON.stringify(answers),
@@ -360,7 +382,8 @@ export async function POST(
       companyName: donorType === "COMPANY" ? companyName : null,
       siret:       donorType === "COMPANY" ? siret : null,
       email,
-      address:   address || null,
+      // Idem que la branche hors ligne ci-dessus : les six colonnes écrites ensemble.
+      ...addressColumns(donorAddress),
       amount,
       message:   message || null,
       anonymous,

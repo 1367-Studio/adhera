@@ -8,6 +8,7 @@ import {
   donationSubscriptionStartedEmail, donationSubscriptionPaymentFailedEmail, donConfirmationEmail,
 } from "@/lib/email"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
+import { addressColumns } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
@@ -82,7 +83,17 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
       companyName: meta.companyName || null,
       siret:       meta.siret || null,
       email:       meta.email ?? "",
-      address:     meta.address || null,
+      // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+      // addressColumns (src/lib/address.ts). Une session ouverte avant le découpage ne porte
+      // que `address` dans ses métadonnées : elle reste enregistrée telle quelle.
+      ...addressColumns({
+        street:     meta.addressStreet,
+        complement: meta.addressComplement,
+        postalCode: meta.postalCode,
+        city:       meta.city,
+        country:    meta.country,
+        legacy:     meta.address,
+      }),
       message:     meta.message || null,
       anonymous:   meta.anonymous === "true",
       answers:     Object.keys(answers).length ? answers : undefined,
@@ -179,7 +190,16 @@ export async function handleDonationInvoicePaid(invoice: Stripe.Invoice) {
       companyName:    donationSub.companyName,
       siret:          donationSub.siret,
       email:           donationSub.email,
-      address:         donationSub.address,
+      // Les six colonnes d'adresse sont recopiées telles quelles depuis l'abonnement : elles
+      // y ont déjà été écrites ensemble par addressColumns au moment du checkout. Sans cette
+      // reprise, seule la première échéance porterait l'adresse structurée et le reçu fiscal
+      // de toutes les suivantes repartirait sans adresse.
+      address:           donationSub.address,
+      addressStreet:     donationSub.addressStreet,
+      addressComplement: donationSub.addressComplement,
+      postalCode:        donationSub.postalCode,
+      city:              donationSub.city,
+      country:           donationSub.country,
       amount,
       message:         donationSub.message,
       anonymous:       donationSub.anonymous,

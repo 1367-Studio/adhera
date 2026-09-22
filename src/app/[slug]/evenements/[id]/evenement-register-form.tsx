@@ -14,10 +14,12 @@ import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
+import { AddressFields } from "@/components/ui/address-fields"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { TermsModal } from "@/components/public/terms-modal"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
+import { EMPTY_ADDRESS_FORM_VALUES } from "@/lib/address"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
@@ -89,14 +91,21 @@ type Attendee = {
   email:        string
   ticketTypeId: string
   phone:        string
-  address:      string
+  // Les cinq colonnes structurées de l'adresse, à plat comme les autres champs du
+  // participant — mêmes noms que AddressFormValues (src/lib/address.ts), pour que le corps
+  // envoyé à l'inscription soit exactement celui des colonnes en base.
+  addressStreet:     string
+  addressComplement: string
+  postalCode:        string
+  city:              string
+  country:           string
   birthDate:    string
   gender:       "" | "HOMME" | "FEMME"
   mobile:       string
   answers:      Record<string, AnswerValue>
 }
 
-const EMPTY_ATTENDEE: Attendee = { firstName: "", lastName: "", email: "", ticketTypeId: "", phone: "", address: "", birthDate: "", gender: "", mobile: "", answers: {} }
+const EMPTY_ATTENDEE: Attendee = { firstName: "", lastName: "", email: "", ticketTypeId: "", phone: "", ...EMPTY_ADDRESS_FORM_VALUES, birthDate: "", gender: "", mobile: "", answers: {} }
 
 type Props = { slug: string; id: string; legalDocuments: RequiredLegalDocument[] }
 
@@ -309,13 +318,21 @@ function AttendeeFields({
       )}
 
       {fieldAddress !== "HIDDEN" && (
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{fieldLabel(fieldAddress, t("addressLabel"))}</label>
-          <input
-            type="text" required={fieldAddress === "REQUIRED"} value={attendee.address} onChange={e => onChange({ address: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-          />
-        </div>
+        // idPrefix indexé par participant : le bloc est répété une fois par billet, et sans
+        // lui les cinq champs porteraient les mêmes id d'un participant à l'autre — cliquer
+        // un libellé mettrait alors le focus sur le champ de quelqu'un d'autre.
+        <AddressFields
+          idPrefix={`attendee-${index}`}
+          required={fieldAddress === "REQUIRED"}
+          value={{
+            addressStreet:     attendee.addressStreet,
+            addressComplement: attendee.addressComplement,
+            postalCode:        attendee.postalCode,
+            city:              attendee.city,
+            country:           attendee.country,
+          }}
+          onChange={onChange}
+        />
       )}
 
       {fieldMobile !== "HIDDEN" && (
@@ -751,7 +768,9 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
         return !!tt && isTicketTypeAvailable(tt)
       })()) &&
       (event.fieldPhone     !== "REQUIRED" || a.phone.trim()     !== "") &&
-      (event.fieldAddress   !== "REQUIRED" || a.address.trim()   !== "") &&
+      // Une adresse obligatoire l'est sur les trois parties qui la rendent postalement
+      // utilisable — le complément et le pays restent facultatifs, comme dans AddressFields.
+      (event.fieldAddress   !== "REQUIRED" || (a.addressStreet.trim() !== "" && a.postalCode.trim() !== "" && a.city.trim() !== "")) &&
       (event.fieldMobile    !== "REQUIRED" || a.mobile.trim()    !== "") &&
       (event.fieldBirthDate !== "REQUIRED" || a.birthDate.trim() !== "") &&
       (event.fieldGender    !== "REQUIRED" || a.gender !== "") &&
@@ -788,7 +807,18 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
             email:     a.email.trim(),
             ticketTypeId: hasTicketTypes ? a.ticketTypeId : undefined,
             phone:     a.phone.trim() || undefined,
-            address:   a.address.trim() || undefined,
+            // Envoyés seulement quand le bloc adresse est affiché, mais alors même vides :
+            // sur une réinscription, la route fusionne l'envoi avec la fiche existante, si
+            // bien qu'une clé absente conserve l'ancienne valeur (c'est ce qui protège les
+            // évènements où le champ est masqué) tandis qu'une chaîne vide efface
+            // réellement — un visiteur qui efface son adresse doit pouvoir l'effacer.
+            ...(event.fieldAddress !== "HIDDEN" ? {
+              addressStreet:     a.addressStreet.trim(),
+              addressComplement: a.addressComplement.trim(),
+              postalCode:        a.postalCode.trim(),
+              city:              a.city.trim(),
+              country:           a.country.trim(),
+            } : {}),
             mobile:    a.mobile.trim() || undefined,
             birthDate: a.birthDate || undefined,
             gender:    a.gender || undefined,

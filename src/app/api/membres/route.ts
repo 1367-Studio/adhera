@@ -8,6 +8,7 @@ import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { membreCreateSchema } from "@/lib/schemas"
+import { addressColumns } from "@/lib/address"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
@@ -47,7 +48,6 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (excludeId) where.id = { not: excludeId }
   if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
   if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
-  if (address)   where.address   = { contains: address,   mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
@@ -76,6 +76,20 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
   if (adherent === "ADHERENT" || adherent === "BENEVOLE") {
     and.push(membreAdherentWhereClause(adherent === "ADHERENT"))
+  }
+  // Le filtre « Adresse » cherche dans le texte libre hérité ET dans les colonnes
+  // structurées : sinon une fiche migrée disparaîtrait des résultats, et tant qu'elle ne
+  // l'est pas, chercher une ville ne la trouverait jamais. Passe par `and` comme les
+  // autres, pour la raison décrite plus haut (where.AND est réassigné d'un bloc).
+  if (address) {
+    and.push({ OR: [
+      { address:           { contains: address, mode: "insensitive" } },
+      { addressStreet:     { contains: address, mode: "insensitive" } },
+      { addressComplement: { contains: address, mode: "insensitive" } },
+      { postalCode:        { contains: address, mode: "insensitive" } },
+      { city:              { contains: address, mode: "insensitive" } },
+      { country:           { contains: address, mode: "insensitive" } },
+    ] })
   }
   if (and.length) where.AND = and
 
@@ -127,7 +141,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, address, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
+  const { birthDate, email, phone, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -162,7 +176,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
     associationId,
     email:         email         || null,
     phone:         phone         || null,
-    address:       address       || null,
+    // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+    // addressColumns dans src/lib/address.ts.
+    ...addressColumns({ street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }),
     typeId:        typeId        || null,
     civilite:      civilite      || null,
     sexe:          sexe          || null,

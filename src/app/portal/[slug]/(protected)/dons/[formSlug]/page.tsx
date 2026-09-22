@@ -9,6 +9,7 @@ import { ArrowLeftIcon, HandHeartIcon, FileIcon, InfoIcon, WarningCircleIcon } f
 import { DateField } from "@/components/ui/date-field"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { AddressFields } from "@/components/ui/address-fields"
 import { Label } from "@/components/ui/label"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
@@ -16,6 +17,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
+import { EMPTY_ADDRESS_FORM_VALUES, addressFormValues, formatAddress, type AddressFormValues } from "@/lib/address"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -55,7 +57,13 @@ type FormInfo = {
   canIssueTaxReceipts: boolean
   tiers: Tier[]
   customFields: CustomField[]
-  member: { firstName: string; lastName: string; email: string; address: string; phone: string }
+  // L'adresse de la fiche arrive sous ses deux formes : les colonnes structurées et le texte
+  // libre hérité, addressFormValues choisissant l'une ou l'autre (voir src/lib/address.ts).
+  member: {
+    firstName: string; lastName: string; email: string; phone: string
+    address: string; addressStreet: string; addressComplement: string
+    postalCode: string; city: string; country: string
+  }
 }
 
 type PaymentMethod = "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT"
@@ -91,7 +99,7 @@ function PortalDonationFormInner() {
   const [donorType, setDonorType]   = useState<"INDIVIDUAL" | "COMPANY">("INDIVIDUAL")
   const [companyName, setCompanyName] = useState("")
   const [siret, setSiret]           = useState("")
-  const [address, setAddress]       = useState("")
+  const [addressValues, setAddressValues] = useState<AddressFormValues>(EMPTY_ADDRESS_FORM_VALUES)
   const [birthDate, setBirthDate]   = useState("")
   const [phone, setPhone]           = useState("")
   const [mobile, setMobile]         = useState("")
@@ -113,7 +121,14 @@ function PortalDonationFormInner() {
         if (data?.tiers.length) setTierId(prev => prev || data.tiers[0].id)
         // Pré-remplit ce qui est déjà connu du profil — le membre n'a pas à le ressaisir.
         if (data?.member) {
-          setAddress(prev => prev || data.member.address)
+          // Jamais par-dessus une saisie en cours : on ne pré-remplit que tant que le bloc
+          // adresse est intact. Une fiche restée en texte libre est reprise dans le champ
+          // « Adresse », comme sur le profil (voir addressFormValues).
+          setAddressValues(previousValues =>
+            Object.values(previousValues).some(fieldValue => fieldValue.trim())
+              ? previousValues
+              : addressFormValues(data.member),
+          )
           setPhone(prev => prev || data.member.phone)
         }
         return data
@@ -167,7 +182,9 @@ function PortalDonationFormInner() {
     (paymentMethod === "STRIPE" ? form.paymentEnabled : selectedTier?.kind === "ONE_OFF") &&
     !!selectedTier && amount > 0 && !belowMinimum && !belowTierMinimum && !belowIneligible &&
     (donorType !== "COMPANY" || (companyName.trim() && siret.trim())) &&
-    (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
+    // Une adresse « requise » est une adresse postale complète — même règle que le
+    // formulaire public ; le complément et le pays restent facultatifs.
+    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim())) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -198,7 +215,11 @@ function PortalDonationFormInner() {
           donorType,
           companyName: donorType === "COMPANY" ? companyName.trim() : undefined,
           siret:       donorType === "COMPANY" ? siret.trim() : undefined,
-          address:     address.trim() || undefined,
+          addressStreet:     addressValues.addressStreet.trim()     || undefined,
+          addressComplement: addressValues.addressComplement.trim() || undefined,
+          postalCode:        addressValues.postalCode.trim()        || undefined,
+          city:              addressValues.city.trim()              || undefined,
+          country:           addressValues.country.trim()           || undefined,
           birthDate:   birthDate.trim() || undefined,
           phone:       phone.trim() || undefined,
           mobile:      mobile.trim() || undefined,
@@ -248,6 +269,17 @@ function PortalDonationFormInner() {
   }
 
   const missingEmail = !form.member.email
+  // L'avertissement « il nous faut votre adresse pour le reçu fiscal » doit tenir compte des
+  // deux formes : une fiche déjà migrée n'a plus que les colonnes structurées, et ne regarder
+  // que le texte libre hérité afficherait l'alerte à des membres qui ont bien une adresse.
+  const memberHasAddress = !!formatAddress({
+    street:     form.member.addressStreet,
+    complement: form.member.addressComplement,
+    postalCode: form.member.postalCode,
+    city:       form.member.city,
+    country:    form.member.country,
+    legacy:     form.member.address,
+  })
 
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
@@ -285,7 +317,7 @@ function PortalDonationFormInner() {
         </div>
       )}
 
-      {!submitted && form.canIssueTaxReceipts && !missingEmail && form.fieldAddress !== "REQUIRED" && !form.member.address && (
+      {!submitted && form.canIssueTaxReceipts && !missingEmail && form.fieldAddress !== "REQUIRED" && !memberHasAddress && (
         <div className="rounded-lg border border-amber-200 bg-amber-50/80 dark:bg-amber-950/20 p-4 flex gap-3">
           <WarningCircleIcon className="size-4 text-amber-600 shrink-0 mt-0.5" />
           <div className="text-sm text-amber-800 dark:text-amber-300 space-y-1">
@@ -418,7 +450,11 @@ function PortalDonationFormInner() {
           )}
 
           {form.fieldAddress !== "HIDDEN" && (
-            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+            <AddressFields
+              value={addressValues}
+              onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
+              required={form.fieldAddress === "REQUIRED"}
+            />
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {form.fieldBirthDate !== "HIDDEN" && (

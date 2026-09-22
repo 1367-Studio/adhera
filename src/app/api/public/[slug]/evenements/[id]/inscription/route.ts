@@ -3,6 +3,7 @@ import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
+import { addressColumns, addressColumnsPatch, type AddressInput } from "@/lib/address"
 import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
@@ -26,7 +27,15 @@ const attendeeSchema = z.object({
   // Present only when the event has EvenementTicketType rows — see the ticketTypes lookup below.
   ticketTypeId: z.string().optional(),
   phone:        z.string().trim().max(30).optional().or(z.literal("")),
-  address:      z.string().trim().max(300).optional().or(z.literal("")),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
+  // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
+  address:           z.string().trim().max(300).optional().or(z.literal("")),
+  addressStreet:     z.string().trim().max(300).optional().or(z.literal("")),
+  addressComplement: z.string().trim().max(300).optional().or(z.literal("")),
+  postalCode:        z.string().trim().max(30).optional().or(z.literal("")),
+  city:              z.string().trim().max(120).optional().or(z.literal("")),
+  country:           z.string().trim().max(120).optional().or(z.literal("")),
   // birthDate/gender get their own Participation columns (mirrors Membre.birthDate/sexe) —
   // mobile has no dedicated column, same as Membre.answers's "mobile" convention, so it
   // rides in `answers` alongside the custom-field replies below.
@@ -77,6 +86,40 @@ const baseSchema = z.object({
   // EvenementDiscountCode, jamais depuis ce que le client a résolu via /discount-code.
   discountCode: z.string().trim().max(30).optional().or(z.literal("")),
 })
+
+// L'adresse d'un participant arrive sous deux formes dans le corps de la requête : les cinq
+// colonnes structurées envoyées par le formulaire actuel, et le texte libre hérité `address`
+// qu'un vieil onglet encore ouvert est seul à poster. Les deux fonctions ci-dessous sont les
+// seules à connaître ce détail ; au-delà, c'est src/lib/address.ts qui décide, à un seul
+// endroit, de ce qui est écrit dans les six colonnes.
+//
+// Le champ « Adresse » de la matrice de champs standards est donc satisfait de deux façons :
+// par une adresse structurée complète (voie + code postal + ville, exactement ce que le
+// formulaire public rend obligatoire), ou par la seule adresse héritée. Le complément et le
+// pays ne comptent jamais : ils restent facultatifs des deux côtés.
+function attendeeAddressIsFilled(attendee: { address?: string; addressStreet?: string; postalCode?: string; city?: string }): boolean {
+  const hasStructuredAddress =
+    !!attendee.addressStreet?.trim() && !!attendee.postalCode?.trim() && !!attendee.city?.trim()
+  return hasStructuredAddress || !!attendee.address?.trim()
+}
+
+function attendeeAddressInput(attendee: {
+  address?:           string
+  addressStreet?:     string
+  addressComplement?: string
+  postalCode?:        string
+  city?:              string
+  country?:           string
+}): AddressInput {
+  return {
+    street:     attendee.addressStreet,
+    complement: attendee.addressComplement,
+    postalCode: attendee.postalCode,
+    city:       attendee.city,
+    country:    attendee.country,
+    legacy:     attendee.address,
+  }
+}
 
 type ResolvedProduct = { varianteId: string; produitId: string; label: string; quantity: number; unitPriceCents: number }
 
@@ -176,7 +219,6 @@ export async function POST(
   // enforced here too, not just client-side — a direct API call could otherwise bypass it.
   const standardFieldChecks: [typeof evenement.fieldPhone, string, string][] = [
     [evenement.fieldPhone, "phone", "Téléphone"],
-    [evenement.fieldAddress, "address", "Adresse"],
     [evenement.fieldMobile, "mobile", "Mobile"],
     [evenement.fieldBirthDate, "birthDate", "Date de naissance"],
     [evenement.fieldGender, "gender", "Genre"],
@@ -186,6 +228,11 @@ export async function POST(
       if (requirement === "REQUIRED" && !a[key as keyof typeof a])
         return NextResponse.json({ error: `Le champ « ${label} » est requis.` }, { status: 422 })
     }
+    // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme
+    // héritée en texte libre reste acceptée — même règle que le checkout d'adhésion (voir
+    // addressIsFilled dans src/app/api/public/[slug]/adhesion/[formSlug]/checkout/route.ts).
+    if (evenement.fieldAddress === "REQUIRED" && !attendeeAddressIsFilled(a))
+      return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   }
 
   // Custom fields are admin-defined per event, so their validation can't be a static
@@ -387,12 +434,15 @@ export async function POST(
   // ---- grouped — an abandoned checkout can be picked back up from the same email.  ----
   if (resolvedAttendees.length === 1) {
     const attendee = resolvedAttendees[0]
-    const { firstName, lastName, email, ticketType, phone, address, birthDateValue, gender, cleanAnswers } = attendee
+    const { firstName, lastName, email, ticketType, phone, birthDateValue, gender, cleanAnswers } = attendee
 
     // Dedup by email — only meaningful for the resume/reuse logic below.
     const existing = await prisma.participation.findFirst({
       where:  { evenementId: evenement.id, email: { equals: email, mode: "insensitive" } },
-      select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true, ticketToken: true, discountCodeId: true },
+      // Les six colonnes d'adresse sont lues ici parce que la mise à jour ci-dessous les
+      // recalcule d'un bloc à partir de ce qui est envoyé complété par ce qui est déjà en
+      // base (voir addressColumnsPatch dans src/lib/address.ts).
+      select: { id: true, ticketPaidAt: true, stripeSessionId: true, orderId: true, rsvp: true, ticketTypeId: true, ticketToken: true, discountCodeId: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true },
     })
 
     // Whether the EXISTING row itself was ever actually going to require payment — keyed off
@@ -435,7 +485,15 @@ export async function POST(
         if (existing) {
           await tx.participation.update({
             where: { id: existing.id },
-            data:  { firstName, lastName, phone: phone || null, address: address || null, birthDate: birthDateValue, gender: gender ?? null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null, ticketToken, paymentMethod: isOffline ? paymentMethod : null, cguvAgreedAt, signedName: cleanSignedName, ...discountFields },
+            data:  {
+              firstName, lastName, phone: phone || null,
+              // Reprise d'une inscription abandonnée : l'adresse se met à jour d'un bloc, à
+              // partir de ce qui est envoyé complété par ce qui est déjà en base. Une
+              // soumission qui ne contient aucun champ d'adresse (événement dont le champ est
+              // masqué, ou simplement laissé vide) n'efface donc pas celle déjà enregistrée.
+              ...addressColumnsPatch({ address: attendee.address, addressStreet: attendee.addressStreet, addressComplement: attendee.addressComplement, postalCode: attendee.postalCode, city: attendee.city, country: attendee.country }, existing),
+              birthDate: birthDateValue, gender: gender ?? null, answers: cleanAnswers, rsvp: "CONFIRME", rsvpAt: new Date(), ticketTypeId: ticketType?.id ?? null, ticketToken, paymentMethod: isOffline ? paymentMethod : null, cguvAgreedAt, signedName: cleanSignedName, ...discountFields,
+            },
           })
           pid = existing.id
         } else {
@@ -446,7 +504,9 @@ export async function POST(
               orderId,
               firstName, lastName, email,
               phone:     phone || null,
-              address:   address || null,
+              // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise —
+              // voir addressColumns dans src/lib/address.ts.
+              ...addressColumns(attendeeAddressInput(attendee)),
               birthDate: birthDateValue,
               gender:    gender ?? null,
               answers: cleanAnswers,
@@ -724,7 +784,8 @@ export async function POST(
             lastName:  a.lastName,
             email:     a.email,
             phone:     a.phone || null,
-            address:   a.address || null,
+            // Mêmes six colonnes que l'inscription individuelle ci-dessus.
+            ...addressColumns(attendeeAddressInput(a)),
             birthDate: a.birthDateValue,
             gender:    a.gender ?? null,
             answers:   a.cleanAnswers,

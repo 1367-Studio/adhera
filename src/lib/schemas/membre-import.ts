@@ -11,7 +11,16 @@ export const importMembreRowSchema = z.object({
   externalId: z.string().trim().optional(), // AssoConnect "ID contact" — see Membre.externalId
   email:      z.string().trim().optional(),
   phone:      z.string().trim().optional(),
+  // Le fichier source fournit déjà voie / complément / code postal / ville / pays en
+  // colonnes séparées : elles sont désormais transmises telles quelles au lieu d'être
+  // concaténées côté client. `address` reste accepté pour les lignes qui n'ont qu'un texte
+  // libre (et pour un onglet resté ouvert sur l'ancienne version).
   address:    z.string().trim().optional(),
+  addressStreet:     z.string().trim().optional(),
+  addressComplement: z.string().trim().optional(),
+  postalCode:        z.string().trim().optional(),
+  city:              z.string().trim().optional(),
+  country:           z.string().trim().optional(),
   sexe:       z.enum(["HOMME", "FEMME"]).optional(),
   civilite:   z.enum(["MME", "MLLE", "M"]).optional(),
   birthDate:  z.string().optional(), // ISO yyyy-mm-dd

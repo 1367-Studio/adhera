@@ -23,6 +23,8 @@ import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { addressColumns } from "@/lib/address"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -31,6 +33,24 @@ const MIN_ITEM_AMOUNT = 1
 // Bounds both Stripe's line_items array and how many rows a single submission can create —
 // see handleMultiRegistrantCheckout below.
 const MAX_REGISTRANTS = 10
+
+// Le champ « Adresse » de la matrice de champs standards est satisfait de deux façons : par
+// une adresse structurée complète (voie + code postal + ville, exactement ce que le formulaire
+// public rend obligatoire), ou par la seule adresse héritée en texte libre — un onglet resté
+// ouvert sur l'ancien formulaire ne poste que celle-là et ne doit pas se voir refuser. Le
+// complément et le pays ne comptent jamais : ils restent facultatifs des deux côtés.
+type SubmittedAddress = {
+  address?:       string
+  addressStreet?: string
+  postalCode?:    string
+  city?:          string
+}
+
+function addressIsFilled(submitted: SubmittedAddress): boolean {
+  const hasStructuredAddress =
+    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() && !!submitted.city?.trim()
+  return hasStructuredAddress || !!submitted.address?.trim()
+}
 
 type ResolvedAddon = {
   tierId:   string
@@ -88,7 +108,15 @@ const schema = z.object({
   lastName:    z.string().trim().min(1).max(100),
   email:       z.string().email().max(200),
   password:    z.string().min(8).optional(), // requis seulement si l'adhésion sera immédiate
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire continue de poster celui-là seul, et il doit rester accepté. Les cinq champs
+  // suivants sont ceux du formulaire actuel (voir AddressFields et src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(300).optional(),
+  addressComplement: z.string().trim().max(300).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(120).optional(),
+  country:           z.string().trim().max(80).optional(),
   birthDate:   z.string().trim().max(20).optional(),
   phone:       z.string().trim().max(30).optional(),
   mobile:      z.string().trim().max(30).optional(),
@@ -102,7 +130,7 @@ const schema = z.object({
   // The page's own locale (LocaleSwitcher, next-intl) — the visitor already picked it to view
   // the form, so it's captured here rather than asking again. Not yet used to localize any
   // outbound email — see Membre.preferredLocale in schema.prisma.
-  locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:      z.enum(SUPPORTED_LOCALES).optional(),
   answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
   addons:      z.array(z.object({
     tierId: z.string().min(1),
@@ -138,7 +166,13 @@ const registrantSchema = z.object({
   mobile:    z.string().trim().max(30).optional(),
   sexe:      z.enum(["HOMME", "FEMME"]).optional(),
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
+  // Même couple hérité/structuré que le parcours à un seul adhérent ci-dessus.
   address:   z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(300).optional(),
+  addressComplement: z.string().trim().max(300).optional(),
+  postalCode:        z.string().trim().max(20).optional(),
+  city:              z.string().trim().max(120).optional(),
+  country:           z.string().trim().max(80).optional(),
   photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
 })
@@ -165,7 +199,7 @@ const multiSchema = z.object({
   // vérifie que ce sont bien celles en vigueur (voir resolveAcceptedRevisions).
   acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
   website:     z.string().optional().or(z.literal("")),
-  locale:      z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:      z.enum(SUPPORTED_LOCALES).optional(),
   // Contrairement au reste de ce schéma, jamais rattaché à un registrant précis : le groupe
   // n'a qu'un seul email/login réel (registrants[0], voir handleMultiRegistrantCheckout), donc
   // le produit lui est toujours attribué en entier plutôt que d'être réparti entre les
@@ -301,9 +335,12 @@ export async function POST(
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les DonationFormField.
-  const { address, birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue } = parsed.data
+  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue } = parsed.data
+  // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
+  // en texte libre reste acceptée (voir addressIsFilled).
+  if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
-    [form.fieldAddress,   address,   "Adresse"],
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
     [form.fieldMobile,    mobile,    "Mobile"],
@@ -339,7 +376,18 @@ export async function POST(
   }
   const birthDateValue = birthDate ? new Date(birthDate) : null
 
-  const { firstName, lastName, email, address: addressValue, photoUrl, locale } = parsed.data
+  const { firstName, lastName, email, photoUrl, locale } = parsed.data
+  // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+  // addressColumns dans src/lib/address.ts. Calculées une fois ici, réutilisées par les trois
+  // branches qui créent un Membre ci-dessous et par les métadonnées Stripe.
+  const membreAddressColumns = addressColumns({
+    street:     parsed.data.addressStreet,
+    complement: parsed.data.addressComplement,
+    postalCode: parsed.data.postalCode,
+    city:       parsed.data.city,
+    country:    parsed.data.country,
+    legacy:     parsed.data.address,
+  })
   const acceptedIp = consentIp(req)
 
   // Documents que l'association impose d'accepter — distincts des conditions propres au
@@ -386,7 +434,7 @@ export async function POST(
         data: {
           firstName, lastName, email,
           phone:         phone || null,
-          address:       addressValue || null,
+          ...membreAddressColumns,
           birthDate:     birthDateValue,
           sexe:          sexe || null,
           spokenLanguage: spokenLanguage || null,
@@ -438,7 +486,7 @@ export async function POST(
           data: {
             firstName, lastName, email,
             phone:         phone || null,
-            address:       addressValue || null,
+            ...membreAddressColumns,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
             spokenLanguage: spokenLanguage || null,
@@ -579,7 +627,7 @@ export async function POST(
           data: {
             firstName, lastName, email,
             phone:         phone || null,
-            address:       addressValue || null,
+            ...membreAddressColumns,
             birthDate:     birthDateValue,
             sexe:          sexe || null,
             spokenLanguage: spokenLanguage || null,
@@ -679,7 +727,15 @@ export async function POST(
     phone:            phone || "",
     typeId:           tier.membreTypeId || "",
     passwordHash,
-    address:          addressValue || "",
+    // Les six colonnes d'adresse traversent Stripe telles qu'elles seront écrites en base —
+    // les cinq structurées plus la version composée lisible dans `address`, comme partout
+    // ailleurs (voir addressColumns). Les webhooks qui créent le Membre les relisent en bloc.
+    address:           membreAddressColumns.address           || "",
+    addressStreet:     membreAddressColumns.addressStreet     || "",
+    addressComplement: membreAddressColumns.addressComplement || "",
+    postalCode:        membreAddressColumns.postalCode        || "",
+    city:              membreAddressColumns.city              || "",
+    country:           membreAddressColumns.country           || "",
     birthDate:        birthDate || "",
     sexe:             sexe || "",
     spokenLanguage:   spokenLanguage || "",
@@ -973,8 +1029,11 @@ async function handleMultiRegistrantCheckout(
 
     // Même matrice de champs standards que le parcours à un seul adhérent, appliquée à
     // chaque personne individuellement — chaque bloc "Adhérent" produit son propre Membre.
+    // Même traitement à part de l'adresse que le parcours à un seul adhérent (voir
+    // addressIsFilled), appliqué à chaque personne.
+    if (form.fieldAddress === "REQUIRED" && !addressIsFilled(r))
+      return NextResponse.json({ error: `Le champ « Adresse » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
     const standardChecks: [string, string | undefined, string][] = [
-      [form.fieldAddress,   r.address,   "Adresse"],
       [form.fieldBirthDate, r.birthDate, "Date de naissance"],
       [form.fieldPhone,     r.phone,     "Téléphone"],
       [form.fieldMobile,    r.mobile,    "Mobile"],
@@ -1076,7 +1135,15 @@ async function handleMultiRegistrantCheckout(
             firstName: r.firstName, lastName: r.lastName,
             email:         i === 0 ? data.email : null,
             phone:         r.phone || null,
-            address:       r.address || null,
+            // Mêmes six colonnes écrites ensemble que dans le parcours à un seul adhérent.
+            ...addressColumns({
+              street:     r.addressStreet,
+              complement: r.addressComplement,
+              postalCode: r.postalCode,
+              city:       r.city,
+              country:    r.country,
+              legacy:     r.address,
+            }),
             birthDate:     r.birthDate ? new Date(r.birthDate) : null,
             sexe:          r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null,
             spokenLanguage: r.spokenLanguage || null,
@@ -1144,7 +1211,14 @@ async function handleMultiRegistrantCheckout(
       registrants: resolved.map(({ tier, r, answers }) => ({
         tierId: tier.id, amount: r.amount,
         firstName: r.firstName, lastName: r.lastName,
-        birthDate: r.birthDate, sexe: r.sexe, spokenLanguage: r.spokenLanguage, phone: r.phone, mobile: r.mobile, address: r.address,
+        birthDate: r.birthDate, sexe: r.sexe, spokenLanguage: r.spokenLanguage, phone: r.phone, mobile: r.mobile,
+        // L'adresse voyage structurée dans le brouillon, colonne héritée comprise : c'est
+        // consumeMembershipCheckoutDraft qui crée le Membre, parfois plusieurs minutes plus
+        // tard, et sans ces cinq champs ici l'adresse serait perdue sur toute inscription
+        // groupée payante. `address` reste posé pour les brouillons d'un onglet resté ouvert
+        // qui ne postait que le texte libre (voir addressColumns).
+        address: r.address, addressStreet: r.addressStreet, addressComplement: r.addressComplement,
+        postalCode: r.postalCode, city: r.city, country: r.country,
         photoUrl: r.photoUrl,
         // Same page, same session for every registrant — see the equivalent PENDING branch.
         locale: data.locale,

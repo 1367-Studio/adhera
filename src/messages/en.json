@@ -51,6 +51,14 @@
     "addressPlaceholder": "Community hall, 12 Main Street…",
     "viewOnGoogleMaps": "View on Google Maps"
   },
+  "address": {
+    "street": "Address",
+    "complement": "Address line 2",
+    "complementPlaceholder": "Building, floor, mailbox…",
+    "postalCode": "Postal code",
+    "city": "City",
+    "country": "Country"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Login",
@@ -1414,7 +1422,6 @@
       "lastNameLabel": "Last name *",
       "emailLabel": "Email *",
       "phoneLabel": "Phone",
-      "addressLabel": "Address",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optional)",
       "fileAttach": "Attach a file",
@@ -2891,7 +2898,6 @@
       "firstNameLabel": "First name",
       "lastNameLabel": "Last name",
       "emailLabel": "Email",
-      "addressLabel": "Address",
       "birthDateLabel": "Date of birth",
       "phoneLabel": "Phone",
       "mobileLabel": "Mobile",
@@ -2909,7 +2915,6 @@
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
-      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
       "phonePlaceholder": "020 7946 0958",
       "mobilePlaceholder": "07700 900123",
       "companyNamePlaceholder": "Smith & Sons Ltd",
@@ -3193,7 +3198,6 @@
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
-      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
       "phonePlaceholder": "020 7946 0958",
       "mobilePlaceholder": "07700 900123",
       "donationBadge": "(donation)",
@@ -3223,7 +3227,6 @@
       "passwordHint": "To access your member portal.",
       "passwordRequirementsTitle": "Your password must contain:",
       "passwordRuleMinLength": "At least {count} characters",
-      "addressLabel": "Address",
       "birthDateLabel": "Date of birth",
       "phoneLabel": "Phone",
       "mobileLabel": "Mobile",
@@ -4029,8 +4032,6 @@
         "allergies": "Known allergies",
         "allergiesPlaceholder": "Peanuts, pollen…",
         "type": "Member type",
-        "address": "Address",
-        "addressPlaceholder": "123 Main St, Springfield",
         "preferredLocale": "Preferred language",
         "spokenLanguage": "Spoken language",
         "cotisationTier": "Membership fee — tier"
@@ -5373,8 +5374,6 @@
         "phoneInvalid": "Invalid phone number",
         "birthDate": "Date of birth",
         "birthDateInPast": "Date of birth must be in the past",
-        "address": "Address",
-        "addressPlaceholder": "123 Main St, Paris",
         "civilite": "Title",
         "groupeSanguin": "Blood type",
         "possedeTshirt": "Has a t-shirt",

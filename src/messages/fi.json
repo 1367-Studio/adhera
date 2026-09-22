@@ -51,6 +51,14 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariisi...",
     "viewOnGoogleMaps": "Katso Google Mapsista"
   },
+  "address": {
+    "street": "Osoite",
+    "complement": "Osoiterivi 2",
+    "complementPlaceholder": "Rakennus, kerros, postilaatikko…",
+    "postalCode": "Postinumero",
+    "city": "Kaupunki",
+    "country": "Maa"
+  },
   "auth": {
     "layout": {
       "imageAlt": "Kirjaudu sisään",
@@ -1357,7 +1365,6 @@
       "lastNameLabel": "Nimi*",
       "emailLabel": "Sähköposti*",
       "phoneLabel": "Puhelin",
-      "addressLabel": "Osoite",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (valinnainen)",
       "fileAttach": "Liitä tiedosto",
@@ -2820,7 +2827,6 @@
       "firstNameLabel": "Etunimi",
       "lastNameLabel": "Nimi",
       "emailLabel": "Sähköposti",
-      "addressLabel": "Osoite",
       "birthDateLabel": "Syntymäpäivämäärä",
       "phoneLabel": "Lankapuhelin",
       "mobileLabel": "Mobiili",
@@ -2838,7 +2844,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariisi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3127,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariisi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3156,6 @@
       "passwordHint": "Päästäksesi jäsenalueellesi.",
       "passwordRequirementsTitle": "Salasanasi tulee sisältää:",
       "passwordRuleMinLength": "Ainakin {count} Hahmot",
-      "addressLabel": "Osoite",
       "birthDateLabel": "Syntymäpäivämäärä",
       "phoneLabel": "Lankapuhelin",
       "mobileLabel": "Mobiili",
@@ -3953,8 +3956,6 @@
         "allergies": "Tunnetut allergiat",
         "allergiesPlaceholder": "Arachideja, siitepölyä...",
         "type": "Jäsentyyppi",
-        "address": "Osoite",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariisi",
         "preferredLocale": "Suosittu kieli",
         "spokenLanguage": "Puhuttu kieli",
         "cotisationTier": "Jäsenmaksu"
@@ -5115,8 +5116,6 @@
         "phoneInvalid": "Virheellinen puhelinnumero",
         "birthDate": "Syntymäpäivämäärä",
         "birthDateInPast": "Syntymäajan tulee olla menneessä aikamuodossa",
-        "address": "Osoite",
-        "addressPlaceholder": "123 rue de la Paix, Pariisi",
         "civilite": "Nimi",
         "groupeSanguin": "Verityyppi",
         "possedeTshirt": "Hänellä on T-paita",
