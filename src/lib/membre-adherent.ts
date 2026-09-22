@@ -57,6 +57,15 @@ export function endOfCotisationYear(year: number): Date {
   return new Date(nextYearUtcMidnight - parisOffsetMilliseconds - 1)
 }
 
+// The first instant of cotisation year `year` — 1 Jan 00:00:00 Paris time — the mirror image
+// of endOfCotisationYear above, for a calendar-year cotisation (periodStart null) that needs a
+// concrete start date (e.g. the member card's "carte valable du 01/01/2026 au 31/12/2026").
+export function startOfCotisationYear(year: number): Date {
+  const yearUtcMidnight = Date.UTC(year, 0, 1)
+  const parisOffsetMilliseconds = parisWallClockAsUtc(new Date(yearUtcMidnight)) - yearUtcMidnight
+  return new Date(yearUtcMidnight - parisOffsetMilliseconds)
+}
+
 // The Paris wall-clock reading of `instant`, re-expressed as if it were a UTC timestamp —
 // subtracting the real instant from it gives Paris' UTC offset at that moment.
 function parisWallClockAsUtc(instant: Date): number {
@@ -181,6 +190,18 @@ function ownAdherentWhereMatch(year: number, referenceDate: Date) {
   }
 }
 
+// L'exact contraire de ownAdherentWhereMatch, écrit en positif : « ownAdherent() ne dit pas
+// oui », c'est-à-dire override à false, ou bien override indéterminé et aucune cotisation
+// couvrante (ownAdherent() renvoie alors null, et isMembreAdherent retombe sur Bénévole).
+function notOwnAdherentWhereMatch(year: number, referenceDate: Date) {
+  return {
+    OR: [
+      { adherentOverride: false },
+      { AND: [{ adherentOverride: null }, { cotisations: { none: coveringCotisationMatch(year, referenceDate) } }] },
+    ],
+  }
+}
+
 // Prisma `where` fragment for filtering a Membre list to only adhérents or only bénévoles,
 // evaluated at the DB level so pagination/counts stay correct. Mirrors isMembreAdherent,
 // including the one-level responsable inheritance for dependents.
@@ -194,7 +215,29 @@ export function membreAdherentWhereClause(wantAdherent: boolean, referenceDate: 
     cotisations: { none: coveringCotisationMatch(year, referenceDate) },
     responsable: ownAdherentWhereMatch(year, referenceDate),
   }
-  return wantAdherent
-    ? { OR: [ownMatch, inheritedMatch] }
-    : { NOT: { OR: [ownMatch, inheritedMatch] } }
+  if (wantAdherent) return { OR: [ownMatch, inheritedMatch] }
+
+  // Le cas Bénévole est écrit en positif plutôt qu'en NOT { OR: [...] }. Le filtre sur la
+  // relation `responsable` compile en `"responsableId" IN (SELECT ...)`, et en SQL
+  // `NULL IN (...)` vaut NULL, pas false : sous un NOT, tout le prédicat passait donc à NULL
+  // pour un membre sans responsable — c'est-à-dire la quasi-totalité d'entre eux — et ces
+  // lignes disparaissaient du résultat. Le filtre « Bénévoles » de la liste des membres ne
+  // renvoyait plus personne, alors que « Adhérents » (un OR, insensible au NULL) marchait.
+  // Miroir exact de la négation d'isMembreAdherent : override à false, ou bien statut propre
+  // indéterminé et responsable absent ou lui-même non adhérent.
+  return {
+    OR: [
+      { adherentOverride: false },
+      {
+        AND: [
+          { adherentOverride: null },
+          { cotisations: { none: coveringCotisationMatch(year, referenceDate) } },
+          { OR: [
+            { responsableId: null },
+            { responsable: notOwnAdherentWhereMatch(year, referenceDate) },
+          ] },
+        ],
+      },
+    ],
+  }
 }

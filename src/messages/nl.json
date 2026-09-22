@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parijs...",
     "viewOnGoogleMaps": "Zie op Google Maps"
   },
+  "address": {
+    "street": "Adres",
+    "complement": "Adresregel 2",
+    "complementPlaceholder": "Gebouw, verdieping, brievenbus…",
+    "postalCode": "Postcode",
+    "city": "Plaats",
+    "country": "Land",
+    "legacyMigratedHint": "Gekopieerd uit het oude adresveld — controleer of de postcode en plaats hieronder niet al zijn opgenomen."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Log in",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Naam *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefoon",
-      "addressLabel": "Adres",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optioneel)",
       "fileAttach": "Voeg een bestand toe",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Voornaam",
       "lastNameLabel": "Naam",
       "emailLabel": "E-mail",
-      "addressLabel": "Adres",
       "birthDateLabel": "Geboortedatum",
       "phoneLabel": "Vaste telefoon",
       "mobileLabel": "Mobiel",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parijs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parijs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Om toegang te krijgen tot je ledengebied.",
       "passwordRequirementsTitle": "Je wachtwoord moet het volgende bevatten:",
       "passwordRuleMinLength": "Tenminste {count} Personages",
-      "addressLabel": "Adres",
       "birthDateLabel": "Geboortedatum",
       "phoneLabel": "Vaste telefoon",
       "mobileLabel": "Mobiel",
@@ -3531,6 +3535,25 @@
       "copied": "Gekopieerd!",
       "copy": "Begrepen",
       "open": "Open"
+    },
+    "customDomainSettings": {
+      "title": "Aangepast domein",
+      "subtitle": "Gebruik uw eigen domein voor de openbare website van de vereniging, naast formwise.fr.",
+      "domainLabel": "Domein",
+      "domainPlaceholder": "www.mijnvereniging.org",
+      "domainHint": "Een subdomein zoals www.mijnvereniging.org heeft maar één DNS-record nodig.",
+      "invalidDomain": "Ongeldig domein",
+      "saved": "Domein toegevoegd",
+      "statusVerified": "Actief",
+      "statusFailed": "Verificatie mislukt",
+      "statusPending": "Wachten op DNS",
+      "dnsInstruction": "Voeg dit DNS-record toe bij uw domeinprovider (OVH, Gandi, GoDaddy, enz.):",
+      "waitingHint": "De verificatie gebeurt automatisch elke paar minuten zodra de DNS is verspreid.",
+      "verifyNow": "Nu verifiëren",
+      "remove": "Domein verwijderen",
+      "removed": "Domein verwijderd",
+      "removeConfirmTitle": "Dit aangepaste domein verwijderen?",
+      "removeConfirmDescription": "De site blijft bereikbaar via formwise.fr, maar dit domein verwijst niet meer naar de vereniging."
     },
     "cotisationDefaultsSettings": {
       "title": "Lidmaatschapsbijdrage",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefoon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobiel",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rol",
         "birthDate": "Geboortedatum",
         "status": "Status",
@@ -3953,8 +3978,6 @@
         "allergies": "Bekende allergieën",
         "allergiesPlaceholder": "Arachides, stuifmeel...",
         "type": "Lidtype",
-        "address": "Adres",
-        "addressPlaceholder": "12 rue de la Paix, Parijs 75001",
         "preferredLocale": "Voorkeurstaal",
         "spokenLanguage": "Gesproken taal",
         "cotisationTier": "Lidmaatschapsbijdrage"
@@ -4683,6 +4706,96 @@
       "importedNote": "Geïmporteerd van AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Geldig van {from} tot {to}",
+      "expiredOn": "Lidmaatschap verlopen op {date}",
+      "status": {
+        "valid": "Lidmaatschap geldig",
+        "expired": "Lidmaatschap verlopen"
+      },
+      "generatedBy": "Kaart gegenereerd via {appName}",
+      "qrAlt": "QR-code voor verificatie van de kaart",
+      "ariaLabel": "Lidmaatschapskaart van {name}"
+    },
+    "portal": {
+      "sidebar": "Mijn kaart",
+      "title": "Mijn lidmaatschapskaart",
+      "titleMultiple": "Mijn lidmaatschapskaarten",
+      "subtitle": "Toon deze bij activiteiten van de vereniging. Met de QR-code kan de geldigheid worden gecontroleerd.",
+      "switcherLabel": "Kies de weer te geven kaart",
+      "downloadPdf": "PDF downloaden",
+      "print": "Afdrukken"
+    },
+    "unavailable": {
+      "title": "Lidmaatschapskaart niet beschikbaar",
+      "pending": "De kaart is beschikbaar zodra de betaling van de contributie is geregistreerd.",
+      "partial": "De contributie is gedeeltelijk betaald. De kaart is beschikbaar zodra het resterende bedrag is geregistreerd.",
+      "late": "De betaling van de contributie is nog niet geregistreerd. De kaart is beschikbaar zodra dit is gebeurd.",
+      "noneTitle": "Geen actieve lidmaatschapskaart",
+      "none": "Er loopt geen lidmaatschap voor deze periode. De kaart wordt automatisch aangemaakt na aanmelding.",
+      "cancelled": "Dit lidmaatschap is geannuleerd. Neem contact op met de vereniging voor meer informatie.",
+      "disabled": "De lidmaatschapskaart wordt niet aangeboden door uw vereniging.",
+      "expired": "Het lidmaatschap is verlopen op {date}. Vernieuw het om een nieuwe kaart te krijgen.",
+      "viewCotisation": "Mijn contributie bekijken"
+    },
+    "manager": {
+      "button": "Lidmaatschapskaart",
+      "rowAction": "Lidmaatschapskaart bekijken",
+      "modalTitle": "Lidmaatschapskaart",
+      "unavailableTitle": "Kaart niet beschikbaar",
+      "noPayment": "Er is geen contributiebetaling geregistreerd voor dit lid. De kaart wordt gegenereerd zodra de betaling is geregistreerd.",
+      "recordPayment": "Een betaling registreren",
+      "settingsHint": "Sjabloon en kleur aanpasbaar onder Instellingen › Lidmaatschapskaart.",
+      "regenerate": "QR-code opnieuw genereren",
+      "regenerateHint": "De oude QR-code werkt daarna direct niet meer. Gebruik dit als een kaart verloren of gedeeld is.",
+      "regenerateConfirm": "De QR-code van deze kaart opnieuw genereren?",
+      "regenerated": "QR-code opnieuw gegenereerd"
+    },
+    "settings": {
+      "title": "Lidmaatschapskaart",
+      "subtitle": "Uiterlijk van de kaart die in de ledenomgeving wordt getoond.",
+      "enabled": "Lidmaatschapskaart inschakelen",
+      "enabledHint": "Leden die hun contributie hebben betaald, zien hun kaart in hun omgeving.",
+      "template": "Sjabloon",
+      "templates": {
+        "classic": "Klassiek",
+        "modern": "Modern",
+        "minimal": "Minimaal"
+      },
+      "color": "Kleur",
+      "colorTooLight": "Zeer lichte kleur: deze zal weinig opvallen tegen de achtergrond van de kaart.",
+      "minimalNoColor": "Het sjabloon Minimaal gebruikt geen kleur.",
+      "showOnCard": "Op de kaart tonen",
+      "showPhoto": "Foto van het lid",
+      "showPhotoHint": "Initialen worden getoond als er geen foto is geregistreerd.",
+      "showCategory": "Categorie",
+      "showPhone": "Telefoonnummer van de vereniging",
+      "showEmail": "E-mail van de vereniging",
+      "preview": "Voorbeeld",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Actief vrijwillig lid",
+      "noLogo": "Voeg een logo toe bij Huisstijl om het op de kaart te tonen.",
+      "noPhone": "Voeg een telefoonnummer toe bij Juridische identiteit & Donaties om het op de kaart te tonen.",
+      "noEmail": "Voeg een contact-e-mail toe bij Verenigingsgegevens om deze op de kaart te tonen.",
+      "saved": "Lidmaatschapskaart opgeslagen"
+    },
+    "print": {
+      "guide": "Knip langs de lijn — bankpasformaat, 85,6 × 54 mm. Druk af op 100%, zonder aan te passen aan de pagina.",
+      "documentTitle": "Lidmaatschapskaart — {name}",
+      "popupBlocked": "Sta pop-upvensters toe om af te drukken, of download de PDF."
+    },
+    "verify": {
+      "valid": "Kaart geldig",
+      "validUntil": "Lidmaatschap geldig tot {date}",
+      "expired": "Lidmaatschap verlopen",
+      "expiredSince": "Verlopen sinds {date}",
+      "invalid": "Kaart ongeldig",
+      "invalidText": "Deze kaart wordt niet herkend of is gedeactiveerd. Neem contact op met de vereniging.",
+      "checkedAt": "Gecontroleerd op {date} om {time}",
+      "poweredBy": "Verificatie verzorgd door {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hoofdbanner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Ongeldig telefoonnummer",
         "birthDate": "Geboortedatum",
         "birthDateInPast": "De geboortedatum moet in de verleden tijd zijn",
-        "address": "Adres",
-        "addressPlaceholder": "123 rue de la Paix, Parijs",
         "civilite": "Titel",
         "groupeSanguin": "Bloedgroep",
         "possedeTshirt": "Heeft een T-shirt",

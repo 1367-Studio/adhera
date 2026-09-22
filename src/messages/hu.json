@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
     "viewOnGoogleMaps": "Lásd a Google Térképen"
   },
+  "address": {
+    "street": "Cím",
+    "complement": "Cím kiegészítése",
+    "complementPlaceholder": "Épület, emelet, postaláda…",
+    "postalCode": "Irányítószám",
+    "city": "Város",
+    "country": "Ország",
+    "legacyMigratedHint": "A régi cím mezőből másolva – ellenőrizze, hogy nem tartalmazza-e már az alábbi irányítószámot és várost."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Bejelentkezés",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Név *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Cím",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcionális)",
       "fileAttach": "Csatolj hozzá egy fájlt",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Keresztnév",
       "lastNameLabel": "Név",
       "emailLabel": "E-mail",
-      "addressLabel": "Cím",
       "birthDateLabel": "Születési dátum",
       "phoneLabel": "Vezetékes telefon",
       "mobileLabel": "Mobil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Párizs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Párizs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "A tagterületed eléréséhez.",
       "passwordRequirementsTitle": "A jelszavadnak tartalmaznia kell, hogy a következőket:",
       "passwordRuleMinLength": "Legalább {count} Szereplők",
-      "addressLabel": "Cím",
       "birthDateLabel": "Születési dátum",
       "phoneLabel": "Vezetékes telefon",
       "mobileLabel": "Mobil",
@@ -3531,6 +3535,25 @@
       "copied": "Másolva!",
       "copy": "Értettem",
       "open": "Nyisd ki"
+    },
+    "customDomainSettings": {
+      "title": "Egyéni domain",
+      "subtitle": "Használja saját domainjét az egyesület nyilvános weboldalához, a formwise.fr mellett.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.egyesuletem.org",
+      "domainHint": "Egy aldomain, mint a www.egyesuletem.org, csak egyetlen DNS-rekordot igényel.",
+      "invalidDomain": "Érvénytelen domain",
+      "saved": "Domain hozzáadva",
+      "statusVerified": "Aktív",
+      "statusFailed": "Ellenőrzés sikertelen",
+      "statusPending": "DNS-re várakozás",
+      "dnsInstruction": "Adja hozzá ezt a DNS-rekordot a domainszolgáltatójánál (OVH, Gandi, GoDaddy stb.):",
+      "waitingHint": "Az ellenőrzés automatikusan megtörténik néhány percenként, miután a DNS elterjedt.",
+      "verifyNow": "Ellenőrzés most",
+      "remove": "Domain eltávolítása",
+      "removed": "Domain eltávolítva",
+      "removeConfirmTitle": "Eltávolítja ezt az egyéni domaint?",
+      "removeConfirmDescription": "Az oldal továbbra is elérhető marad a formwise.fr címen, de ez a domain már nem az egyesületre fog mutatni."
     },
     "cotisationDefaultsSettings": {
       "title": "Tagsági díj",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Szerep",
         "birthDate": "Születési dátum",
         "status": "Státusz",
@@ -3953,8 +3978,6 @@
         "allergies": "Ismert allergiák",
         "allergiesPlaceholder": "Arachidesz, pollen...",
         "type": "Tagtípus",
-        "address": "Cím",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Párizs",
         "preferredLocale": "Preferált nyelv",
         "spokenLanguage": "Beszélt nyelv",
         "cotisationTier": "Tagsági díj"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importálva az AssoConnect-ről — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Érvényes {from}-tól {to}-ig",
+      "expiredOn": "A tagság lejárt: {date}",
+      "status": {
+        "valid": "Érvényes tagság",
+        "expired": "Lejárt tagság"
+      },
+      "generatedBy": "A kártyát létrehozta: {appName}",
+      "qrAlt": "A kártya ellenőrzésére szolgáló QR-kód",
+      "ariaLabel": "{name} tagsági kártyája"
+    },
+    "portal": {
+      "sidebar": "Kártyám",
+      "title": "Tagsági kártyám",
+      "titleMultiple": "Tagsági kártyáim",
+      "subtitle": "Mutassa be az egyesület rendezvényein. A QR-kód lehetővé teszi az érvényesség ellenőrzését.",
+      "switcherLabel": "Válassza ki a megjelenítendő kártyát",
+      "downloadPdf": "PDF letöltése",
+      "print": "Nyomtatás"
+    },
+    "unavailable": {
+      "title": "A tagsági kártya nem elérhető",
+      "pending": "A kártya elérhető lesz, amint a tagdíj befizetése rögzítésre kerül.",
+      "partial": "A tagdíj részben ki lett fizetve. A kártya elérhető lesz, amint a fennmaradó összeg rögzítésre kerül.",
+      "late": "A tagdíj befizetése még nem került rögzítésre. A kártya a rögzítést követően lesz elérhető.",
+      "noneTitle": "Nincs aktív tagsági kártya",
+      "none": "Erre az időszakra nincs érvényes tagság. A kártya automatikusan létrejön a csatlakozás után.",
+      "cancelled": "Ez a tagság törölve lett. További információért forduljon az egyesülethez.",
+      "disabled": "Az Ön egyesülete nem kínál tagsági kártyát.",
+      "expired": "A tagság lejárt: {date}. Újítsa meg új kártya igényléséhez.",
+      "viewCotisation": "Tagdíjam megtekintése"
+    },
+    "manager": {
+      "button": "Tagsági kártya",
+      "rowAction": "Tagsági kártya megtekintése",
+      "modalTitle": "Tagsági kártya",
+      "unavailableTitle": "A kártya nem elérhető",
+      "noPayment": "Ehhez a taghoz nincs rögzített tagdíjbefizetés. A kártya a befizetés rögzítése után jön létre.",
+      "recordPayment": "Befizetés rögzítése",
+      "settingsHint": "A sablon és a szín a Beállítások › Tagsági kártya menüpontban módosítható.",
+      "regenerate": "QR-kód újragenerálása",
+      "regenerateHint": "A régi QR-kód azonnal működésképtelenné válik. Használja, ha egy kártya elveszett vagy megosztásra került.",
+      "regenerateConfirm": "Újragenerálja ennek a kártyának a QR-kódját?",
+      "regenerated": "QR-kód újragenerálva"
+    },
+    "settings": {
+      "title": "Tagsági kártya",
+      "subtitle": "A tagi felületen megjelenő kártya megjelenése.",
+      "enabled": "Tagsági kártya engedélyezése",
+      "enabledHint": "A tagdíjjal rendelkező tagok látni fogják kártyájukat a saját felületükön.",
+      "template": "Sablon",
+      "templates": {
+        "classic": "Klasszikus",
+        "modern": "Modern",
+        "minimal": "Minimál"
+      },
+      "color": "Szín",
+      "colorTooLight": "Nagyon világos szín: alig fog elkülönülni a kártya hátterétől.",
+      "minimalNoColor": "A Minimál sablon nem használ színt.",
+      "showOnCard": "Megjelenítés a kártyán",
+      "showPhoto": "A tag fényképe",
+      "showPhotoHint": "Ha nincs rögzített fénykép, a monogram jelenik meg.",
+      "showCategory": "Kategória",
+      "showPhone": "Az egyesület telefonszáma",
+      "showEmail": "Az egyesület e-mail címe",
+      "preview": "Előnézet",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktív önkéntes tag",
+      "noLogo": "Adjon hozzá logót a Márkajelzés menüpontban, hogy megjelenjen a kártyán.",
+      "noPhone": "Adjon hozzá telefonszámot a Jogi identitás és adományok menüpontban, hogy megjelenjen a kártyán.",
+      "noEmail": "Adjon hozzá kapcsolattartási e-mail címet az Egyesületi adatok menüpontban, hogy megjelenjen a kártyán.",
+      "saved": "Tagsági kártya mentve"
+    },
+    "print": {
+      "guide": "Vágja ki a vonal mentén — bankkártya méret, 85,6 × 54 mm. Nyomtassa 100%-ban, oldalhoz igazítás nélkül.",
+      "documentTitle": "Tagsági kártya — {name}",
+      "popupBlocked": "Engedélyezze a felugró ablakokat a nyomtatáshoz, vagy töltse le a PDF-et."
+    },
+    "verify": {
+      "valid": "A kártya érvényes",
+      "validUntil": "A tagság érvényes eddig: {date}",
+      "expired": "Lejárt tagság",
+      "expiredSince": "Lejárt: {date}",
+      "invalid": "A kártya érvénytelen",
+      "invalidText": "Ezt a kártyát a rendszer nem ismeri fel, vagy deaktiválva lett. Forduljon az egyesülethez.",
+      "checkedAt": "Ellenőrizve: {date}, {time}",
+      "poweredBy": "Az ellenőrzést biztosítja: {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Fő Banner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Érvénytelen telefonszám",
         "birthDate": "Születési dátum",
         "birthDateInPast": "A születési időpontnak múltidőben kell lennie",
-        "address": "Cím",
-        "addressPlaceholder": "123 rue de la Paix, Párizs",
         "civilite": "Cím",
         "groupeSanguin": "Vércsoport",
         "possedeTshirt": "Pólója van",

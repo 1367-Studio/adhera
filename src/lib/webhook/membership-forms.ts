@@ -17,6 +17,7 @@ import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membe
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { addressColumns } from "@/lib/address"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
 //
@@ -100,7 +101,17 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           lastName:      meta.lastName ?? "",
           email:         meta.email,
           phone:         meta.phone || null,
-          address:       meta.address || null,
+          // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+          // addressColumns dans src/lib/address.ts. Une session créée avant le découpage en
+          // colonnes structurées ne porte que `address`, et reste donc écrite telle quelle.
+          ...addressColumns({
+            street:     meta.addressStreet,
+            complement: meta.addressComplement,
+            postalCode: meta.postalCode,
+            city:       meta.city,
+            country:    meta.country,
+            legacy:     meta.address,
+          }),
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,

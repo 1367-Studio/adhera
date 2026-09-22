@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Vezi pe Google Maps"
   },
+  "address": {
+    "street": "Adresă",
+    "complement": "Complement adresă",
+    "complementPlaceholder": "Clădire, etaj, cutie poștală…",
+    "postalCode": "Cod poștal",
+    "city": "Oraș",
+    "country": "Țară",
+    "legacyMigratedHint": "Copiat din vechiul câmp de adresă — verificați dacă nu conține deja codul poștal și orașul de mai jos."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Conectează-te",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nume *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresă",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opțional)",
       "fileAttach": "Atașează un fișier",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Prenume",
       "lastNameLabel": "Nume",
       "emailLabel": "Email",
-      "addressLabel": "Adresă",
       "birthDateLabel": "Data nașterii",
       "phoneLabel": "Telefon fix",
       "mobileLabel": "Mobil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Pentru a accesa zona ta de membri.",
       "passwordRequirementsTitle": "Parola ta trebuie să conțină:",
       "passwordRuleMinLength": "Cel puțin {count} Personaje",
-      "addressLabel": "Adresă",
       "birthDateLabel": "Data nașterii",
       "phoneLabel": "Telefon fix",
       "mobileLabel": "Mobil",
@@ -3531,6 +3535,25 @@
       "copied": "Copiat!",
       "copy": "Recepționat",
       "open": "Deschide"
+    },
+    "customDomainSettings": {
+      "title": "Domeniu personalizat",
+      "subtitle": "Folosiți propriul domeniu pentru site-ul public al asociației, pe lângă formwise.fr.",
+      "domainLabel": "Domeniu",
+      "domainPlaceholder": "www.asociatiamea.org",
+      "domainHint": "Un subdomeniu precum www.asociatiamea.org are nevoie de o singură înregistrare DNS.",
+      "invalidDomain": "Domeniu invalid",
+      "saved": "Domeniu adăugat",
+      "statusVerified": "Activ",
+      "statusFailed": "Verificare eșuată",
+      "statusPending": "Se așteaptă DNS",
+      "dnsInstruction": "Adăugați această înregistrare DNS la furnizorul dvs. de domeniu (OVH, Gandi, GoDaddy etc.):",
+      "waitingHint": "Verificarea are loc automat la fiecare câteva minute după propagarea DNS-ului.",
+      "verifyNow": "Verifică acum",
+      "remove": "Elimină domeniul",
+      "removed": "Domeniu eliminat",
+      "removeConfirmTitle": "Eliminați acest domeniu personalizat?",
+      "removeConfirmDescription": "Site-ul va rămâne accesibil la formwise.fr, dar acest domeniu nu va mai indica spre asociație."
     },
     "cotisationDefaultsSettings": {
       "title": "Taxa de membru",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rol",
         "birthDate": "Data nașterii",
         "status": "Statut",
@@ -3953,8 +3978,6 @@
         "allergies": "Alergii cunoscute",
         "allergiesPlaceholder": "Arahide, polen...",
         "type": "Tip de membru",
-        "address": "Adresă",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Limba preferată",
         "spokenLanguage": "Limba vorbită",
         "cotisationTier": "Taxa de membru"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importat de la AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Valabil din {from} până la {to}",
+      "expiredOn": "Calitatea de membru a expirat la {date}",
+      "status": {
+        "valid": "Calitate de membru valabilă",
+        "expired": "Calitate de membru expirată"
+      },
+      "generatedBy": "Card generat prin {appName}",
+      "qrAlt": "Cod QR de verificare a cardului",
+      "ariaLabel": "Card de membru al lui {name}"
+    },
+    "portal": {
+      "sidebar": "Cardul meu",
+      "title": "Cardul meu de membru",
+      "titleMultiple": "Cardurile mele de membru",
+      "subtitle": "Prezentați-l la activitățile asociației. Codul său QR permite verificarea valabilității.",
+      "switcherLabel": "Alegeți cardul de afișat",
+      "downloadPdf": "Descărcați PDF",
+      "print": "Imprimați"
+    },
+    "unavailable": {
+      "title": "Card de membru indisponibil",
+      "pending": "Cardul va fi disponibil imediat ce plata cotizației va fi înregistrată.",
+      "partial": "Cotizația a fost plătită parțial. Cardul va fi disponibil imediat ce soldul va fi înregistrat.",
+      "late": "Plata cotizației nu a fost încă înregistrată. Cardul va fi disponibil după înregistrarea acesteia.",
+      "noneTitle": "Niciun card de membru activ",
+      "none": "Nu există nicio calitate de membru în curs pentru această perioadă. Cardul este creat automat după înscriere.",
+      "cancelled": "Această calitate de membru a fost anulată. Contactați asociația pentru mai multe informații.",
+      "disabled": "Cardul de membru nu este oferit de asociația dvs.",
+      "expired": "Calitatea de membru a expirat la {date}. Reînnoiți-o pentru a obține un card nou.",
+      "viewCotisation": "Vezi cotizația mea"
+    },
+    "manager": {
+      "button": "Card de membru",
+      "rowAction": "Vezi cardul de membru",
+      "modalTitle": "Card de membru",
+      "unavailableTitle": "Card indisponibil",
+      "noPayment": "Nicio plată a cotizației nu este înregistrată pentru acest membru. Cardul va fi generat imediat ce plata va fi înregistrată.",
+      "recordPayment": "Înregistrați o plată",
+      "settingsHint": "Model și culoare modificabile în Setări › Card de membru.",
+      "regenerate": "Regenerează codul QR",
+      "regenerateHint": "Vechiul cod QR va înceta imediat să funcționeze. Utilizați dacă un card a fost pierdut sau distribuit.",
+      "regenerateConfirm": "Regenerați codul QR al acestui card?",
+      "regenerated": "Cod QR regenerat"
+    },
+    "settings": {
+      "title": "Card de membru",
+      "subtitle": "Aspectul cardului afișat în zona membrilor.",
+      "enabled": "Activează cardul de membru",
+      "enabledHint": "Membrii la zi cu cotizația își vor vedea cardul în zona lor.",
+      "template": "Model",
+      "templates": {
+        "classic": "Clasic",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Culoare",
+      "colorTooLight": "Culoare foarte deschisă: se va distinge slab de fundalul cardului.",
+      "minimalNoColor": "Modelul Minimal nu folosește culoare.",
+      "showOnCard": "Afișează pe card",
+      "showPhoto": "Fotografia membrului",
+      "showPhotoHint": "Inițialele sunt afișate dacă nu este înregistrată nicio fotografie.",
+      "showCategory": "Categorie",
+      "showPhone": "Telefonul asociației",
+      "showEmail": "E-mailul asociației",
+      "preview": "Previzualizare",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Membru voluntar activ",
+      "noLogo": "Adăugați un logo în secțiunea Branding pentru a-l afișa pe card.",
+      "noPhone": "Adăugați un telefon în secțiunea Identitate legală și Donații pentru a-l afișa pe card.",
+      "noEmail": "Adăugați un e-mail de contact în secțiunea Informații despre asociație pentru a-l afișa pe card.",
+      "saved": "Card de membru salvat"
+    },
+    "print": {
+      "guide": "Decupați de-a lungul liniei — format card bancar, 85,6 × 54 mm. Imprimați la 100%, fără a adapta la pagină.",
+      "documentTitle": "Card de membru — {name}",
+      "popupBlocked": "Permiteți ferestrele pop-up pentru a imprima, sau descărcați PDF-ul."
+    },
+    "verify": {
+      "valid": "Card valabil",
+      "validUntil": "Calitate de membru valabilă până la {date}",
+      "expired": "Calitate de membru expirată",
+      "expiredSince": "Expirată de la {date}",
+      "invalid": "Card nevalabil",
+      "invalidText": "Acest card nu este recunoscut sau a fost dezactivat. Contactați asociația.",
+      "checkedAt": "Verificat la {date}, ora {time}",
+      "poweredBy": "Verificare asigurată de {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Steagul principal",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Număr de telefon invalid",
         "birthDate": "Data nașterii",
         "birthDateInPast": "Data nașterii trebuie să fie la timpul trecut",
-        "address": "Adresă",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Titlu",
         "groupeSanguin": "Grupa sanguină",
         "possedeTshirt": "Are un tricou",

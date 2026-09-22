@@ -10,7 +10,14 @@ export type MembreDetail = {
   email:         string | null
   phone:         string | null
   birthDate:     string | null
-  address:       string | null
+  // Texte libre hérité (fiches créées avant le découpage du formulaire d'adresse) ; les
+  // cinq colonnes suivantes sont la version structurée — voir src/lib/address.ts.
+  address:           string | null
+  addressStreet:     string | null
+  addressComplement: string | null
+  postalCode:        string | null
+  city:              string | null
+  country:           string | null
   civilite:      "MME" | "MLLE" | "M" | null
   sexe:          "HOMME" | "FEMME" | null
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null

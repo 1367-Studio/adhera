@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariz...",
     "viewOnGoogleMaps": "Oglejte si na Google Maps"
   },
+  "address": {
+    "street": "Naslov",
+    "complement": "Dodatek k naslovu",
+    "complementPlaceholder": "Stavba, nadstropje, poštni nabiralnik…",
+    "postalCode": "Poštna številka",
+    "city": "Kraj",
+    "country": "Država",
+    "legacyMigratedHint": "Kopirano iz starega polja za naslov — preverite, da že ne vsebuje spodnje poštne številke in kraja."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prijava",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Ime *",
       "emailLabel": "E-pošta *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Nagovor",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (neobvezno)",
       "fileAttach": "Priložite datoteko",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Ime",
       "lastNameLabel": "Ime",
       "emailLabel": "E-pošta",
-      "addressLabel": "Nagovor",
       "birthDateLabel": "Datum rojstva",
       "phoneLabel": "Stacionarni telefon",
       "mobileLabel": "Mobilni",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariz",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariz",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Za dostop do vašega članskega območja.",
       "passwordRequirementsTitle": "Vaše geslo mora vsebovati:",
       "passwordRuleMinLength": "Vsaj {count} Lik",
-      "addressLabel": "Nagovor",
       "birthDateLabel": "Datum rojstva",
       "phoneLabel": "Stacionarni telefon",
       "mobileLabel": "Mobilni",
@@ -3531,6 +3535,25 @@
       "copied": "Prekopirano!",
       "copy": "Sprejeto",
       "open": "Odprto"
+    },
+    "customDomainSettings": {
+      "title": "Domena po meri",
+      "subtitle": "Uporabite lastno domeno za javno spletno stran društva, poleg formwise.fr.",
+      "domainLabel": "Domena",
+      "domainPlaceholder": "www.mojedrustvo.org",
+      "domainHint": "Poddomena, kot je www.mojedrustvo.org, potrebuje samo en zapis DNS.",
+      "invalidDomain": "Neveljavna domena",
+      "saved": "Domena dodana",
+      "statusVerified": "Aktivna",
+      "statusFailed": "Preverjanje ni uspelo",
+      "statusPending": "Čakanje na DNS",
+      "dnsInstruction": "Dodajte ta zapis DNS pri svojem ponudniku domene (OVH, Gandi, GoDaddy itd.):",
+      "waitingHint": "Preverjanje poteka samodejno vsakih nekaj minut, ko se DNS razširi.",
+      "verifyNow": "Preveri zdaj",
+      "remove": "Odstrani domeno",
+      "removed": "Domena odstranjena",
+      "removeConfirmTitle": "Ali želite odstraniti to domeno po meri?",
+      "removeConfirmDescription": "Spletna stran bo ostala dosegljiva na formwise.fr, vendar ta domena ne bo več kazala na društvo."
     },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobitel",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Vloga",
         "birthDate": "Datum rojstva",
         "status": "Status",
@@ -3953,8 +3978,6 @@
         "allergies": "Znane alergije",
         "allergiesPlaceholder": "Arachide, cvetni prah...",
         "type": "Tip člena",
-        "address": "Nagovor",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariz",
         "preferredLocale": "Priljubljen jezik",
         "spokenLanguage": "Govorjeni jezik",
         "cotisationTier": "Članarina"
@@ -4683,6 +4706,96 @@
       "importedNote": "Uvoženo iz AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Velja od {from} do {to}",
+      "expiredOn": "Članstvo je poteklo {date}",
+      "status": {
+        "valid": "Članstvo velja",
+        "expired": "Članstvo poteklo"
+      },
+      "generatedBy": "Izkaznica ustvarjena prek {appName}",
+      "qrAlt": "Koda QR za preverjanje izkaznice",
+      "ariaLabel": "Članska izkaznica: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja izkaznica",
+      "title": "Moja članska izkaznica",
+      "titleMultiple": "Moje članske izkaznice",
+      "subtitle": "Pokažite jo na dejavnostih društva. Koda QR omogoča preverjanje njene veljavnosti.",
+      "switcherLabel": "Izberite izkaznico za prikaz",
+      "downloadPdf": "Prenesi PDF",
+      "print": "Natisni"
+    },
+    "unavailable": {
+      "title": "Članska izkaznica ni na voljo",
+      "pending": "Izkaznica bo na voljo takoj, ko bo plačilo članarine zabeleženo.",
+      "partial": "Članarina je delno plačana. Izkaznica bo na voljo takoj, ko bo preostanek zabeležen.",
+      "late": "Plačilo članarine še ni bilo zabeleženo. Izkaznica bo na voljo po njegovi zabeležbi.",
+      "noneTitle": "Ni aktivne članske izkaznice",
+      "none": "Za to obdobje ni veljavnega članstva. Izkaznica se ustvari samodejno po vpisu.",
+      "cancelled": "To članstvo je bilo preklicano. Za več informacij se obrnite na društvo.",
+      "disabled": "Vaše društvo ne ponuja članske izkaznice.",
+      "expired": "Članstvo je poteklo {date}. Obnovite ga, da dobite novo izkaznico.",
+      "viewCotisation": "Poglej mojo članarino"
+    },
+    "manager": {
+      "button": "Članska izkaznica",
+      "rowAction": "Poglej člansko izkaznico",
+      "modalTitle": "Članska izkaznica",
+      "unavailableTitle": "Izkaznica ni na voljo",
+      "noPayment": "Za tega člana ni zabeleženega plačila članarine. Izkaznica bo ustvarjena takoj, ko bo plačilo zabeleženo.",
+      "recordPayment": "Zabeleži plačilo",
+      "settingsHint": "Predlogo in barvo lahko spremenite v Nastavitve › Članska izkaznica.",
+      "regenerate": "Znova ustvari kodo QR",
+      "regenerateHint": "Stara koda QR bo takoj prenehala delovati. Uporabite, če je bila izkaznica izgubljena ali deljena.",
+      "regenerateConfirm": "Ali želite znova ustvariti kodo QR te izkaznice?",
+      "regenerated": "Koda QR znova ustvarjena"
+    },
+    "settings": {
+      "title": "Članska izkaznica",
+      "subtitle": "Videz izkaznice, prikazane v članskem območju.",
+      "enabled": "Omogoči člansko izkaznico",
+      "enabledHint": "Člani s poravnano članarino bodo svojo izkaznico videli v svojem območju.",
+      "template": "Predloga",
+      "templates": {
+        "classic": "Klasična",
+        "modern": "Sodobna",
+        "minimal": "Minimalna"
+      },
+      "color": "Barva",
+      "colorTooLight": "Zelo svetla barva: se bo slabo ločila od ozadja izkaznice.",
+      "minimalNoColor": "Predloga Minimalna ne uporablja barve.",
+      "showOnCard": "Prikaži na izkaznici",
+      "showPhoto": "Fotografija člana",
+      "showPhotoHint": "Če fotografija ni shranjena, se prikažejo začetnice.",
+      "showCategory": "Kategorija",
+      "showPhone": "Telefon društva",
+      "showEmail": "E-pošta društva",
+      "preview": "Predogled",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktiven prostovoljni član",
+      "noLogo": "Dodajte logotip v razdelku Blagovna znamka, da ga prikažete na izkaznici.",
+      "noPhone": "Dodajte telefon v razdelku Pravna identiteta in donacije, da ga prikažete na izkaznici.",
+      "noEmail": "Dodajte kontaktni e-poštni naslov v razdelku Podatki o društvu, da ga prikažete na izkaznici.",
+      "saved": "Članska izkaznica shranjena"
+    },
+    "print": {
+      "guide": "Izrežite po črti — format bančne kartice, 85,6 × 54 mm. Natisnite v 100 %, brez prilagajanja strani.",
+      "documentTitle": "Članska izkaznica — {name}",
+      "popupBlocked": "Za tiskanje dovolite pojavna okna ali prenesite PDF."
+    },
+    "verify": {
+      "valid": "Izkaznica velja",
+      "validUntil": "Članstvo velja do {date}",
+      "expired": "Članstvo poteklo",
+      "expiredSince": "Poteklo dne {date}",
+      "invalid": "Izkaznica ni veljavna",
+      "invalidText": "Ta izkaznica ni prepoznana ali je bila deaktivirana. Obrnite se na društvo.",
+      "checkedAt": "Preverjeno dne {date} ob {time}",
+      "poweredBy": "Preverjanje zagotavlja {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Glavna zastava",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Neveljavna telefonska številka",
         "birthDate": "Datum rojstva",
         "birthDateInPast": "Datum rojstva mora biti v pretekliku",
-        "address": "Nagovor",
-        "addressPlaceholder": "123 rue de la Paix, Pariz",
         "civilite": "Naslov",
         "groupeSanguin": "Krvna skupina",
         "possedeTshirt": "Ima majico",

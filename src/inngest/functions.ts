@@ -1,4 +1,5 @@
 import { automationSweep } from "@/inngest/automation-sweep"
+import { cotisationSubscriptionSweep } from "@/inngest/cotisation-subscription-sweep"
 import { processAutomationRule } from "@/inngest/process-automation-rule"
 import { sendEventRuleEmail, sendEventRuleSms } from "@/inngest/event-rule-dispatch"
 import { bulkSendMembresEmail, bulkSendMembresSms, bulkSendCotisationReminders, bulkSendSondageInvitations } from "@/inngest/bulk-send"
@@ -7,6 +8,7 @@ import { eventReviewRequest } from "@/inngest/event-review-request"
 
 export const functions = [
   automationSweep,
+  cotisationSubscriptionSweep,
   processAutomationRule,
   sendEventRuleEmail,
   sendEventRuleSms,

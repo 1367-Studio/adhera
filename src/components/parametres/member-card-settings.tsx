@@ -96,8 +96,11 @@ export function MemberCardSettings({
     label: t(`templates.${template}`),
   }))
 
-  // A fixed year ahead of *this* render, not of every render: a date that moves on each
-  // keystroke would make the preview flicker and re-encode the QR for nothing.
+  // Fixed at *this* render, not on every render: a date that moves on each keystroke would
+  // make the preview flicker and re-encode the QR for nothing. previewValidFrom is today
+  // rather than a year ago, so the range reads as "starts now" — the common case for an
+  // admin previewing the card before any member has actually bought one.
+  const previewValidFrom = useMemo(() => new Date(), [])
   const previewValidUntil = useMemo(() => {
     const oneYearOut = new Date()
     oneYearOut.setFullYear(oneYearOut.getFullYear() + 1)
@@ -111,6 +114,7 @@ export function MemberCardSettings({
     logoUrl,
     memberName:  sampleName,
     category:    t("sampleCategory"),
+    validFrom:   previewValidFrom,
     validUntil:  previewValidUntil,
     state:       "valid",
     // No photo on the sample: the initials are the case an admin cannot preview otherwise,
@@ -124,6 +128,8 @@ export function MemberCardSettings({
       draftSettings.showPhone ? associationPhone        : null,
       draftSettings.showEmail ? associationContactEmail : null,
     ),
+    contactPhone: draftSettings.showPhone ? associationPhone        : null,
+    contactEmail: draftSettings.showEmail ? associationContactEmail : null,
     // The real verification URL with a stand-in token: built through the same helper the
     // printed cards use, so the preview's QR has the density of a real one rather than that
     // of a much shorter made-up string. Never scanned in earnest — "apercu" resolves to no

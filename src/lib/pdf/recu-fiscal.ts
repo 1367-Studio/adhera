@@ -4,6 +4,7 @@ import { Prisma, DonorType, OrganismeCategory } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { amountToFrenchWords } from "@/lib/pdf/french-numbers"
 import { APP_TIME_ZONE } from "@/lib/date-format"
+import { formatAddress } from "@/lib/address"
 
 type DonForReceipt = {
   id:           string
@@ -12,7 +13,16 @@ type DonForReceipt = {
   lastName:     string
   companyName?: string | null
   siret?:       string | null
+  // Adresse du donateur sous ses deux formes : `address` est le texte libre hérité (tous
+  // les dons antérieurs au découpage n'ont que lui, et leur reçu doit rester identique au
+  // caractère près), les cinq colonnes structurées sont celles du formulaire actuel.
+  // donorAddress ci-dessous choisit, via formatAddress (src/lib/address.ts).
   address:      string | null
+  addressStreet?:     string | null
+  addressComplement?: string | null
+  postalCode?:        string | null
+  city?:              string | null
+  country?:           string | null
   amount:       { toString(): string }
   paidAt:       Date | null
   anonymous:    boolean
@@ -27,6 +37,20 @@ type DonForReceipt = {
   // CERFA must show, not the full amount paid.
   receiptMode?: string | null
   deductibleAmount?: { toString(): string } | null
+}
+
+// L'adresse imprimée sur le reçu, quelle que soit la forme sous laquelle le don l'a
+// enregistrée. Un don qui n'a que le texte libre hérité rend exactement la même ligne
+// qu'avant le découpage — c'est tout l'objet du champ `legacy`.
+function donorAddress(don: DonForReceipt): string | null {
+  return formatAddress({
+    street:     don.addressStreet,
+    complement: don.addressComplement,
+    postalCode: don.postalCode,
+    city:       don.city,
+    country:    don.country,
+    legacy:     don.address,
+  })
 }
 
 function receiptAmount(don: DonForReceipt): number {
@@ -155,7 +179,7 @@ export async function generateRecuFiscal(
   put(0, association.name, 36, 178)
   const identifier = association.siren ?? association.rna ?? ""
   if (identifier) put(0, identifier, 198, 189)
-  put(0, [association.address, association.city].filter(Boolean).join(", "), 135, 218)
+  put(0, formatAddress({ street: association.address, city: association.city }) ?? "", 135, 218)
   put(0, "France", 65, 244)
   if (association.objet) put(0, association.objet, 70, 256)
 
@@ -166,7 +190,8 @@ export async function generateRecuFiscal(
   // ── Page 2 : donateur, montant, signature ──────────────────────────────────
   const donorName = `${don.firstName} ${don.lastName}`
   put(1, donorName, 65, 250)
-  if (don.address) put(1, don.address, 136, 281)
+  const printedAddress = donorAddress(don)
+  if (printedAddress) put(1, printedAddress, 136, 281)
 
   put(1, amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 75, 363)
   put(1, amountWords, 355, 363)
@@ -289,7 +314,7 @@ export async function generateRecuFiscalEntreprise(
   const donorName = don.companyName ?? `${don.firstName} ${don.lastName}`
   set("b4", donorName)
   set("b6", (don.siret ?? "").slice(0, 9)) // champ "Numéro SIREN" — 9 chiffres, pas le SIRET complet
-  set("b8", don.address ?? "")
+  set("b8", donorAddress(don) ?? "")
 
   set("b15", amount.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
   set("b16", amountWords)
@@ -328,7 +353,13 @@ type DateTime_ = Date
 type MembreForReceipt = {
   firstName: string
   lastName:  string
+  // Texte libre hérité + version structurée : donorAddress choisit (src/lib/address.ts).
   address:   string | null
+  addressStreet:     string | null
+  addressComplement: string | null
+  postalCode:        string | null
+  city:              string | null
+  country:           string | null
 }
 
 // A cotisation is always an individual — MembershipTier has no entreprise/SIRET concept, unlike
@@ -348,6 +379,11 @@ export async function generateRecuFiscalForCotisation(
     firstName:       membre.firstName,
     lastName:        membre.lastName,
     address:         membre.address,
+    addressStreet:     membre.addressStreet,
+    addressComplement: membre.addressComplement,
+    postalCode:        membre.postalCode,
+    city:              membre.city,
+    country:           membre.country,
     amount:          cotisation.amount,
     paidAt:          cotisation.paidAt,
     anonymous:       false,
@@ -362,7 +398,13 @@ type ParticipationForReceipt = {
   id:               string
   firstName:        string
   lastName:         string
+  // Idem : texte libre hérité + version structurée.
   address:          string | null
+  addressStreet:     string | null
+  addressComplement: string | null
+  postalCode:        string | null
+  city:              string | null
+  country:           string | null
   amount:           { toString(): string } | null
   ticketPaidAt:     Date | null
   receiptNumber:    string | null
@@ -387,6 +429,11 @@ export async function generateRecuFiscalForParticipation(
     firstName:       participation.firstName,
     lastName:        participation.lastName,
     address:         participation.address,
+    addressStreet:     participation.addressStreet,
+    addressComplement: participation.addressComplement,
+    postalCode:        participation.postalCode,
+    city:              participation.city,
+    country:           participation.country,
     amount:          participation.amount ?? "0",
     paidAt:          participation.ticketPaidAt,
     anonymous:       false,

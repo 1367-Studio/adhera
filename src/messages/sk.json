@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paríž...",
     "viewOnGoogleMaps": "Pozrite si na Google Maps"
   },
+  "address": {
+    "street": "Adresa",
+    "complement": "Doplnok adresy",
+    "complementPlaceholder": "Budova, poschodie, schránka…",
+    "postalCode": "PSČ",
+    "city": "Mesto",
+    "country": "Krajina",
+    "legacyMigratedHint": "Skopírované zo starého poľa adresy – skontrolujte, či už neobsahuje nižšie uvedené PSČ a mesto."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prihlásiť sa",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Názov *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefón",
-      "addressLabel": "Adresa",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (voliteľné)",
       "fileAttach": "Priložte súbor",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Krstné meno",
       "lastNameLabel": "Názov",
       "emailLabel": "Email",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Dátum narodenia",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilné zariadenia",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paríž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paríž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Aby ste sa dostali do svojej členskej zóny.",
       "passwordRequirementsTitle": "Vaše heslo musí obsahovať:",
       "passwordRuleMinLength": "Aspoň {count} Postavy",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Dátum narodenia",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilné zariadenia",
@@ -3531,6 +3535,25 @@
       "copied": "Skopírované!",
       "copy": "Rozumiem",
       "open": "Otvorené"
+    },
+    "customDomainSettings": {
+      "title": "Vlastná doména",
+      "subtitle": "Použite vlastnú doménu pre verejnú stránku združenia, popri formwise.fr.",
+      "domainLabel": "Doména",
+      "domainPlaceholder": "www.mojezdruzenie.org",
+      "domainHint": "Subdoména ako www.mojezdruzenie.org potrebuje iba jeden DNS záznam.",
+      "invalidDomain": "Neplatná doména",
+      "saved": "Doména pridaná",
+      "statusVerified": "Aktívna",
+      "statusFailed": "Overenie zlyhalo",
+      "statusPending": "Čaká sa na DNS",
+      "dnsInstruction": "Pridajte tento DNS záznam u svojho poskytovateľa domény (OVH, Gandi, GoDaddy atď.):",
+      "waitingHint": "Overenie prebieha automaticky každých pár minút po rozšírení DNS.",
+      "verifyNow": "Overiť teraz",
+      "remove": "Odstrániť doménu",
+      "removed": "Doména odstránená",
+      "removeConfirmTitle": "Odstrániť túto vlastnú doménu?",
+      "removeConfirmDescription": "Stránka zostane dostupná na formwise.fr, ale táto doména už nebude smerovať na združenie."
     },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatok",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefón",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Úloha",
         "birthDate": "Dátum narodenia",
         "status": "Stav",
@@ -3953,8 +3978,6 @@
         "allergies": "Známe alergie",
         "allergiesPlaceholder": "Arachidy, peľ...",
         "type": "Typ člena",
-        "address": "Adresa",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paríž",
         "preferredLocale": "Preferovaný jazyk",
         "spokenLanguage": "Hovorený jazyk",
         "cotisationTier": "Členský poplatok"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importované z AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Platná od {from} do {to}",
+      "expiredOn": "Členstvo vypršalo dňa {date}",
+      "status": {
+        "valid": "Členstvo platné",
+        "expired": "Členstvo vypršané"
+      },
+      "generatedBy": "Karta vygenerovaná pomocou {appName}",
+      "qrAlt": "QR kód na overenie karty",
+      "ariaLabel": "Členská karta: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja karta",
+      "title": "Moja členská karta",
+      "titleMultiple": "Moje členské karty",
+      "subtitle": "Predložte ju pri aktivitách združenia. Jej QR kód umožňuje overiť jej platnosť.",
+      "switcherLabel": "Vybrať kartu na zobrazenie",
+      "downloadPdf": "Stiahnuť PDF",
+      "print": "Tlačiť"
+    },
+    "unavailable": {
+      "title": "Členská karta nie je k dispozícii",
+      "pending": "Karta bude k dispozícii hneď po zaznamenaní platby členského príspevku.",
+      "partial": "Členský príspevok bol uhradený čiastočne. Karta bude k dispozícii hneď po zaznamenaní zostatku.",
+      "late": "Platba členského príspevku ešte nebola zaznamenaná. Karta bude k dispozícii po jej zaznamenaní.",
+      "noneTitle": "Žiadna aktívna členská karta",
+      "none": "Pre toto obdobie neexistuje žiadne prebiehajúce členstvo. Karta sa vytvorí automaticky po prihlásení.",
+      "cancelled": "Toto členstvo bolo zrušené. Ďalšie informácie vám poskytne združenie.",
+      "disabled": "Vaše združenie neponúka členskú kartu.",
+      "expired": "Členstvo vypršalo dňa {date}. Obnovte ho a získajte novú kartu.",
+      "viewCotisation": "Zobraziť môj príspevok"
+    },
+    "manager": {
+      "button": "Členská karta",
+      "rowAction": "Zobraziť členskú kartu",
+      "modalTitle": "Členská karta",
+      "unavailableTitle": "Karta nie je k dispozícii",
+      "noPayment": "Pre tohto člena nie je zaznamenaná žiadna platba príspevku. Karta bude vygenerovaná hneď po zaznamenaní platby.",
+      "recordPayment": "Zaznamenať platbu",
+      "settingsHint": "Šablónu a farbu je možné upraviť v Nastaveniach › Členská karta.",
+      "regenerate": "Znova vygenerovať QR kód",
+      "regenerateHint": "Starý QR kód okamžite prestane fungovať. Použite, ak bola karta stratená alebo zdieľaná.",
+      "regenerateConfirm": "Znova vygenerovať QR kód tejto karty?",
+      "regenerated": "QR kód znova vygenerovaný"
+    },
+    "settings": {
+      "title": "Členská karta",
+      "subtitle": "Vzhľad karty zobrazovanej v členskej sekcii.",
+      "enabled": "Aktivovať členskú kartu",
+      "enabledHint": "Členovia s uhradeným príspevkom uvidia svoju kartu vo svojej sekcii.",
+      "template": "Šablóna",
+      "templates": {
+        "classic": "Klasická",
+        "modern": "Moderná",
+        "minimal": "Minimálna"
+      },
+      "color": "Farba",
+      "colorTooLight": "Veľmi svetlá farba: od pozadia karty sa bude odlišovať len málo.",
+      "minimalNoColor": "Šablóna Minimálna nepoužíva farbu.",
+      "showOnCard": "Zobraziť na karte",
+      "showPhoto": "Fotografia člena",
+      "showPhotoHint": "Ak nie je uložená žiadna fotografia, zobrazia sa iniciály.",
+      "showCategory": "Kategória",
+      "showPhone": "Telefón združenia",
+      "showEmail": "E-mail združenia",
+      "preview": "Náhľad",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktívny dobrovoľný člen",
+      "noLogo": "Pridajte logo v sekcii Branding, aby sa zobrazilo na karte.",
+      "noPhone": "Pridajte telefón v sekcii Právna identita a dary, aby sa zobrazil na karte.",
+      "noEmail": "Pridajte kontaktný e-mail v sekcii Informácie o združení, aby sa zobrazil na karte.",
+      "saved": "Členská karta uložená"
+    },
+    "print": {
+      "guide": "Odstrihnite podľa čiary — formát bankovej karty, 85,6 × 54 mm. Tlačte na 100 %, bez prispôsobenia stránke.",
+      "documentTitle": "Členská karta — {name}",
+      "popupBlocked": "Povoľte vyskakovacie okná na tlač, alebo si stiahnite PDF."
+    },
+    "verify": {
+      "valid": "Karta platná",
+      "validUntil": "Členstvo platné do {date}",
+      "expired": "Členstvo vypršané",
+      "expiredSince": "Vypršané dňa {date}",
+      "invalid": "Karta neplatná",
+      "invalidText": "Táto karta nie je rozpoznaná alebo bola deaktivovaná. Obráťte sa na združenie.",
+      "checkedAt": "Overené dňa {date} o {time}",
+      "poweredBy": "Overenie zaisťuje {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hlavná vlajka",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Neplatné telefónne číslo",
         "birthDate": "Dátum narodenia",
         "birthDateInPast": "Dátum narodenia musí byť v minulom čase",
-        "address": "Adresa",
-        "addressPlaceholder": "123 rue de la Paix, Paríž",
         "civilite": "Názov",
         "groupeSanguin": "Krvná skupina",
         "possedeTshirt": "Má tričko",

@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryžius...",
     "viewOnGoogleMaps": "Žr. Google žemėlapiuose"
   },
+  "address": {
+    "street": "Adresas",
+    "complement": "Papildoma adreso eilutė",
+    "complementPlaceholder": "Pastatas, aukštas, pašto dėžutė…",
+    "postalCode": "Pašto kodas",
+    "city": "Miestas",
+    "country": "Šalis",
+    "legacyMigratedHint": "Nukopijuota iš senojo adreso lauko — patikrinkite, ar jame jau nėra žemiau nurodyto pašto kodo ir miesto."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prisijungti, prisijunk",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Vardas, pavadinimas*",
       "emailLabel": "El paštas*",
       "phoneLabel": "Telefonas",
-      "addressLabel": "Adresas",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (pasirinktinai)",
       "fileAttach": "Prisegti failą",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Vardas",
       "lastNameLabel": "Vardas, pavadinimas",
       "emailLabel": "El paštas",
-      "addressLabel": "Adresas",
       "birthDateLabel": "Gimimo data",
       "phoneLabel": "Fiksuoto ryšio telefonas",
       "mobileLabel": "Mobilusis",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryžius",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryžius",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Norėdami pasiekti savo narių zoną.",
       "passwordRequirementsTitle": "Jūsų slaptažodis turi būti:",
       "passwordRuleMinLength": "Bent jau {count} Veikėjai",
-      "addressLabel": "Adresas",
       "birthDateLabel": "Gimimo data",
       "phoneLabel": "Fiksuoto ryšio telefonas",
       "mobileLabel": "Mobilusis",
@@ -3531,6 +3535,25 @@
       "copied": "Nukopijavau!",
       "copy": "Supratau",
       "open": "Atidaryk"
+    },
+    "customDomainSettings": {
+      "title": "Pasirinktinis domenas",
+      "subtitle": "Naudokite savo domeną asociacijos viešai svetainei, papildomai prie formwise.fr.",
+      "domainLabel": "Domenas",
+      "domainPlaceholder": "www.manoasociacija.org",
+      "domainHint": "Subdomenui, pvz., www.manoasociacija.org, reikia tik vieno DNS įrašo.",
+      "invalidDomain": "Neteisingas domenas",
+      "saved": "Domenas pridėtas",
+      "statusVerified": "Aktyvus",
+      "statusFailed": "Patikrinimas nepavyko",
+      "statusPending": "Laukiama DNS",
+      "dnsInstruction": "Pridėkite šį DNS įrašą pas savo domeno teikėją (OVH, Gandi, GoDaddy ir kt.):",
+      "waitingHint": "Patikrinimas vyksta automatiškai kas kelias minutes, kai tik DNS pasklinda.",
+      "verifyNow": "Patikrinti dabar",
+      "remove": "Pašalinti domeną",
+      "removed": "Domenas pašalintas",
+      "removeConfirmTitle": "Pašalinti šį pasirinktinį domeną?",
+      "removeConfirmDescription": "Svetainė liks pasiekiama adresu formwise.fr, tačiau šis domenas nebenurodys į asociaciją."
     },
     "cotisationDefaultsSettings": {
       "title": "Narystės mokestis",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefonas",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobilusis",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Vaidmuo",
         "birthDate": "Gimimo data",
         "status": "Statusas",
@@ -3953,8 +3978,6 @@
         "allergies": "Žinomos alergijos",
         "allergiesPlaceholder": "Arachidai, žiedadulkės...",
         "type": "Narių tipas",
-        "address": "Adresas",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paryžius",
         "preferredLocale": "Pageidaujama kalba",
         "spokenLanguage": "Vartojama kalba",
         "cotisationTier": "Narystės mokestis"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importuota iš AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Galioja nuo {from} iki {to}",
+      "expiredOn": "Narystė baigėsi {date}",
+      "status": {
+        "valid": "Narystė galiojanti",
+        "expired": "Narystė baigėsi"
+      },
+      "generatedBy": "Kortelė sugeneruota naudojant {appName}",
+      "qrAlt": "Kortelės patvirtinimo QR kodas",
+      "ariaLabel": "{name} nario kortelė"
+    },
+    "portal": {
+      "sidebar": "Mano kortelė",
+      "title": "Mano nario kortelė",
+      "titleMultiple": "Mano nario kortelės",
+      "subtitle": "Pateikite ją asociacijos veiklų metu. Jos QR kodas leidžia patikrinti galiojimą.",
+      "switcherLabel": "Pasirinkite rodomą kortelę",
+      "downloadPdf": "Atsisiųsti PDF",
+      "print": "Spausdinti"
+    },
+    "unavailable": {
+      "title": "Nario kortelė nepasiekiama",
+      "pending": "Kortelė bus pasiekiama, kai tik bus užregistruotas nario mokesčio mokėjimas.",
+      "partial": "Nario mokestis sumokėtas iš dalies. Kortelė bus pasiekiama, kai tik bus užregistruotas likutis.",
+      "late": "Nario mokesčio mokėjimas dar neužregistruotas. Kortelė bus pasiekiama jį užregistravus.",
+      "noneTitle": "Nėra aktyvios nario kortelės",
+      "none": "Šiam laikotarpiui nėra galiojančios narystės. Kortelė sukuriama automatiškai po įstojimo.",
+      "cancelled": "Ši narystė buvo atšaukta. Dėl daugiau informacijos kreipkitės į asociaciją.",
+      "disabled": "Jūsų asociacija nesiūlo nario kortelės.",
+      "expired": "Narystė baigėsi {date}. Atnaujinkite ją, kad gautumėte naują kortelę.",
+      "viewCotisation": "Žiūrėti mano nario mokestį"
+    },
+    "manager": {
+      "button": "Nario kortelė",
+      "rowAction": "Žiūrėti nario kortelę",
+      "modalTitle": "Nario kortelė",
+      "unavailableTitle": "Kortelė nepasiekiama",
+      "noPayment": "Šiam nariui nėra užregistruoto nario mokesčio mokėjimo. Kortelė bus sugeneruota, kai tik mokėjimas bus užregistruotas.",
+      "recordPayment": "Užregistruoti mokėjimą",
+      "settingsHint": "Šabloną ir spalvą galima keisti skyriuje Nustatymai › Nario kortelė.",
+      "regenerate": "Iš naujo sugeneruoti QR kodą",
+      "regenerateHint": "Senas QR kodas iškart nustos veikti. Naudokite, jei kortelė buvo pamesta arba bendrai naudota.",
+      "regenerateConfirm": "Ar iš naujo sugeneruoti šios kortelės QR kodą?",
+      "regenerated": "QR kodas sugeneruotas iš naujo"
+    },
+    "settings": {
+      "title": "Nario kortelė",
+      "subtitle": "Narių srityje rodomos kortelės išvaizda.",
+      "enabled": "Įjungti nario kortelę",
+      "enabledHint": "Nariai, sumokėję nario mokestį, matys savo kortelę savo srityje.",
+      "template": "Šablonas",
+      "templates": {
+        "classic": "Klasikinis",
+        "modern": "Modernus",
+        "minimal": "Minimalistinis"
+      },
+      "color": "Spalva",
+      "colorTooLight": "Labai šviesi spalva: ji menkai išsiskirs kortelės fone.",
+      "minimalNoColor": "Minimalistinis šablonas nenaudoja spalvos.",
+      "showOnCard": "Rodyti kortelėje",
+      "showPhoto": "Nario nuotrauka",
+      "showPhotoHint": "Jei nuotrauka neįrašyta, rodomi inicialai.",
+      "showCategory": "Kategorija",
+      "showPhone": "Asociacijos telefonas",
+      "showEmail": "Asociacijos el. paštas",
+      "preview": "Peržiūra",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktyvus savanoris narys",
+      "noLogo": "Pridėkite logotipą skyriuje Prekės ženklas, kad jis būtų rodomas kortelėje.",
+      "noPhone": "Pridėkite telefoną skyriuje Teisinis identitetas ir aukos, kad jis būtų rodomas kortelėje.",
+      "noEmail": "Pridėkite kontaktinį el. paštą skyriuje Informacija apie asociaciją, kad jis būtų rodomas kortelėje.",
+      "saved": "Nario kortelė išsaugota"
+    },
+    "print": {
+      "guide": "Iškirpkite pagal liniją — banko kortelės formatas, 85,6 × 54 mm. Spausdinkite 100 % dydžiu, nepritaikant prie puslapio.",
+      "documentTitle": "Nario kortelė — {name}",
+      "popupBlocked": "Leiskite iškylančiuosius langus, kad galėtumėte spausdinti, arba atsisiųskite PDF."
+    },
+    "verify": {
+      "valid": "Kortelė galiojanti",
+      "validUntil": "Narystė galioja iki {date}",
+      "expired": "Narystė baigėsi",
+      "expiredSince": "Baigėsi nuo {date}",
+      "invalid": "Kortelė negaliojanti",
+      "invalidText": "Ši kortelė neatpažinta arba buvo deaktyvuota. Kreipkitės į asociaciją.",
+      "checkedAt": "Patikrinta {date} {time}",
+      "poweredBy": "Patikrinimą užtikrina {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Pagrindinė vėliava",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Neteisingas telefono numeris",
         "birthDate": "Gimimo data",
         "birthDateInPast": "Gimimo data turi būti būtuoju laiku",
-        "address": "Adresas",
-        "addressPlaceholder": "123 rue de la Paix, Paryžius",
         "civilite": "Pavadinimas",
         "groupeSanguin": "Kraujo grupė",
         "possedeTshirt": "Turi marškinėlius",

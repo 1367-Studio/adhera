@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parigi...",
     "viewOnGoogleMaps": "Vedi su Google Maps"
   },
+  "address": {
+    "street": "Indirizzo",
+    "complement": "Complemento indirizzo",
+    "complementPlaceholder": "Edificio, piano, casella postale…",
+    "postalCode": "CAP",
+    "city": "Città",
+    "country": "Paese",
+    "legacyMigratedHint": "Copiato dal vecchio campo indirizzo: verificare che non includa già il CAP e la città sottostanti."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Accedi",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nome *",
       "emailLabel": "E-mail*",
       "phoneLabel": "Telefono",
-      "addressLabel": "Indirizzo",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opzionale)",
       "fileAttach": "Allega un fascicolo",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Nome",
       "lastNameLabel": "Nome",
       "emailLabel": "E-mail",
-      "addressLabel": "Indirizzo",
       "birthDateLabel": "Data di nascita",
       "phoneLabel": "Telefono fisso",
       "mobileLabel": "Mobile",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parigi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parigi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Per accedere alla tua area iscritta.",
       "passwordRequirementsTitle": "La tua password deve contenere:",
       "passwordRuleMinLength": "Almeno {count} Personaggi",
-      "addressLabel": "Indirizzo",
       "birthDateLabel": "Data di nascita",
       "phoneLabel": "Telefono fisso",
       "mobileLabel": "Mobile",
@@ -3531,6 +3535,25 @@
       "copied": "Ricevuto!",
       "copy": "Ricevuto",
       "open": "Open"
+    },
+    "customDomainSettings": {
+      "title": "Dominio personalizzato",
+      "subtitle": "Usa il tuo dominio per il sito pubblico dell'associazione, oltre a formwise.fr.",
+      "domainLabel": "Dominio",
+      "domainPlaceholder": "www.miaassociazione.org",
+      "domainHint": "Un sottodominio come www.miaassociazione.org richiede un solo record DNS.",
+      "invalidDomain": "Dominio non valido",
+      "saved": "Dominio aggiunto",
+      "statusVerified": "Attivo",
+      "statusFailed": "Verifica non riuscita",
+      "statusPending": "In attesa del DNS",
+      "dnsInstruction": "Aggiungi questo record DNS nel pannello del tuo fornitore di dominio (OVH, Gandi, GoDaddy, ecc.):",
+      "waitingHint": "La verifica avviene automaticamente ogni pochi minuti dopo la propagazione del DNS.",
+      "verifyNow": "Verifica ora",
+      "remove": "Rimuovi dominio",
+      "removed": "Dominio rimosso",
+      "removeConfirmTitle": "Rimuovere questo dominio personalizzato?",
+      "removeConfirmDescription": "Il sito resterà raggiungibile su formwise.fr, ma questo dominio non punterà più all'associazione."
     },
     "cotisationDefaultsSettings": {
       "title": "Quota associativa",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefono",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Cellulare",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Ruolo",
         "birthDate": "Data di nascita",
         "status": "Stato",
@@ -3953,8 +3978,6 @@
         "allergies": "Allergie note",
         "allergiesPlaceholder": "Arachidi, polline...",
         "type": "Tipo di membro",
-        "address": "Indirizzo",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Parigi",
         "preferredLocale": "Lingua preferita",
         "spokenLanguage": "Lingua parlata",
         "cotisationTier": "Quota associativa"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importato da AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Valido dal {from} al {to}",
+      "expiredOn": "Iscrizione scaduta il {date}",
+      "status": {
+        "valid": "Iscrizione valida",
+        "expired": "Iscrizione scaduta"
+      },
+      "generatedBy": "Tessera generata tramite {appName}",
+      "qrAlt": "Codice QR di verifica della tessera",
+      "ariaLabel": "Tessera associativa di {name}"
+    },
+    "portal": {
+      "sidebar": "La mia tessera",
+      "title": "La mia tessera associativa",
+      "titleMultiple": "Le mie tessere associative",
+      "subtitle": "Presentala durante le attività dell'associazione. Il suo codice QR consente di verificarne la validità.",
+      "switcherLabel": "Scegliere la tessera da mostrare",
+      "downloadPdf": "Scarica PDF",
+      "print": "Stampa"
+    },
+    "unavailable": {
+      "title": "Tessera associativa non disponibile",
+      "pending": "La tessera sarà disponibile non appena verrà registrato il pagamento della quota.",
+      "partial": "La quota è stata pagata parzialmente. La tessera sarà disponibile non appena verrà registrato il saldo.",
+      "late": "Il pagamento della quota non è ancora stato registrato. La tessera sarà disponibile non appena registrato.",
+      "noneTitle": "Nessuna tessera associativa attiva",
+      "none": "Nessuna iscrizione in corso per questo periodo. La tessera viene creata automaticamente dopo l'iscrizione.",
+      "cancelled": "Questa iscrizione è stata annullata. Contatta l'associazione per saperne di più.",
+      "disabled": "La tessera associativa non è proposta dalla tua associazione.",
+      "expired": "L'iscrizione è scaduta il {date}. Rinnovala per ottenere una nuova tessera.",
+      "viewCotisation": "Vedi la mia quota"
+    },
+    "manager": {
+      "button": "Tessera associativa",
+      "rowAction": "Vedi tessera associativa",
+      "modalTitle": "Tessera associativa",
+      "unavailableTitle": "Tessera non disponibile",
+      "noPayment": "Nessun pagamento della quota è registrato per questo membro. La tessera sarà generata non appena registrato il pagamento.",
+      "recordPayment": "Registra un pagamento",
+      "settingsHint": "Modello e colore modificabili in Impostazioni › Tessera associativa.",
+      "regenerate": "Rigenera codice QR",
+      "regenerateHint": "Il vecchio codice QR smetterà immediatamente di funzionare. Da usare se una tessera è stata persa o condivisa.",
+      "regenerateConfirm": "Rigenerare il codice QR di questa tessera?",
+      "regenerated": "Codice QR rigenerato"
+    },
+    "settings": {
+      "title": "Tessera associativa",
+      "subtitle": "Aspetto della tessera mostrata nell'area soci.",
+      "enabled": "Attiva la tessera associativa",
+      "enabledHint": "I soci in regola con la quota vedranno la propria tessera nella loro area.",
+      "template": "Modello",
+      "templates": {
+        "classic": "Classico",
+        "modern": "Moderno",
+        "minimal": "Minimal"
+      },
+      "color": "Colore",
+      "colorTooLight": "Colore molto chiaro: si distinguerà poco dallo sfondo della tessera.",
+      "minimalNoColor": "Il modello Minimal non utilizza il colore.",
+      "showOnCard": "Mostra sulla tessera",
+      "showPhoto": "Foto del socio",
+      "showPhotoHint": "Se non è registrata alcuna foto vengono mostrate le iniziali.",
+      "showCategory": "Categoria",
+      "showPhone": "Telefono dell'associazione",
+      "showEmail": "E-mail dell'associazione",
+      "preview": "Anteprima",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Socio volontario attivo",
+      "noLogo": "Aggiungi un logo in Personalizzazione per mostrarlo sulla tessera.",
+      "noPhone": "Aggiungi un telefono in Identità legale e Donazioni per mostrarlo sulla tessera.",
+      "noEmail": "Aggiungi un'e-mail di contatto in Informazioni sull'associazione per mostrarla sulla tessera.",
+      "saved": "Tessera associativa salvata"
+    },
+    "print": {
+      "guide": "Ritaglia seguendo la linea — formato carta bancaria, 85,6 × 54 mm. Stampa al 100%, senza adattare alla pagina.",
+      "documentTitle": "Tessera associativa — {name}",
+      "popupBlocked": "Consenti le finestre pop-up per stampare, oppure scarica il PDF."
+    },
+    "verify": {
+      "valid": "Tessera valida",
+      "validUntil": "Iscrizione valida fino al {date}",
+      "expired": "Iscrizione scaduta",
+      "expiredSince": "Scaduta dal {date}",
+      "invalid": "Tessera non valida",
+      "invalidText": "Questa tessera non è riconosciuta o è stata disattivata. Contatta l'associazione.",
+      "checkedAt": "Verificata il {date} alle {time}",
+      "poweredBy": "Verifica fornita da {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Bandiera principale",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Numero di telefono invalido",
         "birthDate": "Data di nascita",
         "birthDateInPast": "La data di nascita deve essere al passato",
-        "address": "Indirizzo",
-        "addressPlaceholder": "123 rue de la Paix, Parigi",
         "civilite": "Titolo",
         "groupeSanguin": "Gruppo sanguigno",
         "possedeTshirt": "Ha una maglietta",

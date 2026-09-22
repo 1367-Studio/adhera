@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 export const loginSchema = z.object({
   email:    z.string().min(1, "Email requis").email("Email invalide"),
@@ -28,7 +29,7 @@ export const portalRegisterSchema = z.object({
   // Révisions des documents de l'association affichées au visiteur — distinctes de
   // acceptedTerms ci-dessus, qui porte sur la politique de la plateforme.
   acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
-  locale:        z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:        z.enum(SUPPORTED_LOCALES).optional(),
 })
 
 export type PortalRegisterInput = z.infer<typeof portalRegisterSchema>

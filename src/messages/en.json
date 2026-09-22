@@ -51,6 +51,15 @@
     "addressPlaceholder": "Community hall, 12 Main Street…",
     "viewOnGoogleMaps": "View on Google Maps"
   },
+  "address": {
+    "street": "Address",
+    "complement": "Address line 2",
+    "complementPlaceholder": "Building, floor, mailbox…",
+    "postalCode": "Postal code",
+    "city": "City",
+    "country": "Country",
+    "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Login",
@@ -1414,7 +1423,6 @@
       "lastNameLabel": "Last name *",
       "emailLabel": "Email *",
       "phoneLabel": "Phone",
-      "addressLabel": "Address",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optional)",
       "fileAttach": "Attach a file",
@@ -2891,7 +2899,6 @@
       "firstNameLabel": "First name",
       "lastNameLabel": "Last name",
       "emailLabel": "Email",
-      "addressLabel": "Address",
       "birthDateLabel": "Date of birth",
       "phoneLabel": "Phone",
       "mobileLabel": "Mobile",
@@ -2909,7 +2916,6 @@
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
-      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
       "phonePlaceholder": "020 7946 0958",
       "mobilePlaceholder": "07700 900123",
       "companyNamePlaceholder": "Smith & Sons Ltd",
@@ -3193,7 +3199,6 @@
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
-      "addressPlaceholder": "12 Oak Street, London SW1A 1AA",
       "phonePlaceholder": "020 7946 0958",
       "mobilePlaceholder": "07700 900123",
       "donationBadge": "(donation)",
@@ -3223,7 +3228,6 @@
       "passwordHint": "To access your member portal.",
       "passwordRequirementsTitle": "Your password must contain:",
       "passwordRuleMinLength": "At least {count} characters",
-      "addressLabel": "Address",
       "birthDateLabel": "Date of birth",
       "phoneLabel": "Phone",
       "mobileLabel": "Mobile",
@@ -3606,6 +3610,25 @@
       "copied": "Copied!",
       "copy": "Copy",
       "open": "Open"
+    },
+    "customDomainSettings": {
+      "title": "Custom domain",
+      "subtitle": "Use your own domain for the association's public site, alongside formwise.fr.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.myassociation.org",
+      "domainHint": "A subdomain like www.myassociation.org only needs a single DNS record.",
+      "invalidDomain": "Invalid domain",
+      "saved": "Domain added",
+      "statusVerified": "Active",
+      "statusFailed": "Verification failed",
+      "statusPending": "Waiting for DNS",
+      "dnsInstruction": "Add this DNS record with your domain provider (OVH, Gandi, GoDaddy, etc.):",
+      "waitingHint": "Verification happens automatically every few minutes once the DNS has propagated.",
+      "verifyNow": "Verify now",
+      "remove": "Remove domain",
+      "removed": "Domain removed",
+      "removeConfirmTitle": "Remove this custom domain?",
+      "removeConfirmDescription": "The site will stay reachable at formwise.fr, but this domain will no longer point to the association."
     },
     "cotisationDefaultsSettings": {
       "title": "Membership fee",
@@ -4016,6 +4039,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Phone",
         "phonePlaceholder": "+1 555 123 4567",
+        "mobile": "Mobile",
+        "mobilePlaceholder": "+1 555 123 4567",
         "role": "Role",
         "birthDate": "Date of birth",
         "status": "Status",
@@ -4029,8 +4054,6 @@
         "allergies": "Known allergies",
         "allergiesPlaceholder": "Peanuts, pollen…",
         "type": "Member type",
-        "address": "Address",
-        "addressPlaceholder": "123 Main St, Springfield",
         "preferredLocale": "Preferred language",
         "spokenLanguage": "Spoken language",
         "cotisationTier": "Membership fee — tier"
@@ -4794,7 +4817,7 @@
   },
   "memberCard": {
     "card": {
-      "validUntil": "Valid until {date}",
+      "validPeriod": "Valid from {from} to {to}",
       "expiredOn": "Membership expired on {date}",
       "status": {
         "valid": "Valid membership",
@@ -5373,8 +5396,6 @@
         "phoneInvalid": "Invalid phone number",
         "birthDate": "Date of birth",
         "birthDateInPast": "Date of birth must be in the past",
-        "address": "Address",
-        "addressPlaceholder": "123 Main St, Paris",
         "civilite": "Title",
         "groupeSanguin": "Blood type",
         "possedeTshirt": "Has a t-shirt",

@@ -11,6 +11,9 @@ import {
 // 31 Dec 2026 23:59:59.999 Paris (CET, UTC+1) — what endOfCotisationYear(2026) returns.
 const END_OF_2026_PARIS = new Date("2026-12-31T22:59:59.999Z")
 const END_OF_2025_PARIS = new Date("2025-12-31T22:59:59.999Z")
+// 1 Jan 2026 00:00:00 Paris (CET, UTC+1) — required by MemberCardEligibility's "valid" state,
+// but not something memberCardVerifyDisplay carries through, so no test below asserts on it.
+const START_OF_2026_PARIS = new Date("2025-12-31T23:00:00.000Z")
 
 function buildCard(eligibility: MemberCardEligibility): MemberCardData {
   return {
@@ -38,7 +41,7 @@ function buildCard(eligibility: MemberCardEligibility): MemberCardData {
 describe("memberCardVerifyDisplay — what a stranger may see", () => {
   it("shows the member and the association for a valid card", () => {
     const display = memberCardVerifyDisplay(
-      buildCard({ state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }),
+      buildCard({ state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }),
     )
     expect(display).toEqual({
       state:      "valid",
@@ -80,14 +83,14 @@ describe("memberCardVerifyDisplay — what a stranger may see", () => {
   })
 
   it("omits the category when the association chose not to show it", () => {
-    const card = buildCard({ state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" })
+    const card = buildCard({ state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" })
     card.membre.type = null
     expect(memberCardVerifyDisplay(card)).toMatchObject({ identity: { categoryName: null } })
   })
 
   it("never carries the photo the loader returned", () => {
     const display = memberCardVerifyDisplay(
-      buildCard({ state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }),
+      buildCard({ state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }),
     )
     expect(JSON.stringify(display)).not.toContain("photo.jpg")
   })

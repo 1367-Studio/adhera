@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Παρίσι...",
     "viewOnGoogleMaps": "Δείτε στο Google Maps"
   },
+  "address": {
+    "street": "Διεύθυνση",
+    "complement": "Συμπλήρωμα διεύθυνσης",
+    "complementPlaceholder": "Κτίριο, όροφος, γραμματοκιβώτιο…",
+    "postalCode": "Ταχυδρομικός κώδικας",
+    "city": "Πόλη",
+    "country": "Χώρα",
+    "legacyMigratedHint": "Αντιγράφηκε από το παλιό πεδίο διεύθυνσης — ελέγξτε ότι δεν περιλαμβάνει ήδη τον ταχυδρομικό κώδικα και την πόλη παρακάτω."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Σύνδεση",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Όνομα *",
       "emailLabel": "Ηλεκτρονικό ταχυδρομείο *",
       "phoneLabel": "Τηλέφωνο",
-      "addressLabel": "Διεύθυνση",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (προαιρετικός)",
       "fileAttach": "Επισύναψη αρχείου",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Όνομα",
       "lastNameLabel": "Όνομα",
       "emailLabel": "Ηλεκτρονικό ταχυδρομείο",
-      "addressLabel": "Διεύθυνση",
       "birthDateLabel": "Ημερομηνία γέννησης",
       "phoneLabel": "Σταθερό τηλέφωνο",
       "mobileLabel": "Κινητό",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Μαρία",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Παρίσι",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Μαρία",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Παρίσι",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(ντον)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Για πρόσβαση στην περιοχή μελών σας.",
       "passwordRequirementsTitle": "Ο κωδικός πρόσβασής σας πρέπει να περιέχει:",
       "passwordRuleMinLength": "Τουλάχιστον {count} Χαρακτήρες",
-      "addressLabel": "Διεύθυνση",
       "birthDateLabel": "Ημερομηνία γέννησης",
       "phoneLabel": "Σταθερό τηλέφωνο",
       "mobileLabel": "Κινητό",
@@ -3531,6 +3535,25 @@
       "copied": "Αντιγράφηκε!",
       "copy": "Αντιγραφή",
       "open": "Ανοιξε"
+    },
+    "customDomainSettings": {
+      "title": "Προσαρμοσμένος τομέας",
+      "subtitle": "Χρησιμοποιήστε τον δικό σας τομέα για τη δημόσια ιστοσελίδα του συλλόγου, επιπλέον του formwise.fr.",
+      "domainLabel": "Τομέας",
+      "domainPlaceholder": "www.osyllogosmou.org",
+      "domainHint": "Ένας υποτομέας όπως ο www.osyllogosmou.org χρειάζεται μόνο μία εγγραφή DNS.",
+      "invalidDomain": "Μη έγκυρος τομέας",
+      "saved": "Ο τομέας προστέθηκε",
+      "statusVerified": "Ενεργός",
+      "statusFailed": "Η επαλήθευση απέτυχε",
+      "statusPending": "Αναμονή DNS",
+      "dnsInstruction": "Προσθέστε αυτή την εγγραφή DNS στον πάροχο του τομέα σας (OVH, Gandi, GoDaddy κ.λπ.):",
+      "waitingHint": "Η επαλήθευση γίνεται αυτόματα κάθε λίγα λεπτά μόλις διαδοθεί το DNS.",
+      "verifyNow": "Επαλήθευση τώρα",
+      "remove": "Αφαίρεση τομέα",
+      "removed": "Ο τομέας αφαιρέθηκε",
+      "removeConfirmTitle": "Αφαίρεση αυτού του προσαρμοσμένου τομέα;",
+      "removeConfirmDescription": "Ο ιστότοπος θα παραμείνει προσβάσιμος στο formwise.fr, αλλά αυτός ο τομέας δεν θα δείχνει πλέον στον σύλλογο."
     },
     "cotisationDefaultsSettings": {
       "title": "Συνδρομή μέλους",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Τηλέφωνο",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Κινητό",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Ρόλος",
         "birthDate": "Ημερομηνία γέννησης",
         "status": "Κατάσταση",
@@ -3953,8 +3978,6 @@
         "allergies": "Γνωστές αλλεργίες",
         "allergiesPlaceholder": "Αραχειρίδες, γύρη...",
         "type": "Τύπος μέλους",
-        "address": "Διεύθυνση",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Παρίσι",
         "preferredLocale": "Προτιμώμενη γλώσσα",
         "spokenLanguage": "Γλώσσα που μιλάς",
         "cotisationTier": "Συνδρομή μέλους"
@@ -4683,6 +4706,96 @@
       "importedNote": "Εισαγωγή από το AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Ισχύει από {from} έως {to}",
+      "expiredOn": "Η ιδιότητα μέλους έληξε στις {date}",
+      "status": {
+        "valid": "Έγκυρη ιδιότητα μέλους",
+        "expired": "Ληγμένη ιδιότητα μέλους"
+      },
+      "generatedBy": "Κάρτα που δημιουργήθηκε μέσω {appName}",
+      "qrAlt": "Κωδικός QR επαλήθευσης της κάρτας",
+      "ariaLabel": "Κάρτα μέλους του/της {name}"
+    },
+    "portal": {
+      "sidebar": "Η κάρτα μου",
+      "title": "Η κάρτα μέλους μου",
+      "titleMultiple": "Οι κάρτες μέλους μου",
+      "subtitle": "Επιδείξτε τη στις δραστηριότητες του συλλόγου. Ο κωδικός QR επιτρέπει την επαλήθευση της ισχύος της.",
+      "switcherLabel": "Επιλέξτε την κάρτα προς εμφάνιση",
+      "downloadPdf": "Λήψη PDF",
+      "print": "Εκτύπωση"
+    },
+    "unavailable": {
+      "title": "Η κάρτα μέλους δεν είναι διαθέσιμη",
+      "pending": "Η κάρτα θα είναι διαθέσιμη μόλις καταχωριστεί η πληρωμή της συνδρομής.",
+      "partial": "Η συνδρομή έχει πληρωθεί μερικώς. Η κάρτα θα είναι διαθέσιμη μόλις καταχωριστεί το υπόλοιπο.",
+      "late": "Η πληρωμή της συνδρομής δεν έχει καταχωριστεί ακόμη. Η κάρτα θα είναι διαθέσιμη μετά την καταχώρισή της.",
+      "noneTitle": "Καμία ενεργή κάρτα μέλους",
+      "none": "Δεν υπάρχει ενεργή ιδιότητα μέλους για αυτήν την περίοδο. Η κάρτα δημιουργείται αυτόματα μετά την εγγραφή.",
+      "cancelled": "Αυτή η ιδιότητα μέλους ακυρώθηκε. Επικοινωνήστε με τον σύλλογο για περισσότερες πληροφορίες.",
+      "disabled": "Ο σύλλογός σας δεν προσφέρει κάρτα μέλους.",
+      "expired": "Η ιδιότητα μέλους έληξε στις {date}. Ανανεώστε την για να αποκτήσετε νέα κάρτα.",
+      "viewCotisation": "Δείτε τη συνδρομή μου"
+    },
+    "manager": {
+      "button": "Κάρτα μέλους",
+      "rowAction": "Δείτε την κάρτα μέλους",
+      "modalTitle": "Κάρτα μέλους",
+      "unavailableTitle": "Η κάρτα δεν είναι διαθέσιμη",
+      "noPayment": "Δεν έχει καταχωριστεί καμία πληρωμή συνδρομής για αυτό το μέλος. Η κάρτα θα δημιουργηθεί μόλις καταχωριστεί η πληρωμή.",
+      "recordPayment": "Καταχώριση πληρωμής",
+      "settingsHint": "Το πρότυπο και το χρώμα μπορούν να τροποποιηθούν στις Ρυθμίσεις › Κάρτα μέλους.",
+      "regenerate": "Επαναδημιουργία κωδικού QR",
+      "regenerateHint": "Ο παλιός κωδικός QR θα σταματήσει αμέσως να λειτουργεί. Χρησιμοποιήστε το αν μια κάρτα χάθηκε ή κοινοποιήθηκε.",
+      "regenerateConfirm": "Επαναδημιουργία του κωδικού QR αυτής της κάρτας;",
+      "regenerated": "Ο κωδικός QR δημιουργήθηκε εκ νέου"
+    },
+    "settings": {
+      "title": "Κάρτα μέλους",
+      "subtitle": "Εμφάνιση της κάρτας που προβάλλεται στην περιοχή μελών.",
+      "enabled": "Ενεργοποίηση κάρτας μέλους",
+      "enabledHint": "Τα μέλη με ενήμερη συνδρομή θα βλέπουν την κάρτα τους στην περιοχή τους.",
+      "template": "Πρότυπο",
+      "templates": {
+        "classic": "Κλασικό",
+        "modern": "Μοντέρνο",
+        "minimal": "Μινιμαλιστικό"
+      },
+      "color": "Χρώμα",
+      "colorTooLight": "Πολύ ανοιχτό χρώμα: θα ξεχωρίζει ελάχιστα από το φόντο της κάρτας.",
+      "minimalNoColor": "Το μινιμαλιστικό πρότυπο δεν χρησιμοποιεί χρώμα.",
+      "showOnCard": "Εμφάνιση στην κάρτα",
+      "showPhoto": "Φωτογραφία μέλους",
+      "showPhotoHint": "Εμφανίζονται τα αρχικά όταν δεν υπάρχει καταχωρισμένη φωτογραφία.",
+      "showCategory": "Κατηγορία",
+      "showPhone": "Τηλέφωνο συλλόγου",
+      "showEmail": "E-mail συλλόγου",
+      "preview": "Προεπισκόπηση",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Ενεργό εθελοντικό μέλος",
+      "noLogo": "Προσθέστε λογότυπο στην ενότητα Ταυτότητα μάρκας για να εμφανίζεται στην κάρτα.",
+      "noPhone": "Προσθέστε τηλέφωνο στην ενότητα Νομική ταυτότητα & Δωρεές για να εμφανίζεται στην κάρτα.",
+      "noEmail": "Προσθέστε e-mail επικοινωνίας στην ενότητα Πληροφορίες συλλόγου για να εμφανίζεται στην κάρτα.",
+      "saved": "Η κάρτα μέλους αποθηκεύτηκε"
+    },
+    "print": {
+      "guide": "Κόψτε ακολουθώντας τη γραμμή — μέγεθος τραπεζικής κάρτας, 85,6 × 54 mm. Εκτυπώστε στο 100%, χωρίς προσαρμογή στη σελίδα.",
+      "documentTitle": "Κάρτα μέλους — {name}",
+      "popupBlocked": "Επιτρέψτε τα αναδυόμενα παράθυρα για εκτύπωση, ή κατεβάστε το PDF."
+    },
+    "verify": {
+      "valid": "Η κάρτα είναι έγκυρη",
+      "validUntil": "Η ιδιότητα μέλους ισχύει έως {date}",
+      "expired": "Ληγμένη ιδιότητα μέλους",
+      "expiredSince": "Έληξε στις {date}",
+      "invalid": "Μη έγκυρη κάρτα",
+      "invalidText": "Αυτή η κάρτα δεν αναγνωρίζεται ή έχει απενεργοποιηθεί. Επικοινωνήστε με τον σύλλογο.",
+      "checkedAt": "Ελέγχθηκε στις {date} στις {time}",
+      "poweredBy": "Η επαλήθευση παρέχεται από {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Κύριο banner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Μη έγκυρος αριθμός τηλεφώνου",
         "birthDate": "Ημερομηνία γέννησης",
         "birthDateInPast": "Η ημερομηνία γέννησης πρέπει να είναι σε παρελθοντικό χρόνο",
-        "address": "Διεύθυνση",
-        "addressPlaceholder": "123 rue de la Paix, Παρίσι",
         "civilite": "Τίτλος",
         "groupeSanguin": "Ομάδα αίματος",
         "possedeTshirt": "Διαθέτει μπλουζάκι",

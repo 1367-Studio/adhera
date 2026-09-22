@@ -9,12 +9,13 @@ import { fr } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
-  EnvelopeSimpleIcon, PhoneIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
+  EnvelopeSimpleIcon, PhoneIcon, DeviceMobileIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon,
   IdentificationCardIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
+import { formatAddress } from "@/lib/address"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -185,6 +186,16 @@ export function MembreDetailView() {
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
   const isSelf = !!membre && membre.userId === currentUser.id
+  // Champs structurés pour les fiches saisies depuis le découpage du formulaire, texte
+  // libre hérité pour toutes les précédentes — formatAddress choisit (src/lib/address.ts).
+  const membreAddress = formatAddress({
+    street:     membre?.addressStreet,
+    complement: membre?.addressComplement,
+    postalCode: membre?.postalCode,
+    city:       membre?.city,
+    country:    membre?.country,
+    legacy:     membre?.address,
+  })
 
   async function handleUpdate(data: MembreInput) {
     try {
@@ -361,6 +372,16 @@ export function MembreDetailView() {
   const meetingsAsParticipant = membre.meetingsAsParticipant ?? []
   const materialLoans         = membre.materialLoans ?? []
   const cotisationsTotal      = membre._count?.cotisations    ?? cotisations.length
+  // Un membre actif sans la moindre cotisation s'affiche simplement « Bénévole » — un état
+  // parfaitement légitime par ailleurs, qu'aucune donnée ne distingue d'un oubli. L'alerte se
+  // limite donc aux cas que rien n'explique : ni décision explicite (adherentOverride), ni
+  // statut hérité d'un responsable. Sans ça elle sonnerait sur chaque vrai bénévole, et on
+  // apprendrait vite à l'ignorer.
+  const missingCotisation = modules.cotisations
+    && membre?.status === "ACTIF"
+    && cotisationsTotal === 0
+    && membre?.adherentOverride === null
+    && !isMembreAdherentViaResponsable(membre)
   const participationsTotal   = membre._count?.participations ?? participations.length
   const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
   const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
@@ -496,6 +517,23 @@ export function MembreDetailView() {
         )}
       </div>
 
+      {/* Rien n'annonçait qu'un membre actif n'avait aucune cotisation : l'information n'existait
+          que dans l'onglet Cotisations, et son absence se lisait comme un simple « Bénévole ».
+          Une inscription portail peut d'ailleurs créer ce cas sans que personne en soit informé
+          (voir /api/portal/register, où la notification est conditionnée à la cotisation). */}
+      {missingCotisation && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
+          <span className="flex items-center gap-2">
+            <WarningIcon className="size-4 shrink-0" />
+            {t("membres.detail.noCotisation")}
+          </span>
+          <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
+            <PlusIcon className="mr-1.5 size-4" />
+            {t("membres.detail.cotisationButton")}
+          </Button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.contact")}</p>
@@ -505,10 +543,17 @@ export function MembreDetailView() {
           {membre.phone && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{membre.phone}</p>
           )}
-          {membre.address && (
-            <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membre.address}</span></p>
+          {/* Le mobile s'affichait sous « Informations personnelles », entre le groupe sanguin
+              et les allergies : personne ne va chercher un numéro de téléphone là. Il est ici,
+              avec les autres moyens de joindre la personne. Libellé conservé pour le
+              distinguer du fixe juste au-dessus, que rien n'annonce comme tel. */}
+          {membre.mobile && (
+            <p className="flex items-center gap-1.5 text-muted-foreground"><DeviceMobileIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
           )}
-          {!membre.email && !membre.phone && !membre.address && (
+          {membreAddress && (
+            <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membreAddress}</span></p>
+          )}
+          {!membre.email && !membre.phone && !membre.mobile && !membreAddress && (
             <p className="text-muted-foreground">{t("membres.detail.noContactInfo")}</p>
           )}
         </div>
@@ -563,15 +608,12 @@ export function MembreDetailView() {
               </button>
             </p>
           )}
-          {membre.mobile && (
-            <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{t("membres.detail.mobileColon", { value: membre.mobile })}</p>
-          )}
           {membre.customFieldAnswers.map((a, i) => (
             <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
           ))}
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
             && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
-            && !membre.mobile && membre.customFieldAnswers.length === 0 && (
+            && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}
         </div>
@@ -924,6 +966,17 @@ export function MembreDetailView() {
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",
+            // Sans ces six clés, le formulaire d'édition repartait d'une adresse vide et
+            // l'enregistrement effaçait celle de la fiche.
+            // Sans cette clé, ouvrir « Modifier » puis enregistrer postait mobile: "" et
+            // effaçait le numéro saisi par l'adhérent sur le formulaire public.
+            mobile:            membre.mobile            ?? "",
+            address:           membre.address           ?? "",
+            addressStreet:     membre.addressStreet     ?? "",
+            addressComplement: membre.addressComplement ?? "",
+            postalCode:        membre.postalCode        ?? "",
+            city:              membre.city              ?? "",
+            country:           membre.country           ?? "",
             adherentOverride: membre.adherentOverride === null ? "" : String(membre.adherentOverride) as "true" | "false",
           }}
           onSubmit={handleUpdate}

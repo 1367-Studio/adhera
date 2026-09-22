@@ -11,6 +11,8 @@ import {
 // 31 Dec 23:59:59.999 Paris (CET, UTC+1) — what endOfCotisationYear() returns for each year.
 const END_OF_2026_PARIS = new Date("2026-12-31T22:59:59.999Z")
 const END_OF_2025_PARIS = new Date("2025-12-31T22:59:59.999Z")
+// 1 Jan 2026 00:00:00 Paris (CET, UTC+1) — what startOfCotisationYear() returns for 2026.
+const START_OF_2026_PARIS = new Date("2025-12-31T23:00:00.000Z")
 
 const VERIFICATION_URL = "http://localhost:3000/app/carte/Hn2pQ8vLmK4sT7wXyZ0aBc"
 
@@ -41,6 +43,7 @@ function buildLoadedCard(eligibility: MemberCardEligibility): MemberCardData {
 
 const VALID_ELIGIBILITY: MemberCardEligibility = {
   state:        "valid",
+  validFrom:    START_OF_2026_PARIS,
   validUntil:   END_OF_2026_PARIS,
   cotisationId: "cotisation-2026",
 }
@@ -53,11 +56,14 @@ describe("buildMemberCardViewModel", () => {
       logoUrl:         "https://example.test/logo.png",
       memberName:      "Camille Martin",
       category:        "Adhérent bénévole",
+      validFrom:       START_OF_2026_PARIS,
       validUntil:      END_OF_2026_PARIS,
       state:           "valid",
       photoUrl:        "https://example.test/photo.jpg",
       initials:        "CM",
       contactLine:     "01 23 45 67 89 · contact@amis-du-parc.fr",
+      contactPhone:    "01 23 45 67 89",
+      contactEmail:    "contact@amis-du-parc.fr",
       verificationUrl: VERIFICATION_URL,
       settings:        { ...DEFAULT_MEMBER_CARD_SETTINGS, enabled: true },
     })

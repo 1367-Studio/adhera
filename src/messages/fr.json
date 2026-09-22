@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris…",
     "viewOnGoogleMaps": "Voir sur Google Maps"
   },
+  "address": {
+    "street": "Adresse",
+    "complement": "Complément d'adresse",
+    "complementPlaceholder": "Bâtiment, étage, boîte aux lettres…",
+    "postalCode": "Code postal",
+    "city": "Ville",
+    "country": "Pays",
+    "legacyMigratedHint": "Copié depuis l'ancien champ adresse : vérifiez qu'il ne contient pas déjà le code postal et la ville ci-dessous."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Connexion",
@@ -1414,7 +1423,6 @@
       "lastNameLabel": "Nom *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Téléphone",
-      "addressLabel": "Adresse",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optionnel)",
       "fileAttach": "Joindre un fichier",
@@ -2899,7 +2907,6 @@
       "firstNameLabel": "Prénom",
       "lastNameLabel": "Nom",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Date de naissance",
       "phoneLabel": "Téléphone fixe",
       "mobileLabel": "Mobile",
@@ -2917,7 +2924,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3201,7 +3207,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3231,7 +3236,6 @@
       "passwordHint": "Pour accéder à votre espace membre.",
       "passwordRequirementsTitle": "Votre mot de passe doit contenir :",
       "passwordRuleMinLength": "Au moins {count} caractères",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Date de naissance",
       "phoneLabel": "Téléphone fixe",
       "mobileLabel": "Mobile",
@@ -3614,6 +3618,25 @@
       "copied": "Copié !",
       "copy": "Copier",
       "open": "Ouvrir"
+    },
+    "customDomainSettings": {
+      "title": "Domaine personnalisé",
+      "subtitle": "Utilisez votre propre domaine pour le site public de l'association, en plus de formwise.fr.",
+      "domainLabel": "Domaine",
+      "domainPlaceholder": "www.monassociation.fr",
+      "domainHint": "Un sous-domaine comme www.monassociation.fr ne demande qu'un seul enregistrement DNS.",
+      "invalidDomain": "Domaine invalide",
+      "saved": "Domaine ajouté",
+      "statusVerified": "Actif",
+      "statusFailed": "Échec de la vérification",
+      "statusPending": "En attente du DNS",
+      "dnsInstruction": "Ajoutez cet enregistrement DNS chez votre hébergeur de domaine (OVH, Gandi, GoDaddy, etc.) :",
+      "waitingHint": "La vérification se fait automatiquement toutes les quelques minutes après la propagation du DNS.",
+      "verifyNow": "Vérifier maintenant",
+      "remove": "Retirer le domaine",
+      "removed": "Domaine retiré",
+      "removeConfirmTitle": "Retirer ce domaine personnalisé ?",
+      "removeConfirmDescription": "Le site restera accessible via formwise.fr, mais ce domaine ne pointera plus vers l'association."
     },
     "cotisationDefaultsSettings": {
       "title": "Cotisation",
@@ -4024,6 +4047,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Téléphone",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobile",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rôle",
         "birthDate": "Date de naissance",
         "status": "Statut",
@@ -4037,8 +4062,6 @@
         "allergies": "Allergies connues",
         "allergiesPlaceholder": "Arachides, pollen…",
         "type": "Type de membre",
-        "address": "Adresse",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Langue préférée",
         "spokenLanguage": "Langue parlée",
         "cotisationTier": "Cotisation — tarif d'adhésion"
@@ -4802,7 +4825,7 @@
   },
   "memberCard": {
     "card": {
-      "validUntil": "Valable jusqu'au {date}",
+      "validPeriod": "Valable du {from} au {to}",
       "expiredOn": "Adhésion expirée le {date}",
       "status": {
         "valid": "Adhésion valide",
@@ -5381,8 +5404,6 @@
         "phoneInvalid": "Numéro de téléphone invalide",
         "birthDate": "Date de naissance",
         "birthDateInPast": "La date de naissance doit être dans le passé",
-        "address": "Adresse",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Civilité",
         "groupeSanguin": "Groupe sanguin",
         "possedeTshirt": "Possède un tee-shirt",

@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Siehe auf Google Maps"
   },
+  "address": {
+    "street": "Adresse",
+    "complement": "Adresszusatz",
+    "complementPlaceholder": "Gebäude, Etage, Briefkasten…",
+    "postalCode": "Postleitzahl",
+    "city": "Stadt",
+    "country": "Land",
+    "legacyMigratedHint": "Aus dem alten Adressfeld übernommen – prüfen Sie, ob Postleitzahl und Ort unten nicht bereits enthalten sind."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Einloggen",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Name *",
       "emailLabel": "E-Mail *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresse",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (optional)",
       "fileAttach": "Eine Datei anhängen",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Vorname",
       "lastNameLabel": "Name",
       "emailLabel": "E-Mail",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Geburtsdatum",
       "phoneLabel": "Festnetztelefon",
       "mobileLabel": "Mobil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Um Zugang zu Ihrem Mitgliederbereich zu erhalten.",
       "passwordRequirementsTitle": "Ihr Passwort muss enthalten:",
       "passwordRuleMinLength": "Zumindest {count} Charaktere",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Geburtsdatum",
       "phoneLabel": "Festnetztelefon",
       "mobileLabel": "Mobil",
@@ -3531,6 +3535,25 @@
       "copied": "Kopiert!",
       "copy": "Verstanden",
       "open": "Offen"
+    },
+    "customDomainSettings": {
+      "title": "Eigene Domain",
+      "subtitle": "Verwenden Sie Ihre eigene Domain für die öffentliche Website des Vereins, zusätzlich zu formwise.fr.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.meinverein.org",
+      "domainHint": "Eine Subdomain wie www.meinverein.org benötigt nur einen einzigen DNS-Eintrag.",
+      "invalidDomain": "Ungültige Domain",
+      "saved": "Domain hinzugefügt",
+      "statusVerified": "Aktiv",
+      "statusFailed": "Überprüfung fehlgeschlagen",
+      "statusPending": "Warten auf DNS",
+      "dnsInstruction": "Fügen Sie diesen DNS-Eintrag bei Ihrem Domain-Anbieter hinzu (OVH, Gandi, GoDaddy usw.):",
+      "waitingHint": "Die Überprüfung erfolgt automatisch alle paar Minuten, sobald das DNS verbreitet wurde.",
+      "verifyNow": "Jetzt überprüfen",
+      "remove": "Domain entfernen",
+      "removed": "Domain entfernt",
+      "removeConfirmTitle": "Diese eigene Domain entfernen?",
+      "removeConfirmDescription": "Die Website bleibt weiterhin unter formwise.fr erreichbar, aber diese Domain zeigt nicht mehr auf den Verein."
     },
     "cotisationDefaultsSettings": {
       "title": "Mitgliedsbeitrag",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rolle",
         "birthDate": "Geburtsdatum",
         "status": "Status",
@@ -3953,8 +3978,6 @@
         "allergies": "Bekannte Allergien",
         "allergiesPlaceholder": "Arachides, Pollen...",
         "type": "Mitgliedertyp",
-        "address": "Adresse",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Bevorzugte Sprache",
         "spokenLanguage": "Gesprochene Sprache",
         "cotisationTier": "Mitgliedsbeitrag"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importiert von AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Gültig vom {from} bis {to}",
+      "expiredOn": "Mitgliedschaft abgelaufen am {date}",
+      "status": {
+        "valid": "Mitgliedschaft gültig",
+        "expired": "Mitgliedschaft abgelaufen"
+      },
+      "generatedBy": "Ausweis erstellt mit {appName}",
+      "qrAlt": "QR-Code zur Überprüfung des Ausweises",
+      "ariaLabel": "Mitgliedsausweis von {name}"
+    },
+    "portal": {
+      "sidebar": "Mein Ausweis",
+      "title": "Mein Mitgliedsausweis",
+      "titleMultiple": "Meine Mitgliedsausweise",
+      "subtitle": "Zeigen Sie ihn bei Vereinsaktivitäten vor. Der QR-Code ermöglicht die Überprüfung seiner Gültigkeit.",
+      "switcherLabel": "Anzuzeigenden Ausweis auswählen",
+      "downloadPdf": "PDF herunterladen",
+      "print": "Drucken"
+    },
+    "unavailable": {
+      "title": "Mitgliedsausweis nicht verfügbar",
+      "pending": "Der Ausweis wird verfügbar, sobald die Zahlung des Mitgliedsbeitrags erfasst wurde.",
+      "partial": "Der Mitgliedsbeitrag wurde teilweise bezahlt. Der Ausweis wird verfügbar, sobald der Restbetrag erfasst wurde.",
+      "late": "Die Zahlung des Mitgliedsbeitrags wurde noch nicht erfasst. Der Ausweis wird nach Erfassung verfügbar.",
+      "noneTitle": "Kein aktiver Mitgliedsausweis",
+      "none": "Für diesen Zeitraum liegt keine laufende Mitgliedschaft vor. Der Ausweis wird automatisch nach dem Beitritt erstellt.",
+      "cancelled": "Diese Mitgliedschaft wurde storniert. Wenden Sie sich für weitere Informationen an den Verein.",
+      "disabled": "Der Mitgliedsausweis wird von Ihrem Verein nicht angeboten.",
+      "expired": "Die Mitgliedschaft ist am {date} abgelaufen. Erneuern Sie sie, um einen neuen Ausweis zu erhalten.",
+      "viewCotisation": "Meinen Mitgliedsbeitrag ansehen"
+    },
+    "manager": {
+      "button": "Mitgliedsausweis",
+      "rowAction": "Mitgliedsausweis ansehen",
+      "modalTitle": "Mitgliedsausweis",
+      "unavailableTitle": "Ausweis nicht verfügbar",
+      "noPayment": "Für dieses Mitglied ist keine Beitragszahlung erfasst. Der Ausweis wird erstellt, sobald die Zahlung erfasst wurde.",
+      "recordPayment": "Zahlung erfassen",
+      "settingsHint": "Vorlage und Farbe änderbar unter Einstellungen › Mitgliedsausweis.",
+      "regenerate": "QR-Code neu generieren",
+      "regenerateHint": "Der alte QR-Code funktioniert danach sofort nicht mehr. Verwenden, wenn ein Ausweis verloren gegangen oder geteilt wurde.",
+      "regenerateConfirm": "QR-Code dieses Ausweises neu generieren?",
+      "regenerated": "QR-Code neu generiert"
+    },
+    "settings": {
+      "title": "Mitgliedsausweis",
+      "subtitle": "Erscheinungsbild des im Mitgliederbereich angezeigten Ausweises.",
+      "enabled": "Mitgliedsausweis aktivieren",
+      "enabledHint": "Mitglieder mit aktuellem Beitrag sehen ihren Ausweis in ihrem Bereich.",
+      "template": "Vorlage",
+      "templates": {
+        "classic": "Klassisch",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Farbe",
+      "colorTooLight": "Sehr helle Farbe: sie hebt sich kaum vom Hintergrund des Ausweises ab.",
+      "minimalNoColor": "Die Vorlage „Minimal“ verwendet keine Farbe.",
+      "showOnCard": "Auf dem Ausweis anzeigen",
+      "showPhoto": "Foto des Mitglieds",
+      "showPhotoHint": "Initialen werden angezeigt, wenn kein Foto hinterlegt ist.",
+      "showCategory": "Kategorie",
+      "showPhone": "Telefonnummer des Vereins",
+      "showEmail": "E-Mail des Vereins",
+      "preview": "Vorschau",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktives ehrenamtliches Mitglied",
+      "noLogo": "Fügen Sie unter Markendesign ein Logo hinzu, um es auf dem Ausweis anzuzeigen.",
+      "noPhone": "Fügen Sie unter Rechtliche Identität & Spenden eine Telefonnummer hinzu, um sie auf dem Ausweis anzuzeigen.",
+      "noEmail": "Fügen Sie unter Vereinsinformationen eine Kontakt-E-Mail hinzu, um sie auf dem Ausweis anzuzeigen.",
+      "saved": "Mitgliedsausweis gespeichert"
+    },
+    "print": {
+      "guide": "Entlang der Linie ausschneiden — Bankkartenformat, 85,6 × 54 mm. Zu 100 % drucken, ohne Anpassung an die Seite.",
+      "documentTitle": "Mitgliedsausweis — {name}",
+      "popupBlocked": "Erlauben Sie Pop-up-Fenster zum Drucken oder laden Sie die PDF-Datei herunter."
+    },
+    "verify": {
+      "valid": "Ausweis gültig",
+      "validUntil": "Mitgliedschaft gültig bis {date}",
+      "expired": "Mitgliedschaft abgelaufen",
+      "expiredSince": "Abgelaufen seit {date}",
+      "invalid": "Ausweis ungültig",
+      "invalidText": "Dieser Ausweis wird nicht erkannt oder wurde deaktiviert. Wenden Sie sich an den Verein.",
+      "checkedAt": "Überprüft am {date} um {time}",
+      "poweredBy": "Überprüfung bereitgestellt von {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hauptbanner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Ungültige Telefonnummer",
         "birthDate": "Geburtsdatum",
         "birthDateInPast": "Das Geburtsdatum muss in der Vergangenheit liegen",
-        "address": "Adresse",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Titel",
         "groupeSanguin": "Blutgruppe",
         "possedeTshirt": "Hat ein T-Shirt",

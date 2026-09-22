@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { IdentificationCardIcon, PlusIcon, MinusIcon, TrashIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { AddressFields } from "@/components/ui/address-fields"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
@@ -20,6 +21,7 @@ import { TermsModal } from "@/components/public/terms-modal"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { spokenLanguageOptions } from "@/lib/languages"
+import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { Label } from "@/components/ui/label"
@@ -117,9 +119,33 @@ type RegistrantDraft = {
   mobile:    string
   sexe:      "" | "HOMME" | "FEMME"
   spokenLanguage: string
-  address:   string
+  // Les cinq champs structurés de l'adresse (voir AddressFields), et non plus l'unique champ
+  // en texte libre — chaque bloc « Adhérent » a les siens.
+  addressValues: AddressFormValues
   photoUrl:  string
   answers:   Record<string, string>
+}
+
+// Le champ « Adresse » de la matrice de champs standards est satisfait dès que la voie, le
+// code postal et la ville sont saisis. Le complément et le pays ne sont jamais obligatoires
+// (voir AddressFields) : le premier est facultatif par nature, le second est vide pour la
+// quasi-totalité des adresses françaises. Le checkout applique exactement la même règle.
+function addressIsComplete(values: AddressFormValues): boolean {
+  return !!values.addressStreet.trim() && !!values.postalCode.trim() && !!values.city.trim()
+}
+
+// Les cinq champs d'adresse tels qu'ils partent au serveur : trimés, et omis quand ils sont
+// vides plutôt qu'envoyés en chaîne vide — même convention que les autres champs facultatifs
+// de ce formulaire. L'unique colonne `address` héritée n'est plus postée : le serveur la
+// recompose lui-même à partir de ces cinq champs (voir addressColumns dans src/lib/address.ts).
+function addressPayload(values: AddressFormValues) {
+  return {
+    addressStreet:     values.addressStreet.trim()     || undefined,
+    addressComplement: values.addressComplement.trim() || undefined,
+    postalCode:        values.postalCode.trim()        || undefined,
+    city:              values.city.trim()              || undefined,
+    country:           values.country.trim()           || undefined,
+  }
 }
 
 let nextRegistrantId = 0
@@ -171,7 +197,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const [lastName, setLastName]     = useState("")
   const [email, setEmail]           = useState("")
   const [password, setPassword]     = useState("")
-  const [address, setAddress]       = useState("")
+  const [addressValues, setAddressValues] = useState<AddressFormValues>({ ...EMPTY_ADDRESS_FORM_VALUES })
   const [birthDate, setBirthDate]   = useState("")
   const [phone, setPhone]           = useState("")
   const [mobile, setMobile]         = useState("")
@@ -449,7 +475,8 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     // second adhérent faisait disparaître le don sans rien dire.
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
-      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", address: "", photoUrl: "", answers: {},
+      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "",
+      addressValues: { ...EMPTY_ADDRESS_FORM_VALUES }, photoUrl: "", answers: {},
     }])
   }
   function removeRegistrant(key: string) {
@@ -477,6 +504,19 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const registrantPhotoError = (r: RegistrantDraft) =>
     requiredError(`${r.key}.photo`, r.photoUrl, form?.fieldPhoto === "REQUIRED")
 
+  // Même raison que les deux erreurs ci-dessus : AddressFields n'expose pas de blur, ces
+  // erreurs n'apparaissent donc qu'après une tentative d'envoi (showAllErrors) — précisément
+  // le moment où le visiteur cherche ce qui manque. Seuls la voie, le code postal et la ville
+  // peuvent être en erreur, le complément et le pays restant toujours facultatifs.
+  const addressErrors = (fieldPrefix: string, values: AddressFormValues) =>
+    form?.fieldAddress === "REQUIRED"
+      ? {
+          addressStreet: requiredError(`${fieldPrefix}.addressStreet`, values.addressStreet),
+          postalCode:    requiredError(`${fieldPrefix}.postalCode`,    values.postalCode),
+          city:          requiredError(`${fieldPrefix}.city`,          values.city),
+        }
+      : undefined
+
   async function checkEmailTaken() {
     touch("email")
     const value = email.trim()
@@ -503,7 +543,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     const rt = registrantTier(r)
     return !!form && !!rt &&
       !!r.firstName.trim() && !!r.lastName.trim() &&
-      (form.fieldAddress   !== "REQUIRED" || r.address.trim()) &&
+      (form.fieldAddress   !== "REQUIRED" || addressIsComplete(r.addressValues)) &&
       (form.fieldBirthDate !== "REQUIRED" || r.birthDate.trim()) &&
       (form.fieldPhone     !== "REQUIRED" || r.phone.trim()) &&
       (form.fieldMobile    !== "REQUIRED" || r.mobile.trim()) &&
@@ -526,7 +566,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     // Mode admin : la personne n'est pas là pour choisir un mot de passe (son compte n'est
     // créé qu'au paiement) ni pour accepter les CGUV.
     (!willBeImmediate || isAdminFill || password.length >= PASSWORD_MIN_LENGTH) &&
-    (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
+    (form.fieldAddress   !== "REQUIRED" || addressIsComplete(addressValues)) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -561,7 +601,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     : willBeImmediate && !isAdminFill && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
     : form.requireCguvSignature && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
     : legalDocuments.length > 0 && !isAdminFill && !legalAccepted ? tLegal("required")
-    : (form.fieldAddress   === "REQUIRED" && !address.trim())
+    : (form.fieldAddress   === "REQUIRED" && !addressIsComplete(addressValues))
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
       || (form.fieldPhone     === "REQUIRED" && !phone.trim())
       || (form.fieldMobile    === "REQUIRED" && !mobile.trim())
@@ -590,7 +630,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             firstName: firstName.trim(),
             lastName:  lastName.trim(),
             email:     email.trim(),
-            address:   address.trim() || undefined,
+            ...addressPayload(addressValues),
             birthDate: birthDate.trim() || undefined,
             phone:     phone.trim() || undefined,
             mobile:    mobile.trim() || undefined,
@@ -615,7 +655,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                 amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
                 firstName: firstName.trim(), lastName: lastName.trim(),
                 birthDate: birthDate.trim() || undefined, phone: phone.trim() || undefined, mobile: mobile.trim() || undefined,
-                sexe: sexe || undefined, spokenLanguage: spokenLanguage || undefined, address: address.trim() || undefined, photoUrl: photoUrl || undefined, answers,
+                sexe: sexe || undefined, spokenLanguage: spokenLanguage || undefined, ...addressPayload(addressValues), photoUrl: photoUrl || undefined, answers,
               },
               ...extraRegistrants.map(r => {
                 const rt = registrantTier(r)
@@ -624,7 +664,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   amount: rt && !rt.free && rt.freeAmount ? r.freeAmount : undefined,
                   firstName: r.firstName.trim(), lastName: r.lastName.trim(),
                   birthDate: r.birthDate.trim() || undefined, phone: r.phone.trim() || undefined, mobile: r.mobile.trim() || undefined,
-                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, address: r.address.trim() || undefined,
+                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, ...addressPayload(r.addressValues),
                   photoUrl: r.photoUrl || undefined, answers: r.answers,
                 }
               }),
@@ -657,7 +697,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             lastName:  lastName.trim(),
             email:     email.trim(),
             password:  willBeImmediate ? password : undefined,
-            address:   address.trim() || undefined,
+            ...addressPayload(addressValues),
             birthDate: birthDate.trim() || undefined,
             phone:     phone.trim() || undefined,
             mobile:    mobile.trim() || undefined,
@@ -1008,7 +1048,12 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                 )}
 
                 {form.fieldAddress !== "HIDDEN" && (
-                  <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} onBlur={() => touch("address")} error={requiredError("address", address, form.fieldAddress === "REQUIRED")} />
+                  <AddressFields
+                    value={addressValues}
+                    onChange={patch => setAddressValues(prev => ({ ...prev, ...patch }))}
+                    required={form.fieldAddress === "REQUIRED"}
+                    errors={addressErrors("address", addressValues)}
+                  />
                 )}
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldBirthDate !== "HIDDEN" && (
@@ -1158,7 +1203,15 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                             </div>
                           )}
                           {form.fieldAddress !== "HIDDEN" && (
-                            <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={r.address} onChange={e => updateRegistrant(r.key, { address: e.target.value })} onBlur={() => touch(`${r.key}.address`)} error={requiredError(`${r.key}.address`, r.address, form.fieldAddress === "REQUIRED")} />
+                            <AddressFields
+                              value={r.addressValues}
+                              onChange={patch => updateRegistrant(r.key, { addressValues: { ...r.addressValues, ...patch } })}
+                              required={form.fieldAddress === "REQUIRED"}
+                              errors={addressErrors(`${r.key}.address`, r.addressValues)}
+                              // Le bloc est répété pour chaque adhérent supplémentaire : sans
+                              // préfixe, tous les blocs partageraient les mêmes id de champ.
+                              idPrefix={r.key}
+                            />
                           )}
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {form.fieldBirthDate !== "HIDDEN" && (

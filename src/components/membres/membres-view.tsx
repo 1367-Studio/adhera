@@ -53,6 +53,8 @@ type Membre = {
   email:         string | null
   phone:         string | null
   address:       string | null
+  // Résolu server-side depuis Membre.answers (voir GET /api/membres) — pas une colonne.
+  mobile:        string | null
   birthDate:     string | null
   civilite:      "MME" | "MLLE" | "M" | null
   sexe:          "HOMME" | "FEMME" | null
@@ -724,6 +726,9 @@ export function MembresView() {
             lastName:  editTarget.lastName,
             email:     editTarget.email     ?? "",
             phone:     editTarget.phone     ?? "",
+            // Sans cette clé, enregistrer depuis la liste postait mobile: "" et effaçait le
+            // numéro — même raison que sur la fiche (membre-detail-view.tsx).
+            mobile:    editTarget.mobile    ?? "",
             birthDate: editTarget.birthDate ? editTarget.birthDate.split("T")[0] : "",
             status:    editTarget.status,
             typeId:    editTarget.typeId    ?? "",

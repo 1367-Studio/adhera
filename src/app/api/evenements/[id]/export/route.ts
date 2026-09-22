@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { format } from "date-fns"
 import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { formatAddress } from "@/lib/address"
 
 // Neutralize CSV/formula injection (Nom/Prénom/Email come from public, unauthenticated
 // self-registration) — Excel/Sheets execute a cell starting with =, +, - or @ as a formula.
@@ -33,7 +34,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // comment for why every active member used to be listed here regardless.
   const participations = await prisma.participation.findMany({
     where:  { evenementId: id },
-    select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, ticketTypeId: true },
+    select: { membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, ticketTypeId: true },
   })
 
   const slug    = evenement.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()
@@ -46,7 +47,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   // One column per custom field configured on this event — active members never fill
   // these (they're only asked on the public registration form), so their cells stay
-  // blank, same as Téléphone/Adresse below.
+  // blank, same as Téléphone and the address columns below.
   const customFieldColumns = Object.fromEntries(
     evenement.customFields.map(f => [f.label, (p?: { answers: unknown }) => {
       const answers = p?.answers as Record<string, string> | null
@@ -62,7 +63,13 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       Prénom:    sanitizeCell(m.firstName),
       Email:     sanitizeCell(m.email ?? ""),
       Téléphone: sanitizeCell(p?.phone ?? ""),
-      Adresse:   sanitizeCell(p?.address ?? ""),
+      // Colonne historique : elle garde l'adresse complète sur une ligne, pour ne pas casser
+      // les tableurs des clients qui la lisent déjà. Les colonnes détaillées s'ajoutent après.
+      Adresse:   sanitizeCell(formatAddress({ street: p?.addressStreet, complement: p?.addressComplement, postalCode: p?.postalCode, city: p?.city, country: p?.country, legacy: p?.address }) ?? ""),
+      "Complément d'adresse": sanitizeCell(p?.addressComplement ?? ""),
+      "Code postal": sanitizeCell(p?.postalCode ?? ""),
+      Ville:     sanitizeCell(p?.city ?? ""),
+      Pays:      sanitizeCell(p?.country ?? ""),
       Présent:   p?.present ? "Oui" : "Non",
     }
     const customValues = Object.fromEntries(
@@ -89,15 +96,17 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     utils.book_append_sheet(wb, ws, "Présences")
 
     // Fixed widths for the always-present columns (#, Nom, Prénom, Email, Téléphone,
-    // Adresse, Présent, + Paiement/RSVP), then a generic width for however many custom
-    // field columns this event happens to have — their count varies per event, so an
-    // exact hardcoded array (like before) would silently mis-align as soon as it did.
+    // Adresse, Complément d'adresse, Code postal, Ville, Pays, Présent, + Paiement/RSVP),
+    // then a generic width for however many custom field columns this event happens to
+    // have — their count varies per event, so an exact hardcoded array (like before) would
+    // silently mis-align as soon as it did.
+    const addressCols = [{ wch: 28 }, { wch: 24 }, { wch: 12 }, { wch: 20 }, { wch: 14 }]
     const fixedCols = hasFee
       ? [
-          { wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }, { wch: 14 },
+          { wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, ...addressCols, { wch: 10 }, { wch: 14 }, { wch: 14 },
           ...(hasTicketTypes ? [{ wch: 18 }] : []),
         ]
-      : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, { wch: 28 }, { wch: 10 }, { wch: 14 }]
+      : [{ wch: 4 }, { wch: 20 }, { wch: 20 }, { wch: 28 }, { wch: 16 }, ...addressCols, { wch: 10 }, { wch: 14 }]
     ws["!cols"] = [...fixedCols, ...evenement.customFields.map(() => ({ wch: 20 }))]
 
     const buf = write(wb, { type: "buffer", bookType: "xlsx" })
@@ -109,7 +118,7 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     })
   }
 
-  const header = Object.keys(rows[0] ?? { "#": "", Nom: "", Prénom: "", Email: "", Téléphone: "", Adresse: "", Présent: "", RSVP: "" }).join(",") + "\n"
+  const header = Object.keys(rows[0] ?? { "#": "", Nom: "", Prénom: "", Email: "", Téléphone: "", Adresse: "", "Complément d'adresse": "", "Code postal": "", Ville: "", Pays: "", Présent: "", RSVP: "" }).join(",") + "\n"
   const csv    = header + rows.map(r =>
     Object.values(r).map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")
   ).join("\n")

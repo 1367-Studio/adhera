@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Париж...",
     "viewOnGoogleMaps": "Вижте в Google Maps"
   },
+  "address": {
+    "street": "Адрес",
+    "complement": "Допълнение към адреса",
+    "complementPlaceholder": "Сграда, етаж, пощенска кутия…",
+    "postalCode": "Пощенски код",
+    "city": "Град",
+    "country": "Държава",
+    "legacyMigratedHint": "Копирано от стария адрес — проверете дали вече не съдържа пощенския код и града по-долу."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Влез",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Име *",
       "emailLabel": "Имейл *",
       "phoneLabel": "Телефон",
-      "addressLabel": "Адрес",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (по избор)",
       "fileAttach": "Прикачете файл",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Първо име",
       "lastNameLabel": "Име",
       "emailLabel": "Имейл",
-      "addressLabel": "Адрес",
       "birthDateLabel": "Дата на раждане",
       "phoneLabel": "Стационарен телефон",
       "mobileLabel": "Мобилни",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Мари",
       "lastNamePlaceholder": "Дюпон",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Париж",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Мари",
       "lastNamePlaceholder": "Дюпон",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Париж",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(дон)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "За достъп до вашата членска зона.",
       "passwordRequirementsTitle": "Вашата парола трябва да съдържа:",
       "passwordRuleMinLength": "Поне {count} Герои",
-      "addressLabel": "Адрес",
       "birthDateLabel": "Дата на раждане",
       "phoneLabel": "Стационарен телефон",
       "mobileLabel": "Мобилни",
@@ -3531,6 +3535,25 @@
       "copied": "Копирах!",
       "copy": "Прието.",
       "open": "Отвори"
+    },
+    "customDomainSettings": {
+      "title": "Персонализиран домейн",
+      "subtitle": "Използвайте свой собствен домейн за публичния сайт на сдружението, в допълнение към formwise.fr.",
+      "domainLabel": "Домейн",
+      "domainPlaceholder": "www.mysdruzhenie.org",
+      "domainHint": "Поддомейн като www.mysdruzhenie.org изисква само един DNS запис.",
+      "invalidDomain": "Невалиден домейн",
+      "saved": "Домейнът е добавен",
+      "statusVerified": "Активен",
+      "statusFailed": "Проверката не бе успешна",
+      "statusPending": "Изчакване на DNS",
+      "dnsInstruction": "Добавете този DNS запис при доставчика на домейна си (OVH, Gandi, GoDaddy и др.):",
+      "waitingHint": "Проверката се извършва автоматично на всеки няколко минути след разпространението на DNS.",
+      "verifyNow": "Провери сега",
+      "remove": "Премахни домейна",
+      "removed": "Домейнът е премахнат",
+      "removeConfirmTitle": "Да се премахне ли този персонализиран домейн?",
+      "removeConfirmDescription": "Сайтът ще остане достъпен на formwise.fr, но този домейн вече няма да сочи към сдружението."
     },
     "cotisationDefaultsSettings": {
       "title": "Членски внос",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Телефон",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Мобилен телефон",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Роля",
         "birthDate": "Дата на раждане",
         "status": "Статус",
@@ -3953,8 +3978,6 @@
         "allergies": "Известни алергии",
         "allergiesPlaceholder": "Арахиди, прашец...",
         "type": "Тип член",
-        "address": "Адрес",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Париж",
         "preferredLocale": "Предпочитан език",
         "spokenLanguage": "Говорен език",
         "cotisationTier": "Членски внос"
@@ -4683,6 +4706,96 @@
       "importedNote": "Импортирано от AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Валидна от {from} до {to}",
+      "expiredOn": "Членството е изтекло на {date}",
+      "status": {
+        "valid": "Членството е валидно",
+        "expired": "Членството е изтекло"
+      },
+      "generatedBy": "Картата е генерирана чрез {appName}",
+      "qrAlt": "QR код за проверка на картата",
+      "ariaLabel": "Членска карта на {name}"
+    },
+    "portal": {
+      "sidebar": "Моята карта",
+      "title": "Моята членска карта",
+      "titleMultiple": "Моите членски карти",
+      "subtitle": "Показвайте я на дейностите на сдружението. Нейният QR код позволява проверка на валидността ѝ.",
+      "switcherLabel": "Изберете картата за показване",
+      "downloadPdf": "Изтегли PDF",
+      "print": "Печат"
+    },
+    "unavailable": {
+      "title": "Членската карта не е налична",
+      "pending": "Картата ще бъде налична веднага след регистриране на плащането на членския внос.",
+      "partial": "Членският внос е платен частично. Картата ще бъде налична веднага след регистриране на остатъка.",
+      "late": "Плащането на членския внос все още не е регистрирано. Картата ще бъде налична след регистрирането му.",
+      "noneTitle": "Няма активна членска карта",
+      "none": "За този период няма текущо членство. Картата се създава автоматично след записването.",
+      "cancelled": "Това членство е анулирано. Свържете се със сдружението за повече информация.",
+      "disabled": "Вашето сдружение не предлага членска карта.",
+      "expired": "Членството е изтекло на {date}. Подновете го, за да получите нова карта.",
+      "viewCotisation": "Виж моя членски внос"
+    },
+    "manager": {
+      "button": "Членска карта",
+      "rowAction": "Виж членската карта",
+      "modalTitle": "Членска карта",
+      "unavailableTitle": "Картата не е налична",
+      "noPayment": "За този член не е регистрирано плащане на членски внос. Картата ще бъде генерирана веднага след регистриране на плащането.",
+      "recordPayment": "Регистрирай плащане",
+      "settingsHint": "Шаблонът и цветът могат да се променят в Настройки › Членска карта.",
+      "regenerate": "Генерирай отново QR кода",
+      "regenerateHint": "Старият QR код веднага ще спре да работи. Използвайте, ако карта е изгубена или споделена.",
+      "regenerateConfirm": "Да се генерира ли отново QR кодът на тази карта?",
+      "regenerated": "QR кодът е генериран отново"
+    },
+    "settings": {
+      "title": "Членска карта",
+      "subtitle": "Външен вид на картата, показвана в зоната на членовете.",
+      "enabled": "Активирай членската карта",
+      "enabledHint": "Членовете с платен членски внос ще виждат картата си в своята зона.",
+      "template": "Шаблон",
+      "templates": {
+        "classic": "Класически",
+        "modern": "Модерен",
+        "minimal": "Минималистичен"
+      },
+      "color": "Цвят",
+      "colorTooLight": "Много светъл цвят: ще се отличава слабо от фона на картата.",
+      "minimalNoColor": "Минималистичният шаблон не използва цвят.",
+      "showOnCard": "Показвай на картата",
+      "showPhoto": "Снимка на члена",
+      "showPhotoHint": "Инициалите се показват, ако не е записана снимка.",
+      "showCategory": "Категория",
+      "showPhone": "Телефон на сдружението",
+      "showEmail": "Имейл на сдружението",
+      "preview": "Преглед",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Активен доброволен член",
+      "noLogo": "Добавете лого в Брандиране, за да се показва на картата.",
+      "noPhone": "Добавете телефон в Правна идентичност и дарения, за да се показва на картата.",
+      "noEmail": "Добавете имейл за контакт в Информация за сдружението, за да се показва на картата.",
+      "saved": "Членската карта е запазена"
+    },
+    "print": {
+      "guide": "Изрежете по линията — формат на банкова карта, 85,6 × 54 мм. Печатайте на 100%, без напасване към страницата.",
+      "documentTitle": "Членска карта — {name}",
+      "popupBlocked": "Разрешете изскачащите прозорци, за да отпечатате, или изтеглете PDF файла."
+    },
+    "verify": {
+      "valid": "Картата е валидна",
+      "validUntil": "Членството е валидно до {date}",
+      "expired": "Членството е изтекло",
+      "expiredSince": "Изтекло от {date}",
+      "invalid": "Картата не е валидна",
+      "invalidText": "Тази карта не е разпозната или е деактивирана. Свържете се със сдружението.",
+      "checkedAt": "Проверено на {date} в {time}",
+      "poweredBy": "Проверката е осигурена от {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Основно знаме",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Невалиден телефонен номер",
         "birthDate": "Дата на раждане",
         "birthDateInPast": "Датата на раждане трябва да е в минало време",
-        "address": "Адрес",
-        "addressPlaceholder": "123 rue de la Paix, Париж",
         "civilite": "Заглавие",
         "groupeSanguin": "Кръвна група",
         "possedeTshirt": "Има тениска",

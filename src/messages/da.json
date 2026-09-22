@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Se på Google Maps"
   },
+  "address": {
+    "street": "Adresse",
+    "complement": "Adresselinje 2",
+    "complementPlaceholder": "Bygning, etage, postkasse…",
+    "postalCode": "Postnummer",
+    "city": "By",
+    "country": "Land",
+    "legacyMigratedHint": "Kopieret fra det gamle adressefelt — tjek at det ikke allerede indeholder postnummer og by nedenfor."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Log ind",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Navn *",
       "emailLabel": "E-mail*",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresse",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (valgfrit)",
       "fileAttach": "Vedhæft en fil",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Fornavn",
       "lastNameLabel": "Navn",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Fødselsdato",
       "phoneLabel": "Fastnettelefon",
       "mobileLabel": "Mobil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paris",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "For at få adgang til dit medlemsområde.",
       "passwordRequirementsTitle": "Din adgangskode skal indeholde:",
       "passwordRuleMinLength": "I det mindste {count} Personer",
-      "addressLabel": "Adresse",
       "birthDateLabel": "Fødselsdato",
       "phoneLabel": "Fastnettelefon",
       "mobileLabel": "Mobil",
@@ -3531,6 +3535,25 @@
       "copied": "Kopieret!",
       "copy": "Modtaget",
       "open": "Åben"
+    },
+    "customDomainSettings": {
+      "title": "Brugerdefineret domæne",
+      "subtitle": "Brug dit eget domæne til foreningens offentlige side, ud over formwise.fr.",
+      "domainLabel": "Domæne",
+      "domainPlaceholder": "www.minforening.org",
+      "domainHint": "Et underdomæne som www.minforening.org kræver kun én DNS-post.",
+      "invalidDomain": "Ugyldigt domæne",
+      "saved": "Domæne tilføjet",
+      "statusVerified": "Aktiv",
+      "statusFailed": "Bekræftelse mislykkedes",
+      "statusPending": "Venter på DNS",
+      "dnsInstruction": "Tilføj denne DNS-post hos din domæneudbyder (OVH, Gandi, GoDaddy osv.):",
+      "waitingHint": "Bekræftelsen sker automatisk hvert par minutter, når DNS er slået igennem.",
+      "verifyNow": "Bekræft nu",
+      "remove": "Fjern domæne",
+      "removed": "Domæne fjernet",
+      "removeConfirmTitle": "Fjern dette brugerdefinerede domæne?",
+      "removeConfirmDescription": "Siden forbliver tilgængelig på formwise.fr, men dette domæne peger ikke længere på foreningen."
     },
     "cotisationDefaultsSettings": {
       "title": "Medlemskontingent",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rolle",
         "birthDate": "Fødselsdato",
         "status": "Status",
@@ -3953,8 +3978,6 @@
         "allergies": "Kendte allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstype",
-        "address": "Adresse",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paris",
         "preferredLocale": "Foretrukket sprog",
         "spokenLanguage": "Sprog, der tales",
         "cotisationTier": "Medlemskontingent"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importeret fra AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Gyldig fra {from} til {to}",
+      "expiredOn": "Medlemskab udløbet den {date}",
+      "status": {
+        "valid": "Medlemskab gyldigt",
+        "expired": "Medlemskab udløbet"
+      },
+      "generatedBy": "Kort genereret via {appName}",
+      "qrAlt": "QR-kode til bekræftelse af kortet",
+      "ariaLabel": "Medlemskort for {name}"
+    },
+    "portal": {
+      "sidebar": "Mit kort",
+      "title": "Mit medlemskort",
+      "titleMultiple": "Mine medlemskort",
+      "subtitle": "Vis det ved foreningens aktiviteter. QR-koden gør det muligt at bekræfte gyldigheden.",
+      "switcherLabel": "Vælg det kort, der skal vises",
+      "downloadPdf": "Download PDF",
+      "print": "Udskriv"
+    },
+    "unavailable": {
+      "title": "Medlemskort ikke tilgængeligt",
+      "pending": "Kortet bliver tilgængeligt, så snart betalingen af kontingentet er registreret.",
+      "partial": "Kontingentet er delvist betalt. Kortet bliver tilgængeligt, så snart restbeløbet er registreret.",
+      "late": "Betalingen af kontingentet er endnu ikke registreret. Kortet bliver tilgængeligt, når det er registreret.",
+      "noneTitle": "Intet aktivt medlemskort",
+      "none": "Der er ikke noget aktivt medlemskab for denne periode. Kortet oprettes automatisk efter tilmelding.",
+      "cancelled": "Dette medlemskab er blevet annulleret. Kontakt foreningen for at vide mere.",
+      "disabled": "Medlemskortet tilbydes ikke af din forening.",
+      "expired": "Medlemskabet udløb den {date}. Forny det for at få et nyt kort.",
+      "viewCotisation": "Se mit kontingent"
+    },
+    "manager": {
+      "button": "Medlemskort",
+      "rowAction": "Se medlemskort",
+      "modalTitle": "Medlemskort",
+      "unavailableTitle": "Kort ikke tilgængeligt",
+      "noPayment": "Der er ikke registreret nogen kontingentbetaling for dette medlem. Kortet genereres, så snart betalingen er registreret.",
+      "recordPayment": "Registrer en betaling",
+      "settingsHint": "Skabelon og farve kan ændres under Indstillinger › Medlemskort.",
+      "regenerate": "Generer QR-kode igen",
+      "regenerateHint": "Den gamle QR-kode holder straks op med at virke. Brug denne funktion, hvis et kort er mistet eller delt.",
+      "regenerateConfirm": "Vil du generere QR-koden til dette kort igen?",
+      "regenerated": "QR-kode genereret igen"
+    },
+    "settings": {
+      "title": "Medlemskort",
+      "subtitle": "Udseende af det kort, der vises i medlemsområdet.",
+      "enabled": "Aktivér medlemskort",
+      "enabledHint": "Medlemmer, der er ajour med kontingentet, ser deres kort i deres område.",
+      "template": "Skabelon",
+      "templates": {
+        "classic": "Klassisk",
+        "modern": "Moderne",
+        "minimal": "Minimal"
+      },
+      "color": "Farve",
+      "colorTooLight": "Meget lys farve: den vil skille sig lidt ud fra kortets baggrund.",
+      "minimalNoColor": "Skabelonen Minimal bruger ikke farve.",
+      "showOnCard": "Vis på kortet",
+      "showPhoto": "Medlemmets foto",
+      "showPhotoHint": "Initialer vises, hvis der ikke er registreret noget foto.",
+      "showCategory": "Kategori",
+      "showPhone": "Foreningens telefonnummer",
+      "showEmail": "Foreningens e-mail",
+      "preview": "Forhåndsvisning",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktivt frivilligt medlem",
+      "noLogo": "Tilføj et logo under Branding for at vise det på kortet.",
+      "noPhone": "Tilføj et telefonnummer under Juridisk identitet & Donationer for at vise det på kortet.",
+      "noEmail": "Tilføj en kontakt-e-mail under Foreningsoplysninger for at vise den på kortet.",
+      "saved": "Medlemskort gemt"
+    },
+    "print": {
+      "guide": "Klip langs linjen — bankkortformat, 85,6 × 54 mm. Udskriv i 100 %, uden at tilpasse til siden.",
+      "documentTitle": "Medlemskort — {name}",
+      "popupBlocked": "Tillad pop op-vinduer for at udskrive, eller download PDF'en."
+    },
+    "verify": {
+      "valid": "Kort gyldigt",
+      "validUntil": "Medlemskab gyldigt til {date}",
+      "expired": "Medlemskab udløbet",
+      "expiredSince": "Udløbet siden {date}",
+      "invalid": "Kort ugyldigt",
+      "invalidText": "Dette kort genkendes ikke eller er blevet deaktiveret. Kontakt foreningen.",
+      "checkedAt": "Kontrolleret den {date} kl. {time}",
+      "poweredBy": "Bekræftelse leveret af {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hovedbanner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Ugyldigt telefonnummer",
         "birthDate": "Fødselsdato",
         "birthDateInPast": "Fødselsdatoen skal være i datid",
-        "address": "Adresse",
-        "addressPlaceholder": "123 rue de la Paix, Paris",
         "civilite": "Titel",
         "groupeSanguin": "Blodtype",
         "possedeTshirt": "Har en T-shirt",

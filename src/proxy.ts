@@ -2,8 +2,24 @@ import { auth } from "@/lib/auth/config"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { BASE_PATH } from "@/lib/env"
+import { resolveAssociationSlugByHost } from "@/lib/custom-domain-lookup"
+
+// Hosts that already resolve to an association via the /[slug] path segment (formwise.fr
+// through the form-wise-app proxy, or direct Vercel preview/prod URLs) — never worth a
+// customDomain lookup. Anything else might be an association's own verified domain.
+const KNOWN_HOSTS = new Set(["formwise.fr", "www.formwise.fr", "localhost", "127.0.0.1"])
 
 export async function proxy(request: NextRequest) {
+  const host = request.headers.get("host")?.split(":")[0] ?? ""
+  if (host && !KNOWN_HOSTS.has(host) && !host.endsWith(".vercel.app")) {
+    const slug = await resolveAssociationSlugByHost(host)
+    if (slug) {
+      const { pathname, search } = request.nextUrl
+      const targetPath = pathname === "/" ? "" : pathname
+      return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
+    }
+  }
+
   const session    = await auth()
   const { pathname } = request.nextUrl
   const isLoggedIn = !!session?.user
@@ -78,6 +94,16 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next()
 }
 
+// Next auto-prefixes this pattern with `basePath` ("/app"), and auto-strips that same
+// prefix back off `request.nextUrl.pathname` before the handler above ever sees it — so
+// this only has to describe paths relative to /app, exactly like before this feature
+// existed. It only ever runs on requests that physically carry /app: formwise.fr and
+// *.vercel.app traffic arrive that way already; an association's own custom domain does
+// NOT (it hits the bare path), so vercel.json's rewrite normalizes it to /app/* at the
+// platform edge, before Next (and this basePath handling) ever sees the request — see the
+// root rewrite there. Without that rewrite, this proxy is architecturally unreachable for
+// a bare "/" request: Next rejects anything outside basePath before invoking any
+// middleware at all, confirmed empirically (a literal catch-all matcher still never ran).
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 }

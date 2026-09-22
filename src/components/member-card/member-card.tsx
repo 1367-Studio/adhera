@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react"
 import { useFormatter, useTranslations } from "next-intl"
+import { PhoneIcon } from "@phosphor-icons/react/dist/ssr"
 import { QRCodeSVG } from "qrcode.react"
 import { APP_NAME } from "@/config/brand"
 import { APP_TIME_ZONE } from "@/lib/date-format"
@@ -9,7 +10,10 @@ import { getContrastingTextColor, resolveMemberCardColor } from "@/lib/member-ca
 import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
   CARD_CONTACT_GAP_MM,
+  CARD_CONTACT_ICON_GAP_MM,
+  CARD_CONTACT_ICON_SIZE_MM,
   CARD_CONTACT_MAX_WIDTH_MM,
+  CARD_CONTACT_SEPARATOR_GAP_MM,
   CARD_CORNER_RADIUS_MM,
   CARD_FONT_ASSOCIATION_NAME_MM,
   CARD_FONT_BODY_MM,
@@ -80,10 +84,25 @@ export function MemberCard({ card, className }: MemberCardProps) {
   const showsNeutralInitials = !card.photoUrl && settings.template !== "classic"
 
   // Explicit time zone rather than the runtime's: a card rendered on the server (PDF, scan
-  // page) and one rendered in the member's browser must print the same expiry date.
-  const validUntilLabel = formatter.dateTime(card.validUntil, {
-    day: "2-digit", month: "2-digit", year: "numeric", timeZone: APP_TIME_ZONE,
-  })
+  // page) and one rendered in the member's browser must print the same dates.
+  const dateFormatOptions = { day: "2-digit", month: "2-digit", year: "numeric", timeZone: APP_TIME_ZONE } as const
+  const validUntilLabel = formatter.dateTime(card.validUntil, dateFormatOptions)
+  // Only a valid card has a start date to show (see MemberCardViewModel.validFrom) — an
+  // expired one prints the single day it stopped covering, via card.expiredOn below.
+  //
+  // `from` never carries a year, `to` always does — not just when they happen to match.
+  // Measured against the printed font, "Valable du 01/01/2026 au 31/12/2026" plus "Carte
+  // générée via Formwise" overruns this row's width in every locale checked; dropping the
+  // year only when the two years matched (tried first) still left the far more common case
+  // of a rolling 12-month membership — a real signup date to a real anniversary a year
+  // later, i.e. two *different* years — overrunning just the same, which a member hit
+  // immediately in the settings preview (today to +1 year always differs in year outside a
+  // narrow window). `to` is the date a member actually needs to see and must never be the
+  // one CSS truncation eats; unconditionally shortening `from` is what makes that guarantee
+  // hold regardless of which two years are involved.
+  const validFromLabel = card.validFrom
+    ? formatter.dateTime(card.validFrom, { day: "2-digit", month: "2-digit", timeZone: APP_TIME_ZONE })
+    : null
 
   return (
     <section
@@ -238,14 +257,29 @@ export function MemberCard({ card, className }: MemberCardProps) {
               baseline. Absent entirely when there is nothing to show, so nothing moves. */}
           {card.contactLine && (
             <p
-              className="shrink-0 truncate leading-tight text-neutral-500"
+              className="flex shrink-0 items-center overflow-hidden leading-tight text-neutral-500"
               style={{
                 fontSize:     millimetres(CARD_FONT_FOOTER_MM),
                 maxWidth:     millimetres(CARD_CONTACT_MAX_WIDTH_MM),
                 marginBottom: millimetres(CARD_CONTACT_GAP_MM),
               }}
             >
-              {card.contactLine}
+              {/* The glyph marks this as a phone number rather than another line of prose — the
+                  number alone, next to an e-mail, reads ambiguous at footer size. Never
+                  truncated (shrink-0): a phone number is short and always fits, so the e-mail
+                  after it is the one that gives way when the line runs out of room. */}
+              {card.contactPhone && (
+                <span className="inline-flex shrink-0 items-center" style={{ gap: millimetres(CARD_CONTACT_ICON_GAP_MM) }}>
+                  <PhoneIcon aria-hidden style={{ width: millimetres(CARD_CONTACT_ICON_SIZE_MM), height: millimetres(CARD_CONTACT_ICON_SIZE_MM) }} />
+                  {card.contactPhone}
+                </span>
+              )}
+              {card.contactPhone && card.contactEmail && (
+                <span aria-hidden className="shrink-0" style={{ paddingInline: millimetres(CARD_CONTACT_SEPARATOR_GAP_MM) }}>
+                  ·
+                </span>
+              )}
+              {card.contactEmail && <span className="min-w-0 truncate">{card.contactEmail}</span>}
             </p>
           )}
 
@@ -257,7 +291,9 @@ export function MemberCard({ card, className }: MemberCardProps) {
           >
             <div className="min-w-0">
               <p className="truncate leading-tight text-neutral-600" style={{ fontSize: millimetres(CARD_FONT_BODY_MM) }}>
-                {t("validUntil", { date: validUntilLabel })}
+                {card.state === "valid" && validFromLabel
+                  ? t("validPeriod", { from: validFromLabel, to: validUntilLabel })
+                  : t("expiredOn", { date: validUntilLabel })}
               </p>
               <p
                 className={cn("truncate font-medium leading-tight", card.state === "valid" ? "text-green-700" : "text-red-700")}

@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paříž...",
     "viewOnGoogleMaps": "Podívejte se na Google Maps"
   },
+  "address": {
+    "street": "Adresa",
+    "complement": "Doplněk adresy",
+    "complementPlaceholder": "Budova, patro, schránka…",
+    "postalCode": "PSČ",
+    "city": "Město",
+    "country": "Země",
+    "legacyMigratedHint": "Zkopírováno ze starého pole adresy – zkontrolujte, zda již neobsahuje PSČ a město uvedené níže."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Přihlásit se",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Jméno*",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresa",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (volitelné)",
       "fileAttach": "Přiložte soubor",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Křestní jméno",
       "lastNameLabel": "Jméno",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum narození",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilní",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paříž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paříž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Pro přístup do členské oblasti.",
       "passwordRequirementsTitle": "Vaše heslo musí obsahovat:",
       "passwordRuleMinLength": "Aspoň tak {count} Postavy",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum narození",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilní",
@@ -3531,6 +3535,25 @@
       "copied": "Zkopírováno!",
       "copy": "Rozumím",
       "open": "Otevřeno"
+    },
+    "customDomainSettings": {
+      "title": "Vlastní doména",
+      "subtitle": "Použijte vlastní doménu pro veřejný web spolku, kromě formwise.fr.",
+      "domainLabel": "Doména",
+      "domainPlaceholder": "www.mujspolek.org",
+      "domainHint": "Subdoména jako www.mujspolek.org potřebuje jen jeden DNS záznam.",
+      "invalidDomain": "Neplatná doména",
+      "saved": "Doména přidána",
+      "statusVerified": "Aktivní",
+      "statusFailed": "Ověření se nezdařilo",
+      "statusPending": "Čeká se na DNS",
+      "dnsInstruction": "Přidejte tento DNS záznam u svého poskytovatele domény (OVH, Gandi, GoDaddy atd.):",
+      "waitingHint": "Ověření probíhá automaticky každých pár minut po rozšíření DNS.",
+      "verifyNow": "Ověřit nyní",
+      "remove": "Odebrat doménu",
+      "removed": "Doména odebrána",
+      "removeConfirmTitle": "Odebrat tuto vlastní doménu?",
+      "removeConfirmDescription": "Web zůstane dostupný na formwise.fr, ale tato doména už nebude ukazovat na spolek."
     },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatek",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobil",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Role",
         "birthDate": "Datum narození",
         "status": "Stav",
@@ -3953,8 +3978,6 @@
         "allergies": "Známé alergie",
         "allergiesPlaceholder": "Arachidy, pyl...",
         "type": "Typ člena",
-        "address": "Adresa",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paříž",
         "preferredLocale": "Preferovaný jazyk",
         "spokenLanguage": "Mluvený jazyk",
         "cotisationTier": "Členský poplatek"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importováno z AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Platné od {from} do {to}",
+      "expiredOn": "Členství vypršelo dne {date}",
+      "status": {
+        "valid": "Členství platné",
+        "expired": "Členství vypršelo"
+      },
+      "generatedBy": "Karta vygenerována pomocí {appName}",
+      "qrAlt": "QR kód pro ověření karty",
+      "ariaLabel": "Členská karta: {name}"
+    },
+    "portal": {
+      "sidebar": "Moje karta",
+      "title": "Moje členská karta",
+      "titleMultiple": "Moje členské karty",
+      "subtitle": "Předložte ji při akcích spolku. Její QR kód umožňuje ověřit její platnost.",
+      "switcherLabel": "Vybrat kartu k zobrazení",
+      "downloadPdf": "Stáhnout PDF",
+      "print": "Tisknout"
+    },
+    "unavailable": {
+      "title": "Členská karta není k dispozici",
+      "pending": "Karta bude k dispozici, jakmile bude zaznamenána platba členského příspěvku.",
+      "partial": "Členský příspěvek byl uhrazen částečně. Karta bude k dispozici, jakmile bude zaznamenán zůstatek.",
+      "late": "Platba členského příspěvku ještě nebyla zaznamenána. Karta bude k dispozici po jejím zaznamenání.",
+      "noneTitle": "Žádná aktivní členská karta",
+      "none": "Pro toto období neexistuje žádné probíhající členství. Karta se vytvoří automaticky po přihlášení.",
+      "cancelled": "Toto členství bylo zrušeno. Další informace vám poskytne spolek.",
+      "disabled": "Váš spolek členskou kartu nenabízí.",
+      "expired": "Členství vypršelo dne {date}. Obnovte jej a získejte novou kartu.",
+      "viewCotisation": "Zobrazit můj příspěvek"
+    },
+    "manager": {
+      "button": "Členská karta",
+      "rowAction": "Zobrazit členskou kartu",
+      "modalTitle": "Členská karta",
+      "unavailableTitle": "Karta není k dispozici",
+      "noPayment": "Pro tohoto člena není zaznamenána žádná platba příspěvku. Karta bude vygenerována, jakmile bude platba zaznamenána.",
+      "recordPayment": "Zaznamenat platbu",
+      "settingsHint": "Šablonu a barvu lze upravit v Nastavení › Členská karta.",
+      "regenerate": "Znovu vygenerovat QR kód",
+      "regenerateHint": "Starý QR kód okamžitě přestane fungovat. Použijte, pokud byla karta ztracena nebo sdílena.",
+      "regenerateConfirm": "Znovu vygenerovat QR kód této karty?",
+      "regenerated": "QR kód znovu vygenerován"
+    },
+    "settings": {
+      "title": "Členská karta",
+      "subtitle": "Vzhled karty zobrazované v členské sekci.",
+      "enabled": "Aktivovat členskou kartu",
+      "enabledHint": "Členové, kteří mají zaplacený příspěvek, uvidí svou kartu ve své sekci.",
+      "template": "Šablona",
+      "templates": {
+        "classic": "Klasická",
+        "modern": "Moderní",
+        "minimal": "Minimální"
+      },
+      "color": "Barva",
+      "colorTooLight": "Velmi světlá barva: bude se od pozadí karty odlišovat jen málo.",
+      "minimalNoColor": "Šablona Minimální nepoužívá barvu.",
+      "showOnCard": "Zobrazit na kartě",
+      "showPhoto": "Fotografie člena",
+      "showPhotoHint": "Pokud není uložena žádná fotografie, zobrazí se iniciály.",
+      "showCategory": "Kategorie",
+      "showPhone": "Telefon spolku",
+      "showEmail": "E-mail spolku",
+      "preview": "Náhled",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktivní dobrovolný člen",
+      "noLogo": "Přidejte logo v sekci Branding, abyste jej zobrazili na kartě.",
+      "noPhone": "Přidejte telefon v sekci Právní identita a dary, abyste jej zobrazili na kartě.",
+      "noEmail": "Přidejte kontaktní e-mail v sekci Informace o spolku, abyste jej zobrazili na kartě.",
+      "saved": "Členská karta uložena"
+    },
+    "print": {
+      "guide": "Ořízněte podle čáry — formát bankovní karty, 85,6 × 54 mm. Tiskněte na 100 %, bez přizpůsobení stránce.",
+      "documentTitle": "Členská karta — {name}",
+      "popupBlocked": "Povolte vyskakovací okna pro tisk, nebo si stáhněte PDF."
+    },
+    "verify": {
+      "valid": "Karta platná",
+      "validUntil": "Členství platné do {date}",
+      "expired": "Členství vypršelo",
+      "expiredSince": "Vypršelo dne {date}",
+      "invalid": "Karta neplatná",
+      "invalidText": "Tato karta není rozpoznána nebo byla deaktivována. Obraťte se na spolek.",
+      "checkedAt": "Ověřeno dne {date} v {time}",
+      "poweredBy": "Ověření zajišťuje {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hlavní prapor",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Neplatné telefonní číslo",
         "birthDate": "Datum narození",
         "birthDateInPast": "Datum narození musí být v minulém čase",
-        "address": "Adresa",
-        "addressPlaceholder": "123 rue de la Paix, Paříž",
         "civilite": "Název",
         "groupeSanguin": "Krevní skupina",
         "possedeTshirt": "Má tričko",

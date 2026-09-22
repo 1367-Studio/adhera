@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryż...",
     "viewOnGoogleMaps": "Zobacz na Google Maps"
   },
+  "address": {
+    "street": "Adres",
+    "complement": "Dodatkowe informacje adresowe",
+    "complementPlaceholder": "Budynek, piętro, skrzynka…",
+    "postalCode": "Kod pocztowy",
+    "city": "Miasto",
+    "country": "Kraj",
+    "legacyMigratedHint": "Skopiowano ze starego pola adresu — sprawdź, czy nie zawiera już kodu pocztowego i miasta podanych poniżej."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Zaloguj się",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nazwa *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adres",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcjonalnie)",
       "fileAttach": "Dołącz plik",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Imię",
       "lastNameLabel": "Nazwa",
       "emailLabel": "E-mail",
-      "addressLabel": "Adres",
       "birthDateLabel": "Data urodzenia",
       "phoneLabel": "Telefon stacjonarny",
       "mobileLabel": "Mobilność",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryż",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryż",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Aby uzyskać dostęp do swojej strefy członkowskiej.",
       "passwordRequirementsTitle": "Twoje hasło musi zawierać:",
       "passwordRuleMinLength": "Przynajmniej {count} Postacie",
-      "addressLabel": "Adres",
       "birthDateLabel": "Data urodzenia",
       "phoneLabel": "Telefon stacjonarny",
       "mobileLabel": "Mobilność",
@@ -3531,6 +3535,25 @@
       "copied": "Skopiowane!",
       "copy": "Kopiuję",
       "open": "Otwarte"
+    },
+    "customDomainSettings": {
+      "title": "Własna domena",
+      "subtitle": "Użyj własnej domeny dla publicznej strony stowarzyszenia, oprócz formwise.fr.",
+      "domainLabel": "Domena",
+      "domainPlaceholder": "www.mojestowarzyszenie.org",
+      "domainHint": "Subdomena taka jak www.mojestowarzyszenie.org wymaga tylko jednego rekordu DNS.",
+      "invalidDomain": "Nieprawidłowa domena",
+      "saved": "Domena dodana",
+      "statusVerified": "Aktywna",
+      "statusFailed": "Weryfikacja nie powiodła się",
+      "statusPending": "Oczekiwanie na DNS",
+      "dnsInstruction": "Dodaj ten rekord DNS u swojego dostawcy domeny (OVH, Gandi, GoDaddy itp.):",
+      "waitingHint": "Weryfikacja odbywa się automatycznie co kilka minut po propagacji DNS.",
+      "verifyNow": "Zweryfikuj teraz",
+      "remove": "Usuń domenę",
+      "removed": "Domena usunięta",
+      "removeConfirmTitle": "Usunąć tę własną domenę?",
+      "removeConfirmDescription": "Strona pozostanie dostępna pod adresem formwise.fr, ale ta domena przestanie wskazywać na stowarzyszenie."
     },
     "cotisationDefaultsSettings": {
       "title": "Składka członkowska",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefon",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Telefon komórkowy",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rola",
         "birthDate": "Data urodzenia",
         "status": "Status",
@@ -3953,8 +3978,6 @@
         "allergies": "Znane alergie",
         "allergiesPlaceholder": "Arachidy, pyłek...",
         "type": "Typ członka",
-        "address": "Adres",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paryż",
         "preferredLocale": "Preferowany język",
         "spokenLanguage": "Język używany",
         "cotisationTier": "Składka członkowska"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importowane z AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Ważna od {from} do {to}",
+      "expiredOn": "Członkostwo wygasło {date}",
+      "status": {
+        "valid": "Członkostwo ważne",
+        "expired": "Członkostwo wygasłe"
+      },
+      "generatedBy": "Karta wygenerowana za pomocą {appName}",
+      "qrAlt": "Kod QR do weryfikacji karty",
+      "ariaLabel": "Karta członkowska: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja karta",
+      "title": "Moja karta członkowska",
+      "titleMultiple": "Moje karty członkowskie",
+      "subtitle": "Okazuj ją podczas działań stowarzyszenia. Kod QR umożliwia sprawdzenie jej ważności.",
+      "switcherLabel": "Wybierz kartę do wyświetlenia",
+      "downloadPdf": "Pobierz PDF",
+      "print": "Drukuj"
+    },
+    "unavailable": {
+      "title": "Karta członkowska niedostępna",
+      "pending": "Karta będzie dostępna, gdy tylko płatność składki zostanie zarejestrowana.",
+      "partial": "Składka została zapłacona częściowo. Karta będzie dostępna, gdy tylko saldo zostanie zarejestrowane.",
+      "late": "Płatność składki nie została jeszcze zarejestrowana. Karta będzie dostępna po jej zarejestrowaniu.",
+      "noneTitle": "Brak aktywnej karty członkowskiej",
+      "none": "Brak aktywnego członkostwa w tym okresie. Karta jest tworzona automatycznie po przystąpieniu.",
+      "cancelled": "To członkostwo zostało anulowane. Skontaktuj się ze stowarzyszeniem, aby dowiedzieć się więcej.",
+      "disabled": "Twoje stowarzyszenie nie oferuje karty członkowskiej.",
+      "expired": "Członkostwo wygasło {date}. Odnów je, aby otrzymać nową kartę.",
+      "viewCotisation": "Zobacz moją składkę"
+    },
+    "manager": {
+      "button": "Karta członkowska",
+      "rowAction": "Zobacz kartę członkowską",
+      "modalTitle": "Karta członkowska",
+      "unavailableTitle": "Karta niedostępna",
+      "noPayment": "Dla tego członka nie zarejestrowano żadnej płatności składki. Karta zostanie wygenerowana, gdy tylko płatność zostanie zarejestrowana.",
+      "recordPayment": "Zarejestruj płatność",
+      "settingsHint": "Szablon i kolor można zmienić w Ustawieniach › Karta członkowska.",
+      "regenerate": "Wygeneruj ponownie kod QR",
+      "regenerateHint": "Stary kod QR natychmiast przestanie działać. Użyj, jeśli karta została zgubiona lub udostępniona.",
+      "regenerateConfirm": "Wygenerować ponownie kod QR tej karty?",
+      "regenerated": "Kod QR wygenerowany ponownie"
+    },
+    "settings": {
+      "title": "Karta członkowska",
+      "subtitle": "Wygląd karty wyświetlanej w strefie członka.",
+      "enabled": "Włącz kartę członkowską",
+      "enabledHint": "Członkowie z opłaconą składką zobaczą swoją kartę w swojej strefie.",
+      "template": "Szablon",
+      "templates": {
+        "classic": "Klasyczny",
+        "modern": "Nowoczesny",
+        "minimal": "Minimalny"
+      },
+      "color": "Kolor",
+      "colorTooLight": "Bardzo jasny kolor: będzie słabo odróżniał się od tła karty.",
+      "minimalNoColor": "Szablon Minimalny nie używa koloru.",
+      "showOnCard": "Pokaż na karcie",
+      "showPhoto": "Zdjęcie członka",
+      "showPhotoHint": "Jeśli nie zapisano zdjęcia, wyświetlane są inicjały.",
+      "showCategory": "Kategoria",
+      "showPhone": "Telefon stowarzyszenia",
+      "showEmail": "E-mail stowarzyszenia",
+      "preview": "Podgląd",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktywny członek wolontariusz",
+      "noLogo": "Dodaj logo w sekcji Marka, aby wyświetlić je na karcie.",
+      "noPhone": "Dodaj numer telefonu w sekcji Tożsamość prawna i darowizny, aby wyświetlić go na karcie.",
+      "noEmail": "Dodaj e-mail kontaktowy w sekcji Informacje o stowarzyszeniu, aby wyświetlić go na karcie.",
+      "saved": "Karta członkowska zapisana"
+    },
+    "print": {
+      "guide": "Wytnij wzdłuż linii — format karty bankowej, 85,6 × 54 mm. Drukuj w 100%, bez dopasowania do strony.",
+      "documentTitle": "Karta członkowska — {name}",
+      "popupBlocked": "Zezwól na wyskakujące okienka, aby wydrukować, albo pobierz plik PDF."
+    },
+    "verify": {
+      "valid": "Karta ważna",
+      "validUntil": "Członkostwo ważne do {date}",
+      "expired": "Członkostwo wygasłe",
+      "expiredSince": "Wygasło {date}",
+      "invalid": "Karta nieważna",
+      "invalidText": "Ta karta nie jest rozpoznawana lub została dezaktywowana. Skontaktuj się ze stowarzyszeniem.",
+      "checkedAt": "Zweryfikowano {date} o {time}",
+      "poweredBy": "Weryfikacja zapewniona przez {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Główny sztandar",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Nieprawidłowy numer telefonu",
         "birthDate": "Data urodzenia",
         "birthDateInPast": "Data urodzenia musi być w czasie przeszłym",
-        "address": "Adres",
-        "addressPlaceholder": "123 rue de la Paix, Paryż",
         "civilite": "Tytuł",
         "groupeSanguin": "Grupa krwi",
         "possedeTshirt": "Ma koszulkę",

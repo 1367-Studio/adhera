@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parīze...",
     "viewOnGoogleMaps": "Skatīt Google Maps"
   },
+  "address": {
+    "street": "Adrese",
+    "complement": "Adreses papildinformācija",
+    "complementPlaceholder": "Ēka, stāvs, pastkastīte…",
+    "postalCode": "Pasta indekss",
+    "city": "Pilsēta",
+    "country": "Valsts",
+    "legacyMigratedHint": "Kopēts no vecā adreses lauka — pārbaudiet, vai tajā jau nav iekļauts zemāk norādītais pasta indekss un pilsēta."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Pieslēgties",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nosaukums *",
       "emailLabel": "E-pasts *",
       "phoneLabel": "Telefons",
-      "addressLabel": "Adrese",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (pēc izvēles)",
       "fileAttach": "Pievienot failu",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Vārds",
       "lastNameLabel": "Nosaukums",
       "emailLabel": "E-pasts",
-      "addressLabel": "Adrese",
       "birthDateLabel": "Dzimšanas datums",
       "phoneLabel": "Fiksētais tālrunis",
       "mobileLabel": "Mobilais",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marija",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parīze",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marija",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Parīze",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Lai piekļūtu savai biedru zonai.",
       "passwordRequirementsTitle": "Jūsu parolei jābūt:",
       "passwordRuleMinLength": "Vismaz {count} Tēli",
-      "addressLabel": "Adrese",
       "birthDateLabel": "Dzimšanas datums",
       "phoneLabel": "Fiksētais tālrunis",
       "mobileLabel": "Mobilais",
@@ -3531,6 +3535,25 @@
       "copied": "Kopēts!",
       "copy": "Sapratu",
       "open": "Atvērt"
+    },
+    "customDomainSettings": {
+      "title": "Pielāgots domēns",
+      "subtitle": "Izmantojiet savu domēnu biedrības publiskajai vietnei, papildus formwise.fr.",
+      "domainLabel": "Domēns",
+      "domainPlaceholder": "www.manabiedriba.org",
+      "domainHint": "Apakšdomēnam, piemēram, www.manabiedriba.org, nepieciešams tikai viens DNS ieraksts.",
+      "invalidDomain": "Nederīgs domēns",
+      "saved": "Domēns pievienots",
+      "statusVerified": "Aktīvs",
+      "statusFailed": "Pārbaude neizdevās",
+      "statusPending": "Gaida DNS",
+      "dnsInstruction": "Pievienojiet šo DNS ierakstu pie sava domēna nodrošinātāja (OVH, Gandi, GoDaddy u.c.):",
+      "waitingHint": "Pārbaude notiek automātiski ik pēc dažām minūtēm, kad DNS ir izplatījies.",
+      "verifyNow": "Pārbaudīt tagad",
+      "remove": "Noņemt domēnu",
+      "removed": "Domēns noņemts",
+      "removeConfirmTitle": "Noņemt šo pielāgoto domēnu?",
+      "removeConfirmDescription": "Vietne joprojām būs pieejama formwise.fr, bet šis domēns vairs nenorādīs uz biedrību."
     },
     "cotisationDefaultsSettings": {
       "title": "Dalības maksa",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Telefons",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Mobilais",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Loma",
         "birthDate": "Dzimšanas datums",
         "status": "Statuss",
@@ -3953,8 +3978,6 @@
         "allergies": "Zināmās alerģijas",
         "allergiesPlaceholder": "Arahīdi, ziedputekšņi...",
         "type": "Locekļa tips",
-        "address": "Adrese",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Parīze",
         "preferredLocale": "Vēlamā valoda",
         "spokenLanguage": "Runātā valoda",
         "cotisationTier": "Dalības maksa"
@@ -4683,6 +4706,96 @@
       "importedNote": "Importēts no AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Derīga no {from} līdz {to}",
+      "expiredOn": "Dalība beidzās {date}",
+      "status": {
+        "valid": "Dalība derīga",
+        "expired": "Dalība beigusies"
+      },
+      "generatedBy": "Karte izveidota, izmantojot {appName}",
+      "qrAlt": "QR kods kartes pārbaudei",
+      "ariaLabel": "{name} biedra karte"
+    },
+    "portal": {
+      "sidebar": "Mana karte",
+      "title": "Mana biedra karte",
+      "titleMultiple": "Manas biedra kartes",
+      "subtitle": "Uzrādiet to biedrības pasākumos. Tās QR kods ļauj pārbaudīt derīgumu.",
+      "switcherLabel": "Izvēlieties rādāmo karti",
+      "downloadPdf": "Lejupielādēt PDF",
+      "print": "Drukāt"
+    },
+    "unavailable": {
+      "title": "Biedra karte nav pieejama",
+      "pending": "Karte būs pieejama, tiklīdz biedra naudas maksājums tiks reģistrēts.",
+      "partial": "Biedra nauda ir samaksāta daļēji. Karte būs pieejama, tiklīdz atlikums tiks reģistrēts.",
+      "late": "Biedra naudas maksājums vēl nav reģistrēts. Karte būs pieejama pēc tā reģistrēšanas.",
+      "noneTitle": "Nav aktīvas biedra kartes",
+      "none": "Šim periodam nav spēkā esošas dalības. Karte tiek izveidota automātiski pēc iestāšanās.",
+      "cancelled": "Šī dalība ir atcelta. Sazinieties ar biedrību, lai uzzinātu vairāk.",
+      "disabled": "Jūsu biedrība nepiedāvā biedra karti.",
+      "expired": "Dalība beidzās {date}. Atjaunojiet to, lai saņemtu jaunu karti.",
+      "viewCotisation": "Skatīt manu biedra naudu"
+    },
+    "manager": {
+      "button": "Biedra karte",
+      "rowAction": "Skatīt biedra karti",
+      "modalTitle": "Biedra karte",
+      "unavailableTitle": "Karte nav pieejama",
+      "noPayment": "Šim biedram nav reģistrēts neviens biedra naudas maksājums. Karte tiks izveidota, tiklīdz maksājums tiks reģistrēts.",
+      "recordPayment": "Reģistrēt maksājumu",
+      "settingsHint": "Veidni un krāsu var mainīt sadaļā Iestatījumi › Biedra karte.",
+      "regenerate": "Atkārtoti izveidot QR kodu",
+      "regenerateHint": "Vecais QR kods nekavējoties pārstās darboties. Izmantojiet, ja karte ir pazaudēta vai kopīgota.",
+      "regenerateConfirm": "Vai atkārtoti izveidot šīs kartes QR kodu?",
+      "regenerated": "QR kods izveidots atkārtoti"
+    },
+    "settings": {
+      "title": "Biedra karte",
+      "subtitle": "Biedru zonā rādītās kartes izskats.",
+      "enabled": "Iespējot biedra karti",
+      "enabledHint": "Biedri, kuriem ir samaksāta biedra nauda, savā zonā redzēs savu karti.",
+      "template": "Veidne",
+      "templates": {
+        "classic": "Klasiska",
+        "modern": "Moderna",
+        "minimal": "Minimāla"
+      },
+      "color": "Krāsa",
+      "colorTooLight": "Ļoti gaiša krāsa: tā slikti izcelsies uz kartes fona.",
+      "minimalNoColor": "Minimālā veidne neizmanto krāsu.",
+      "showOnCard": "Rādīt uz kartes",
+      "showPhoto": "Biedra fotogrāfija",
+      "showPhotoHint": "Ja fotogrāfija nav saglabāta, tiek rādīti iniciāļi.",
+      "showCategory": "Kategorija",
+      "showPhone": "Biedrības tālrunis",
+      "showEmail": "Biedrības e-pasts",
+      "preview": "Priekšskatījums",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktīvs brīvprātīgais biedrs",
+      "noLogo": "Pievienojiet logotipu sadaļā Zīmols, lai to rādītu uz kartes.",
+      "noPhone": "Pievienojiet tālruni sadaļā Juridiskā identitāte un ziedojumi, lai to rādītu uz kartes.",
+      "noEmail": "Pievienojiet kontakta e-pastu sadaļā Informācija par biedrību, lai to rādītu uz kartes.",
+      "saved": "Biedra karte saglabāta"
+    },
+    "print": {
+      "guide": "Izgrieziet pa līniju — bankas kartes formāts, 85,6 × 54 mm. Drukājiet 100% izmērā, nepielāgojot lapai.",
+      "documentTitle": "Biedra karte — {name}",
+      "popupBlocked": "Atļaujiet uznirstošos logus, lai drukātu, vai lejupielādējiet PDF."
+    },
+    "verify": {
+      "valid": "Karte derīga",
+      "validUntil": "Dalība derīga līdz {date}",
+      "expired": "Dalība beigusies",
+      "expiredSince": "Beigusies kopš {date}",
+      "invalid": "Karte nav derīga",
+      "invalidText": "Šī karte nav atpazīta vai ir deaktivizēta. Sazinieties ar biedrību.",
+      "checkedAt": "Pārbaudīts {date} plkst. {time}",
+      "poweredBy": "Pārbaudi nodrošina {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Galvenais baneris",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Nederīgs tālruņa numurs",
         "birthDate": "Dzimšanas datums",
         "birthDateInPast": "Dzimšanas datumam jābūt pagātnes formā",
-        "address": "Adrese",
-        "addressPlaceholder": "123 rue de la Paix, Parīze",
         "civilite": "Nosaukums",
         "groupeSanguin": "Asins grupa",
         "possedeTshirt": "Ir T-krekls",

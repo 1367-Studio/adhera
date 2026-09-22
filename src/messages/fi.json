@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariisi...",
     "viewOnGoogleMaps": "Katso Google Mapsista"
   },
+  "address": {
+    "street": "Osoite",
+    "complement": "Osoiterivi 2",
+    "complementPlaceholder": "Rakennus, kerros, postilaatikko…",
+    "postalCode": "Postinumero",
+    "city": "Kaupunki",
+    "country": "Maa",
+    "legacyMigratedHint": "Kopioitu vanhasta osoitekentästä — tarkista, ettei se jo sisällä alla olevaa postinumeroa ja kaupunkia."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Kirjaudu sisään",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nimi*",
       "emailLabel": "Sähköposti*",
       "phoneLabel": "Puhelin",
-      "addressLabel": "Osoite",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (valinnainen)",
       "fileAttach": "Liitä tiedosto",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Etunimi",
       "lastNameLabel": "Nimi",
       "emailLabel": "Sähköposti",
-      "addressLabel": "Osoite",
       "birthDateLabel": "Syntymäpäivämäärä",
       "phoneLabel": "Lankapuhelin",
       "mobileLabel": "Mobiili",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariisi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariisi",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Päästäksesi jäsenalueellesi.",
       "passwordRequirementsTitle": "Salasanasi tulee sisältää:",
       "passwordRuleMinLength": "Ainakin {count} Hahmot",
-      "addressLabel": "Osoite",
       "birthDateLabel": "Syntymäpäivämäärä",
       "phoneLabel": "Lankapuhelin",
       "mobileLabel": "Mobiili",
@@ -3531,6 +3535,25 @@
       "copied": "Kopioitu!",
       "copy": "Kopioi",
       "open": "Avaa"
+    },
+    "customDomainSettings": {
+      "title": "Oma verkkotunnus",
+      "subtitle": "Käytä omaa verkkotunnustasi yhdistyksen julkisella sivustolla, formwise.fr:n lisäksi.",
+      "domainLabel": "Verkkotunnus",
+      "domainPlaceholder": "www.omayhdistys.org",
+      "domainHint": "Alitunnus kuten www.omayhdistys.org tarvitsee vain yhden DNS-tietueen.",
+      "invalidDomain": "Virheellinen verkkotunnus",
+      "saved": "Verkkotunnus lisätty",
+      "statusVerified": "Aktiivinen",
+      "statusFailed": "Vahvistus epäonnistui",
+      "statusPending": "Odottaa DNS:ää",
+      "dnsInstruction": "Lisää tämä DNS-tietue verkkotunnuksesi tarjoajalla (OVH, Gandi, GoDaddy jne.):",
+      "waitingHint": "Vahvistus tapahtuu automaattisesti muutaman minuutin välein DNS:n levittyä.",
+      "verifyNow": "Vahvista nyt",
+      "remove": "Poista verkkotunnus",
+      "removed": "Verkkotunnus poistettu",
+      "removeConfirmTitle": "Poistetaanko tämä oma verkkotunnus?",
+      "removeConfirmDescription": "Sivusto pysyy saatavilla osoitteessa formwise.fr, mutta tämä verkkotunnus ei enää osoita yhdistykseen."
     },
     "cotisationDefaultsSettings": {
       "title": "Jäsenmaksu",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Puhelin",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Matkapuhelin",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Rooli",
         "birthDate": "Syntymäpäivämäärä",
         "status": "Tila",
@@ -3953,8 +3978,6 @@
         "allergies": "Tunnetut allergiat",
         "allergiesPlaceholder": "Arachideja, siitepölyä...",
         "type": "Jäsentyyppi",
-        "address": "Osoite",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariisi",
         "preferredLocale": "Suosittu kieli",
         "spokenLanguage": "Puhuttu kieli",
         "cotisationTier": "Jäsenmaksu"
@@ -4683,6 +4706,96 @@
       "importedNote": "Tuotu AssoConnectista — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Voimassa {from}–{to}",
+      "expiredOn": "Jäsenyys päättynyt {date}",
+      "status": {
+        "valid": "Jäsenyys voimassa",
+        "expired": "Jäsenyys päättynyt"
+      },
+      "generatedBy": "Kortti luotu palvelulla {appName}",
+      "qrAlt": "Kortin vahvistuksen QR-koodi",
+      "ariaLabel": "Jäsenkortti: {name}"
+    },
+    "portal": {
+      "sidebar": "Oma korttini",
+      "title": "Oma jäsenkorttini",
+      "titleMultiple": "Jäsenkorttini",
+      "subtitle": "Esitä se yhdistyksen toiminnassa. QR-koodilla voi tarkistaa sen voimassaolon.",
+      "switcherLabel": "Valitse näytettävä kortti",
+      "downloadPdf": "Lataa PDF",
+      "print": "Tulosta"
+    },
+    "unavailable": {
+      "title": "Jäsenkortti ei ole käytettävissä",
+      "pending": "Kortti tulee saataville heti, kun jäsenmaksun maksu on kirjattu.",
+      "partial": "Jäsenmaksu on maksettu osittain. Kortti tulee saataville heti, kun loppusumma on kirjattu.",
+      "late": "Jäsenmaksun maksua ei ole vielä kirjattu. Kortti tulee saataville, kun se on kirjattu.",
+      "noneTitle": "Ei aktiivista jäsenkorttia",
+      "none": "Tälle jaksolle ei ole voimassa olevaa jäsenyyttä. Kortti luodaan automaattisesti liittymisen jälkeen.",
+      "cancelled": "Tämä jäsenyys on peruutettu. Ota yhteyttä yhdistykseen saadaksesi lisätietoja.",
+      "disabled": "Yhdistyksesi ei tarjoa jäsenkorttia.",
+      "expired": "Jäsenyys päättyi {date}. Uusi se saadaksesi uuden kortin.",
+      "viewCotisation": "Näytä jäsenmaksuni"
+    },
+    "manager": {
+      "button": "Jäsenkortti",
+      "rowAction": "Näytä jäsenkortti",
+      "modalTitle": "Jäsenkortti",
+      "unavailableTitle": "Kortti ei ole käytettävissä",
+      "noPayment": "Tälle jäsenelle ei ole kirjattu jäsenmaksun maksua. Kortti luodaan heti, kun maksu on kirjattu.",
+      "recordPayment": "Kirjaa maksu",
+      "settingsHint": "Malli ja väri muokattavissa kohdassa Asetukset › Jäsenkortti.",
+      "regenerate": "Luo QR-koodi uudelleen",
+      "regenerateHint": "Vanha QR-koodi lakkaa toimimasta välittömästi. Käytä, jos kortti on kadonnut tai jaettu.",
+      "regenerateConfirm": "Luodaanko tämän kortin QR-koodi uudelleen?",
+      "regenerated": "QR-koodi luotu uudelleen"
+    },
+    "settings": {
+      "title": "Jäsenkortti",
+      "subtitle": "Jäsenalueella näytettävän kortin ulkoasu.",
+      "enabled": "Ota jäsenkortti käyttöön",
+      "enabledHint": "Jäsenmaksunsa maksaneet jäsenet näkevät korttinsa omalla alueellaan.",
+      "template": "Malli",
+      "templates": {
+        "classic": "Klassinen",
+        "modern": "Moderni",
+        "minimal": "Minimalistinen"
+      },
+      "color": "Väri",
+      "colorTooLight": "Erittäin vaalea väri: se erottuu heikosti kortin taustasta.",
+      "minimalNoColor": "Minimalistinen malli ei käytä väriä.",
+      "showOnCard": "Näytä kortissa",
+      "showPhoto": "Jäsenen kuva",
+      "showPhotoHint": "Nimikirjaimet näytetään, jos kuvaa ei ole tallennettu.",
+      "showCategory": "Kategoria",
+      "showPhone": "Yhdistyksen puhelinnumero",
+      "showEmail": "Yhdistyksen sähköposti",
+      "preview": "Esikatselu",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktiivinen vapaaehtoisjäsen",
+      "noLogo": "Lisää logo kohdassa Brändi näyttääksesi sen kortissa.",
+      "noPhone": "Lisää puhelinnumero kohdassa Oikeudellinen identiteetti ja lahjoitukset näyttääksesi sen kortissa.",
+      "noEmail": "Lisää yhteyssähköposti kohdassa Yhdistyksen tiedot näyttääksesi sen kortissa.",
+      "saved": "Jäsenkortti tallennettu"
+    },
+    "print": {
+      "guide": "Leikkaa viivaa pitkin — pankkikortin koko, 85,6 × 54 mm. Tulosta 100 %:n koossa, sovittamatta sivulle.",
+      "documentTitle": "Jäsenkortti — {name}",
+      "popupBlocked": "Salli ponnahdusikkunat tulostaaksesi tai lataa PDF."
+    },
+    "verify": {
+      "valid": "Kortti voimassa",
+      "validUntil": "Jäsenyys voimassa {date} asti",
+      "expired": "Jäsenyys päättynyt",
+      "expiredSince": "Päättynyt {date}",
+      "invalid": "Kortti ei kelpaa",
+      "invalidText": "Tätä korttia ei tunnisteta tai se on poistettu käytöstä. Ota yhteyttä yhdistykseen.",
+      "checkedAt": "Tarkistettu {date} klo {time}",
+      "poweredBy": "Vahvistuksen tarjoaa {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Main Banner",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Virheellinen puhelinnumero",
         "birthDate": "Syntymäpäivämäärä",
         "birthDateInPast": "Syntymäajan tulee olla menneessä aikamuodossa",
-        "address": "Osoite",
-        "addressPlaceholder": "123 rue de la Paix, Pariisi",
         "civilite": "Nimi",
         "groupeSanguin": "Verityyppi",
         "possedeTshirt": "Hänellä on T-paita",

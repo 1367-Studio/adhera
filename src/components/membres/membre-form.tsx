@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
 import { CheckboxField } from "@/components/ui/checkbox-field"
+import { AddressFields } from "@/components/ui/address-fields"
+import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
@@ -128,11 +130,23 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
     resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
-    defaultValues: { status: "ACTIF", role: "MEMBRE", ...defaultValues },
+    defaultValues: { status: "ACTIF", role: "MEMBRE", ...defaultValues, ...addressFormValues(defaultValues) },
     mode: "onSubmit",
   })
 
-  useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues }) }, [defaultValues, reset])
+  useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues, ...addressFormValues(defaultValues) }) }, [defaultValues, reset])
+
+  const [addressStreetValue, addressComplementValue, postalCodeValue, cityValue, countryValue] = useWatch({
+    control,
+    name: ["addressStreet", "addressComplement", "postalCode", "city", "country"],
+  })
+  const addressValue: AddressFormValues = {
+    addressStreet:     addressStreetValue     ?? "",
+    addressComplement: addressComplementValue ?? "",
+    postalCode:        postalCodeValue        ?? "",
+    city:              cityValue              ?? "",
+    country:           countryValue           ?? "",
+  }
 
   const birthDateValue     = useWatch({ control, name: "birthDate" })
   const responsableIdValue = useWatch({ control, name: "responsableId" })
@@ -216,6 +230,16 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           placeholder={t("membres.form.fields.phonePlaceholder")}
           error={errors.phone?.message}
           {...register("phone")}
+        />
+        {/* Enregistré dans Membre.answers sous la clé "mobile", pas dans une colonne — voir
+            src/lib/membre-answers.ts. Sans ce champ, un numéro saisi par l'adhérent sur le
+            formulaire public n'était plus modifiable nulle part. */}
+        <FormField
+          label={t("membres.form.fields.mobile")}
+          type="tel"
+          placeholder={t("membres.form.fields.mobilePlaceholder")}
+          error={errors.mobile?.message}
+          {...register("mobile")}
         />
       </div>
 
@@ -478,11 +502,21 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         {...register("allergies")}
       />
 
-      <FormField
-        label={t("membres.form.fields.address")}
-        placeholder={t("membres.form.fields.addressPlaceholder")}
-        error={errors.address?.message}
-        {...register("address")}
+      <AddressFields
+        value={addressValue}
+        onChange={patch => {
+          for (const [fieldName, fieldValue] of Object.entries(patch) as [keyof AddressFormValues, string][]) {
+            setValue(fieldName, fieldValue, { shouldDirty: true })
+          }
+        }}
+        legacyHint={addressWasMigratedFromLegacy(defaultValues)}
+        errors={{
+          addressStreet:     errors.addressStreet?.message,
+          addressComplement: errors.addressComplement?.message,
+          postalCode:        errors.postalCode?.message,
+          city:              errors.city?.message,
+          country:           errors.country?.message,
+        }}
       />
 
       {/* Création par un gestionnaire : la personne n'est pas là pour accepter elle-même. Le

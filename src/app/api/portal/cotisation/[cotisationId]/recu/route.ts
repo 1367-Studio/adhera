@@ -17,7 +17,7 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { cotisationId }) =>
 
   const membre = await prisma.membre.findUnique({
     where:  { id: ctx.membreId! },
-    select: { firstName: true, lastName: true, address: true },
+    select: { firstName: true, lastName: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true },
   })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
 

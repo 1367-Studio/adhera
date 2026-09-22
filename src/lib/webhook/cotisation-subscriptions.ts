@@ -18,8 +18,10 @@ import { currentCotisationYear } from "@/lib/membre-adherent"
 import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
+import { notifyMissingCotisation } from "@/lib/cotisation-alerts"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { addressColumns } from "@/lib/address"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -64,13 +66,31 @@ function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
 // shouldn't keep failing forever over it.
 const CHECKOUT_PROCESSING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000
 
-export function shouldRetryUntilCheckoutProcessed(invoice: Stripe.Invoice, expectedKind: "cotisation" | "membership-installment", now: Date = new Date()): boolean {
-  if (invoice.parent?.subscription_details?.metadata?.kind !== expectedKind) return false
+export async function shouldRetryUntilCheckoutProcessed(invoice: Stripe.Invoice, expectedKind: "cotisation" | "membership-installment", now: Date = new Date()): Promise<boolean> {
+  const subscriptionMeta = invoice.parent?.subscription_details?.metadata
+  if (subscriptionMeta?.kind !== expectedKind) return false
 
   const paidAtSeconds = invoice.status_transitions?.paid_at ?? invoice.created
   if (now.getTime() - paidAtSeconds * 1000 <= CHECKOUT_PROCESSING_WINDOW_MS) return true
 
   console.error(`[subscription-invoice] invoice ${invoice.id} (${expectedKind}) still has no matching row ${CHECKOUT_PROCESSING_WINDOW_MS / 3_600_000}h after payment — no longer asking Stripe to retry it; needs manual reconciliation.`)
+  // Le console.error ci-dessus partait dans les logs Vercel et s'arrêtait là : l'association
+  // n'apprenait qu'un paiement encaissé avait été abandonné que le jour où quelqu'un s'étonnait
+  // d'une cotisation manquante. Les métadonnées de l'abonnement portent tout ce qu'il faut pour
+  // nommer la personne concernée (voir subscriptionMeta au checkout).
+  const payerName = [subscriptionMeta.firstName, subscriptionMeta.lastName].filter(Boolean).join(" ")
+    || subscriptionMeta.email
+    || "Un adhérent"
+  const paidAmount = (invoice.amount_paid / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  if (subscriptionMeta.associationId) {
+    await notifyMissingCotisation({
+      associationId: subscriptionMeta.associationId,
+      groupKey:      `subscription-invoice-abandoned:${invoice.id}`,
+      title:         "Paiement d'adhésion à rattacher manuellement",
+      body:          `${payerName} a réglé ${paidAmount}, mais l'adhésion correspondante n'a jamais pu être enregistrée. Le paiement est bien encaissé chez Stripe — la cotisation et la recette doivent être créées à la main, ou le paiement renvoyé depuis Stripe.`,
+      link:          "/dashboard/membres",
+    })
+  }
   return false
 }
 
@@ -162,7 +182,18 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           // MembershipForm (see .../adhesion/[formSlug]/checkout/route.ts) — the legacy
           // /inscription/checkout route's metadata never sets these keys, so they're
           // undefined/"" there and every field below falls back to null exactly as before.
-          address:       meta.address || null,
+          //
+          // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+          // addressColumns dans src/lib/address.ts. Une session créée avant le découpage en
+          // colonnes structurées ne porte que `address`, et reste donc écrite telle quelle.
+          ...addressColumns({
+            street:     meta.addressStreet,
+            complement: meta.addressComplement,
+            postalCode: meta.postalCode,
+            city:       meta.city,
+            country:    meta.country,
+            legacy:     meta.address,
+          }),
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,
@@ -329,7 +360,7 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice): Prom
   })
   // Not a cotisation subscription — or one whose checkout.session.completed hasn't created the
   // row yet, in which case this first payment must come back later rather than be lost.
-  if (!cotisationSub) return shouldRetryUntilCheckoutProcessed(invoice, "cotisation") ? "awaiting-checkout" : undefined
+  if (!cotisationSub) return (await shouldRetryUntilCheckoutProcessed(invoice, "cotisation")) ? "awaiting-checkout" : undefined
 
   const amount = invoice.amount_paid / 100
   if (amount <= 0) return // A $0 invoice (e.g. a fully-credited period) has nothing to record.

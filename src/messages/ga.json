@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
     "viewOnGoogleMaps": "Féach ar Google Maps"
   },
+  "address": {
+    "street": "Seoladh",
+    "complement": "Líne seoltaí 2",
+    "complementPlaceholder": "Foirgneamh, urlár, bosca poist…",
+    "postalCode": "Cód poist",
+    "city": "Cathair",
+    "country": "Tír",
+    "legacyMigratedHint": "Cóipeáilte ón seanréimse seoltaí — deimhnigh nach bhfuil an cód poist agus an baile thíos ann cheana féin."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Logáil isteach",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Ainm *",
       "emailLabel": "Ríomhphost *",
       "phoneLabel": "Fón",
-      "addressLabel": "Seoladh",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (roghnach)",
       "fileAttach": "Ceangail comhad",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Céadainm",
       "lastNameLabel": "Ainm",
       "emailLabel": "Ríomhphost",
-      "addressLabel": "Seoladh",
       "birthDateLabel": "Dáta breithe",
       "phoneLabel": "Fón líne talún",
       "mobileLabel": "Soghluaiste",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Páras",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Páras",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Chun rochtain a fháil ar do limistéar ball.",
       "passwordRequirementsTitle": "Caithfidh an méid seo a leanas a bheith i do phasfhocal:",
       "passwordRuleMinLength": "Ar a laghad {count} Carachtair",
-      "addressLabel": "Seoladh",
       "birthDateLabel": "Dáta breithe",
       "phoneLabel": "Fón líne talún",
       "mobileLabel": "Soghluaiste",
@@ -3531,6 +3535,25 @@
       "copied": "Cóipeáilte!",
       "copy": "Cóipeáil",
       "open": "Oscail"
+    },
+    "customDomainSettings": {
+      "title": "Fearann saincheaptha",
+      "subtitle": "Bain úsáid as d'fhearann féin do shuíomh poiblí an chumainn, i dteannta formwise.fr.",
+      "domainLabel": "Fearann",
+      "domainPlaceholder": "www.mochumann.org",
+      "domainHint": "Ní theastaíonn ach taifead DNS amháin ó bhfofhearann mar www.mochumann.org.",
+      "invalidDomain": "Fearann neamhbhailí",
+      "saved": "Fearann curtha leis",
+      "statusVerified": "Gníomhach",
+      "statusFailed": "Theip ar an bhfíorú",
+      "statusPending": "Ag fanacht le DNS",
+      "dnsInstruction": "Cuir an taifead DNS seo leis ag soláthraí d'fhearainn (OVH, Gandi, GoDaddy, srl.):",
+      "waitingHint": "Déantar an fíorú go huathoibríoch gach cúpla nóiméad tar éis don DNS scaipeadh.",
+      "verifyNow": "Fíoraigh anois",
+      "remove": "Bain an fearann",
+      "removed": "Fearann bainte",
+      "removeConfirmTitle": "An bhfuil fonn ort an fearann saincheaptha seo a bhaint?",
+      "removeConfirmDescription": "Fanfaidh an suíomh inrochtana ag formwise.fr, ach ní bheidh an fearann seo ag díriú a thuilleadh ar an gcumann."
     },
     "cotisationDefaultsSettings": {
       "title": "Táille ballraíochta",
@@ -3940,6 +3963,8 @@
         "emailPlaceholder": "contact@example.com",
         "phone": "Fón",
         "phonePlaceholder": "+33 6 12 34 56 78",
+        "mobile": "Fón póca",
+        "mobilePlaceholder": "+33 6 12 34 56 78",
         "role": "Ról",
         "birthDate": "Dáta breithe",
         "status": "Stádas",
@@ -3953,8 +3978,6 @@
         "allergies": "Ailléirgí aitheanta",
         "allergiesPlaceholder": "Arachides, pailin...",
         "type": "Cineál Ball",
-        "address": "Seoladh",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Páras",
         "preferredLocale": "An teanga is fearr leat",
         "spokenLanguage": "Teanga a labhraítear",
         "cotisationTier": "Táille ballraíochta"
@@ -4683,6 +4706,96 @@
       "importedNote": "Iompórtáilte ó AssoConnect - {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Bailí ó {from} go {to}",
+      "expiredOn": "Tá an ballraíocht imithe as feidhm ar {date}",
+      "status": {
+        "valid": "Ballraíocht bhailí",
+        "expired": "Ballraíocht imithe as feidhm"
+      },
+      "generatedBy": "Cárta ginte trí {appName}",
+      "qrAlt": "Cód QR le haghaidh fíorú an chárta",
+      "ariaLabel": "Cárta ballraíochta {name}"
+    },
+    "portal": {
+      "sidebar": "Mo chárta",
+      "title": "Mo chárta ballraíochta",
+      "titleMultiple": "Mo chártaí ballraíochta",
+      "subtitle": "Taispeáin é ag imeachtaí an chumainn. Ceadaíonn a chód QR a bhailíocht a fhíorú.",
+      "switcherLabel": "Roghnaigh an cárta atá le taispeáint",
+      "downloadPdf": "Íoslódáil PDF",
+      "print": "Priontáil"
+    },
+    "unavailable": {
+      "title": "Níl an cárta ballraíochta ar fáil",
+      "pending": "Beidh an cárta ar fáil a luaithe a chláraítear íocaíocht an tsíntiúis.",
+      "partial": "Tá an síntiús íoctha go páirteach. Beidh an cárta ar fáil a luaithe a chláraítear an fuílleach.",
+      "late": "Níl íocaíocht an tsíntiúis cláraithe fós. Beidh an cárta ar fáil tar éis é a chlárú.",
+      "noneTitle": "Níl aon chárta ballraíochta gníomhach ann",
+      "none": "Níl aon bhallraíocht reatha don tréimhse seo. Cruthaítear an cárta go huathoibríoch tar éis clárú.",
+      "cancelled": "Cuireadh an bhallraíocht seo ar ceal. Déan teagmháil leis an gcumann le tuilleadh eolais a fháil.",
+      "disabled": "Ní thairgeann do chumann cárta ballraíochta.",
+      "expired": "Chuaigh an bhallraíocht as feidhm ar {date}. Athnuaigh í chun cárta nua a fháil.",
+      "viewCotisation": "Féach ar mo shíntiús"
+    },
+    "manager": {
+      "button": "Cárta ballraíochta",
+      "rowAction": "Féach ar an gcárta ballraíochta",
+      "modalTitle": "Cárta ballraíochta",
+      "unavailableTitle": "Níl an cárta ar fáil",
+      "noPayment": "Níl aon íocaíocht síntiúis cláraithe don bhall seo. Ginfear an cárta a luaithe a chláraítear an íocaíocht.",
+      "recordPayment": "Cláraigh íocaíocht",
+      "settingsHint": "Is féidir an teimpléad agus an dath a athrú in Socruithe › Cárta ballraíochta.",
+      "regenerate": "Athghin an cód QR",
+      "regenerateHint": "Stopfaidh an seanchód QR ag obair láithreach. Bain úsáid as seo má cailleadh nó má roinneadh cárta.",
+      "regenerateConfirm": "An bhfuil fonn ort cód QR an chárta seo a athghiniúint?",
+      "regenerated": "Cód QR athghinte"
+    },
+    "settings": {
+      "title": "Cárta ballraíochta",
+      "subtitle": "Cuma an chárta a thaispeántar i limistéar na mball.",
+      "enabled": "Cumasaigh an cárta ballraíochta",
+      "enabledHint": "Feicfidh baill atá cothrom lena síntiús a gcárta ina limistéar féin.",
+      "template": "Teimpléad",
+      "templates": {
+        "classic": "Clasaiceach",
+        "modern": "Nua-aimseartha",
+        "minimal": "Íosta"
+      },
+      "color": "Dath",
+      "colorTooLight": "Dath an-éadrom: is beag a sheasfaidh sé amach ó chúlra an chárta.",
+      "minimalNoColor": "Ní úsáideann an teimpléad Íosta aon dath.",
+      "showOnCard": "Taispeáin ar an gcárta",
+      "showPhoto": "Grianghraf an bhaill",
+      "showPhotoHint": "Taispeántar na túslitreacha mura bhfuil aon ghrianghraf sábháilte.",
+      "showCategory": "Catagóir",
+      "showPhone": "Uimhir ghutháin an chumainn",
+      "showEmail": "Ríomhphost an chumainn",
+      "preview": "Réamhamharc",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Ball deonach gníomhach",
+      "noLogo": "Cuir lógó leis faoi Branda chun é a thaispeáint ar an gcárta.",
+      "noPhone": "Cuir uimhir ghutháin leis faoi Céannacht dhlíthiúil & Deonacháin chun í a thaispeáint ar an gcárta.",
+      "noEmail": "Cuir ríomhphost teagmhála leis faoi Eolas faoin gcumann chun é a thaispeáint ar an gcárta.",
+      "saved": "Sábháladh an cárta ballraíochta"
+    },
+    "print": {
+      "guide": "Gearr feadh na líne — formáid chárta bhainc, 85,6 × 54 mm. Priontáil ag 100%, gan é a oiriúnú don leathanach.",
+      "documentTitle": "Cárta ballraíochta — {name}",
+      "popupBlocked": "Ceadaigh preabfhuinneoga chun priontáil, nó íoslódáil an PDF."
+    },
+    "verify": {
+      "valid": "Cárta bailí",
+      "validUntil": "Ballraíocht bhailí go dtí {date}",
+      "expired": "Ballraíocht imithe as feidhm",
+      "expiredSince": "As feidhm ó {date}",
+      "invalid": "Cárta neamhbhailí",
+      "invalidText": "Ní aithnítear an cárta seo nó díchumasaíodh é. Déan teagmháil leis an gcumann.",
+      "checkedAt": "Seiceáilte ar {date} ag {time}",
+      "poweredBy": "Fíorú curtha ar fáil ag {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Príomh-Bhratach",
@@ -5115,8 +5228,6 @@
         "phoneInvalid": "Uimhir theileafóin neamhbhailí",
         "birthDate": "Dáta breithe",
         "birthDateInPast": "Caithfidh an dáta breithe a bheith san aimsir chaite",
-        "address": "Seoladh",
-        "addressPlaceholder": "123 rue de la Paix, Páras",
         "civilite": "Teideal",
         "groupeSanguin": "Cineál fola",
         "possedeTshirt": "Tá T-léine aige",

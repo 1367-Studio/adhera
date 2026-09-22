@@ -8,6 +8,7 @@ import { useTranslations, useLocale } from "next-intl"
 import { HandHeartIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
+import { AddressFields } from "@/components/ui/address-fields"
 import { Label } from "@/components/ui/label"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
@@ -19,6 +20,7 @@ import { LegalConsent, type RequiredLegalDocument } from "@/components/public/le
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
+import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { cn } from "@/lib/utils"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
@@ -104,7 +106,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   const [companyName, setCompanyName] = useState("")
   const [siret, setSiret]           = useState("")
   const [email, setEmail]           = useState("")
-  const [address, setAddress]       = useState("")
+  const [addressValues, setAddressValues] = useState<AddressFormValues>(EMPTY_ADDRESS_FORM_VALUES)
   const [birthDate, setBirthDate]   = useState("")
   const [phone, setPhone]           = useState("")
   const [mobile, setMobile]         = useState("")
@@ -210,7 +212,10 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     !!selectedTier && amount > 0 && !belowMinimum && !belowTierMinimum && !belowIneligible &&
     firstName.trim() && lastName.trim() && emailValid(email) &&
     (donorType !== "COMPANY" || (companyName.trim() && siret.trim())) &&
-    (form.fieldAddress   !== "REQUIRED" || address.trim()) &&
+    // Une adresse « requise » est une adresse postale complète : la voie seule ne permet
+    // ni d'acheminer un courrier ni d'établir un reçu fiscal. Le complément et le pays
+    // restent facultatifs (voir AddressFields).
+    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim())) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -249,7 +254,11 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
           companyName: donorType === "COMPANY" ? companyName.trim() : undefined,
           siret:       donorType === "COMPANY" ? siret.trim() : undefined,
           email:       email.trim(),
-          address:     address.trim() || undefined,
+          addressStreet:     addressValues.addressStreet.trim()     || undefined,
+          addressComplement: addressValues.addressComplement.trim() || undefined,
+          postalCode:        addressValues.postalCode.trim()        || undefined,
+          city:              addressValues.city.trim()              || undefined,
+          country:           addressValues.country.trim()           || undefined,
           birthDate:   birthDate.trim() || undefined,
           phone:       phone.trim() || undefined,
           mobile:      mobile.trim() || undefined,
@@ -459,7 +468,11 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
               <FormField label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)} />
 
               {form.fieldAddress !== "HIDDEN" && (
-                <FormField label={t("addressLabel")} placeholder={t("addressPlaceholder")} required={form.fieldAddress === "REQUIRED"} value={address} onChange={e => setAddress(e.target.value)} />
+                <AddressFields
+                  value={addressValues}
+                  onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
+                  required={form.fieldAddress === "REQUIRED"}
+                />
               )}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {form.fieldBirthDate !== "HIDDEN" && (
