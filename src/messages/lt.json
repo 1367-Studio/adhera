@@ -3536,6 +3536,25 @@
       "copy": "Supratau",
       "open": "Atidaryk"
     },
+    "customDomainSettings": {
+      "title": "Pasirinktinis domenas",
+      "subtitle": "Naudokite savo domeną asociacijos viešai svetainei, papildomai prie formwise.fr.",
+      "domainLabel": "Domenas",
+      "domainPlaceholder": "www.manoasociacija.org",
+      "domainHint": "Subdomenui, pvz., www.manoasociacija.org, reikia tik vieno DNS įrašo.",
+      "invalidDomain": "Neteisingas domenas",
+      "saved": "Domenas pridėtas",
+      "statusVerified": "Aktyvus",
+      "statusFailed": "Patikrinimas nepavyko",
+      "statusPending": "Laukiama DNS",
+      "dnsInstruction": "Pridėkite šį DNS įrašą pas savo domeno teikėją (OVH, Gandi, GoDaddy ir kt.):",
+      "waitingHint": "Patikrinimas vyksta automatiškai kas kelias minutes, kai tik DNS pasklinda.",
+      "verifyNow": "Patikrinti dabar",
+      "remove": "Pašalinti domeną",
+      "removed": "Domenas pašalintas",
+      "removeConfirmTitle": "Pašalinti šį pasirinktinį domeną?",
+      "removeConfirmDescription": "Svetainė liks pasiekiama adresu formwise.fr, tačiau šis domenas nebenurodys į asociaciją."
+    },
     "cotisationDefaultsSettings": {
       "title": "Narystės mokestis",
       "subtitle": "Įvedus sumą, kiekvienam naujam nariui automatiškai sukuriamas laukiantis narystės mokestis už einamuosius metus — jie gali patys sumokėti per portalą, nelaukdami, kol administratorius jį sukurs. Palikite tuščią vietą, kad niekas nebūtų sukurta automatiškai.",

@@ -3536,6 +3536,25 @@
       "copy": "Kopioi",
       "open": "Avaa"
     },
+    "customDomainSettings": {
+      "title": "Oma verkkotunnus",
+      "subtitle": "Käytä omaa verkkotunnustasi yhdistyksen julkisella sivustolla, formwise.fr:n lisäksi.",
+      "domainLabel": "Verkkotunnus",
+      "domainPlaceholder": "www.omayhdistys.org",
+      "domainHint": "Alitunnus kuten www.omayhdistys.org tarvitsee vain yhden DNS-tietueen.",
+      "invalidDomain": "Virheellinen verkkotunnus",
+      "saved": "Verkkotunnus lisätty",
+      "statusVerified": "Aktiivinen",
+      "statusFailed": "Vahvistus epäonnistui",
+      "statusPending": "Odottaa DNS:ää",
+      "dnsInstruction": "Lisää tämä DNS-tietue verkkotunnuksesi tarjoajalla (OVH, Gandi, GoDaddy jne.):",
+      "waitingHint": "Vahvistus tapahtuu automaattisesti muutaman minuutin välein DNS:n levittyä.",
+      "verifyNow": "Vahvista nyt",
+      "remove": "Poista verkkotunnus",
+      "removed": "Verkkotunnus poistettu",
+      "removeConfirmTitle": "Poistetaanko tämä oma verkkotunnus?",
+      "removeConfirmDescription": "Sivusto pysyy saatavilla osoitteessa formwise.fr, mutta tämä verkkotunnus ei enää osoita yhdistykseen."
+    },
     "cotisationDefaultsSettings": {
       "title": "Jäsenmaksu",
       "subtitle": "Kun summa on syötetty, jokaiselle uudelle jäsenelle luodaan automaattisesti vireillä oleva jäsenmaksu kuluvalta vuodelta — he voivat sitten maksaa sen itse portaalin kautta ilman, että ylläpitäjä luo sen. Jätä tyhjäksi, jotta mikään ei luodu automaattisesti.",

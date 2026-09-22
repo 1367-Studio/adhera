@@ -3536,6 +3536,25 @@
       "copy": "Rozumiem",
       "open": "Otvorené"
     },
+    "customDomainSettings": {
+      "title": "Vlastná doména",
+      "subtitle": "Použite vlastnú doménu pre verejnú stránku združenia, popri formwise.fr.",
+      "domainLabel": "Doména",
+      "domainPlaceholder": "www.mojezdruzenie.org",
+      "domainHint": "Subdoména ako www.mojezdruzenie.org potrebuje iba jeden DNS záznam.",
+      "invalidDomain": "Neplatná doména",
+      "saved": "Doména pridaná",
+      "statusVerified": "Aktívna",
+      "statusFailed": "Overenie zlyhalo",
+      "statusPending": "Čaká sa na DNS",
+      "dnsInstruction": "Pridajte tento DNS záznam u svojho poskytovateľa domény (OVH, Gandi, GoDaddy atď.):",
+      "waitingHint": "Overenie prebieha automaticky každých pár minút po rozšírení DNS.",
+      "verifyNow": "Overiť teraz",
+      "remove": "Odstrániť doménu",
+      "removed": "Doména odstránená",
+      "removeConfirmTitle": "Odstrániť túto vlastnú doménu?",
+      "removeConfirmDescription": "Stránka zostane dostupná na formwise.fr, ale táto doména už nebude smerovať na združenie."
+    },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatok",
       "subtitle": "Keď sa zadá suma, automaticky sa pre každého nového člena vytvorí členský poplatok za aktuálny rok — môžu si ho potom zaplatiť sami cez portál, bez čakania na vytvorenie od administrátora. Nechajte prázdne miesto, aby sa nič nevytvorilo automaticky.",

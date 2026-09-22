@@ -3536,6 +3536,25 @@
       "copy": "Ricevuto",
       "open": "Open"
     },
+    "customDomainSettings": {
+      "title": "Dominio personalizzato",
+      "subtitle": "Usa il tuo dominio per il sito pubblico dell'associazione, oltre a formwise.fr.",
+      "domainLabel": "Dominio",
+      "domainPlaceholder": "www.miaassociazione.org",
+      "domainHint": "Un sottodominio come www.miaassociazione.org richiede un solo record DNS.",
+      "invalidDomain": "Dominio non valido",
+      "saved": "Dominio aggiunto",
+      "statusVerified": "Attivo",
+      "statusFailed": "Verifica non riuscita",
+      "statusPending": "In attesa del DNS",
+      "dnsInstruction": "Aggiungi questo record DNS nel pannello del tuo fornitore di dominio (OVH, Gandi, GoDaddy, ecc.):",
+      "waitingHint": "La verifica avviene automaticamente ogni pochi minuti dopo la propagazione del DNS.",
+      "verifyNow": "Verifica ora",
+      "remove": "Rimuovi dominio",
+      "removed": "Dominio rimosso",
+      "removeConfirmTitle": "Rimuovere questo dominio personalizzato?",
+      "removeConfirmDescription": "Il sito resterà raggiungibile su formwise.fr, ma questo dominio non punterà più all'associazione."
+    },
     "cotisationDefaultsSettings": {
       "title": "Quota associativa",
       "subtitle": "Quando viene inserito un importo, viene automaticamente creata una quota di iscrizione pendente per l'anno corrente per ogni nuovo membro — può poi pagarla autonomamente dal portale, senza aspettare che un amministratore la crei. Lascia vuoto in modo che nulla venga creato automaticamente.",

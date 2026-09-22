@@ -1,4 +1,18 @@
 {
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/app/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/app/:path*"
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/automations",
@@ -19,6 +33,10 @@
     {
       "path": "/api/cron/boutique-storefront-sweep",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/custom-domain-verification-sweep",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

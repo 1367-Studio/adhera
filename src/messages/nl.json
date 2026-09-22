@@ -3536,6 +3536,25 @@
       "copy": "Begrepen",
       "open": "Open"
     },
+    "customDomainSettings": {
+      "title": "Aangepast domein",
+      "subtitle": "Gebruik uw eigen domein voor de openbare website van de vereniging, naast formwise.fr.",
+      "domainLabel": "Domein",
+      "domainPlaceholder": "www.mijnvereniging.org",
+      "domainHint": "Een subdomein zoals www.mijnvereniging.org heeft maar één DNS-record nodig.",
+      "invalidDomain": "Ongeldig domein",
+      "saved": "Domein toegevoegd",
+      "statusVerified": "Actief",
+      "statusFailed": "Verificatie mislukt",
+      "statusPending": "Wachten op DNS",
+      "dnsInstruction": "Voeg dit DNS-record toe bij uw domeinprovider (OVH, Gandi, GoDaddy, enz.):",
+      "waitingHint": "De verificatie gebeurt automatisch elke paar minuten zodra de DNS is verspreid.",
+      "verifyNow": "Nu verifiëren",
+      "remove": "Domein verwijderen",
+      "removed": "Domein verwijderd",
+      "removeConfirmTitle": "Dit aangepaste domein verwijderen?",
+      "removeConfirmDescription": "De site blijft bereikbaar via formwise.fr, maar dit domein verwijst niet meer naar de vereniging."
+    },
     "cotisationDefaultsSettings": {
       "title": "Lidmaatschapsbijdrage",
       "subtitle": "Wanneer een bedrag wordt ingevoerd, wordt er automatisch een lopende lidmaatschapsbijdrage voor het huidige jaar aangemaakt voor elk nieuw lid — ze kunnen het dan zelf via het portaal betalen, zonder te wachten tot een beheerder het aanmaakt. Laat het leeg zodat er niets automatisch wordt aangemaakt.",

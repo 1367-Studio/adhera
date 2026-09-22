@@ -3536,6 +3536,25 @@
       "copy": "Copiar",
       "open": "Abrir"
     },
+    "customDomainSettings": {
+      "title": "Domínio personalizado",
+      "subtitle": "Utilize o seu próprio domínio para o site público da associação, além do formwise.fr.",
+      "domainLabel": "Domínio",
+      "domainPlaceholder": "www.aminhaassociacao.org",
+      "domainHint": "Um subdomínio como www.aminhaassociacao.org só precisa de um registo DNS.",
+      "invalidDomain": "Domínio inválido",
+      "saved": "Domínio adicionado",
+      "statusVerified": "Ativo",
+      "statusFailed": "Falha na verificação",
+      "statusPending": "A aguardar o DNS",
+      "dnsInstruction": "Adicione este registo DNS no painel do seu fornecedor de domínio (OVH, Gandi, GoDaddy, etc.):",
+      "waitingHint": "A verificação é feita automaticamente a cada poucos minutos após a propagação do DNS.",
+      "verifyNow": "Verificar agora",
+      "remove": "Remover domínio",
+      "removed": "Domínio removido",
+      "removeConfirmTitle": "Remover este domínio personalizado?",
+      "removeConfirmDescription": "O site continuará acessível em formwise.fr, mas este domínio deixará de apontar para a associação."
+    },
     "cotisationDefaultsSettings": {
       "title": "Quota",
       "subtitle": "Quando é indicado um valor, é criada automaticamente uma quota pendente do ano em curso para cada novo membro — que a pode então pagar pelo portal, sem esperar que um administrador a crie. Deixe em branco para não criar nada automaticamente.",

@@ -3536,6 +3536,25 @@
       "copy": "Primljeno",
       "open": "Otvoreno"
     },
+    "customDomainSettings": {
+      "title": "Prilagođena domena",
+      "subtitle": "Koristite vlastitu domenu za javnu web-stranicu udruge, uz formwise.fr.",
+      "domainLabel": "Domena",
+      "domainPlaceholder": "www.mojaudruga.org",
+      "domainHint": "Poddomena poput www.mojaudruga.org treba samo jedan DNS zapis.",
+      "invalidDomain": "Nevažeća domena",
+      "saved": "Domena dodana",
+      "statusVerified": "Aktivna",
+      "statusFailed": "Provjera nije uspjela",
+      "statusPending": "Čekanje DNS-a",
+      "dnsInstruction": "Dodajte ovaj DNS zapis kod svog pružatelja domene (OVH, Gandi, GoDaddy itd.):",
+      "waitingHint": "Provjera se odvija automatski svakih nekoliko minuta nakon što se DNS proširi.",
+      "verifyNow": "Provjeri sada",
+      "remove": "Ukloni domenu",
+      "removed": "Domena uklonjena",
+      "removeConfirmTitle": "Ukloniti ovu prilagođenu domenu?",
+      "removeConfirmDescription": "Stranica će ostati dostupna na formwise.fr, ali ova domena više neće upućivati na udrugu."
+    },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
       "subtitle": "Kada se unese iznos, za svakog novog člana automatski se stvara članarina za tekuću godinu — oni je zatim mogu sami platiti putem portala, bez čekanja da administrator kreira članarinu. Ostavite prazno kako se ništa ne bi automatski kreiralo.",
