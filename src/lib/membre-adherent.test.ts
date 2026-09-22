@@ -111,7 +111,30 @@ describe("Prisma fragments mirroring isMembreAdherent — unchanged shape", () =
     }
     const inheritedMatch = { adherentOverride: null, cotisations: { none: coveringMatch }, responsable: ownMatch }
     expect(membreAdherentWhereClause(true, NOW)).toEqual({ OR: [ownMatch, inheritedMatch] })
-    expect(membreAdherentWhereClause(false, NOW)).toEqual({ NOT: { OR: [ownMatch, inheritedMatch] } })
+
+    // Le cas Bénévole ne doit JAMAIS repasser par un NOT englobant : le filtre sur la relation
+    // `responsable` compile en `"responsableId" IN (SELECT ...)`, et `NULL IN (...)` vaut NULL
+    // en SQL. Sous un NOT, tout membre sans responsable — la quasi-totalité — disparaissait du
+    // résultat, et le filtre « Bénévoles » de la liste des membres ne renvoyait personne.
+    const notOwnMatch = {
+      OR: [
+        { adherentOverride: false },
+        { AND: [{ adherentOverride: null }, { cotisations: { none: coveringMatch } }] },
+      ],
+    }
+    expect(membreAdherentWhereClause(false, NOW)).toEqual({
+      OR: [
+        { adherentOverride: false },
+        {
+          AND: [
+            { adherentOverride: null },
+            { cotisations: { none: coveringMatch } },
+            { OR: [{ responsableId: null }, { responsable: notOwnMatch }] },
+          ],
+        },
+      ],
+    })
+    expect(JSON.stringify(membreAdherentWhereClause(false, NOW))).not.toContain("NOT")
   })
 })
 
