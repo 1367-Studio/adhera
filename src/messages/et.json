@@ -3536,6 +3536,25 @@
       "copy": "Kinnitan",
       "open": "Ava"
     },
+    "customDomainSettings": {
+      "title": "Kohandatud domeen",
+      "subtitle": "Kasutage ühingu avalikul veebisaidil oma domeeni, lisaks formwise.fr-ile.",
+      "domainLabel": "Domeen",
+      "domainPlaceholder": "www.minuuhing.org",
+      "domainHint": "Alamdomeen nagu www.minuuhing.org vajab ainult ühte DNS-kirjet.",
+      "invalidDomain": "Vale domeen",
+      "saved": "Domeen lisatud",
+      "statusVerified": "Aktiivne",
+      "statusFailed": "Kinnitamine ebaõnnestus",
+      "statusPending": "Ootab DNS-i",
+      "dnsInstruction": "Lisage see DNS-kirje oma domeenipakkuja juures (OVH, Gandi, GoDaddy jne):",
+      "waitingHint": "Kinnitamine toimub automaatselt iga paari minuti järel, kui DNS on levinud.",
+      "verifyNow": "Kinnita kohe",
+      "remove": "Eemalda domeen",
+      "removed": "Domeen eemaldatud",
+      "removeConfirmTitle": "Kas eemaldada see kohandatud domeen?",
+      "removeConfirmDescription": "Veebisait jääb kättesaadavaks aadressil formwise.fr, kuid see domeen enam ühingule ei osuta."
+    },
     "cotisationDefaultsSettings": {
       "title": "Liikmemaks",
       "subtitle": "Kui summa sisestatakse, luuakse iga uue liikme jaoks automaatselt käesoleva aasta liikmemaksu ootel — nad saavad selle portaalist ise maksta, ilma et peaksid administraatori loomist ootama. Jäta see tühjaks, et automaatselt midagi ei tekiks.",

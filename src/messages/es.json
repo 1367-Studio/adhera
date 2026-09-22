@@ -3536,6 +3536,25 @@
       "copy": "Copiar",
       "open": "Abrir"
     },
+    "customDomainSettings": {
+      "title": "Dominio personalizado",
+      "subtitle": "Use su propio dominio para el sitio público de la asociación, además de formwise.fr.",
+      "domainLabel": "Dominio",
+      "domainPlaceholder": "www.miasociacion.org",
+      "domainHint": "Un subdominio como www.miasociacion.org solo necesita un registro DNS.",
+      "invalidDomain": "Dominio inválido",
+      "saved": "Dominio añadido",
+      "statusVerified": "Activo",
+      "statusFailed": "Verificación fallida",
+      "statusPending": "Esperando el DNS",
+      "dnsInstruction": "Añada este registro DNS en el panel de su proveedor de dominio (OVH, Gandi, GoDaddy, etc.):",
+      "waitingHint": "La verificación se hace automáticamente cada pocos minutos una vez que el DNS se propague.",
+      "verifyNow": "Verificar ahora",
+      "remove": "Quitar dominio",
+      "removed": "Dominio eliminado",
+      "removeConfirmTitle": "¿Quitar este dominio personalizado?",
+      "removeConfirmDescription": "El sitio seguirá accesible en formwise.fr, pero este dominio dejará de apuntar a la asociación."
+    },
     "cotisationDefaultsSettings": {
       "title": "Cuota",
       "subtitle": "Cuando se indica un importe, se crea automáticamente una cuota pendiente del año en curso para cada nuevo miembro — luego puede pagarla él mismo desde el portal, sin esperar a que un administrador la cree. Déjelo vacío para no crear nada automáticamente.",

@@ -3536,6 +3536,25 @@
       "copy": "Rozumím",
       "open": "Otevřeno"
     },
+    "customDomainSettings": {
+      "title": "Vlastní doména",
+      "subtitle": "Použijte vlastní doménu pro veřejný web spolku, kromě formwise.fr.",
+      "domainLabel": "Doména",
+      "domainPlaceholder": "www.mujspolek.org",
+      "domainHint": "Subdoména jako www.mujspolek.org potřebuje jen jeden DNS záznam.",
+      "invalidDomain": "Neplatná doména",
+      "saved": "Doména přidána",
+      "statusVerified": "Aktivní",
+      "statusFailed": "Ověření se nezdařilo",
+      "statusPending": "Čeká se na DNS",
+      "dnsInstruction": "Přidejte tento DNS záznam u svého poskytovatele domény (OVH, Gandi, GoDaddy atd.):",
+      "waitingHint": "Ověření probíhá automaticky každých pár minut po rozšíření DNS.",
+      "verifyNow": "Ověřit nyní",
+      "remove": "Odebrat doménu",
+      "removed": "Doména odebrána",
+      "removeConfirmTitle": "Odebrat tuto vlastní doménu?",
+      "removeConfirmDescription": "Web zůstane dostupný na formwise.fr, ale tato doména už nebude ukazovat na spolek."
+    },
     "cotisationDefaultsSettings": {
       "title": "Členský poplatek",
       "subtitle": "Když je zadána částka, automaticky se pro každého nového člena vytvoří členský poplatek za aktuální rok — ten si ho pak může zaplatit sám z portálu, aniž by čekal na jeho vytvoření od administrátora. Nechte prázdné, aby se nic automaticky nevytvářelo.",

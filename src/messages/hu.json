@@ -3536,6 +3536,25 @@
       "copy": "Értettem",
       "open": "Nyisd ki"
     },
+    "customDomainSettings": {
+      "title": "Egyéni domain",
+      "subtitle": "Használja saját domainjét az egyesület nyilvános weboldalához, a formwise.fr mellett.",
+      "domainLabel": "Domain",
+      "domainPlaceholder": "www.egyesuletem.org",
+      "domainHint": "Egy aldomain, mint a www.egyesuletem.org, csak egyetlen DNS-rekordot igényel.",
+      "invalidDomain": "Érvénytelen domain",
+      "saved": "Domain hozzáadva",
+      "statusVerified": "Aktív",
+      "statusFailed": "Ellenőrzés sikertelen",
+      "statusPending": "DNS-re várakozás",
+      "dnsInstruction": "Adja hozzá ezt a DNS-rekordot a domainszolgáltatójánál (OVH, Gandi, GoDaddy stb.):",
+      "waitingHint": "Az ellenőrzés automatikusan megtörténik néhány percenként, miután a DNS elterjedt.",
+      "verifyNow": "Ellenőrzés most",
+      "remove": "Domain eltávolítása",
+      "removed": "Domain eltávolítva",
+      "removeConfirmTitle": "Eltávolítja ezt az egyéni domaint?",
+      "removeConfirmDescription": "Az oldal továbbra is elérhető marad a formwise.fr címen, de ez a domain már nem az egyesületre fog mutatni."
+    },
     "cotisationDefaultsSettings": {
       "title": "Tagsági díj",
       "subtitle": "Amikor összeget írnak be, automatikusan minden új tag számára létrejön egy függőben lévő tagsági díj az aktuális évre — ezután ők maguk fizethetik a portálon, anélkül, hogy adminisztrátor létrehozná. Hagyj üres helyet, hogy semmi ne generálódjon automatikusan.",

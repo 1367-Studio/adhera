@@ -3536,6 +3536,25 @@
       "copy": "Kopiuję",
       "open": "Otwarte"
     },
+    "customDomainSettings": {
+      "title": "Własna domena",
+      "subtitle": "Użyj własnej domeny dla publicznej strony stowarzyszenia, oprócz formwise.fr.",
+      "domainLabel": "Domena",
+      "domainPlaceholder": "www.mojestowarzyszenie.org",
+      "domainHint": "Subdomena taka jak www.mojestowarzyszenie.org wymaga tylko jednego rekordu DNS.",
+      "invalidDomain": "Nieprawidłowa domena",
+      "saved": "Domena dodana",
+      "statusVerified": "Aktywna",
+      "statusFailed": "Weryfikacja nie powiodła się",
+      "statusPending": "Oczekiwanie na DNS",
+      "dnsInstruction": "Dodaj ten rekord DNS u swojego dostawcy domeny (OVH, Gandi, GoDaddy itp.):",
+      "waitingHint": "Weryfikacja odbywa się automatycznie co kilka minut po propagacji DNS.",
+      "verifyNow": "Zweryfikuj teraz",
+      "remove": "Usuń domenę",
+      "removed": "Domena usunięta",
+      "removeConfirmTitle": "Usunąć tę własną domenę?",
+      "removeConfirmDescription": "Strona pozostanie dostępna pod adresem formwise.fr, ale ta domena przestanie wskazywać na stowarzyszenie."
+    },
     "cotisationDefaultsSettings": {
       "title": "Składka członkowska",
       "subtitle": "Po wpisaniu kwoty automatycznie tworzy się oczekującą opłatę członkowską za bieżący rok dla każdego nowego członka — mogą oni wtedy sami ją opłacić z portalu, nie czekając na utworzenie przez administratora. Zostaw puste miejsce, aby nic nie było automatycznie tworzone.",

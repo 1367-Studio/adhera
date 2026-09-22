@@ -3598,6 +3598,25 @@
       "copy": "Copiar",
       "open": "Abrir"
     },
+    "customDomainSettings": {
+      "title": "Domínio personalizado",
+      "subtitle": "Use seu próprio domínio para o site público da associação, além do formwise.fr.",
+      "domainLabel": "Domínio",
+      "domainPlaceholder": "www.minhaassociacao.org",
+      "domainHint": "Um subdomínio como www.minhaassociacao.org exige apenas um registro DNS.",
+      "invalidDomain": "Domínio inválido",
+      "saved": "Domínio adicionado",
+      "statusVerified": "Ativo",
+      "statusFailed": "Falha na verificação",
+      "statusPending": "Aguardando DNS",
+      "dnsInstruction": "Adicione este registro DNS no painel do seu provedor de domínio (OVH, Gandi, GoDaddy, etc.):",
+      "waitingHint": "A verificação acontece automaticamente a cada poucos minutos depois que o DNS propagar.",
+      "verifyNow": "Verificar agora",
+      "remove": "Remover domínio",
+      "removed": "Domínio removido",
+      "removeConfirmTitle": "Remover este domínio personalizado?",
+      "removeConfirmDescription": "O site continuará acessível em formwise.fr, mas este domínio deixará de apontar para a associação."
+    },
     "cotisationDefaultsSettings": {
       "title": "Mensalidade",
       "subtitle": "Quando um valor é informado, uma mensalidade pendente do ano em curso é criada automaticamente para cada novo membro — ele pode então pagá-la pelo portal, sem esperar que um admin a crie. Deixe em branco para não criar nada automaticamente.",

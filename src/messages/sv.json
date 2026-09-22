@@ -3536,6 +3536,25 @@
       "copy": "Kopiera",
       "open": "Öppet"
     },
+    "customDomainSettings": {
+      "title": "Anpassad domän",
+      "subtitle": "Använd din egen domän för föreningens publika webbplats, utöver formwise.fr.",
+      "domainLabel": "Domän",
+      "domainPlaceholder": "www.minforening.org",
+      "domainHint": "En subdomän som www.minforening.org behöver bara en enda DNS-post.",
+      "invalidDomain": "Ogiltig domän",
+      "saved": "Domän tillagd",
+      "statusVerified": "Aktiv",
+      "statusFailed": "Verifiering misslyckades",
+      "statusPending": "Väntar på DNS",
+      "dnsInstruction": "Lägg till denna DNS-post hos din domänleverantör (OVH, Gandi, GoDaddy, osv.):",
+      "waitingHint": "Verifieringen sker automatiskt var några minuter efter att DNS har spridit sig.",
+      "verifyNow": "Verifiera nu",
+      "remove": "Ta bort domän",
+      "removed": "Domän borttagen",
+      "removeConfirmTitle": "Ta bort den här anpassade domänen?",
+      "removeConfirmDescription": "Webbplatsen förblir tillgänglig på formwise.fr, men den här domänen pekar inte längre på föreningen."
+    },
     "cotisationDefaultsSettings": {
       "title": "Medlemsavgift",
       "subtitle": "När ett belopp matas in skapas automatiskt en väntande medlemsavgift för det aktuella året för varje ny medlem — de kan sedan betala den själva från portalen utan att vänta på att en administratör ska skapa den. Lämna den tom så att inget skapas automatiskt.",

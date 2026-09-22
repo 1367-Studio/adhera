@@ -3536,6 +3536,25 @@
       "copy": "Sprejeto",
       "open": "Odprto"
     },
+    "customDomainSettings": {
+      "title": "Domena po meri",
+      "subtitle": "Uporabite lastno domeno za javno spletno stran društva, poleg formwise.fr.",
+      "domainLabel": "Domena",
+      "domainPlaceholder": "www.mojedrustvo.org",
+      "domainHint": "Poddomena, kot je www.mojedrustvo.org, potrebuje samo en zapis DNS.",
+      "invalidDomain": "Neveljavna domena",
+      "saved": "Domena dodana",
+      "statusVerified": "Aktivna",
+      "statusFailed": "Preverjanje ni uspelo",
+      "statusPending": "Čakanje na DNS",
+      "dnsInstruction": "Dodajte ta zapis DNS pri svojem ponudniku domene (OVH, Gandi, GoDaddy itd.):",
+      "waitingHint": "Preverjanje poteka samodejno vsakih nekaj minut, ko se DNS razširi.",
+      "verifyNow": "Preveri zdaj",
+      "remove": "Odstrani domeno",
+      "removed": "Domena odstranjena",
+      "removeConfirmTitle": "Ali želite odstraniti to domeno po meri?",
+      "removeConfirmDescription": "Spletna stran bo ostala dosegljiva na formwise.fr, vendar ta domena ne bo več kazala na društvo."
+    },
     "cotisationDefaultsSettings": {
       "title": "Članarina",
       "subtitle": "Ko se vnese znesek, se za vsakega novega člana samodejno ustvari članarina za tekoče leto — nato jo lahko plača sam prek portala, brez čakanja, da jo ustvari skrbnik. Pustite prazno, da se nič ne ustvari samodejno.",

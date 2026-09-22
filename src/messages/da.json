@@ -3536,6 +3536,25 @@
       "copy": "Modtaget",
       "open": "Åben"
     },
+    "customDomainSettings": {
+      "title": "Brugerdefineret domæne",
+      "subtitle": "Brug dit eget domæne til foreningens offentlige side, ud over formwise.fr.",
+      "domainLabel": "Domæne",
+      "domainPlaceholder": "www.minforening.org",
+      "domainHint": "Et underdomæne som www.minforening.org kræver kun én DNS-post.",
+      "invalidDomain": "Ugyldigt domæne",
+      "saved": "Domæne tilføjet",
+      "statusVerified": "Aktiv",
+      "statusFailed": "Bekræftelse mislykkedes",
+      "statusPending": "Venter på DNS",
+      "dnsInstruction": "Tilføj denne DNS-post hos din domæneudbyder (OVH, Gandi, GoDaddy osv.):",
+      "waitingHint": "Bekræftelsen sker automatisk hvert par minutter, når DNS er slået igennem.",
+      "verifyNow": "Bekræft nu",
+      "remove": "Fjern domæne",
+      "removed": "Domæne fjernet",
+      "removeConfirmTitle": "Fjern dette brugerdefinerede domæne?",
+      "removeConfirmDescription": "Siden forbliver tilgængelig på formwise.fr, men dette domæne peger ikke længere på foreningen."
+    },
     "cotisationDefaultsSettings": {
       "title": "Medlemskontingent",
       "subtitle": "Når et beløb indtastes, oprettes der automatisk et ventende medlemsgebyr for det aktuelle år for hvert nyt medlem — de kan så selv betale det fra portalen uden at vente på, at en administrator opretter det. Lad det stå tomt, så intet oprettes automatisk.",

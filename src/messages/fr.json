@@ -3619,6 +3619,25 @@
       "copy": "Copier",
       "open": "Ouvrir"
     },
+    "customDomainSettings": {
+      "title": "Domaine personnalisé",
+      "subtitle": "Utilisez votre propre domaine pour le site public de l'association, en plus de formwise.fr.",
+      "domainLabel": "Domaine",
+      "domainPlaceholder": "www.monassociation.fr",
+      "domainHint": "Un sous-domaine comme www.monassociation.fr ne demande qu'un seul enregistrement DNS.",
+      "invalidDomain": "Domaine invalide",
+      "saved": "Domaine ajouté",
+      "statusVerified": "Actif",
+      "statusFailed": "Échec de la vérification",
+      "statusPending": "En attente du DNS",
+      "dnsInstruction": "Ajoutez cet enregistrement DNS chez votre hébergeur de domaine (OVH, Gandi, GoDaddy, etc.) :",
+      "waitingHint": "La vérification se fait automatiquement toutes les quelques minutes après la propagation du DNS.",
+      "verifyNow": "Vérifier maintenant",
+      "remove": "Retirer le domaine",
+      "removed": "Domaine retiré",
+      "removeConfirmTitle": "Retirer ce domaine personnalisé ?",
+      "removeConfirmDescription": "Le site restera accessible via formwise.fr, mais ce domaine ne pointera plus vers l'association."
+    },
     "cotisationDefaultsSettings": {
       "title": "Cotisation",
       "subtitle": "Quand un montant est renseigné, une cotisation en attente pour l'année en cours est créée automatiquement à chaque nouveau membre — il peut ensuite la payer lui-même depuis le portail, sans attendre qu'un admin la crée. Laissez vide pour ne rien créer automatiquement.",
