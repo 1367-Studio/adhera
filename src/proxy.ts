@@ -16,25 +16,36 @@ const KNOWN_HOSTS = new Set(["formwise.fr", "www.formwise.fr", "localhost", "127
 // webmanifest was rewriting to /app/{slug}/manifest.webmanifest, which doesn't exist).
 const STATIC_ASSET_PATH = /\.[a-zA-Z0-9]+$/
 
+// Global, tenant-less admin routes (staff login/register/password-reset, the whole dashboard
+// and backoffice) that a public site link can still point at — "Esqueci minha senha" on the
+// portal login form links to plain /forgot-password, no slug involved at all. These must
+// never gain a slug prefix regardless of which association's custom domain served the click.
+const GLOBAL_ADMIN_PATHS = new Set(["/login", "/register", "/forgot-password", "/reset-password"])
+
+// Every path shape that's already fully resolved and must pass through untouched: a global
+// admin route, anything under /portal (its own self-contained tree, already slug-scoped), or
+// this exact association's own [slug] tree. Internal site links (nav buttons, "Connecter",
+// the dons fallback, "Esqueci minha senha") are built with one of these three shapes because
+// the same components are shared with the formwise.fr/app/... rendering path — on a custom
+// domain, basePath still adds "/app" in front, so the browser navigates to an
+// ALREADY-correct URL; rewriting it again doubles the slug into a 404. Found by clicking
+// around the live site, one route family at a time — keep this list, don't go back to
+// allowlisting one path at a time.
+function isAlreadyResolvedPath(pathname: string, slug: string): boolean {
+  if (GLOBAL_ADMIN_PATHS.has(pathname)) return true
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/backoffice")) return true
+  if (pathname === "/portal" || pathname.startsWith("/portal/")) return true
+  if (pathname === `/${slug}` || pathname.startsWith(`/${slug}/`)) return true
+  return false
+}
+
 export async function proxy(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0] ?? ""
   if (host && !KNOWN_HOSTS.has(host) && !host.endsWith(".vercel.app")) {
     const { pathname, search } = request.nextUrl
     if (!STATIC_ASSET_PATH.test(pathname)) {
       const slug = await resolveAssociationSlugByHost(host)
-      // Internal links on the public site (nav buttons, "voir plus", the "Connecter" member
-      // login, the dons-without-a-bound-form fallback, ...) are built as `/${slug}/evenements`
-      // or `/portal/${slug}/login` — two SEPARATE route trees ([slug] and /portal/[slug]) that
-      // both already embed the slug. Once basePath adds "/app" the browser navigates to an
-      // ALREADY-resolved URL on either tree; rewriting it again would double the slug into a
-      // 404 (`/app/{slug}/{slug}/...` or `/app/{slug}/portal/{slug}/...`) — caught by clicking
-      // "Connecter" and the dons button on the live site after the first version of this fix
-      // only accounted for the [slug] tree.
-      const alreadyPrefixed = slug && (
-        pathname === `/${slug}` || pathname.startsWith(`/${slug}/`) ||
-        pathname === `/portal/${slug}` || pathname.startsWith(`/portal/${slug}/`)
-      )
-      if (slug && !alreadyPrefixed) {
+      if (slug && !isAlreadyResolvedPath(pathname, slug)) {
         const targetPath = pathname === "/" ? "" : pathname
         return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
       }
