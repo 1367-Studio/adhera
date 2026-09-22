@@ -372,6 +372,16 @@ export function MembreDetailView() {
   const meetingsAsParticipant = membre.meetingsAsParticipant ?? []
   const materialLoans         = membre.materialLoans ?? []
   const cotisationsTotal      = membre._count?.cotisations    ?? cotisations.length
+  // Un membre actif sans la moindre cotisation s'affiche simplement « Bénévole » — un état
+  // parfaitement légitime par ailleurs, qu'aucune donnée ne distingue d'un oubli. L'alerte se
+  // limite donc aux cas que rien n'explique : ni décision explicite (adherentOverride), ni
+  // statut hérité d'un responsable. Sans ça elle sonnerait sur chaque vrai bénévole, et on
+  // apprendrait vite à l'ignorer.
+  const missingCotisation = modules.cotisations
+    && membre?.status === "ACTIF"
+    && cotisationsTotal === 0
+    && membre?.adherentOverride === null
+    && !isMembreAdherentViaResponsable(membre)
   const participationsTotal   = membre._count?.participations ?? participations.length
   const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
   const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
@@ -506,6 +516,23 @@ export function MembreDetailView() {
           </div>
         )}
       </div>
+
+      {/* Rien n'annonçait qu'un membre actif n'avait aucune cotisation : l'information n'existait
+          que dans l'onglet Cotisations, et son absence se lisait comme un simple « Bénévole ».
+          Une inscription portail peut d'ailleurs créer ce cas sans que personne en soit informé
+          (voir /api/portal/register, où la notification est conditionnée à la cotisation). */}
+      {missingCotisation && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-400">
+          <span className="flex items-center gap-2">
+            <WarningIcon className="size-4 shrink-0" />
+            {t("membres.detail.noCotisation")}
+          </span>
+          <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
+            <PlusIcon className="mr-1.5 size-4" />
+            {t("membres.detail.cotisationButton")}
+          </Button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">

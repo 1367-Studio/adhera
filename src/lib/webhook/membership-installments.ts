@@ -279,7 +279,7 @@ export async function handleInstallmentInvoicePaid(invoice: Stripe.Invoice): Pro
   // Not an installment plan — or one whose checkout.session.completed hasn't created the plan
   // (and its Cotisation) yet, in which case this first installment must come back later rather
   // than be lost.
-  if (!plan) return shouldRetryUntilCheckoutProcessed(invoice, "membership-installment") ? "awaiting-checkout" : undefined
+  if (!plan) return (await shouldRetryUntilCheckoutProcessed(invoice, "membership-installment")) ? "awaiting-checkout" : undefined
   if (plan.status === "COMPLETED") return // Redelivered event for a plan already fully paid.
 
   const amount = invoice.amount_paid / 100
