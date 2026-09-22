@@ -22,7 +22,12 @@ export async function proxy(request: NextRequest) {
     const { pathname, search } = request.nextUrl
     if (!STATIC_ASSET_PATH.test(pathname)) {
       const slug = await resolveAssociationSlugByHost(host)
-      if (slug) {
+      // Internal links on the public site (nav buttons, "voir plus", ...) are built as
+      // `/${slug}/evenements` etc., so once basePath adds "/app" the browser navigates to
+      // an ALREADY slug-prefixed URL — rewriting that again would double it up into
+      // `/app/{slug}/{slug}/evenements`, a real 404 caught by clicking around the live site.
+      const alreadyPrefixed = slug && (pathname === `/${slug}` || pathname.startsWith(`/${slug}/`))
+      if (slug && !alreadyPrefixed) {
         const targetPath = pathname === "/" ? "" : pathname
         return NextResponse.rewrite(new URL(`${BASE_PATH}/${slug}${targetPath}${search}`, request.url))
       }
