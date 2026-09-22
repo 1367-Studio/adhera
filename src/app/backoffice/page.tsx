@@ -1,14 +1,13 @@
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon, CurrencyEurIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { APP_NAME } from "@/config/brand"
 import { RecentAdhesionsChart } from "@/components/backoffice/recent-adhesions-chart"
+import { RevenueChart } from "@/components/backoffice/revenue-chart"
 export const metadata: Metadata = {
   title: `Vue d'ensemble — Backoffice ${APP_NAME}`,
 }
-
-const MRR_PER_ACTIVE = 29.90
 
 async function getStats() {
   const assocs = await prisma.association.findMany({
@@ -20,9 +19,8 @@ async function getStats() {
   const active   = assocs.filter(a => a.subscriptionStatus === "ACTIVE").length
   const trial    = assocs.filter(a => a.subscriptionStatus === "TRIAL").length
   const problem  = assocs.filter(a => ["PAST_DUE", "SUSPENDED", "CANCELLED"].includes(a.subscriptionStatus)).length
-  const monthly  = active * MRR_PER_ACTIVE
 
-  return { total, active, trial, problem, monthly }
+  return { total, active, trial, problem }
 }
 
 function StatCard({
@@ -49,7 +47,7 @@ function StatCard({
 }
 
 export default async function BackofficePage() {
-  const { total, active, trial, problem, monthly } = await getStats()
+  const { total, active, trial, problem } = await getStats()
 
   const kpis = [
     { title: "Associations",  value: total,   icon: BuildingsIcon,     description: "enregistrées sur la plateforme" },
@@ -65,6 +63,8 @@ export default async function BackofficePage() {
         <p className="text-sm text-muted-foreground">Métriques SaaS de la plateforme</p>
       </div>
 
+      <RevenueChart />
+
       <RecentAdhesionsChart />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -72,14 +72,6 @@ export default async function BackofficePage() {
           <StatCard key={kpi.title} {...kpi} />
         ))}
       </div>
-
-      <StatCard
-        title="Revenu mensuel estimé"
-        value={`${monthly.toFixed(2)} €`}
-        icon={CurrencyEurIcon}
-        description={`associations actives × ${MRR_PER_ACTIVE.toFixed(2)} €/mois`}
-        className="max-w-xs"
-      />
     </div>
   )
 }
