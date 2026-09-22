@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Париж...",
     "viewOnGoogleMaps": "Вижте в Google Maps"
   },
+  "address": {
+    "street": "Адрес",
+    "complement": "Допълнение към адреса",
+    "complementPlaceholder": "Сграда, етаж, пощенска кутия…",
+    "postalCode": "Пощенски код",
+    "city": "Град",
+    "country": "Държава",
+    "legacyMigratedHint": "Копирано от стария адрес — проверете дали вече не съдържа пощенския код и града по-долу."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Влез",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Име *",
       "emailLabel": "Имейл *",
       "phoneLabel": "Телефон",
-      "addressLabel": "Адрес",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (по избор)",
       "fileAttach": "Прикачете файл",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Първо име",
       "lastNameLabel": "Име",
       "emailLabel": "Имейл",
-      "addressLabel": "Адрес",
       "birthDateLabel": "Дата на раждане",
       "phoneLabel": "Стационарен телефон",
       "mobileLabel": "Мобилни",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Мари",
       "lastNamePlaceholder": "Дюпон",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Париж",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Мари",
       "lastNamePlaceholder": "Дюпон",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Париж",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(дон)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "За достъп до вашата членска зона.",
       "passwordRequirementsTitle": "Вашата парола трябва да съдържа:",
       "passwordRuleMinLength": "Поне {count} Герои",
-      "addressLabel": "Адрес",
       "birthDateLabel": "Дата на раждане",
       "phoneLabel": "Стационарен телефон",
       "mobileLabel": "Мобилни",
@@ -3953,8 +3957,6 @@
         "allergies": "Известни алергии",
         "allergiesPlaceholder": "Арахиди, прашец...",
         "type": "Тип член",
-        "address": "Адрес",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Париж",
         "preferredLocale": "Предпочитан език",
         "spokenLanguage": "Говорен език",
         "cotisationTier": "Членски внос"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Невалиден телефонен номер",
         "birthDate": "Дата на раждане",
         "birthDateInPast": "Датата на раждане трябва да е в минало време",
-        "address": "Адрес",
-        "addressPlaceholder": "123 rue de la Paix, Париж",
         "civilite": "Заглавие",
         "groupeSanguin": "Кръвна група",
         "possedeTshirt": "Има тениска",

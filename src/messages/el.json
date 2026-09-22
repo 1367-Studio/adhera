@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Παρίσι...",
     "viewOnGoogleMaps": "Δείτε στο Google Maps"
   },
+  "address": {
+    "street": "Διεύθυνση",
+    "complement": "Συμπλήρωμα διεύθυνσης",
+    "complementPlaceholder": "Κτίριο, όροφος, γραμματοκιβώτιο…",
+    "postalCode": "Ταχυδρομικός κώδικας",
+    "city": "Πόλη",
+    "country": "Χώρα",
+    "legacyMigratedHint": "Αντιγράφηκε από το παλιό πεδίο διεύθυνσης — ελέγξτε ότι δεν περιλαμβάνει ήδη τον ταχυδρομικό κώδικα και την πόλη παρακάτω."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Σύνδεση",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Όνομα *",
       "emailLabel": "Ηλεκτρονικό ταχυδρομείο *",
       "phoneLabel": "Τηλέφωνο",
-      "addressLabel": "Διεύθυνση",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (προαιρετικός)",
       "fileAttach": "Επισύναψη αρχείου",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Όνομα",
       "lastNameLabel": "Όνομα",
       "emailLabel": "Ηλεκτρονικό ταχυδρομείο",
-      "addressLabel": "Διεύθυνση",
       "birthDateLabel": "Ημερομηνία γέννησης",
       "phoneLabel": "Σταθερό τηλέφωνο",
       "mobileLabel": "Κινητό",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Μαρία",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Παρίσι",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Μαρία",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Παρίσι",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(ντον)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Για πρόσβαση στην περιοχή μελών σας.",
       "passwordRequirementsTitle": "Ο κωδικός πρόσβασής σας πρέπει να περιέχει:",
       "passwordRuleMinLength": "Τουλάχιστον {count} Χαρακτήρες",
-      "addressLabel": "Διεύθυνση",
       "birthDateLabel": "Ημερομηνία γέννησης",
       "phoneLabel": "Σταθερό τηλέφωνο",
       "mobileLabel": "Κινητό",
@@ -3953,8 +3957,6 @@
         "allergies": "Γνωστές αλλεργίες",
         "allergiesPlaceholder": "Αραχειρίδες, γύρη...",
         "type": "Τύπος μέλους",
-        "address": "Διεύθυνση",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Παρίσι",
         "preferredLocale": "Προτιμώμενη γλώσσα",
         "spokenLanguage": "Γλώσσα που μιλάς",
         "cotisationTier": "Συνδρομή μέλους"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Μη έγκυρος αριθμός τηλεφώνου",
         "birthDate": "Ημερομηνία γέννησης",
         "birthDateInPast": "Η ημερομηνία γέννησης πρέπει να είναι σε παρελθοντικό χρόνο",
-        "address": "Διεύθυνση",
-        "addressPlaceholder": "123 rue de la Paix, Παρίσι",
         "civilite": "Τίτλος",
         "groupeSanguin": "Ομάδα αίματος",
         "possedeTshirt": "Διαθέτει μπλουζάκι",

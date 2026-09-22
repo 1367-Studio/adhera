@@ -4,11 +4,11 @@ import { useState } from "react"
 import { DateField } from "@/components/ui/date-field"
 import { useTranslations } from "next-intl"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { UserIcon, PhoneIcon, MapPinIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, PhoneIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,6 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { portalFetch } from "@/lib/portal-fetch"
+import { AddressFields } from "@/components/ui/address-fields"
+import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
@@ -28,7 +30,14 @@ type Membre = {
   lastName:  string
   email:     string | null
   phone:     string | null
-  address:   string | null
+  // Texte libre hérité (fiches d'avant le découpage du formulaire d'adresse) ; les cinq
+  // colonnes suivantes en sont la version structurée — voir src/lib/address.ts.
+  address:           string | null
+  addressStreet:     string | null
+  addressComplement: string | null
+  postalCode:        string | null
+  city:              string | null
+  country:           string | null
   birthDate: string | null
   status:    "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
   civilite:      "MME" | "MLLE" | "M" | null
@@ -49,7 +58,11 @@ function buildSchema(t: ReturnType<typeof useTranslations>) {
       v => !v || phoneRegex.test(v),
       t("contact.phoneInvalid"),
     ),
-    address:   z.string().trim().optional().or(z.literal("")),
+    addressStreet:     z.string().trim().optional().or(z.literal("")),
+    addressComplement: z.string().trim().optional().or(z.literal("")),
+    postalCode:        z.string().trim().optional().or(z.literal("")),
+    city:              z.string().trim().optional().or(z.literal("")),
+    country:           z.string().trim().optional().or(z.literal("")),
     birthDate: z.string().optional().or(z.literal("")).refine(
       v => !v || new Date(v) < new Date(),
       t("contact.birthDateInPast"),
@@ -63,7 +76,7 @@ function buildSchema(t: ReturnType<typeof useTranslations>) {
     ]).optional().or(z.literal("")),
     allergies: z.string().trim().optional().or(z.literal("")),
     photoUrl:  z.string().trim().optional().or(z.literal("")),
-    preferredLocale: z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional().or(z.literal("")),
+    preferredLocale: z.enum(SUPPORTED_LOCALES).optional().or(z.literal("")),
     spokenLanguage:  z.enum(SPOKEN_LANGUAGE_CODES).optional().or(z.literal("")),
     possedeTshirt: z.enum(["true", "false"]).optional().or(z.literal("")),
     tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
@@ -127,7 +140,7 @@ export default function ProfilPage() {
     resolver:      zodResolver(buildSchema(t)),
     values: membre ? {
       phone:     membre.phone     ?? "",
-      address:   membre.address   ?? "",
+      ...addressFormValues(membre),
       birthDate: membre.birthDate ? membre.birthDate.slice(0, 10) : "",
       civilite:      membre.civilite      ?? "",
       groupeSanguin: membre.groupeSanguin ?? "",
@@ -139,6 +152,18 @@ export default function ProfilPage() {
       tailleTshirt:  membre.tailleTshirt  ?? "",
     } : undefined,
   })
+
+  const [addressStreetValue, addressComplementValue, postalCodeValue, cityValue, countryValue] = useWatch({
+    control,
+    name: ["addressStreet", "addressComplement", "postalCode", "city", "country"],
+  })
+  const addressValue: AddressFormValues = {
+    addressStreet:     addressStreetValue     ?? "",
+    addressComplement: addressComplementValue ?? "",
+    postalCode:        postalCodeValue        ?? "",
+    city:              cityValue              ?? "",
+    country:           countryValue           ?? "",
+  }
 
   const mutation = useMutation({
     mutationFn: async (data: FormValues) => {
@@ -316,12 +341,22 @@ export default function ProfilPage() {
               {errors.birthDate && <p className="text-destructive text-xs">{errors.birthDate.message}</p>}
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="address" className="flex items-center gap-1.5">
-                <MapPinIcon className="size-3.5" /> {t("contact.address")}
-              </Label>
-              <Input id="address" placeholder={t("contact.addressPlaceholder")} {...register("address")} />
-            </div>
+            <AddressFields
+              value={addressValue}
+              onChange={patch => {
+                for (const [fieldName, fieldValue] of Object.entries(patch) as [keyof AddressFormValues, string][]) {
+                  setValue(fieldName, fieldValue, { shouldDirty: true })
+                }
+              }}
+              legacyHint={addressWasMigratedFromLegacy(membre)}
+              errors={{
+                addressStreet:     errors.addressStreet?.message,
+                addressComplement: errors.addressComplement?.message,
+                postalCode:        errors.postalCode?.message,
+                city:              errors.city?.message,
+                country:           errors.country?.message,
+              }}
+            />
 
             <div className="grid grid-cols-2 gap-4">
               <Controller

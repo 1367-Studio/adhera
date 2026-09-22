@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
+import { formatAddress } from "@/lib/address"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
@@ -185,6 +186,16 @@ export function MembreDetailView() {
   const updateCotisationMutation = useUpdateCotisation(editCotisationTarget?.id ?? "")
 
   const isSelf = !!membre && membre.userId === currentUser.id
+  // Champs structurés pour les fiches saisies depuis le découpage du formulaire, texte
+  // libre hérité pour toutes les précédentes — formatAddress choisit (src/lib/address.ts).
+  const membreAddress = formatAddress({
+    street:     membre?.addressStreet,
+    complement: membre?.addressComplement,
+    postalCode: membre?.postalCode,
+    city:       membre?.city,
+    country:    membre?.country,
+    legacy:     membre?.address,
+  })
 
   async function handleUpdate(data: MembreInput) {
     try {
@@ -505,10 +516,10 @@ export function MembreDetailView() {
           {membre.phone && (
             <p className="flex items-center gap-1.5 text-muted-foreground"><PhoneIcon className="size-3.5" />{membre.phone}</p>
           )}
-          {membre.address && (
-            <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membre.address}</span></p>
+          {membreAddress && (
+            <p className="flex items-start gap-1.5 text-muted-foreground"><MapPinIcon className="size-3.5 mt-0.5 shrink-0" /><span>{membreAddress}</span></p>
           )}
-          {!membre.email && !membre.phone && !membre.address && (
+          {!membre.email && !membre.phone && !membreAddress && (
             <p className="text-muted-foreground">{t("membres.detail.noContactInfo")}</p>
           )}
         </div>
@@ -924,6 +935,14 @@ export function MembreDetailView() {
             possedeTshirt: membre.possedeTshirt === null ? "" : String(membre.possedeTshirt) as "true" | "false",
             tailleTshirt:  membre.tailleTshirt  ?? "",
             responsableId: membre.responsableId ?? "",
+            // Sans ces six clés, le formulaire d'édition repartait d'une adresse vide et
+            // l'enregistrement effaçait celle de la fiche.
+            address:           membre.address           ?? "",
+            addressStreet:     membre.addressStreet     ?? "",
+            addressComplement: membre.addressComplement ?? "",
+            postalCode:        membre.postalCode        ?? "",
+            city:              membre.city              ?? "",
+            country:           membre.country           ?? "",
             adherentOverride: membre.adherentOverride === null ? "" : String(membre.adherentOverride) as "true" | "false",
           }}
           onSubmit={handleUpdate}

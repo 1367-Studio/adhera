@@ -31,7 +31,11 @@ type ParsedRow = {
   externalId?: string
   email?:    string
   phone?:    string
-  address?:  string
+  addressStreet?:     string
+  addressComplement?: string
+  postalCode?:        string
+  city?:              string
+  country?:           string
   sexe?:     "HOMME" | "FEMME"
   civilite?: "MME" | "MLLE" | "M"
   birthDate?: string
@@ -324,13 +328,17 @@ export function MembreImportWizard() {
       const email = String(get(row, "email") ?? "").trim() || undefined
       const phone = String(get(row, "phoneMobile") ?? "").trim() || String(get(row, "phoneFixe") ?? "").trim() || undefined
 
-      const addressParts = [
-        String(get(row, "addressStreet") ?? "").trim(),
-        String(get(row, "addressComplement") ?? "").trim(),
-        [String(get(row, "postalCode") ?? "").trim(), String(get(row, "city") ?? "").trim()].filter(Boolean).join(" "),
-        String(get(row, "country") ?? "").trim(),
-      ].filter(Boolean)
-      const address = addressParts.length > 0 ? addressParts.join(", ") : undefined
+      // Les colonnes d'adresse du fichier sont transmises telles quelles : addressColumns
+      // (côté serveur) en fait les colonnes structurées et recompose la colonne héritée.
+      // C'est tout l'intérêt du découpage — cet import recevait déjà l'adresse détaillée et
+      // la perdait en l'aplatissant en une seule chaîne.
+      const importedAddress = {
+        addressStreet:     String(get(row, "addressStreet") ?? "").trim() || undefined,
+        addressComplement: String(get(row, "addressComplement") ?? "").trim() || undefined,
+        postalCode:        String(get(row, "postalCode") ?? "").trim() || undefined,
+        city:              String(get(row, "city") ?? "").trim() || undefined,
+        country:           String(get(row, "country") ?? "").trim() || undefined,
+      }
 
       const amount = parseAmount(get(row, "amount"))
       const periodStart = parseDate(get(row, "periodStart")) || undefined
@@ -341,7 +349,7 @@ export function MembreImportWizard() {
       const collecte = String(get(row, "collecte") ?? "").trim() || undefined
 
       return {
-        firstName, lastName, externalId, email, phone, address,
+        firstName, lastName, externalId, email, phone, ...importedAddress,
         sexe:      mapSexe(get(row, "sexe")),
         civilite:  mapCivilite(get(row, "civilite")),
         birthDate: parseDate(get(row, "birthDate")) || undefined,

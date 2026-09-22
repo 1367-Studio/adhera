@@ -20,6 +20,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { addressColumns } from "@/lib/address"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -162,7 +163,18 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           // MembershipForm (see .../adhesion/[formSlug]/checkout/route.ts) — the legacy
           // /inscription/checkout route's metadata never sets these keys, so they're
           // undefined/"" there and every field below falls back to null exactly as before.
-          address:       meta.address || null,
+          //
+          // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+          // addressColumns dans src/lib/address.ts. Une session créée avant le découpage en
+          // colonnes structurées ne porte que `address`, et reste donc écrite telle quelle.
+          ...addressColumns({
+            street:     meta.addressStreet,
+            complement: meta.addressComplement,
+            postalCode: meta.postalCode,
+            city:       meta.city,
+            country:    meta.country,
+            legacy:     meta.address,
+          }),
           birthDate:     meta.birthDate ? new Date(meta.birthDate) : null,
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,

@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
     "viewOnGoogleMaps": "Lásd a Google Térképen"
   },
+  "address": {
+    "street": "Cím",
+    "complement": "Cím kiegészítése",
+    "complementPlaceholder": "Épület, emelet, postaláda…",
+    "postalCode": "Irányítószám",
+    "city": "Város",
+    "country": "Ország",
+    "legacyMigratedHint": "A régi cím mezőből másolva – ellenőrizze, hogy nem tartalmazza-e már az alábbi irányítószámot és várost."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Bejelentkezés",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Név *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Cím",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcionális)",
       "fileAttach": "Csatolj hozzá egy fájlt",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Keresztnév",
       "lastNameLabel": "Név",
       "emailLabel": "E-mail",
-      "addressLabel": "Cím",
       "birthDateLabel": "Születési dátum",
       "phoneLabel": "Vezetékes telefon",
       "mobileLabel": "Mobil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Párizs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Párizs",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "A tagterületed eléréséhez.",
       "passwordRequirementsTitle": "A jelszavadnak tartalmaznia kell, hogy a következőket:",
       "passwordRuleMinLength": "Legalább {count} Szereplők",
-      "addressLabel": "Cím",
       "birthDateLabel": "Születési dátum",
       "phoneLabel": "Vezetékes telefon",
       "mobileLabel": "Mobil",
@@ -3953,8 +3957,6 @@
         "allergies": "Ismert allergiák",
         "allergiesPlaceholder": "Arachidesz, pollen...",
         "type": "Tagtípus",
-        "address": "Cím",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Párizs",
         "preferredLocale": "Preferált nyelv",
         "spokenLanguage": "Beszélt nyelv",
         "cotisationTier": "Tagsági díj"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Érvénytelen telefonszám",
         "birthDate": "Születési dátum",
         "birthDateInPast": "A születési időpontnak múltidőben kell lennie",
-        "address": "Cím",
-        "addressPlaceholder": "123 rue de la Paix, Párizs",
         "civilite": "Cím",
         "groupeSanguin": "Vércsoport",
         "possedeTshirt": "Pólója van",

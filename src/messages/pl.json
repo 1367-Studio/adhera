@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryż...",
     "viewOnGoogleMaps": "Zobacz na Google Maps"
   },
+  "address": {
+    "street": "Adres",
+    "complement": "Dodatkowe informacje adresowe",
+    "complementPlaceholder": "Budynek, piętro, skrzynka…",
+    "postalCode": "Kod pocztowy",
+    "city": "Miasto",
+    "country": "Kraj",
+    "legacyMigratedHint": "Skopiowano ze starego pola adresu — sprawdź, czy nie zawiera już kodu pocztowego i miasta podanych poniżej."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Zaloguj się",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Nazwa *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adres",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcjonalnie)",
       "fileAttach": "Dołącz plik",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Imię",
       "lastNameLabel": "Nazwa",
       "emailLabel": "E-mail",
-      "addressLabel": "Adres",
       "birthDateLabel": "Data urodzenia",
       "phoneLabel": "Telefon stacjonarny",
       "mobileLabel": "Mobilność",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryż",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paryż",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Aby uzyskać dostęp do swojej strefy członkowskiej.",
       "passwordRequirementsTitle": "Twoje hasło musi zawierać:",
       "passwordRuleMinLength": "Przynajmniej {count} Postacie",
-      "addressLabel": "Adres",
       "birthDateLabel": "Data urodzenia",
       "phoneLabel": "Telefon stacjonarny",
       "mobileLabel": "Mobilność",
@@ -3953,8 +3957,6 @@
         "allergies": "Znane alergie",
         "allergiesPlaceholder": "Arachidy, pyłek...",
         "type": "Typ członka",
-        "address": "Adres",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paryż",
         "preferredLocale": "Preferowany język",
         "spokenLanguage": "Język używany",
         "cotisationTier": "Składka członkowska"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Nieprawidłowy numer telefonu",
         "birthDate": "Data urodzenia",
         "birthDateInPast": "Data urodzenia musi być w czasie przeszłym",
-        "address": "Adres",
-        "addressPlaceholder": "123 rue de la Paix, Paryż",
         "civilite": "Tytuł",
         "groupeSanguin": "Grupa krwi",
         "possedeTshirt": "Ma koszulkę",

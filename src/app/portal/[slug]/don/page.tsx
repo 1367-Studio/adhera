@@ -6,7 +6,9 @@ import { toast } from "sonner"
 import { HandshakeIcon, InfoIcon, ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { CurrencyInput } from "@/components/ui/currency-field"
+import { AddressFields } from "@/components/ui/address-fields"
 import { cn } from "@/lib/utils"
+import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { isValidSiret } from "@/lib/siret"
 
 const SUGGESTED = [10, 20, 50, 100]
@@ -39,7 +41,7 @@ function PublicDonPageInner() {
   const [companyName, setCompanyName] = useState("")
   const [siret, setSiret]         = useState("")
   const [email, setEmail]         = useState("")
-  const [address, setAddress]     = useState("")
+  const [addressValues, setAddressValues] = useState<AddressFormValues>(EMPTY_ADDRESS_FORM_VALUES)
   const [message, setMessage]     = useState("")
   const [anonymous, setAnonymous] = useState(false)
   const [loading, setLoading]     = useState(false)
@@ -86,7 +88,11 @@ function PublicDonPageInner() {
           companyName: donorType === "COMPANY" ? companyName.trim() : undefined,
           siret:       donorType === "COMPANY" ? siret.trim() : undefined,
           email:       email.trim(),
-          address:     address.trim() || undefined,
+          addressStreet:     addressValues.addressStreet.trim()     || undefined,
+          addressComplement: addressValues.addressComplement.trim() || undefined,
+          postalCode:        addressValues.postalCode.trim()        || undefined,
+          city:              addressValues.city.trim()              || undefined,
+          country:           addressValues.country.trim()           || undefined,
           amount,
           message:     message.trim() || undefined,
           anonymous,
@@ -268,15 +274,14 @@ function PublicDonPageInner() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {/* Intitulé de section : les libellés de chaque champ sont portés par
+                AddressFields, seule la mention « pourquoi la donner » reste ici. */}
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
               Adresse {assoc?.canIssueTaxReceipts ? "(recommandée pour le reçu fiscal)" : "(optionnelle)"}
-            </label>
-            <input
-              type="text"
-              value={address}
-              onChange={e => setAddress(e.target.value)}
-              placeholder="Ex : 12 rue de la Paix, 75001 Paris"
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            </p>
+            <AddressFields
+              value={addressValues}
+              onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
             />
           </div>
 

@@ -4,6 +4,7 @@ import { format } from "date-fns"
 import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { membreAdherentWhereClause } from "@/lib/membre-adherent"
+import { formatAddress } from "@/lib/address"
 
 // Same reasoning as evenements/[id]/export — Nom/Prénom/Email can come from public,
 // unauthenticated self-registration (site-membership-section.tsx), so a value starting
@@ -53,7 +54,6 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (typeId) where.typeId = typeId
   if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
   if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
-  if (address)   where.address   = { contains: address,   mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
@@ -70,6 +70,18 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
   if (adherent === "ADHERENT" || adherent === "BENEVOLE") {
     and.push(membreAdherentWhereClause(adherent === "ADHERENT"))
+  }
+  // Même filtre que la liste (texte libre hérité + colonnes structurées) : un export qui
+  // chercherait ailleurs ne rendrait pas les lignes affichées à l'écran.
+  if (address) {
+    and.push({ OR: [
+      { address:           { contains: address, mode: "insensitive" } },
+      { addressStreet:     { contains: address, mode: "insensitive" } },
+      { addressComplement: { contains: address, mode: "insensitive" } },
+      { postalCode:        { contains: address, mode: "insensitive" } },
+      { city:              { contains: address, mode: "insensitive" } },
+      { country:           { contains: address, mode: "insensitive" } },
+    ] })
   }
   if (and.length) where.AND = and
 
@@ -97,7 +109,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
     Prénom:            sanitizeCell(m.firstName),
     Email:             sanitizeCell(m.email ?? ""),
     Téléphone:         sanitizeCell(m.phone ?? ""),
-    Adresse:           sanitizeCell(m.address ?? ""),
+    // Colonne historique : elle garde l'adresse complète sur une ligne, pour ne pas casser
+    // les tableurs des clients qui la lisent déjà. Les colonnes détaillées s'ajoutent après.
+    Adresse:           sanitizeCell(formatAddress({ street: m.addressStreet, complement: m.addressComplement, postalCode: m.postalCode, city: m.city, country: m.country, legacy: m.address }) ?? ""),
+    "Complément d'adresse": sanitizeCell(m.addressComplement ?? ""),
+    "Code postal":     sanitizeCell(m.postalCode ?? ""),
+    Ville:             sanitizeCell(m.city ?? ""),
+    Pays:              sanitizeCell(m.country ?? ""),
     "Date de naissance": m.birthDate ? format(m.birthDate, "dd/MM/yyyy") : "",
     ...(full ? { Sexe: m.sexe ? SEXE_LABELS[m.sexe] : "" } : {}),
     "Groupe sanguin":  m.groupeSanguin ? GROUPE_SANGUIN_LABELS[m.groupeSanguin] : "",

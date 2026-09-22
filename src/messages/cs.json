@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paříž...",
     "viewOnGoogleMaps": "Podívejte se na Google Maps"
   },
+  "address": {
+    "street": "Adresa",
+    "complement": "Doplněk adresy",
+    "complementPlaceholder": "Budova, patro, schránka…",
+    "postalCode": "PSČ",
+    "city": "Město",
+    "country": "Země",
+    "legacyMigratedHint": "Zkopírováno ze starého pole adresy – zkontrolujte, zda již neobsahuje PSČ a město uvedené níže."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Přihlásit se",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Jméno*",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresa",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (volitelné)",
       "fileAttach": "Přiložte soubor",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Křestní jméno",
       "lastNameLabel": "Jméno",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum narození",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilní",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paříž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Paříž",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Pro přístup do členské oblasti.",
       "passwordRequirementsTitle": "Vaše heslo musí obsahovat:",
       "passwordRuleMinLength": "Aspoň tak {count} Postavy",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum narození",
       "phoneLabel": "Pevná linka",
       "mobileLabel": "Mobilní",
@@ -3953,8 +3957,6 @@
         "allergies": "Známé alergie",
         "allergiesPlaceholder": "Arachidy, pyl...",
         "type": "Typ člena",
-        "address": "Adresa",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Paříž",
         "preferredLocale": "Preferovaný jazyk",
         "spokenLanguage": "Mluvený jazyk",
         "cotisationTier": "Členský poplatek"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Neplatné telefonní číslo",
         "birthDate": "Datum narození",
         "birthDateInPast": "Datum narození musí být v minulém čase",
-        "address": "Adresa",
-        "addressPlaceholder": "123 rue de la Paix, Paříž",
         "civilite": "Název",
         "groupeSanguin": "Krevní skupina",
         "possedeTshirt": "Má tričko",

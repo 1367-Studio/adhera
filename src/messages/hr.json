@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariz...",
     "viewOnGoogleMaps": "Pogledajte na Google kartama"
   },
+  "address": {
+    "street": "Adresa",
+    "complement": "Dodatak adresi",
+    "complementPlaceholder": "Zgrada, kat, poštanski sandučić…",
+    "postalCode": "Poštanski broj",
+    "city": "Grad",
+    "country": "Država",
+    "legacyMigratedHint": "Kopirano iz starog polja adrese — provjerite da već ne sadrži poštanski broj i grad u nastavku."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Prijavite se",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Ime *",
       "emailLabel": "Email *",
       "phoneLabel": "Telefon",
-      "addressLabel": "Adresa",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcionalno)",
       "fileAttach": "Priložite datoteku",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Ime",
       "lastNameLabel": "Ime",
       "emailLabel": "E-mail",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum rođenja",
       "phoneLabel": "Fiksni telefon",
       "mobileLabel": "Mobilni",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariz",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Pariz",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Za pristup vašem članskom području.",
       "passwordRequirementsTitle": "Vaša lozinka mora sadržavati:",
       "passwordRuleMinLength": "Barem {count} Likovi",
-      "addressLabel": "Adresa",
       "birthDateLabel": "Datum rođenja",
       "phoneLabel": "Fiksni telefon",
       "mobileLabel": "Mobilni",
@@ -3953,8 +3957,6 @@
         "allergies": "Poznate alergije",
         "allergiesPlaceholder": "Arachide, pelud...",
         "type": "Tip člana",
-        "address": "Adresa",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Pariz",
         "preferredLocale": "Preferirani jezik",
         "spokenLanguage": "Govoreni jezik",
         "cotisationTier": "Članarina"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Nevažeći telefonski broj",
         "birthDate": "Datum rođenja",
         "birthDateInPast": "Datum rođenja mora biti u prošlom vremenu",
-        "address": "Adresa",
-        "addressPlaceholder": "123 rue de la Paix, Pariz",
         "civilite": "Naslov",
         "groupeSanguin": "Krvna grupa",
         "possedeTshirt": "Ima majicu",

@@ -4,6 +4,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { formatAddress } from "@/lib/address"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // Narrower than MANAGERS on purpose — waiving a ticket's price is a judgment call an
@@ -31,7 +32,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
   // separate, deliberate click, same as any other row.
   const participations = await prisma.participation.findMany({
     where:  { evenementId },
-    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true, receiptMode: true },
+    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true, receiptMode: true },
   })
 
   const rows = participations
@@ -42,7 +43,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
       lastName:        p.lastName,
       email:           p.email,
       phone:           p.phone,
-      address:         p.address,
+      // Une seule chaîne lisible, quelle que soit la forme stockée : les colonnes
+      // structurées quand elles existent, le texte libre hérité sinon. La page présences
+      // (fiche d'inscription, export PDF) n'a donc rien à recomposer elle-même.
+      address:         formatAddress({ street: p.addressStreet, complement: p.addressComplement, postalCode: p.postalCode, city: p.city, country: p.country, legacy: p.address }),
       answers:         p.answers,
       present:         p.present,
       rsvp:            p.rsvp,

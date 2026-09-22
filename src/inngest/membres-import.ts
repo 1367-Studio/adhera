@@ -7,6 +7,7 @@ import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
 import { isPlaceholderEmail, normalizeName } from "@/lib/membre-import-matching"
+import { addressColumns, addressColumnsPatch } from "@/lib/address"
 import { notifyBulkSendCompleted } from "@/inngest/bulk-send"
 import type { ImportMembreRow } from "@/lib/schemas"
 
@@ -126,7 +127,10 @@ export const importMembres = inngest.createFunction(
             }
             if (row.email && !isPlaceholderEmail(row.email) && row.email !== membre.email) refresh.email = row.email
             if (row.phone)     refresh.phone     = row.phone
-            if (row.address)   refresh.address   = row.address
+            // L'adresse se rafraîchit d'un bloc : les six colonnes sont recalculées
+            // ensemble à partir de la ligne importée complétée par la fiche existante,
+            // sinon la colonne héritée dirait autre chose que les colonnes structurées.
+            Object.assign(refresh, addressColumnsPatch(row, membre))
             if (row.sexe)      refresh.sexe      = row.sexe
             if (row.civilite)  refresh.civilite  = row.civilite
             if (row.birthDate) refresh.birthDate = new Date(`${row.birthDate}T12:00:00`)
@@ -142,7 +146,7 @@ export const importMembres = inngest.createFunction(
                 lastName:  row.lastName,
                 email:     row.email || null,
                 phone:     row.phone || null,
-                address:   row.address || null,
+                ...addressColumns({ street: row.addressStreet, complement: row.addressComplement, postalCode: row.postalCode, city: row.city, country: row.country, legacy: row.address }),
                 sexe:      row.sexe || null,
                 civilite:  row.civilite || null,
                 birthDate: row.birthDate ? new Date(`${row.birthDate}T12:00:00`) : null,

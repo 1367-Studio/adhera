@@ -6,6 +6,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
+import { ADDRESS_MAX_LENGTHS, addressColumns } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
 
 export async function GET(
@@ -54,7 +55,14 @@ const schema = z.object({
   companyName: z.string().trim().min(1).max(200).optional(),
   siret:       z.string().trim().regex(/^\d{14}$/, "SIRET invalide (14 chiffres)").optional(),
   email:       z.string().email().max(200),
+  // `address` reste le champ hérité en texte libre : un onglet resté ouvert sur l'ancien
+  // formulaire ne poste que celui-là, et il doit rester accepté (voir src/lib/address.ts).
   address:     z.string().trim().max(300).optional(),
+  addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
+  addressComplement: z.string().trim().max(ADDRESS_MAX_LENGTHS.complement).optional(),
+  postalCode:        z.string().trim().max(ADDRESS_MAX_LENGTHS.postalCode).optional(),
+  city:              z.string().trim().max(ADDRESS_MAX_LENGTHS.city).optional(),
+  country:           z.string().trim().max(ADDRESS_MAX_LENGTHS.country).optional(),
   amount:      z.number().positive().max(100000),
   message:     z.string().trim().max(500).optional(),
   anonymous:   z.boolean().optional().default(false),
@@ -104,7 +112,7 @@ export async function POST(
   if (!parsed.success)
     return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { donorType, firstName, lastName, companyName, siret, email, address, amount, message, anonymous, evenementId } = parsed.data
+  const { donorType, firstName, lastName, companyName, siret, email, address, addressStreet, addressComplement, postalCode, city, country, amount, message, anonymous, evenementId } = parsed.data
 
   // The Stripe return URLs below point at the readable public URL (Evenement.slug), not the id.
   let evenementSlug: string | null = null
@@ -124,7 +132,9 @@ export async function POST(
       companyName: donorType === "COMPANY" ? companyName : null,
       siret:       donorType === "COMPANY" ? siret : null,
       email,
-      address:   address || null,
+      // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
+      // addressColumns (src/lib/address.ts).
+      ...addressColumns({ street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }),
       amount,
       message:   message || null,
       anonymous,

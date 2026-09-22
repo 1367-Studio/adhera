@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
     "viewOnGoogleMaps": "Féach ar Google Maps"
   },
+  "address": {
+    "street": "Seoladh",
+    "complement": "Líne seoltaí 2",
+    "complementPlaceholder": "Foirgneamh, urlár, bosca poist…",
+    "postalCode": "Cód poist",
+    "city": "Cathair",
+    "country": "Tír",
+    "legacyMigratedHint": "Cóipeáilte ón seanréimse seoltaí — deimhnigh nach bhfuil an cód poist agus an baile thíos ann cheana féin."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Logáil isteach",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Ainm *",
       "emailLabel": "Ríomhphost *",
       "phoneLabel": "Fón",
-      "addressLabel": "Seoladh",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (roghnach)",
       "fileAttach": "Ceangail comhad",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Céadainm",
       "lastNameLabel": "Ainm",
       "emailLabel": "Ríomhphost",
-      "addressLabel": "Seoladh",
       "birthDateLabel": "Dáta breithe",
       "phoneLabel": "Fón líne talún",
       "mobileLabel": "Soghluaiste",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Páras",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "companyNamePlaceholder": "Dupont & Fils",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
-      "addressPlaceholder": "12 rue des Lilas, 75011 Páras",
       "phonePlaceholder": "01 23 45 67 89",
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Chun rochtain a fháil ar do limistéar ball.",
       "passwordRequirementsTitle": "Caithfidh an méid seo a leanas a bheith i do phasfhocal:",
       "passwordRuleMinLength": "Ar a laghad {count} Carachtair",
-      "addressLabel": "Seoladh",
       "birthDateLabel": "Dáta breithe",
       "phoneLabel": "Fón líne talún",
       "mobileLabel": "Soghluaiste",
@@ -3953,8 +3957,6 @@
         "allergies": "Ailléirgí aitheanta",
         "allergiesPlaceholder": "Arachides, pailin...",
         "type": "Cineál Ball",
-        "address": "Seoladh",
-        "addressPlaceholder": "12 rue de la Paix, 75001 Páras",
         "preferredLocale": "An teanga is fearr leat",
         "spokenLanguage": "Teanga a labhraítear",
         "cotisationTier": "Táille ballraíochta"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Uimhir theileafóin neamhbhailí",
         "birthDate": "Dáta breithe",
         "birthDateInPast": "Caithfidh an dáta breithe a bheith san aimsir chaite",
-        "address": "Seoladh",
-        "addressPlaceholder": "123 rue de la Paix, Páras",
         "civilite": "Teideal",
         "groupeSanguin": "Cineál fola",
         "possedeTshirt": "Tá T-léine aige",

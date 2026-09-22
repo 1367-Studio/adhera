@@ -17,7 +17,14 @@ export const GET = withPortalAuth<{ formSlug: string }>(async (_req, ctx, { form
     }),
     prisma.membre.findUnique({
       where:  { id: ctx.membreId! },
-      select: { firstName: true, lastName: true, email: true, address: true, phone: true },
+      // Les six colonnes d'adresse sont lues ensemble : le formulaire pré-remplit son bloc
+      // adresse avec addressFormValues, qui retombe sur le texte libre hérité quand la fiche
+      // n'a pas encore été migrée (voir src/lib/address.ts).
+      select: {
+        firstName: true, lastName: true, email: true, phone: true,
+        address: true, addressStreet: true, addressComplement: true,
+        postalCode: true, city: true, country: true,
+      },
     }),
   ])
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
@@ -98,8 +105,13 @@ export const GET = withPortalAuth<{ formSlug: string }>(async (_req, ctx, { form
       firstName: membre?.firstName ?? "",
       lastName:  membre?.lastName ?? "",
       email:     membre?.email ?? "",
-      address:   membre?.address ?? "",
       phone:     membre?.phone ?? "",
+      address:           membre?.address           ?? "",
+      addressStreet:     membre?.addressStreet     ?? "",
+      addressComplement: membre?.addressComplement ?? "",
+      postalCode:        membre?.postalCode        ?? "",
+      city:              membre?.city              ?? "",
+      country:           membre?.country           ?? "",
     },
   })
 }, { module: "dons" })

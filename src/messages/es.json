@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salón de actos, Calle Mayor 12…",
     "viewOnGoogleMaps": "Ver en Google Maps"
   },
+  "address": {
+    "street": "Dirección",
+    "complement": "Complemento de dirección",
+    "complementPlaceholder": "Edificio, piso, buzón…",
+    "postalCode": "Código postal",
+    "city": "Ciudad",
+    "country": "País",
+    "legacyMigratedHint": "Copiado del campo de dirección antiguo: compruebe que no incluya ya el código postal y la ciudad de abajo."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Inicio de sesión",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Apellido *",
       "emailLabel": "Correo electrónico *",
       "phoneLabel": "Teléfono",
-      "addressLabel": "Dirección",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcional)",
       "fileAttach": "Adjuntar un archivo",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Nombre",
       "lastNameLabel": "Apellidos",
       "emailLabel": "Correo electrónico",
-      "addressLabel": "Dirección",
       "birthDateLabel": "Fecha de nacimiento",
       "phoneLabel": "Teléfono",
       "mobileLabel": "Móvil",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "María",
       "lastNamePlaceholder": "García",
       "emailPlaceholder": "maria.garcia@email.es",
-      "addressPlaceholder": "Calle Mayor 12, 28013 Madrid",
       "phonePlaceholder": "912 345 678",
       "mobilePlaceholder": "612 345 678",
       "companyNamePlaceholder": "García e Hijos S.L.",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "María",
       "lastNamePlaceholder": "García",
       "emailPlaceholder": "maria.garcia@email.es",
-      "addressPlaceholder": "Calle Mayor 12, 28013 Madrid",
       "phonePlaceholder": "912 345 678",
       "mobilePlaceholder": "612 345 678",
       "donationBadge": "(donación)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Para acceder a tu espacio de socio.",
       "passwordRequirementsTitle": "Su contraseña debe contener:",
       "passwordRuleMinLength": "Al menos {count} caracteres",
-      "addressLabel": "Dirección",
       "birthDateLabel": "Fecha de nacimiento",
       "phoneLabel": "Teléfono",
       "mobileLabel": "Móvil",
@@ -3953,8 +3957,6 @@
         "allergies": "Alergias conocidas",
         "allergiesPlaceholder": "Cacahuetes, polen…",
         "type": "Tipo de miembro",
-        "address": "Dirección",
-        "addressPlaceholder": "Calle Ejemplo 123, Madrid",
         "preferredLocale": "Idioma preferido",
         "spokenLanguage": "Idioma hablado",
         "cotisationTier": "Cuota — tarifa de afiliación"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Número de teléfono inválido",
         "birthDate": "Fecha de nacimiento",
         "birthDateInPast": "La fecha de nacimiento debe estar en el pasado",
-        "address": "Dirección",
-        "addressPlaceholder": "Calle Mayor 123, Madrid",
         "civilite": "Título",
         "groupeSanguin": "Grupo sanguíneo",
         "possedeTshirt": "Tiene camiseta",

@@ -51,6 +51,15 @@
     "addressPlaceholder": "Salão de festas, Rua Principal, 123…",
     "viewOnGoogleMaps": "Ver no Google Maps"
   },
+  "address": {
+    "street": "Morada",
+    "complement": "Complemento",
+    "complementPlaceholder": "Edifício, andar, caixa de correio…",
+    "postalCode": "Código postal",
+    "city": "Cidade",
+    "country": "País",
+    "legacyMigratedHint": "Copiado do campo de morada antigo — verifique se já não inclui o código postal e a localidade abaixo."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Início de sessão",
@@ -1357,7 +1366,6 @@
       "lastNameLabel": "Apelido *",
       "emailLabel": "E-mail *",
       "phoneLabel": "Telefone",
-      "addressLabel": "Morada",
       "customFieldRequired": "{label} *",
       "customFieldOptional": "{label} (opcional)",
       "fileAttach": "Anexar um ficheiro",
@@ -2820,7 +2828,6 @@
       "firstNameLabel": "Nome próprio",
       "lastNameLabel": "Apelido",
       "emailLabel": "E-mail",
-      "addressLabel": "Morada",
       "birthDateLabel": "Data de nascimento",
       "phoneLabel": "Telefone",
       "mobileLabel": "Telemóvel",
@@ -2838,7 +2845,6 @@
       "firstNamePlaceholder": "Maria",
       "lastNamePlaceholder": "Silva",
       "emailPlaceholder": "maria.silva@email.pt",
-      "addressPlaceholder": "Rua das Flores 12, 1200-192 Lisboa",
       "phonePlaceholder": "213 456 789",
       "mobilePlaceholder": "912 345 678",
       "companyNamePlaceholder": "Silva & Filhos Lda",
@@ -3122,7 +3128,6 @@
       "firstNamePlaceholder": "Maria",
       "lastNamePlaceholder": "Silva",
       "emailPlaceholder": "maria.silva@email.pt",
-      "addressPlaceholder": "Rua das Flores 12, 1200-192 Lisboa",
       "phonePlaceholder": "213 456 789",
       "mobilePlaceholder": "912 345 678",
       "donationBadge": "(donativo)",
@@ -3152,7 +3157,6 @@
       "passwordHint": "Para aceder à sua área de membro.",
       "passwordRequirementsTitle": "A sua palavra-passe deve conter:",
       "passwordRuleMinLength": "Pelo menos {count} caracteres",
-      "addressLabel": "Morada",
       "birthDateLabel": "Data de nascimento",
       "phoneLabel": "Telefone",
       "mobileLabel": "Telemóvel",
@@ -3953,8 +3957,6 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "type": "Tipo de membro",
-        "address": "Morada",
-        "addressPlaceholder": "Rua Exemplo, n.º 123, Lisboa",
         "preferredLocale": "Idioma preferido",
         "spokenLanguage": "Língua falada",
         "cotisationTier": "Quota — tarifa de adesão"
@@ -5205,8 +5207,6 @@
         "phoneInvalid": "Número de telefone inválido",
         "birthDate": "Data de nascimento",
         "birthDateInPast": "A data de nascimento deve estar no passado",
-        "address": "Morada",
-        "addressPlaceholder": "Rua Principal, n.º 123, Lisboa",
         "civilite": "Tratamento",
         "groupeSanguin": "Grupo sanguíneo",
         "possedeTshirt": "Tem t-shirt",

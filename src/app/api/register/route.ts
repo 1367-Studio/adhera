@@ -12,6 +12,7 @@ import { adminWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -33,7 +34,7 @@ const schema = z.object({
   plan:            z.enum(["monthly", "yearly"]).optional(),
   tier:            z.enum(["essential", "pro"]).optional(),
   offerToken:      z.string().optional(),
-  locale:          z.enum(["fr", "en", "pt", "pt-PT", "es"]).optional(),
+  locale:          z.enum(SUPPORTED_LOCALES).optional(),
 }).refine(
   d => (d.offerToken != null) !== (d.plan != null && d.tier != null),
   { message: "Choisissez soit un plan, soit un lien d'offre, pas les deux." },
