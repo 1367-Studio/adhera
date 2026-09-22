@@ -4751,6 +4751,96 @@
       "importedNote": "Importado do AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Válido de {from} até {to}",
+      "expiredOn": "Associação expirada em {date}",
+      "status": {
+        "valid": "Associação válida",
+        "expired": "Associação expirada"
+      },
+      "generatedBy": "Cartão gerado via {appName}",
+      "qrAlt": "QR code de verificação do cartão",
+      "ariaLabel": "Cartão de associado de {name}"
+    },
+    "portal": {
+      "sidebar": "Meu cartão",
+      "title": "Meu cartão de associado",
+      "titleMultiple": "Meus cartões de associado",
+      "subtitle": "Apresente-o nas atividades da associação. O QR code permite verificar sua validade.",
+      "switcherLabel": "Escolher o cartão a exibir",
+      "downloadPdf": "Baixar PDF",
+      "print": "Imprimir"
+    },
+    "unavailable": {
+      "title": "Cartão de associado indisponível",
+      "pending": "O cartão ficará disponível assim que o pagamento da mensalidade for registrado.",
+      "partial": "A mensalidade foi paga parcialmente. O cartão ficará disponível assim que o saldo for registrado.",
+      "late": "O pagamento da mensalidade ainda não foi registrado. O cartão ficará disponível assim que for registrado.",
+      "noneTitle": "Nenhum cartão de associado ativo",
+      "none": "Não há associação em vigor para este período. O cartão é criado automaticamente após a associação.",
+      "cancelled": "Esta associação foi cancelada. Entre em contato com a associação para saber mais.",
+      "disabled": "O cartão de associado não é oferecido pela sua associação.",
+      "expired": "A associação expirou em {date}. Renove-a para obter um novo cartão.",
+      "viewCotisation": "Ver minha mensalidade"
+    },
+    "manager": {
+      "button": "Cartão de associado",
+      "rowAction": "Ver cartão de associado",
+      "modalTitle": "Cartão de associado",
+      "unavailableTitle": "Cartão indisponível",
+      "noPayment": "Nenhum pagamento de mensalidade está registrado para este membro. O cartão será gerado assim que o pagamento for registrado.",
+      "recordPayment": "Registrar um pagamento",
+      "settingsHint": "Modelo e cor editáveis em Configurações › Cartão de associado.",
+      "regenerate": "Regenerar QR code",
+      "regenerateHint": "O QR code antigo deixará de funcionar imediatamente. Use se um cartão foi perdido ou compartilhado.",
+      "regenerateConfirm": "Regenerar o QR code deste cartão?",
+      "regenerated": "QR code regenerado"
+    },
+    "settings": {
+      "title": "Cartão de associado",
+      "subtitle": "Aparência do cartão exibido na área do associado.",
+      "enabled": "Ativar o cartão de associado",
+      "enabledHint": "Os associados em dia com a mensalidade verão seu cartão na área deles.",
+      "template": "Modelo",
+      "templates": {
+        "classic": "Clássico",
+        "modern": "Moderno",
+        "minimal": "Minimalista"
+      },
+      "color": "Cor",
+      "colorTooLight": "Cor muito clara: ela se destacará pouco do fundo do cartão.",
+      "minimalNoColor": "O modelo Minimalista não usa cor.",
+      "showOnCard": "Exibir no cartão",
+      "showPhoto": "Foto do associado",
+      "showPhotoHint": "As iniciais são exibidas quando não há foto registrada.",
+      "showCategory": "Categoria",
+      "showPhone": "Telefone da associação",
+      "showEmail": "E-mail da associação",
+      "preview": "Pré-visualização",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Associado voluntário ativo",
+      "noLogo": "Adicione um logotipo em Personalização para exibi-lo no cartão.",
+      "noPhone": "Adicione um telefone em Identidade legal e Doações para exibi-lo no cartão.",
+      "noEmail": "Adicione um e-mail de contato em Informações da associação para exibi-lo no cartão.",
+      "saved": "Cartão de associado salvo"
+    },
+    "print": {
+      "guide": "Recorte seguindo a linha — formato de cartão bancário, 85,6 × 54 mm. Imprima a 100%, sem ajustar à página.",
+      "documentTitle": "Cartão de associado — {name}",
+      "popupBlocked": "Permita as janelas pop-up para imprimir, ou baixe o PDF."
+    },
+    "verify": {
+      "valid": "Cartão válido",
+      "validUntil": "Associação válida até {date}",
+      "expired": "Associação expirada",
+      "expiredSince": "Expirada desde {date}",
+      "invalid": "Cartão inválido",
+      "invalidText": "Este cartão não é reconhecido ou foi desativado. Entre em contato com a associação.",
+      "checkedAt": "Verificado em {date} às {time}",
+      "poweredBy": "Verificação garantida por {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Banner principal",

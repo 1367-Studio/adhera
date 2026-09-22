@@ -4683,6 +4683,96 @@
       "importedNote": "Importowane z AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Ważna od {from} do {to}",
+      "expiredOn": "Członkostwo wygasło {date}",
+      "status": {
+        "valid": "Członkostwo ważne",
+        "expired": "Członkostwo wygasłe"
+      },
+      "generatedBy": "Karta wygenerowana za pomocą {appName}",
+      "qrAlt": "Kod QR do weryfikacji karty",
+      "ariaLabel": "Karta członkowska: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja karta",
+      "title": "Moja karta członkowska",
+      "titleMultiple": "Moje karty członkowskie",
+      "subtitle": "Okazuj ją podczas działań stowarzyszenia. Kod QR umożliwia sprawdzenie jej ważności.",
+      "switcherLabel": "Wybierz kartę do wyświetlenia",
+      "downloadPdf": "Pobierz PDF",
+      "print": "Drukuj"
+    },
+    "unavailable": {
+      "title": "Karta członkowska niedostępna",
+      "pending": "Karta będzie dostępna, gdy tylko płatność składki zostanie zarejestrowana.",
+      "partial": "Składka została zapłacona częściowo. Karta będzie dostępna, gdy tylko saldo zostanie zarejestrowane.",
+      "late": "Płatność składki nie została jeszcze zarejestrowana. Karta będzie dostępna po jej zarejestrowaniu.",
+      "noneTitle": "Brak aktywnej karty członkowskiej",
+      "none": "Brak aktywnego członkostwa w tym okresie. Karta jest tworzona automatycznie po przystąpieniu.",
+      "cancelled": "To członkostwo zostało anulowane. Skontaktuj się ze stowarzyszeniem, aby dowiedzieć się więcej.",
+      "disabled": "Twoje stowarzyszenie nie oferuje karty członkowskiej.",
+      "expired": "Członkostwo wygasło {date}. Odnów je, aby otrzymać nową kartę.",
+      "viewCotisation": "Zobacz moją składkę"
+    },
+    "manager": {
+      "button": "Karta członkowska",
+      "rowAction": "Zobacz kartę członkowską",
+      "modalTitle": "Karta członkowska",
+      "unavailableTitle": "Karta niedostępna",
+      "noPayment": "Dla tego członka nie zarejestrowano żadnej płatności składki. Karta zostanie wygenerowana, gdy tylko płatność zostanie zarejestrowana.",
+      "recordPayment": "Zarejestruj płatność",
+      "settingsHint": "Szablon i kolor można zmienić w Ustawieniach › Karta członkowska.",
+      "regenerate": "Wygeneruj ponownie kod QR",
+      "regenerateHint": "Stary kod QR natychmiast przestanie działać. Użyj, jeśli karta została zgubiona lub udostępniona.",
+      "regenerateConfirm": "Wygenerować ponownie kod QR tej karty?",
+      "regenerated": "Kod QR wygenerowany ponownie"
+    },
+    "settings": {
+      "title": "Karta członkowska",
+      "subtitle": "Wygląd karty wyświetlanej w strefie członka.",
+      "enabled": "Włącz kartę członkowską",
+      "enabledHint": "Członkowie z opłaconą składką zobaczą swoją kartę w swojej strefie.",
+      "template": "Szablon",
+      "templates": {
+        "classic": "Klasyczny",
+        "modern": "Nowoczesny",
+        "minimal": "Minimalny"
+      },
+      "color": "Kolor",
+      "colorTooLight": "Bardzo jasny kolor: będzie słabo odróżniał się od tła karty.",
+      "minimalNoColor": "Szablon Minimalny nie używa koloru.",
+      "showOnCard": "Pokaż na karcie",
+      "showPhoto": "Zdjęcie członka",
+      "showPhotoHint": "Jeśli nie zapisano zdjęcia, wyświetlane są inicjały.",
+      "showCategory": "Kategoria",
+      "showPhone": "Telefon stowarzyszenia",
+      "showEmail": "E-mail stowarzyszenia",
+      "preview": "Podgląd",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktywny członek wolontariusz",
+      "noLogo": "Dodaj logo w sekcji Marka, aby wyświetlić je na karcie.",
+      "noPhone": "Dodaj numer telefonu w sekcji Tożsamość prawna i darowizny, aby wyświetlić go na karcie.",
+      "noEmail": "Dodaj e-mail kontaktowy w sekcji Informacje o stowarzyszeniu, aby wyświetlić go na karcie.",
+      "saved": "Karta członkowska zapisana"
+    },
+    "print": {
+      "guide": "Wytnij wzdłuż linii — format karty bankowej, 85,6 × 54 mm. Drukuj w 100%, bez dopasowania do strony.",
+      "documentTitle": "Karta członkowska — {name}",
+      "popupBlocked": "Zezwól na wyskakujące okienka, aby wydrukować, albo pobierz plik PDF."
+    },
+    "verify": {
+      "valid": "Karta ważna",
+      "validUntil": "Członkostwo ważne do {date}",
+      "expired": "Członkostwo wygasłe",
+      "expiredSince": "Wygasło {date}",
+      "invalid": "Karta nieważna",
+      "invalidText": "Ta karta nie jest rozpoznawana lub została dezaktywowana. Skontaktuj się ze stowarzyszeniem.",
+      "checkedAt": "Zweryfikowano {date} o {time}",
+      "poweredBy": "Weryfikacja zapewniona przez {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Główny sztandar",

@@ -5,6 +5,7 @@ import {
   cotisationCoversDate,
   cotisationPeriodIncludesDate,
   endOfCotisationYear,
+  startOfCotisationYear,
 } from "@/lib/membre-adherent"
 
 // Whether a member's digital card is VALID is always computed live from this pure function,
@@ -50,7 +51,7 @@ export type MemberCardNoneReason = "disabled" | "inactive-member" | "cancelled" 
 
 export type MemberCardEligibility =
   // cotisationId = the covering row whose period ends last (the one validUntil comes from).
-  | { state: "valid"; validUntil: Date; cotisationId: string }
+  | { state: "valid"; validFrom: Date; validUntil: Date; cotisationId: string }
   // cotisationId = the current-period row still waiting on money, so the UI can link to its
   // payment without re-deriving which row that is.
   | { state: "unavailable"; reason: MemberCardUnavailableReason; cotisationId: string }
@@ -70,6 +71,13 @@ const UNAVAILABLE_REASON_ORDER: readonly { status: CotisationStatus; reason: Mem
 // of its calendar year in Paris time — the same boundary currentCotisationYear() flips at.
 function cotisationEndDate(cotisation: MemberCardCotisation): Date {
   return cotisation.periodEnd ? new Date(cotisation.periodEnd) : endOfCotisationYear(cotisation.year)
+}
+
+// Mirror of cotisationEndDate for the start of the period: a custom-duration tier's own
+// periodStart, otherwise 1 Jan of its calendar year — the "carte valable du {from} au {to}"
+// line's other half.
+function cotisationStartDate(cotisation: MemberCardCotisation): Date {
+  return cotisation.periodStart ? new Date(cotisation.periodStart) : startOfCotisationYear(cotisation.year)
 }
 
 function latestEnding(cotisations: readonly MemberCardCotisation[]): MemberCardCotisation {
@@ -104,7 +112,12 @@ export function getMemberCardEligibility(input: MemberCardEligibilityInput, now:
   const coveringCotisations = input.cotisations.filter(cotisation => cotisationCoversDate(cotisation, now))
   if (coveringCotisations.length > 0) {
     const longestCovering = latestEnding(coveringCotisations)
-    return { state: "valid", validUntil: cotisationEndDate(longestCovering), cotisationId: longestCovering.id }
+    return {
+      state:        "valid",
+      validFrom:    cotisationStartDate(longestCovering),
+      validUntil:   cotisationEndDate(longestCovering),
+      cotisationId: longestCovering.id,
+    }
   }
 
   const currentCotisations = input.cotisations.filter(cotisation => cotisationPeriodIncludesDate(cotisation, now))

@@ -4683,6 +4683,96 @@
       "importedNote": "Importerad från AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Giltigt från {from} till {to}",
+      "expiredOn": "Medlemskapet gick ut den {date}",
+      "status": {
+        "valid": "Medlemskap giltigt",
+        "expired": "Medlemskap utgånget"
+      },
+      "generatedBy": "Kort genererat via {appName}",
+      "qrAlt": "QR-kod för verifiering av kortet",
+      "ariaLabel": "Medlemskort för {name}"
+    },
+    "portal": {
+      "sidebar": "Mitt kort",
+      "title": "Mitt medlemskort",
+      "titleMultiple": "Mina medlemskort",
+      "subtitle": "Visa det vid föreningens aktiviteter. QR-koden gör det möjligt att kontrollera dess giltighet.",
+      "switcherLabel": "Välj vilket kort som ska visas",
+      "downloadPdf": "Ladda ner PDF",
+      "print": "Skriv ut"
+    },
+    "unavailable": {
+      "title": "Medlemskort ej tillgängligt",
+      "pending": "Kortet blir tillgängligt så snart betalningen av medlemsavgiften har registrerats.",
+      "partial": "Medlemsavgiften är delvis betald. Kortet blir tillgängligt så snart restbeloppet har registrerats.",
+      "late": "Betalningen av medlemsavgiften har ännu inte registrerats. Kortet blir tillgängligt när den har registrerats.",
+      "noneTitle": "Inget aktivt medlemskort",
+      "none": "Det finns inget pågående medlemskap för denna period. Kortet skapas automatiskt efter anmälan.",
+      "cancelled": "Detta medlemskap har avbrutits. Kontakta föreningen för mer information.",
+      "disabled": "Medlemskortet erbjuds inte av din förening.",
+      "expired": "Medlemskapet gick ut den {date}. Förnya det för att få ett nytt kort.",
+      "viewCotisation": "Se min medlemsavgift"
+    },
+    "manager": {
+      "button": "Medlemskort",
+      "rowAction": "Visa medlemskort",
+      "modalTitle": "Medlemskort",
+      "unavailableTitle": "Kort ej tillgängligt",
+      "noPayment": "Ingen betalning av medlemsavgift är registrerad för denna medlem. Kortet skapas så snart betalningen har registrerats.",
+      "recordPayment": "Registrera en betalning",
+      "settingsHint": "Mall och färg kan ändras under Inställningar › Medlemskort.",
+      "regenerate": "Generera ny QR-kod",
+      "regenerateHint": "Den gamla QR-koden slutar fungera omedelbart. Används om ett kort har förlorats eller delats.",
+      "regenerateConfirm": "Vill du generera en ny QR-kod för detta kort?",
+      "regenerated": "QR-kod genererad på nytt"
+    },
+    "settings": {
+      "title": "Medlemskort",
+      "subtitle": "Utseende på kortet som visas i medlemsområdet.",
+      "enabled": "Aktivera medlemskort",
+      "enabledHint": "Medlemmar som är à jour med sin avgift ser sitt kort i sitt område.",
+      "template": "Mall",
+      "templates": {
+        "classic": "Klassisk",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Färg",
+      "colorTooLight": "Mycket ljus färg: den kommer att synas dåligt mot kortets bakgrund.",
+      "minimalNoColor": "Mallen Minimal använder ingen färg.",
+      "showOnCard": "Visa på kortet",
+      "showPhoto": "Medlemmens foto",
+      "showPhotoHint": "Initialer visas om inget foto är registrerat.",
+      "showCategory": "Kategori",
+      "showPhone": "Föreningens telefonnummer",
+      "showEmail": "Föreningens e-post",
+      "preview": "Förhandsvisning",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktiv frivilligmedlem",
+      "noLogo": "Lägg till en logotyp under Varumärke för att visa den på kortet.",
+      "noPhone": "Lägg till ett telefonnummer under Juridisk identitet & Donationer för att visa det på kortet.",
+      "noEmail": "Lägg till en kontakt-e-post under Föreningsinformation för att visa den på kortet.",
+      "saved": "Medlemskort sparat"
+    },
+    "print": {
+      "guide": "Klipp längs linjen — bankkortsformat, 85,6 × 54 mm. Skriv ut i 100 %, utan att anpassa till sidan.",
+      "documentTitle": "Medlemskort — {name}",
+      "popupBlocked": "Tillåt popup-fönster för att skriva ut, eller ladda ner PDF-filen."
+    },
+    "verify": {
+      "valid": "Kortet är giltigt",
+      "validUntil": "Medlemskap giltigt till {date}",
+      "expired": "Medlemskap utgånget",
+      "expiredSince": "Utgånget sedan {date}",
+      "invalid": "Kortet är ogiltigt",
+      "invalidText": "Detta kort känns inte igen eller har inaktiverats. Kontakta föreningen.",
+      "checkedAt": "Kontrollerat den {date} kl. {time}",
+      "poweredBy": "Verifiering tillhandahålls av {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Huvudbanner",

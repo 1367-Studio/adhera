@@ -4683,6 +4683,96 @@
       "importedNote": "Uvezeno s AssoConnecta — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Vrijedi od {from} do {to}",
+      "expiredOn": "Članstvo isteklo {date}",
+      "status": {
+        "valid": "Članstvo vrijedi",
+        "expired": "Članstvo isteklo"
+      },
+      "generatedBy": "Iskaznica generirana putem {appName}",
+      "qrAlt": "QR kod za provjeru iskaznice",
+      "ariaLabel": "Članska iskaznica: {name}"
+    },
+    "portal": {
+      "sidebar": "Moja iskaznica",
+      "title": "Moja članska iskaznica",
+      "titleMultiple": "Moje članske iskaznice",
+      "subtitle": "Pokažite je na aktivnostima udruge. QR kod omogućuje provjeru njezine valjanosti.",
+      "switcherLabel": "Odaberite iskaznicu za prikaz",
+      "downloadPdf": "Preuzmi PDF",
+      "print": "Ispiši"
+    },
+    "unavailable": {
+      "title": "Članska iskaznica nije dostupna",
+      "pending": "Iskaznica će biti dostupna čim se evidentira uplata članarine.",
+      "partial": "Članarina je djelomično plaćena. Iskaznica će biti dostupna čim se evidentira preostali iznos.",
+      "late": "Uplata članarine još nije evidentirana. Iskaznica će biti dostupna nakon evidentiranja.",
+      "noneTitle": "Nema aktivne članske iskaznice",
+      "none": "Za ovo razdoblje nema aktivnog članstva. Iskaznica se automatski izrađuje nakon učlanjenja.",
+      "cancelled": "Ovo članstvo je otkazano. Obratite se udruzi za više informacija.",
+      "disabled": "Vaša udruga ne nudi člansku iskaznicu.",
+      "expired": "Članstvo je isteklo {date}. Obnovite ga kako biste dobili novu iskaznicu.",
+      "viewCotisation": "Pogledaj moju članarinu"
+    },
+    "manager": {
+      "button": "Članska iskaznica",
+      "rowAction": "Pogledaj člansku iskaznicu",
+      "modalTitle": "Članska iskaznica",
+      "unavailableTitle": "Iskaznica nije dostupna",
+      "noPayment": "Za ovog člana nije evidentirana nijedna uplata članarine. Iskaznica će biti generirana čim se uplata evidentira.",
+      "recordPayment": "Evidentiraj uplatu",
+      "settingsHint": "Predložak i boju moguće je urediti u Postavke › Članska iskaznica.",
+      "regenerate": "Ponovno generiraj QR kod",
+      "regenerateHint": "Stari QR kod odmah prestaje raditi. Koristite ako je iskaznica izgubljena ili podijeljena.",
+      "regenerateConfirm": "Ponovno generirati QR kod ove iskaznice?",
+      "regenerated": "QR kod ponovno generiran"
+    },
+    "settings": {
+      "title": "Članska iskaznica",
+      "subtitle": "Izgled iskaznice prikazane u članskom području.",
+      "enabled": "Omogući člansku iskaznicu",
+      "enabledHint": "Članovi s podmirenom članarinom vidjet će svoju iskaznicu u svom području.",
+      "template": "Predložak",
+      "templates": {
+        "classic": "Klasičan",
+        "modern": "Moderan",
+        "minimal": "Minimalan"
+      },
+      "color": "Boja",
+      "colorTooLight": "Vrlo svijetla boja: slabo će se isticati od pozadine iskaznice.",
+      "minimalNoColor": "Minimalni predložak ne koristi boju.",
+      "showOnCard": "Prikaži na iskaznici",
+      "showPhoto": "Fotografija člana",
+      "showPhotoHint": "Ako fotografija nije spremljena, prikazuju se inicijali.",
+      "showCategory": "Kategorija",
+      "showPhone": "Telefon udruge",
+      "showEmail": "E-pošta udruge",
+      "preview": "Pregled",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktivan volonterski član",
+      "noLogo": "Dodajte logotip u odjeljku Brend kako biste ga prikazali na iskaznici.",
+      "noPhone": "Dodajte telefon u odjeljku Pravni identitet i donacije kako biste ga prikazali na iskaznici.",
+      "noEmail": "Dodajte kontakt e-poštu u odjeljku Podaci o udruzi kako biste je prikazali na iskaznici.",
+      "saved": "Članska iskaznica spremljena"
+    },
+    "print": {
+      "guide": "Izrežite po crti — format bankovne kartice, 85,6 × 54 mm. Ispišite u 100 %, bez prilagodbe stranici.",
+      "documentTitle": "Članska iskaznica — {name}",
+      "popupBlocked": "Dopustite skočne prozore za ispis ili preuzmite PDF."
+    },
+    "verify": {
+      "valid": "Iskaznica vrijedi",
+      "validUntil": "Članstvo vrijedi do {date}",
+      "expired": "Članstvo isteklo",
+      "expiredSince": "Isteklo {date}",
+      "invalid": "Iskaznica ne vrijedi",
+      "invalidText": "Ova iskaznica nije prepoznata ili je deaktivirana. Obratite se udruzi.",
+      "checkedAt": "Provjereno {date} u {time}",
+      "poweredBy": "Provjeru omogućuje {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Glavna zastava",

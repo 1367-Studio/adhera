@@ -69,18 +69,27 @@ export async function memberCardPdfResponse(
   // Explicit time zone, exactly like <MemberCard />: a cotisation covering a calendar year
   // ends at 31 December 23:59 Paris, which a server running in UTC would print as the 30th —
   // and the printed date must match the one the member sees on screen.
-  const cardDate = formatter.dateTime(card.validUntil, {
-    day: "2-digit", month: "2-digit", year: "numeric", timeZone: APP_TIME_ZONE,
-  })
+  const dateFormatOptions = { day: "2-digit", month: "2-digit", year: "numeric", timeZone: APP_TIME_ZONE } as const
+  const validUntilLabel   = formatter.dateTime(card.validUntil, dateFormatOptions)
 
   // An expired card carries the day its membership *stopped* covering (see
   // buildMemberCardViewModel), and the sheet deliberately has no status line of its own, so
-  // this single line is all the paper says about validity: printed as "Valable jusqu'au
+  // this single line is all the paper says about validity: printed as "Valable du … au
   // 31/12/2024" it would read as a card that is still good to anyone glancing at it. The
   // screen card keeps its own "Adhésion expirée" badge and is untouched.
-  const validityLabel = card.state === "expired"
-    ? translate("card.expiredOn",  { date: cardDate })
-    : translate("card.validUntil", { date: cardDate })
+  //
+  // Same rule as <MemberCard />: `from` never carries a year (`to` always does), because
+  // dropping it only when both years matched still overran this row's width — plus "Carte
+  // générée via {appName}" — for the equally common case of a rolling 12-month membership
+  // that legitimately starts and ends in different years. buildMemberCardPdf additionally
+  // truncates whatever is left over as a last resort, but the point of this rule is that it
+  // shouldn't have to.
+  const validityLabel = card.state === "expired" || !card.validFrom
+    ? translate("card.expiredOn",  { date: validUntilLabel })
+    : translate("card.validPeriod", {
+        from: formatter.dateTime(card.validFrom, { day: "2-digit", month: "2-digit", timeZone: APP_TIME_ZONE }),
+        to: validUntilLabel,
+      })
 
   const pdf = await buildMemberCardPdf({
     card,

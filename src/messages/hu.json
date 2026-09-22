@@ -4683,6 +4683,96 @@
       "importedNote": "Importálva az AssoConnect-ről — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Érvényes {from}-tól {to}-ig",
+      "expiredOn": "A tagság lejárt: {date}",
+      "status": {
+        "valid": "Érvényes tagság",
+        "expired": "Lejárt tagság"
+      },
+      "generatedBy": "A kártyát létrehozta: {appName}",
+      "qrAlt": "A kártya ellenőrzésére szolgáló QR-kód",
+      "ariaLabel": "{name} tagsági kártyája"
+    },
+    "portal": {
+      "sidebar": "Kártyám",
+      "title": "Tagsági kártyám",
+      "titleMultiple": "Tagsági kártyáim",
+      "subtitle": "Mutassa be az egyesület rendezvényein. A QR-kód lehetővé teszi az érvényesség ellenőrzését.",
+      "switcherLabel": "Válassza ki a megjelenítendő kártyát",
+      "downloadPdf": "PDF letöltése",
+      "print": "Nyomtatás"
+    },
+    "unavailable": {
+      "title": "A tagsági kártya nem elérhető",
+      "pending": "A kártya elérhető lesz, amint a tagdíj befizetése rögzítésre kerül.",
+      "partial": "A tagdíj részben ki lett fizetve. A kártya elérhető lesz, amint a fennmaradó összeg rögzítésre kerül.",
+      "late": "A tagdíj befizetése még nem került rögzítésre. A kártya a rögzítést követően lesz elérhető.",
+      "noneTitle": "Nincs aktív tagsági kártya",
+      "none": "Erre az időszakra nincs érvényes tagság. A kártya automatikusan létrejön a csatlakozás után.",
+      "cancelled": "Ez a tagság törölve lett. További információért forduljon az egyesülethez.",
+      "disabled": "Az Ön egyesülete nem kínál tagsági kártyát.",
+      "expired": "A tagság lejárt: {date}. Újítsa meg új kártya igényléséhez.",
+      "viewCotisation": "Tagdíjam megtekintése"
+    },
+    "manager": {
+      "button": "Tagsági kártya",
+      "rowAction": "Tagsági kártya megtekintése",
+      "modalTitle": "Tagsági kártya",
+      "unavailableTitle": "A kártya nem elérhető",
+      "noPayment": "Ehhez a taghoz nincs rögzített tagdíjbefizetés. A kártya a befizetés rögzítése után jön létre.",
+      "recordPayment": "Befizetés rögzítése",
+      "settingsHint": "A sablon és a szín a Beállítások › Tagsági kártya menüpontban módosítható.",
+      "regenerate": "QR-kód újragenerálása",
+      "regenerateHint": "A régi QR-kód azonnal működésképtelenné válik. Használja, ha egy kártya elveszett vagy megosztásra került.",
+      "regenerateConfirm": "Újragenerálja ennek a kártyának a QR-kódját?",
+      "regenerated": "QR-kód újragenerálva"
+    },
+    "settings": {
+      "title": "Tagsági kártya",
+      "subtitle": "A tagi felületen megjelenő kártya megjelenése.",
+      "enabled": "Tagsági kártya engedélyezése",
+      "enabledHint": "A tagdíjjal rendelkező tagok látni fogják kártyájukat a saját felületükön.",
+      "template": "Sablon",
+      "templates": {
+        "classic": "Klasszikus",
+        "modern": "Modern",
+        "minimal": "Minimál"
+      },
+      "color": "Szín",
+      "colorTooLight": "Nagyon világos szín: alig fog elkülönülni a kártya hátterétől.",
+      "minimalNoColor": "A Minimál sablon nem használ színt.",
+      "showOnCard": "Megjelenítés a kártyán",
+      "showPhoto": "A tag fényképe",
+      "showPhotoHint": "Ha nincs rögzített fénykép, a monogram jelenik meg.",
+      "showCategory": "Kategória",
+      "showPhone": "Az egyesület telefonszáma",
+      "showEmail": "Az egyesület e-mail címe",
+      "preview": "Előnézet",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktív önkéntes tag",
+      "noLogo": "Adjon hozzá logót a Márkajelzés menüpontban, hogy megjelenjen a kártyán.",
+      "noPhone": "Adjon hozzá telefonszámot a Jogi identitás és adományok menüpontban, hogy megjelenjen a kártyán.",
+      "noEmail": "Adjon hozzá kapcsolattartási e-mail címet az Egyesületi adatok menüpontban, hogy megjelenjen a kártyán.",
+      "saved": "Tagsági kártya mentve"
+    },
+    "print": {
+      "guide": "Vágja ki a vonal mentén — bankkártya méret, 85,6 × 54 mm. Nyomtassa 100%-ban, oldalhoz igazítás nélkül.",
+      "documentTitle": "Tagsági kártya — {name}",
+      "popupBlocked": "Engedélyezze a felugró ablakokat a nyomtatáshoz, vagy töltse le a PDF-et."
+    },
+    "verify": {
+      "valid": "A kártya érvényes",
+      "validUntil": "A tagság érvényes eddig: {date}",
+      "expired": "Lejárt tagság",
+      "expiredSince": "Lejárt: {date}",
+      "invalid": "A kártya érvénytelen",
+      "invalidText": "Ezt a kártyát a rendszer nem ismeri fel, vagy deaktiválva lett. Forduljon az egyesülethez.",
+      "checkedAt": "Ellenőrizve: {date}, {time}",
+      "poweredBy": "Az ellenőrzést biztosítja: {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Fő Banner",

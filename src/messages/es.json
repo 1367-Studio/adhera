@@ -4683,6 +4683,96 @@
       "importedNote": "Importado de AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Válido del {from} al {to}",
+      "expiredOn": "Membresía caducada el {date}",
+      "status": {
+        "valid": "Membresía válida",
+        "expired": "Membresía caducada"
+      },
+      "generatedBy": "Tarjeta generada mediante {appName}",
+      "qrAlt": "Código QR de verificación de la tarjeta",
+      "ariaLabel": "Tarjeta de socio de {name}"
+    },
+    "portal": {
+      "sidebar": "Mi tarjeta",
+      "title": "Mi tarjeta de socio",
+      "titleMultiple": "Mis tarjetas de socio",
+      "subtitle": "Preséntala en las actividades de la asociación. Su código QR permite verificar su validez.",
+      "switcherLabel": "Elegir la tarjeta a mostrar",
+      "downloadPdf": "Descargar PDF",
+      "print": "Imprimir"
+    },
+    "unavailable": {
+      "title": "Tarjeta de socio no disponible",
+      "pending": "La tarjeta estará disponible en cuanto se registre el pago de la cuota.",
+      "partial": "La cuota está pagada parcialmente. La tarjeta estará disponible en cuanto se registre el saldo.",
+      "late": "El pago de la cuota aún no se ha registrado. La tarjeta estará disponible en cuanto se registre.",
+      "noneTitle": "Ninguna tarjeta de socio activa",
+      "none": "No hay ninguna membresía vigente para este periodo. La tarjeta se crea automáticamente tras la inscripción.",
+      "cancelled": "Esta membresía ha sido cancelada. Contacta con la asociación para más información.",
+      "disabled": "Su asociación no ofrece la tarjeta de socio.",
+      "expired": "La membresía caducó el {date}. Renuévala para obtener una nueva tarjeta.",
+      "viewCotisation": "Ver mi cuota"
+    },
+    "manager": {
+      "button": "Tarjeta de socio",
+      "rowAction": "Ver tarjeta de socio",
+      "modalTitle": "Tarjeta de socio",
+      "unavailableTitle": "Tarjeta no disponible",
+      "noPayment": "No hay ningún pago de cuota registrado para este miembro. La tarjeta se generará en cuanto se registre el pago.",
+      "recordPayment": "Registrar un pago",
+      "settingsHint": "Plantilla y color editables en Ajustes › Tarjeta de socio.",
+      "regenerate": "Regenerar código QR",
+      "regenerateHint": "El código QR anterior dejará de funcionar de inmediato. Úsalo si una tarjeta se perdió o se compartió.",
+      "regenerateConfirm": "¿Regenerar el código QR de esta tarjeta?",
+      "regenerated": "Código QR regenerado"
+    },
+    "settings": {
+      "title": "Tarjeta de socio",
+      "subtitle": "Apariencia de la tarjeta mostrada en el área del socio.",
+      "enabled": "Activar la tarjeta de socio",
+      "enabledHint": "Los socios al día con su cuota verán su tarjeta en su área.",
+      "template": "Plantilla",
+      "templates": {
+        "classic": "Clásica",
+        "modern": "Moderna",
+        "minimal": "Minimalista"
+      },
+      "color": "Color",
+      "colorTooLight": "Color muy claro: se distinguirá poco del fondo de la tarjeta.",
+      "minimalNoColor": "La plantilla Minimalista no usa color.",
+      "showOnCard": "Mostrar en la tarjeta",
+      "showPhoto": "Foto del socio",
+      "showPhotoHint": "Se muestran las iniciales si no hay ninguna foto registrada.",
+      "showCategory": "Categoría",
+      "showPhone": "Teléfono de la asociación",
+      "showEmail": "Correo electrónico de la asociación",
+      "preview": "Vista previa",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Socio voluntario activo",
+      "noLogo": "Añade un logotipo en Personalización para mostrarlo en la tarjeta.",
+      "noPhone": "Añade un teléfono en Identidad legal y Donaciones para mostrarlo en la tarjeta.",
+      "noEmail": "Añade un correo de contacto en Información de la asociación para mostrarlo en la tarjeta.",
+      "saved": "Tarjeta de socio guardada"
+    },
+    "print": {
+      "guide": "Recorta siguiendo la línea — formato de tarjeta bancaria, 85,6 × 54 mm. Imprime al 100 %, sin ajustar a la página.",
+      "documentTitle": "Tarjeta de socio — {name}",
+      "popupBlocked": "Permite las ventanas emergentes para imprimir, o descarga el PDF."
+    },
+    "verify": {
+      "valid": "Tarjeta válida",
+      "validUntil": "Membresía válida hasta el {date}",
+      "expired": "Membresía caducada",
+      "expiredSince": "Caducada desde el {date}",
+      "invalid": "Tarjeta no válida",
+      "invalidText": "Esta tarjeta no se reconoce o ha sido desactivada. Contacta con la asociación.",
+      "checkedAt": "Verificada el {date} a las {time}",
+      "poweredBy": "Verificación proporcionada por {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Banner principal",

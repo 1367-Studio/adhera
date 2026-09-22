@@ -4683,6 +4683,96 @@
       "importedNote": "Importiert von AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Gültig vom {from} bis {to}",
+      "expiredOn": "Mitgliedschaft abgelaufen am {date}",
+      "status": {
+        "valid": "Mitgliedschaft gültig",
+        "expired": "Mitgliedschaft abgelaufen"
+      },
+      "generatedBy": "Ausweis erstellt mit {appName}",
+      "qrAlt": "QR-Code zur Überprüfung des Ausweises",
+      "ariaLabel": "Mitgliedsausweis von {name}"
+    },
+    "portal": {
+      "sidebar": "Mein Ausweis",
+      "title": "Mein Mitgliedsausweis",
+      "titleMultiple": "Meine Mitgliedsausweise",
+      "subtitle": "Zeigen Sie ihn bei Vereinsaktivitäten vor. Der QR-Code ermöglicht die Überprüfung seiner Gültigkeit.",
+      "switcherLabel": "Anzuzeigenden Ausweis auswählen",
+      "downloadPdf": "PDF herunterladen",
+      "print": "Drucken"
+    },
+    "unavailable": {
+      "title": "Mitgliedsausweis nicht verfügbar",
+      "pending": "Der Ausweis wird verfügbar, sobald die Zahlung des Mitgliedsbeitrags erfasst wurde.",
+      "partial": "Der Mitgliedsbeitrag wurde teilweise bezahlt. Der Ausweis wird verfügbar, sobald der Restbetrag erfasst wurde.",
+      "late": "Die Zahlung des Mitgliedsbeitrags wurde noch nicht erfasst. Der Ausweis wird nach Erfassung verfügbar.",
+      "noneTitle": "Kein aktiver Mitgliedsausweis",
+      "none": "Für diesen Zeitraum liegt keine laufende Mitgliedschaft vor. Der Ausweis wird automatisch nach dem Beitritt erstellt.",
+      "cancelled": "Diese Mitgliedschaft wurde storniert. Wenden Sie sich für weitere Informationen an den Verein.",
+      "disabled": "Der Mitgliedsausweis wird von Ihrem Verein nicht angeboten.",
+      "expired": "Die Mitgliedschaft ist am {date} abgelaufen. Erneuern Sie sie, um einen neuen Ausweis zu erhalten.",
+      "viewCotisation": "Meinen Mitgliedsbeitrag ansehen"
+    },
+    "manager": {
+      "button": "Mitgliedsausweis",
+      "rowAction": "Mitgliedsausweis ansehen",
+      "modalTitle": "Mitgliedsausweis",
+      "unavailableTitle": "Ausweis nicht verfügbar",
+      "noPayment": "Für dieses Mitglied ist keine Beitragszahlung erfasst. Der Ausweis wird erstellt, sobald die Zahlung erfasst wurde.",
+      "recordPayment": "Zahlung erfassen",
+      "settingsHint": "Vorlage und Farbe änderbar unter Einstellungen › Mitgliedsausweis.",
+      "regenerate": "QR-Code neu generieren",
+      "regenerateHint": "Der alte QR-Code funktioniert danach sofort nicht mehr. Verwenden, wenn ein Ausweis verloren gegangen oder geteilt wurde.",
+      "regenerateConfirm": "QR-Code dieses Ausweises neu generieren?",
+      "regenerated": "QR-Code neu generiert"
+    },
+    "settings": {
+      "title": "Mitgliedsausweis",
+      "subtitle": "Erscheinungsbild des im Mitgliederbereich angezeigten Ausweises.",
+      "enabled": "Mitgliedsausweis aktivieren",
+      "enabledHint": "Mitglieder mit aktuellem Beitrag sehen ihren Ausweis in ihrem Bereich.",
+      "template": "Vorlage",
+      "templates": {
+        "classic": "Klassisch",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Farbe",
+      "colorTooLight": "Sehr helle Farbe: sie hebt sich kaum vom Hintergrund des Ausweises ab.",
+      "minimalNoColor": "Die Vorlage „Minimal“ verwendet keine Farbe.",
+      "showOnCard": "Auf dem Ausweis anzeigen",
+      "showPhoto": "Foto des Mitglieds",
+      "showPhotoHint": "Initialen werden angezeigt, wenn kein Foto hinterlegt ist.",
+      "showCategory": "Kategorie",
+      "showPhone": "Telefonnummer des Vereins",
+      "showEmail": "E-Mail des Vereins",
+      "preview": "Vorschau",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktives ehrenamtliches Mitglied",
+      "noLogo": "Fügen Sie unter Markendesign ein Logo hinzu, um es auf dem Ausweis anzuzeigen.",
+      "noPhone": "Fügen Sie unter Rechtliche Identität & Spenden eine Telefonnummer hinzu, um sie auf dem Ausweis anzuzeigen.",
+      "noEmail": "Fügen Sie unter Vereinsinformationen eine Kontakt-E-Mail hinzu, um sie auf dem Ausweis anzuzeigen.",
+      "saved": "Mitgliedsausweis gespeichert"
+    },
+    "print": {
+      "guide": "Entlang der Linie ausschneiden — Bankkartenformat, 85,6 × 54 mm. Zu 100 % drucken, ohne Anpassung an die Seite.",
+      "documentTitle": "Mitgliedsausweis — {name}",
+      "popupBlocked": "Erlauben Sie Pop-up-Fenster zum Drucken oder laden Sie die PDF-Datei herunter."
+    },
+    "verify": {
+      "valid": "Ausweis gültig",
+      "validUntil": "Mitgliedschaft gültig bis {date}",
+      "expired": "Mitgliedschaft abgelaufen",
+      "expiredSince": "Abgelaufen seit {date}",
+      "invalid": "Ausweis ungültig",
+      "invalidText": "Dieser Ausweis wird nicht erkannt oder wurde deaktiviert. Wenden Sie sich an den Verein.",
+      "checkedAt": "Überprüft am {date} um {time}",
+      "poweredBy": "Überprüfung bereitgestellt von {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Hauptbanner",

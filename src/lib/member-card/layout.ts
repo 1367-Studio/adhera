@@ -58,6 +58,12 @@ export const CARD_CONTACT_GAP_MM = 1.2
  * otherwise run straight across the card. 54,6 mm at today's constants.
  */
 export const CARD_CONTACT_MAX_WIDTH_MM = CARD_WIDTH_MM - 2 * CARD_MARGIN_MM - CARD_GUTTER_MM - CARD_QR_SIZE_MM
+/** The phone glyph in front of the contact line's phone number — sized to the footer text it sits beside. */
+export const CARD_CONTACT_ICON_SIZE_MM = 2.1
+/** Gap between the phone glyph and the digits that follow it. */
+export const CARD_CONTACT_ICON_GAP_MM = 0.6
+/** Extra breathing room on each side of the "·" between phone and e-mail — wider than a plain inline space, so the two values read as separate fields rather than one run-on string. */
+export const CARD_CONTACT_SEPARATOR_GAP_MM = 1
 /** Letter-spacing of the uppercased association name — uppercase needs air to stay readable. */
 export const CARD_ASSOCIATION_NAME_TRACKING_MM = 0.06
 

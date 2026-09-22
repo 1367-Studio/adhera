@@ -4794,7 +4794,7 @@
   },
   "memberCard": {
     "card": {
-      "validUntil": "Valid until {date}",
+      "validPeriod": "Valid from {from} to {to}",
       "expiredOn": "Membership expired on {date}",
       "status": {
         "valid": "Valid membership",

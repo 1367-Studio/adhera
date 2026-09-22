@@ -12,6 +12,8 @@ const NOW = new Date("2026-09-19T12:00:00Z")
 // 31 Dec 2026 23:59:59.999 in Paris (CET, UTC+1).
 const END_OF_2026_PARIS = new Date("2026-12-31T22:59:59.999Z")
 const END_OF_2025_PARIS = new Date("2025-12-31T22:59:59.999Z")
+// 1 Jan 2026 00:00:00 in Paris (CET, UTC+1).
+const START_OF_2026_PARIS = new Date("2025-12-31T23:00:00.000Z")
 
 function buildCotisation(overrides: Partial<MemberCardCotisation> = {}): MemberCardCotisation {
   return { id: "cotisation-2026", year: 2026, status: "PAYE", periodStart: null, periodEnd: null, ...overrides }
@@ -23,8 +25,8 @@ function buildInput(overrides: Partial<MemberCardEligibilityInput> = {}): Member
 
 describe("getMemberCardEligibility — the current row's status", () => {
   it.each<[CotisationStatus, ReturnType<typeof getMemberCardEligibility>]>([
-    ["PAYE",                { state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }],
-    ["EXONERE",             { state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }],
+    ["PAYE",                { state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }],
+    ["EXONERE",             { state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026" }],
     ["EN_ATTENTE",          { state: "unavailable", reason: "pending", cotisationId: "cotisation-2026" }],
     ["PARTIELLEMENT_PAYEE", { state: "unavailable", reason: "partial", cotisationId: "cotisation-2026" }],
     ["EN_RETARD",           { state: "unavailable", reason: "late", cotisationId: "cotisation-2026" }],
@@ -38,7 +40,7 @@ describe("getMemberCardEligibility — the current row's status", () => {
     const freeMembership = { ...buildCotisation({ status: "EXONERE" }), amount: 0 }
     const input = buildInput({ cotisations: [freeMembership] })
     expect(getMemberCardEligibility(input, NOW)).toEqual({
-      state: "valid", validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026",
+      state: "valid", validFrom: START_OF_2026_PARIS, validUntil: END_OF_2026_PARIS, cotisationId: "cotisation-2026",
     })
   })
 })
@@ -50,11 +52,14 @@ describe("getMemberCardEligibility — periodEnd rows vs calendar-year rows", ()
   })
 
   it("a custom-duration row filed under last year still covers until its periodEnd", () => {
+    const periodStart = new Date("2025-09-01T10:00:00Z")
     const periodEnd = new Date("2027-03-01T10:00:00Z")
     const input = buildInput({
-      cotisations: [buildCotisation({ id: "six-month-tier", year: 2025, periodStart: "2025-09-01T10:00:00Z", periodEnd })],
+      cotisations: [buildCotisation({ id: "six-month-tier", year: 2025, periodStart, periodEnd })],
     })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "valid", validUntil: periodEnd, cotisationId: "six-month-tier" })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({
+      state: "valid", validFrom: periodStart, validUntil: periodEnd, cotisationId: "six-month-tier",
+    })
   })
 
   it("a custom-duration row of the current year whose periodEnd has passed is expired, not valid", () => {
@@ -161,25 +166,31 @@ describe("getMemberCardEligibility — expired vs no-membership", () => {
 
 describe("getMemberCardEligibility — several rows at once", () => {
   it("an old season still covering by periodEnd + a new EN_ATTENTE row → valid on the old one", () => {
+    const periodStart = new Date("2025-10-15T10:00:00Z")
     const periodEnd = new Date("2026-10-15T10:00:00Z")
     const input = buildInput({
       cotisations: [
-        buildCotisation({ id: "previous-season", year: 2025, periodStart: "2025-10-15T10:00:00Z", periodEnd }),
+        buildCotisation({ id: "previous-season", year: 2025, periodStart, periodEnd }),
         buildCotisation({ id: "renewal", status: "EN_ATTENTE" }),
       ],
     })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "valid", validUntil: periodEnd, cotisationId: "previous-season" })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({
+      state: "valid", validFrom: periodStart, validUntil: periodEnd, cotisationId: "previous-season",
+    })
   })
 
   it("two covering rows → validUntil is the later end, with that row's id", () => {
+    const periodStart = new Date("2026-02-01T10:00:00Z")
     const periodEnd = new Date("2027-02-01T10:00:00Z")
     const input = buildInput({
       cotisations: [
         buildCotisation({ id: "calendar-2026" }),
-        buildCotisation({ id: "twelve-month-tier", periodStart: "2026-02-01T10:00:00Z", periodEnd }),
+        buildCotisation({ id: "twelve-month-tier", periodStart, periodEnd }),
       ],
     })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "valid", validUntil: periodEnd, cotisationId: "twelve-month-tier" })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({
+      state: "valid", validFrom: periodStart, validUntil: periodEnd, cotisationId: "twelve-month-tier",
+    })
   })
 
   it("a cancelled duplicate next to a live unpaid row → unavailable on the live one", () => {

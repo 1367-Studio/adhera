@@ -4683,6 +4683,96 @@
       "importedNote": "Importat de la AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Valabil din {from} până la {to}",
+      "expiredOn": "Calitatea de membru a expirat la {date}",
+      "status": {
+        "valid": "Calitate de membru valabilă",
+        "expired": "Calitate de membru expirată"
+      },
+      "generatedBy": "Card generat prin {appName}",
+      "qrAlt": "Cod QR de verificare a cardului",
+      "ariaLabel": "Card de membru al lui {name}"
+    },
+    "portal": {
+      "sidebar": "Cardul meu",
+      "title": "Cardul meu de membru",
+      "titleMultiple": "Cardurile mele de membru",
+      "subtitle": "Prezentați-l la activitățile asociației. Codul său QR permite verificarea valabilității.",
+      "switcherLabel": "Alegeți cardul de afișat",
+      "downloadPdf": "Descărcați PDF",
+      "print": "Imprimați"
+    },
+    "unavailable": {
+      "title": "Card de membru indisponibil",
+      "pending": "Cardul va fi disponibil imediat ce plata cotizației va fi înregistrată.",
+      "partial": "Cotizația a fost plătită parțial. Cardul va fi disponibil imediat ce soldul va fi înregistrat.",
+      "late": "Plata cotizației nu a fost încă înregistrată. Cardul va fi disponibil după înregistrarea acesteia.",
+      "noneTitle": "Niciun card de membru activ",
+      "none": "Nu există nicio calitate de membru în curs pentru această perioadă. Cardul este creat automat după înscriere.",
+      "cancelled": "Această calitate de membru a fost anulată. Contactați asociația pentru mai multe informații.",
+      "disabled": "Cardul de membru nu este oferit de asociația dvs.",
+      "expired": "Calitatea de membru a expirat la {date}. Reînnoiți-o pentru a obține un card nou.",
+      "viewCotisation": "Vezi cotizația mea"
+    },
+    "manager": {
+      "button": "Card de membru",
+      "rowAction": "Vezi cardul de membru",
+      "modalTitle": "Card de membru",
+      "unavailableTitle": "Card indisponibil",
+      "noPayment": "Nicio plată a cotizației nu este înregistrată pentru acest membru. Cardul va fi generat imediat ce plata va fi înregistrată.",
+      "recordPayment": "Înregistrați o plată",
+      "settingsHint": "Model și culoare modificabile în Setări › Card de membru.",
+      "regenerate": "Regenerează codul QR",
+      "regenerateHint": "Vechiul cod QR va înceta imediat să funcționeze. Utilizați dacă un card a fost pierdut sau distribuit.",
+      "regenerateConfirm": "Regenerați codul QR al acestui card?",
+      "regenerated": "Cod QR regenerat"
+    },
+    "settings": {
+      "title": "Card de membru",
+      "subtitle": "Aspectul cardului afișat în zona membrilor.",
+      "enabled": "Activează cardul de membru",
+      "enabledHint": "Membrii la zi cu cotizația își vor vedea cardul în zona lor.",
+      "template": "Model",
+      "templates": {
+        "classic": "Clasic",
+        "modern": "Modern",
+        "minimal": "Minimal"
+      },
+      "color": "Culoare",
+      "colorTooLight": "Culoare foarte deschisă: se va distinge slab de fundalul cardului.",
+      "minimalNoColor": "Modelul Minimal nu folosește culoare.",
+      "showOnCard": "Afișează pe card",
+      "showPhoto": "Fotografia membrului",
+      "showPhotoHint": "Inițialele sunt afișate dacă nu este înregistrată nicio fotografie.",
+      "showCategory": "Categorie",
+      "showPhone": "Telefonul asociației",
+      "showEmail": "E-mailul asociației",
+      "preview": "Previzualizare",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Membru voluntar activ",
+      "noLogo": "Adăugați un logo în secțiunea Branding pentru a-l afișa pe card.",
+      "noPhone": "Adăugați un telefon în secțiunea Identitate legală și Donații pentru a-l afișa pe card.",
+      "noEmail": "Adăugați un e-mail de contact în secțiunea Informații despre asociație pentru a-l afișa pe card.",
+      "saved": "Card de membru salvat"
+    },
+    "print": {
+      "guide": "Decupați de-a lungul liniei — format card bancar, 85,6 × 54 mm. Imprimați la 100%, fără a adapta la pagină.",
+      "documentTitle": "Card de membru — {name}",
+      "popupBlocked": "Permiteți ferestrele pop-up pentru a imprima, sau descărcați PDF-ul."
+    },
+    "verify": {
+      "valid": "Card valabil",
+      "validUntil": "Calitate de membru valabilă până la {date}",
+      "expired": "Calitate de membru expirată",
+      "expiredSince": "Expirată de la {date}",
+      "invalid": "Card nevalabil",
+      "invalidText": "Acest card nu este recunoscut sau a fost dezactivat. Contactați asociația.",
+      "checkedAt": "Verificat la {date}, ora {time}",
+      "poweredBy": "Verificare asigurată de {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Steagul principal",

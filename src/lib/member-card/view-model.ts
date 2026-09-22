@@ -26,6 +26,8 @@ export type MemberCardViewModel = {
   memberName:      string
   /** Membre type name, or null when hidden by settings.showCategory / the member has none. */
   category:        string | null
+  /** Only set when `state` is "valid" — an expired card prints a single date, not a range. */
+  validFrom:       Date | null
   validUntil:      Date
   /**
    * Only the two states a card can actually be *printed* in. "unavailable" and "none" have no
@@ -43,6 +45,13 @@ export type MemberCardViewModel = {
    * cannot drift on the separator or on the order.
    */
   contactLine:     string | null
+  /**
+   * The same two values contactLine joins, kept separately so the screen card can put a phone
+   * glyph in front of the number without re-parsing the finished line. Both already null under
+   * the same rules as contactLine (setting off, or never filled in).
+   */
+  contactPhone:    string | null
+  contactEmail:    string | null
   /**
    * Absolute URL the QR encodes. Passed in rather than derived: the public verification URL
    * depends on the member's rotatable card token and on the deployment's base path, neither of
@@ -116,6 +125,7 @@ export function buildMemberCardViewModel(
     // (The members *table* sorts by "Martin Camille"; a card is not a sorted list.)
     memberName:      `${membre.firstName} ${membre.lastName}`,
     category:        membre.type?.name ?? null,
+    validFrom:       eligibility.state === "valid" ? eligibility.validFrom : null,
     // An expired card has no validUntil of its own: the day it stopped covering *is* its
     // expiry date, and the renderer prints a single date either way, labelled by `state`.
     validUntil:      eligibility.state === "valid" ? eligibility.validUntil : eligibility.expiredOn,
@@ -125,6 +135,8 @@ export function buildMemberCardViewModel(
     // Both halves already arrive null when the association turned the setting off or left the
     // field blank (the loader does that), so this only joins.
     contactLine:     formatMemberCardContact(association.phone, association.contactEmail),
+    contactPhone:    association.phone,
+    contactEmail:    association.contactEmail,
     verificationUrl,
     settings,
   }

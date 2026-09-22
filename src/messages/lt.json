@@ -4683,6 +4683,96 @@
       "importedNote": "Importuota iš AssoConnect — {collecte}"
     }
   },
+  "memberCard": {
+    "card": {
+      "validPeriod": "Galioja nuo {from} iki {to}",
+      "expiredOn": "Narystė baigėsi {date}",
+      "status": {
+        "valid": "Narystė galiojanti",
+        "expired": "Narystė baigėsi"
+      },
+      "generatedBy": "Kortelė sugeneruota naudojant {appName}",
+      "qrAlt": "Kortelės patvirtinimo QR kodas",
+      "ariaLabel": "{name} nario kortelė"
+    },
+    "portal": {
+      "sidebar": "Mano kortelė",
+      "title": "Mano nario kortelė",
+      "titleMultiple": "Mano nario kortelės",
+      "subtitle": "Pateikite ją asociacijos veiklų metu. Jos QR kodas leidžia patikrinti galiojimą.",
+      "switcherLabel": "Pasirinkite rodomą kortelę",
+      "downloadPdf": "Atsisiųsti PDF",
+      "print": "Spausdinti"
+    },
+    "unavailable": {
+      "title": "Nario kortelė nepasiekiama",
+      "pending": "Kortelė bus pasiekiama, kai tik bus užregistruotas nario mokesčio mokėjimas.",
+      "partial": "Nario mokestis sumokėtas iš dalies. Kortelė bus pasiekiama, kai tik bus užregistruotas likutis.",
+      "late": "Nario mokesčio mokėjimas dar neužregistruotas. Kortelė bus pasiekiama jį užregistravus.",
+      "noneTitle": "Nėra aktyvios nario kortelės",
+      "none": "Šiam laikotarpiui nėra galiojančios narystės. Kortelė sukuriama automatiškai po įstojimo.",
+      "cancelled": "Ši narystė buvo atšaukta. Dėl daugiau informacijos kreipkitės į asociaciją.",
+      "disabled": "Jūsų asociacija nesiūlo nario kortelės.",
+      "expired": "Narystė baigėsi {date}. Atnaujinkite ją, kad gautumėte naują kortelę.",
+      "viewCotisation": "Žiūrėti mano nario mokestį"
+    },
+    "manager": {
+      "button": "Nario kortelė",
+      "rowAction": "Žiūrėti nario kortelę",
+      "modalTitle": "Nario kortelė",
+      "unavailableTitle": "Kortelė nepasiekiama",
+      "noPayment": "Šiam nariui nėra užregistruoto nario mokesčio mokėjimo. Kortelė bus sugeneruota, kai tik mokėjimas bus užregistruotas.",
+      "recordPayment": "Užregistruoti mokėjimą",
+      "settingsHint": "Šabloną ir spalvą galima keisti skyriuje Nustatymai › Nario kortelė.",
+      "regenerate": "Iš naujo sugeneruoti QR kodą",
+      "regenerateHint": "Senas QR kodas iškart nustos veikti. Naudokite, jei kortelė buvo pamesta arba bendrai naudota.",
+      "regenerateConfirm": "Ar iš naujo sugeneruoti šios kortelės QR kodą?",
+      "regenerated": "QR kodas sugeneruotas iš naujo"
+    },
+    "settings": {
+      "title": "Nario kortelė",
+      "subtitle": "Narių srityje rodomos kortelės išvaizda.",
+      "enabled": "Įjungti nario kortelę",
+      "enabledHint": "Nariai, sumokėję nario mokestį, matys savo kortelę savo srityje.",
+      "template": "Šablonas",
+      "templates": {
+        "classic": "Klasikinis",
+        "modern": "Modernus",
+        "minimal": "Minimalistinis"
+      },
+      "color": "Spalva",
+      "colorTooLight": "Labai šviesi spalva: ji menkai išsiskirs kortelės fone.",
+      "minimalNoColor": "Minimalistinis šablonas nenaudoja spalvos.",
+      "showOnCard": "Rodyti kortelėje",
+      "showPhoto": "Nario nuotrauka",
+      "showPhotoHint": "Jei nuotrauka neįrašyta, rodomi inicialai.",
+      "showCategory": "Kategorija",
+      "showPhone": "Asociacijos telefonas",
+      "showEmail": "Asociacijos el. paštas",
+      "preview": "Peržiūra",
+      "sampleName": "Camille Martin",
+      "sampleCategory": "Aktyvus savanoris narys",
+      "noLogo": "Pridėkite logotipą skyriuje Prekės ženklas, kad jis būtų rodomas kortelėje.",
+      "noPhone": "Pridėkite telefoną skyriuje Teisinis identitetas ir aukos, kad jis būtų rodomas kortelėje.",
+      "noEmail": "Pridėkite kontaktinį el. paštą skyriuje Informacija apie asociaciją, kad jis būtų rodomas kortelėje.",
+      "saved": "Nario kortelė išsaugota"
+    },
+    "print": {
+      "guide": "Iškirpkite pagal liniją — banko kortelės formatas, 85,6 × 54 mm. Spausdinkite 100 % dydžiu, nepritaikant prie puslapio.",
+      "documentTitle": "Nario kortelė — {name}",
+      "popupBlocked": "Leiskite iškylančiuosius langus, kad galėtumėte spausdinti, arba atsisiųskite PDF."
+    },
+    "verify": {
+      "valid": "Kortelė galiojanti",
+      "validUntil": "Narystė galioja iki {date}",
+      "expired": "Narystė baigėsi",
+      "expiredSince": "Baigėsi nuo {date}",
+      "invalid": "Kortelė negaliojanti",
+      "invalidText": "Ši kortelė neatpažinta arba buvo deaktyvuota. Kreipkitės į asociaciją.",
+      "checkedAt": "Patikrinta {date} {time}",
+      "poweredBy": "Patikrinimą užtikrina {appName}"
+    }
+  },
   "site": {
     "sectionLabels": {
       "hero": "Pagrindinė vėliava",
