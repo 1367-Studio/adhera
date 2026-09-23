@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Pasākuma nosaukums",
         "dateEvenement": "Pasākuma datums",
-        "lieuEvenement": "Pasākuma norises vieta"
+        "lieuEvenement": "Pasākuma norises vieta",
+        "dateExpiration": "Derīguma termiņš",
+        "lienRenouvellement": "Atjaunošanas saite"
       },
       "emailBody": "Ziņojuma saturs (e-pasts)",
       "emailBodyPlaceholder": "Sveiki '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP apstiprināts",
         "memberCreated": "Jaunais biedrs",
         "memberBirthday": "Dzimšanas diena",
-        "eventAdherentLapsed": "Neatjaunotā dalība"
+        "eventAdherentLapsed": "Neatjaunotā dalība",
+        "membershipExpiring": "Beidzas dalība"
       },
       "statusLabels": {
         "active": "Aktīva",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j pirms katra notikuma",
         "rsvpConfirmed": "Aktivizēts pēc RSVP apstiprinājuma",
         "memberCreated": "Aktivizēts dalībnieka izveides brīdī",
-        "memberBirthday": "Katra biedra dzimšanas diena"
+        "memberBirthday": "Katra biedra dzimšanas diena",
+        "membershipExpiring": "{days} dienas pirms dalības termiņa beigām",
+        "membershipExpiringToday": "Dalības termiņa beigu dienā"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Dalības apstiprināšana (RSVP)",
         "memberCreated": "Jaunais reģistrētais biedrs",
         "memberBirthday": "Biedra dzimšanas diena",
-        "eventAdherentLapsed": "Neatjaunotā dalība"
+        "eventAdherentLapsed": "Neatjaunotā dalība",
+        "membershipExpiring": "Beidzas dalība"
       },
       "sendDate": "Nosūtīšanas datums",
       "time": "Laiks",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dienas pirms pasākuma",
       "daysBeforeEventHint": "Piemēram: 1 = dienu iepriekš, 3 = 3 dienas pirms",
       "adherentLapsedHint": "Sūta ziņu aktīvajiem biedriem, kuri bija biedri pagājušajā gadā (samaksātas/atbrīvotas biedra naudas), bet vēl nav saņēmuši atbilstošu biedra maksu par pašreizējo gadu. Biedrs, kura biedra statuss ir manuāli piespiests, nekad netiek ietekmēts.",
+      "membershipExpiringHint": "Nosūta atgādinājumu biedriem, kuru dalība (samaksāta biedra nauda) drīz beigsies, N dienas pirms derīguma termiņa beigām. Netiek nosūtīts, ja dalība jau ir atjaunota.",
+      "daysBeforeExpiration": "Dienas pirms termiņa beigām",
+      "daysBeforeExpirationHint": "Piem.: 30 = mēnesi iepriekš, 7 = nedēļu iepriekš, 0 = tajā pašā dienā",
       "birthdayHint": "Automātiski nosūta ziņu katra aktīvā biedra dzimšanas dienā (dienā un mēnesī, neatkarīgi no dzimšanas gada). Tikai viens sūtījums katram biedram gadā.",
       "birthdayNoDateWarningType": "Neviens no aktīvajiem šī tipa dalībniekiem ({count}) nav ievadīts dzimšanas datums — šis noteikums neko nesūtīs, kamēr datums netiks pievienots viņu kartei.",
       "birthdayNoDateWarningAll": "Neviens no jūsu aktīvajiem biedriem ({count}) nav ievadīts dzimšanas datums — šis noteikums neko nesūtīs, kamēr datums netiks pievienots viņu kartei.",

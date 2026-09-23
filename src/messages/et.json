@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Võistluse pealkiri",
         "dateEvenement": "Ürituse kuupäev",
-        "lieuEvenement": "Ürituse toimumiskoht"
+        "lieuEvenement": "Ürituse toimumiskoht",
+        "dateExpiration": "Aegumiskuupäev",
+        "lienRenouvellement": "Uuendamise link"
       },
       "emailBody": "Sõnumi põhiosa (e-post)",
       "emailBodyPlaceholder": "Tere '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP kinnitatud",
         "memberCreated": "Uus liige",
         "memberBirthday": "Sünnipäev",
-        "eventAdherentLapsed": "Mitteuuendatud liikmeskond"
+        "eventAdherentLapsed": "Mitteuuendatud liikmeskond",
+        "membershipExpiring": "Liikmesus aegumas"
       },
       "statusLabels": {
         "active": "Aktiivne",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j enne iga sündmust",
         "rsvpConfirmed": "Käivitub RSVP kinnitusel",
         "memberCreated": "Käivitub liikmete loomisel",
-        "memberBirthday": "Iga liikme sünnipäev"
+        "memberBirthday": "Iga liikme sünnipäev",
+        "membershipExpiring": "{days} päeva enne liikmesuse aegumist",
+        "membershipExpiringToday": "Liikmesuse aegumispäeval"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Osalemise kinnitamine (RSVP)",
         "memberCreated": "Uus registreeritud liige",
         "memberBirthday": "Liikme sünnipäev",
-        "eventAdherentLapsed": "Mitteuuendatud liikmeskond"
+        "eventAdherentLapsed": "Mitteuuendatud liikmeskond",
+        "membershipExpiring": "Liikmesus aegumas"
       },
       "sendDate": "Saatmise kuupäev",
       "time": "Aeg",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Päevad enne sündmust",
       "daysBeforeEventHint": "Näiteks: 1 = päev enne, 3 = 3 päeva enne",
       "adherentLapsedHint": "Saadab sõnumi aktiivsetele liikmetele, kes olid eelmisel aastal liikmed (makstud/vabastatud liikmemaksud), kuid kellel puudub veel heas seisus liikmemaksu käesoleval aastal. Liige, kelle liikmestaatus on käsitsi sunnitud, ei muutu kunagi.",
+      "membershipExpiringHint": "Saadab meeldetuletuse liikmetele, kelle liikmesus (tasutud liikmemaks) on aegumas, N päeva enne aegumiskuupäeva. Ei saadeta kunagi, kui liikmesus on juba uuendatud.",
+      "daysBeforeExpiration": "Päeva enne aegumist",
+      "daysBeforeExpirationHint": "Nt: 30 = kuu aega ette, 7 = nädal ette, 0 = samal päeval",
       "birthdayHint": "Saadab automaatselt sõnumi iga aktiivse liikme sünnipäeval (päev ja kuu, sõltumata sünniaastast). Iga liikme kohta on ainult üks saatmine aastas.",
       "birthdayNoDateWarningType": "Ükski selle tüübi aktiivsetest liikmetest ({count}) ei sisesta sünnikuupäeva — see reegel ei saada midagi enne, kui kaardile on lisatud kuupäev.",
       "birthdayNoDateWarningAll": "Ükski sinu aktiivsetest liikmetest ({count}) ei sisesta sünnikuupäeva — see reegel ei saada midagi enne, kui kaardile on lisatud kuupäev.",

@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Evenemangets titel",
         "dateEvenement": "Evenemangsdatum",
-        "lieuEvenement": "Evenemangsplats"
+        "lieuEvenement": "Evenemangsplats",
+        "dateExpiration": "Utgångsdatum",
+        "lienRenouvellement": "Förnyelselänk"
       },
       "emailBody": "Meddelandetext (e-post)",
       "emailBodyPlaceholder": "Hej '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "OSA bekräftat",
         "memberCreated": "Ny medlem",
         "memberBirthday": "Födelsedag",
-        "eventAdherentLapsed": "Icke förnyat medlemskap"
+        "eventAdherentLapsed": "Icke förnyat medlemskap",
+        "membershipExpiring": "Medlemskap går ut"
       },
       "statusLabels": {
         "active": "Aktiv",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j före varje gren",
         "rsvpConfirmed": "Utlöst vid RSVP-bekräftelse",
         "memberCreated": "Utlöst vid medlemsskapande",
-        "memberBirthday": "Varje medlems födelsedag"
+        "memberBirthday": "Varje medlems födelsedag",
+        "membershipExpiring": "{days} dagar innan medlemskapet går ut",
+        "membershipExpiringToday": "Dagen medlemskapet går ut"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Bekräftelse av deltagande (RSVP)",
         "memberCreated": "Ny registrerad medlem",
         "memberBirthday": "Medlemmens födelsedag",
-        "eventAdherentLapsed": "Icke förnyat medlemskap"
+        "eventAdherentLapsed": "Icke förnyat medlemskap",
+        "membershipExpiring": "Medlemskap går ut"
       },
       "sendDate": "Datum för skickat",
       "time": "Tid",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dagar före evenemanget",
       "daysBeforeEventHint": "Exempel: 1 = dagen innan, 3 = 3 dagar innan",
       "adherentLapsedHint": "Skickar ett meddelande till aktiva medlemmar som var medlemmar förra året (betalda/undantagna avgifter) men ännu inte har någon medlemsavgift i gott skick för innevarande år. En medlem vars medlemskapsstatus har tvingats fram manuellt påverkas aldrig.",
+      "membershipExpiringHint": "Skickar en påminnelse till medlemmar vars medlemskap (betald avgift) snart går ut, N dagar före utgångsdatumet. Skickas aldrig om medlemskapet redan har förnyats.",
+      "daysBeforeExpiration": "Dagar före utgång",
+      "daysBeforeExpirationHint": "T.ex.: 30 = en månad innan, 7 = en vecka innan, 0 = samma dag",
       "birthdayHint": "Skickar automatiskt ett meddelande på varje aktiv medlems födelsedag (dag och månad, oavsett födelseår). Endast en sändning per medlem per år.",
       "birthdayNoDateWarningType": "Inga av de aktiva medlemmarna av denna typ ({count}) har inget födelsedatum angett — denna regel skickar inget förrän ett datum läggs till på deras kort.",
       "birthdayNoDateWarningAll": "Inga av dina aktiva medlemmar ({count}) har inget födelsedatum angett — denna regel skickar inget förrän ett datum läggs till på deras kort.",

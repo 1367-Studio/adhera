@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Tytuł wydarzenia",
         "dateEvenement": "Data wydarzenia",
-        "lieuEvenement": "Miejsce wydarzenia"
+        "lieuEvenement": "Miejsce wydarzenia",
+        "dateExpiration": "Data wygaśnięcia",
+        "lienRenouvellement": "Link do odnowienia"
       },
       "emailBody": "Treść wiadomości (e-mail)",
       "emailBodyPlaceholder": "Cześć '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "Potwierdzenie przyłączenia",
         "memberCreated": "Nowy członek",
         "memberBirthday": "Urodziny",
-        "eventAdherentLapsed": "Członkostwo nieodnowione"
+        "eventAdherentLapsed": "Członkostwo nieodnowione",
+        "membershipExpiring": "Wygasające członkostwo"
       },
       "statusLabels": {
         "active": "Aktywny",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j przed każdym wydarzeniem",
         "rsvpConfirmed": "Wyzwalane po potwierdzeniu RSVP",
         "memberCreated": "Wyzwalane podczas tworzenia członka",
-        "memberBirthday": "Urodziny każdego członka"
+        "memberBirthday": "Urodziny każdego członka",
+        "membershipExpiring": "{days} dni przed wygaśnięciem członkostwa",
+        "membershipExpiringToday": "W dniu wygaśnięcia członkostwa"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Potwierdzenie udziału (RSVP)",
         "memberCreated": "Nowy zarejestrowany członek",
         "memberBirthday": "Urodziny członka",
-        "eventAdherentLapsed": "Członkostwo nieodnowione"
+        "eventAdherentLapsed": "Członkostwo nieodnowione",
+        "membershipExpiring": "Wygasające członkostwo"
       },
       "sendDate": "Data wysłania",
       "time": "Czas",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Kilka dni przed wydarzeniem",
       "daysBeforeEventHint": "Np.: 1 = dzień wcześniej, 3 = 3 dni przed",
       "adherentLapsedHint": "Wysyła wiadomość do aktywnych członków, którzy byli członkami w zeszłym roku (opłacone/zwolnione składki), ale nie mają jeszcze składki członkowskiej w stanie obowiązującym za bieżący rok. Członek, którego status członkowski został ręcznie wymuszony, nigdy nie jest objęty niczym problemem.",
+      "membershipExpiringHint": "Wysyła przypomnienie do członków, których członkostwo (opłacona składka) wkrótce wygaśnie, N dni przed datą wygaśnięcia. Nigdy nie jest wysyłane, jeśli członkostwo zostało już odnowione.",
+      "daysBeforeExpiration": "Dni przed wygaśnięciem",
+      "daysBeforeExpirationHint": "Np.: 30 = miesiąc wcześniej, 7 = tydzień wcześniej, 0 = tego samego dnia",
       "birthdayHint": "Wysyła wiadomość automatycznie w dniu urodzin każdego aktywnego członka (dzień i miesiąc, niezależnie od roku urodzenia). Tylko jedna wiadomość na każdego członka w roku.",
       "birthdayNoDateWarningType": "Żaden z aktywnych członków tego typu ({count}) nie wpisuje daty urodzenia — ta zasada nie wysyła niczego, dopóki data nie zostanie dodana do karty.",
       "birthdayNoDateWarningAll": "Żaden z twoich aktywnych członków ({count}) nie wpisuje daty urodzenia — ta zasada nie wysyła niczego, dopóki data nie zostanie dodana do karty.",

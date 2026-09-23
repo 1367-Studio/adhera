@@ -3373,7 +3373,9 @@
         "montantCotisation": "Fee amount",
         "titreEvenement": "Event title",
         "dateEvenement": "Event date",
-        "lieuEvenement": "Event location"
+        "lieuEvenement": "Event location",
+        "dateExpiration": "Expiration date",
+        "lienRenouvellement": "Renewal link"
       },
       "emailBody": "Message body (email)",
       "emailBodyPlaceholder": "Hello '{{prenom}}',…",
@@ -3414,7 +3416,8 @@
         "rsvpConfirmed": "RSVP confirmed",
         "memberCreated": "New member",
         "memberBirthday": "Birthday",
-        "eventAdherentLapsed": "Membership not renewed"
+        "eventAdherentLapsed": "Membership not renewed",
+        "membershipExpiring": "Membership expiring"
       },
       "statusLabels": {
         "active": "Active",
@@ -3466,7 +3469,9 @@
         "reminderDays": "{days}d before each event",
         "rsvpConfirmed": "Triggered on RSVP confirmation",
         "memberCreated": "Triggered when a member is created",
-        "memberBirthday": "On each member's birthday"
+        "memberBirthday": "On each member's birthday",
+        "membershipExpiring": "{days}d before membership expires",
+        "membershipExpiringToday": "On the day the membership expires"
       }
     },
     "ruleModal": {
@@ -3484,7 +3489,8 @@
         "rsvpConfirmed": "RSVP confirmation",
         "memberCreated": "New member registered",
         "memberBirthday": "Member's birthday",
-        "eventAdherentLapsed": "Membership not renewed"
+        "eventAdherentLapsed": "Membership not renewed",
+        "membershipExpiring": "Membership expiring"
       },
       "sendDate": "Send date",
       "time": "Time",
@@ -3518,6 +3524,9 @@
       "daysBeforeEvent": "Days before the event",
       "daysBeforeEventHint": "E.g.: 1 = the day before, 3 = 3 days before",
       "adherentLapsedHint": "Sends a message to active members who were members last year (fee paid/exempted) but don't yet have a valid fee for the current year. A member whose membership status was manually forced is never affected.",
+      "membershipExpiringHint": "Sends a reminder to members whose membership (paid dues) is about to expire, N days before its expiration date. Never sent if the membership has already been renewed.",
+      "daysBeforeExpiration": "Days before expiration",
+      "daysBeforeExpirationHint": "E.g. 30 = one month before, 7 = one week before, 0 = on the day itself",
       "birthdayHint": "Automatically sends a message on each active member's birthday (day and month, regardless of birth year). One send per member per year.",
       "birthdayNoDateWarningType": "None of the active members of this type ({count}) have a birth date on file — this rule won't send anything until a date is added to their profile.",
       "birthdayNoDateWarningAll": "None of your active members ({count}) have a birth date on file — this rule won't send anything until a date is added to their profile.",

@@ -7,6 +7,7 @@ import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { APP_URL } from "@/lib/env"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -39,6 +40,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     titreEvenement:     "Événement de test",
     dateEvenement:      new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
     lieuEvenement:      "Salle des fêtes",
+    dateExpiration:     new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+    lienRenouvellement: `${APP_URL}/${rule.association.slug}/adhesion/exemple`,
   })
 
   const subject = `[TEST] ${substituteVars(rule.template.subject, vars)}`

@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Titlu tal-Avveniment",
         "dateEvenement": "Data tal-avveniment",
-        "lieuEvenement": "Post tal-Avveniment"
+        "lieuEvenement": "Post tal-Avveniment",
+        "dateExpiration": "Data tal-iskadenza",
+        "lienRenouvellement": "Link ta' tiġdid"
       },
       "emailBody": "Korp tal-messaġġ (email)",
       "emailBodyPlaceholder": "Ħello '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP ikkonfermat",
         "memberCreated": "Membru Ġdid",
         "memberBirthday": "Għeluq sninu",
-        "eventAdherentLapsed": "Membri Mhux Rinnovati"
+        "eventAdherentLapsed": "Membri Mhux Rinnovati",
+        "membershipExpiring": "Sħubija tiskadi"
       },
       "statusLabels": {
         "active": "Attiv",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j qabel kull avveniment",
         "rsvpConfirmed": "Attivata fuq konferma ta' RSVP",
         "memberCreated": "Attivata fil-ħolqien tal-membri",
-        "memberBirthday": "Il-jum tat-twelid ta' kull membru"
+        "memberBirthday": "Il-jum tat-twelid ta' kull membru",
+        "membershipExpiring": "{days} jum qabel tiskadi s-sħubija",
+        "membershipExpiringToday": "Fil-jum tal-iskadenza tas-sħubija"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Konferma tal-Parteċipazzjoni (RSVP)",
         "memberCreated": "Membru ġdid irreġistrat",
         "memberBirthday": "Il-jum tat-twelid tal-membru",
-        "eventAdherentLapsed": "Membri Mhux Rinnovati"
+        "eventAdherentLapsed": "Membri Mhux Rinnovati",
+        "membershipExpiring": "Sħubija tiskadi"
       },
       "sendDate": "Data mibgħuta",
       "time": "Ħin",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Jiem qabel l-avveniment",
       "daysBeforeEventHint": "Eż.: 1 = il-ġurnata ta' qabel, 3 = 3 ijiem qabel",
       "adherentLapsedHint": "Jibgħat messaġġ lill-membri attivi li kienu membri is-sena l-oħra (ħlas imħallas/eżentati) iżda għadhom m'għandhomx ħlas ta' sħubija f'kundizzjoni tajba għas-sena kurrenti. Membru li l-istatus ta' membru tiegħu ġie forzat manwalment qatt ma jiġi affettwat.",
+      "membershipExpiringHint": "Jibgħat tfakkira lill-membri li s-sħubija tagħhom (kontribuzzjoni mħallsa) waslet biex tiskadi, N ijiem qabel id-data tal-iskadenza. Qatt ma jintbagħat jekk is-sħubija tkun diġà ġġeddet.",
+      "daysBeforeExpiration": "Ijiem qabel l-iskadenza",
+      "daysBeforeExpirationHint": "Eż.: 30 = xahar qabel, 7 = ġimgħa qabel, 0 = fl-istess jum",
       "birthdayHint": "Jibgħat messaġġ awtomatikament fil-jum tat-twelid ta' kull membru attiv (jum u xahar, irrispettivament mis-sena tat-twelid). Jibgħat biss wieħed għal kull membru fis-sena.",
       "birthdayNoDateWarningType": "L-ebda membru attiv ta' dan it-tip ({count}) m'għandux data tat-twelid imdaħħal — din ir-regola ma tibgħatx xejn sakemm data tiżdied mal-karta tagħhom.",
       "birthdayNoDateWarningAll": "L-ebda wieħed mill-membri attivi tiegħek ({count}) m'għandux data tat-twelid imdaħħal — din ir-regola ma tibgħatx xejn sakemm data tiżdied mal-karta tagħhom.",

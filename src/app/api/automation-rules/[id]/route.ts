@@ -2,7 +2,11 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
-import { computeNextRunAt, birthdayRecipientsConflict, isBirthdayConflictError, BIRTHDAY_CONFLICT_MESSAGE } from "@/lib/automation"
+import {
+  computeNextRunAt,
+  birthdayRecipientsConflict, isBirthdayConflictError, BIRTHDAY_CONFLICT_MESSAGE,
+  membershipExpiringConflict, isMembershipExpiringConflictError, MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE,
+} from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
@@ -11,7 +15,7 @@ const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const schema = z.object({
   name:          z.string().min(1).max(100).optional(),
   templateId:    z.string().min(1).optional(),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]).optional(),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED", "MEMBERSHIP_EXPIRING"]).optional(),
   triggerConfig: z.record(z.string(), z.unknown()).optional(),
   recipients:    z.string().optional(),
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).optional(),
@@ -55,7 +59,29 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const include = { template: { select: { name: true, active: true } } }
 
   let updated
-  if (triggerType === "MEMBER_BIRTHDAY" && status === "ACTIVE") {
+  if (triggerType === "MEMBERSHIP_EXPIRING" && status === "ACTIVE") {
+    // Same guard as on create: block an active rule whose daysBefore and recipients overlap
+    // another active one.
+    const daysBefore = (triggerConfig as Record<string, unknown>).daysBefore
+    try {
+      updated = await prisma.$transaction(async tx => {
+        const others = await tx.automationRule.findMany({
+          where:  { associationId, id: { not: id }, triggerType: "MEMBERSHIP_EXPIRING", status: "ACTIVE" },
+          select: { recipients: true, triggerConfig: true },
+        })
+        const sameInterval = others.filter(o => (o.triggerConfig as Record<string, unknown>).daysBefore === daysBefore)
+        if (membershipExpiringConflict(recipients, sameInterval.map(o => o.recipients))) {
+          throw new Error(MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE)
+        }
+        return tx.automationRule.update({ where: { id }, data, include })
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
+    } catch (err) {
+      if (isMembershipExpiringConflictError(err)) {
+        return NextResponse.json({ error: "Une règle Adhésion expirante active existe déjà avec le même délai et des destinataires qui se chevauchent." }, { status: 409 })
+      }
+      throw err
+    }
+  } else if (triggerType === "MEMBER_BIRTHDAY" && status === "ACTIVE") {
     // Same guard as on create: block an active MEMBER_BIRTHDAY rule whose recipients
     // overlap another active one. Check + update run in one serializable transaction so
     // two concurrent requests can't both pass the check before either commits.

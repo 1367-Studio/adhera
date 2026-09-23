@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Renginio pavadinimas",
         "dateEvenement": "Renginio data",
-        "lieuEvenement": "Renginio vieta"
+        "lieuEvenement": "Renginio vieta",
+        "dateExpiration": "Galiojimo pabaigos data",
+        "lienRenouvellement": "Atnaujinimo nuoroda"
       },
       "emailBody": "Žinutės turinys (el. paštas)",
       "emailBodyPlaceholder": "Labas '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP patvirtintas",
         "memberCreated": "Naujas narys",
         "memberBirthday": "Gimtadienis",
-        "eventAdherentLapsed": "Neatnaujinta narystė"
+        "eventAdherentLapsed": "Neatnaujinta narystė",
+        "membershipExpiring": "Baigiasi narystė"
       },
       "statusLabels": {
         "active": "Aktyvus",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j prieš kiekvieną renginį",
         "rsvpConfirmed": "Suaktyvinta patvirtinus RSVP",
         "memberCreated": "Suaktyvinta sukūrus narį",
-        "memberBirthday": "Kiekvieno nario gimtadienis"
+        "memberBirthday": "Kiekvieno nario gimtadienis",
+        "membershipExpiring": "Liko {days} d. iki narystės pabaigos",
+        "membershipExpiringToday": "Narystės pabaigos dieną"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Dalyvavimo patvirtinimas (RSVP)",
         "memberCreated": "Naujas registruotas narys",
         "memberBirthday": "Nario gimtadienis",
-        "eventAdherentLapsed": "Neatnaujinta narystė"
+        "eventAdherentLapsed": "Neatnaujinta narystė",
+        "membershipExpiring": "Baigiasi narystė"
       },
       "sendDate": "Siuntimo data",
       "time": "Laikas",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dienos prieš renginį",
       "daysBeforeEventHint": "Pvz.: 1 = diena prieš, 3 = 3 dienos prieš",
       "adherentLapsedHint": "Siunčia žinutę aktyviems nariams, kurie buvo nariais praėjusiais metais (sumokėti/atleisti nario mokesčiai), bet dar neturi tinkamo narystės mokesčio už einamuosius metus. Narys, kurio narystės statusas buvo rankiniu būdu priverstas, niekada nėra paveiktas.",
+      "membershipExpiringHint": "Siunčia priminimą nariams, kurių narystė (apmokėtas mokestis) netrukus baigiasi, N dienų prieš galiojimo pabaigos datą. Niekada nesiunčiama, jei narystė jau atnaujinta.",
+      "daysBeforeExpiration": "Dienų iki galiojimo pabaigos",
+      "daysBeforeExpirationHint": "Pvz.: 30 = likus mėnesiui, 7 = likus savaitei, 0 = tą pačią dieną",
       "birthdayHint": "Automatiškai siunčia žinutę kiekvieno aktyvaus nario gimimo dieną (dieną ir mėnesį, nepriklausomai nuo gimimo metų). Per metus kiekvienam nariui siunčiama tik po vieną žinutę.",
       "birthdayNoDateWarningType": "Nė vienas iš aktyvių šio tipo narių ({count}) neįveda gimimo datos — ši taisyklė nieko nesiunčia, kol kortelėje nebus pridėta data.",
       "birthdayNoDateWarningAll": "Nė vienas iš jūsų aktyvių narių ({count}) neįveda gimimo datos — ši taisyklė nieko nesiunčia, kol kortelėje nebus pridėta data.",

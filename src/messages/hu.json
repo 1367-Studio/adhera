@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Esemény címe",
         "dateEvenement": "Az esemény dátuma",
-        "lieuEvenement": "Az esemény helyszíne"
+        "lieuEvenement": "Az esemény helyszíne",
+        "dateExpiration": "Lejárati dátum",
+        "lienRenouvellement": "Megújítási link"
       },
       "emailBody": "Üzenet törzse (e-mail)",
       "emailBodyPlaceholder": "Helló '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP megerősítve",
         "memberCreated": "Új tag",
         "memberBirthday": "Születésnap",
-        "eventAdherentLapsed": "Nem megújított tagság"
+        "eventAdherentLapsed": "Nem megújított tagság",
+        "membershipExpiring": "Tagság lejár"
       },
       "statusLabels": {
         "active": "Aktív",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j minden esemény előtt",
         "rsvpConfirmed": "A RSVP megerősítése után aktiválódik",
         "memberCreated": "Tag létrehozásakor aktiválódik",
-        "memberBirthday": "Minden tag születésnapja"
+        "memberBirthday": "Minden tag születésnapja",
+        "membershipExpiring": "{days} nappal a tagság lejárata előtt",
+        "membershipExpiringToday": "A tagság lejáratának napján"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Részvétel megerősítése (RSVP)",
         "memberCreated": "Új regisztrált tag",
         "memberBirthday": "A tag születésnapja",
-        "eventAdherentLapsed": "Nem megújított tagság"
+        "eventAdherentLapsed": "Nem megújított tagság",
+        "membershipExpiring": "Tagság lejár"
       },
       "sendDate": "Küldés dátuma",
       "time": "Idő",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Napokkal az esemény előtt",
       "daysBeforeEventHint": "Példa: 1 = előző nap, 3 = 3 nappal korábban",
       "adherentLapsedHint": "Üzenetet küld azoknak az aktív tagoknak, akik tavaly tagságok voltak (fizetett/mentesültek), de még nincs jó rangú tagságuk az adott évre. Az a tag, akinek tagsági státuszát manuálisan kényszerítették, soha nem érintett.",
+      "membershipExpiringHint": "Emlékeztetőt küld azoknak a tagoknak, akiknek tagsága (befizetett tagdíj) hamarosan lejár, N nappal a lejárati dátum előtt. Soha nem küldi el, ha a tagságot már megújították.",
+      "daysBeforeExpiration": "Nap a lejárat előtt",
+      "daysBeforeExpirationHint": "Pl.: 30 = egy hónappal előtte, 7 = egy héttel előtte, 0 = a lejárat napján",
       "birthdayHint": "Minden aktív tag születésnapján (nap és hónap, születési évtől függetlenül) automatikusan küld üzenetet. Évente csak egy küldés tagonként.",
       "birthdayNoDateWarningType": "Egyik aktív tag sem ezen a típusnak ({count}) nem írja be a születési dátumot — ez a szabály nem küld semmit, amíg nem adnak hozzá egy dátumot a kártyájukra.",
       "birthdayNoDateWarningAll": "Egyik aktív tagod sem ({count}) nem írja be a születési dátumot — ez a szabály nem küld semmit, amíg nem adnak hozzá egy dátumot a kártyájukra.",

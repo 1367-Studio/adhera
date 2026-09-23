@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Tapahtuman nimi",
         "dateEvenement": "Tapahtuman päivämäärä",
-        "lieuEvenement": "Tapahtumapaikka"
+        "lieuEvenement": "Tapahtumapaikka",
+        "dateExpiration": "Vanhenemispäivä",
+        "lienRenouvellement": "Uusimislinkki"
       },
       "emailBody": "Viestin runko (sähköposti)",
       "emailBodyPlaceholder": "Hei '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP vahvistettu",
         "memberCreated": "Uusi jäsen",
         "memberBirthday": "Syntymäpäivä",
-        "eventAdherentLapsed": "Uusimaton jäsenyys"
+        "eventAdherentLapsed": "Uusimaton jäsenyys",
+        "membershipExpiring": "Jäsenyys vanhenemassa"
       },
       "statusLabels": {
         "active": "Aktiivinen",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j ennen jokaista tapahtumaa",
         "rsvpConfirmed": "Aktivoitui RSVP-vahvistuksen yhteydessä",
         "memberCreated": "Aktivoituu jäsenten luomisessa",
-        "memberBirthday": "Jokaisen jäsenen syntymäpäivä"
+        "memberBirthday": "Jokaisen jäsenen syntymäpäivä",
+        "membershipExpiring": "{days} pv ennen jäsenyyden vanhenemista",
+        "membershipExpiringToday": "Jäsenyyden vanhenemispäivänä"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Osallistumisen vahvistus (RSVP)",
         "memberCreated": "Uusi rekisteröity jäsen",
         "memberBirthday": "Jäsenen syntymäpäivä",
-        "eventAdherentLapsed": "Uusimaton jäsenyys"
+        "eventAdherentLapsed": "Uusimaton jäsenyys",
+        "membershipExpiring": "Jäsenyys vanhenemassa"
       },
       "sendDate": "Lähetyspäivä",
       "time": "Aika",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Päiviä ennen tapahtumaa",
       "daysBeforeEventHint": "Esim. 1 = edellisenä päivänä, 3 = 3 päivää ennen",
       "adherentLapsedHint": "Lähettää viestin aktiivisille jäsenille, jotka olivat jäseniä viime vuonna (maksetut/vapautetut jäsenmaksut), mutta joilla ei vielä ole jäsenmaksua voimassa olevalle vuodelle. Jäsen, jonka jäsenstatusta on pakotettu manuaalisesti, ei koskaan vaikuta.",
+      "membershipExpiringHint": "Lähettää muistutuksen jäsenille, joiden jäsenyys (maksettu jäsenmaksu) on vanhenemassa, N päivää ennen vanhenemispäivää. Ei koskaan lähetetä, jos jäsenyys on jo uusittu.",
+      "daysBeforeExpiration": "Päivää ennen vanhenemista",
+      "daysBeforeExpirationHint": "Esim.: 30 = kuukausi etukäteen, 7 = viikko etukäteen, 0 = samana päivänä",
       "birthdayHint": "Lähettää viestin automaattisesti jokaisen aktiivisen jäsenen syntymäpäivänä (päivä ja kuukausi, syntymävuodesta riippumatta). Vain yksi lähetys per jäsen vuodessa.",
       "birthdayNoDateWarningType": "Yksikään tämän tyyppisistä aktiivisista jäsenistä ({count}) ei ole syöttänyt syntymäpäivää — tämä sääntö ei lähetä mitään ennen kuin korttiin lisätään päivämäärä.",
       "birthdayNoDateWarningAll": "Yksikään aktiivisista jäsenistäsi ({count}) ei ole syöttänyt syntymäpäivää — tämä sääntö ei lähetä mitään ennen kuin korttiin lisätään päivämäärä.",

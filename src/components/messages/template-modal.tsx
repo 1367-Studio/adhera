@@ -48,16 +48,24 @@ function buildSchema(t: ReturnType<typeof useTranslations>) {
 type FormValues = z.infer<ReturnType<typeof buildSchema>>
 
 const PREVIEW_VARS = buildVars({
-  prenom:            "Prénom",
-  nom:               "Nom",
-  email:             "prenom.nom@example.com",
-  association:       "Votre association",
-  slug:              "demo",
-  anneeCotisation:   new Date().getFullYear(),
-  montantCotisation: "50",
-  titreEvenement:    "Événement de test",
-  dateEvenement:     new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
-  lieuEvenement:     "Salle des fêtes",
+  prenom:             "Prénom",
+  nom:                "Nom",
+  email:              "prenom.nom@example.com",
+  association:        "Votre association",
+  slug:               "demo",
+  anneeCotisation:    new Date().getFullYear(),
+  montantCotisation:  "50",
+  titreEvenement:     "Événement de test",
+  dateEvenement:      new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
+  lieuEvenement:      "Salle des fêtes",
+  dateExpiration:     new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+  // Domain-less on purpose — this is a substitution preview, not a real destination. A fake
+  // absolute URL on an unrelated-looking domain (an earlier version of this used
+  // "https://exemple.formwise.fr/...") reads as a mistake or a broken/suspicious link if an
+  // admin clicks it from the preview; a path with no domain instead resolves back into this
+  // same app (a harmless 404) if clicked, exactly like the rest of this preview's fake data
+  // (fake amount, fake event name) isn't meant to be real either.
+  lienRenouvellement: "/mon-asso/adhesion/exemple",
 })
 
 interface Props {
@@ -71,17 +79,19 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
   const templateCategoryLabels = getTemplateCategoryLabels(t)
   const categoryOptions = TEMPLATE_CATEGORIES.map(value => ({ value, label: templateCategoryLabels[value] }))
   const variables = [
-    { token: "{{prenom}}",             label: t("messages.templateModal.variables.prenom") },
-    { token: "{{nom}}",                label: t("messages.templateModal.variables.nom") },
-    { token: "{{nom_complet}}",        label: t("messages.templateModal.variables.nomComplet") },
-    { token: "{{email}}",              label: t("messages.templateModal.variables.email") },
-    { token: "{{association}}",        label: t("messages.templateModal.variables.association") },
-    { token: "{{lien_portal}}",        label: t("messages.templateModal.variables.lienPortal") },
-    { token: "{{annee_cotisation}}",   label: t("messages.templateModal.variables.anneeCotisation") },
-    { token: "{{montant_cotisation}}", label: t("messages.templateModal.variables.montantCotisation") },
-    { token: "{{titre_evenement}}",    label: t("messages.templateModal.variables.titreEvenement") },
-    { token: "{{date_evenement}}",     label: t("messages.templateModal.variables.dateEvenement") },
-    { token: "{{lieu_evenement}}",     label: t("messages.templateModal.variables.lieuEvenement") },
+    { token: "{{prenom}}",               label: t("messages.templateModal.variables.prenom") },
+    { token: "{{nom}}",                  label: t("messages.templateModal.variables.nom") },
+    { token: "{{nom_complet}}",          label: t("messages.templateModal.variables.nomComplet") },
+    { token: "{{email}}",                label: t("messages.templateModal.variables.email") },
+    { token: "{{association}}",          label: t("messages.templateModal.variables.association") },
+    { token: "{{lien_portal}}",          label: t("messages.templateModal.variables.lienPortal") },
+    { token: "{{annee_cotisation}}",     label: t("messages.templateModal.variables.anneeCotisation") },
+    { token: "{{montant_cotisation}}",   label: t("messages.templateModal.variables.montantCotisation") },
+    { token: "{{titre_evenement}}",      label: t("messages.templateModal.variables.titreEvenement") },
+    { token: "{{date_evenement}}",       label: t("messages.templateModal.variables.dateEvenement") },
+    { token: "{{lieu_evenement}}",       label: t("messages.templateModal.variables.lieuEvenement") },
+    { token: "{{date_expiration}}",      label: t("messages.templateModal.variables.dateExpiration") },
+    { token: "{{lien_renouvellement}}",  label: t("messages.templateModal.variables.lienRenouvellement") },
   ]
 
   const isEditing = !!template
