@@ -7,6 +7,7 @@ import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { APP_URL } from "@/lib/env"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -26,16 +27,18 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!adminEmail) return NextResponse.json({ error: "Email admin introuvable" }, { status: 400 })
 
   const vars = buildVars({
-    prenom:            u?.name?.split(" ")[0] ?? "Prénom",
-    nom:               u?.name?.split(" ").slice(1).join(" ") ?? "Nom",
-    email:             adminEmail,
-    association:       template.association.name,
-    slug:              template.association.slug,
-    anneeCotisation:   new Date().getFullYear(),
-    montantCotisation: "50",
-    titreEvenement:    "Événement de test",
-    dateEvenement:     new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
-    lieuEvenement:     "Salle des fêtes",
+    prenom:             u?.name?.split(" ")[0] ?? "Prénom",
+    nom:                u?.name?.split(" ").slice(1).join(" ") ?? "Nom",
+    email:              adminEmail,
+    association:        template.association.name,
+    slug:               template.association.slug,
+    anneeCotisation:    new Date().getFullYear(),
+    montantCotisation:  "50",
+    titreEvenement:     "Événement de test",
+    dateEvenement:      new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" }),
+    lieuEvenement:      "Salle des fêtes",
+    dateExpiration:     new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+    lienRenouvellement: `${APP_URL}/${template.association.slug}/adhesion/exemple`,
   })
 
   const subject  = `[TEST] ${substituteVars(template.subject, vars)}`

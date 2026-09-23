@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Begivenhedstitel",
         "dateEvenement": "Begivenhedsdato",
-        "lieuEvenement": "Eventsted"
+        "lieuEvenement": "Eventsted",
+        "dateExpiration": "Udløbsdato",
+        "lienRenouvellement": "Fornyelseslink"
       },
       "emailBody": "Beskedtekst (e-mail)",
       "emailBodyPlaceholder": "Hej '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP bekræftet",
         "memberCreated": "Nyt medlem",
         "memberBirthday": "Fødselsdag",
-        "eventAdherentLapsed": "Ikke-fornyet medlemskab"
+        "eventAdherentLapsed": "Ikke-fornyet medlemskab",
+        "membershipExpiring": "Medlemskab udløber"
       },
       "statusLabels": {
         "active": "Aktiv",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j før hver begivenhed",
         "rsvpConfirmed": "Udløst ved RSVP-bekræftelse",
         "memberCreated": "Udløst ved medlemsoprettelse",
-        "memberBirthday": "Hver medlems fødselsdag"
+        "memberBirthday": "Hver medlems fødselsdag",
+        "membershipExpiring": "{days} dage før medlemskabet udløber",
+        "membershipExpiringToday": "På dagen medlemskabet udløber"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Bekræftelse af deltagelse (RSVP)",
         "memberCreated": "Nyt registreret medlem",
         "memberBirthday": "Medlemmets fødselsdag",
-        "eventAdherentLapsed": "Ikke-fornyet medlemskab"
+        "eventAdherentLapsed": "Ikke-fornyet medlemskab",
+        "membershipExpiring": "Medlemskab udløber"
       },
       "sendDate": "Afsendelsesdato",
       "time": "Tidspunkt",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dage før begivenheden",
       "daysBeforeEventHint": "F.eks.: 1 = dagen før, 3 = 3 dage før",
       "adherentLapsedHint": "Sender en besked til aktive medlemmer, der var medlemmer sidste år (betalt/fritaget kontingent), men som endnu ikke har et medlemsgebyr i god stand for det nuværende år. Et medlem, hvis medlemsstatus er blevet manuelt tvunget på, bliver aldrig påvirket.",
+      "membershipExpiringHint": "Sender en påmindelse til medlemmer, hvis medlemskab (betalt kontingent) snart udløber, N dage før udløbsdatoen. Sendes aldrig, hvis medlemskabet allerede er fornyet.",
+      "daysBeforeExpiration": "Dage før udløb",
+      "daysBeforeExpirationHint": "F.eks.: 30 = en måned før, 7 = en uge før, 0 = på selve dagen",
       "birthdayHint": "Sender automatisk en besked på hvert aktivt medlems fødselsdag (dag og måned, uanset fødselsår). Kun én afsendelse pr. medlem pr. år.",
       "birthdayNoDateWarningType": "Ingen af de aktive medlemmer af denne type ({count}) har ingen fødselsdato indtastet — denne regel sender ikke noget, før en dato er tilføjet til deres kort.",
       "birthdayNoDateWarningAll": "Ingen af dine aktive medlemmer ({count}) har ingen fødselsdato indtastet — denne regel sender ikke noget, før en dato er tilføjet til deres kort.",

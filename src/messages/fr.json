@@ -3361,7 +3361,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Titre événement",
         "dateEvenement": "Date événement",
-        "lieuEvenement": "Lieu événement"
+        "lieuEvenement": "Lieu événement",
+        "dateExpiration": "Date d'expiration",
+        "lienRenouvellement": "Lien de renouvellement"
       },
       "emailBody": "Corps du message (email)",
       "emailBodyPlaceholder": "Bonjour '{{prenom}}',…",
@@ -3402,7 +3404,8 @@
         "rsvpConfirmed": "RSVP confirmé",
         "memberCreated": "Nouveau membre",
         "memberBirthday": "Anniversaire",
-        "eventAdherentLapsed": "Adhésion non renouvelée"
+        "eventAdherentLapsed": "Adhésion non renouvelée",
+        "membershipExpiring": "Adhésion expirante"
       },
       "statusLabels": {
         "active": "Active",
@@ -3454,7 +3457,9 @@
         "reminderDays": "{days}j avant chaque événement",
         "rsvpConfirmed": "Déclenché à la confirmation RSVP",
         "memberCreated": "Déclenché à la création du membre",
-        "memberBirthday": "Le jour de l'anniversaire de chaque membre"
+        "memberBirthday": "Le jour de l'anniversaire de chaque membre",
+        "membershipExpiring": "{days}j avant expiration de l'adhésion",
+        "membershipExpiringToday": "Le jour de l'expiration de l'adhésion"
       }
     },
     "ruleModal": {
@@ -3472,7 +3477,8 @@
         "rsvpConfirmed": "Confirmation de participation (RSVP)",
         "memberCreated": "Nouveau membre inscrit",
         "memberBirthday": "Anniversaire du membre",
-        "eventAdherentLapsed": "Adhésion non renouvelée"
+        "eventAdherentLapsed": "Adhésion non renouvelée",
+        "membershipExpiring": "Adhésion arrivant à expiration"
       },
       "sendDate": "Date d'envoi",
       "time": "Heure",
@@ -3506,6 +3512,9 @@
       "daysBeforeEvent": "Jours avant l'événement",
       "daysBeforeEventHint": "Ex: 1 = la veille, 3 = 3 jours avant",
       "adherentLapsedHint": "Envoie un message aux membres actifs qui étaient adhérents l'année dernière (cotisation payée/exonérée) mais n'ont pas encore de cotisation en règle pour l'année en cours. Un membre dont le statut d'adhésion a été forcé manuellement n'est jamais concerné.",
+      "membershipExpiringHint": "Envoie un rappel aux membres dont l'adhésion (cotisation payée) arrive à expiration, N jours avant la date de fin de validité. N'est jamais envoyé si l'adhésion a déjà été renouvelée.",
+      "daysBeforeExpiration": "Jours avant expiration",
+      "daysBeforeExpirationHint": "Ex: 30 = un mois avant, 7 = une semaine avant, 0 = le jour même",
       "birthdayHint": "Envoie un message automatiquement le jour de l'anniversaire de chaque membre actif (jour et mois, indépendamment de l'année de naissance). Un seul envoi par membre et par an.",
       "birthdayNoDateWarningType": "Aucun des membres actifs de ce type ({count}) n'a de date de naissance renseignée — cette règle ne va rien envoyer tant qu'aucune date n'est ajoutée sur leur fiche.",
       "birthdayNoDateWarningAll": "Aucun de vos membres actifs ({count}) n'a de date de naissance renseignée — cette règle ne va rien envoyer tant qu'aucune date n'est ajoutée sur leur fiche.",

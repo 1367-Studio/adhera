@@ -3275,7 +3275,9 @@
         "montantCotisation": "Valor da quota",
         "titreEvenement": "Título do evento",
         "dateEvenement": "Data do evento",
-        "lieuEvenement": "Local do evento"
+        "lieuEvenement": "Local do evento",
+        "dateExpiration": "Data de expiração",
+        "lienRenouvellement": "Ligação de renovação"
       },
       "emailBody": "Corpo da mensagem (e-mail)",
       "emailBodyPlaceholder": "Olá '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP confirmado",
         "memberCreated": "Novo membro",
         "memberBirthday": "Aniversário",
-        "eventAdherentLapsed": "Associação não renovada"
+        "eventAdherentLapsed": "Associação não renovada",
+        "membershipExpiring": "Adesão a expirar"
       },
       "statusLabels": {
         "active": "Ativa",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}d antes de cada evento",
         "rsvpConfirmed": "Acionado na confirmação do RSVP",
         "memberCreated": "Acionado na criação do membro",
-        "memberBirthday": "No dia do aniversário de cada membro"
+        "memberBirthday": "No dia do aniversário de cada membro",
+        "membershipExpiring": "{days}d antes da expiração da adesão",
+        "membershipExpiringToday": "No dia da expiração da adesão"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Confirmação de participação (RSVP)",
         "memberCreated": "Novo membro registado",
         "memberBirthday": "Aniversário do membro",
-        "eventAdherentLapsed": "Associação não renovada"
+        "eventAdherentLapsed": "Associação não renovada",
+        "membershipExpiring": "Adesão a expirar"
       },
       "sendDate": "Data de envio",
       "time": "Hora",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dias antes do evento",
       "daysBeforeEventHint": "Ex.: 1 = na véspera, 3 = 3 dias antes",
       "adherentLapsedHint": "Envia uma mensagem aos membros ativos que eram associados no ano anterior (quota paga/isenta) mas ainda não têm uma quota em dia para o ano atual. Um membro cujo estado de associação tenha sido forçado manualmente nunca é afetado.",
+      "membershipExpiringHint": "Envia um lembrete aos membros cuja adesão (quotização paga) está prestes a expirar, N dias antes da data de expiração. Nunca é enviado se a adesão já tiver sido renovada.",
+      "daysBeforeExpiration": "Dias antes da expiração",
+      "daysBeforeExpirationHint": "Ex.: 30 = um mês antes, 7 = uma semana antes, 0 = no próprio dia",
       "birthdayHint": "Envia automaticamente uma mensagem no dia do aniversário de cada membro ativo (dia e mês, independentemente do ano de nascimento). Um único envio por membro e por ano.",
       "birthdayNoDateWarningType": "Nenhum dos membros ativos deste tipo ({count}) tem uma data de nascimento registada — esta regra não enviará nada até que uma data seja adicionada ao seu registo.",
       "birthdayNoDateWarningAll": "Nenhum dos seus membros ativos ({count}) tem uma data de nascimento registada — esta regra não enviará nada até que uma data seja adicionada ao seu registo.",

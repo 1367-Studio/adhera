@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Naslov događaja",
         "dateEvenement": "Datum događaja",
-        "lieuEvenement": "Mjesto održavanja događaja"
+        "lieuEvenement": "Mjesto održavanja događaja",
+        "dateExpiration": "Datum isteka",
+        "lienRenouvellement": "Poveznica za obnovu"
       },
       "emailBody": "Tijelo poruke (email)",
       "emailBodyPlaceholder": "Bok '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP potvrđen",
         "memberCreated": "Novi član",
         "memberBirthday": "Rođendan",
-        "eventAdherentLapsed": "Neobnovljeno članstvo"
+        "eventAdherentLapsed": "Neobnovljeno članstvo",
+        "membershipExpiring": "Članstvo istječe"
       },
       "statusLabels": {
         "active": "Aktivno",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j prije svakog događaja",
         "rsvpConfirmed": "Aktivirano potvrdom RSVP-a",
         "memberCreated": "Pokreće se prilikom stvaranja člana",
-        "memberBirthday": "Rođendan svakog člana"
+        "memberBirthday": "Rođendan svakog člana",
+        "membershipExpiring": "{days} dana prije isteka članstva",
+        "membershipExpiringToday": "Na dan isteka članstva"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Potvrda sudjelovanja (RSVP)",
         "memberCreated": "Novi registrirani član",
         "memberBirthday": "Rođendan člana",
-        "eventAdherentLapsed": "Neobnovljeno članstvo"
+        "eventAdherentLapsed": "Neobnovljeno članstvo",
+        "membershipExpiring": "Članstvo istječe"
       },
       "sendDate": "Datum slanja",
       "time": "Vrijeme",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Dani prije događaja",
       "daysBeforeEventHint": "Primjer: 1 = dan prije, 3 = 3 dana prije",
       "adherentLapsedHint": "Šalje poruku aktivnim članovima koji su bili članovi prošle godine (plaćene/oslobođene članarine), ali još nemaju članarinu u dobrom statusu za tekuću godinu. Član čiji je status članstva ručno nametnut nikada nije pogođen.",
+      "membershipExpiringHint": "Šalje podsjetnik članovima čije članstvo (plaćena članarina) uskoro istječe, N dana prije datuma isteka. Nikada se ne šalje ako je članstvo već obnovljeno.",
+      "daysBeforeExpiration": "Dana prije isteka",
+      "daysBeforeExpirationHint": "Npr.: 30 = mjesec dana prije, 7 = tjedan dana prije, 0 = na sam dan",
       "birthdayHint": "Automatski šalje poruku na rođendan svakog aktivnog člana (dan i mjesec, bez obzira na godinu rođenja). Samo jedna poruka po članu godišnje.",
       "birthdayNoDateWarningType": "Nijedan od aktivnih članova ovog tipa ({count}) nema unesen datum rođenja — ovo pravilo neće poslati ništa dok im se datum ne doda na karticu.",
       "birthdayNoDateWarningAll": "Nitko od vaših aktivnih članova ({count}) nema unesen datum rođenja — ovo pravilo neće poslati ništa dok im se datum ne doda na karticu.",

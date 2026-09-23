@@ -3275,7 +3275,9 @@
         "montantCotisation": "Importe de la cuota",
         "titreEvenement": "Título del evento",
         "dateEvenement": "Fecha del evento",
-        "lieuEvenement": "Lugar del evento"
+        "lieuEvenement": "Lugar del evento",
+        "dateExpiration": "Fecha de vencimiento",
+        "lienRenouvellement": "Enlace de renovación"
       },
       "emailBody": "Cuerpo del mensaje (correo)",
       "emailBodyPlaceholder": "Hola '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP confirmado",
         "memberCreated": "Nuevo miembro",
         "memberBirthday": "Cumpleaños",
-        "eventAdherentLapsed": "Membresía no renovada"
+        "eventAdherentLapsed": "Membresía no renovada",
+        "membershipExpiring": "Membresía por vencer"
       },
       "statusLabels": {
         "active": "Activa",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}d antes de cada evento",
         "rsvpConfirmed": "Activado al confirmar el RSVP",
         "memberCreated": "Activado al crear el miembro",
-        "memberBirthday": "El día del cumpleaños de cada miembro"
+        "memberBirthday": "El día del cumpleaños de cada miembro",
+        "membershipExpiring": "{days}d antes del vencimiento de la membresía",
+        "membershipExpiringToday": "El día del vencimiento de la membresía"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Confirmación de participación (RSVP)",
         "memberCreated": "Nuevo miembro inscrito",
         "memberBirthday": "Cumpleaños del miembro",
-        "eventAdherentLapsed": "Membresía no renovada"
+        "eventAdherentLapsed": "Membresía no renovada",
+        "membershipExpiring": "Membresía por vencer"
       },
       "sendDate": "Fecha de envío",
       "time": "Hora",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Días antes del evento",
       "daysBeforeEventHint": "Ej: 1 = el día antes, 3 = 3 días antes",
       "adherentLapsedHint": "Envía un mensaje a los miembros activos que eran miembros el año pasado (cuota pagada/exonerada) pero que aún no tienen una cuota en regla para el año en curso. Un miembro cuyo estado de membresía se forzó manualmente nunca se ve afectado.",
+      "membershipExpiringHint": "Envía un recordatorio a los socios cuya membresía (cuota pagada) está por vencer, N días antes de la fecha de vencimiento. Nunca se envía si la membresía ya fue renovada.",
+      "daysBeforeExpiration": "Días antes del vencimiento",
+      "daysBeforeExpirationHint": "Ej: 30 = un mes antes, 7 = una semana antes, 0 = el mismo día",
       "birthdayHint": "Envía un mensaje automáticamente el día del cumpleaños de cada miembro activo (día y mes, independientemente del año de nacimiento). Un único envío por miembro y por año.",
       "birthdayNoDateWarningType": "Ninguno de los miembros activos de este tipo ({count}) tiene una fecha de nacimiento registrada — esta regla no enviará nada hasta que se agregue una fecha en su ficha.",
       "birthdayNoDateWarningAll": "Ninguno de sus miembros activos ({count}) tiene una fecha de nacimiento registrada — esta regla no enviará nada hasta que se agregue una fecha en su ficha.",

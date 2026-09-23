@@ -28,6 +28,7 @@ function getTriggerLabels(t: Translator): Record<string, string> {
     MEMBER_CREATED:        t("messages.rulesManager.triggerLabels.memberCreated"),
     MEMBER_BIRTHDAY:       t("messages.rulesManager.triggerLabels.memberBirthday"),
     EVENT_ADHERENT_LAPSED: t("messages.rulesManager.triggerLabels.eventAdherentLapsed"),
+    MEMBERSHIP_EXPIRING:   t("messages.rulesManager.triggerLabels.membershipExpiring"),
   }
 }
 
@@ -88,6 +89,12 @@ function triggerSummary(rule: AutomationRule, t: Translator): string {
     return d === 1
       ? t("messages.rulesManager.triggerSummary.reminderTomorrow")
       : t("messages.rulesManager.triggerSummary.reminderDays", { days: d })
+  }
+  if (rule.triggerType === "MEMBERSHIP_EXPIRING") {
+    const d = (c.daysBefore as number) ?? 30
+    return d === 0
+      ? t("messages.rulesManager.triggerSummary.membershipExpiringToday")
+      : t("messages.rulesManager.triggerSummary.membershipExpiring", { days: d })
   }
   if (rule.triggerType === "RSVP_CONFIRMED") return t("messages.rulesManager.triggerSummary.rsvpConfirmed")
   if (rule.triggerType === "MEMBER_CREATED")  return t("messages.rulesManager.triggerSummary.memberCreated")

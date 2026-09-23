@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Teideal an Imeachta",
         "dateEvenement": "Dáta na hócáide",
-        "lieuEvenement": "Ionad na hócáide"
+        "lieuEvenement": "Ionad na hócáide",
+        "dateExpiration": "Dáta éaga",
+        "lienRenouvellement": "Nasc athnuachana"
       },
       "emailBody": "Corp na teachtaireachta (ríomhphost)",
       "emailBodyPlaceholder": "Dia duit '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP deimhnithe",
         "memberCreated": "Ball Nua",
         "memberBirthday": "Breithlá",
-        "eventAdherentLapsed": "Ballraíocht Neamh-Athnuaite"
+        "eventAdherentLapsed": "Ballraíocht Neamh-Athnuaite",
+        "membershipExpiring": "Ballraíocht ag dul in éag"
       },
       "statusLabels": {
         "active": "Gníomhach",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j roimh gach teagmhas",
         "rsvpConfirmed": "Triggered ar dhearbhú RSVP",
         "memberCreated": "Triggered on member creation",
-        "memberBirthday": "Lá breithe gach ball"
+        "memberBirthday": "Lá breithe gach ball",
+        "membershipExpiring": "{days} lá roimh dheireadh na ballraíochta",
+        "membershipExpiringToday": "Ar an lá a rachaidh an bhallraíocht in éag"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Dearbhú Rannpháirtíochta (RSVP)",
         "memberCreated": "Ball cláraithe nua",
         "memberBirthday": "Breithlá an Chomhalta",
-        "eventAdherentLapsed": "Ballraíocht Neamh-Athnuaite"
+        "eventAdherentLapsed": "Ballraíocht Neamh-Athnuaite",
+        "membershipExpiring": "Ballraíocht ag dul in éag"
       },
       "sendDate": "Dáta seolta",
       "time": "Am",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Laethanta roimh an ócáid",
       "daysBeforeEventHint": "Ex: 1 = an lá roimhe sin, 3 = 3 lá roimh",
       "adherentLapsedHint": "Seolann sé teachtaireacht chuig baill ghníomhacha a bhí ina mbaill anuraidh (dleachtanna íoctha/díolmhaithe) ach nach bhfuil táille ballraíochta acu go fóill don bhliain reatha. Ní dhéantar difear riamh do bhall a bhfuil a stádas ballraíochta éigeantach de láimh.",
+      "membershipExpiringHint": "Seolann sé meabhrúchán chuig baill a bhfuil a mballraíocht (táille íoctha) ag druidim le deireadh, N lá roimh dháta an éaga. Ní sheoltar riamh é má tá an bhallraíocht athnuaite cheana féin.",
+      "daysBeforeExpiration": "Laethanta roimh éag",
+      "daysBeforeExpirationHint": "Sampla: 30 = mí roimh ré, 7 = seachtain roimh ré, 0 = ar an lá féin",
       "birthdayHint": "Seolann teachtaireacht go huathoibríoch ar lá breithe gach ball gníomhach (lá agus mí, beag beann ar bhliain bhreithe). Níl ach seoladh amháin in aghaidh an bhall in aghaidh na bliana.",
       "birthdayNoDateWarningType": "Níl aon cheann de na baill ghníomhacha den chineál seo ({count}) nach bhfuil aon dáta breithe iontráilte - ní sheolfaidh an riail seo aon rud go dtí go gcuirfear dáta lena gcárta.",
       "birthdayNoDateWarningAll": "Níl aon cheann de do bhaill ghníomhacha ({count}) nach bhfuil aon dáta breithe iontráilte - ní sheolfaidh an riail seo aon rud go dtí go gcuirfear dáta lena gcárta.",

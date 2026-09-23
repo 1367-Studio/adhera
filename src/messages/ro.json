@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Titlul evenimentului",
         "dateEvenement": "Data evenimentului",
-        "lieuEvenement": "Locația evenimentelor"
+        "lieuEvenement": "Locația evenimentelor",
+        "dateExpiration": "Data expirării",
+        "lienRenouvellement": "Link de reînnoire"
       },
       "emailBody": "Corpul mesajului (email)",
       "emailBodyPlaceholder": "Bună '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP confirmat",
         "memberCreated": "Membru Nou",
         "memberBirthday": "Ziua de naștere",
-        "eventAdherentLapsed": "Calitatea de membru nereînnoită"
+        "eventAdherentLapsed": "Calitatea de membru nereînnoită",
+        "membershipExpiring": "Abonament expirând"
       },
       "statusLabels": {
         "active": "Activitate",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j înainte de fiecare eveniment",
         "rsvpConfirmed": "Declanșat la confirmarea RSVP",
         "memberCreated": "Declanșat la crearea membrilor",
-        "memberBirthday": "Ziua fiecărui membru"
+        "memberBirthday": "Ziua fiecărui membru",
+        "membershipExpiring": "{days} zile înainte de expirarea calității de membru",
+        "membershipExpiringToday": "În ziua expirării calității de membru"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Confirmarea participării (RSVP)",
         "memberCreated": "Nou membru înregistrat",
         "memberBirthday": "Ziua de naștere a membrului",
-        "eventAdherentLapsed": "Calitatea de membru nereînnoită"
+        "eventAdherentLapsed": "Calitatea de membru nereînnoită",
+        "membershipExpiring": "Abonament expirând"
       },
       "sendDate": "Data trimiterii",
       "time": "Timp",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Cu zile înainte de eveniment",
       "daysBeforeEventHint": "Ex: 1 = ziua dinainte, 3 = 3 zile înainte",
       "adherentLapsedHint": "Transmite un mesaj membrilor activi care au fost membri anul trecut (cotizații plătite/scutite), dar care încă nu au o taxă de membru valabilă pentru anul curent. Un membru al cărui statut de membru a fost forțat manual nu este niciodată afectat.",
+      "membershipExpiringHint": "Trimite un memento membrilor a căror calitate de membru (cotizație plătită) urmează să expire, cu N zile înainte de data expirării. Nu se trimite niciodată dacă calitatea de membru a fost deja reînnoită.",
+      "daysBeforeExpiration": "Zile înainte de expirare",
+      "daysBeforeExpirationHint": "Ex.: 30 = cu o lună înainte, 7 = cu o săptămână înainte, 0 = chiar în ziua respectivă",
       "birthdayHint": "Trimite automat un mesaj la ziua fiecărui membru activ (zi și lună, indiferent de anul nașterii). Trimite un singur mesaj per membru pe an.",
       "birthdayNoDateWarningType": "Niciunul dintre membrii activi ai acestui tip ({count}) nu are dată de naștere introdusă — această regulă nu va trimite nimic până când o dată nu este adăugată pe cardul lor.",
       "birthdayNoDateWarningAll": "Niciunul dintre membrii tăi activi ({count}) nu are dată de naștere introdusă — această regulă nu va trimite nimic până când o dată nu este adăugată pe cardul lor.",

@@ -104,6 +104,7 @@ enum TriggerType {
   MEMBER_CREATED
   MEMBER_BIRTHDAY
   EVENT_ADHERENT_LAPSED
+  MEMBERSHIP_EXPIRING
 }
 
 enum MessageChannel {
@@ -2107,6 +2108,11 @@ model AutomationLog {
   membreId        String?
   participationId String? // dedup key for EVENT_REMINDER targets that have no Membre (guests) — membreId alone can't identify them
   eventId         String?
+  // Dedup key for MEMBERSHIP_EXPIRING — a member can hold several Cotisation rows over time,
+  // each with its own expiration date, so membreId alone can't tell "already reminded for
+  // this specific membership period" from "already reminded for a prior one" — same reasoning
+  // as participationId above for EVENT_REMINDER.
+  cotisationId    String?
   subject         String?
   sentAt          DateTime @default(now())
 
@@ -2116,6 +2122,7 @@ model AutomationLog {
 
   @@index([ruleId, sentAt])
   @@index([ruleId, eventId])
+  @@index([ruleId, cotisationId])
 }
 
 model ActivityLog {

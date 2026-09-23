@@ -26,7 +26,7 @@ function buildSchema(t: Translator) {
   return z.object({
     name:          z.string().min(1, t("messages.ruleModal.validation.required")),
     templateId:    z.string().min(1, t("messages.ruleModal.validation.required")),
-    triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]),
+    triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED", "MEMBERSHIP_EXPIRING"]),
     channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
     recipients:    z.string(),
     // SCHEDULED_ONCE
@@ -64,6 +64,7 @@ function getTriggerOptions(t: Translator) {
     { value: "MEMBER_CREATED",        label: t("messages.ruleModal.triggerOptions.memberCreated") },
     { value: "MEMBER_BIRTHDAY",       label: t("messages.ruleModal.triggerOptions.memberBirthday") },
     { value: "EVENT_ADHERENT_LAPSED", label: t("messages.ruleModal.triggerOptions.eventAdherentLapsed") },
+    { value: "MEMBERSHIP_EXPIRING",   label: t("messages.ruleModal.triggerOptions.membershipExpiring") },
   ]
 }
 
@@ -198,6 +199,9 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
     }
     if (values.triggerType === "EVENT_ADHERENT_LAPSED") {
       return { cooldownDays: Number(values.cooldownDays) }
+    }
+    if (values.triggerType === "MEMBERSHIP_EXPIRING") {
+      return { daysBefore: Number(values.daysBefore) }
     }
     return {}
   }
@@ -363,6 +367,22 @@ export function RuleModal({ open, onOpenChange, rule }: Props) {
               {t("messages.ruleModal.adherentLapsedHint")}
             </p>
             <FormField label={t("messages.ruleModal.cooldownDays")} type="number" min={1} placeholder="30" hint={t("messages.ruleModal.cooldownHint")} {...register("cooldownDays")} />
+          </div>
+        )}
+
+        {/* MEMBERSHIP_EXPIRING */}
+        {triggerType === "MEMBERSHIP_EXPIRING" && (
+          <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+            <p className="text-xs text-muted-foreground">{t("messages.ruleModal.membershipExpiringHint")}</p>
+            <FormField
+              label={t("messages.ruleModal.daysBeforeExpiration")}
+              type="number"
+              min={0}
+              max={365}
+              placeholder="30"
+              hint={t("messages.ruleModal.daysBeforeExpirationHint")}
+              {...register("daysBefore")}
+            />
           </div>
         )}
 

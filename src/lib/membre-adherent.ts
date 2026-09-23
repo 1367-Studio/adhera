@@ -66,6 +66,26 @@ export function startOfCotisationYear(year: number): Date {
   return new Date(yearUtcMidnight - parisOffsetMilliseconds)
 }
 
+// The [00:00:00.000, 23:59:59.999] window of the Paris calendar day that `instant` falls on
+// — the generalization of startOfCotisationYear/endOfCotisationYear above to an arbitrary
+// day instead of Jan 1st/Dec 31st. Used by any cron-driven processor that buckets "does X
+// happen on day D" by a fixed offset from now (e.g. "N days before a Cotisation expires"):
+// computing that window with plain server-local Date math would use UTC on Vercel, which can
+// disagree with the Paris-precise instant endOfCotisationYear() itself returns for a
+// calendar-year Cotisation, silently shifting a reminder by up to an hour near a DST change.
+export function parisDayBounds(instant: Date): { dayStart: Date; dayEnd: Date } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Europe/Paris", year: "numeric", month: "numeric", day: "numeric",
+  }).formatToParts(instant)
+  const partValue = (partType: Intl.DateTimeFormatPartTypes) => Number(parts.find(part => part.type === partType)?.value)
+  const dayUtcMidnight = Date.UTC(partValue("year"), partValue("month") - 1, partValue("day"))
+  const parisOffsetMilliseconds = parisWallClockAsUtc(new Date(dayUtcMidnight)) - dayUtcMidnight
+  return {
+    dayStart: new Date(dayUtcMidnight - parisOffsetMilliseconds),
+    dayEnd:   new Date(dayUtcMidnight + 86_400_000 - parisOffsetMilliseconds - 1),
+  }
+}
+
 // The Paris wall-clock reading of `instant`, re-expressed as if it were a UTC timestamp —
 // subtracting the real instant from it gives Paris' UTC offset at that moment.
 function parisWallClockAsUtc(instant: Date): number {

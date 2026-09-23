@@ -3275,7 +3275,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Titolo dell'evento",
         "dateEvenement": "Data dell'evento",
-        "lieuEvenement": "Luogo dell'evento"
+        "lieuEvenement": "Luogo dell'evento",
+        "dateExpiration": "Data di scadenza",
+        "lienRenouvellement": "Link di rinnovo"
       },
       "emailBody": "Corpo del messaggio (email)",
       "emailBodyPlaceholder": "Ciao '{{prenom}}',…",
@@ -3316,7 +3318,8 @@
         "rsvpConfirmed": "RSVP confermato",
         "memberCreated": "Nuovo membro",
         "memberBirthday": "Compleanno",
-        "eventAdherentLapsed": "Iscrizione non rinnovata"
+        "eventAdherentLapsed": "Iscrizione non rinnovata",
+        "membershipExpiring": "Iscrizione in scadenza"
       },
       "statusLabels": {
         "active": "Attivo",
@@ -3368,7 +3371,9 @@
         "reminderDays": "{days}j prima di ogni evento",
         "rsvpConfirmed": "Attivato alla conferma RSVP",
         "memberCreated": "Attivato alla creazione dei membri",
-        "memberBirthday": "Il compleanno di ogni membro"
+        "memberBirthday": "Il compleanno di ogni membro",
+        "membershipExpiring": "{days}g prima della scadenza dell'iscrizione",
+        "membershipExpiringToday": "Il giorno della scadenza dell'iscrizione"
       }
     },
     "ruleModal": {
@@ -3386,7 +3391,8 @@
         "rsvpConfirmed": "Conferma di partecipazione (RSVP)",
         "memberCreated": "Nuovo membro registrato",
         "memberBirthday": "Compleanno del membro",
-        "eventAdherentLapsed": "Iscrizione non rinnovata"
+        "eventAdherentLapsed": "Iscrizione non rinnovata",
+        "membershipExpiring": "Iscrizione in scadenza"
       },
       "sendDate": "Data di invio",
       "time": "Tempo",
@@ -3420,6 +3426,9 @@
       "daysBeforeEvent": "Giorni prima dell'evento",
       "daysBeforeEventHint": "Es: 1 = il giorno prima, 3 = 3 giorni prima",
       "adherentLapsedHint": "Invia un messaggio ai membri attivi che erano membri l'anno scorso (quote pagate/esentate) ma che non hanno ancora una quota associativa in regola per l'anno in corso. Un membro il cui status di membro è stato forzato manualmente non viene mai colpito.",
+      "membershipExpiringHint": "Invia un promemoria ai soci la cui iscrizione (quota pagata) sta per scadere, N giorni prima della data di scadenza. Non viene mai inviato se l'iscrizione è già stata rinnovata.",
+      "daysBeforeExpiration": "Giorni prima della scadenza",
+      "daysBeforeExpirationHint": "Es: 30 = un mese prima, 7 = una settimana prima, 0 = il giorno stesso",
       "birthdayHint": "Invia automaticamente un messaggio al giorno del compleanno di ogni membro attivo (giorno e mese, indipendentemente dall'anno di nascita). Solo un messaggio per membro all'anno.",
       "birthdayNoDateWarningType": "Nessuno dei membri attivi di questo tipo ({count}) non ha inserita data di nascita — questa regola non invierà nulla finché una data non viene aggiunta alla loro carta.",
       "birthdayNoDateWarningAll": "Nessuno dei tuoi membri attivi ({count}) non ha inserita data di nascita — questa regola non invierà nulla finché una data non viene aggiunta alla loro carta.",
