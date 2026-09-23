@@ -30,11 +30,40 @@ export const changelogEntry = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "showInPopup",
+      title: "Afficher dans la pop-up des nouveautés",
+      description:
+        "S'affiche une fois dans une pop-up à l'ouverture de l'application, pour les utilisateurs qui ne l'ont pas encore vue — uniquement si la date de publication a moins de 90 jours. Activé si non renseigné : seule une case explicitement décochée masque la nouveauté.",
+      type: "boolean",
+      initialValue: true,
+    }),
+    defineField({
       name: "kind",
       title: "Type",
       type: "string",
       options: { list: CHANGELOG_KINDS, layout: "radio", direction: "horizontal" },
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: "image",
+      title: "Image (pop-up)",
+      description: "Capture d'écran au format 16:9, 1280×720 minimum. Affichée en tête de la nouveauté dans la pop-up.",
+      type: "image",
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: "alt",
+          title: "Texte alternatif",
+          type: "string",
+          // Only required once an image is actually set — the image itself stays optional.
+          validation: (rule) =>
+            rule.custom((altText, context) => {
+              const parentImage = context.parent as { asset?: unknown } | undefined
+              if (!parentImage?.asset) return true
+              return altText?.trim() ? true : "Le texte alternatif est requis lorsqu'une image est ajoutée."
+            }),
+        }),
+      ],
     }),
     defineField({
       name: "modules",

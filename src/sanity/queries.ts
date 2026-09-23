@@ -58,6 +58,24 @@ export const HELP_CHANGELOG_QUERY = defineQuery(`*[_type == "changelogEntry" && 
     "body": ${LOCALIZED_BODY}
   }`)
 
+// "What's new" pop-up: entries not explicitly opted out (a missing showInPopup counts as on)
+// and published on or after $since (YYYY-MM-DD),
+// newest first, at most 10. $locale, $since.
+export const HELP_RELEASE_NOTES_QUERY = defineQuery(`*[_type == "changelogEntry" && coalesce(showInPopup, true) == true && defined(publishedAt) && publishedAt >= $since]
+  | order(publishedAt desc, _createdAt desc) [0...10] {
+    "id": _id,
+    "title": ${LOCALIZED_TITLE},
+    publishedAt,
+    kind,
+    "body": ${LOCALIZED_BODY},
+    "image": select(defined(image.asset) => {
+      "url": image.asset->url,
+      "alt": image.alt,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height
+    }, null)
+  }`)
+
 // Search / AI retrieval share one result shape: `text` is the flattened localised body or
 // answer (the search snippet and the AI passage are both cut from it in JS — GROQ has no
 // substring function) and `score` is the score() total.

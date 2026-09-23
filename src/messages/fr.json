@@ -5910,6 +5910,15 @@
         "fix": "Correctif"
       }
     },
+    "releaseNotes": {
+      "title": "Nouveautés",
+      "dontRemind": "Ne plus me rappeler",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "finish": "Terminer",
+      "position": "Nouveauté {current} sur {total}",
+      "goTo": "Aller à la nouveauté {index}"
+    },
     "footer": {
       "tour": "Visite guidée",
       "contactSupport": "Contacter le support"

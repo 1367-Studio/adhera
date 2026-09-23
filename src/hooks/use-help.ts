@@ -1,4 +1,4 @@
-import { keepPreviousData, skipToken, useMutation, useQuery } from "@tanstack/react-query"
+import { keepPreviousData, queryOptions, skipToken, useMutation, useQuery } from "@tanstack/react-query"
 import { apiError } from "@/lib/api-error"
 import type { HelpModuleKey } from "@/lib/help/modules"
 import type {
@@ -9,6 +9,7 @@ import type {
   HelpModuleContent,
   HelpSearchHit,
   HelpSource,
+  ReleaseNote,
   SupportReplySuggestion,
 } from "@/sanity/types"
 
@@ -20,6 +21,7 @@ export type {
   HelpModuleContent,
   HelpSearchHit,
   HelpSource,
+  ReleaseNote,
   SupportReplySuggestion,
 }
 
@@ -71,6 +73,12 @@ async function fetchHelpChangelog(): Promise<ChangelogEntry[]> {
   return res.json()
 }
 
+async function fetchReleaseNotes(): Promise<ReleaseNote[]> {
+  const res = await fetch("/api/help/release-notes")
+  if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
+  return res.json()
+}
+
 async function suggestSupportReply(ticketId: string): Promise<SupportReplySuggestion> {
   const res = await fetch(`/api/backoffice/support-tickets/${ticketId}/suggest-reply`, { method: "POST" })
   if (!res.ok) throw await apiError(res, "Erreur IA")
@@ -112,6 +120,18 @@ export function useHelpChangelog() {
     queryFn:   fetchHelpChangelog,
     staleTime: HELP_CONTENT_STALE_TIME,
   })
+}
+
+// Shared by the pop-up and the notification bell (same cache entry), and used as-is with
+// queryClient.fetchQuery when the bell asks the pop-up to open before it has loaded anything.
+export const releaseNotesQueryOptions = queryOptions({
+  queryKey:  [...QK, "release-notes"],
+  queryFn:   fetchReleaseNotes,
+  staleTime: HELP_CONTENT_STALE_TIME,
+})
+
+export function useReleaseNotes({ enabled }: { enabled: boolean }) {
+  return useQuery({ ...releaseNotesQueryOptions, enabled })
 }
 
 export function useSuggestSupportReply(ticketId: string) {

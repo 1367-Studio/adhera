@@ -48,6 +48,17 @@ export type ChangelogEntry = {
   body:        PortableTextBlock[] | null
 }
 
+export type ReleaseNoteImage = {
+  url:    string
+  alt:    string | null
+  width:  number
+  height: number
+}
+
+export type ReleaseNote = Omit<ChangelogEntry, "modules"> & {
+  image: ReleaseNoteImage | null
+}
+
 export type HelpSearchHit = {
   id:      string
   type:    HelpContentType
