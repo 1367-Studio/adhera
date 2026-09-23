@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -41,6 +41,10 @@ interface NavItem {
   roles:        UserRole[]
   moduleKey?:   keyof AssocModules
   categoryKey?: CategoryKey
+  // Standalone (not folded into a category) but rendered right after this category.
+  afterCategory?: CategoryKey
+  // Rendered in the footer (with Documents and Paramètres) instead of the main list.
+  inFooter?:    true
 }
 
 const MANAGERS: UserRole[] = [...MANAGER_ROLES]
@@ -63,16 +67,19 @@ const navigationItems: NavItem[] = [
   { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
   { key: "adhesions",     href: "/dashboard/adhesions",    icon: UserPlusIcon,        roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
-  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,         roles: FINANCE, moduleKey: "dons",        categoryKey: "adherents" },
-  { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  categoryKey: "adherents" },
+  // Dons, Événements and Messagerie are daily entry points, so they sit as top-level items
+  // right under "Adhérents" instead of inside a category.
+  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,         roles: FINANCE, moduleKey: "dons",        afterCategory: "adherents" },
+  { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  afterCategory: "adherents" },
+  { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", afterCategory: "adherents" },
 
-  { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", categoryKey: "communication" },
   { key: "reunions",      href: "/dashboard/reunions",     icon: VideoCameraIcon,   roles: MANAGERS, moduleKey: "reunions",   categoryKey: "communication" },
   { key: "sondages",      href: "/dashboard/sondages",     icon: ClipboardTextIcon, roles: MANAGERS, moduleKey: "sondages",   categoryKey: "communication" },
   { key: "actualites",    href: "/dashboard/actualites",   icon: NewspaperIcon,     roles: MANAGERS, moduleKey: "actualites", categoryKey: "communication" },
   // No moduleKey — support isn't a toggleable module, every subscriber gets a channel to
-  // reach the platform team. ADMIN-only per the client's own scoping of this feature.
-  { key: "suporte",       href: "/dashboard/suporte",      icon: LifebuoyIcon,      roles: ["ADMIN"] as UserRole[], categoryKey: "communication" },
+  // reach the platform team. ADMIN-only per the client's own scoping of this feature. It's
+  // help from the platform, not communication with members, so it lives in the footer.
+  { key: "suporte",       href: "/dashboard/suporte",      icon: LifebuoyIcon,      roles: ["ADMIN"] as UserRole[], inFooter: true },
 
   { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon,      roles: FINANCE, moduleKey: "finances",     categoryKey: "finances" },
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
@@ -80,7 +87,8 @@ const navigationItems: NavItem[] = [
   { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,  roles: FINANCE, moduleKey: "fournisseurs", categoryKey: "finances" },
 
   { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon,     roles: MANAGERS, moduleKey: "materiel", categoryKey: "outils" },
-  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", categoryKey: "outils" },
+  // Set up once and rarely revisited, so it sits with the settings in the footer.
+  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", inFooter: true },
   { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, roles: MANAGERS, moduleKey: "boutique", categoryKey: "outils" },
 
   { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
@@ -145,6 +153,7 @@ export function AppSidebar() {
   // grouped together, so they're split rather than rendered as one "topLevel" block.
   const leadingItems  = visible.filter(item => item.key === "dashboard")
   const trailingItems = visible.filter(item => item.key === "activite")
+  const footerItems   = visible.filter(item => item.inFooter)
   const grouped       = groupByCategory(visible)
 
   const activeCategory = CATEGORIES.find(cat =>
@@ -300,13 +309,14 @@ export function AppSidebar() {
 
                 {CATEGORIES.map((cat, idx) => {
                   const items = grouped.get(cat.key)
-                  if (!items?.length) return null
+                  const standaloneItems = visible.filter(item => item.afterCategory === cat.key)
                   const isOpen      = openCategories.has(cat.key)
                   const isCatActive = activeCategory === cat.key
 
                   return (
+                    <Fragment key={cat.key}>
+                    {!!items?.length && (
                     <SidebarMenuItem
-                      key={cat.key}
                       data-tour={`nav-category-${cat.key}`}
                       style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
                     >
@@ -344,9 +354,6 @@ export function AppSidebar() {
                             <NavIcon icon={cat.icon} className="size-5" />
                             <span>{t(`categories.${cat.key}`)}</span>
                             <span className="ml-auto flex items-center gap-1.5">
-                              {cat.key === "communication" && supportUnreadCount > 0 && !isOpen && (
-                                <span className="size-1.5 shrink-0 rounded-full bg-destructive" aria-hidden />
-                              )}
                               <CaretRightIcon className={cn("size-3.5 transition-transform", isOpen && "rotate-90")} />
                             </span>
                           </SidebarMenuButton>
@@ -378,6 +385,25 @@ export function AppSidebar() {
                         </>
                       )}
                     </SidebarMenuItem>
+                    )}
+                    {standaloneItems.map(item => (
+                      <SidebarMenuItem
+                        key={item.href}
+                        data-tour={`nav-${item.href.split("/").pop()}`}
+                        style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
+                      >
+                        <SidebarMenuButton
+                          render={<Link href={item.href} />}
+                          isActive={isActive(item.href, pathname)}
+                          tooltip={t(item.key)}
+                          onClick={closeMobile}
+                        >
+                          <NavIcon icon={item.icon} className="size-5" />
+                          <span>{t(item.key)}</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                    </Fragment>
                   )
                 })}
 
@@ -414,6 +440,24 @@ export function AppSidebar() {
       <SidebarFooter className="border-t border-sidebar-border pt-3">
         {/* One list, so the footer entries share the nav's item spacing. */}
         <SidebarMenu>
+          {footerItems.map(item => (
+            <SidebarMenuItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+              <SidebarMenuButton
+                render={<Link href={item.href} />}
+                isActive={isActive(item.href, pathname)}
+                tooltip={t(item.key)}
+                onClick={closeMobile}
+              >
+                <item.icon />
+                <span>{t(item.key)}</span>
+                {item.key === "suporte" && supportUnreadCount > 0 && (
+                  <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                    {supportUnreadCount > 9 ? "9+" : supportUnreadCount}
+                  </span>
+                )}
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
           {canAccessDashboardRoute(userRole, "/dashboard/documents-association") && (
             <SidebarMenuItem>
               <SidebarMenuButton
