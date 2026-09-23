@@ -238,3 +238,82 @@ export async function translateFields<T extends Record<string, unknown>>(
     return clone
   })
 }
+
+// Same {{word}} syntax as substituteVars in src/lib/automation.ts — duplicated (not
+// imported) because that module pulls in the Prisma runtime via its callers' expectations
+// and this one is meant to stay a small, self-contained i18n unit.
+const VAR_TOKEN_PATTERN = /\{\{(\w+)\}\}/g
+
+// Unnatural-looking "word" (no spaces, no punctuation) so both the AI prompt-based path and
+// Azure's NMT engine copy it through untranslated rather than trying to render it as language
+// — unlike wrapping the token's own name (e.g. "prenom"), which is a real French word an NMT
+// engine can and does translate on its own.
+const varPlaceholder = (index: number): string => `xvar${index}zqx`
+
+function protectVarTokens(text: string): { text: string; tokens: string[] } {
+  const tokens: string[] = []
+  const protectedText = text.replace(VAR_TOKEN_PATTERN, (match) => {
+    tokens.push(match)
+    return varPlaceholder(tokens.length - 1)
+  })
+  return { text: protectedText, tokens }
+}
+
+// Fails closed: if a placeholder didn't survive translation as exactly one occurrence —
+// dropped, split, or duplicated by the model (seen in practice with repetition-prone NMT/LLM
+// output) — allRestored is false and the caller must not use this text — a merge-tag member
+// email, or one with a stray "xvar0zqx" literally visible, is worse than an untranslated one.
+function restoreVarTokens(text: string, tokens: string[]): { text: string; allRestored: boolean } {
+  let result = text
+  let allRestored = true
+  tokens.forEach((token, index) => {
+    const placeholder = varPlaceholder(index)
+    const occurrences = result.split(placeholder).length - 1
+    if (occurrences !== 1) { allRestored = false; return }
+    result = result.replace(placeholder, token)
+  })
+  return { text: result, allRestored }
+}
+
+export type EmailTranslationResult = {
+  subject:         string
+  bodyHtml:        string
+  // False means translation for this locale is unusable (Azure/AI down, or a {{var}} token
+  // got mangled) — subject/bodyHtml are then the untranslated originals, same fail-safe
+  // fallback convention as translateFields itself.
+  translated:      boolean
+}
+
+// Admin-authored email content (SendEmailModal, MessageTemplate) has {{prenom}}-style merge
+// tags that translateFields' plain string translation doesn't know to protect — this wraps
+// it with the token-preservation + fail-safe-to-original guarantee those callers need.
+export async function translateEmailContent(
+  subject: string,
+  bodyHtml: string,
+  locale: Locale,
+  associationId: string,
+): Promise<EmailTranslationResult> {
+  if (locale === DEFAULT_LOCALE) return { subject, bodyHtml, translated: false }
+
+  const subjectProtected = protectVarTokens(subject)
+  const bodyProtected    = protectVarTokens(bodyHtml)
+
+  const [result] = await translateFields(
+    [{ subject: subjectProtected.text, bodyHtml: bodyProtected.text }],
+    ["subject", "bodyHtml"],
+    locale,
+    associationId,
+  )
+
+  const subjectRestored = restoreVarTokens(result.subject, subjectProtected.tokens)
+  const bodyRestored    = restoreVarTokens(result.bodyHtml, bodyProtected.tokens)
+
+  // Azure/AI silently returning the source text unchanged (its own failure fallback) also
+  // lands here as translated:false, which is correct — nothing was actually translated.
+  const changed = result.subject !== subjectProtected.text || result.bodyHtml !== bodyProtected.text
+  if (!changed || !subjectRestored.allRestored || !bodyRestored.allRestored) {
+    return { subject, bodyHtml, translated: false }
+  }
+
+  return { subject: subjectRestored.text, bodyHtml: bodyRestored.text, translated: true }
+}

@@ -4,6 +4,8 @@ import { sendEmailBulk, sendEmailBatch, sendEmailsWithAttachments } from "@/lib/
 import { sendSmsBatch } from "@/lib/sms"
 import { customEmail, sondageInvitationEmail, type EmailBranding } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
+import { translateEmailContent } from "@/lib/i18n/translate"
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 import { writeActivityLog } from "@/lib/activity-log"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
@@ -67,32 +69,62 @@ async function notifyMembersOfMessage(associationId: string, memberIds: string[]
 
 // ── Bulk member email (src/app/api/membres/email/route.ts) ────────────────────
 
-type MembresEmailMember = { id: string; firstName: string; lastName: string; email: string }
+type MembresEmailMember = { id: string; firstName: string; lastName: string; email: string; preferredLocale: string | null }
 type MembresEmailRecipient = { member: MembresEmailMember; externalEmail?: never } | { externalEmail: string; member?: never }
 type MembresEmailSendOutcome = { sent: number; failed: number; failedNames: string[]; deliveredMemberIds: string[] }
 
 export const bulkSendMembresEmail = inngest.createFunction(
   { id: "bulk-send-membres-email", triggers: { event: "bulk/membres-email.requested" } },
   async ({ event, step }) => {
-    const { jobId, associationId, actorId, subject, bodyHtml, branding, associationName, slug, members, externalEmails, attachments = [], activityMeta } = event.data as {
+    const { jobId, associationId, actorId, subject, bodyHtml, branding, associationName, slug, members, externalEmails, attachments = [], autoLocalize = false, translationOverrides = {}, activityMeta } = event.data as {
       jobId: string; associationId: string; actorId: string
       subject: string; bodyHtml: string; branding: EmailBranding; associationName: string; slug: string
       members: MembresEmailMember[]; externalEmails: string[]
       // Set by src/app/api/membres/email/route.ts only once every file was verified in R2 —
       // metadata only (Resend fetches each file from its URL), absent when there are none.
       attachments?: VerifiedEmailAttachment[]
+      // subject/bodyHtml above are the source (French) version; when true each member with a
+      // non-default Membre.preferredLocale gets that version instead — see the "translate"
+      // step below. External emails always get the source, since they have no Membre record.
+      autoLocalize?: boolean
+      // Locales the admin already reviewed/edited in SendEmailModal's auto-preview dialog —
+      // used as-is, skipping the live translation call for those locales entirely.
+      translationOverrides?: Record<string, { subject: string; bodyHtml: string }>
       activityMeta: {
         recipientMode: string; typeId?: string; recipientCount?: number; externalEmailCount?: number; externalEmails?: string[]
         attachmentCount?: number; attachmentNames?: string[]
       }
     }
 
+    // One translateEmailContent call per distinct target locale actually present among the
+    // recipients (never per member) — a member-by-member loop would fire duplicate concurrent
+    // translations for the same (text, locale) pair, since the DB cache check races before the
+    // first write lands. Locales already covered by translationOverrides are skipped entirely.
+    // Computed once, before either send path below.
+    const localesNeeded = autoLocalize
+      ? [...new Set(members.map(m => m.preferredLocale).filter((l): l is Locale =>
+          !!l && l !== DEFAULT_LOCALE && !translationOverrides[l]
+        ))]
+      : []
+    const computedTranslations: Record<string, { subject: string; bodyHtml: string }> = localesNeeded.length
+      ? await step.run("translate", async () => {
+          const entries = await Promise.all(localesNeeded.map(async (locale) => {
+            const result = await translateEmailContent(subject, bodyHtml, locale, associationId)
+            return [locale, { subject: result.subject, bodyHtml: result.bodyHtml }] as const
+          }))
+          return Object.fromEntries(entries)
+        })
+      : {}
+    const translationsByLocale: Record<string, { subject: string; bodyHtml: string }> =
+      { ...computedTranslations, ...translationOverrides }
+
     // Only ever called inside a step: Inngest re-runs this function body once per step, so
     // rendering every recipient's email up here would be repeated on each of those re-runs.
     const buildMemberPayload = (member: MembresEmailMember) => {
-      const vars = buildVars({ prenom: member.firstName, nom: member.lastName, email: member.email, association: associationName, slug })
+      const vars    = buildVars({ prenom: member.firstName, nom: member.lastName, email: member.email, association: associationName, slug })
+      const content = (member.preferredLocale && translationsByLocale[member.preferredLocale]) || { subject, bodyHtml }
       return {
-        ...customEmail({ associationName, subject: substituteVars(subject, vars), bodyHtml: substituteVars(bodyHtml, vars), recipientEmail: member.email, branding }),
+        ...customEmail({ associationName, subject: substituteVars(content.subject, vars), bodyHtml: substituteVars(content.bodyHtml, vars), recipientEmail: member.email, branding }),
         context: { associationId, membreId: member.id, source: "BULK_MESSAGE" },
       }
     }

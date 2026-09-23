@@ -4,6 +4,8 @@ import { sendEmailBatch } from "@/lib/mail"
 import { sendSmsBatch } from "@/lib/sms"
 import { eventReminderEmail, customEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt, isBirthdayToday } from "@/lib/automation"
+import { translateEmailContent } from "@/lib/i18n/translate"
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
@@ -13,6 +15,28 @@ import type { TriggerType, MessageChannel } from "@prisma/client"
 import { APP_URL } from "@/lib/env"
 
 const BATCH_SIZE = 100
+
+// One translateEmailContent call per distinct Membre.preferredLocale actually present among
+// this run's email-reachable targets (never per member — see the identical reasoning in
+// src/inngest/bulk-send.ts, which this mirrors). Returns an empty map (no-op downstream) when
+// every target is on the default locale or has none set, without making any network/DB call.
+async function localizeTemplateContent(
+  associationId: string,
+  subject:       string,
+  body:          string,
+  emailJobs:     { membre: { preferredLocale: string | null } }[],
+): Promise<Map<string, { subject: string; body: string }>> {
+  const locales = [...new Set(
+    emailJobs.map(j => j.membre.preferredLocale).filter((l): l is Locale => !!l && l !== DEFAULT_LOCALE)
+  )]
+  if (locales.length === 0) return new Map()
+
+  const entries = await Promise.all(locales.map(async (locale) => {
+    const result = await translateEmailContent(subject, body, locale, associationId)
+    return [locale, { subject: result.subject, body: result.bodyHtml }] as const
+  }))
+  return new Map(entries)
+}
 
 export const automationRuleInclude = {
   template:    true,
@@ -174,22 +198,26 @@ export async function processRule(rule: RuleWithRelations, now: Date): Promise<n
 
   // Email dispatch
   if (emailEnabled) {
-    const branding  = resolveDocumentBranding(rule.association)
-    const emailJobs = jobs
-      .filter(j => j.membre.email)
-      .map(j => ({
-        membreId: j.membreId,
-        payload: {
-          ...customEmail({
-            associationName: rule.association.name,
-            subject:         substituteVars(rule.template.subject, j.vars),
-            bodyHtml:        substituteVars(rule.template.body, j.vars),
-            recipientEmail:  j.membre.email!,
-            branding,
-          }),
-          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
-        },
-      }))
+    const branding      = resolveDocumentBranding(rule.association)
+    const emailTargets  = jobs.filter(j => j.membre.email)
+    const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
+    const emailJobs = emailTargets
+      .map(j => {
+        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        return {
+          membreId: j.membreId,
+          payload: {
+            ...customEmail({
+              associationName: rule.association.name,
+              subject:         substituteVars(content.subject, j.vars),
+              bodyHtml:        substituteVars(content.body, j.vars),
+              recipientEmail:  j.membre.email!,
+              branding,
+            }),
+            context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
+          },
+        }
+      })
 
     for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
       const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
@@ -304,22 +332,26 @@ async function processBirthday(
   let sent = 0
 
   if (opts.emailEnabled) {
-    const branding  = resolveDocumentBranding(rule.association)
-    const emailJobs = jobs
-      .filter(j => j.membre.email)
-      .map(j => ({
-        membreId: j.membreId,
-        payload: {
-          ...customEmail({
-            associationName: rule.association.name,
-            subject:         substituteVars(rule.template.subject, j.vars),
-            bodyHtml:        substituteVars(rule.template.body, j.vars),
-            recipientEmail:  j.membre.email!,
-            branding,
-          }),
-          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
-        },
-      }))
+    const branding      = resolveDocumentBranding(rule.association)
+    const emailTargets  = jobs.filter(j => j.membre.email)
+    const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
+    const emailJobs = emailTargets
+      .map(j => {
+        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        return {
+          membreId: j.membreId,
+          payload: {
+            ...customEmail({
+              associationName: rule.association.name,
+              subject:         substituteVars(content.subject, j.vars),
+              bodyHtml:        substituteVars(content.body, j.vars),
+              recipientEmail:  j.membre.email!,
+              branding,
+            }),
+            context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
+          },
+        }
+      })
 
     for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
       const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
@@ -436,22 +468,26 @@ async function processAdherentLapsed(
   let sent = 0
 
   if (opts.emailEnabled) {
-    const branding  = resolveDocumentBranding(rule.association)
-    const emailJobs = jobs
-      .filter(j => j.membre.email)
-      .map(j => ({
-        membreId: j.membreId,
-        payload: {
-          ...customEmail({
-            associationName: rule.association.name,
-            subject:         substituteVars(rule.template.subject, j.vars),
-            bodyHtml:        substituteVars(rule.template.body, j.vars),
-            recipientEmail:  j.membre.email!,
-            branding,
-          }),
-          context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
-        },
-      }))
+    const branding      = resolveDocumentBranding(rule.association)
+    const emailTargets  = jobs.filter(j => j.membre.email)
+    const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
+    const emailJobs = emailTargets
+      .map(j => {
+        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        return {
+          membreId: j.membreId,
+          payload: {
+            ...customEmail({
+              associationName: rule.association.name,
+              subject:         substituteVars(content.subject, j.vars),
+              bodyHtml:        substituteVars(content.body, j.vars),
+              recipientEmail:  j.membre.email!,
+              branding,
+            }),
+            context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
+          },
+        }
+      })
 
     for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
       const chunk     = emailJobs.slice(i, i + BATCH_SIZE)

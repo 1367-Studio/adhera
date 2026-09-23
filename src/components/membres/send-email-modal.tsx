@@ -5,12 +5,14 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { useLocale, useTranslations } from "next-intl"
 import { z } from "zod"
-import { PaperPlaneTiltIcon, WarningIcon, WarningCircleIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon, PlusIcon, XIcon, InfoIcon, PaperclipIcon, FilePdfIcon, FileImageIcon } from "@phosphor-icons/react/dist/ssr";
+import { PaperPlaneTiltIcon, WarningIcon, WarningCircleIcon, UsersIcon, TagIcon, UserCheckIcon, MagnifyingGlassIcon, CheckIcon, PencilSimpleIcon, CaretRightIcon, CircleNotchIcon, FileTextIcon, BookmarkIcon, PlusIcon, XIcon, InfoIcon, PaperclipIcon, FilePdfIcon, FileImageIcon, TranslateIcon, GlobeIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { Label } from "@/components/ui/label"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { RichTextView } from "@/components/ui/rich-text-view"
+import { SelectField } from "@/components/ui/select-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
 import { useMessageTemplates, useCreateTemplate, type MessageTemplate } from "@/hooks/use-message-templates"
@@ -20,22 +22,32 @@ import { BASE_PATH } from "@/lib/env"
 import { formatFileSize } from "@/lib/format-file-size"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 import { cn } from "@/lib/utils"
+import { SUPPORTED_LOCALES, LOCALE_LABELS, DEFAULT_LOCALE, type Locale, type EuLocale } from "@/i18n/locales"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type MembreTypeRef = { id: string; name: string; color: string }
 
 type MembrePick = {
-  id:        string
-  firstName: string
-  lastName:  string
-  email:     string | null
-  status:    string
-  typeId:    string | null
-  type:      MembreTypeRef | null
+  id:              string
+  firstName:       string
+  lastName:        string
+  email:           string | null
+  status:          string
+  typeId:          string | null
+  type:            MembreTypeRef | null
+  preferredLocale: string | null
 }
 
 type RecipientMode = "all" | "type" | "manual"
+
+// "original": send exactly what's composed. "translated": subject/bodyHtml have been swapped
+// for a single target locale's translation (editable, sent to every recipient as-is).
+// "auto": subject/bodyHtml stay the composed (source) version — each member gets it
+// auto-translated into their own preferredLocale at send time (see bulk-send.ts).
+type LanguageMode = "original" | "translated" | "auto"
+
+type EmailTranslationResult = { subject: string; bodyHtml: string; translated: boolean }
 
 // "uploading" pushes the attachments to R2, "queuing" is the send request itself (which only
 // queues the background job) — a send without attachments goes straight to "queuing".
@@ -72,6 +84,9 @@ function hasContent(subject: string, body: string): boolean {
 // for every recipient, members included, with no indication of which address was the problem.
 const EXTERNAL_EMAIL_SCHEMA = z.string().email()
 const MAX_EXTERNAL_EMAILS = 100
+// Mirrors the server's z.string().max(200) on subject in /api/membres/email — checked
+// client-side too so a too-long translation is caught before Continue, not after Send.
+const MAX_SUBJECT_LENGTH = 200
 
 // The total size cap is shared through src/lib/upload-limits.ts (import-free, so safe here),
 // which is where MAX_EMAIL_ATTACHMENTS_TOTAL_BYTES comes from too. The count and content types
@@ -336,6 +351,24 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const [saveTemplateName,    setSaveTemplateName]    = useState("")
   const [subject,           setSubject]           = useState("")
   const [bodyHtml,          setBodyHtml]          = useState("")
+  const [languageMode,      setLanguageMode]      = useState<LanguageMode>("original")
+  const [targetLocale,      setTargetLocale]      = useState<Locale | "">("")
+  const [translating,       setTranslating]       = useState(false)
+  const [translateNotice,   setTranslateNotice]   = useState<string | null>(null)
+  const [autoPreviewOpen,    setAutoPreviewOpen]    = useState(false)
+  const [autoPreviewLoading, setAutoPreviewLoading] = useState(false)
+  const [autoPreviewError,   setAutoPreviewError]   = useState(false)
+  const [autoPreviewByLocale, setAutoPreviewByLocale] = useState<Record<string, EmailTranslationResult>>({})
+  // The true composed (source) content, captured the moment a translation first replaces
+  // subject/bodyHtml — re-translating (e.g. switching target locale) always starts from this,
+  // never from whatever translated text happens to be showing, so translations never compound.
+  const sourceContentRef = useRef<{ subject: string; bodyHtml: string } | null>(null)
+  // What the API last returned for the current translated locale — compared against the live
+  // subject/bodyHtml to tell "just translated, nothing to lose" apart from "admin then hand-
+  // edited this," so reverting/switching locale only asks for confirmation when it actually
+  // would discard something.
+  const lastTranslationRef = useRef<{ subject: string; bodyHtml: string } | null>(null)
+  const [pendingLanguageAction, setPendingLanguageAction] = useState<(() => void) | null>(null)
   const [sendPhase,         setSendPhase]         = useState<SendPhase>("idle")
   const [sendFailure,       setSendFailure]       = useState<SendFailure | null>(null)
   const [countLoading,      setCountLoading]      = useState(false)
@@ -377,6 +410,16 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       setSaveTemplateName("")
       setSubject("")
       setBodyHtml("")
+      setLanguageMode("original")
+      setTargetLocale("")
+      setTranslating(false)
+      setTranslateNotice(null)
+      setAutoPreviewOpen(false)
+      setAutoPreviewByLocale({})
+      setAutoPreviewError(false)
+      sourceContentRef.current = null
+      lastTranslationRef.current = null
+      setPendingLanguageAction(null)
       setRecipientCount(null)
       setCountLoading(false)
       setSendFailure(null)
@@ -445,6 +488,15 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
     captureNextBody.current = true
     setBodyHtml(tpl.body)
     setPendingTemplate(null)
+    // The template's content is a fresh French source, not a translation of whatever was
+    // there before — without this, "Voir l'original" would later restore the pre-template
+    // text instead of the template that was just applied.
+    sourceContentRef.current = null
+    lastTranslationRef.current = null
+    setLanguageMode("original")
+    setTargetLocale("")
+    setTranslateNotice(null)
+    setAutoPreviewByLocale({})
   }
 
   function handleBodyChange(html: string) {
@@ -457,6 +509,90 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
   function clearTemplate() {
     setSelectedTemplate(null)
+  }
+
+  function hasUnsavedTranslationEdits(): boolean {
+    const snapshot = lastTranslationRef.current
+    if (!snapshot) return false
+    return subject !== snapshot.subject || bodyHtml !== snapshot.bodyHtml
+  }
+
+  // Always translates from the true source (captured on first use), never from whatever
+  // translated text is currently displayed — otherwise switching target locale a second time
+  // would translate a translation instead of the original French.
+  async function handleTranslate(locale: Locale) {
+    const base = sourceContentRef.current ?? { subject, bodyHtml }
+    setTranslating(true)
+    setTranslateNotice(null)
+    try {
+      const res  = await fetch("/api/ai/translate-email", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ subject: base.subject, bodyHtml: base.bodyHtml, locales: [locale] }),
+      })
+      const data = await res.json().catch(() => null) as { results?: Record<string, EmailTranslationResult>; error?: string } | null
+      const result = data?.results?.[locale]
+      if (!res.ok || !result) {
+        setTranslateNotice(t("membres.email.language.translateFailed"))
+        return
+      }
+      if (!result.translated) {
+        // Nothing actually changed (Azure/IA down, or the source already matched the target)
+        // — say so instead of flipping to "translated" over content that's still French.
+        setTranslateNotice(t("membres.email.language.translateUnavailable"))
+        return
+      }
+      sourceContentRef.current = base
+      lastTranslationRef.current = { subject: result.subject, bodyHtml: result.bodyHtml }
+      setSubject(result.subject)
+      setBodyHtml(result.bodyHtml)
+      setLanguageMode("translated")
+    } catch {
+      setTranslateNotice(t("membres.email.language.translateFailed"))
+    } finally {
+      setTranslating(false)
+    }
+  }
+
+  function revertToOriginal() {
+    const base = sourceContentRef.current
+    if (base) { setSubject(base.subject); setBodyHtml(base.bodyHtml) }
+    sourceContentRef.current = null
+    lastTranslationRef.current = null
+    setLanguageMode("original")
+    setTargetLocale("")
+    setTranslateNotice(null)
+  }
+
+  // Only interrupts with a confirmation when there's actually something to lose — translating
+  // and immediately reverting (no edits made) reverts straight away.
+  function requestRevertToOriginal() {
+    if (hasUnsavedTranslationEdits()) setPendingLanguageAction(() => revertToOriginal)
+    else revertToOriginal()
+  }
+
+  function requestTranslate(locale: Locale) {
+    setTargetLocale(locale)
+    if (languageMode === "translated" && hasUnsavedTranslationEdits()) {
+      setPendingLanguageAction(() => () => handleTranslate(locale))
+    } else {
+      handleTranslate(locale)
+    }
+  }
+
+  // Switching to "auto" must send the true source, not a single-locale translation currently
+  // on screen — each recipient gets their own locale's version computed at send time instead.
+  function selectLanguageMode(mode: LanguageMode) {
+    if (mode === languageMode) return
+    if (mode !== "translated" && sourceContentRef.current) {
+      if (hasUnsavedTranslationEdits()) {
+        setPendingLanguageAction(() => () => { revertToOriginal(); setLanguageMode(mode); setAutoPreviewByLocale({}) })
+        return
+      }
+      revertToOriginal()
+    }
+    setLanguageMode(mode)
+    setAutoPreviewByLocale({})
   }
 
   async function handleSaveAsTemplate() {
@@ -677,6 +813,10 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       toast.error(t("membres.email.toasts.subjectRequired"))
       return
     }
+    if (subject.length > MAX_SUBJECT_LENGTH) {
+      toast.error(t("membres.email.subjectTooLong", { length: subject.length, max: MAX_SUBJECT_LENGTH }))
+      return
+    }
     if (!hasHtmlContent(bodyHtml)) {
       toast.error(t("membres.email.toasts.bodyRequired"))
       return
@@ -715,6 +855,18 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   async function handleSend() {
     setSendFailure(null)
 
+    // Edited in the auto-preview dialog, which stays reachable from this step — subject.length
+    // itself was already checked before Continue, but an override typed after that point never
+    // was, so it needs its own guard right before the request goes out.
+    const overLimitLocale = Object.entries(autoPreviewByLocale).find(([, v]) => v.subject.length > MAX_SUBJECT_LENGTH)
+    if (overLimitLocale) {
+      setSendFailure({
+        title:       t("membres.email.sendFailedTitle"),
+        description: t("membres.email.subjectTooLong", { length: overLimitLocale[1].subject.length, max: MAX_SUBJECT_LENGTH }),
+      })
+      return
+    }
+
     // Attachments are uploaded only now, so an abandoned draft never leaves files in R2.
     let attachmentReferences: EmailAttachmentReference[] = []
     if (attachments.length > 0) {
@@ -743,6 +895,17 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       if (recipientMode === "type" && selectedTypeId) body.typeId       = selectedTypeId
       if (externalEmails.length > 0)                  body.externalEmails = externalEmails
       if (attachmentReferences.length > 0)            body.attachments  = attachmentReferences
+      if (languageMode === "auto") {
+        body.autoLocalize = true
+        // Locales reviewed (and possibly edited) in the preview dialog are sent as-is instead
+        // of being re-translated server-side — any other locale among the recipients still
+        // gets auto-translated live, same as if the preview had never been opened.
+        if (Object.keys(autoPreviewByLocale).length > 0) {
+          body.translationOverrides = Object.fromEntries(
+            Object.entries(autoPreviewByLocale).map(([locale, v]) => [locale, { subject: v.subject, bodyHtml: v.bodyHtml }])
+          )
+        }
+      }
 
       let response: Response
       try {
@@ -810,6 +973,65 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       : memberCount === 0
         ? t("membres.email.externalOnlyCount", { count: externalEmails.length })
         : t("membres.email.recipientsWithExternal", { members: memberSummary, count: externalEmails.length })
+
+  // Which members this send actually targets, mirroring the same three recipientMode
+  // branches used elsewhere — needed client-side only for the auto-locale distribution
+  // summary/preview, not for the send itself (the server recomputes recipients independently).
+  const targetedMembers: MembrePick[] =
+    recipientMode === "manual"
+      ? allMembres.filter(m => selectedMemberIds.includes(m.id))
+      : recipientMode === "type"
+        ? membresWithEmail.filter(m => m.typeId === selectedTypeId)
+        : membresWithEmail
+
+  const autoLocaleCounts = new Map<string, number>()
+  if (languageMode === "auto") {
+    for (const m of targetedMembers) {
+      const locale = m.preferredLocale || DEFAULT_LOCALE
+      autoLocaleCounts.set(locale, (autoLocaleCounts.get(locale) ?? 0) + 1)
+    }
+  }
+  const autoDistinctNonDefaultLocales = [...autoLocaleCounts.keys()].filter(l => l !== DEFAULT_LOCALE)
+
+  async function openAutoPreview() {
+    setAutoPreviewOpen(true)
+    if (autoDistinctNonDefaultLocales.length === 0) return
+    // Always refetches rather than reusing a previous preview — the composed subject/bodyHtml
+    // may have changed (or the recipient set, and so the distinct locale list, may have) since
+    // the last time this was opened, and translateEmailContent's own DB cache already makes an
+    // unchanged-text refetch cheap, so there's no real cost to staying correct instead.
+    setAutoPreviewByLocale({})
+    setAutoPreviewLoading(true)
+    setAutoPreviewError(false)
+    try {
+      const res  = await fetch("/api/ai/translate-email", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ subject, bodyHtml, locales: autoDistinctNonDefaultLocales }),
+      })
+      const data = await res.json().catch(() => null) as { results?: Record<string, EmailTranslationResult> } | null
+      if (!res.ok || !data?.results) { setAutoPreviewError(true); return }
+      setAutoPreviewByLocale(data.results)
+    } catch {
+      setAutoPreviewError(true)
+    } finally {
+      setAutoPreviewLoading(false)
+    }
+  }
+
+  // Edits made in the auto-preview dialog become the version actually sent for that locale
+  // (see handleSend's translationOverrides) — the server skips re-translating any locale the
+  // admin has already reviewed/edited here, and only auto-translates the rest live.
+  function updateAutoPreview(locale: string, field: "subject" | "bodyHtml", value: string) {
+    setAutoPreviewByLocale(prev => ({
+      ...prev,
+      [locale]: { ...prev[locale], [field]: value, translated: true },
+    }))
+  }
+
+  const targetLocaleOptions = SUPPORTED_LOCALES
+    .filter(l => l !== DEFAULT_LOCALE)
+    .map(l => ({ value: l, label: LOCALE_LABELS[l as EuLocale] }))
 
   const usedVars = new Set([...extractVarTokens(subject), ...extractVarTokens(bodyHtml)])
   const unresolvedVars = [
@@ -1104,6 +1326,12 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 placeholder={t("membres.email.subjectPlaceholder")}
                 value={subject}
                 onChange={e => setSubject(e.target.value)}
+                // The server caps subject at MAX_SUBJECT_LENGTH — a translation into another
+                // language commonly runs longer than the French original, so this is reachable
+                // in practice, not just from someone typing a very long subject by hand.
+                error={subject.length > MAX_SUBJECT_LENGTH
+                  ? t("membres.email.subjectTooLong", { length: subject.length, max: MAX_SUBJECT_LENGTH })
+                  : undefined}
               />
               <RichTextEditor
                 label={t("membres.email.bodyLabel")}
@@ -1113,6 +1341,86 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 placeholder={t("membres.email.bodyPlaceholder")}
                 minHeight="180px"
               />
+
+              <div className="space-y-2 rounded-lg border bg-muted/20 p-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.email.language.title")}</p>
+                  {languageMode === "translated" && (
+                    <button type="button" onClick={requestRevertToOriginal} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      {t("membres.email.language.viewOriginal")}
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {([
+                    { mode: "original",   icon: PencilSimpleIcon, label: t("membres.email.language.modeOriginal") },
+                    { mode: "translated", icon: TranslateIcon,    label: t("membres.email.language.modeTranslated") },
+                    { mode: "auto",       icon: GlobeIcon,        label: t("membres.email.language.modeAuto") },
+                  ] as const).map(({ mode, icon: Icon, label }) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => selectLanguageMode(mode)}
+                      className={cn(
+                        "flex flex-col items-center gap-1.5 rounded-lg border p-2.5 text-xs font-medium transition-all",
+                        languageMode === mode
+                          ? "border-primary bg-primary/5 text-primary ring-1 ring-primary"
+                          : "border-border text-muted-foreground hover:border-muted-foreground/40 hover:bg-muted/40 hover:text-foreground",
+                      )}
+                    >
+                      <Icon className="size-4" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {languageMode === "translated" && (
+                  <div className="flex items-center gap-2 pt-0.5">
+                    <div className="flex-1">
+                      <SelectField
+                        label=""
+                        options={targetLocaleOptions}
+                        value={targetLocale}
+                        onValueChange={v => requestTranslate(v as Locale)}
+                        placeholder={t("membres.email.language.targetLocalePlaceholder")}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      loading={translating}
+                      disabled={!targetLocale}
+                      onClick={() => targetLocale && requestTranslate(targetLocale)}
+                    >
+                      <TranslateIcon className="mr-1.5 size-3.5" />
+                      {t("membres.email.language.translate")}
+                    </Button>
+                  </div>
+                )}
+
+                {languageMode === "auto" && (
+                  <div className="space-y-1.5 pt-0.5">
+                    <p className="text-xs text-muted-foreground">{t("membres.email.language.autoHint")}</p>
+                    {autoLocaleCounts.size > 0 && (
+                      <p className="text-xs">
+                        {[...autoLocaleCounts.entries()].map(([locale, count]) => `${LOCALE_LABELS[locale as EuLocale] ?? locale} (${count})`).join(" · ")}
+                      </p>
+                    )}
+                    {/* Every current target is on the default locale (or there are none yet) —
+                        without this, toggling "auto" here silently does nothing observable.
+                        Held back while member data is still loading to avoid a false flash. */}
+                    {!loadingMembres && autoDistinctNonDefaultLocales.length === 0 && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">{t("membres.email.language.autoNoEffect")}</p>
+                    )}
+                  </div>
+                )}
+
+                {translateNotice && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">{translateNotice}</p>
+                )}
+              </div>
 
               {/* Attachments: kept in the browser while composing, uploaded on "Envoyer maintenant" */}
               <div className="space-y-1.5">
@@ -1232,6 +1540,22 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 <p className="text-xs text-muted-foreground">{t("membres.email.recipients")}</p>
                 <p className="text-sm font-medium">{recipientSummary}</p>
               </div>
+              {languageMode === "auto" && (
+                <div className="space-y-0.5">
+                  <p className="text-xs text-muted-foreground">{t("membres.email.language.autoDistribution")}</p>
+                  <p className="text-sm">
+                    {[
+                      ...[...autoLocaleCounts.entries()].map(([locale, count]) => `${LOCALE_LABELS[locale as EuLocale] ?? locale} (${count})`),
+                      ...(externalEmails.length > 0 ? [t("membres.email.language.autoExternalNote", { count: externalEmails.length })] : []),
+                    ].join(" · ")}
+                  </p>
+                  {autoDistinctNonDefaultLocales.length > 0 && (
+                    <button type="button" onClick={openAutoPreview} className="text-xs text-primary hover:underline">
+                      {t("membres.email.language.previewTranslations")}
+                    </button>
+                  )}
+                </div>
+              )}
               {externalEmails.length > 0 && (
                 <div className="space-y-0.5">
                   <p className="text-xs text-muted-foreground">{t("membres.email.externalEmailsLabel")}</p>
@@ -1290,6 +1614,15 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
           confirmLabel={t("membres.email.replace")}
           onConfirm={() => { if (pendingTemplate) doApplyTemplate(pendingTemplate) }}
         />
+
+        <ConfirmDialog
+          open={!!pendingLanguageAction}
+          onOpenChange={open => { if (!open) setPendingLanguageAction(null) }}
+          title={t("membres.email.language.discardEditsTitle")}
+          description={t("membres.email.language.discardEditsDescription")}
+          confirmLabel={t("membres.email.language.discardEditsConfirm")}
+          onConfirm={() => { pendingLanguageAction?.(); setPendingLanguageAction(null) }}
+        />
       </Modal>
 
       <ConfirmDialog
@@ -1331,6 +1664,73 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
             </Button>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        open={autoPreviewOpen}
+        onOpenChange={setAutoPreviewOpen}
+        title={t("membres.email.language.previewTitle")}
+        description={t("membres.email.language.previewDescription")}
+        size="lg"
+      >
+        {autoPreviewLoading ? (
+          <div className="flex flex-col items-center justify-center gap-2 py-10">
+            <CircleNotchIcon className="size-5 animate-spin text-muted-foreground" />
+            <p className="text-xs text-muted-foreground">{t("membres.email.language.previewLoading")}</p>
+          </div>
+        ) : autoPreviewError ? (
+          <p className="text-sm text-destructive py-4 text-center">{t("membres.email.language.previewFailed")}</p>
+        ) : (
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-0.5">
+            <div className="space-y-1.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t("membres.email.language.original")}</p>
+              <div className="rounded-lg border p-3 space-y-1">
+                <p className="text-sm font-medium">{subject}</p>
+                <RichTextView content={bodyHtml} />
+              </div>
+            </div>
+            {autoDistinctNonDefaultLocales.map(locale => {
+              const preview = autoPreviewByLocale[locale]
+              return (
+                <div key={locale} className="space-y-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {LOCALE_LABELS[locale as EuLocale] ?? locale}
+                    </p>
+                    {/* Without this, a failed translation is indistinguishable from a
+                        successful one here — both just show the French text unchanged. */}
+                    {preview && !preview.translated && (
+                      <span className="inline-flex items-center gap-1 text-xs font-normal normal-case text-amber-600 dark:text-amber-400">
+                        <WarningCircleIcon className="size-3" aria-hidden />
+                        {t("membres.email.language.translateUnavailable")}
+                      </span>
+                    )}
+                  </div>
+                  {preview ? (
+                    <div className="rounded-lg border p-3 space-y-2">
+                      <FormField
+                        label=""
+                        value={preview.subject}
+                        onChange={e => updateAutoPreview(locale, "subject", e.target.value)}
+                        error={preview.subject.length > MAX_SUBJECT_LENGTH
+                          ? t("membres.email.subjectTooLong", { length: preview.subject.length, max: MAX_SUBJECT_LENGTH })
+                          : undefined}
+                      />
+                      <RichTextEditor
+                        label=""
+                        value={preview.bodyHtml}
+                        onChange={html => updateAutoPreview(locale, "bodyHtml", html)}
+                        minHeight="120px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-16 rounded-lg bg-muted animate-pulse" />
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
       </Modal>
     </>
   )

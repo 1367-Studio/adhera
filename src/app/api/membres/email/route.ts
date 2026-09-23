@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma/client"
 import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { EMAIL_ATTACHMENT_ERRORS, MAX_EMAIL_ATTACHMENTS_COUNT, verifyEmailAttachments } from "@/lib/email-attachments"
+import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -20,6 +21,16 @@ const schema = z.object({
     key:      z.string(),
     filename: z.string().min(1).max(255),
   })).max(MAX_EMAIL_ATTACHMENTS_COUNT, EMAIL_ATTACHMENT_ERRORS.tooMany).optional(),
+  // When true, subject/bodyHtml are treated as the source (French) version and each member
+  // gets it auto-translated into their own Membre.preferredLocale — see bulkSendMembresEmail's
+  // "translate" step. External emails have no Membre record, so they always get the source.
+  autoLocalize:   z.boolean().optional(),
+  // Locales the admin already reviewed/edited in SendEmailModal's auto-preview dialog — sent
+  // as-is instead of being re-translated server-side. Only meaningful alongside autoLocalize.
+  translationOverrides: z.record(z.enum(SUPPORTED_LOCALES), z.object({
+    subject:  z.string().min(1).max(200),
+    bodyHtml: z.string().min(1),
+  })).optional(),
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {
@@ -34,7 +45,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 400 })
 
-  const { subject, bodyHtml, recipientIds, typeId, externalEmails = [], attachments = [] } = parsed.data
+  const { subject, bodyHtml, recipientIds, typeId, externalEmails = [], attachments = [], autoLocalize = false, translationOverrides } = parsed.data
 
   // Checked before anything is queued: a missing, oversized or disguised file must fail the
   // request the admin is looking at, not surface later as a background job failure.
@@ -59,7 +70,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       ...(recipientIds !== undefined ? { id: { in: recipientIds } } : {}),
       ...(typeId ? { typeId } : {}),
     },
-    select: { id: true, firstName: true, lastName: true, email: true },
+    select: { id: true, firstName: true, lastName: true, email: true, preferredLocale: true },
     take:   500,
   })
 
@@ -94,8 +105,16 @@ export const POST = withAdminAuth(async (req, ctx) => {
         branding,
         associationName: assoc.name,
         slug:             assoc.slug,
-        members:          recipients.map(m => ({ id: m.id, firstName: m.firstName, lastName: m.lastName, email: m.email! })),
+        members: recipients.map(m => ({
+          id:              m.id,
+          firstName:       m.firstName,
+          lastName:        m.lastName,
+          email:           m.email!,
+          preferredLocale: m.preferredLocale,
+        })),
         externalEmails:   uniqueExternalEmails,
+        autoLocalize,
+        ...(translationOverrides && Object.keys(translationOverrides).length ? { translationOverrides } : {}),
         ...(verifiedAttachments.length ? { attachments: verifiedAttachments } : {}),
         activityMeta: {
           recipientMode,
@@ -103,6 +122,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
           ...(recipientIds                ? { recipientCount: recipientIds.length }                                          : {}),
           ...(uniqueExternalEmails.length ? { externalEmailCount: uniqueExternalEmails.length, externalEmails: uniqueExternalEmails } : {}),
           ...(verifiedAttachments.length  ? { attachmentCount: verifiedAttachments.length, attachmentNames: verifiedAttachments.map(attachment => attachment.filename) } : {}),
+          ...(autoLocalize                ? { autoLocalize: true }                                                           : {}),
         },
       },
     })
