@@ -61,7 +61,7 @@ export function RegistrationsToggleButton({ evenement }: { evenement: Registrati
           {t("reopenRegistrationsButton")}
         </Button>
       ) : (
-        <Button size="sm" variant="outline" onClick={() => setCloseConfirmOpen(true)} loading={toggleRegistrations.isPending}>
+        <Button size="sm" variant="destructive" onClick={() => setCloseConfirmOpen(true)} loading={toggleRegistrations.isPending}>
           <LockSimpleIcon className="mr-1.5 size-4" />
           {t("closeRegistrationsButton")}
         </Button>
@@ -73,7 +73,7 @@ export function RegistrationsToggleButton({ evenement }: { evenement: Registrati
         title={t("closeRegistrationsConfirmTitle")}
         description={t("closeRegistrationsConfirmDescription")}
         confirmLabel={t("closeRegistrationsButton")}
-        confirmVariant="default"
+        confirmVariant="destructive"
         loading={toggleRegistrations.isPending}
         onConfirm={() => runToggle("closeRegistrations")}
       />
