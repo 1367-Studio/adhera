@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
 // Same gate as /api/dons and the sidebar's Dons entry — a role that can't open the dons
@@ -82,7 +83,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
       _sum: { amount: true },
     }),
     prisma.evenement.findFirst({
-      where: { associationId, date: { gte: now } },
+      where: { associationId, ...evenementNotOverWhere(now) },
       orderBy: { date: "asc" },
       select: { id: true, title: true, date: true, location: true },
     }),

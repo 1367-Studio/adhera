@@ -9,6 +9,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { writeActivityLog } from "@/lib/activity-log"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 
@@ -41,11 +42,15 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
     include: { ticketTypes: true },
   })
   if (!evenement) return NextResponse.json({ error: "Not found" }, { status: 404 })
-  if (evenement.date < new Date()) return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
+  if (isEvenementOver(evenement)) return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
 
   const body = await req.json()
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
+  // A manual close stops new registrations only — a member can still tell the association
+  // they won't come (ABSENT) after the manager closed registrations.
+  if (evenement.registrationsClosedAt && parsed.data.rsvp !== "ABSENT")
+    return NextResponse.json({ error: "Les inscriptions sont closes." }, { status: 422 })
 
   const membre = await prisma.membre.findUnique({
     where: { id: ctx.membreId! },

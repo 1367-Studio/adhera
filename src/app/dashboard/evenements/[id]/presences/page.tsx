@@ -29,6 +29,7 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
 
 type PresenceRow = {
@@ -672,7 +673,8 @@ export default function PresencesPage() {
   const capacity = ev.capacity
   const pct      = capacity ? Math.min(100, Math.round((presentsCount / capacity) * 100)) : null
   const isFull   = capacity != null && presentsCount >= capacity
-  const isPast   = new Date(ev.date) < new Date()
+  // Late arrivals can be added until the end of the event's Paris day, whatever the registration state.
+  const isPast   = isEvenementOver(ev)
 
   const now = new Date()
   const { opensAt: checkInOpensAt, closesAt: checkInClosesAt } = getCheckInWindow(ev)

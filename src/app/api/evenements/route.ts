@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { evenementSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -43,7 +44,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const to   = searchParams.get("to")
 
   const where: Record<string, unknown> = { associationId }
-  if (upcoming) where.date = { gte: new Date() }
+  // Today's events stay "upcoming" all day (see lib/evenement-timing). Under AND because the
+  // search below also writes an `OR`.
+  if (upcoming) where.AND = [evenementNotOverWhere()]
   else if (from || to) {
     where.date = {
       ...(from ? { gte: new Date(from) } : {}),

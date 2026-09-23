@@ -6,6 +6,7 @@ import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { translateFields } from "@/lib/i18n/translate"
 import { canPreviewForm } from "@/lib/form-preview"
 import { evenementRefWhere } from "@/lib/slug"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import type { Locale } from "@/i18n/locales"
 
 export async function GET(
@@ -35,7 +36,7 @@ export async function GET(
     },
     select: {
       id: true, title: true, description: true, imageUrl: true, date: true, endDate: true,
-      location: true, price: true, capacity: true, opensAt: true, closesAt: true,
+      location: true, price: true, capacity: true, opensAt: true, closesAt: true, registrationsClosedAt: true,
       contactEmail: true, contactPhone: true,
       fieldPhone: true, fieldAddress: true, fieldBirthDate: true, fieldGender: true, fieldMobile: true,
       allowCash: true, allowCheque: true, allowTransfer: true,
@@ -61,7 +62,8 @@ export async function GET(
 
   const now        = new Date()
   const notOpenYet = !preview && !!evenement.opensAt  && evenement.opensAt  > now
-  const closed     = !preview && !!evenement.closesAt && evenement.closesAt < now
+  // A manual close by the manager (registrationsClosedAt) reads exactly like a passed closesAt.
+  const closed     = !preview && ((!!evenement.closesAt && evenement.closesAt < now) || evenement.registrationsClosedAt != null)
 
   // The admin always writes this content in their own language — translate it for
   // visitors on the fly (cached per locale) rather than asking associations to
@@ -126,7 +128,7 @@ export async function GET(
   }
 
   const full = evenement.capacity != null && evenement._count.participations >= evenement.capacity
-  const past = evenement.date < new Date()
+  const past = isEvenementOver(evenement, now)
   const remainingCapacity = evenement.capacity != null
     ? Math.max(0, evenement.capacity - evenement._count.participations)
     : null

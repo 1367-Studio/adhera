@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -22,6 +23,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
+  if (isEvenementOver(evenement))
+    return NextResponse.json({ error: "Impossible de modifier la liste d'un événement déjà passé." }, { status: 422 })
 
   const parsed = bodySchema.safeParse(await req.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { formatAddress } from "@/lib/address"
@@ -230,6 +231,10 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
     if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
     participation = await prisma.participation.findFirst({ where: { membreId, evenementId } })
     if (!participation) {
+      // Adding a member to the list is allowed until the event is over (late arrivals at the
+      // door); toggling presence on an existing row stays possible afterwards.
+      if (isEvenementOver(evenement))
+        return NextResponse.json({ error: "Impossible de modifier la liste d'un événement déjà passé." }, { status: 422 })
       participation = await prisma.participation.create({
         data: { associationId, membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
       })

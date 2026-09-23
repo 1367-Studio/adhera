@@ -9,6 +9,7 @@ import { ArrowLeftIcon, CalendarBlankIcon, MapPinIcon, PushPinIcon, ArrowSquareO
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { PriceBadge } from "@/components/ui/price-badge"
+import { isEvenementOver } from "@/lib/evenement-timing"
 
 type EvenementRef = {
   id:          string
@@ -74,7 +75,7 @@ export default function ActualiteDetailPage() {
   )
 
   const ev = post.evenement
-  const isUpcoming = ev ? new Date(ev.date) >= new Date() : false
+  const isUpcoming = ev ? !isEvenementOver(ev) : false
 
   return (
     <div className="w-full space-y-6">

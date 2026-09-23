@@ -1785,7 +1785,9 @@
         "saved": "Modifications enregistrées",
         "saveError": "Erreur lors de l'enregistrement",
         "linkCopied": "Lien copié",
-        "linkCopyError": "Copie impossible — sélectionnez le lien manuellement."
+        "linkCopyError": "Copie impossible — sélectionnez le lien manuellement.",
+        "registrationsClosed": "Inscriptions fermées",
+        "registrationsReopened": "Inscriptions rouvertes"
       },
       "publishBlocked": {
         "unsavedToast": "Enregistrez les sections suivantes avant de publier : {steps}",
@@ -1842,13 +1844,18 @@
           "visibilityLink": "Sur lien uniquement",
           "visibilityPrivate": "Privé",
           "schedulePeriodLabel": "Limiter la période d'inscription",
-          "schedulePeriodHint": "Sans période définie, l'inscription reste ouverte tant que l'événement est publié.",
+          "schedulePeriodHint": "Sans période définie, l'inscription reste ouverte jusqu'à la fin du jour de l'événement, sauf si vous la fermez.",
           "opensAtLabel": "Ouverture",
           "closesAtLabel": "Fermeture",
           "datesOrderError": "La date de fermeture doit être postérieure à la date d'ouverture."
         }
       },
-      "titleRequired": "Le titre est obligatoire"
+      "titleRequired": "Le titre est obligatoire",
+      "closeRegistrationsButton": "Fermer les inscriptions",
+      "reopenRegistrationsButton": "Rouvrir les inscriptions",
+      "registrationsClosedNotice": "Inscriptions closes",
+      "closeRegistrationsConfirmTitle": "Fermer les inscriptions ?",
+      "closeRegistrationsConfirmDescription": "Plus personne ne pourra s'inscrire en ligne. Vous pourrez toujours ajouter des participants depuis la liste des présences."
     },
     "discountCodes": {
       "title": "Codes promotionnels",
@@ -5536,7 +5543,8 @@
       "send": "Envoyer",
       "commentPlaceholder": "Un commentaire ? (facultatif)",
       "ticketPurchaseSuccessToast": "Billet acheté avec succès !",
-      "paymentCancelledToast": "Paiement annulé. Votre place est toujours réservée — payez plus tard ou annulez la réservation sur la carte de l'événement."
+      "paymentCancelledToast": "Paiement annulé. Votre place est toujours réservée — payez plus tard ou annulez la réservation sur la carte de l'événement.",
+      "registrationsClosed": "Les inscriptions sont closes."
     }
   },
   "ai": {

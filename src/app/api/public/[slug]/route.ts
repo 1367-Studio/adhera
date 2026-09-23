@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { parseModules } from "@/lib/modules"
 
 export async function GET(
@@ -33,7 +34,7 @@ export async function GET(
   const [events, actualites] = await Promise.all([
     mods.evenements
       ? prisma.evenement.findMany({
-          where:   { associationId: assoc.id, date: { gte: now } },
+          where:   { associationId: assoc.id, ...evenementNotOverWhere(now) },
           orderBy: { date: "asc" },
           take:    20,
           select:  { id: true, slug: true, title: true, date: true, endDate: true, location: true, description: true, price: true, capacity: true },

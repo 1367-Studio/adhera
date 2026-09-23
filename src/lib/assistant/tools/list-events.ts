@@ -1,6 +1,7 @@
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
+import { evenementNotOverWhere, evenementOverWhere } from "@/lib/evenement-timing"
 import { runToolSafely, toIsoDate } from "@/lib/assistant/tool-result"
 import type { ToolContext } from "@/lib/assistant/types"
 
@@ -8,7 +9,8 @@ const TOOL_NAME     = "list_events"
 const DEFAULT_LIMIT = 10
 const MAX_LIMIT     = 20
 
-// Mirrors GET /api/evenements: upcoming = date >= now ascending, past = descending; the
+// Mirrors GET /api/evenements: upcoming = not over yet (today's events included, see
+// lib/evenement-timing) ascending, past = over, descending; the
 // confirmed count uses the same paid-or-CONFIRME predicate as the admin list.
 export function listEventsTool(context: ToolContext) {
   return betaZodTool({
@@ -27,17 +29,21 @@ export function listEventsTool(context: ToolContext) {
       const { associationId, today } = context
       const limit = input.limit ?? DEFAULT_LIMIT
 
+      // Both the timing fragment and the search are `OR`s — combined under AND so neither overwrites the other.
+      const timingWhere = input.scope === "upcoming" ? evenementNotOverWhere(today) : evenementOverWhere(today)
       const where = {
         associationId,
-        date: input.scope === "upcoming" ? { gte: today } : { lt: today },
-        ...(input.search
-          ? {
-              OR: [
-                { title:    { contains: input.search, mode: "insensitive" as const } },
-                { location: { contains: input.search, mode: "insensitive" as const } },
-              ],
-            }
-          : {}),
+        AND: [
+          timingWhere,
+          ...(input.search
+            ? [{
+                OR: [
+                  { title:    { contains: input.search, mode: "insensitive" as const } },
+                  { location: { contains: input.search, mode: "insensitive" as const } },
+                ],
+              }]
+            : []),
+        ],
       }
 
       const [rows, total] = await Promise.all([

@@ -12,7 +12,7 @@ import { APP_TIME_ZONE } from "@/lib/date-format"
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 const actionSchema = z.object({
-  action: z.enum(["publish", "unpublish", "archive", "duplicate"]),
+  action: z.enum(["publish", "unpublish", "archive", "duplicate", "closeRegistrations", "reopenRegistrations"]),
 })
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -75,6 +75,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         qrExpiresAt: null,
         opensAt:     null,
         closesAt:    null,
+        registrationsClosedAt: null,
         ticketTypes: {
           create: evenement.ticketTypes.map(tt => ({
             itemType: tt.itemType, label: tt.label, price: tt.price, priceBeforeDiscount: tt.priceBeforeDiscount,
@@ -105,6 +106,27 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     })
 
     return NextResponse.json(copy, { status: 201 })
+  }
+
+  // Manual close/reopen of online registrations — independent of the status and of the
+  // opensAt/closesAt window. The manager can still add participants from the presences page.
+  if (action === "closeRegistrations" || action === "reopenRegistrations") {
+    const closing = action === "closeRegistrations"
+    const updated = await prisma.evenement.update({
+      where: { id },
+      data:  { registrationsClosedAt: closing ? new Date() : null },
+    })
+    await revalidatePublicSite((await prisma.association.findUnique({ where: { id: associationId }, select: { slug: true } }))?.slug ?? "")
+
+    await writeActivityLog({
+      associationId, actorId: userId,
+      action:   closing ? "EVENEMENT_REGISTRATIONS_CLOSED" : "EVENEMENT_REGISTRATIONS_REOPENED",
+      entity:   "Evenement",
+      entityId: id,
+      label:    evenement.title,
+    })
+
+    return NextResponse.json(updated)
   }
 
   const status = action === "publish" ? "PUBLISHED" : action === "unpublish" ? "DRAFT" : "ARCHIVED"
