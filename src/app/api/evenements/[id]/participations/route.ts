@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
-import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import {
+  TicketPaymentError, applyDoorPayment, assertSeatAvailable, doorPaymentSchema, evenementHasFee,
+  evenementTicketPaymentSelect, markParticipationPaid, onSitePaymentMethodSchema, type DoorPayment,
+} from "@/lib/evenement-ticket-payment"
 import { formatAddress } from "@/lib/address"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -33,7 +37,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
   // separate, deliberate click, same as any other row.
   const participations = await prisma.participation.findMany({
     where:  { evenementId },
-    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true, receiptMode: true },
+    select: { id: true, membreId: true, firstName: true, lastName: true, email: true, phone: true, address: true, addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, answers: true, present: true, rsvp: true, ticketPaidAt: true, amount: true, stripeSessionId: true, ticketTypeId: true, receiptMode: true, paymentMethod: true },
   })
 
   const rows = participations
@@ -57,10 +61,21 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
       ticketTypeLabel: p.ticketTypeId ? (ticketTypeLabels.get(p.ticketTypeId) ?? null) : null,
       isGuest:         p.membreId == null,
       receiptMode:     p.receiptMode,
+      ticketTypeId:    p.ticketTypeId,
+      paymentMethod:   p.paymentMethod,
     }))
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
 
   return NextResponse.json(rows)
+})
+
+const markPaidBodySchema = z.object({
+  participationId: z.string().min(1).optional(),
+  membreId:        z.string().min(1).optional(),
+  ticketTypeId:    z.string().min(1).optional(),
+  free:            z.boolean().optional(),
+  // Absent = previous behaviour (the method chosen at registration, else espèces).
+  paymentMethod:   onSitePaymentMethodSchema.optional(),
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
@@ -69,15 +84,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   if (!MANAGERS.includes(role))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
-  const { participationId, membreId, ticketTypeId, free } = await req.json() as { participationId?: string; membreId?: string; ticketTypeId?: string; free?: boolean }
+  const parsedBody = markPaidBodySchema.safeParse(await req.json())
+  if (!parsedBody.success) return NextResponse.json({ error: parsedBody.error.issues }, { status: 422 })
+  const { participationId, membreId, ticketTypeId, free, paymentMethod } = parsedBody.data
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { title: true, price: true, ticketTypes: { select: { id: true, label: true, price: true, receiptMode: true, ineligibleAmount: true } } },
+    select: evenementTicketPaymentSelect,
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  const hasTicketTypes = evenement.ticketTypes.length > 0
-  if (!hasTicketTypes && (!evenement.price || Number(evenement.price) === 0))
+  if (!evenementHasFee(evenement))
     return NextResponse.json({ error: "Événement gratuit" }, { status: 422 })
 
   let participation
@@ -132,70 +148,26 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     return NextResponse.json(updated)
   }
 
-  // Which tier to charge: an explicit choice from the request wins (the "choose a tier"
-  // modal in the presences UI, for a walk-in that was never given one); otherwise fall back
-  // to whatever this registration already picked (public form, portal purchase, or a
-  // previous manual assignment); a single-tier event has no ambiguity so needs neither.
-  // More than one tier and nothing resolved means the caller must pick — never guess.
-  let tier: { id: string; label: string; price: unknown; receiptMode: "NONE" | "FULL" | "PARTIAL"; ineligibleAmount: unknown } | undefined
-  if (hasTicketTypes) {
-    if (ticketTypeId) {
-      tier = evenement.ticketTypes.find(tt => tt.id === ticketTypeId)
-      if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
-    } else if (participation.ticketTypeId) {
-      tier = evenement.ticketTypes.find(tt => tt.id === participation.ticketTypeId)
-    } else if (evenement.ticketTypes.length === 1) {
-      tier = evenement.ticketTypes[0]
-    } else {
-      return NextResponse.json({ error: "Sélectionnez un tarif" }, { status: 422 })
-    }
-  }
-  // Un code promo a déjà été validé/appliqué à l'inscription (voir inscription/route.ts) —
-  // recalculer ici depuis le prix de tarif ignorerait silencieusement la remise, même bug que
-  // celui corrigé côté webhook Stripe (voir Participation.amount/discountCodeId dans
-  // schema.prisma). Ignoré si l'admin réassigne explicitement une AUTRE tarif que celle
-  // d'origine — le code n'a jamais été validé contre ce nouveau choix.
-  const usesDiscountSnapshot = participation.discountCodeId != null && participation.amount != null
-    && (!ticketTypeId || ticketTypeId === participation.ticketTypeId)
-  const amount = usesDiscountSnapshot ? Number(participation.amount) : (hasTicketTypes ? Number(tier!.price) : Number(evenement.price))
-
   const exercice = await resolveExerciceForDate(associationId, paidAt)
   const exerciceGuard = closedExerciceGuard(exercice?.status)
   if (exerciceGuard) return exerciceGuard
 
-  // A visitor who chose an offline method at registration (see the public inscription
-  // route) already has it set here — respect that instead of guessing. Only a walk-in the
-  // admin is confirming with no prior selection (the only case that existed before this
-  // field) falls back to espèces, exactly as this route always assumed.
-  const method = participation.paymentMethod ?? "ESPECES"
-  const methodLabel = { ESPECES: "espèces", CHEQUE: "chèque", VIREMENT: "virement", STRIPE: "carte" }[method]
-
-  // Snapshotted from the tier at the moment of payment (see Participation.receiptMode in
-  // schema.prisma) — an admin editing the tier's receipt settings later must not retroactively
-  // change what receipt an already-paid ticket gets.
-  const receiptMode      = tier?.receiptMode ?? "NONE"
-  const deductibleAmount = eligibleReceiptAmount(amount, receiptMode, tier?.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)
-
-  const updated = await prisma.participation.update({
-    where: { id: participation.id },
-    data:  { ticketPaidAt: paidAt, amount, ticketTypeId: tier?.id, paymentMethod: method, receiptMode, deductibleAmount },
-  })
-
-  const ticketLabel = evenement.ticketTypes.length > 1 && tier ? ` (${tier.label})` : ""
-  await prisma.income.create({
-    data: {
+  const participationToPay = participation
+  let updated
+  try {
+    updated = await prisma.$transaction(transaction => markParticipationPaid(transaction, {
       associationId,
-      exerciceId:      exercice?.id ?? null,
-      memberId:        participation.membreId,
-      participationId: participation.id,
-      amount,
-      paymentMethod: method,
-      description: `Billet (${methodLabel}) — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
-      source:      "MANUAL",
-      status:      "PAID",
-      date:        paidAt,
-    },
-  })
+      evenement,
+      participation: participationToPay,
+      ticketTypeId,
+      paymentMethod,
+      paidAt,
+      exerciceId: exercice?.id ?? null,
+    }))
+  } catch (error) {
+    if (error instanceof TicketPaymentError) return NextResponse.json({ error: error.message }, { status: error.status })
+    throw error
+  }
 
   await writeActivityLog({
     associationId,
@@ -204,10 +176,17 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
     entity:   "Participation",
     entityId: participation.id,
     label:    evenement.title,
-    metadata: { memberName: `${participation.firstName} ${participation.lastName}` },
+    metadata: { memberName: `${participation.firstName} ${participation.lastName}`, paymentMethod: updated.paymentMethod },
   })
 
   return NextResponse.json(updated)
+})
+
+const presenceBodySchema = z.object({
+  participationId: z.string().min(1).optional(),
+  membreId:        z.string().min(1).optional(),
+  present:         z.boolean(),
+  payment:         doorPaymentSchema.optional(),
 })
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
@@ -219,7 +198,16 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
-  const { participationId, membreId, present } = await req.json() as { participationId?: string; membreId?: string; present: boolean }
+  const parsedBody = presenceBodySchema.safeParse(await req.json())
+  if (!parsedBody.success) return NextResponse.json({ error: parsedBody.error.issues }, { status: 422 })
+  const { participationId, membreId, present, payment } = parsedBody.data
+
+  // "Ajouter un membre" with a payment choice (paid event) — creation + payment/reservation in
+  // one transaction, see addMemberWithPayment below.
+  if (payment) {
+    if (!membreId) return NextResponse.json({ error: "membreId requis" }, { status: 422 })
+    return addMemberWithPayment({ associationId, userId, evenementId, evenement, membreId, present, payment })
+  }
 
   let participation
   let justCreated = false
@@ -297,3 +285,84 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
 
   return NextResponse.json(updated)
 })
+
+async function addMemberWithPayment(params: {
+  associationId: string
+  userId:        string
+  evenementId:   string
+  evenement:     { title: string; capacity: number | null; date: Date; endDate: Date | null }
+  membreId:      string
+  present:       boolean
+  payment:       DoorPayment
+}) {
+  const { associationId, userId, evenementId, evenement, membreId, present, payment } = params
+
+  const evenementForPayment = await prisma.evenement.findFirst({
+    where:  { id: evenementId, associationId },
+    select: evenementTicketPaymentSelect,
+  })
+  if (!evenementForPayment) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
+  if (!evenementHasFee(evenementForPayment))
+    return NextResponse.json({ error: "Événement gratuit" }, { status: 422 })
+
+  const membre = await prisma.membre.findFirst({ where: { id: membreId, associationId, deletedAt: null } })
+  if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
+
+  const existing = await prisma.participation.findFirst({ where: { membreId, evenementId } })
+  if (!existing && isEvenementOver(evenement))
+    return NextResponse.json({ error: "Impossible de modifier la liste d'un événement déjà passé." }, { status: 422 })
+  if (existing?.rsvp === "LISTA_ESPERA")
+    return NextResponse.json({ error: "Cette personne est en liste d'attente — promouvez-la d'abord." }, { status: 422 })
+
+  const paidAt = new Date()
+  let exerciceId: string | null = null
+  if (payment.mode === "now") {
+    const exercice = await resolveExerciceForDate(associationId, paidAt)
+    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    if (exerciceGuard) return exerciceGuard
+    exerciceId = exercice?.id ?? null
+  }
+
+  let updated
+  try {
+    updated = await prisma.$transaction(async transaction => {
+      const alreadyHoldsSeat = !!existing && (existing.ticketPaidAt != null || existing.rsvp === "CONFIRME")
+      if (!alreadyHoldsSeat)
+        await assertSeatAvailable(transaction, { evenementId, capacity: evenement.capacity, participationId: existing?.id })
+
+      const participation = existing ?? await transaction.participation.create({
+        data: { associationId, membreId, evenementId, firstName: membre.firstName, lastName: membre.lastName, email: membre.email },
+      })
+      const withPayment = await applyDoorPayment(transaction, {
+        associationId, evenement: evenementForPayment, participation, payment, paidAt, exerciceId,
+      })
+      if (withPayment.present === present) return withPayment
+      return transaction.participation.update({ where: { id: participation.id }, data: { present } })
+    })
+  } catch (error) {
+    if (error instanceof TicketPaymentError) return NextResponse.json({ error: error.message }, { status: error.status })
+    throw error
+  }
+
+  const memberName = `${membre.firstName} ${membre.lastName}`
+  if (!existing) {
+    await writeActivityLog({
+      associationId, actorId: userId, action: "PARTICIPANT_ADDED", entity: "Participation",
+      entityId: updated.id, label: evenement.title, metadata: { memberName },
+    })
+  }
+  if (payment.mode === "now") {
+    await writeActivityLog({
+      associationId, actorId: userId, action: "TICKET_PAID", entity: "Participation",
+      entityId: updated.id, label: evenement.title, metadata: { memberName, paymentMethod: updated.paymentMethod },
+    })
+  }
+  if ((existing?.present ?? false) !== present) {
+    await writeActivityLog({
+      associationId, actorId: userId, action: "PRESENCE_MARKED", entity: "Participation",
+      entityId: updated.id, label: evenement.title, metadata: { present, memberName },
+    })
+  }
+
+  return NextResponse.json(updated)
+}

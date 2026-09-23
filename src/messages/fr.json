@@ -1750,6 +1750,26 @@
         "qrRevoked": "QR Code désactivé",
         "noMembersToExport": "Aucun membre à exporter",
         "linkCopied": "Lien copié"
+      },
+      "payment": {
+        "sectionTitle": "Paiement",
+        "modeLabel": "Paiement",
+        "modeNow": "Payé maintenant",
+        "modeLater": "À régler plus tard",
+        "laterHint": "La place est réservée. Encaissez-la ensuite avec « Marquer payé ».",
+        "methodLabel": "Moyen de paiement",
+        "tierLabel": "Tarif",
+        "methods": {
+          "ESPECES": "Espèces",
+          "CHEQUE": "Chèque",
+          "VIREMENT": "Virement"
+        },
+        "encaisserTitle": "Encaisser",
+        "encaisserConfirm": "Encaisser",
+        "amountHint": "Montant : {amount}",
+        "selectedMember": "Membre sélectionné : {name}",
+        "selectMemberHint": "Sélectionnez un membre dans la liste ci-dessus.",
+        "addSubmit": "Ajouter"
       }
     },
     "avaliacoes": {
