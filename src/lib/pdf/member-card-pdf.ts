@@ -27,6 +27,8 @@ import { getContrastingTextColor, resolveMemberCardColor } from "@/lib/member-ca
 import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
   CARD_CONTACT_GAP_MM,
+  CARD_CONTACT_ICON_GAP_MM,
+  CARD_CONTACT_ICON_SIZE_MM,
   CARD_CONTACT_MAX_WIDTH_MM,
   CARD_CONTACT_SEPARATOR_GAP_MM,
   CARD_CORNER_RADIUS_MM,
@@ -127,6 +129,19 @@ const NEUTRAL_100  = hexToRgb("#f5f5f5") // bg-neutral-100 — neutral initials 
 
 /** Kappa: the constant that makes four cubic Béziers approximate a circle to ~0.02%. */
 const BEZIER_CIRCLE_CONSTANT = 0.5522847498
+
+/**
+ * Phosphor's "Phone" glyph, regular weight, traced at build time from
+ * @phosphor-icons/react/dist/defs/Phone.es.js — the same icon member-card.tsx draws with
+ * <PhoneIcon>. pdf-lib has no font that carries icon glyphs, so the outline is drawn as a raw
+ * SVG path instead; keeping it byte-for-byte the source package's "regular" path means the
+ * printed card doesn't drift from the screen one if Phosphor ever tweaks the glyph.
+ */
+const PHONE_ICON_SVG_PATH =
+  "M222.37,158.46l-47.11-21.11-.13-.06a16,16,0,0,0-15.17,1.4,8.12,8.12,0,0,0-.75.56L134.87,160c-15.42-7.49-31.34-23.29-38.83-38.51l20.78-24.71c.2-.25.39-.5.57-.77a16,16,0,0,0,1.32-15.06l0-.12L97.54,33.64a16,16,0,0,0-16.62-9.52A56.26,56.26,0,0,0,32,80c0,79.4,64.6,144,144,144a56.26,56.26,0,0,0,55.88-48.92A16,16,0,0,0,222.37,158.46ZM176,208A128.14,128.14,0,0,1,48,80,40.2,40.2,0,0,1,82.87,40a.61.61,0,0,0,0,.12l21,47L83.2,111.86a6.13,6.13,0,0,0-.57.77,16,16,0,0,0-1,15.7c9.06,18.53,27.73,37.06,46.46,46.11a16,16,0,0,0,15.75-1.14,8.44,8.44,0,0,0,.74-.56L168.89,152l47,21.05h0s.08,0,.11,0A40.21,40.21,0,0,1,176,208Z"
+/** Phosphor icons are drawn on a 256×256 grid — the divisor that turns a target mm size into
+ *  the `scale` drawSvgPath expects. */
+const PHONE_ICON_VIEWBOX_SIZE = 256
 
 export type MemberCardPdfLabels = {
   /** `memberCard.print.documentTitle`, interpolated — shown by the browser's print dialog. */
@@ -754,10 +769,11 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
   })
 
   // The association's phone / e-mail, one gap above the validity line — the same place and
-  // the same tone as on the screen card. Drawn as up to three separate runs (phone, a middle
-  // dot with extra breathing room on each side, e-mail) rather than one joined string, so the
-  // two values read as distinct fields instead of a single run-on line — the print mirror of
-  // the phone icon the screen card adds (see member-card.tsx). Positions are measured, not
+  // the same tone as on the screen card, phone icon included (PHONE_ICON_SVG_PATH is Phosphor's
+  // own outline, so it's the same glyph the screen card's <PhoneIcon> draws — see
+  // member-card.tsx). Drawn as up to four separate runs (icon, phone, a middle dot with extra
+  // breathing room on each side, e-mail) rather than one joined string, so the two values read
+  // as distinct fields instead of a single run-on line. Positions are measured, not
   // counted in characters: the phone is capped at the full CARD_CONTACT_MAX_WIDTH_MM (it is
   // always short in practice — the settings form caps it at 30 characters — but a renderer
   // must not depend on a limit enforced two layers away), and the e-mail eats whatever the
@@ -770,6 +786,19 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
     let cursorMm        = CARD_MARGIN_MM
 
     if (card.contactPhone) {
+      // Vertically centred in the line box, like `items-center` does for the screen card's
+      // <PhoneIcon> — the icon's own height (CARD_CONTACT_ICON_SIZE_MM) is shorter than the
+      // line box (LINE_HEIGHT_FACTOR × the footer font), so it sits with equal breathing room
+      // above and below rather than pinned to the text baseline.
+      const iconTopMm = contactTopMm + (LINE_HEIGHT_FACTOR * CARD_FONT_FOOTER_MM - CARD_CONTACT_ICON_SIZE_MM) / 2
+      page.drawSvgPath(PHONE_ICON_SVG_PATH, {
+        x:     cardX(cursorMm),
+        y:     cardY(iconTopMm),
+        scale: millimetresToPoints(CARD_CONTACT_ICON_SIZE_MM) / PHONE_ICON_VIEWBOX_SIZE,
+        color: NEUTRAL_500,
+      })
+      cursorMm += CARD_CONTACT_ICON_SIZE_MM + CARD_CONTACT_ICON_GAP_MM
+
       const phoneText = truncateToWidth(
         regularFont,
         sanitizeForWinAnsi(card.contactPhone),
