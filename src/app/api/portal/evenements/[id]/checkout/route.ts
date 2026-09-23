@@ -7,6 +7,7 @@ import { z } from "zod"
 import { APP_URL } from "@/lib/env"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import { sendEmail } from "@/lib/mail"
 import { waitlistConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
@@ -45,8 +46,10 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     include: { association: { select: { stripeConnectId: true, name: true, slug: true } }, ticketTypes: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  if (evenement.date < new Date())
+  if (isEvenementOver(evenement))
     return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
+  if (evenement.registrationsClosedAt)
+    return NextResponse.json({ error: "Les inscriptions sont closes." }, { status: 422 })
 
   // Ticket types (when the admin defined any) replace the flat price entirely — a fully
   // free selection (every seat on a 0€ tier) is legitimate here and confirmed without

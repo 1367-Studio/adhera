@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 
 const bodySchema = z.object({ participationId: z.string().optional() })
 
@@ -17,10 +18,10 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { title: true, date: true, price: true, associationId: true },
+    select: { title: true, date: true, endDate: true, price: true, associationId: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  if (evenement.date < new Date())
+  if (isEvenementOver(evenement))
     return NextResponse.json({ error: "Impossible d'annuler un billet pour un événement déjà passé." }, { status: 422 })
 
   const parsed = bodySchema.safeParse(await req.json().catch(() => ({})))

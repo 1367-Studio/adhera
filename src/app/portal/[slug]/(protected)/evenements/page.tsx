@@ -40,6 +40,8 @@ type Evenement = {
   lng:            number | null
   price:          string | null
   capacity:       number | null
+  // Set when the manager closed online registrations early (see Evenement.registrationsClosedAt).
+  registrationsClosedAt: string | null
   ticketTypes:    EvenementTicketType[]
   participations: { id: string; present: boolean; rsvp: RsvpStatus | null; ticketPaidAt: string | null; avis: { id: string } | null }[]
   partySize:      number
@@ -242,6 +244,7 @@ function PaidEventSection({
   remainingCapacity,
   price,
   ticketTypes,
+  registrationsClosed,
 }: {
   evenementId:       string
   ticketPaid:        boolean
@@ -252,6 +255,7 @@ function PaidEventSection({
   remainingCapacity: number | null
   price:             string | null
   ticketTypes:       EvenementTicketType[]
+  registrationsClosed: boolean
 }) {
   const t       = useTranslations("portalMembre.evenements")
   const tCommon = useTranslations("common")
@@ -413,15 +417,21 @@ function PaidEventSection({
           <BookmarkSimpleIcon className="size-3.5" />
           {t("reservedPayOnSite")}
         </div>
-        {maxQtyConfirme > 1 && (
-          <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} label={t("seatsCountLabel")} />
+        {/* Registrations closed: the reservation stands (and can still be cancelled), but no
+            seat can be added or bought online any more. */}
+        {!registrationsClosed && (
+          <>
+            {maxQtyConfirme > 1 && (
+              <QuantityStepper value={quantity} onChange={setQuantity} max={maxQtyConfirme} label={t("seatsCountLabel")} />
+            )}
+            {ticketTypes.length > 0 && (
+              <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
+            )}
+            <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} ticketTypes={ticketTypes} />
+            {TotalLine}
+            {(connectEnabled || allFree) && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} ticketTypeId={selfTicketTypeId} free={allFree} />}
+          </>
         )}
-        {ticketTypes.length > 0 && (
-          <TicketTypeSelect ticketTypes={ticketTypes} value={selfTicketTypeId} onChange={setSelfTicketTypeId} />
-        )}
-        <GuestNameFields count={quantity - 1} guests={guests} onChange={setGuests} ticketTypes={ticketTypes} />
-        {TotalLine}
-        {(connectEnabled || allFree) && <TicketButton evenementId={evenementId} quantity={quantity} guests={guests} ticketTypeId={selfTicketTypeId} free={allFree} />}
         <Button
           size="sm"
           variant="ghost"
@@ -471,6 +481,10 @@ function PaidEventSection({
         {t("eventFull")}
       </div>
     )
+  }
+
+  if (registrationsClosed) {
+    return <p className="text-xs text-muted-foreground">{t("registrationsClosed")}</p>
   }
 
   return (
@@ -655,6 +669,7 @@ function EventCard({
   const cheapestTicketTypePrice = hasTicketTypes ? cheapestAvailableTicketTypePrice(ev.ticketTypes) : null
   const remainingCapacity = ev.capacity != null ? Math.max(0, ev.capacity - ev.confirmedCount) : null
   const allTicketTypesFull = hasTicketTypes && ev.ticketTypes.every(tt => tt.full)
+  const registrationsClosed = ev.registrationsClosedAt != null
   const isFull           = (allTicketTypesFull || (ev.capacity != null && ev.confirmedCount >= ev.capacity)) && !ticketPaid && currentRsvp !== "CONFIRME"
 
   return (
@@ -734,6 +749,7 @@ function EventCard({
               remainingCapacity={remainingCapacity}
               price={ev.price}
               ticketTypes={ev.ticketTypes}
+              registrationsClosed={registrationsClosed}
             />
           )}
           {isPast && ticketPaid && (
@@ -772,6 +788,14 @@ function EventCard({
           {participation?.present && (
             <EventReviewSection evenementId={ev.id} alreadySubmitted={!!participation.avis} />
           )}
+        </div>
+      ) : !hasFee && registrationsClosed ? (
+        // Free event whose registrations the manager closed: show the recorded answer, no buttons.
+        <div className="space-y-1 text-xs text-muted-foreground">
+          {currentRsvp && (
+            <p>{t("rsvpDisplay", { label: t(RSVP_OPTIONS.find(o => o.value === currentRsvp)?.labelKey ?? "rsvpConfirme") })}</p>
+          )}
+          <p>{t("registrationsClosed")}</p>
         </div>
       ) : !hasFee ? (
         // Free event: show RSVP buttons

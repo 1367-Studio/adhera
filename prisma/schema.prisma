@@ -857,6 +857,8 @@ model Evenement {
   visibility             EvenementVisibility       @default(LINK)
   opensAt                DateTime?
   closesAt               DateTime?
+  // Fermeture manuelle des inscriptions en ligne par le gestionnaire (null = ouvertes).
+  registrationsClosedAt  DateTime?
   // Miroir exact de MembershipForm/DonationForm.conditions/attachments/requireCguvSignature —
   // absents de tout événement existant avant ce champ (backfill : conditions/attachments
   // null, requireCguvSignature false, son default de colonne = comportement identique à avant).

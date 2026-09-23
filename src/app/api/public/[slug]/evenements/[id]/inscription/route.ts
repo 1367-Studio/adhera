@@ -3,6 +3,7 @@ import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
+import { isEvenementOver } from "@/lib/evenement-timing"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressColumnsPatch, addressIsFilled, type AddressInput } from "@/lib/address"
 import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
@@ -188,12 +189,12 @@ export async function POST(
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   // Public URL segment for the confirmation emails and Stripe return URLs (see Evenement.slug).
   const evenementRef = evenement.slug ?? evenement.id
-  if (evenement.date < new Date())
-    return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
   const now = new Date()
+  if (isEvenementOver(evenement, now))
+    return NextResponse.json({ error: "Événement déjà passé" }, { status: 422 })
   if (evenement.opensAt && evenement.opensAt > now)
     return NextResponse.json({ error: "Les inscriptions ne sont pas encore ouvertes." }, { status: 422 })
-  if (evenement.closesAt && evenement.closesAt < now)
+  if ((evenement.closesAt && evenement.closesAt < now) || evenement.registrationsClosedAt)
     return NextResponse.json({ error: "Les inscriptions sont closes." }, { status: 422 })
 
   // Le client refuse déjà de soumettre sans cette case cochée (+ nom saisi) quand l'événement

@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isEvenementOver } from "@/lib/evenement-timing"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -24,7 +25,7 @@ export const PATCH = withAdminAuth<Params>(async (req, ctx, { id: evenementId, p
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  if (evenement.date < new Date())
+  if (isEvenementOver(evenement))
     return NextResponse.json({ error: "Impossible de modifier la liste d'un événement déjà passé." }, { status: 422 })
 
   const participation = await prisma.participation.findFirst({ where: { id: participationId, evenementId } })
@@ -62,7 +63,7 @@ export const DELETE = withAdminAuth<Params>(async (_req, ctx, { id: evenementId,
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
-  if (evenement.date < new Date())
+  if (isEvenementOver(evenement))
     return NextResponse.json({ error: "Impossible de modifier la liste d'un événement déjà passé." }, { status: 422 })
 
   const participation = await prisma.participation.findFirst({ where: { id: participationId, evenementId } })

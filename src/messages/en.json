@@ -1785,7 +1785,9 @@
         "saved": "Changes saved",
         "saveError": "Error while saving",
         "linkCopied": "Link copied",
-        "linkCopyError": "Could not copy — select the link manually."
+        "linkCopyError": "Could not copy — select the link manually.",
+        "registrationsClosed": "Registrations closed",
+        "registrationsReopened": "Registrations reopened"
       },
       "publishBlocked": {
         "unsavedToast": "Save the following sections before publishing: {steps}",
@@ -1842,13 +1844,18 @@
           "visibilityLink": "Link only",
           "visibilityPrivate": "Private",
           "schedulePeriodLabel": "Limit the registration period",
-          "schedulePeriodHint": "With no period set, registration stays open as long as the event is published.",
+          "schedulePeriodHint": "With no period set, registration stays open until the end of the event day, unless you close it.",
           "opensAtLabel": "Opens",
           "closesAtLabel": "Closes",
           "datesOrderError": "The closing date must be after the opening date."
         }
       },
-      "titleRequired": "The title is required"
+      "titleRequired": "The title is required",
+      "closeRegistrationsButton": "Close registrations",
+      "reopenRegistrationsButton": "Reopen registrations",
+      "registrationsClosedNotice": "Registrations closed",
+      "closeRegistrationsConfirmTitle": "Close registrations?",
+      "closeRegistrationsConfirmDescription": "No one will be able to register online anymore. You can still add participants from the attendance list."
     },
     "discountCodes": {
       "title": "Promo codes",
@@ -5528,7 +5535,8 @@
       "send": "Send",
       "commentPlaceholder": "A comment? (optional)",
       "ticketPurchaseSuccessToast": "Ticket purchased successfully!",
-      "paymentCancelledToast": "Payment cancelled. Your seat is still booked — pay later or cancel the booking from the event card."
+      "paymentCancelledToast": "Payment cancelled. Your seat is still booked — pay later or cancel the booking from the event card.",
+      "registrationsClosed": "Registrations are closed."
     }
   },
   "ai": {

@@ -7,6 +7,7 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/mail"
 import { cancellationConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { isEvenementOver } from "@/lib/evenement-timing"
 
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
@@ -24,7 +25,7 @@ async function findByToken(token: string) {
     include: {
       evenement: {
         select: {
-          title: true, date: true, price: true, associationId: true,
+          title: true, date: true, endDate: true, price: true, associationId: true,
           association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
         },
       },
@@ -56,7 +57,7 @@ export async function GET(
     isPaid:     participation.ticketPaidAt != null,
     amount:     participation.amount?.toString() ?? null,
     cancelled,
-    past:       participation.evenement.date < new Date(),
+    past:       isEvenementOver(participation.evenement),
   })
 }
 
@@ -72,7 +73,7 @@ export async function POST(
 
   const participation = await findByToken(token)
   if (!participation) return NextResponse.json({ error: "Lien invalide" }, { status: 404 })
-  if (participation.evenement.date < new Date())
+  if (isEvenementOver(participation.evenement))
     return NextResponse.json({ error: "Cet événement est déjà passé." }, { status: 422 })
   if (!participation.ticketPaidAt && !participation.rsvp)
     return NextResponse.json({ error: "Cette inscription est déjà annulée." }, { status: 409 })

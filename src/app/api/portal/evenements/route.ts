@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { evenementNotOverWhere, evenementOverWhere } from "@/lib/evenement-timing"
 import { translateFields } from "@/lib/i18n/translate"
 import type { Locale } from "@/i18n/locales"
 
@@ -85,13 +86,13 @@ export const GET = withPortalAuth(async (_req, ctx) => {
       // No visibility filter here (unlike the public site route) — PRIVATE means "portal
       // only, not on the public site/link", so a member should still see it. DRAFT is
       // excluded either way: an admin still configuring the event isn't done announcing it.
-      where:   { associationId, date: { gte: now }, status: "PUBLISHED" },
+      where:   { associationId, status: "PUBLISHED", ...evenementNotOverWhere(now) },
       orderBy: { date: "asc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect, ticketTypes: ticketTypesSelect },
     }),
     prisma.evenement.findMany({
-      where:   { associationId, date: { lt: now }, status: "PUBLISHED" },
+      where:   { associationId, status: "PUBLISHED", ...evenementOverWhere(now) },
       orderBy: { date: "desc" },
       take:    LIMIT + 1,
       include: { participations: participationSelect, ticketTypes: ticketTypesSelect },

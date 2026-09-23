@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
+import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { SiteHeroSection }        from "@/components/site/sections/site-hero-section"
 import { SiteAboutSection }       from "@/components/site/sections/site-about-section"
 import { SiteEventsSection }      from "@/components/site/sections/site-events-section"
@@ -48,7 +49,7 @@ async function getSiteData(slug: string) {
   const [events, actualites, boutiqueProduits] = await Promise.all([
     mods.evenements
       ? prisma.evenement.findMany({
-          where:   { association: { slug }, date: { gte: now }, status: "PUBLISHED", visibility: { not: "PRIVATE" } },
+          where:   { association: { slug }, status: "PUBLISHED", visibility: { not: "PRIVATE" }, ...evenementNotOverWhere(now) },
           orderBy: { date: "asc" },
           take:    20,
           // Une tarif désactivée n'est plus achetable — même filtre que le formulaire public
