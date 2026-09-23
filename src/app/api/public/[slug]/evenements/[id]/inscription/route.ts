@@ -17,6 +17,7 @@ import { rsvpConfirmationEmail, waitlistConfirmationEmail } from "@/lib/email"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { createEvenementDonation } from "@/lib/webhook/evenement-addons"
+import { ON_SITE_PAYMENT_METHODS, isOnSitePaymentMethodAccepted } from "@/lib/evenement-payment-methods"
 
 const MAX_NUMBER_FIELD_VALUE = 999_999
 const MAX_QUANTITY = 10
@@ -59,7 +60,7 @@ const baseSchema = z.object({
   website:   z.string().optional().or(z.literal("")),
   // Offline choice, mirroring Don/Cotisation's own paymentMethod — only ever meaningful
   // for a single-attendee, paid order (see the isOffline guard below).
-  paymentMethod: z.enum(["STRIPE", "ESPECES", "CHEQUE", "VIREMENT"]).optional().default("STRIPE"),
+  paymentMethod: z.enum(["STRIPE", ...ON_SITE_PAYMENT_METHODS]).optional().default("STRIPE"),
   // Optional donation(s) riding alongside the ticket, one Don per selected EvenementTicketType
   // with itemType == DONATION — only ever meaningful for a single-attendee order, same
   // restriction as products on the membership form (one Participation, one payment). Amount
@@ -390,7 +391,7 @@ export async function POST(
     // evenement-products.ts) — an offline payment never goes through that webhook.
     if (resolvedProducts.length > 0)
       return NextResponse.json({ error: "Le paiement hors ligne n'est pas disponible avec des produits." }, { status: 400 })
-    const allowed = paymentMethod === "ESPECES" ? evenement.allowCash : paymentMethod === "CHEQUE" ? evenement.allowCheque : evenement.allowTransfer
+    const allowed = isOnSitePaymentMethodAccepted(paymentMethod, evenement)
     if (!allowed) return NextResponse.json({ error: "Ce moyen de paiement n'est pas disponible pour cet événement." }, { status: 400 })
   } else if (isPaid && (!assoc.stripeConnectId || !(await connectAccountChargesEnabled(assoc.stripeConnectId)))) {
     return NextResponse.json({ error: "Paiement en ligne non disponible pour cette association" }, { status: 400 })

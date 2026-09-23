@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { EvenementInput, EvenementUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage } from "@/lib/api-error"
+import type { OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
 
 const QK = ["evenements"]
 
@@ -52,6 +53,12 @@ async function deleteEvenement(id: string) {
 
 export type GuestInput = { firstName: string; lastName: string; email?: string; ticketTypeId?: string }
 
+// Payment choice when adding someone at the door on a paid event — see doorPaymentSchema in
+// src/lib/evenement-ticket-payment.ts.
+export type DoorPaymentInput =
+  | { mode: "now"; ticketTypeId?: string; paymentMethod: OnSitePaymentMethod }
+  | { mode: "later" }
+
 async function setRsvp(evenementId: string, rsvp: string, quantity?: number, guests?: GuestInput[], ticketTypeId?: string) {
   const res = await fetch(`/api/portal/evenements/${evenementId}/rsvp`, {
     method:  "PATCH",
@@ -96,15 +103,17 @@ async function revokeQr(evenementId: string) {
 // hasn't RSVP'd yet (membreId) — the backend creates the ticket on first use in that case.
 export type RowRef = { participationId: string; membreId?: undefined } | { membreId: string; participationId?: undefined }
 
-async function markPaid(evenementId: string, ref: RowRef, ticketTypeId?: string, free?: boolean) {
+async function markPaid(evenementId: string, ref: RowRef, options: MarkPaidOptions) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method:  "PATCH",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ ...ref, ticketTypeId, free }),
+    body:    JSON.stringify({ ...ref, ...options }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
 }
+
+type MarkPaidOptions = { ticketTypeId?: string; free?: boolean; paymentMethod?: OnSitePaymentMethod }
 
 async function cancelPayment(evenementId: string, ref: RowRef) {
   const res = await fetch(`/api/evenements/${evenementId}/participations/cancel-payment`, {
@@ -126,17 +135,17 @@ async function promoteWaitlist(evenementId: string, participationId: string) {
   return res.json()
 }
 
-async function togglePresence(evenementId: string, ref: RowRef, present: boolean) {
+async function togglePresence(evenementId: string, ref: RowRef, present: boolean, payment?: DoorPaymentInput) {
   const res = await fetch(`/api/evenements/${evenementId}/participations`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...ref, present }),
+    body: JSON.stringify({ ...ref, present, ...(payment ? { payment } : {}) }),
   })
   if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
   return res.json()
 }
 
-async function addGuest(evenementId: string, guest: GuestInput) {
+async function addGuest(evenementId: string, guest: GuestInput & { payment?: DoorPaymentInput }) {
   const res = await fetch(`/api/evenements/${evenementId}/participations/guest`, {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
@@ -281,7 +290,8 @@ export function useSetRsvp(evenementId: string) {
 export function useMarkPaid(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ ticketTypeId, free, ...ref }: RowRef & { ticketTypeId?: string; free?: boolean }) => markPaid(evenementId, ref, ticketTypeId, free),
+    mutationFn: ({ ticketTypeId, free, paymentMethod, ...ref }: RowRef & MarkPaidOptions) =>
+      markPaid(evenementId, ref as RowRef, { ticketTypeId, free, paymentMethod }),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["activity-logs"] }),
@@ -314,8 +324,8 @@ export function usePromoteWaitlist(evenementId: string) {
 export function useTogglePresence(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ present, ...ref }: RowRef & { present: boolean }) =>
-      togglePresence(evenementId, ref as RowRef, present),
+    mutationFn: ({ present, payment, ...ref }: RowRef & { present: boolean; payment?: DoorPaymentInput }) =>
+      togglePresence(evenementId, ref as RowRef, present, payment),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: ["portal-evenements"] }),
@@ -329,7 +339,7 @@ export function useTogglePresence(evenementId: string) {
 export function useAddGuest(evenementId: string) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (guest: GuestInput) => addGuest(evenementId, guest),
+    mutationFn: (guest: GuestInput & { payment?: DoorPaymentInput }) => addGuest(evenementId, guest),
     onSuccess: () => Promise.all([
       qc.invalidateQueries({ queryKey: [...QK, evenementId, "participations"] }),
       qc.invalidateQueries({ queryKey: QK }),
@@ -522,5 +532,35 @@ export function useRevokeQr(evenementId: string) {
   return useMutation({
     mutationFn: () => revokeQr(evenementId),
     onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+export type RegistrationsToggleAction = "closeRegistrations" | "reopenRegistrations"
+
+type RegistrationsToggleResult = { id: string; registrationsClosedAt: string | null }
+
+async function toggleRegistrations(evenementId: string, action: RegistrationsToggleAction) {
+  const res = await fetch(`/api/evenements/${evenementId}/publish`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ action }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur"))
+  return res.json() as Promise<RegistrationsToggleResult>
+}
+
+// Manual close/reopen of online registrations. The publish route returns the bare event row
+// (no relations), so only `registrationsClosedAt` is merged into the cached detail — the
+// detail and presences pages both read ["evenements", id] and rely on its relations.
+export function useToggleRegistrations(evenementId: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (action: RegistrationsToggleAction) => toggleRegistrations(evenementId, action),
+    onSuccess:  (updated) => {
+      qc.setQueryData([...QK, evenementId], (cached: Record<string, unknown> | undefined) =>
+        cached ? { ...cached, registrationsClosedAt: updated.registrationsClosedAt } : cached,
+      )
+      return qc.invalidateQueries({ queryKey: QK })
+    },
   })
 }

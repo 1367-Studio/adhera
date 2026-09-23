@@ -4,6 +4,7 @@ import { EvenementCustomFieldsEditor, type EvenementCustomFieldsEditorHandle } f
 import { EvenementTicketTypesEditor, type EvenementTicketTypesEditorHandle, type TicketTypeDraftRow } from "@/components/evenements/evenement-ticket-types-editor"
 import { EvenementDiscountCodesEditor, type EvenementDiscountCodesEditorHandle } from "@/components/evenements/evenement-discount-codes-editor"
 import { EvenementProductsEditor, type EvenementProductsEditorHandle } from "@/components/evenements/evenement-products-editor"
+import { RegistrationsClosedNotice, RegistrationsToggleButton } from "@/components/evenements/registrations-toggle-button"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
@@ -26,7 +27,6 @@ import { SelectField } from "@/components/ui/select-field"
 import { useParticipations, useEvenementTicketTypes } from "@/hooks/use-evenements"
 import { BASE_PATH } from "@/lib/env"
 import { cn } from "@/lib/utils"
-import { isEvenementOver } from "@/lib/evenement-timing"
 import { useCurrentUser } from "@/lib/user-context"
 import {
   ArchiveIcon,
@@ -36,8 +36,6 @@ import {
   CopyIcon,
   EyeIcon,
   LinkIcon,
-  LockSimpleIcon,
-  LockSimpleOpenIcon,
   TrashIcon,
 } from "@phosphor-icons/react/dist/ssr"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -133,7 +131,6 @@ export default function EvenementDetailPage() {
   const user    = useCurrentUser()
 
   const [deleteConfirm, setDeleteConfirm] = useState(false)
-  const [closeRegistrationsConfirm, setCloseRegistrationsConfirm] = useState(false)
   // The Tarifs / Formulaire (custom fields) editors own their own drafts, so they report
   // dirtiness up rather than the page trying to read it out of them.
   const [tiersDirty, setTiersDirty]     = useState(false)
@@ -366,7 +363,7 @@ export default function EvenementDetailPage() {
   }
 
   const publishMutation = useMutation({
-    mutationFn: async (action: "publish" | "unpublish" | "archive" | "duplicate" | "closeRegistrations" | "reopenRegistrations") => {
+    mutationFn: async (action: "publish" | "unpublish" | "archive" | "duplicate") => {
       const res = await fetch(`/api/evenements/${id}/publish`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
@@ -385,15 +382,6 @@ export default function EvenementDetailPage() {
       qc.setQueryData(["evenements", id], result)
       qc.invalidateQueries({ queryKey: ["evenements"] })
       if (action === "publish") setPublishAttempted(false)
-      if (action === "closeRegistrations") {
-        setCloseRegistrationsConfirm(false)
-        toast.success(t("detail.toasts.registrationsClosed"))
-        return
-      }
-      if (action === "reopenRegistrations") {
-        toast.success(t("detail.toasts.registrationsReopened"))
-        return
-      }
       toast.success(t("view.toasts.statusUpdated"))
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : tCommon("error")),
@@ -592,10 +580,6 @@ export default function EvenementDetailPage() {
     )
   }
 
-  // Closing/reopening online registrations only makes sense while the event is live on the
-  // public link — a draft/archived or already-over event takes no registrations anyway.
-  const registrationsControllable = evenement.status === "PUBLISHED" && !isEvenementOver(evenement)
-
   return (
     <div className="space-y-4">
       <BackLink
@@ -613,9 +597,7 @@ export default function EvenementDetailPage() {
             {evenement.status === "DRAFT" && (
               <span className="text-xs text-muted-foreground">{t("detail.draftNotice")}</span>
             )}
-            {registrationsControllable && evenement.registrationsClosedAt && (
-              <span className="text-xs text-muted-foreground">{t("detail.registrationsClosedNotice")}</span>
-            )}
+            <RegistrationsClosedNotice evenement={evenement} />
           </span>
         }
         action={
@@ -631,19 +613,7 @@ export default function EvenementDetailPage() {
                 {t("detail.unpublishButton")}
               </Button>
             )}
-            {registrationsControllable && (
-              evenement.registrationsClosedAt ? (
-                <Button size="sm" variant="outline" onClick={() => publishMutation.mutate("reopenRegistrations")} loading={publishMutation.isPending}>
-                  <LockSimpleOpenIcon className="mr-1.5 size-4" />
-                  {t("detail.reopenRegistrationsButton")}
-                </Button>
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setCloseRegistrationsConfirm(true)} loading={publishMutation.isPending}>
-                  <LockSimpleIcon className="mr-1.5 size-4" />
-                  {t("detail.closeRegistrationsButton")}
-                </Button>
-              )
-            )}
+            <RegistrationsToggleButton evenement={evenement} />
             <Button size="sm" variant="ghost" onClick={handlePreview}>
               <EyeIcon className="mr-1.5 size-4" />
               {t("detail.previewButton")}
@@ -931,17 +901,6 @@ export default function EvenementDetailPage() {
         confirmLabel={tCommon("delete")}
         loading={deleteMutation.isPending}
         onConfirm={() => deleteMutation.mutate()}
-      />
-
-      <ConfirmDialog
-        open={closeRegistrationsConfirm}
-        onOpenChange={setCloseRegistrationsConfirm}
-        title={t("detail.closeRegistrationsConfirmTitle")}
-        description={t("detail.closeRegistrationsConfirmDescription")}
-        confirmLabel={t("detail.closeRegistrationsButton")}
-        confirmVariant="default"
-        loading={publishMutation.isPending}
-        onConfirm={() => publishMutation.mutate("closeRegistrations")}
       />
     </div>
   )

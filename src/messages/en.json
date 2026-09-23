@@ -1750,6 +1750,26 @@
         "qrRevoked": "QR Code disabled",
         "noMembersToExport": "No members to export",
         "linkCopied": "Link copied"
+      },
+      "payment": {
+        "sectionTitle": "Payment",
+        "modeLabel": "Payment",
+        "modeNow": "Paid now",
+        "modeLater": "Pay later",
+        "laterHint": "The seat is reserved. Record the payment later with “Mark paid”.",
+        "methodLabel": "Payment method",
+        "tierLabel": "Rate",
+        "methods": {
+          "ESPECES": "Cash",
+          "CHEQUE": "Cheque",
+          "VIREMENT": "Bank transfer"
+        },
+        "encaisserTitle": "Record payment",
+        "encaisserConfirm": "Record payment",
+        "amountHint": "Amount: {amount}",
+        "selectedMember": "Selected member: {name}",
+        "selectMemberHint": "Select a member from the list above.",
+        "addSubmit": "Add"
       }
     },
     "avaliacoes": {

@@ -24,13 +24,17 @@ import { APP_NAME } from "@/config/brand"
 import { BASE_PATH } from "@/lib/env"
 import { Modal } from "@/components/ui/modal"
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { SelectField } from "@/components/ui/select-field"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import { RegistrationsClosedNotice, RegistrationsToggleButton } from "@/components/evenements/registrations-toggle-button"
+import {
+  DoorPaymentFields, doorPaymentDraftIsComplete, initialDoorPaymentDraft, toDoorPaymentInput, type DoorPaymentDraft,
+} from "@/components/evenements/door-payment-fields"
+import { managerOnSitePaymentMethods } from "@/lib/evenement-payment-methods"
 
 type PresenceRow = {
   membreId:        string | null
@@ -49,6 +53,8 @@ type PresenceRow = {
   ticketTypeLabel: string | null
   isGuest:         boolean
   receiptMode:     string | null
+  ticketTypeId:    string | null
+  paymentMethod:   string | null
 }
 
 function rowRef(row: PresenceRow): RowRef {
@@ -70,8 +76,10 @@ type EvenementTicketType = { id: string; label: string; price: string }
 type Evenement = {
   id:          string
   title:       string
+  status:      string
   date:        string
   endDate:     string | null
+  registrationsClosedAt: string | null
   location:    string | null
   price:       string | null
   capacity:    number | null
@@ -79,6 +87,9 @@ type Evenement = {
   qrExpiresAt: string | null
   customFields: CustomField[]
   ticketTypes:  EvenementTicketType[]
+  allowCash:     boolean
+  allowCheque:   boolean
+  allowTransfer: boolean
 }
 
 // Mirrors the grace window enforced server-side in /api/portal/check-in/[token] —
@@ -156,8 +167,13 @@ export default function PresencesPage() {
   const [deleteTarget, setDeleteTarget] = useState<PresenceRow | null>(null)
   const [infoTarget, setInfoTarget]     = useState<PresenceRow | null>(null)
   const [sendingTickets, setSendingTickets] = useState(false)
-  const [tierPickerTarget, setTierPickerTarget] = useState<PresenceRow | null>(null)
-  const [selectedTierId,   setSelectedTierId]   = useState("")
+  // "Encaisser" dialog (Marquer payé): payment method, plus the tier when still ambiguous.
+  const [encaisserTarget, setEncaisserTarget] = useState<PresenceRow | null>(null)
+  const [encaisserDraft,  setEncaisserDraft]  = useState<DoorPaymentDraft | null>(null)
+  // "Paiement" section of the add-guest / add-member dialogs, on a paid event.
+  const [guestPaymentDraft,  setGuestPaymentDraft]  = useState<DoorPaymentDraft | null>(null)
+  const [memberPaymentDraft, setMemberPaymentDraft] = useState<DoorPaymentDraft | null>(null)
+  const [selectedMember, setSelectedMember] = useState<{ id: string; firstName: string; lastName: string } | null>(null)
 
   const { data: evenement, isLoading: loadingEvent } = useEvenement(id)
   const ev = evenement as Evenement | undefined
@@ -231,6 +247,8 @@ export default function PresencesPage() {
   )
   const hasFee         = !!ev?.ticketTypes.length || (!!ev?.price && Number(ev.price) > 0)
   const hasMultipleTicketTypes = (ev?.ticketTypes.length ?? 0) > 1
+  const ticketTypes            = ev?.ticketTypes ?? []
+  const onSitePaymentMethods   = useMemo(() => managerOnSitePaymentMethods(ev ?? {}), [ev])
   const presentsCount  = typed.filter(r => r.present).length
   const reservedCount  = hasFee
     ? typed.filter(r => r.ticketPaidAt != null || r.rsvp === "CONFIRME").length
@@ -251,14 +269,14 @@ export default function PresencesPage() {
     ? typed.filter(r => `${r.lastName} ${r.firstName}`.toLowerCase().includes(search.toLowerCase()))
     : typed
 
-  function submitMarkPaid(row: PresenceRow, ticketTypeId?: string) {
+  function submitMarkPaid(row: PresenceRow, draft: DoorPaymentDraft) {
     const key = rowKey(row)
     if (payingIds.has(key)) return
     setPayingIds(prev => new Set(prev).add(key))
-    markPaid.mutate({ ...rowRef(row), ticketTypeId }, {
+    markPaid.mutate({ ...rowRef(row), ticketTypeId: draft.ticketTypeId || undefined, paymentMethod: draft.paymentMethod }, {
       onSuccess: () => {
         toast.success(t("evenements.presences.toasts.markedPaid", { name: `${row.firstName} ${row.lastName}` }))
-        setTierPickerTarget(null)
+        setEncaisserTarget(null)
       },
       onError:   (err) => toast.error(err instanceof Error ? err.message : t("common.error")),
       onSettled: () => setPayingIds(prev => { const s = new Set(prev); s.delete(key); return s }),
@@ -279,17 +297,47 @@ export default function PresencesPage() {
     })
   }
 
-  // A registration that never picked a tier (typically a walk-in added at the door) is
-  // ambiguous once the event has more than one — ask instead of silently charging the
-  // cheapest one. Anyone who already has a tier, or an event with at most one, pays in
-  // a single click as before.
+  // Always goes through the small "Encaisser" dialog: the payment method is asked every
+  // time (preselected from the registration's own choice when there is one). The tier is only
+  // asked when still ambiguous — a registration that never picked one (typically a walk-in
+  // added at the door) on an event with several; never silently the cheapest one.
+  function encaisserNeedsTier(row: PresenceRow): boolean {
+    return hasMultipleTicketTypes && !row.ticketTypeLabel
+  }
+
   function handleMarkPaid(row: PresenceRow) {
-    if (hasMultipleTicketTypes && !row.ticketTypeLabel) {
-      setSelectedTierId("")
-      setTierPickerTarget(row)
-      return
-    }
-    submitMarkPaid(row)
+    setEncaisserDraft(initialDoorPaymentDraft({
+      ticketTypes,
+      availableMethods: onSitePaymentMethods,
+      preferredMethod:  row.paymentMethod,
+      // ticketTypeLabel is null when the stored tier no longer exists — ask again then.
+      preferredTierId:  row.ticketTypeLabel ? row.ticketTypeId : null,
+    }))
+    setEncaisserTarget(row)
+  }
+
+  // Amount shown in the "Encaisser" dialog when no tier select already carries it — mirrors
+  // markParticipationPaid: a discount snapshot wins, then the tier, then the flat price.
+  function encaisserAmount(row: PresenceRow, draft: DoorPaymentDraft): string | null {
+    if (row.amount != null) return row.amount
+    const tier = ticketTypes.find(ticketType => ticketType.id === draft.ticketTypeId)
+    return tier?.price ?? ev?.price ?? null
+  }
+
+  function flatOrTierAmount(draft: DoorPaymentDraft): string | null {
+    const tier = ticketTypes.find(ticketType => ticketType.id === draft.ticketTypeId)
+    return tier?.price ?? ev?.price ?? null
+  }
+
+  function openAddGuest() {
+    setGuestPaymentDraft(hasFee ? initialDoorPaymentDraft({ ticketTypes, availableMethods: onSitePaymentMethods }) : null)
+    setAddGuestOpen(true)
+  }
+
+  function openAddMember() {
+    setSelectedMember(null)
+    setMemberPaymentDraft(hasFee ? initialDoorPaymentDraft({ ticketTypes, availableMethods: onSitePaymentMethods }) : null)
+    setAddMemberOpen(true)
   }
 
   function handleCancelPayment(row: PresenceRow) {
@@ -317,8 +365,12 @@ export default function PresencesPage() {
 
   async function handleAddGuest() {
     if (!guestFirstName.trim() || !guestLastName.trim()) return
+    if (guestPaymentDraft && !doorPaymentDraftIsComplete(guestPaymentDraft, hasMultipleTicketTypes)) return
     try {
-      await addGuest.mutateAsync({ firstName: guestFirstName.trim(), lastName: guestLastName.trim(), email: guestEmail.trim() || undefined })
+      await addGuest.mutateAsync({
+        firstName: guestFirstName.trim(), lastName: guestLastName.trim(), email: guestEmail.trim() || undefined,
+        ...(guestPaymentDraft ? { payment: toDoorPaymentInput(guestPaymentDraft) } : {}),
+      })
       toast.success(t("evenements.presences.toasts.guestAdded", { name: `${guestFirstName} ${guestLastName}` }))
       setAddGuestOpen(false)
       setGuestFirstName(""); setGuestLastName(""); setGuestEmail("")
@@ -332,13 +384,21 @@ export default function PresencesPage() {
   // guest: cmdk selects an item on Enter as well as click, so auto-marking present here
   // would let a stray Enter while typing a search silently check someone in who never
   // showed up. Adding them to the list is enough; presence is still one click away.
-  async function handleAddMember(m: { id: string; firstName: string; lastName: string }) {
+  //
+  // On a paid event, picking a member only selects them: the "Paiement" section below the
+  // search then decides paid now / reserved, and "Ajouter" submits both in one request.
+  async function handleAddMember(member: { id: string; firstName: string; lastName: string }) {
     if (addingMemberId) return
-    setAddingMemberId(m.id)
+    if (memberPaymentDraft && !doorPaymentDraftIsComplete(memberPaymentDraft, hasMultipleTicketTypes)) return
+    setAddingMemberId(member.id)
     try {
-      await toggle.mutateAsync({ membreId: m.id, present: false })
-      toast.success(t("evenements.presences.toasts.memberAdded", { name: `${m.firstName} ${m.lastName}` }))
+      await toggle.mutateAsync({
+        membreId: member.id, present: false,
+        ...(memberPaymentDraft ? { payment: toDoorPaymentInput(memberPaymentDraft) } : {}),
+      })
+      toast.success(t("evenements.presences.toasts.memberAdded", { name: `${member.firstName} ${member.lastName}` }))
       setAddMemberOpen(false)
+      setSelectedMember(null)
       setMemberQuery("")
       setDebouncedMemberQuery("")
     } catch (err) {
@@ -688,31 +748,35 @@ export default function PresencesPage() {
       <div className="flex items-center justify-between gap-4">
         <BackLink href="/dashboard/evenements">{t("evenements.view.title")}</BackLink>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
-            <DownloadSimpleIcon className="mr-1.5 size-4" />
-            {t("evenements.presences.export.button")}
-            <CaretDownIcon className="ml-1 size-3" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=csv`}>
-              {t("evenements.presences.export.csv")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=xlsx`}>
-              {t("evenements.presences.export.excel")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleExportPdf}>
-              {t("evenements.presences.export.pdf")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <RegistrationsToggleButton evenement={ev} />
+          <DropdownMenu>
+            <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
+              <DownloadSimpleIcon className="mr-1.5 size-4" />
+              {t("evenements.presences.export.button")}
+              <CaretDownIcon className="ml-1 size-3" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=csv`}>
+                {t("evenements.presences.export.csv")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => window.location.href = `${BASE_PATH}/api/evenements/${id}/export?format=xlsx`}>
+                {t("evenements.presences.export.excel")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportPdf}>
+                {t("evenements.presences.export.pdf")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Event header */}
       <div>
         <h1 className="text-xl font-semibold">{ev.title}</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
+        <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           {format(new Date(ev.date), "EEEE dd MMMM yyyy · HH:mm", { locale: fr })}
+          <RegistrationsClosedNotice evenement={ev} />
         </p>
       </div>
 
@@ -919,7 +983,7 @@ export default function PresencesPage() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger render={<span />}>
-                    <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddMemberOpen(true)}>
+                    <Button size="sm" variant="outline" className="shrink-0" onClick={openAddMember}>
                       <UserPlusIcon className="mr-1.5 size-3.5" />
                       {t("evenements.presences.list.addMember")}
                     </Button>
@@ -928,7 +992,7 @@ export default function PresencesPage() {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger render={<span />}>
-                    <Button size="sm" variant="outline" className="shrink-0" onClick={() => setAddGuestOpen(true)}>
+                    <Button size="sm" variant="outline" className="shrink-0" onClick={openAddGuest}>
                       <UserPlusIcon className="mr-1.5 size-3.5" />
                       {t("evenements.presences.list.addGuest")}
                     </Button>
@@ -1181,7 +1245,10 @@ export default function PresencesPage() {
             <Button variant="outline" onClick={() => setAddGuestOpen(false)}>{t("common.cancel")}</Button>
             <Button
               loading={addGuest.isPending}
-              disabled={!guestFirstName.trim() || !guestLastName.trim()}
+              disabled={
+                !guestFirstName.trim() || !guestLastName.trim()
+                || (!!guestPaymentDraft && !doorPaymentDraftIsComplete(guestPaymentDraft, hasMultipleTicketTypes))
+              }
               onClick={handleAddGuest}
             >
               <UserPlusIcon className="mr-1.5 size-4" />
@@ -1221,6 +1288,19 @@ export default function PresencesPage() {
             />
             <p className="text-xs text-muted-foreground">{t("evenements.presences.addGuestModal.emailHint")}</p>
           </div>
+          {guestPaymentDraft && (
+            <div className="border-t pt-3">
+              <DoorPaymentFields
+                draft={guestPaymentDraft}
+                onDraftChange={setGuestPaymentDraft}
+                ticketTypes={ticketTypes}
+                availableMethods={onSitePaymentMethods}
+                showModeChoice
+                showTierSelect={hasMultipleTicketTypes}
+                amount={flatOrTierAmount(guestPaymentDraft)}
+              />
+            </div>
+          )}
         </div>
       </Modal>
 
@@ -1231,10 +1311,23 @@ export default function PresencesPage() {
         open={addMemberOpen}
         onOpenChange={(open) => {
           setAddMemberOpen(open)
-          if (!open) { setMemberQuery(""); setDebouncedMemberQuery("") }
+          if (!open) { setMemberQuery(""); setDebouncedMemberQuery(""); setSelectedMember(null) }
         }}
         title={t("evenements.presences.addMemberModal.title")}
         size="sm"
+        footer={memberPaymentDraft ? (
+          <>
+            <Button variant="outline" onClick={() => setAddMemberOpen(false)}>{t("common.cancel")}</Button>
+            <Button
+              loading={!!addingMemberId}
+              disabled={!selectedMember || !doorPaymentDraftIsComplete(memberPaymentDraft, hasMultipleTicketTypes)}
+              onClick={() => selectedMember && handleAddMember(selectedMember)}
+            >
+              <UserPlusIcon className="mr-1.5 size-4" />
+              {t("evenements.presences.payment.addSubmit")}
+            </Button>
+          </>
+        ) : undefined}
       >
         {/* shouldFilter=false: the association's active members are searched server-side
             (see the query above), not filtered client-side against a locally fetched
@@ -1262,53 +1355,75 @@ export default function PresencesPage() {
                     ? t("evenements.presences.addMemberModal.allAdded")
                     : t("evenements.presences.addMemberModal.noResults")}
                 </CommandEmpty>
-                {memberCandidates.map(m => (
+                {memberCandidates.map(member => (
                   <CommandItem
-                    key={m.id}
-                    value={`${m.lastName} ${m.firstName}`}
-                    disabled={addingMemberId === m.id}
-                    onSelect={() => handleAddMember(m)}
+                    key={member.id}
+                    value={`${member.lastName} ${member.firstName}`}
+                    disabled={addingMemberId === member.id}
+                    onSelect={() => memberPaymentDraft ? setSelectedMember(member) : handleAddMember(member)}
                   >
-                    {m.lastName} {m.firstName}
+                    {member.lastName} {member.firstName}
+                    {selectedMember?.id === member.id && <CheckIcon className="ml-auto size-4" />}
                   </CommandItem>
                 ))}
               </>
             )}
           </CommandList>
         </Command>
+        {memberPaymentDraft && (
+          <div className="mt-3 space-y-3 border-t pt-3">
+            <p className="text-sm text-muted-foreground">
+              {selectedMember
+                ? t("evenements.presences.payment.selectedMember", { name: `${selectedMember.firstName} ${selectedMember.lastName}` })
+                : t("evenements.presences.payment.selectMemberHint")}
+            </p>
+            <DoorPaymentFields
+              draft={memberPaymentDraft}
+              onDraftChange={setMemberPaymentDraft}
+              ticketTypes={ticketTypes}
+              availableMethods={onSitePaymentMethods}
+              showModeChoice
+              showTierSelect={hasMultipleTicketTypes}
+              amount={flatOrTierAmount(memberPaymentDraft)}
+            />
+          </div>
+        )}
       </Modal>
 
-      {/* Which tier to charge, when marking paid a registration that never picked one */}
+      {/* "Encaisser" — payment method, plus the tier when the registration never picked one */}
       <Modal
-        open={!!tierPickerTarget}
-        onOpenChange={(open) => !open && setTierPickerTarget(null)}
-        title={t("evenements.presences.tierPickerModal.title")}
+        open={!!encaisserTarget}
+        onOpenChange={(open) => !open && setEncaisserTarget(null)}
+        title={t("evenements.presences.payment.encaisserTitle")}
+        description={encaisserTarget ? `${encaisserTarget.firstName} ${encaisserTarget.lastName}` : undefined}
         size="sm"
         footer={
           <>
-            <Button variant="outline" onClick={() => setTierPickerTarget(null)}>{t("common.cancel")}</Button>
+            <Button variant="outline" onClick={() => setEncaisserTarget(null)}>{t("common.cancel")}</Button>
             <Button
-              loading={tierPickerTarget ? payingIds.has(rowKey(tierPickerTarget)) : false}
-              disabled={!selectedTierId}
-              onClick={() => tierPickerTarget && submitMarkPaid(tierPickerTarget, selectedTierId)}
+              loading={encaisserTarget ? payingIds.has(rowKey(encaisserTarget)) : false}
+              disabled={!encaisserTarget || !encaisserDraft || !doorPaymentDraftIsComplete(encaisserDraft, encaisserNeedsTier(encaisserTarget))}
+              onClick={() => encaisserTarget && encaisserDraft && submitMarkPaid(encaisserTarget, encaisserDraft)}
             >
               <MoneyIcon className="mr-1.5 size-4" />
-              {t("evenements.presences.tierPickerModal.confirm")}
+              {t("evenements.presences.payment.encaisserConfirm")}
             </Button>
           </>
         }
       >
-        <div className="py-2">
-          <SelectField
-            label={t("evenements.presences.tierPickerModal.selectLabel")}
-            value={selectedTierId}
-            onValueChange={setSelectedTierId}
-            options={(ev?.ticketTypes ?? []).map(tt => ({
-              value: tt.id,
-              label: `${tt.label} — ${Number(tt.price).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}`,
-            }))}
-          />
-        </div>
+        {encaisserTarget && encaisserDraft && (
+          <div className="py-2">
+            <DoorPaymentFields
+              draft={encaisserDraft}
+              onDraftChange={setEncaisserDraft}
+              ticketTypes={ticketTypes}
+              availableMethods={onSitePaymentMethods}
+              showModeChoice={false}
+              showTierSelect={encaisserNeedsTier(encaisserTarget)}
+              amount={encaisserAmount(encaisserTarget, encaisserDraft)}
+            />
+          </div>
+        )}
       </Modal>
 
       {/* Registration details (phone/address/custom field answers) */}

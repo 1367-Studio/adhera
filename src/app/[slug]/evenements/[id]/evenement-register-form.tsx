@@ -22,6 +22,7 @@ import { LegalConsent, type RequiredLegalDocument } from "@/components/public/le
 import { EMPTY_ADDRESS_FORM_VALUES } from "@/lib/address"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { acceptedOnSitePaymentMethods, type OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
 
 const MAX_QUANTITY = 10
 
@@ -42,7 +43,7 @@ type OfferedProduct = {
   productId: string; productName: string; productImageUrl: string | null
 }
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
-type PaymentMethod = "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT"
+type PaymentMethod = "STRIPE" | OnSitePaymentMethod
 
 type EventInfo = {
   associationName: string
@@ -692,9 +693,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   const total  = ticketsTotal + donationsTotal + productsTotal
   const isPaid = total > 0
 
-  const offlineMethods = (["ESPECES", "CHEQUE", "VIREMENT"] as const).filter(m =>
-    m === "ESPECES" ? event?.allowCash : m === "CHEQUE" ? event?.allowCheque : event?.allowTransfer,
-  )
+  const offlineMethods = acceptedOnSitePaymentMethods(event ?? {})
   // A multi-attendee order has no single Participation.paymentMethod/ticketPaidAt pair to
   // carry an offline choice for the whole group — same reasoning as the membership public
   // form restricting its own offline chooser to a single registrant (isMulti there). A product
@@ -1226,10 +1225,10 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                               {t("paymentMethodStripe")}
                             </label>
                           )}
-                          {offlineMethods.map(m => (
-                            <label key={m} className="flex items-center gap-1.5">
-                              <input type="radio" checked={paymentMethod === m} onChange={() => setPaymentMethod(m)} />
-                              {m === "ESPECES" ? t("paymentMethodCash") : m === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
+                          {offlineMethods.map(method => (
+                            <label key={method} className="flex items-center gap-1.5">
+                              <input type="radio" checked={paymentMethod === method} onChange={() => setPaymentMethod(method)} />
+                              {method === "ESPECES" ? t("paymentMethodCash") : method === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
                             </label>
                           ))}
                         </div>
