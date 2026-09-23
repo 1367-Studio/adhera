@@ -5902,6 +5902,15 @@
         "fix": "Fix"
       }
     },
+    "releaseNotes": {
+      "title": "What's new",
+      "dontRemind": "Don't remind me",
+      "previous": "Previous",
+      "next": "Next",
+      "finish": "Done",
+      "position": "Update {current} of {total}",
+      "goTo": "Go to update {index}"
+    },
     "footer": {
       "tour": "Guided tour",
       "contactSupport": "Contact support"

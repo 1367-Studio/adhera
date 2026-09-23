@@ -11,6 +11,7 @@ import { parseModules, deriveModulesForPlan } from "@/lib/modules"
 import { parseMemberCardSettings } from "@/lib/member-card/settings"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
+import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -93,6 +94,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <PastDueBanner />
           <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
+          {/* Never alongside the fiscal-period popup, so the two dialogs don't stack. */}
+          <ReleaseNotesPopup enabled={!showFiscalPeriodPopup} />
           <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 scroll-pt-4 md:overflow-y-auto animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>
