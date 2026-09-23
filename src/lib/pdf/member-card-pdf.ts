@@ -799,11 +799,17 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
       })
       cursorMm += CARD_CONTACT_ICON_SIZE_MM + CARD_CONTACT_ICON_GAP_MM
 
+      // Reduced by the icon's own footprint: CARD_CONTACT_MAX_WIDTH_MM is the budget for the
+      // whole row (icon + phone + separator + e-mail, same box the screen card's maxWidth
+      // uses), and the phone now starts CARD_CONTACT_ICON_SIZE_MM + CARD_CONTACT_ICON_GAP_MM
+      // to the right of that row's left edge — without subtracting it here, an unusually long
+      // phone number could truncate to a width that runs past the QR column. Still keeps this
+      // renderer independent of the settings form's 30-character cap, per the note above.
       const phoneText = truncateToWidth(
         regularFont,
         sanitizeForWinAnsi(card.contactPhone),
         footerSizePt,
-        millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM),
+        millimetresToPoints(CARD_CONTACT_MAX_WIDTH_MM - CARD_CONTACT_ICON_SIZE_MM - CARD_CONTACT_ICON_GAP_MM),
       )
       drawTextLine({
         text: phoneText, font: regularFont, sizeMillimetres: CARD_FONT_FOOTER_MM,
