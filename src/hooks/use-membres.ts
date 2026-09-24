@@ -63,6 +63,10 @@ export type MembreDetail = {
     // the status column itself never reflects this expiring (cotisation-status-sweep
     // deliberately never touches a PAYE/EXONERE row), so the UI checks this directly.
     periodEnd: string | null
+    // Snapshot of the MembershipTier that produced this cotisation (see
+    // Cotisation.tierId) — null for cotisations created outside a MembershipForm
+    // (admin manual add, legacy /inscription flow).
+    tier: { label: string } | null
   }[]
 
   participations: {

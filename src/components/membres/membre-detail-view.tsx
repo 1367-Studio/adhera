@@ -365,6 +365,10 @@ export function MembreDetailView() {
   const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
+  // La tarifa affichée dans le bloc « Statut » est celle de la cotisation la plus récente qui
+  // en a une — cotisations triées year desc côté API, donc la première rencontrée suffit.
+  // Absente pour un membre créé manuellement ou hors MembershipForm (voir Cotisation.tierId).
+  const currentTierLabel      = cotisations.find(c => c.tier)?.tier?.label ?? null
   // Mêmes rôles que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
   // ceci évite seulement d'afficher une action qui répondrait 403.
   const canRecordPayment      = ["ADMIN", "PRESIDENT", "TRESORIER"].includes(currentUser.role)
@@ -565,6 +569,7 @@ export function MembreDetailView() {
             {t("membres.detail.memberSinceColon", { date: format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr }) })}
           </p>
           {membre.type && <p className="text-muted-foreground">{t("membres.detail.typeColon", { name: membre.type.name })}</p>}
+          {currentTierLabel && <p className="text-muted-foreground">{t("membres.detail.tierColon", { name: currentTierLabel })}</p>}
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
@@ -698,6 +703,7 @@ export function MembreDetailView() {
                 declarationNumber: string | null; periodEnd?: string | null; receiptMode?: "NONE" | "FULL" | "PARTIAL"
                 deductibleAmount?: string | null
                 installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
+                tier?: { label: string } | null
               }) => {
                 const s = cotisationStatusBadge[c.status]
                 // A custom-duration Cotisation (MembershipTier.durationMonths) keeps its PAYE/
@@ -712,6 +718,7 @@ export function MembreDetailView() {
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                     <div>
                       <p className="font-medium tabular-nums">{c.year}</p>
+                      {c.tier && <p className="text-xs text-muted-foreground">{c.tier.label}</p>}
                       {c.paidAt && <p className="text-xs text-muted-foreground">{t("membres.detail.paidOn", { date: format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr }) })}</p>}
                       {periodEndDate && (
                         <p className={cn("text-xs", periodExpired ? "text-destructive" : "text-muted-foreground")}>

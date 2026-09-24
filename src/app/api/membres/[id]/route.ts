@@ -33,7 +33,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       cotisations:    {
         orderBy: { year: "desc" },
         take:    50,
-        include: { installmentPlan: { select: { id: true, status: true, installmentsPaid: true, installmentsCount: true } } },
+        include: {
+          installmentPlan: { select: { id: true, status: true, installmentsPaid: true, installmentsCount: true } },
+          tier:            { select: { label: true } },
+        },
       },
       participations: { include: { evenement: true }, orderBy: { createdAt: "desc" }, take: 50 },
       // Ordered by the meeting's createdAt (always set), not scheduledAt (null for
