@@ -10,7 +10,7 @@ import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { BASE_PATH } from "@/lib/env"
 import type { Locale } from "@/i18n/locales"
 
-type PublicDocumentSummary = { id: string; title: string; updatedAt: string }
+type PublicDocumentSummary = { id: string; title: string; fileUrl: string | null; updatedAt: string }
 
 type ApiResponse = { documents?: PublicDocumentSummary[]; site?: PublicSiteInfo; error?: string }
 
@@ -66,6 +66,7 @@ export function PublicDocumentsListView({ slug }: { slug: string }) {
                     <span className="block truncate text-sm font-medium">{associationDocument.title}</span>
                     <span className="block text-xs text-gray-500">
                       {t("updatedAt", { date: format(new Date(associationDocument.updatedAt), "d MMMM yyyy", { locale: dateFnsLocale }) })}
+                      {associationDocument.fileUrl ? ` · ${t("pdfShort")}` : ""}
                     </span>
                   </span>
                   <CaretRightIcon className="size-4 shrink-0 text-gray-400" />

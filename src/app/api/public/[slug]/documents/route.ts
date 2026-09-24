@@ -24,8 +24,8 @@ export async function GET(
     where:   { associationId: assoc.id, deletedAt: null, visibleToPublic: true },
     orderBy: { title: "asc" },
     // Never `content` here: the list only renders one row per document, and a document's HTML
-    // runs to 200 000 characters.
-    select:  { id: true, title: true, updatedAt: true },
+    // runs to 200 000 characters. The PDF's URL and name are short, so they ride along.
+    select:  { id: true, title: true, fileUrl: true, fileName: true, updatedAt: true },
   })
 
   // `site` lets the page draw the association's nav/footer around the list — sent even when

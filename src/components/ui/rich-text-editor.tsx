@@ -284,6 +284,9 @@ function MenuBar({ editor, aiOpen, onToggleAi, aiEnabled, variant }: MenuBarProp
 interface RichTextEditorProps {
   label?:      string
   required?:   boolean
+  // Short muted line under the label. Sits above the editor rather than below it like
+  // FormField's hint: under a tall document editor it would be scrolled out of sight.
+  hint?:       string
   value:       string
   onChange:    (value: string) => void
   placeholder?: string
@@ -297,6 +300,7 @@ const EDITOR_CONTENT_CLASS = "prose prose-sm dark:prose-invert max-w-none focus:
 export function RichTextEditor({
   label,
   required,
+  hint,
   value,
   onChange,
   placeholder = "Rédigez votre contenu…",
@@ -339,6 +343,20 @@ export function RichTextEditor({
     },
   })
 
+  // editorProps are read once when the editor is created, so a later minHeight (e.g. the
+  // legal-document form shrinking the editor once a PDF is attached) has to be pushed in.
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    const currentAttributes = editor.options.editorProps.attributes
+    if (typeof currentAttributes !== "object" || currentAttributes.style === `min-height: ${minHeight}`) return
+    editor.setOptions({
+      editorProps: {
+        ...editor.options.editorProps,
+        attributes: { ...currentAttributes, style: `min-height: ${minHeight}` },
+      },
+    })
+  }, [editor, minHeight])
+
   useEffect(() => {
     if (!editor) return
     const current = editor.getHTML()
@@ -371,6 +389,7 @@ export function RichTextEditor({
           {required && <span className="ml-0.5 text-destructive" aria-hidden>*</span>}
         </Label>
       )}
+      {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
       <div
         className={cn(
           "rounded-md border bg-background",

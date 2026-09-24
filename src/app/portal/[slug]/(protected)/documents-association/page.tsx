@@ -57,6 +57,7 @@ export default function PortalAssociationDocumentsPage() {
                 <p className="text-sm font-medium truncate">{associationDocument.title}</p>
                 <p className="text-xs text-muted-foreground">
                   {t("updatedAt", { date: format(new Date(associationDocument.updatedAt), "d MMM yyyy", { locale: dateFnsLocale }) })}
+                  {associationDocument.fileUrl ? ` · ${t("pdfShort")}` : ""}
                 </p>
               </div>
               <CaretRightIcon className="size-4 text-muted-foreground shrink-0" />

@@ -18,18 +18,21 @@ import { BackLink } from "@/components/ui/back-link"
 import { PageHeader } from "@/components/ui/page-header"
 import { FormField } from "@/components/ui/form-field"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { DocumentUpload } from "@/components/ui/document-upload"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import { ASSOCIATION_DOCUMENT_FILE_PREFIX } from "@/lib/association-document-file"
 import type { Locale } from "@/i18n/locales"
 
 const ASSOCIATION_DOCUMENTS_PATH = "/dashboard/documents-association"
 const FORM_ID                    = "document-form"
 // What Tiptap emits for a document with nothing in it.
 const EMPTY_EDITOR_HTML          = "<p></p>"
+const PDF_MIME_TYPE              = "application/pdf"
 
 type AssociationDocumentFormValues = z.input<typeof associationDocumentSchema>
 
@@ -42,6 +45,8 @@ function toFormValues(document?: AssociationDocument): AssociationDocumentFormVa
   return {
     title:              document?.title ?? "",
     content:            document?.content ?? "",
+    fileUrl:            document?.fileUrl ?? null,
+    fileName:           document?.fileName ?? null,
     visibleToMembers:   document?.visibleToMembers ?? false,
     visibleToPublic:    document?.visibleToPublic ?? false,
     requiresAcceptance: document?.requiresAcceptance ?? false,
@@ -69,7 +74,7 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
   const deleteMutation = useDeleteAssociationDocument()
   const isSaving       = createMutation.isPending || updateMutation.isPending
 
-  const { register, control, handleSubmit, reset, getValues, setValue, formState: { errors, isDirty } } =
+  const { register, control, handleSubmit, reset, getValues, setValue, trigger, formState: { errors, isDirty } } =
     useForm<AssociationDocumentFormValues, unknown, AssociationDocumentInput>({
       resolver:      zodResolver(associationDocumentSchema),
       defaultValues: toFormValues(document),
@@ -79,6 +84,10 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
   const hasUnsavedChanges = isDirty && !isCreated
   // Drives the public switch below, which a document requiring acceptance forces on.
   const requiresAcceptance = useWatch({ control, name: "requiresAcceptance" }) ?? false
+  const fileUrl            = useWatch({ control, name: "fileUrl" }) ?? null
+  const fileName           = useWatch({ control, name: "fileName" }) ?? null
+  // With a PDF attached the written content becomes optional — it is shown under the file.
+  const hasFile            = !!fileUrl
 
   // Covers tab close / reload / external links, which client-side routing never sees. The
   // browser shows its own generic wording — returnValue only has to be set.
@@ -128,6 +137,12 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
       }
       if (currentValues.content === submittedValues.content && currentValues.content !== savedValues.content) {
         setValue("content", savedValues.content)
+      }
+      // The url and name move together: both come from the same upload (or removal).
+      if (currentValues.fileUrl === submittedValues.fileUrl
+        && (currentValues.fileUrl !== savedValues.fileUrl || currentValues.fileName !== savedValues.fileName)) {
+        setValue("fileUrl", savedValues.fileUrl)
+        setValue("fileName", savedValues.fileName)
       }
       // The saved values become the new baseline while keepValues leaves the fields as they
       // are, so the form only stays dirty if something was typed during the save.
@@ -292,6 +307,28 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
           </div>
         </div>
 
+        {/* Uploaded as soon as it is picked. Replacing or removing it only changes the fields:
+            the stored file stays, since accepted revisions of the document still point at it. */}
+        <div className="space-y-1.5">
+          <Label htmlFor="document-file">{t("form.fileLabel")}</Label>
+          <p id="document-file-hint" className="text-xs text-muted-foreground">{t("form.fileHint")}</p>
+          <DocumentUpload
+            id="document-file"
+            describedBy="document-file-hint"
+            value={fileUrl ?? ""}
+            accept={PDF_MIME_TYPE}
+            prefix={ASSOCIATION_DOCUMENT_FILE_PREFIX}
+            fileLabel={fileName}
+            onChange={(uploadedUrl, uploadedFile) => {
+              setValue("fileUrl", uploadedUrl || null, { shouldDirty: true })
+              setValue("fileName", uploadedUrl ? (uploadedFile?.name ?? null) : null, { shouldDirty: true })
+              // Validation only runs on submit, so a "content or PDF" error already shown
+              // would otherwise stay up after the PDF that resolves it was attached.
+              if (errors.content) void trigger("content")
+            }}
+          />
+        </div>
+
         <Controller
           name="content"
           control={control}
@@ -299,13 +336,14 @@ export function AssociationDocumentForm({ document }: AssociationDocumentFormPro
             <RichTextEditor
               variant="document"
               label={t("form.contentLabel")}
-              required
+              required={!hasFile}
+              hint={hasFile ? t("form.contentOptionalHint") : undefined}
               value={field.value ?? ""}
               // An emptied editor reports "<p></p>"; storing it as "" keeps a create form
               // that was typed in and then cleared from counting as modified.
               onChange={html => field.onChange(html === EMPTY_EDITOR_HTML ? "" : html)}
               placeholder={t("form.contentPlaceholder")}
-              minHeight="480px"
+              minHeight={hasFile ? "240px" : "480px"}
               error={contentError}
             />
           )}

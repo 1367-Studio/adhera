@@ -70,7 +70,12 @@ export function AssociationDocumentsView() {
     {
       key:    "title",
       header: t("columns.title"),
-      cell:   document => <span className="font-medium">{document.title}</span>,
+      cell:   document => (
+        <span>
+          <span className="font-medium">{document.title}</span>
+          {document.fileUrl && <span className="ml-2 text-xs text-muted-foreground">{t("pdfShort")}</span>}
+        </span>
+      ),
     },
     {
       key:       "visibility",
