@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Vapautetaanko tämä maksu?",
       "exonereConfirmDescription": "Jo julkaistut maksut poistetaan. Tätä toimenpidettä ei voi peruuttaa.",
       "installments": {
-        "title": "Määräajat (parcelamento)",
+        "title": "Määräajat",
         "none": "Ei määräpäivää — maksu käyttää yllä olevaa eräpäivää.",
         "count": "Erättyjen määrä",
         "generate": "Laadi määräajat",

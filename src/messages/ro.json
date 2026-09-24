@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Să scutesc această contribuție?",
       "exonereConfirmDescription": "Plățile care au fost deja înregistrate vor fi șterse. Această acțiune nu poate fi anulată.",
       "installments": {
-        "title": "Termene limită (parcelamento)",
+        "title": "Termene limită",
         "none": "Fără termen limită — contribuția folosește data scadentă de mai sus.",
         "count": "Numărul de maturități",
         "generate": "Generează termene limită",

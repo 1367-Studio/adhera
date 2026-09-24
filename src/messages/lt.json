@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Atleisti šį įnašą?",
       "exonereConfirmDescription": "Jau atlikti mokėjimai bus ištrinti. Šio veiksmo atšaukti negalima.",
       "installments": {
-        "title": "Terminai (parcelamento)",
+        "title": "Terminai",
         "none": "Nėra termino – įnašas naudoja aukščiau nurodytą terminą.",
         "count": "Brandų skaičius",
         "generate": "Generuoti terminus",

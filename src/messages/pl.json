@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Zwolnić z tego składu?",
       "exonereConfirmDescription": "Płatności, które już zostały zaksięgowane, zostaną usunięte. Tego działania nie da się cofnąć.",
       "installments": {
-        "title": "Terminy (parcelamento)",
+        "title": "Terminy",
         "none": "Brak terminu płatności — wpłata wykorzystuje powyższy termin.",
         "count": "Liczba terminów wykupu",
         "generate": "Generuj terminy",

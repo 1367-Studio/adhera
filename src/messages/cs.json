@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Osvobodit tento příspěvek?",
       "exonereConfirmDescription": "Platby, které již byly zaúčtovány, budou smazány. Tento krok nelze vzít zpět.",
       "installments": {
-        "title": "Termíny (parcelamento)",
+        "title": "Termíny",
         "none": "Žádný termín splatnosti — příspěvek používá výše uvedený termín.",
         "count": "Počet splatností",
         "generate": "Generujte termíny",

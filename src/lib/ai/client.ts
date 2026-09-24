@@ -101,6 +101,17 @@ export async function resolveAiConfig(associationId: string): Promise<ResolvedAn
     : null
 }
 
+// Whether completeWithImages (src/lib/ai/complete.ts) can run on this config. Only on the
+// association's own key, and only for providers whose API takes images: the platform
+// fallback is Groq's text model, so a scan must never silently ride on our shared key.
+// This checks the provider, not the model — an association that picked a text-only model
+// by hand still gets the provider's error back from the call itself.
+const VISION_PROVIDERS: readonly AiProvider[] = ["anthropic", "openai", "mistral"]
+
+export function supportsVision(aiConfig: ResolvedAnyAiConfig | null): boolean {
+  return !!aiConfig && !aiConfig.usingPlatform && VISION_PROVIDERS.includes(aiConfig.provider)
+}
+
 // Meeting transcription (src/app/api/meetings/[id]/transcribe/route.ts) only ever talks to
 // Groq's Whisper endpoint — Mistral has no audio transcription API at all, and OpenAI's
 // Whisper uses a different model name/response shape. Rather than silently mis-routing a

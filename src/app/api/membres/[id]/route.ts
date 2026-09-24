@@ -112,7 +112,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, ...rest } = parsed.data
 
   if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
@@ -145,6 +145,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const possedeTshirtValue = possedeTshirt === undefined ? undefined : (possedeTshirt === "" ? null : possedeTshirt === "true")
   const tailleTshirtValue  = possedeTshirtValue === false ? null : (tailleTshirt === undefined ? undefined : (tailleTshirt || null))
   const adherentOverrideValue = adherentOverride === undefined ? undefined : (adherentOverride === "" ? null : adherentOverride === "true")
+  // Same encoding as possedeTshirt. The answer is only re-dated when it actually changes —
+  // re-saving the form must not make an old paper consent look recent.
+  const imageRightsConsentValue = imageRightsConsent === undefined ? undefined : (imageRightsConsent === "" ? null : imageRightsConsent === "true")
+  const imageRightsConsentChanged = imageRightsConsentValue !== undefined && imageRightsConsentValue !== existing.imageRightsConsent
 
   const emailChanged = email !== undefined && email !== existing.email
 
@@ -205,6 +209,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(responsableId !== undefined ? { responsableId: responsableId || null } : {}),
         ...(birthDate     !== undefined ? { birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null } : {}),
         ...(adherentOverrideValue !== undefined ? { adherentOverride: adherentOverrideValue } : {}),
+        ...(notes         !== undefined ? { notes:         notes         || null } : {}),
+        ...(guardianName        !== undefined ? { guardianName:        guardianName        || null } : {}),
+        ...(guardianPhone       !== undefined ? { guardianPhone:       guardianPhone       || null } : {}),
+        ...(secondGuardianName  !== undefined ? { secondGuardianName:  secondGuardianName  || null } : {}),
+        ...(secondGuardianPhone !== undefined ? { secondGuardianPhone: secondGuardianPhone || null } : {}),
+        ...(imageRightsConsentChanged
+          ? { imageRightsConsent: imageRightsConsentValue, imageRightsConsentAt: imageRightsConsentValue === null ? null : new Date() }
+          : {}),
         ...(pendingTier   ? { pendingTierId: null } : {}),
       },
       include: { cotisations: membreAdherentCotisationSelect(), responsable: RESPONSABLE_SELECT },

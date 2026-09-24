@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "An ranníocaíocht seo a dhíolmhú?",
       "exonereConfirmDescription": "Scriosfar íocaíochtaí atá curtha sa phost cheana féin. Ní féidir an gníomh seo a chealú.",
       "installments": {
-        "title": "Spriocdhátaí (parcelamento)",
+        "title": "Spriocdhátaí",
         "none": "Níl aon dáta dlite — úsáideann an ranníocaíocht an dáta dlite thuas.",
         "count": "Líon na n-aibíochtaí",
         "generate": "Cruthaigh spriocdhátaí",

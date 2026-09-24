@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Diesen Beitrag befreien?",
       "exonereConfirmDescription": "Bereits gepostete Zahlungen werden gelöscht. Diese Maßnahme kann nicht rückgängig gemacht werden.",
       "installments": {
-        "title": "Fristen (parcelamento)",
+        "title": "Fristen",
         "none": "Kein Fälligkeitsdatum – der Beitrag verwendet das oben genannte Fälligkeitsdatum.",
         "count": "Anzahl der Laufzeiten",
         "generate": "Deadlines erstellen",

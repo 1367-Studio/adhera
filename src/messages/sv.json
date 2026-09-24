@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Undanta detta bidrag?",
       "exonereConfirmDescription": "Betalningar som redan har bokförts kommer att raderas. Denna åtgärd kan inte göras otagna.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "Inget förfallodatum — bidraget använder förfallodatumet ovan.",
         "count": "Antal löptider",
         "generate": "Skapa deadlines",

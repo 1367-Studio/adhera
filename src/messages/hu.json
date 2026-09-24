@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Mentesülsz ez a hozzájárulás?",
       "exonereConfirmDescription": "A már közzétett kifizetéseket törölni fogják. Ezt a lépést nem lehet visszavonni.",
       "installments": {
-        "title": "Határidők (parcelamento)",
+        "title": "Határidők",
         "none": "Nincs esedékesség — a hozzájárulás a fenti esedékességet használja.",
         "count": "Lejárati idők száma",
         "generate": "Határidők generálása",

@@ -26,7 +26,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SearchInput } from "@/components/ui/search-input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { clientNextAmountDue } from "@/lib/cotisation-display"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import { BASE_PATH } from "@/lib/env";
 import { ApiError } from "@/lib/api-error"
@@ -551,12 +550,11 @@ export function CotisationsView() {
       {paymentTarget && (
         <CotisationPaymentModal
           cotisationId={paymentTarget.id}
-          remaining={Number(paymentTarget.amount) - Number(paymentTarget.amountPaid)}
-          suggestedAmount={clientNextAmountDue(
-            Number(paymentTarget.amount),
-            Number(paymentTarget.amountPaid),
-            paymentTarget.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate })),
-          )}
+          schedule={{
+            amount:       Number(paymentTarget.amount),
+            amountPaid:   Number(paymentTarget.amountPaid),
+            installments: paymentTarget.installments.map(installment => ({ amount: Number(installment.amount), dueDate: installment.dueDate })),
+          }}
           open={!!paymentTarget}
           onOpenChange={(open) => !open && setPaymentTarget(null)}
         />

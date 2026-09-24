@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Oprostite ta prispevek?",
       "exonereConfirmDescription": "Plačila, ki so bila že uveljavljena, bodo izbrisana. Tega dejanja ni mogoče razveljaviti.",
       "installments": {
-        "title": "Roki (parcelamento)",
+        "title": "Roki",
         "none": "Brez roka zapadlosti — prispevek uporablja zgoraj navedeni rok.",
         "count": "Število zapadlosti",
         "generate": "Generirajte roke",

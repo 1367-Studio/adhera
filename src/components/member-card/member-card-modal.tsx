@@ -148,7 +148,6 @@ export function MemberCardModal({ membreId, memberName, open, onOpenChange }: Me
       {pendingCotisation && (
         <CotisationPaymentModal
           cotisationId={pendingCotisation.id}
-          remaining={pendingCotisation.remaining}
           open={paymentOpen}
           onOpenChange={setPaymentOpen}
         />

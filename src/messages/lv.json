@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Atbrīvot šo iemaksu?",
       "exonereConfirmDescription": "Maksājumi, kas jau ir veikti, tiks dzēsti. Šo darbību nevar atsaukt.",
       "installments": {
-        "title": "Termiņi (parcelamento)",
+        "title": "Termiņi",
         "none": "Nav termiņa — iemaksa tiek izmantota iepriekš minētajā termiņā.",
         "count": "Nobriedumu skaits",
         "generate": "Ģenerēt termiņus",

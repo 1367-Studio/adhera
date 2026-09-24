@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Esentare questo contributo?",
       "exonereConfirmDescription": "I pagamenti già registrati verranno cancellati. Questa azione non può essere annullata.",
       "installments": {
-        "title": "Scadenze (parcelamento)",
+        "title": "Scadenze",
         "none": "Nessuna data di scadenza — il contributo utilizza la data di scadenza sopra.",
         "count": "Numero di scadenze",
         "generate": "Genera scadenze",

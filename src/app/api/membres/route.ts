@@ -2,16 +2,13 @@ import { NextResponse } from "next/server"
 import { randomBytes } from "crypto"
 import bcrypt from "bcryptjs"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { requiredDocuments, recordAcceptances } from "@/lib/legal/acceptance"
+import { requiredDocuments } from "@/lib/legal/acceptance"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
-import { fireEventRule } from "@/lib/fire-event-rule"
 import { membreCreateSchema } from "@/lib/schemas"
-import { addressColumns } from "@/lib/address"
-import { answersWithMobile, readMobileAnswer } from "@/lib/membre-answers"
+import { readMobileAnswer } from "@/lib/membre-answers"
 import { parsePagination } from "@/lib/pagination"
-import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
 import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
 import { currentCotisationYear, isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect, membreAdherentWhereClause } from "@/lib/membre-adherent"
@@ -20,6 +17,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { parseModules } from "@/lib/modules"
 import { addMonths } from "date-fns"
 import { pusherServer } from "@/lib/pusher-server"
+import { announceMembreCreated, findMembreCreationAssociation, membreColumns, recordOfflineAcceptances } from "@/lib/membres/create-membre"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -145,7 +143,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
+  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })
@@ -170,33 +168,17 @@ export const POST = withAdminAuth(async (req, ctx) => {
     throw err
   }
 
-  const assoc = await prisma.association.findUnique({
-    where:  { id: associationId },
-    select: { name: true, slug: true, modules: true, plan: true, customBrandingEnabled: true, logoUrl: true, cotisationDefaultAmount: true },
-  })
+  const assoc = await findMembreCreationAssociation(associationId)
 
+  // Colonnes partagées avec l'import de fiches papier — voir membreColumns dans
+  // src/lib/membres/create-membre.ts (adresse, mobile, t-shirt…).
   const membreData = {
     ...rest,
-    associationId,
-    email:         email         || null,
-    phone:         phone         || null,
-    // Le mobile n'a pas de colonne : il part dans answers (voir src/lib/membre-answers.ts).
-    ...(mobile !== undefined ? { answers: answersWithMobile(null, mobile) } : {}),
-    // Les six colonnes d'adresse sont écrites ensemble, colonne héritée comprise — voir
-    // addressColumns dans src/lib/address.ts.
-    ...addressColumns({ street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }),
-    typeId:        typeId        || null,
-    civilite:      civilite      || null,
-    sexe:          sexe          || null,
-    groupeSanguin: groupeSanguin || null,
-    allergies:     allergies     || null,
-    spokenLanguage: spokenLanguage || null,
-    // Never persist "does not have a t-shirt" alongside a size (see membre-form.tsx's
-    // matching reactive clear on the client — this is the server-side backstop).
-    possedeTshirt: possedeTshirt === undefined || possedeTshirt === "" ? null : possedeTshirt === "true",
-    tailleTshirt:  possedeTshirt === "false" ? null : (tailleTshirt || null),
-    responsableId: responsableId || null,
-    birthDate: birthDate ? new Date(birthDate + "T12:00:00") : null,
+    ...membreColumns(associationId, {
+      email, phone, mobile, birthDate, address, addressStreet, addressComplement, postalCode, city, country,
+      typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId,
+      notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone,
+    }),
   }
 
   const existing = await prisma.user.findFirst({ where: { email: email.toLowerCase(), associationId } })
@@ -281,12 +263,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // preuve que personne n'a donnée. collectedById garde la trace de qui s'est engagé.
   if (legalOfflineAttestation) {
     const requiredLegalDocuments = await requiredDocuments(associationId)
-    await recordAcceptances({
+    await recordOfflineAcceptances({
       associationId,
       revisionIds:   requiredLegalDocuments.map(document => document.revisionId),
-      identity:      { membreId: membre.id, userId: membre.userId },
-      context:       "DASHBOARD_OFFLINE",
-      contextId:     membre.id,
+      membre,
       collectedById: userId,
     })
   }
@@ -336,18 +316,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
         .then(() => pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}))
         .catch(() => {})
     }
-
-    if (role === "MEMBRE") {
-      fireEventRule({
-        triggerType:   "MEMBER_CREATED",
-        associationId,
-        association:   { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
-        membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
-      }).catch(() => {})
-    }
   }
 
-  await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id, label: `${membre.firstName} ${membre.lastName}` })
+  // MEMBER_CREATED automation (MEMBRE role only, as before) + MEMBRE_CREATED activity log.
+  await announceMembreCreated({ associationId, actorId: userId, association: assoc, membre, fireMemberCreatedRule: role === "MEMBRE" })
 
   return NextResponse.json(membre, { status: 201 })
 }, { roles: MANAGERS })

@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Tħalli din il-kontribuzzjoni?",
       "exonereConfirmDescription": "Il-ħlasijiet li diġà ġew ippubblikati se jitħassru. Din l-azzjoni ma tistax tiġi mħassra.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "L-ebda data ta' skadenza — il-kontribuzzjoni tuża d-data ta' skadenza hawn fuq.",
         "count": "Numru ta' maturitajiet",
         "generate": "Iġib ħinijiet ta' skadenza",
