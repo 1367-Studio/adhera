@@ -2,13 +2,18 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { notifyEventReviewSubmitted } from "@/lib/evenement-notify"
 
 type Params = { id: string }
 
 async function findOwnParticipation(evenementId: string, membreId: string) {
   return prisma.participation.findFirst({
     where:  { evenementId, membreId },
-    select: { id: true, present: true, avis: { select: { id: true } } },
+    select: {
+      id: true, present: true, firstName: true, lastName: true,
+      avis:      { select: { id: true } },
+      evenement: { select: { title: true, date: true, associationId: true, adminNotificationEmail: true } },
+    },
   })
 }
 
@@ -51,6 +56,17 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
   } catch {
     return NextResponse.json({ error: "Vous avez déjà laissé un avis." }, { status: 409 })
   }
+
+  notifyEventReviewSubmitted({
+    associationId:          participation.evenement.associationId,
+    evenementId,
+    eventTitle:             participation.evenement.title,
+    eventDate:              participation.evenement.date,
+    reviewerName:           `${participation.firstName} ${participation.lastName}`,
+    rating,
+    comment,
+    adminNotificationEmail: participation.evenement.adminNotificationEmail,
+  }).catch(() => {})
 
   return NextResponse.json({ ok: true })
 })

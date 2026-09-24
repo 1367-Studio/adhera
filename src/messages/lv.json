@@ -1718,6 +1718,7 @@
       "notFound": "Notikums nav atrasts",
       "titleLabel": "Pasākuma nosaukums",
       "duplicateButton": "Dublikāts",
+      "avaliacoesButton": "Atsauksmes",
       "deleteButton": "Dzēst",
       "publishButton": "Publicēt",
       "unpublishButton": "Nepublicēt",

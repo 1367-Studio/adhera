@@ -1718,6 +1718,7 @@
       "notFound": "Begivenhed ikke fundet",
       "titleLabel": "Begivenhedstitel",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Anmeldelser",
       "deleteButton": "Slet",
       "publishButton": "Udgiv",
       "unpublishButton": "Af-udgivelse",

@@ -1718,6 +1718,7 @@
       "notFound": "Събитие, което не е открито",
       "titleLabel": "Заглавие на събитието",
       "duplicateButton": "Дубликат",
+      "avaliacoesButton": "Рецензии",
       "deleteButton": "Изтрий",
       "publishButton": "Публикуване",
       "unpublishButton": "Прекрати публикуването",

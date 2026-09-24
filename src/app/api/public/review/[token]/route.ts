@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { notifyEventReviewSubmitted } from "@/lib/evenement-notify"
 
 // Public, no-login page for leaving a post-event review — reached via the unguessable
 // reviewToken emailed after the event (see src/inngest/event-review-request.ts), same
@@ -13,7 +14,7 @@ async function findByToken(token: string) {
   return prisma.participation.findUnique({
     where:  { reviewToken: token },
     include: {
-      evenement: { select: { title: true, date: true } },
+      evenement: { select: { title: true, date: true, associationId: true, adminNotificationEmail: true } },
       avis:      { select: { id: true } },
     },
   })
@@ -78,6 +79,17 @@ export async function POST(
     // Unique constraint on participationId — a second submit racing the first.
     return NextResponse.json({ error: "Vous avez déjà laissé un avis." }, { status: 409 })
   }
+
+  notifyEventReviewSubmitted({
+    associationId:          participation.evenement.associationId,
+    evenementId:            participation.evenementId,
+    eventTitle:             participation.evenement.title,
+    eventDate:              participation.evenement.date,
+    reviewerName:           `${participation.firstName} ${participation.lastName}`,
+    rating,
+    comment,
+    adminNotificationEmail: participation.evenement.adminNotificationEmail,
+  }).catch(() => {})
 
   return NextResponse.json({ ok: true })
 }

@@ -1718,6 +1718,7 @@
       "notFound": "Dogodek ni najden",
       "titleLabel": "Naslov dogodka",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Ocene",
       "deleteButton": "Izbriši",
       "publishButton": "Objavi",
       "unpublishButton": "Odjavi",

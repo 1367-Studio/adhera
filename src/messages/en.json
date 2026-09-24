@@ -1797,6 +1797,7 @@
       "notFound": "Event not found",
       "titleLabel": "Event title",
       "duplicateButton": "Duplicate",
+      "avaliacoesButton": "Reviews",
       "deleteButton": "Delete",
       "publishButton": "Publish",
       "unpublishButton": "Unpublish",

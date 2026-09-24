@@ -1797,6 +1797,7 @@
       "notFound": "Événement introuvable",
       "titleLabel": "Titre de l'événement",
       "duplicateButton": "Dupliquer",
+      "avaliacoesButton": "Avis",
       "deleteButton": "Supprimer",
       "publishButton": "Publier",
       "unpublishButton": "Dépublier",

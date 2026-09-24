@@ -1413,6 +1413,41 @@ export function evenementRegistrationAdminNotificationEmail(p: {
   }
 }
 
+export function evenementReviewAdminNotificationEmail(p: {
+  email:           string
+  associationName: string
+  eventTitle:      string
+  eventDate:       Date
+  reviewerName:    string
+  rating:          number
+  comment?:        string | null
+  dashboardUrl:    string
+  branding?:       EmailBranding
+}) {
+  const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
+  const stars    = "★".repeat(p.rating) + "☆".repeat(5 - p.rating)
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvel avis</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      ${escapeHtml(p.reviewerName)} a laissé un avis sur
+      <strong>${escapeHtml(p.eventTitle)}</strong> — ${escapeHtml(dateStr)}.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Note</span>
+        <span style="font-size:20px;font-weight:700;letter-spacing:2px;color:#f59e0b;">${stars}</span>
+        ${p.comment ? `<p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:#3f3f46;">${escapeHtml(p.comment)}</p>` : ""}
+      </td></tr>
+    </table>
+    ${btn("Voir les avis", p.dashboardUrl)}`
+  return {
+    to:       p.email,
+    subject:  `Nouvel avis · ${p.eventTitle}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
 export function cotisationSubscriptionPaymentFailedEmail(p: {
   firstName:       string
   email:           string
