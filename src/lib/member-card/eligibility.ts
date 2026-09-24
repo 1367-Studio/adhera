@@ -55,7 +55,9 @@ export type MemberCardEligibility =
   // cotisationId = the current-period row still waiting on money, so the UI can link to its
   // payment without re-deriving which row that is.
   | { state: "unavailable"; reason: MemberCardUnavailableReason; cotisationId: string }
-  | { state: "expired"; expiredOn: Date }
+  // cotisationId = the past PAYE/EXONERE row whose expiry is printed — lets the view model
+  // read which MembershipTier produced it (see Cotisation.tierId), same as "valid" above.
+  | { state: "expired"; expiredOn: Date; cotisationId: string }
   | { state: "none"; reason: MemberCardNoneReason }
 
 // Most urgent first — when a member somehow has several unpaid rows for the current period,
@@ -137,7 +139,8 @@ export function getMemberCardEligibility(input: MemberCardEligibilityInput, now:
     ADHERENT_STATUSES.includes(cotisation.status) && cotisationEndDate(cotisation) < now,
   )
   if (pastPaidCotisations.length > 0) {
-    return { state: "expired", expiredOn: cotisationEndDate(latestEnding(pastPaidCotisations)) }
+    const lastCovering = latestEnding(pastPaidCotisations)
+    return { state: "expired", expiredOn: cotisationEndDate(lastCovering), cotisationId: lastCovering.id }
   }
 
   return { state: "none", reason: "no-membership" }

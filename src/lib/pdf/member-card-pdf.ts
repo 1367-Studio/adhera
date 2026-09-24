@@ -719,7 +719,13 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
     })
   })
 
+  // Category and tarifa stack below the name, each row's top computed from where the previous
+  // one ended — never gated together: a tarifa is not a MembreType (see
+  // MembershipTier.membreTypeId), so it prints even when settings.showCategory is off.
+  let nextIdentityRowTopMm = identityTopMm + memberNameLines.length * LINE_HEIGHT_FACTOR * CARD_FONT_MEMBER_NAME_MM
+
   if (settings.showCategory && card.category) {
+    const categoryTopMm = nextIdentityRowTopMm + CARD_IDENTITY_ROW_GAP_MM
     drawTextLine({
       text: truncateToWidth(
         regularFont,
@@ -730,9 +736,25 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
       font:            regularFont,
       sizeMillimetres: CARD_FONT_BODY_MM,
       leftMillimetres: identityTextLeftMm,
-      topMillimetres:  identityTopMm
-        + memberNameLines.length * LINE_HEIGHT_FACTOR * CARD_FONT_MEMBER_NAME_MM
-        + CARD_IDENTITY_ROW_GAP_MM,
+      topMillimetres:  categoryTopMm,
+      color:           NEUTRAL_600,
+    })
+    nextIdentityRowTopMm = categoryTopMm + LINE_HEIGHT_FACTOR * CARD_FONT_BODY_MM
+  }
+
+  if (card.tier) {
+    const tierTopMm = nextIdentityRowTopMm + CARD_IDENTITY_ROW_GAP_MM
+    drawTextLine({
+      text: truncateToWidth(
+        regularFont,
+        sanitizeForWinAnsi(card.tier),
+        millimetresToPoints(CARD_FONT_BODY_MM),
+        identityTextWidthPt,
+      ),
+      font:            regularFont,
+      sizeMillimetres: CARD_FONT_BODY_MM,
+      leftMillimetres: identityTextLeftMm,
+      topMillimetres:  tierTopMm,
       color:           NEUTRAL_600,
     })
   }

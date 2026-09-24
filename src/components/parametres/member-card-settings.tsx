@@ -114,6 +114,7 @@ export function MemberCardSettings({
     logoUrl,
     memberName:  sampleName,
     category:    t("sampleCategory"),
+    tier:        t("sampleTier"),
     validFrom:   previewValidFrom,
     validUntil:  previewValidUntil,
     state:       "valid",

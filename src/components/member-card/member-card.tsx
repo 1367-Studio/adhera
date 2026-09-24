@@ -227,6 +227,16 @@ export function MemberCard({ card, className }: MemberCardProps) {
                   {card.category}
                 </p>
               )}
+              {/* Never gated by settings.showCategory — a tarifa is not a MembreType, see
+                  MembershipTier.membreTypeId. Shown whenever the printed cotisation has one. */}
+              {card.tier && (
+                <p
+                  className="truncate leading-tight text-neutral-600"
+                  style={{ fontSize: millimetres(CARD_FONT_BODY_MM) }}
+                >
+                  {card.tier}
+                </p>
+              )}
             </div>
 
             {/* Black on white whatever the template: a tinted or logo-filled QR is the first
