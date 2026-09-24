@@ -4105,7 +4105,8 @@
       "noType": "No type",
       "noResponsable": "None",
       "noAdultResponsable": "No eligible adult member available",
-      "preview": "Preview:"
+      "preview": "Preview:",
+      "customFieldsSectionTitle": "Membership form answers"
     },
     "actions": {
       "add": "Add a member",
@@ -4221,6 +4222,7 @@
       "noContactInfo": "No contact information",
       "memberSinceColon": "Member since: {date}",
       "typeColon": "Type: {name}",
+      "tierColon": "Tier: {name}",
       "personalInfo": "Personal information",
       "civiliteColon": "Title: {value}",
       "sexeColon": "Sex: {value}",
@@ -4943,11 +4945,13 @@
       "showPhoto": "Member photo",
       "showPhotoHint": "Initials are shown when there is no photo.",
       "showCategory": "Category",
+      "showTier": "Tier",
       "showPhone": "Association phone",
       "showEmail": "Association email",
       "preview": "Preview",
       "sampleName": "Camille Martin",
       "sampleCategory": "Active volunteer member",
+      "sampleTier": "Adult",
       "noLogo": "Add a logo under Branding to show it on the card.",
       "noPhone": "Add a phone number under Legal identity & Donations to show it on the card.",
       "noEmail": "Add a contact email under Association information to show it on the card.",

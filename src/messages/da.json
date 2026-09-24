@@ -4000,7 +4000,8 @@
       "noType": "Ingen type",
       "noResponsable": "Ingen",
       "noAdultResponsable": "Ingen voksne medlemmer tilgængelige",
-      "preview": "Oversigt:"
+      "preview": "Oversigt:",
+      "customFieldsSectionTitle": "Svar fra indmeldelsesformularen"
     },
     "actions": {
       "add": "Tilføj et medlem",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Ingen kontaktoplysninger",
       "memberSinceColon": "Medlem siden: {date}",
       "typeColon": "Type: {name}",
+      "tierColon": "Tarif: {name}",
       "personalInfo": "Personlige oplysninger",
       "civiliteColon": "Titel : {value}",
       "sexeColon": "Køn: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Medlemmets foto",
       "showPhotoHint": "Initialer vises, hvis der ikke er registreret noget foto.",
       "showCategory": "Kategori",
+      "showTier": "Tarif",
       "showPhone": "Foreningens telefonnummer",
       "showEmail": "Foreningens e-mail",
       "preview": "Forhåndsvisning",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktivt frivilligt medlem",
+      "sampleTier": "Voksen",
       "noLogo": "Tilføj et logo under Branding for at vise det på kortet.",
       "noPhone": "Tilføj et telefonnummer under Juridisk identitet & Donationer for at vise det på kortet.",
       "noEmail": "Tilføj en kontakt-e-mail under Foreningsoplysninger for at vise den på kortet.",

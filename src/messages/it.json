@@ -4000,7 +4000,8 @@
       "noType": "Nessun tipo",
       "noResponsable": "Nessuna",
       "noAdultResponsable": "Nessun membro adulto disponibile",
-      "preview": "Panoramica:"
+      "preview": "Panoramica:",
+      "customFieldsSectionTitle": "Risposte al modulo di adesione"
     },
     "actions": {
       "add": "Aggiungi un membro",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nessuna informazione di contatto",
       "memberSinceColon": "Membro da: {date}",
       "typeColon": "Tipo: {name}",
+      "tierColon": "Tariffa: {name}",
       "personalInfo": "Informazioni personali",
       "civiliteColon": "Titolo: {value}",
       "sexeColon": "Genere: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Foto del socio",
       "showPhotoHint": "Se non è registrata alcuna foto vengono mostrate le iniziali.",
       "showCategory": "Categoria",
+      "showTier": "Tariffa",
       "showPhone": "Telefono dell'associazione",
       "showEmail": "E-mail dell'associazione",
       "preview": "Anteprima",
       "sampleName": "Camille Martin",
       "sampleCategory": "Socio volontario attivo",
+      "sampleTier": "Adulto",
       "noLogo": "Aggiungi un logo in Personalizzazione per mostrarlo sulla tessera.",
       "noPhone": "Aggiungi un telefono in Identità legale e Donazioni per mostrarlo sulla tessera.",
       "noEmail": "Aggiungi un'e-mail di contatto in Informazioni sull'associazione per mostrarla sulla tessera.",

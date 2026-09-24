@@ -4000,7 +4000,8 @@
       "noType": "Žádný typ",
       "noResponsable": "Žádné",
       "noAdultResponsable": "Žádní dospělí členové nejsou k dispozici",
-      "preview": "Přehled:"
+      "preview": "Přehled:",
+      "customFieldsSectionTitle": "Odpovědi z členské přihlášky"
     },
     "actions": {
       "add": "Přidejte člena",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Žádné kontaktní údaje",
       "memberSinceColon": "Člen od té doby: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Sazba: {name}",
       "personalInfo": "Osobní informace",
       "civiliteColon": "Název: {value}",
       "sexeColon": "Pohlaví: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografie člena",
       "showPhotoHint": "Pokud není uložena žádná fotografie, zobrazí se iniciály.",
       "showCategory": "Kategorie",
+      "showTier": "Sazba",
       "showPhone": "Telefon spolku",
       "showEmail": "E-mail spolku",
       "preview": "Náhled",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktivní dobrovolný člen",
+      "sampleTier": "Dospělý",
       "noLogo": "Přidejte logo v sekci Branding, abyste jej zobrazili na kartě.",
       "noPhone": "Přidejte telefon v sekci Právní identita a dary, abyste jej zobrazili na kartě.",
       "noEmail": "Přidejte kontaktní e-mail v sekci Informace o spolku, abyste jej zobrazili na kartě.",

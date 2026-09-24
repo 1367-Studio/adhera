@@ -4000,7 +4000,8 @@
       "noType": "Fără tip",
       "noResponsable": "Niciuna",
       "noAdultResponsable": "Nu există membri adulți disponibili",
-      "preview": "Prezentare generală:"
+      "preview": "Prezentare generală:",
+      "customFieldsSectionTitle": "Răspunsuri din formularul de adeziune"
     },
     "actions": {
       "add": "Adaugă un membru",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Fără informații de contact",
       "memberSinceColon": "Membru de la: {date}",
       "typeColon": "Tip: {name}",
+      "tierColon": "Tarif: {name}",
       "personalInfo": "Informații personale",
       "civiliteColon": "Titlu: {value}",
       "sexeColon": "Gen: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografia membrului",
       "showPhotoHint": "Inițialele sunt afișate dacă nu este înregistrată nicio fotografie.",
       "showCategory": "Categorie",
+      "showTier": "Tarif",
       "showPhone": "Telefonul asociației",
       "showEmail": "E-mailul asociației",
       "preview": "Previzualizare",
       "sampleName": "Camille Martin",
       "sampleCategory": "Membru voluntar activ",
+      "sampleTier": "Adult",
       "noLogo": "Adăugați un logo în secțiunea Branding pentru a-l afișa pe card.",
       "noPhone": "Adăugați un telefon în secțiunea Identitate legală și Donații pentru a-l afișa pe card.",
       "noEmail": "Adăugați un e-mail de contact în secțiunea Informații despre asociație pentru a-l afișa pe card.",

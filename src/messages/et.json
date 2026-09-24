@@ -4000,7 +4000,8 @@
       "noType": "Tüüp puudub",
       "noResponsable": "Puudub",
       "noAdultResponsable": "Täiskasvanud liikmeid pole saadaval",
-      "preview": "Ülevaade:"
+      "preview": "Ülevaade:",
+      "customFieldsSectionTitle": "Liikmevormi vastused"
     },
     "actions": {
       "add": "Lisa liige",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Kontaktandmed puuduvad",
       "memberSinceColon": "Liige alates: {date}",
       "typeColon": "Tüüp: {name}",
+      "tierColon": "Tariif: {name}",
       "personalInfo": "Isikuandmed",
       "civiliteColon": "Pealkiri : {value}",
       "sexeColon": "Sugu: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Liikme foto",
       "showPhotoHint": "Kui fotot ei ole salvestatud, kuvatakse initsiaalid.",
       "showCategory": "Kategooria",
+      "showTier": "Tariif",
       "showPhone": "Ühingu telefon",
       "showEmail": "Ühingu e-post",
       "preview": "Eelvaade",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktiivne vabatahtlik liige",
+      "sampleTier": "Täiskasvanu",
       "noLogo": "Lisage logo jaotises Bränding, et see kaardil kuvataks.",
       "noPhone": "Lisage telefon jaotises Juriidiline identiteet ja annetused, et see kaardil kuvataks.",
       "noEmail": "Lisage kontakti e-post jaotises Ühingu teave, et see kaardil kuvataks.",

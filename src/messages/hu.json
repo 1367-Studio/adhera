@@ -4000,7 +4000,8 @@
       "noType": "Nincs típus",
       "noResponsable": "Nincs",
       "noAdultResponsable": "Felnőtt tagok nem elérhetők",
-      "preview": "Áttekintés:"
+      "preview": "Áttekintés:",
+      "customFieldsSectionTitle": "Tagfelvételi űrlap válaszai"
     },
     "actions": {
       "add": "Tag hozzáadása",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nincs elérhetőségi információ",
       "memberSinceColon": "Tag azóta: {date}",
       "typeColon": "Típus: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Személyes adatok",
       "civiliteColon": "Cím: {value}",
       "sexeColon": "Nem: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "A tag fényképe",
       "showPhotoHint": "Ha nincs rögzített fénykép, a monogram jelenik meg.",
       "showCategory": "Kategória",
+      "showTier": "Tarifa",
       "showPhone": "Az egyesület telefonszáma",
       "showEmail": "Az egyesület e-mail címe",
       "preview": "Előnézet",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktív önkéntes tag",
+      "sampleTier": "Felnőtt",
       "noLogo": "Adjon hozzá logót a Márkajelzés menüpontban, hogy megjelenjen a kártyán.",
       "noPhone": "Adjon hozzá telefonszámot a Jogi identitás és adományok menüpontban, hogy megjelenjen a kártyán.",
       "noEmail": "Adjon hozzá kapcsolattartási e-mail címet az Egyesületi adatok menüpontban, hogy megjelenjen a kártyán.",

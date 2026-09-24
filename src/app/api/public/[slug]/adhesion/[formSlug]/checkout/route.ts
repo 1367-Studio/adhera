@@ -23,6 +23,7 @@ import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
+import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
@@ -336,17 +337,12 @@ export async function POST(
   }
 
   const knownFieldIds = new Set(form.customFields.map(f => f.id))
-  for (const field of form.customFields) {
-    const value = parsed.data.answers[field.id]
-    if (field.required && (value == null || value.trim() === ""))
-      return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
-    // Même contrôle que le formulaire d'inscription des événements — évite qu'une réponse
-    // fabriquée à la main atterrisse hors de la liste de choix configurée.
-    if (field.type === "SELECT" && value != null && value !== "") {
-      const options = Array.isArray(field.options) ? field.options as string[] : []
-      if (!options.includes(value))
-        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
-    }
+  const invalidAnswer = findInvalidMembershipFormAnswer(form.customFields, parsed.data.answers)
+  if (invalidAnswer) {
+    const message = invalidAnswer.kind === "required"
+      ? `Le champ « ${invalidAnswer.field.label} » est requis.`
+      : `Le champ « ${invalidAnswer.field.label} » est invalide.`
+    return NextResponse.json({ error: message }, { status: 422 })
   }
 
   // birthDate/sexe ont leurs propres colonnes sur Membre (voir plus bas) — seul "mobile"
@@ -1033,15 +1029,12 @@ async function handleMultiRegistrantCheckout(
       if (requirement === "REQUIRED" && (!value || !value.trim()))
         return NextResponse.json({ error: `Le champ « ${label} » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
     }
-    for (const field of form.customFields) {
-      const value = r.answers[field.id]
-      if (field.required && (value == null || value.trim() === ""))
-        return NextResponse.json({ error: `Le champ « ${field.label} » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
-      if (field.type === "SELECT" && value != null && value !== "") {
-        const options = Array.isArray(field.options) ? field.options as string[] : []
-        if (!options.includes(value))
-          return NextResponse.json({ error: `Le champ « ${field.label} » est invalide pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
-      }
+    const invalidRegistrantAnswer = findInvalidMembershipFormAnswer(form.customFields, r.answers)
+    if (invalidRegistrantAnswer) {
+      const message = invalidRegistrantAnswer.kind === "required"
+        ? `Le champ « ${invalidRegistrantAnswer.field.label} » est requis pour ${r.firstName} ${r.lastName}.`
+        : `Le champ « ${invalidRegistrantAnswer.field.label} » est invalide pour ${r.firstName} ${r.lastName}.`
+      return NextResponse.json({ error: message }, { status: 422 })
     }
 
     // birthDate/sexe ont leurs propres colonnes sur Membre — seul "mobile" (pas de colonne

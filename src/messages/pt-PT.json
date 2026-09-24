@@ -4000,7 +4000,8 @@
       "noType": "Nenhum tipo",
       "noResponsable": "Nenhum",
       "noAdultResponsable": "Nenhum membro maior de idade disponível",
-      "preview": "Pré-visualização:"
+      "preview": "Pré-visualização:",
+      "customFieldsSectionTitle": "Respostas do formulário de adesão"
     },
     "actions": {
       "add": "Adicionar membro",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nenhuma informação de contacto",
       "memberSinceColon": "Membro desde: {date}",
       "typeColon": "Tipo: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Informações pessoais",
       "civiliteColon": "Tratamento: {value}",
       "sexeColon": "Sexo: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografia do sócio",
       "showPhotoHint": "As iniciais são apresentadas quando não há fotografia registada.",
       "showCategory": "Categoria",
+      "showTier": "Tarifa",
       "showPhone": "Telefone da associação",
       "showEmail": "E-mail da associação",
       "preview": "Pré-visualização",
       "sampleName": "Camille Martin",
       "sampleCategory": "Sócio voluntário ativo",
+      "sampleTier": "Adulto",
       "noLogo": "Adicione um logótipo em Personalização para o mostrar no cartão.",
       "noPhone": "Adicione um telefone em Identidade legal e Donativos para o mostrar no cartão.",
       "noEmail": "Adicione um e-mail de contacto em Informações da associação para o mostrar no cartão.",

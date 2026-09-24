@@ -4000,7 +4000,8 @@
       "noType": "Žiadny typ",
       "noResponsable": "Žiadna",
       "noAdultResponsable": "Nie sú k dispozícii žiadni dospelí členovia",
-      "preview": "Prehľad:"
+      "preview": "Prehľad:",
+      "customFieldsSectionTitle": "Odpovede z prihlášky za člena"
     },
     "actions": {
       "add": "Pridať člena",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Žiadne kontaktné informácie",
       "memberSinceColon": "Člen od: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Osobné informácie",
       "civiliteColon": "Názov: {value}",
       "sexeColon": "Pohlavie: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografia člena",
       "showPhotoHint": "Ak nie je uložená žiadna fotografia, zobrazia sa iniciály.",
       "showCategory": "Kategória",
+      "showTier": "Tarifa",
       "showPhone": "Telefón združenia",
       "showEmail": "E-mail združenia",
       "preview": "Náhľad",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktívny dobrovoľný člen",
+      "sampleTier": "Dospelý",
       "noLogo": "Pridajte logo v sekcii Branding, aby sa zobrazilo na karte.",
       "noPhone": "Pridajte telefón v sekcii Právna identita a dary, aby sa zobrazil na karte.",
       "noEmail": "Pridajte kontaktný e-mail v sekcii Informácie o združení, aby sa zobrazil na karte.",

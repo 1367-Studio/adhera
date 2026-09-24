@@ -4000,7 +4000,8 @@
       "noType": "Nėra tipo",
       "noResponsable": "Nėra",
       "noAdultResponsable": "Suaugusiųjų narių nėra.",
-      "preview": "Apžvalga:"
+      "preview": "Apžvalga:",
+      "customFieldsSectionTitle": "Narystės formos atsakymai"
     },
     "actions": {
       "add": "Pridėti narį",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nėra kontaktinės informacijos",
       "memberSinceColon": "Narys nuo: {date}",
       "typeColon": "Tipas : {name}",
+      "tierColon": "Tarifas : {name}",
       "personalInfo": "Asmeninė informacija",
       "civiliteColon": "Pavadinimas: {value}",
       "sexeColon": "Lytis: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Nario nuotrauka",
       "showPhotoHint": "Jei nuotrauka neįrašyta, rodomi inicialai.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifas",
       "showPhone": "Asociacijos telefonas",
       "showEmail": "Asociacijos el. paštas",
       "preview": "Peržiūra",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktyvus savanoris narys",
+      "sampleTier": "Suaugęs",
       "noLogo": "Pridėkite logotipą skyriuje Prekės ženklas, kad jis būtų rodomas kortelėje.",
       "noPhone": "Pridėkite telefoną skyriuje Teisinis identitetas ir aukos, kad jis būtų rodomas kortelėje.",
       "noEmail": "Pridėkite kontaktinį el. paštą skyriuje Informacija apie asociaciją, kad jis būtų rodomas kortelėje.",

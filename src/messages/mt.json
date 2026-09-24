@@ -4000,7 +4000,8 @@
       "noType": "L-ebda tip",
       "noResponsable": "Xejn",
       "noAdultResponsable": "L-ebda membri adulti disponibbli",
-      "preview": "Ħarsa Ġenerali:"
+      "preview": "Ħarsa Ġenerali:",
+      "customFieldsSectionTitle": "Tweġibiet tal-formola tas-sħubija"
     },
     "actions": {
       "add": "Żid membru",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "L-ebda informazzjoni ta' kuntatt",
       "memberSinceColon": "Membru minn dakinhar: {date}",
       "typeColon": "Tip : {name}",
+      "tierColon": "Tariffa : {name}",
       "personalInfo": "Informazzjoni Personali",
       "civiliteColon": "Titlu : {value}",
       "sexeColon": "Ġeneru: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Ritratt tal-membru",
       "showPhotoHint": "L-inizjali jintwerew meta ma jkun hemm l-ebda ritratt irreġistrat.",
       "showCategory": "Kategorija",
+      "showTier": "Tariffa",
       "showPhone": "Telefon tal-assoċjazzjoni",
       "showEmail": "Email tal-assoċjazzjoni",
       "preview": "Antiprima",
       "sampleName": "Camille Martin",
       "sampleCategory": "Membru volontarju attiv",
+      "sampleTier": "Adult",
       "noLogo": "Żid logo taħt Branding biex tintwera fuq il-karta.",
       "noPhone": "Żid numru tat-telefon taħt Identità legali u Donazzjonijiet biex jintwera fuq il-karta.",
       "noEmail": "Żid email ta' kuntatt taħt Informazzjoni dwar l-assoċjazzjoni biex tintwera fuq il-karta.",

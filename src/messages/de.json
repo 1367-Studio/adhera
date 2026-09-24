@@ -4000,7 +4000,8 @@
       "noType": "Kein Typ",
       "noResponsable": "Keine",
       "noAdultResponsable": "Keine erwachsenen Mitglieder verfügbar",
-      "preview": "Überblick:"
+      "preview": "Überblick:",
+      "customFieldsSectionTitle": "Antworten aus dem Mitgliedsformular"
     },
     "actions": {
       "add": "Mitglied hinzufügen",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Keine Kontaktinformationen",
       "memberSinceColon": "Mitglied seitdem: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tarif: {name}",
       "personalInfo": "Persönliche Informationen",
       "civiliteColon": "Titel: {value}",
       "sexeColon": "Geschlecht: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Foto des Mitglieds",
       "showPhotoHint": "Initialen werden angezeigt, wenn kein Foto hinterlegt ist.",
       "showCategory": "Kategorie",
+      "showTier": "Tarif",
       "showPhone": "Telefonnummer des Vereins",
       "showEmail": "E-Mail des Vereins",
       "preview": "Vorschau",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktives ehrenamtliches Mitglied",
+      "sampleTier": "Erwachsener",
       "noLogo": "Fügen Sie unter Markendesign ein Logo hinzu, um es auf dem Ausweis anzuzeigen.",
       "noPhone": "Fügen Sie unter Rechtliche Identität & Spenden eine Telefonnummer hinzu, um sie auf dem Ausweis anzuzeigen.",
       "noEmail": "Fügen Sie unter Vereinsinformationen eine Kontakt-E-Mail hinzu, um sie auf dem Ausweis anzuzeigen.",

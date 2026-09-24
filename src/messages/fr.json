@@ -4113,7 +4113,8 @@
       "noType": "Aucun type",
       "noResponsable": "Aucun",
       "noAdultResponsable": "Aucun membre majeur disponible",
-      "preview": "Aperçu :"
+      "preview": "Aperçu :",
+      "customFieldsSectionTitle": "Réponses au formulaire d'adhésion"
     },
     "actions": {
       "add": "Ajouter un membre",
@@ -4229,6 +4230,7 @@
       "noContactInfo": "Aucune information de contact",
       "memberSinceColon": "Membre depuis : {date}",
       "typeColon": "Type : {name}",
+      "tierColon": "Tarif : {name}",
       "personalInfo": "Informations personnelles",
       "civiliteColon": "Civilité : {value}",
       "sexeColon": "Sexe : {value}",
@@ -4951,11 +4953,13 @@
       "showPhoto": "Photo du membre",
       "showPhotoHint": "Les initiales s'affichent si aucune photo n'est enregistrée.",
       "showCategory": "Catégorie",
+      "showTier": "Tarif",
       "showPhone": "Téléphone de l'association",
       "showEmail": "E-mail de l'association",
       "preview": "Aperçu",
       "sampleName": "Camille Martin",
       "sampleCategory": "Adhérent bénévole actif",
+      "sampleTier": "Adulte",
       "noLogo": "Ajoutez un logo dans Personnalisation pour l'afficher sur la carte.",
       "noPhone": "Ajoutez un téléphone dans Identité légale & Dons pour l'afficher sur la carte.",
       "noEmail": "Ajoutez un e-mail de contact dans Informations de l'association pour l'afficher sur la carte.",

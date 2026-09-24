@@ -4000,7 +4000,8 @@
       "noType": "Ingen typ",
       "noResponsable": "Inga",
       "noAdultResponsable": "Inga vuxna medlemmar tillgängliga",
-      "preview": "Översikt:"
+      "preview": "Översikt:",
+      "customFieldsSectionTitle": "Svar från medlemsformuläret"
     },
     "actions": {
       "add": "Lägg till en medlem",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Ingen kontaktinformation",
       "memberSinceColon": "Medlem sedan dess: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tariff: {name}",
       "personalInfo": "Personlig information",
       "civiliteColon": "Titel: {value}",
       "sexeColon": "Kön: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Medlemmens foto",
       "showPhotoHint": "Initialer visas om inget foto är registrerat.",
       "showCategory": "Kategori",
+      "showTier": "Tariff",
       "showPhone": "Föreningens telefonnummer",
       "showEmail": "Föreningens e-post",
       "preview": "Förhandsvisning",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktiv frivilligmedlem",
+      "sampleTier": "Vuxen",
       "noLogo": "Lägg till en logotyp under Varumärke för att visa den på kortet.",
       "noPhone": "Lägg till ett telefonnummer under Juridisk identitet & Donationer för att visa det på kortet.",
       "noEmail": "Lägg till en kontakt-e-post under Föreningsinformation för att visa den på kortet.",

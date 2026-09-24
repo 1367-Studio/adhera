@@ -26,6 +26,8 @@ export type MemberCardViewModel = {
   memberName:      string
   /** Membre type name, or null when hidden by settings.showCategory / the member has none. */
   category:        string | null
+  /** MembershipTier label behind the printed cotisation, or null when hidden by settings.showTier / it wasn't created via a MembershipForm. Its own setting — never settings.showCategory, a tarifa is not a category. */
+  tier:            string | null
   /** Only set when `state` is "valid" — an expired card prints a single date, not a range. */
   validFrom:       Date | null
   validUntil:      Date
@@ -125,6 +127,7 @@ export function buildMemberCardViewModel(
     // (The members *table* sorts by "Martin Camille"; a card is not a sorted list.)
     memberName:      `${membre.firstName} ${membre.lastName}`,
     category:        membre.type?.name ?? null,
+    tier:            membre.tier,
     validFrom:       eligibility.state === "valid" ? eligibility.validFrom : null,
     // An expired card has no validUntil of its own: the day it stopped covering *is* its
     // expiry date, and the renderer prints a single date either way, labelled by `state`.

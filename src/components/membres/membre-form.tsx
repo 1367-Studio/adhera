@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button"
 import { ImageUpload } from "../ui/image-upload"
 import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
 import { spokenLanguageOptions } from "@/lib/languages"
+import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
 
 // Same role set as the PATCH /api/membres/[id] server-side check and cotisation-defaults'
 // FINANCE roles — forcing a member's adhérent status is a financial call equivalent to
@@ -48,16 +49,21 @@ function isConfirmedAdult(birthDateStr: string): boolean {
 
 interface MembreFormProps {
   defaultValues?: Partial<MembreInput>
-  onSubmit: (data: MembreCreateInput) => Promise<void>
+  onSubmit: (data: MembreCreateInput & { answers?: Record<string, string> }) => Promise<void>
   onCancel: () => void
   loading?: boolean
   isCreate?: boolean
   actorRole?: string
   isSelf?: boolean
   membreId?: string
+  // Custom fields of the MembershipForm this member actually joined through (see
+  // resolveMembreMembershipFormId), pre-filled with their current answers — absent for a
+  // member with no traceable form (manual creation), and always absent on create: there is no
+  // member yet to have joined through anything.
+  editableCustomFields?: { field: MembershipFormFieldInputField; value: string }[]
 }
 
-export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId }: MembreFormProps) {
+export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId, editableCustomFields = [] }: MembreFormProps) {
   const t = useTranslations()
     const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
@@ -136,6 +142,27 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues, ...addressFormValues(defaultValues) }) }, [defaultValues, reset])
 
+  // Kept outside react-hook-form: the fields (and their ids) vary per member's own
+  // MembershipForm, so there is no fixed zod shape to resolve them against like every other
+  // field above. Re-seeded whenever the modal opens on a different member.
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
+    () => Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])),
+  )
+  useEffect(() => {
+    setCustomAnswers(Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])))
+  }, [editableCustomFields])
+  // Same touched/showAll pattern as the public adhésion form (membership-form-public-form.tsx):
+  // a required field only turns red once it's been left, or once a submit was attempted —
+  // never on first render, and never merely because another required field failed.
+  const [touchedCustomFields, setTouchedCustomFields] = useState<Set<string>>(new Set())
+  const [showAllCustomFieldErrors, setShowAllCustomFieldErrors] = useState(false)
+  function customFieldError(fieldId: string, required: boolean): string | undefined {
+    if (!required || (customAnswers[fieldId] ?? "").trim()) return undefined
+    return (showAllCustomFieldErrors || touchedCustomFields.has(fieldId))
+      ? t("membershipForms.public.fieldRequired")
+      : undefined
+  }
+
   const [addressStreetValue, addressComplementValue, postalCodeValue, cityValue, countryValue] = useWatch({
     control,
     name: ["addressStreet", "addressComplement", "postalCode", "city", "country"],
@@ -179,11 +206,33 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       ]
     : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
+  async function submit(data: MembreCreateInput) {
+    // Only the answers actually changed in this session — never the whole set. A required
+    // field the member never answered (added to the form after they joined, say) must not
+    // block an edit that has nothing to do with it: sending it unchanged would fail the
+    // server's required-field check on every single save until someone fills it in.
+    const initialCustomAnswers = Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value]))
+    const changedCustomAnswers = Object.fromEntries(
+      Object.entries(customAnswers).filter(([fieldId, value]) => value !== (initialCustomAnswers[fieldId] ?? "")),
+    )
+    // Only a *changed* required field is checked here, for the same reason it's the only one
+    // sent to the server above — a pre-existing blank on an untouched field is not this save's
+    // problem to fix.
+    const hasInvalidChangedField = editableCustomFields.some(
+      ({ field }) => field.id in changedCustomAnswers && field.required && !(customAnswers[field.id] ?? "").trim(),
+    )
+    if (hasInvalidChangedField) {
+      setShowAllCustomFieldErrors(true)
+      return
+    }
+    await onSubmit(Object.keys(changedCustomAnswers).length > 0 ? { ...data, answers: changedCustomAnswers } : data)
+  }
+
   return (
     // PILOTE espacement (voir la discussion sur la densité des formulaires) : 20px entre
     // champs au lieu de 16, pour que l'écart entre deux champs se distingue nettement des
     // 6px qui séparent un label de son propre contrôle. À généraliser si validé.
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(submit)} className="space-y-5" noValidate>
       <Controller
         name="photoUrl"
         control={control}
@@ -518,6 +567,27 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           country:           errors.country?.message,
         }}
       />
+
+      {/* Réponses au formulaire d'adhésion réellement utilisé par ce membre (voir
+          resolveMembreMembershipFormId) — jamais l'ancien formulaire figé d'origine. Absent
+          pour un membre créé manuellement, faute de formulaire à qui rattacher des réponses. */}
+      {editableCustomFields.length > 0 && (
+        <div className="space-y-5 border-t pt-5">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {t("membres.form.customFieldsSectionTitle")}
+          </p>
+          {editableCustomFields.map(({ field }) => (
+            <MembershipFormFieldInput
+              key={field.id}
+              field={field}
+              value={customAnswers[field.id] ?? ""}
+              onChange={value => setCustomAnswers(prev => ({ ...prev, [field.id]: value }))}
+              onBlur={() => setTouchedCustomFields(prev => new Set(prev).add(field.id))}
+              error={customFieldError(field.id, field.required)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Création par un gestionnaire : la personne n'est pas là pour accepter elle-même. Le
           gestionnaire atteste avoir recueilli son accord, et c'est cette affirmation qui est

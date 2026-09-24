@@ -65,7 +65,7 @@ describe("getMemberCardEligibility — periodEnd rows vs calendar-year rows", ()
   it("a custom-duration row of the current year whose periodEnd has passed is expired, not valid", () => {
     const periodEnd = new Date("2026-06-30T10:00:00Z")
     const input = buildInput({ cotisations: [buildCotisation({ periodStart: "2026-01-01T10:00:00Z", periodEnd })] })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: periodEnd })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: periodEnd, cotisationId: "cotisation-2026" })
   })
 
   it("is still valid at the exact periodEnd instant", () => {
@@ -109,7 +109,7 @@ describe("getMemberCardEligibility — the Paris year boundary", () => {
 
   it("a 2026 calendar-year row has expired at 00:30 Paris time on 1 Jan, while UTC still reads 31 Dec", () => {
     const input = buildInput({ cotisations: [buildCotisation()] })
-    expect(getMemberCardEligibility(input, PARIS_NEW_YEAR_UTC_EVENING)).toEqual({ state: "expired", expiredOn: END_OF_2026_PARIS })
+    expect(getMemberCardEligibility(input, PARIS_NEW_YEAR_UTC_EVENING)).toEqual({ state: "expired", expiredOn: END_OF_2026_PARIS, cotisationId: "cotisation-2026" })
   })
 
   it("a 2027 row already covers at 00:30 Paris time on 1 Jan", () => {
@@ -128,7 +128,7 @@ describe("getMemberCardEligibility — the Paris year boundary", () => {
 describe("getMemberCardEligibility — expired vs no-membership", () => {
   it("only a past PAYE row → expired on the end of that season", () => {
     const input = buildInput({ cotisations: [buildCotisation({ id: "cotisation-2025", year: 2025 })] })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS, cotisationId: "cotisation-2025" })
   })
 
   it("several past paid rows → expiredOn is the most recent end", () => {
@@ -138,7 +138,7 @@ describe("getMemberCardEligibility — expired vs no-membership", () => {
         buildCotisation({ id: "cotisation-2025", year: 2025, status: "EXONERE" }),
       ],
     })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS, cotisationId: "cotisation-2025" })
   })
 
   it.each<CotisationStatus>(["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD", "ANNULEE"])(
@@ -160,7 +160,7 @@ describe("getMemberCardEligibility — expired vs no-membership", () => {
 
   it("a past paid row plus a row paid ahead for next year → expired on the past one", () => {
     const input = buildInput({ cotisations: [buildCotisation({ year: 2025 }), buildCotisation({ year: 2027 })] })
-    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS })
+    expect(getMemberCardEligibility(input, NOW)).toEqual({ state: "expired", expiredOn: END_OF_2025_PARIS, cotisationId: "cotisation-2026" })
   })
 })
 

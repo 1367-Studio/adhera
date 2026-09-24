@@ -4000,7 +4000,8 @@
       "noType": "Brak typu",
       "noResponsable": "Brak",
       "noAdultResponsable": "Brak dostępnych dorosłych członków",
-      "preview": "Przegląd:"
+      "preview": "Przegląd:",
+      "customFieldsSectionTitle": "Odpowiedzi z formularza członkowskiego"
     },
     "actions": {
       "add": "Dodaj członka",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Brak danych kontaktowych",
       "memberSinceColon": "Członek od następującego czasu: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Taryfa: {name}",
       "personalInfo": "Dane osobowe",
       "civiliteColon": "Tytuł: {value}",
       "sexeColon": "Płeć: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Zdjęcie członka",
       "showPhotoHint": "Jeśli nie zapisano zdjęcia, wyświetlane są inicjały.",
       "showCategory": "Kategoria",
+      "showTier": "Taryfa",
       "showPhone": "Telefon stowarzyszenia",
       "showEmail": "E-mail stowarzyszenia",
       "preview": "Podgląd",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktywny członek wolontariusz",
+      "sampleTier": "Dorosły",
       "noLogo": "Dodaj logo w sekcji Marka, aby wyświetlić je na karcie.",
       "noPhone": "Dodaj numer telefonu w sekcji Tożsamość prawna i darowizny, aby wyświetlić go na karcie.",
       "noEmail": "Dodaj e-mail kontaktowy w sekcji Informacje o stowarzyszeniu, aby wyświetlić go na karcie.",

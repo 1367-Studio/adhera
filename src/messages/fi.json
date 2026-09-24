@@ -4000,7 +4000,8 @@
       "noType": "Ei tyyppiä",
       "noResponsable": "Ei mitään",
       "noAdultResponsable": "Aikuisjäseniä ei ole saatavilla",
-      "preview": "Yleiskatsaus:"
+      "preview": "Yleiskatsaus:",
+      "customFieldsSectionTitle": "Jäsenlomakkeen vastaukset"
     },
     "actions": {
       "add": "Lisää jäsen",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Ei yhteystietoja",
       "memberSinceColon": "Jäsen siitä lähtien: {date}",
       "typeColon": "Tyyppi: {name}",
+      "tierColon": "Tariffi: {name}",
       "personalInfo": "Henkilökohtaiset tiedot",
       "civiliteColon": "Otsikko: {value}",
       "sexeColon": "Sukupuoli: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Jäsenen kuva",
       "showPhotoHint": "Nimikirjaimet näytetään, jos kuvaa ei ole tallennettu.",
       "showCategory": "Kategoria",
+      "showTier": "Tariffi",
       "showPhone": "Yhdistyksen puhelinnumero",
       "showEmail": "Yhdistyksen sähköposti",
       "preview": "Esikatselu",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktiivinen vapaaehtoisjäsen",
+      "sampleTier": "Aikuinen",
       "noLogo": "Lisää logo kohdassa Brändi näyttääksesi sen kortissa.",
       "noPhone": "Lisää puhelinnumero kohdassa Oikeudellinen identiteetti ja lahjoitukset näyttääksesi sen kortissa.",
       "noEmail": "Lisää yhteyssähköposti kohdassa Yhdistyksen tiedot näyttääksesi sen kortissa.",

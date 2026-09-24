@@ -4000,7 +4000,8 @@
       "noType": "Няма тип",
       "noResponsable": "Няма",
       "noAdultResponsable": "Няма налични възрастни членове",
-      "preview": "Общ преглед:"
+      "preview": "Общ преглед:",
+      "customFieldsSectionTitle": "Отговори от формуляра за членство"
     },
     "actions": {
       "add": "Добавете член",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Без контактна информация",
       "memberSinceColon": "Член от: {date}",
       "typeColon": "Тип: {name}",
+      "tierColon": "Тарифа: {name}",
       "personalInfo": "Лична информация",
       "civiliteColon": "Заглавие: {value}",
       "sexeColon": "Пол: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Снимка на члена",
       "showPhotoHint": "Инициалите се показват, ако не е записана снимка.",
       "showCategory": "Категория",
+      "showTier": "Тарифа",
       "showPhone": "Телефон на сдружението",
       "showEmail": "Имейл на сдружението",
       "preview": "Преглед",
       "sampleName": "Camille Martin",
       "sampleCategory": "Активен доброволен член",
+      "sampleTier": "Възрастен",
       "noLogo": "Добавете лого в Брандиране, за да се показва на картата.",
       "noPhone": "Добавете телефон в Правна идентичност и дарения, за да се показва на картата.",
       "noEmail": "Добавете имейл за контакт в Информация за сдружението, за да се показва на картата.",

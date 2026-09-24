@@ -197,7 +197,7 @@ export function MembreDetailView() {
     legacy:     membre?.address,
   })
 
-  async function handleUpdate(data: MembreInput) {
+  async function handleUpdate(data: MembreInput & { answers?: Record<string, string> }) {
     try {
       await updateMutation.mutateAsync(data)
       toast.success(t("membres.view.toasts.memberUpdated"))
@@ -365,6 +365,12 @@ export function MembreDetailView() {
   const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
+  // La tarifa affichée dans le bloc « Statut » est celle de la cotisation la plus récente tout
+  // court (cotisations triées year desc côté API) — jamais celle d'une année passée : un
+  // membre dont la cotisation de cette année a été ajoutée à la main, sans tarif, ne doit pas
+  // afficher un tarif d'il y a deux ans comme si c'était encore le sien. Absente pour un membre
+  // créé manuellement ou hors MembershipForm (voir Cotisation.tierId).
+  const currentTierLabel      = cotisations[0]?.tier?.label ?? null
   // Mêmes rôles que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
   // ceci évite seulement d'afficher une action qui répondrait 403.
   const canRecordPayment      = ["ADMIN", "PRESIDENT", "TRESORIER"].includes(currentUser.role)
@@ -565,6 +571,7 @@ export function MembreDetailView() {
             {t("membres.detail.memberSinceColon", { date: format(new Date(membre.joinedAt), "dd/MM/yyyy", { locale: fr }) })}
           </p>
           {membre.type && <p className="text-muted-foreground">{t("membres.detail.typeColon", { name: membre.type.name })}</p>}
+          {currentTierLabel && <p className="text-muted-foreground">{t("membres.detail.tierColon", { name: currentTierLabel })}</p>}
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-2.5 text-sm">
@@ -698,6 +705,7 @@ export function MembreDetailView() {
                 declarationNumber: string | null; periodEnd?: string | null; receiptMode?: "NONE" | "FULL" | "PARTIAL"
                 deductibleAmount?: string | null
                 installmentPlan?: { id: string; status: string; installmentsPaid: number; installmentsCount: number } | null
+                tier?: { label: string } | null
               }) => {
                 const s = cotisationStatusBadge[c.status]
                 // A custom-duration Cotisation (MembershipTier.durationMonths) keeps its PAYE/
@@ -712,6 +720,7 @@ export function MembreDetailView() {
                   <div key={c.id} className="flex items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-sm">
                     <div>
                       <p className="font-medium tabular-nums">{c.year}</p>
+                      {c.tier && <p className="text-xs text-muted-foreground">{c.tier.label}</p>}
                       {c.paidAt && <p className="text-xs text-muted-foreground">{t("membres.detail.paidOn", { date: format(new Date(c.paidAt), "dd/MM/yyyy", { locale: fr }) })}</p>}
                       {periodEndDate && (
                         <p className={cn("text-xs", periodExpired ? "text-destructive" : "text-muted-foreground")}>
@@ -985,6 +994,7 @@ export function MembreDetailView() {
           actorRole={currentUser.role}
           isSelf={isSelf}
           membreId={membre.id}
+          editableCustomFields={membre.editableCustomFields}
         />
       </Modal>
 

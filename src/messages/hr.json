@@ -4000,7 +4000,8 @@
       "noType": "Bez tipa",
       "noResponsable": "Nema",
       "noAdultResponsable": "Nema dostupnih punoljetnih članova",
-      "preview": "Pregled:"
+      "preview": "Pregled:",
+      "customFieldsSectionTitle": "Odgovori s obrasca za članstvo"
     },
     "actions": {
       "add": "Dodajte člana",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nema kontakt informacija",
       "memberSinceColon": "Član od: {date}",
       "typeColon": "Tip: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Osobni podaci",
       "civiliteColon": "Naslov: {value}",
       "sexeColon": "Spol: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografija člana",
       "showPhotoHint": "Ako fotografija nije spremljena, prikazuju se inicijali.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifa",
       "showPhone": "Telefon udruge",
       "showEmail": "E-pošta udruge",
       "preview": "Pregled",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktivan volonterski član",
+      "sampleTier": "Odrasla osoba",
       "noLogo": "Dodajte logotip u odjeljku Brend kako biste ga prikazali na iskaznici.",
       "noPhone": "Dodajte telefon u odjeljku Pravni identitet i donacije kako biste ga prikazali na iskaznici.",
       "noEmail": "Dodajte kontakt e-poštu u odjeljku Podaci o udruzi kako biste je prikazali na iskaznici.",

@@ -4000,7 +4000,8 @@
       "noType": "Brez vrste",
       "noResponsable": "Nobenega",
       "noAdultResponsable": "Ni na voljo nobenih odraslih članov",
-      "preview": "Pregled:"
+      "preview": "Pregled:",
+      "customFieldsSectionTitle": "Odgovori na obrazec za članstvo"
     },
     "actions": {
       "add": "Dodajte člana",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Brez kontaktnih podatkov",
       "memberSinceColon": "Član od: {date}",
       "typeColon": "Tip: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Osebni podatki",
       "civiliteColon": "Naslov: {value}",
       "sexeColon": "Spol: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Fotografija člana",
       "showPhotoHint": "Če fotografija ni shranjena, se prikažejo začetnice.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifa",
       "showPhone": "Telefon društva",
       "showEmail": "E-pošta društva",
       "preview": "Predogled",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktiven prostovoljni član",
+      "sampleTier": "Odrasli",
       "noLogo": "Dodajte logotip v razdelku Blagovna znamka, da ga prikažete na izkaznici.",
       "noPhone": "Dodajte telefon v razdelku Pravna identiteta in donacije, da ga prikažete na izkaznici.",
       "noEmail": "Dodajte kontaktni e-poštni naslov v razdelku Podatki o društvu, da ga prikažete na izkaznici.",

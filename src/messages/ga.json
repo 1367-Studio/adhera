@@ -4000,7 +4000,8 @@
       "noType": "Gan aon chineál",
       "noResponsable": "Níl aon cheann",
       "noAdultResponsable": "Níl aon bhaill fásta ar fáil",
-      "preview": "Forbhreathnú:"
+      "preview": "Forbhreathnú:",
+      "customFieldsSectionTitle": "Freagraí ar an bhfoirm bhallraíochta"
     },
     "actions": {
       "add": "Cuir ball leis",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Gan aon eolas teagmhála",
       "memberSinceColon": "Ball ós rud é: {date}",
       "typeColon": "Cineál: {name}",
+      "tierColon": "Táille: {name}",
       "personalInfo": "Faisnéis Phearsanta",
       "civiliteColon": "Teideal : {value}",
       "sexeColon": "Inscne: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Grianghraf an bhaill",
       "showPhotoHint": "Taispeántar na túslitreacha mura bhfuil aon ghrianghraf sábháilte.",
       "showCategory": "Catagóir",
+      "showTier": "Táille",
       "showPhone": "Uimhir ghutháin an chumainn",
       "showEmail": "Ríomhphost an chumainn",
       "preview": "Réamhamharc",
       "sampleName": "Camille Martin",
       "sampleCategory": "Ball deonach gníomhach",
+      "sampleTier": "Duine fásta",
       "noLogo": "Cuir lógó leis faoi Branda chun é a thaispeáint ar an gcárta.",
       "noPhone": "Cuir uimhir ghutháin leis faoi Céannacht dhlíthiúil & Deonacháin chun í a thaispeáint ar an gcárta.",
       "noEmail": "Cuir ríomhphost teagmhála leis faoi Eolas faoin gcumann chun é a thaispeáint ar an gcárta.",

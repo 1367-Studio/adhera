@@ -4000,7 +4000,8 @@
       "noType": "Nav tipa",
       "noResponsable": "Nav",
       "noAdultResponsable": "Pieaugušo biedru nav pieejami",
-      "preview": "Pārskats:"
+      "preview": "Pārskats:",
+      "customFieldsSectionTitle": "Biedra pieteikuma anketas atbildes"
     },
     "actions": {
       "add": "Pievienot biedru",
@@ -4116,6 +4117,7 @@
       "noContactInfo": "Nav kontaktinformācijas",
       "memberSinceColon": "Loceklis kopš: {date}",
       "typeColon": "Tips: {name}",
+      "tierColon": "Tarifs: {name}",
       "personalInfo": "Personīgā informācija",
       "civiliteColon": "Virsraksts: {value}",
       "sexeColon": "Dzimums: {value}",
@@ -4805,11 +4807,13 @@
       "showPhoto": "Biedra fotogrāfija",
       "showPhotoHint": "Ja fotogrāfija nav saglabāta, tiek rādīti iniciāļi.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifs",
       "showPhone": "Biedrības tālrunis",
       "showEmail": "Biedrības e-pasts",
       "preview": "Priekšskatījums",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktīvs brīvprātīgais biedrs",
+      "sampleTier": "Pieaugušais",
       "noLogo": "Pievienojiet logotipu sadaļā Zīmols, lai to rādītu uz kartes.",
       "noPhone": "Pievienojiet tālruni sadaļā Juridiskā identitāte un ziedojumi, lai to rādītu uz kartes.",
       "noEmail": "Pievienojiet kontakta e-pastu sadaļā Informācija par biedrību, lai to rādītu uz kartes.",

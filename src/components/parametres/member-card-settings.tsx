@@ -114,6 +114,7 @@ export function MemberCardSettings({
     logoUrl,
     memberName:  sampleName,
     category:    t("sampleCategory"),
+    tier:        t("sampleTier"),
     validFrom:   previewValidFrom,
     validUntil:  previewValidUntil,
     state:       "valid",
@@ -215,6 +216,13 @@ export function MemberCardSettings({
               checked={draftSettings.showCategory}
               disabled={!canEdit}
               onChange={event => updateDraft({ showCategory: event.target.checked })}
+            />
+            <CheckboxField
+              id="member-card-show-tier"
+              label={t("showTier")}
+              checked={draftSettings.showTier}
+              disabled={!canEdit}
+              onChange={event => updateDraft({ showTier: event.target.checked })}
             />
             {/* The hint only appears when the field is empty, like noLogo above: with the
                 number filled in, the preview beside it already says what will be printed. */}
