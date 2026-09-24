@@ -1,35 +1,57 @@
 "use client"
 
-import { Fragment, useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { useQueryClient } from "@tanstack/react-query"
-import { useSupportTickets } from "@/hooks/use-support-tickets"
-import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-listener"
-import { useBulkSendListener } from "@/hooks/use-bulk-send-listener"
-import {
-  SquaresFourIcon, UsersIcon, CalendarBlankIcon, CoinsIcon, GearIcon, NewspaperIcon,
-  EnvelopeSimpleIcon, PackageIcon, GlobeIcon, PulseIcon, HeartIcon, ClipboardTextIcon,
-  ShoppingBagIcon, VideoCameraIcon, MoneyIcon, BuildingsIcon, FileTextIcon, ReceiptIcon,
-  UsersThreeIcon, ChatsCircleIcon, WrenchIcon, CaretRightIcon, LifebuoyIcon, UserPlusIcon, BookOpenTextIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { BrandLogo } from "@/components/layout/brand-logo"
+import { FinanceNavTree } from "@/components/layout/finance-nav-tree"
+import { NavIcon } from "@/components/layout/nav-icon"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
-  SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, SidebarMenuSubButton,
+  SidebarMenuButton, SidebarMenuItem, SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { FinanceNavTree } from "@/components/layout/finance-nav-tree"
-import type { Icon } from "@phosphor-icons/react"
-import { NavIcon } from "@/components/layout/nav-icon"
-import { FINANCE_ROLES, MANAGER_ROLES, PARAMETRES_ROLES } from "@/lib/roles"
-import { cn } from "@/lib/utils"
-import { useCurrentUser, useModules, useBranding } from "@/lib/user-context"
-import type { AssocModules } from "@/lib/modules"
 import { APP_NAME } from "@/config/brand"
-import { BrandLogo } from "@/components/layout/brand-logo"
+import { useBulkSendListener } from "@/hooks/use-bulk-send-listener"
+import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-listener"
+import { useSupportTickets } from "@/hooks/use-support-tickets"
+import type { AssocModules } from "@/lib/modules"
+import { FINANCE_ROLES, MANAGER_ROLES, PARAMETRES_ROLES } from "@/lib/roles"
+import { useBranding, useCurrentUser, useModules } from "@/lib/user-context"
+import { cn } from "@/lib/utils"
+import type { Icon } from "@phosphor-icons/react"
+import {
+  BookOpenTextIcon,
+  BuildingsIcon,
+  CalendarBlankIcon,
+  CaretRightIcon,
+  ChatsCircleIcon,
+  ClipboardTextIcon,
+  CoinsIcon,
+  EnvelopeSimpleIcon,
+  FileTextIcon,
+  GearIcon,
+  GlobeIcon,
+  HeartIcon,
+  LifebuoyIcon,
+  MoneyIcon,
+  NewspaperIcon,
+  PackageIcon,
+  PulseIcon,
+  ReceiptIcon,
+  ShoppingBagIcon,
+  SquaresFourIcon,
+  UsersIcon,
+  UsersThreeIcon,
+  VideoCameraIcon,
+  WrenchIcon
+} from "@phosphor-icons/react/dist/ssr"
+import { useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Fragment, useEffect, useRef, useState } from "react"
 
 type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 type CategoryKey = "adherents" | "communication" | "finances" | "outils"
@@ -65,7 +87,7 @@ const navigationItems: NavItem[] = [
   { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon,   roles: MANAGERS },
 
   { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
-  { key: "adhesions",     href: "/dashboard/adhesions",    icon: UserPlusIcon,        roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "adhesions",     href: "/dashboard/adhesions",    icon: ClipboardTextIcon,        roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
   // Dons, Événements and Messagerie are daily entry points, so they sit as top-level items
   // right under "Adhérents" instead of inside a category.
@@ -85,11 +107,11 @@ const navigationItems: NavItem[] = [
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
   { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon,    roles: FINANCE, moduleKey: "factures",     categoryKey: "finances" },
   { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,  roles: FINANCE, moduleKey: "fournisseurs", categoryKey: "finances" },
+  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", categoryKey: "outils" },
+  { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, roles: MANAGERS, moduleKey: "boutique", categoryKey: "outils" },
 
   { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon,     roles: MANAGERS, moduleKey: "materiel", categoryKey: "outils" },
   // Set up once and rarely revisited, so it sits with the settings in the footer.
-  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", inFooter: true },
-  { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, roles: MANAGERS, moduleKey: "boutique", categoryKey: "outils" },
 
   { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
 ]
