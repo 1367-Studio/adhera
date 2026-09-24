@@ -140,7 +140,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
   const existing = await prisma.cotisationSubscription.findUnique({ where: { stripeSubscriptionId: subscriptionId } })
   if (existing) return
 
-  const sub        = await stripe.subscriptions.retrieve(subscriptionId)
+  const sub        = await stripe.subscriptions.retrieve(subscriptionId, { expand: ["latest_invoice"] })
   const unitAmount = sub.items.data[0]?.price.unit_amount
   const amount     = unitAmount != null ? unitAmount / 100 : 0
 
@@ -279,6 +279,19 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       await pusherServer.trigger(`private-association-${meta.associationId}`, "new-notification", {}).catch(() => {})
     }
     return
+  }
+
+  // Self-heal for the race documented on shouldRetryUntilCheckoutProcessed above: if invoice.paid
+  // for this subscription's first invoice already arrived and gave up (Stripe only retries it for
+  // CHECKOUT_PROCESSING_WINDOW_MS), no further invoice.paid will ever be delivered for it — the
+  // next one is a full billing period away, leaving the member's first payment permanently
+  // unrecorded. Processing it here as soon as the row exists closes the gap regardless of delivery
+  // order; handleCotisationInvoicePaid's own Income.reference check makes this a no-op on the
+  // (normal) case where invoice.paid already succeeded before checkout.session.completed did.
+  const latestInvoice = sub.latest_invoice
+  if (latestInvoice && typeof latestInvoice !== "string" && latestInvoice.status === "paid") {
+    await handleCotisationInvoicePaid(latestInvoice).catch(err =>
+      console.error(`[cotisation-subscription] self-heal invoice.paid replay failed for subscription ${subscriptionId}:`, err))
   }
 
   if (assoc?.slug) {
