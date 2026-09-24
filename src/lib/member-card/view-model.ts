@@ -26,7 +26,7 @@ export type MemberCardViewModel = {
   memberName:      string
   /** Membre type name, or null when hidden by settings.showCategory / the member has none. */
   category:        string | null
-  /** MembershipTier label behind the printed cotisation, or null when it wasn't created via a MembershipForm. Never gated by settings.showCategory — a tarifa is not a category. */
+  /** MembershipTier label behind the printed cotisation, or null when hidden by settings.showTier / it wasn't created via a MembershipForm. Its own setting — never settings.showCategory, a tarifa is not a category. */
   tier:            string | null
   /** Only set when `state` is "valid" — an expired card prints a single date, not a range. */
   validFrom:       Date | null

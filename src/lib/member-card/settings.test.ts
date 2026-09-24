@@ -10,7 +10,7 @@ describe("parseMemberCardSettings", () => {
   it("keeps valid stored values", () => {
     const stored = {
       enabled: true, template: "modern", color: "#1A2b3C",
-      showPhoto: false, showCategory: false, showPhone: true, showEmail: true,
+      showPhoto: false, showCategory: false, showTier: false, showPhone: true, showEmail: true,
     }
     expect(parseMemberCardSettings(stored)).toEqual(stored)
   })

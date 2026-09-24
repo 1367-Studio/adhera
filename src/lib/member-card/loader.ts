@@ -9,12 +9,12 @@ export type MemberCardData = {
   membre: {
     firstName: string
     lastName:  string
-    // Already null when settings.showPhoto / showCategory is off — see below.
+    // Already null when settings.showPhoto / showCategory / showTier is off — see below.
     photoUrl:  string | null
     type:      { name: string; color: string } | null
     // Label of the MembershipTier behind the cotisation the card is actually printing (see
-    // eligibility's cotisationId) — always shown when known, unlike category which is gated
-    // by settings.showCategory: a tarifa is never the same thing as a MembreType.
+    // eligibility's cotisationId) — its own setting, gated independently from showCategory:
+    // a tarifa is never the same thing as a MembreType.
     tier:      string | null
   }
   association: {
@@ -92,7 +92,7 @@ export async function loadMemberCardEligibility(
   // shows — "valid"/"unavailable"/"expired" all carry that row's id — never a different,
   // more-recent-but-unrelated row (see MembershipTier.membreTypeId for why tier ≠ category).
   const cardCotisationId = eligibility.state === "none" ? null : eligibility.cotisationId
-  const tierLabel = cardCotisationId
+  const tierLabel = settings.showTier && cardCotisationId
     ? membre.cotisations.find(c => c.id === cardCotisationId)?.tier?.label ?? null
     : null
 

@@ -720,8 +720,8 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
   })
 
   // Category and tarifa stack below the name, each row's top computed from where the previous
-  // one ended — never gated together: a tarifa is not a MembreType (see
-  // MembershipTier.membreTypeId), so it prints even when settings.showCategory is off.
+  // one ended — each behind its own setting, never gated together: a tarifa is not a
+  // MembreType (see MembershipTier.membreTypeId).
   let nextIdentityRowTopMm = identityTopMm + memberNameLines.length * LINE_HEIGHT_FACTOR * CARD_FONT_MEMBER_NAME_MM
 
   if (settings.showCategory && card.category) {
@@ -742,7 +742,7 @@ export async function buildMemberCardPdf({ card, labels }: MemberCardPdfInput): 
     nextIdentityRowTopMm = categoryTopMm + LINE_HEIGHT_FACTOR * CARD_FONT_BODY_MM
   }
 
-  if (card.tier) {
+  if (settings.showTier && card.tier) {
     const tierTopMm = nextIdentityRowTopMm + CARD_IDENTITY_ROW_GAP_MM
     drawTextLine({
       text: truncateToWidth(

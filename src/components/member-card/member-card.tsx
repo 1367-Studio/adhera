@@ -227,9 +227,9 @@ export function MemberCard({ card, className }: MemberCardProps) {
                   {card.category}
                 </p>
               )}
-              {/* Never gated by settings.showCategory — a tarifa is not a MembreType, see
-                  MembershipTier.membreTypeId. Shown whenever the printed cotisation has one. */}
-              {card.tier && (
+              {/* Own setting, independent of settings.showCategory — a tarifa is not a
+                  MembreType, see MembershipTier.membreTypeId. */}
+              {settings.showTier && card.tier && (
                 <p
                   className="truncate leading-tight text-neutral-600"
                   style={{ fontSize: millimetres(CARD_FONT_BODY_MM) }}

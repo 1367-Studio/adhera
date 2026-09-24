@@ -19,6 +19,7 @@ export const memberCardSettingsSchema = z.object({
   color:        z.string().regex(MEMBER_CARD_COLOR_PATTERN).nullable(),
   showPhoto:    z.boolean(),
   showCategory: z.boolean(),
+  showTier:     z.boolean(),
   // The *association's* phone and contact e-mail, not the member's: a card is handed to third
   // parties (a partner, a venue, a controller), so the only contact details it may carry are
   // the ones the association already publishes. Both off by default — see below.
@@ -36,6 +37,7 @@ export const DEFAULT_MEMBER_CARD_SETTINGS: MemberCardSettings = {
   color:        null,
   showPhoto:    true,
   showCategory: true,
+  showTier:     true,
   // Off, unlike the two above: an association that filled in a phone number for its invoices
   // never asked for it to be printed on every member's card, and a card can be photographed
   // and forwarded by anyone holding it. Publishing those details is a deliberate decision.
@@ -58,6 +60,9 @@ const storedMemberCardSettingsSchema = z.object({
   // contact line rather than suddenly publishing its phone number.
   showPhone:    memberCardSettingsSchema.shape.showPhone.catch(DEFAULT_MEMBER_CARD_SETTINGS.showPhone),
   showEmail:    memberCardSettingsSchema.shape.showEmail.catch(DEFAULT_MEMBER_CARD_SETTINGS.showEmail),
+  // Same reasoning as showCategory/showPhone above — absent from every row written before the
+  // tarifa line existed, defaulting to true so a card that already showed it keeps showing it.
+  showTier:     memberCardSettingsSchema.shape.showTier.catch(DEFAULT_MEMBER_CARD_SETTINGS.showTier),
 })
 
 // The only way Association.memberCardSettings (Json?) should be read. null — an association
