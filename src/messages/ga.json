@@ -4000,7 +4000,8 @@
       "noType": "Gan aon chineál",
       "noResponsable": "Níl aon cheann",
       "noAdultResponsable": "Níl aon bhaill fásta ar fáil",
-      "preview": "Forbhreathnú:"
+      "preview": "Forbhreathnú:",
+      "customFieldsSectionTitle": "Freagraí ar an bhfoirm bhallraíochta"
     },
     "actions": {
       "add": "Cuir ball leis",

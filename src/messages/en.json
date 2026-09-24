@@ -4105,7 +4105,8 @@
       "noType": "No type",
       "noResponsable": "None",
       "noAdultResponsable": "No eligible adult member available",
-      "preview": "Preview:"
+      "preview": "Preview:",
+      "customFieldsSectionTitle": "Membership form answers"
     },
     "actions": {
       "add": "Add a member",

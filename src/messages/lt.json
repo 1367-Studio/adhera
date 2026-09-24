@@ -4000,7 +4000,8 @@
       "noType": "Nėra tipo",
       "noResponsable": "Nėra",
       "noAdultResponsable": "Suaugusiųjų narių nėra.",
-      "preview": "Apžvalga:"
+      "preview": "Apžvalga:",
+      "customFieldsSectionTitle": "Narystės formos atsakymai"
     },
     "actions": {
       "add": "Pridėti narį",

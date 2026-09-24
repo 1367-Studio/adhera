@@ -4000,7 +4000,8 @@
       "noType": "Žádný typ",
       "noResponsable": "Žádné",
       "noAdultResponsable": "Žádní dospělí členové nejsou k dispozici",
-      "preview": "Přehled:"
+      "preview": "Přehled:",
+      "customFieldsSectionTitle": "Odpovědi z členské přihlášky"
     },
     "actions": {
       "add": "Přidejte člena",

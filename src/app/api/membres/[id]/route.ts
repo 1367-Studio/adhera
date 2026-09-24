@@ -6,9 +6,11 @@ import { membreUpdateSchema } from "@/lib/schemas"
 import { addressColumnsPatch } from "@/lib/address"
 import { writeActivityLog, computeMemberDiff } from "@/lib/activity-log"
 import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear } from "@/lib/membre-adherent"
-import { answersWithMobile, readMobileAnswer } from "@/lib/membre-answers"
+import { MOBILE_ANSWER_KEY, mergeAnswers, readMobileAnswer } from "@/lib/membre-answers"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
+import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
+import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -95,10 +97,24 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       .map(([k, value]) => ({ label: labelById.get(k) ?? k, value }))
   }
 
+  // The full field set of the MembershipForm this member actually joined through — not just
+  // the fields they already answered — so "Editar membro" can render an empty optional field
+  // too. Empty for a member with no traceable form (manual creation, legacy /inscription):
+  // the edit modal then shows no custom-fields section at all, unchanged from before this.
+  const membershipFormId = await resolveMembreMembershipFormId(id)
+  const editableCustomFields = membershipFormId
+    ? (await prisma.membershipFormField.findMany({
+        where:   { formId: membershipFormId },
+        orderBy: { order: "asc" },
+        select:  { id: true, type: true, label: true, required: true, options: true },
+      })).map(field => ({ field, value: rawAnswers?.[field.id] ?? "" }))
+    : []
+
   return NextResponse.json({
     ...membre,
     mobile: readMobileAnswer(rawAnswers),
     customFieldAnswers,
+    editableCustomFields,
     isAdherent: isMembreAdherent(membre),
   })
 })
@@ -115,7 +131,25 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+  const { birthDate, email, phone, mobile, answers, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, ...rest } = parsed.data
+
+  // Réponses aux champs personnalisés du formulaire d'adhésion réellement suivi par ce membre —
+  // revalidées contre ce même formulaire, jamais contre un autre (voir
+  // resolveMembreMembershipFormId). Un membre sans formulaire rattaché ne peut pas en recevoir :
+  // le modal d'édition n'envoie alors jamais cette clé.
+  if (answers !== undefined) {
+    const membershipFormId = await resolveMembreMembershipFormId(id)
+    const fields = membershipFormId
+      ? await prisma.membershipFormField.findMany({ where: { formId: membershipFormId } })
+      : []
+    const invalidAnswer = findInvalidMembershipFormAnswer(fields, answers)
+    if (invalidAnswer) {
+      const message = invalidAnswer.kind === "required"
+        ? `Le champ « ${invalidAnswer.field.label} » est requis.`
+        : `Le champ « ${invalidAnswer.field.label} » est invalide.`
+      return NextResponse.json({ error: message }, { status: 422 })
+    }
+  }
 
   if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
@@ -188,9 +222,13 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...rest,
         ...(email         !== undefined ? { email:         email         || null } : {}),
         ...(phone         !== undefined ? { phone:         phone         || null } : {}),
-        // Le mobile vit dans answers, aux côtés des réponses aux champs personnalisés du
-        // formulaire d'adhésion : on patche la clé, on ne remplace jamais l'objet.
-        ...(mobile        !== undefined ? { answers: answersWithMobile(existing.answers, mobile) } : {}),
+        // Le mobile et les réponses aux champs personnalisés du formulaire d'adhésion vivent
+        // tous deux dans answers : un seul merge pour les deux, jamais un remplacement de
+        // l'objet — et jamais deux écritures indépendantes qui s'écraseraient l'une l'autre
+        // si les deux arrivent dans la même requête.
+        ...((mobile !== undefined || answers !== undefined)
+          ? { answers: mergeAnswers(existing.answers, { ...(mobile !== undefined ? { [MOBILE_ANSWER_KEY]: mobile } : {}), ...answers }) }
+          : {}),
         // L'adresse se met à jour d'un bloc : les six colonnes sont recalculées ensemble à
         // partir de ce qui est envoyé complété par ce qui est déjà en base, sinon la colonne
         // héritée et les colonnes structurées finiraient par se contredire.

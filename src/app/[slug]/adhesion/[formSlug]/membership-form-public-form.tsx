@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { SelectField } from "@/components/ui/select-field"
+import { MembershipFormFieldInput } from "@/components/adhesions/membership-form-field-input"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/password-requirements"
@@ -1096,30 +1097,12 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   )}
                 </div>
 
-                {form.customFields.map(field => field.type === "SELECT" ? (
-                  // SelectField doesn't expose onBlur — wrapping div catches the trigger
-                  // button's blur (React's synthetic onBlur bubbles) so this field turns red
-                  // on leave, same as every other required field here, instead of staying
-                  // silent until a submit attempt.
-                  <div key={field.id} onBlur={() => touch(field.id)}>
-                    <SelectField
-                      id={`custom-${field.id}`}
-                      label={field.label}
-                      required={field.required}
-                      options={(field.options ?? []).map(o => ({ value: o, label: o }))}
-                      value={answers[field.id] ?? ""}
-                      onValueChange={v => setAnswers(prev => ({ ...prev, [field.id]: v }))}
-                      error={requiredError(field.id, answers[field.id] ?? "", field.required)}
-                    />
-                  </div>
-                ) : (
-                  <FormField
+                {form.customFields.map(field => (
+                  <MembershipFormFieldInput
                     key={field.id}
-                    label={field.label}
-                    required={field.required}
-                    type={field.type === "NUMBER" ? "number" : "text"}
+                    field={field}
                     value={answers[field.id] ?? ""}
-                    onChange={e => setAnswers(prev => ({ ...prev, [field.id]: e.target.value }))}
+                    onChange={value => setAnswers(prev => ({ ...prev, [field.id]: value }))}
                     onBlur={() => touch(field.id)}
                     error={requiredError(field.id, answers[field.id] ?? "", field.required)}
                   />
@@ -1251,26 +1234,13 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                               <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={r.mobile} onChange={e => updateRegistrant(r.key, { mobile: e.target.value })} onBlur={() => touch(`${r.key}.mobile`)} error={requiredError(`${r.key}.mobile`, r.mobile, form.fieldMobile === "REQUIRED")} />
                             )}
                           </div>
-                          {form.customFields.map(field => field.type === "SELECT" ? (
-                            <div key={field.id} onBlur={() => touch(`${r.key}.${field.id}`)}>
-                              <SelectField
-                                id={`custom-${r.key}-${field.id}`}
-                                label={field.label}
-                                required={field.required}
-                                options={(field.options ?? []).map(o => ({ value: o, label: o }))}
-                                value={r.answers[field.id] ?? ""}
-                                onValueChange={v => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: v } })}
-                                error={requiredError(`${r.key}.${field.id}`, r.answers[field.id] ?? "", field.required)}
-                              />
-                            </div>
-                          ) : (
-                            <FormField
+                          {form.customFields.map(field => (
+                            <MembershipFormFieldInput
                               key={field.id}
-                              label={field.label}
-                              required={field.required}
-                              type={field.type === "NUMBER" ? "number" : "text"}
+                              id={`custom-${r.key}-${field.id}`}
+                              field={field}
                               value={r.answers[field.id] ?? ""}
-                              onChange={e => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: e.target.value } })}
+                              onChange={value => updateRegistrant(r.key, { answers: { ...r.answers, [field.id]: value } })}
                               onBlur={() => touch(`${r.key}.${field.id}`)}
                               error={requiredError(`${r.key}.${field.id}`, r.answers[field.id] ?? "", field.required)}
                             />

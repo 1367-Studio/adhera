@@ -4000,7 +4000,8 @@
       "noType": "Nessun tipo",
       "noResponsable": "Nessuna",
       "noAdultResponsable": "Nessun membro adulto disponibile",
-      "preview": "Panoramica:"
+      "preview": "Panoramica:",
+      "customFieldsSectionTitle": "Risposte al modulo di adesione"
     },
     "actions": {
       "add": "Aggiungi un membro",

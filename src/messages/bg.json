@@ -4000,7 +4000,8 @@
       "noType": "Няма тип",
       "noResponsable": "Няма",
       "noAdultResponsable": "Няма налични възрастни членове",
-      "preview": "Общ преглед:"
+      "preview": "Общ преглед:",
+      "customFieldsSectionTitle": "Отговори от формуляра за членство"
     },
     "actions": {
       "add": "Добавете член",

@@ -4000,7 +4000,8 @@
       "noType": "Geen type",
       "noResponsable": "Geen enkele",
       "noAdultResponsable": "Geen volwassen leden beschikbaar",
-      "preview": "Overzicht:"
+      "preview": "Overzicht:",
+      "customFieldsSectionTitle": "Antwoorden op het lidmaatschapsformulier"
     },
     "actions": {
       "add": "Voeg een lid toe",

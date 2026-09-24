@@ -4000,7 +4000,8 @@
       "noType": "Ingen type",
       "noResponsable": "Ingen",
       "noAdultResponsable": "Ingen voksne medlemmer tilgængelige",
-      "preview": "Oversigt:"
+      "preview": "Oversigt:",
+      "customFieldsSectionTitle": "Svar fra indmeldelsesformularen"
     },
     "actions": {
       "add": "Tilføj et medlem",

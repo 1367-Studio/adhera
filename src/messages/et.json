@@ -4000,7 +4000,8 @@
       "noType": "Tüüp puudub",
       "noResponsable": "Puudub",
       "noAdultResponsable": "Täiskasvanud liikmeid pole saadaval",
-      "preview": "Ülevaade:"
+      "preview": "Ülevaade:",
+      "customFieldsSectionTitle": "Liikmevormi vastused"
     },
     "actions": {
       "add": "Lisa liige",

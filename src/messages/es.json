@@ -4000,7 +4000,8 @@
       "noType": "Sin tipo",
       "noResponsable": "Ninguno",
       "noAdultResponsable": "Ningún miembro adulto disponible",
-      "preview": "Vista previa:"
+      "preview": "Vista previa:",
+      "customFieldsSectionTitle": "Respuestas del formulario de afiliación"
     },
     "actions": {
       "add": "Añadir miembro",

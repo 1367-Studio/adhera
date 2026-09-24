@@ -197,7 +197,7 @@ export function MembreDetailView() {
     legacy:     membre?.address,
   })
 
-  async function handleUpdate(data: MembreInput) {
+  async function handleUpdate(data: MembreInput & { answers?: Record<string, string> }) {
     try {
       await updateMutation.mutateAsync(data)
       toast.success(t("membres.view.toasts.memberUpdated"))
@@ -992,6 +992,7 @@ export function MembreDetailView() {
           actorRole={currentUser.role}
           isSelf={isSelf}
           membreId={membre.id}
+          editableCustomFields={membre.editableCustomFields}
         />
       </Modal>
 

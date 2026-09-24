@@ -4062,7 +4062,8 @@
       "noType": "Nenhum tipo",
       "noResponsable": "Nenhum",
       "noAdultResponsable": "Nenhum membro maior de idade disponível",
-      "preview": "Prévia:"
+      "preview": "Prévia:",
+      "customFieldsSectionTitle": "Respostas do formulário de adesão"
     },
     "actions": {
       "add": "Adicionar membro",

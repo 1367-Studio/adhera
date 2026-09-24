@@ -49,6 +49,19 @@ export type MembreDetail = {
   // MembershipForm's "mobile" standard field and its custom MembershipFormField questions.
   mobile:             string | null
   customFieldAnswers: { label: string; value: string }[]
+  // Full field set of the MembershipForm this member joined through (see
+  // resolveMembreMembershipFormId), each with its current raw answer — feeds "Editar membro"'s
+  // custom-fields section. Empty for a member with no traceable form.
+  editableCustomFields: {
+    field: {
+      id:       string
+      type:     "TEXT" | "NUMBER" | "SELECT"
+      label:    string
+      required: boolean
+      options:  string[] | null
+    }
+    value: string
+  }[]
   cotisations: {
     id:     string
     year:   number

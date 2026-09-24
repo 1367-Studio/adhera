@@ -4000,7 +4000,8 @@
       "noType": "Brak typu",
       "noResponsable": "Brak",
       "noAdultResponsable": "Brak dostępnych dorosłych członków",
-      "preview": "Przegląd:"
+      "preview": "Przegląd:",
+      "customFieldsSectionTitle": "Odpowiedzi z formularza członkowskiego"
     },
     "actions": {
       "add": "Dodaj członka",

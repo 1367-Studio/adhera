@@ -4000,7 +4000,8 @@
       "noType": "Ingen typ",
       "noResponsable": "Inga",
       "noAdultResponsable": "Inga vuxna medlemmar tillgängliga",
-      "preview": "Översikt:"
+      "preview": "Översikt:",
+      "customFieldsSectionTitle": "Svar från medlemsformuläret"
     },
     "actions": {
       "add": "Lägg till en medlem",

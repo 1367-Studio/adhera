@@ -66,7 +66,13 @@ export const membreCreateSchema = membreSchema.extend({
   legalOfflineAttestation: z.boolean().optional(),
 })
 
-export const membreUpdateSchema = membreSchema.partial()
+export const membreUpdateSchema = membreSchema.partial().extend({
+  // Réponses aux champs personnalisés (MembershipFormField) du formulaire d'adhésion réellement
+  // utilisé par ce membre — keyed par fieldId, comme Membre.answers. Absent du schéma de
+  // création : un membre créé manuellement n'a pas encore de formulaire à qui rattacher des
+  // réponses (voir resolveMembreMembershipFormId dans src/lib/membre-membership-form.ts).
+  answers: z.record(z.string(), z.string().max(500)).optional(),
+})
 
 export type MembreInput       = z.infer<typeof membreSchema>
 export type MembreCreateInput = z.infer<typeof membreCreateSchema>

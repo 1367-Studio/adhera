@@ -4000,7 +4000,8 @@
       "noType": "Nincs típus",
       "noResponsable": "Nincs",
       "noAdultResponsable": "Felnőtt tagok nem elérhetők",
-      "preview": "Áttekintés:"
+      "preview": "Áttekintés:",
+      "customFieldsSectionTitle": "Tagfelvételi űrlap válaszai"
     },
     "actions": {
       "add": "Tag hozzáadása",

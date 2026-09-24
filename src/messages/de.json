@@ -4000,7 +4000,8 @@
       "noType": "Kein Typ",
       "noResponsable": "Keine",
       "noAdultResponsable": "Keine erwachsenen Mitglieder verfügbar",
-      "preview": "Überblick:"
+      "preview": "Überblick:",
+      "customFieldsSectionTitle": "Antworten aus dem Mitgliedsformular"
     },
     "actions": {
       "add": "Mitglied hinzufügen",

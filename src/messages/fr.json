@@ -4113,7 +4113,8 @@
       "noType": "Aucun type",
       "noResponsable": "Aucun",
       "noAdultResponsable": "Aucun membre majeur disponible",
-      "preview": "Aperçu :"
+      "preview": "Aperçu :",
+      "customFieldsSectionTitle": "Réponses au formulaire d'adhésion"
     },
     "actions": {
       "add": "Ajouter un membre",

@@ -4000,7 +4000,8 @@
       "noType": "Χωρίς τύπο",
       "noResponsable": "Κανένας",
       "noAdultResponsable": "Δεν υπάρχουν διαθέσιμα ενήλικα μέλη",
-      "preview": "Επισκόπηση:"
+      "preview": "Επισκόπηση:",
+      "customFieldsSectionTitle": "Απαντήσεις φόρμας εγγραφής μέλους"
     },
     "actions": {
       "add": "Προσθήκη μέλους",

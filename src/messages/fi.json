@@ -4000,7 +4000,8 @@
       "noType": "Ei tyyppiä",
       "noResponsable": "Ei mitään",
       "noAdultResponsable": "Aikuisjäseniä ei ole saatavilla",
-      "preview": "Yleiskatsaus:"
+      "preview": "Yleiskatsaus:",
+      "customFieldsSectionTitle": "Jäsenlomakkeen vastaukset"
     },
     "actions": {
       "add": "Lisää jäsen",

@@ -4000,7 +4000,8 @@
       "noType": "Fără tip",
       "noResponsable": "Niciuna",
       "noAdultResponsable": "Nu există membri adulți disponibili",
-      "preview": "Prezentare generală:"
+      "preview": "Prezentare generală:",
+      "customFieldsSectionTitle": "Răspunsuri din formularul de adeziune"
     },
     "actions": {
       "add": "Adaugă un membru",

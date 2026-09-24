@@ -4000,7 +4000,8 @@
       "noType": "Bez tipa",
       "noResponsable": "Nema",
       "noAdultResponsable": "Nema dostupnih punoljetnih članova",
-      "preview": "Pregled:"
+      "preview": "Pregled:",
+      "customFieldsSectionTitle": "Odgovori s obrasca za članstvo"
     },
     "actions": {
       "add": "Dodajte člana",

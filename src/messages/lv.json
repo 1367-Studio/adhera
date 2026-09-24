@@ -4000,7 +4000,8 @@
       "noType": "Nav tipa",
       "noResponsable": "Nav",
       "noAdultResponsable": "Pieaugušo biedru nav pieejami",
-      "preview": "Pārskats:"
+      "preview": "Pārskats:",
+      "customFieldsSectionTitle": "Biedra pieteikuma anketas atbildes"
     },
     "actions": {
       "add": "Pievienot biedru",
