@@ -365,10 +365,12 @@ export function MembreDetailView() {
   const subscriptionStatusBadge = getSubscriptionStatusBadge(t)
   const statusInfo            = statusBadge[membre.status]
   const cotisations           = membre.cotisations ?? []
-  // La tarifa affichée dans le bloc « Statut » est celle de la cotisation la plus récente qui
-  // en a une — cotisations triées year desc côté API, donc la première rencontrée suffit.
-  // Absente pour un membre créé manuellement ou hors MembershipForm (voir Cotisation.tierId).
-  const currentTierLabel      = cotisations.find(c => c.tier)?.tier?.label ?? null
+  // La tarifa affichée dans le bloc « Statut » est celle de la cotisation la plus récente tout
+  // court (cotisations triées year desc côté API) — jamais celle d'une année passée : un
+  // membre dont la cotisation de cette année a été ajoutée à la main, sans tarif, ne doit pas
+  // afficher un tarif d'il y a deux ans comme si c'était encore le sien. Absente pour un membre
+  // créé manuellement ou hors MembershipForm (voir Cotisation.tierId).
+  const currentTierLabel      = cotisations[0]?.tier?.label ?? null
   // Mêmes rôles que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
   // ceci évite seulement d'afficher une action qui répondrait 403.
   const canRecordPayment      = ["ADMIN", "PRESIDENT", "TRESORIER"].includes(currentUser.role)

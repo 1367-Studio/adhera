@@ -137,10 +137,18 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // revalidées contre ce même formulaire, jamais contre un autre (voir
   // resolveMembreMembershipFormId). Un membre sans formulaire rattaché ne peut pas en recevoir :
   // le modal d'édition n'envoie alors jamais cette clé.
-  if (answers !== undefined) {
+  //
+  // Seuls les champs réellement présents dans `answers` sont validés — jamais tout le
+  // formulaire. Le client n'envoie que ce qui a changé (voir membre-form.tsx), donc un champ
+  // devenu obligatoire après l'adhésion d'un membre, jamais rempli, ne doit jamais bloquer une
+  // modification qui ne le touche pas (changer un téléphone, par exemple) : il resterait sinon
+  // impossible à modifier tant que ce champ précis n'est pas renseigné.
+  if (answers !== undefined && Object.keys(answers).length > 0) {
+    const submittedFieldIds = new Set(Object.keys(answers))
     const membershipFormId = await resolveMembreMembershipFormId(id)
     const fields = membershipFormId
-      ? await prisma.membershipFormField.findMany({ where: { formId: membershipFormId } })
+      ? (await prisma.membershipFormField.findMany({ where: { formId: membershipFormId } }))
+          .filter(field => submittedFieldIds.has(field.id))
       : []
     const invalidAnswer = findInvalidMembershipFormAnswer(fields, answers)
     if (invalidAnswer) {

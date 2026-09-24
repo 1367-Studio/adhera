@@ -151,6 +151,17 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   useEffect(() => {
     setCustomAnswers(Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])))
   }, [editableCustomFields])
+  // Same touched/showAll pattern as the public adhésion form (membership-form-public-form.tsx):
+  // a required field only turns red once it's been left, or once a submit was attempted —
+  // never on first render, and never merely because another required field failed.
+  const [touchedCustomFields, setTouchedCustomFields] = useState<Set<string>>(new Set())
+  const [showAllCustomFieldErrors, setShowAllCustomFieldErrors] = useState(false)
+  function customFieldError(fieldId: string, required: boolean): string | undefined {
+    if (!required || (customAnswers[fieldId] ?? "").trim()) return undefined
+    return (showAllCustomFieldErrors || touchedCustomFields.has(fieldId))
+      ? t("membershipForms.public.fieldRequired")
+      : undefined
+  }
 
   const [addressStreetValue, addressComplementValue, postalCodeValue, cityValue, countryValue] = useWatch({
     control,
@@ -196,7 +207,25 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
   async function submit(data: MembreCreateInput) {
-    await onSubmit(editableCustomFields.length > 0 ? { ...data, answers: customAnswers } : data)
+    // Only the answers actually changed in this session — never the whole set. A required
+    // field the member never answered (added to the form after they joined, say) must not
+    // block an edit that has nothing to do with it: sending it unchanged would fail the
+    // server's required-field check on every single save until someone fills it in.
+    const initialCustomAnswers = Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value]))
+    const changedCustomAnswers = Object.fromEntries(
+      Object.entries(customAnswers).filter(([fieldId, value]) => value !== (initialCustomAnswers[fieldId] ?? "")),
+    )
+    // Only a *changed* required field is checked here, for the same reason it's the only one
+    // sent to the server above — a pre-existing blank on an untouched field is not this save's
+    // problem to fix.
+    const hasInvalidChangedField = editableCustomFields.some(
+      ({ field }) => field.id in changedCustomAnswers && field.required && !(customAnswers[field.id] ?? "").trim(),
+    )
+    if (hasInvalidChangedField) {
+      setShowAllCustomFieldErrors(true)
+      return
+    }
+    await onSubmit(Object.keys(changedCustomAnswers).length > 0 ? { ...data, answers: changedCustomAnswers } : data)
   }
 
   return (
@@ -553,6 +582,8 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               field={field}
               value={customAnswers[field.id] ?? ""}
               onChange={value => setCustomAnswers(prev => ({ ...prev, [field.id]: value }))}
+              onBlur={() => setTouchedCustomFields(prev => new Set(prev).add(field.id))}
+              error={customFieldError(field.id, field.required)}
             />
           ))}
         </div>

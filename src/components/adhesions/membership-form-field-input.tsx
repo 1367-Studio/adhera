@@ -28,6 +28,16 @@ type MembershipFormFieldInputProps = {
 // differently from one another.
 export function MembershipFormFieldInput({ field, value, onChange, onBlur, error, id }: MembershipFormFieldInputProps) {
   if (field.type === "SELECT") {
+    const configuredOptions = field.options ?? []
+    // An existing answer can fall outside the field's current options — the admin edited the
+    // form's option list after this member answered. Dropping it silently would make
+    // SelectField fall back to its placeholder (SelectField picks the label by scanning
+    // `options`, see select-field.tsx), which reads as "nothing answered" even though a real
+    // answer exists — and re-saving unchanged would then fail the required check. Appended,
+    // not merged in place, so it still sorts after the form's real options.
+    const options = value && !configuredOptions.includes(value)
+      ? [...configuredOptions, value]
+      : configuredOptions
     return (
       // SelectField doesn't expose onBlur — the wrapping div catches the trigger button's
       // blur (React's synthetic onBlur bubbles), so the field turns red on leave like every
@@ -37,7 +47,7 @@ export function MembershipFormFieldInput({ field, value, onChange, onBlur, error
           id={id ?? `custom-${field.id}`}
           label={field.label}
           required={field.required}
-          options={(field.options ?? []).map(option => ({ value: option, label: option }))}
+          options={options.map(option => ({ value: option, label: option }))}
           value={value}
           onValueChange={onChange}
           error={error}
