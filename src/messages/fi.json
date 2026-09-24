@@ -1718,6 +1718,7 @@
       "notFound": "Tapahtumaa ei löydetty",
       "titleLabel": "Tapahtuman nimi",
       "duplicateButton": "Kaksoiskappale",
+      "avaliacoesButton": "Arvostelut",
       "deleteButton": "Poista",
       "publishButton": "Julkaise",
       "unpublishButton": "Julkaise pois",

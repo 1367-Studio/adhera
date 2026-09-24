@@ -36,6 +36,7 @@ import {
   CopyIcon,
   EyeIcon,
   LinkIcon,
+  StarIcon,
   TrashIcon,
 } from "@phosphor-icons/react/dist/ssr"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
@@ -627,6 +628,10 @@ export default function EvenementDetailPage() {
             <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>
               <CopyIcon className="mr-1.5 size-4" />
               {t("detail.duplicateButton")}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => router.push(`/dashboard/evenements/${id}/avaliacoes`)}>
+              <StarIcon className="mr-1.5 size-4" />
+              {t("detail.avaliacoesButton")}
             </Button>
             {evenement.status !== "ARCHIVED" && (
               <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("archive")} loading={publishMutation.isPending}>

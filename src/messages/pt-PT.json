@@ -1718,6 +1718,7 @@
       "notFound": "Evento não encontrado",
       "titleLabel": "Título do evento",
       "duplicateButton": "Duplicar",
+      "avaliacoesButton": "Avaliações",
       "deleteButton": "Eliminar",
       "publishButton": "Publicar",
       "unpublishButton": "Despublicar",

@@ -1718,6 +1718,7 @@
       "notFound": "Händelse ej hittad",
       "titleLabel": "Evenemangets titel",
       "duplicateButton": "Duplicat",
+      "avaliacoesButton": "Recensioner",
       "deleteButton": "Radera",
       "publishButton": "Publicera",
       "unpublishButton": "Ej publicera",

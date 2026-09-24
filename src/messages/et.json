@@ -1718,6 +1718,7 @@
       "notFound": "Sündmust ei leitud",
       "titleLabel": "Võistluse pealkiri",
       "duplicateButton": "Duplikaat",
+      "avaliacoesButton": "Arvustused",
       "deleteButton": "Kustuta",
       "publishButton": "Avalda",
       "unpublishButton": "Avaldamise lõpetamine",

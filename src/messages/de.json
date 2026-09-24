@@ -1718,6 +1718,7 @@
       "notFound": "Ereignis nicht gefunden",
       "titleLabel": "Veranstaltungstitel",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Rezensionen",
       "deleteButton": "Löschen",
       "publishButton": "Veröffentlichen",
       "unpublishButton": "Unveröffentlicht",
