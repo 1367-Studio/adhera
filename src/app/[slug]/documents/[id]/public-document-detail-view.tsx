@@ -7,11 +7,20 @@ import { format } from "date-fns"
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr"
 import { RichTextView, DOCUMENT_PROSE } from "@/components/ui/rich-text-view"
 import { SitePublicChrome, type PublicSiteInfo } from "@/components/site/site-public-chrome"
+import { AssociationDocumentPdf } from "@/components/association-documents/association-document-pdf"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { BASE_PATH } from "@/lib/env"
+import { stripHtml } from "@/lib/utils"
 import type { Locale } from "@/i18n/locales"
 
-type PublicDocument = { id: string; title: string; content: string; updatedAt: string }
+type PublicDocument = {
+  id:        string
+  title:     string
+  content:   string
+  fileUrl:   string | null
+  fileName:  string | null
+  updatedAt: string
+}
 
 // The route returns `site` even on a 404, so a stale link still renders the association's
 // nav and footer around the "no longer available" message.
@@ -65,7 +74,23 @@ export function PublicDocumentDetailView({ slug, id }: { slug: string; id: strin
               </p>
             </header>
 
-            <RichTextView content={associationDocument.content} className={`${DOCUMENT_PROSE} mt-8`} />
+            {associationDocument.fileUrl && (
+              <div className="mt-8">
+                <AssociationDocumentPdf
+                  tone="public"
+                  fileUrl={associationDocument.fileUrl}
+                  fileName={associationDocument.fileName}
+                  documentTitle={associationDocument.title}
+                  openLabel={t("openPdf")}
+                  opensNewTabLabel={t("opensNewTab")}
+                />
+              </div>
+            )}
+
+            {/* A PDF-only document stores "" (or an emptied editor's markup) as its content. */}
+            {stripHtml(associationDocument.content).length > 0 && (
+              <RichTextView content={associationDocument.content} className={`${DOCUMENT_PROSE} mt-8`} />
+            )}
           </>
         )}
       </article>

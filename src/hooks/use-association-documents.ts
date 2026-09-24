@@ -11,6 +11,9 @@ const PORTAL_QK = ["portal", "association-documents"]
 export type AssociationDocumentSummary = {
   id:                 string
   title:              string
+  // Imported PDF — null when the document is text only.
+  fileUrl:            string | null
+  fileName:           string | null
   visibleToMembers:   boolean
   visibleToPublic:    boolean
   requiresAcceptance: boolean
@@ -25,6 +28,8 @@ export type AssociationDocument = AssociationDocumentSummary & {
 export type PortalAssociationDocumentSummary = {
   id:        string
   title:     string
+  fileUrl:   string | null
+  fileName:  string | null
   updatedAt: string
 }
 

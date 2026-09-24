@@ -10,7 +10,7 @@ export const GET = withPortalAuth(async (_req, ctx) => {
   const documents = await prisma.associationDocument.findMany({
     where:   { associationId, deletedAt: null, OR: [{ visibleToMembers: true }, { visibleToPublic: true }] },
     orderBy: { title: "asc" },
-    select:  { id: true, title: true, updatedAt: true },
+    select:  { id: true, title: true, fileUrl: true, fileName: true, updatedAt: true },
   })
 
   return NextResponse.json(documents)
