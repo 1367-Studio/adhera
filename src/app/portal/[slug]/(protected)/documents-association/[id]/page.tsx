@@ -8,6 +8,8 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { RichTextView, DOCUMENT_PROSE } from "@/components/ui/rich-text-view"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AssociationDocumentPdf } from "@/components/association-documents/association-document-pdf"
+import { stripHtml } from "@/lib/utils"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
 
@@ -55,7 +57,20 @@ export default function PortalAssociationDocumentPage() {
             </p>
           </div>
 
-          <RichTextView content={associationDocument.content} className={DOCUMENT_PROSE} />
+          {associationDocument.fileUrl && (
+            <AssociationDocumentPdf
+              fileUrl={associationDocument.fileUrl}
+              fileName={associationDocument.fileName}
+              documentTitle={associationDocument.title}
+              openLabel={t("openPdf")}
+              opensNewTabLabel={t("opensNewTab")}
+            />
+          )}
+
+          {/* A PDF-only document stores "" (or an emptied editor's markup) as its content. */}
+          {stripHtml(associationDocument.content).length > 0 && (
+            <RichTextView content={associationDocument.content} className={DOCUMENT_PROSE} />
+          )}
         </>
       )}
     </article>

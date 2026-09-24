@@ -2920,7 +2920,11 @@ model AssociationDocument {
   id                 String    @id @default(cuid())
   associationId      String
   title              String
-  content            String // HTML riche (Tiptap)
+  content            String // HTML riche (Tiptap) — "" when the document is a PDF only
+  // Imported PDF (public R2 URL + original name for display). A document needs visible
+  // content, a file, or both — enforced by the API, not the database.
+  fileUrl            String?
+  fileName           String?
   visibleToMembers   Boolean   @default(false)
   visibleToPublic    Boolean   @default(false)
   requiresAcceptance Boolean   @default(false)
@@ -2951,6 +2955,9 @@ model AssociationDocumentRevision {
   version    Int
   title      String
   content    String
+  // The PDF in force at this version. Its R2 object is never deleted: this row is the evidence.
+  fileUrl    String?
+  fileName   String?
   createdAt  DateTime @default(now())
 
   document    AssociationDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)

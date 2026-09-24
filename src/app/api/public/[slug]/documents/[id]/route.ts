@@ -28,7 +28,7 @@ export async function GET(
   // instead of stranding the visitor on a bare page.
   const document = await prisma.associationDocument.findFirst({
     where:  { id, associationId: assoc.id, deletedAt: null, visibleToPublic: true },
-    select: { id: true, title: true, content: true, updatedAt: true },
+    select: { id: true, title: true, content: true, fileUrl: true, fileName: true, updatedAt: true },
   })
   if (!document) return NextResponse.json({ error: "Not found", site }, { status: 404 })
 

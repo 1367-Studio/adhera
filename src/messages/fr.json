@@ -381,7 +381,9 @@
     "viewDocument": "Voir le document",
     "remove": "Supprimer",
     "uploading": "Upload en cours…",
-    "attach": "Joindre image ou PDF (max 4 Mo)"
+    "attach": "Joindre image ou PDF (max 4 Mo)",
+    "attachPdf": "Importer un PDF (max 4 Mo)",
+    "pdfOnly": "Seuls les fichiers PDF sont acceptés"
   },
   "factures": {
     "form": {
@@ -5170,7 +5172,10 @@
       "contentLabel": "Contenu",
       "contentPlaceholder": "Rédigez le contenu du document…",
       "titleRequired": "Le titre est obligatoire.",
-      "contentRequired": "Le contenu est obligatoire."
+      "contentRequired": "Rédigez un contenu ou importez un fichier PDF.",
+      "fileLabel": "Fichier PDF",
+      "fileHint": "Importez la version officielle du document (statuts signés, règlement scanné…). Elle est proposée au téléchargement et affichée avec le contenu.",
+      "contentOptionalHint": "Facultatif lorsqu'un PDF est joint : le texte s'affiche sous le fichier."
     },
     "leaveWarning": {
       "title": "Modifications non enregistrées",
@@ -5179,7 +5184,8 @@
       "saveAndLeave": "Enregistrer et quitter"
     },
     "notFound": "Ce document est introuvable.",
-    "backToList": "Retour aux documents"
+    "backToList": "Retour aux documents",
+    "pdfShort": "PDF"
   },
   "legalConsent": {
     "agreeLabel": "{count, plural, one {J'accepte le document suivant :} other {J'accepte les documents suivants :}}",
@@ -5200,7 +5206,10 @@
     "updatedAt": "Mis à jour le {date}",
     "backToList": "Tous les documents",
     "associationNotFound": "Cette association est introuvable.",
-    "notFound": "Ce document n'est plus disponible."
+    "notFound": "Ce document n'est plus disponible.",
+    "openPdf": "Ouvrir le PDF",
+    "opensNewTab": "(s'ouvre dans un nouvel onglet)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5210,7 +5219,10 @@
       "empty": "Aucun document disponible pour le moment.",
       "loadError": "Impossible de charger les documents.",
       "notFound": "Ce document est introuvable ou n'est plus disponible.",
-      "backToList": "Retour aux documents"
+      "backToList": "Retour aux documents",
+      "openPdf": "Ouvrir le PDF",
+      "opensNewTab": "(s'ouvre dans un nouvel onglet)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Sondages",
